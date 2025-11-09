@@ -1,0 +1,15 @@
+#!/usr/bin/env bun
+
+import Deem from '../src/deem';
+
+console.log('Deem console');
+while (true) {
+  const input = prompt('> ');
+  if (input === null) break; // Exit on Ctrl+D
+  try {
+    const result = Deem.evaluate(input);
+    console.log(result);
+  } catch (err) {
+    console.error('Error:', err);
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": {
+    "discriminator": "gender",
+    "groups": {
+      "male": ["Aldric", "Borin", "Cedric"],
+      "female": ["Aria", "Brenna", "Celeste"]
+    }
+  },
+  "treasure": {
+    "discriminator": "tier",
+    "groups": {
+      "minor": ["a silver coin", "a healing potion"],
+      "major": ["a magic sword", "an enchanted ring"]
+    }
+  }
+}

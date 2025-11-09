@@ -1,0 +1,17 @@
+{
+  "pc": {
+    "gender": "=oneOf(male, female)",
+    "name": "=lookup(name, #gender)",
+    "class": "=oneOf(fighter, wizard, rogue)",
+    "str": "=3d6",
+    "hp": "=10 + #str"
+  },
+  "encounter": {
+    "type": "=oneOf(goblin, dragon, bandit)",
+    "difficulty": "=oneOf(easy, medium, hard)"
+  },
+  "room": {
+    "description": "=oneOf(dark_cavern, ancient_hall, forest_clearing)",
+    "encounter": "=if(rand() < 0.4, gen(encounter), nihil)"
+  }
+}
