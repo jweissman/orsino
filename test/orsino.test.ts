@@ -35,4 +35,28 @@ describe('Orsino', () => {
     const response = await orsino.gen("room");
     expect(response.narrative).toMatch(/A dimly lit tavern|A bustling marketplace|A quiet library|A shadowy alleyway|A grand hall/);
   });
+
+  it('combat generator', async () => {
+    let combat = orsino.play("combat", { 
+      outputSink: (_message: string) => {}
+    });
+    combat.setUp();
+    expect(combat.isOver()).toBe(false);
+    expect(combat.teams[0]).toHaveProperty('name');
+    expect(combat.teams[1]).toHaveProperty('name');
+    expect(combat.teams[0].combatants[0].hp).toBeGreaterThan(0);
+    expect(combat.teams[1].combatants[0].hp).toBeGreaterThan(0);
+
+    await combat.setUp();
+    let turn = await combat.nextTurn();
+    expect(turn).toHaveProperty('number');
+    expect(turn).toHaveProperty('description');
+    while (!combat.isOver()) {
+      turn = await combat.nextTurn();
+      expect(turn).toHaveProperty('number');
+      expect(turn).toHaveProperty('description');
+    }
+    expect(combat.winner).toBeDefined();
+    expect(combat.winner).toMatch(/Player|Enemy/);
+  });
 });

@@ -3,12 +3,24 @@ import { GenerationTemplateType } from "./orsino/types/GenerationTemplateType";
 import { Template } from "./orsino/Template";
 import { Table } from "./orsino/Table";
 import { loadSetting } from "./orsino/loader";
+import Combat, { PlaygroundType } from "./orsino/Combat";
 
 export default class Orsino {
   setting: Record<GenerationTemplateType, Template | Table>;
 
   constructor(public settingName?: string) {
     this.setting = settingName ? loadSetting(settingName) : this.defaultSetting;
+  }
+
+  play(
+    type: PlaygroundType,
+    options: Record<string, any> = {}
+  ) {
+    if (type === "combat") {
+      return new Combat(options);
+    } else {
+      throw new Error('Unsupported playground type: ' + type);
+    }
   }
 
   genList(
