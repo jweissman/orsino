@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'bun:test';
 import Orsino from '../src/orsino';
+import Combat from '../src/orsino/Combat';
 
 describe('Orsino', () => {
   const orsino = new Orsino();
@@ -37,10 +38,8 @@ describe('Orsino', () => {
   });
 
   it('combat generator', async () => {
-    let combat = orsino.play("combat", { 
-      outputSink: (_message: string) => {}
-    });
-    combat.setUp();
+    let combat = new Combat();
+    combat.setUp(Combat.defaultTeams());
     expect(combat.isOver()).toBe(false);
     expect(combat.teams[0]).toHaveProperty('name');
     expect(combat.teams[1]).toHaveProperty('name');

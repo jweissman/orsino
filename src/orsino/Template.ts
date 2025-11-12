@@ -1,4 +1,5 @@
 import Deem from "../deem";
+import deepCopy from "./deepCopy";
 import { GenerationTemplateType } from "./types/GenerationTemplateType";
 
 export class Template {
@@ -8,18 +9,33 @@ export class Template {
   ) { }
 
   assembleProperties(
-    options: Record<string, any> = {}
+    options: Record<string, any> = {},
+    orsino: any
   ): Record<string, any> {
+    const localContext = { ...options };
     let assembled: Record<string, any> = {};
 
     Object.entries(this.props).forEach(([key, value]) => {
       const context: Record<string, any> = {
-        ...options,
+        ...localContext,
         ...assembled
       };
+      Deem.stdlib.lookup = (tableName: GenerationTemplateType, groupName: string) => orsino.lookupInTable(tableName, groupName);
+      Deem.stdlib.gen = (type: GenerationTemplateType) => {
+        // console.log("Sub-genning", type, "with parent options:", options);
+        return orsino.gen(type, { ...context })
+      };
+      Deem.stdlib.genList = (type: GenerationTemplateType, count: number = 1, condition?: string) => {
+        // console.log("Sub-genning list of", type, "with parent options:", options);
+        return orsino.genList(type, { ...context }, count, condition);
+      }
+
       assembled[key] =
-        options[key] !== undefined ? options[key] :
-          this.evaluatePropertyExpression(key, value, context);
+        localContext[key] !== undefined ? localContext[key] :
+          Template.evaluatePropertyExpression(value, context);
+
+
+      localContext[key] = assembled[key];
     });
 
     // omit internal properties starting with '_'
@@ -32,7 +48,7 @@ export class Template {
     return assembled;
   }
 
-  private evaluatePropertyExpression(key: string, expr: any, context: Record<string, any>): any {
+  static evaluatePropertyExpression(expr: any, context: Record<string, any>): any {
     if (!expr || typeof expr !== 'string') {
       return expr;
     }
@@ -41,7 +57,7 @@ export class Template {
       try {
         return Deem.evaluate(expr.slice(1), context);
       } catch (e) {
-        console.error(`Error evaluating expression for ${key}: ${expr}`, e);
+        console.error(`Error evaluating expression ${expr}`, e);
         return null;
       }
     }

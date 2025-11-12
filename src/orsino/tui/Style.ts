@@ -1,0 +1,33 @@
+export default class Style {
+  static format = (text: string, style: 'bold' | 'italic' | 'underline') => {
+    const styles: Record<string, string> = {
+      bold: '\x1b[1m',
+      italic: '\x1b[3m',
+      underline: '\x1b[4m',
+    };
+    const reset = '\x1b[0m';
+    return `${styles[style] || ''}${text}${reset}`;
+  }
+
+  static colorize = (text: string, color: string) => {
+    const colors: Record<string, string> = {
+      black: '30',
+      red: '31',
+      green: '32',
+      yellow: '33',
+      blue: '34',
+      magenta: '35',
+      cyan: '36',
+      white: '37',
+    };
+    const colorCode = colors[color] || colors.white;
+    return `\x1b[${colorCode}m${text}\x1b[0m`;
+  }
+
+  static prettyValue = (value: number, maxValue: number): string => {
+    let counter = ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
+    const ratio = value / maxValue;
+
+    return counter[Math.floor(ratio * (counter.length - 1))] || counter[0];
+  }
+}

@@ -2,6 +2,7 @@ import * as ohm from 'ohm-js';
 import source from './deem.ohm.txt';
 
 export default class Deem {
+  static magicVars: Record<string, any> = {};
   static colors = {
     black: '30',
     red: '31',
@@ -14,17 +15,37 @@ export default class Deem {
   };
   static colorize = (str: string, color: string) => `\x1b[${color}m${str}\x1b[0m`;
   static stdlib: { [key: string]: (...args: any[]) => any } = {
+    count: (arr: any[]) => arr.length,
     rand: () => Math.random(),
     if: (cond: any, trueVal: any, falseVal: any) => (cond ? trueVal : falseVal),
     oneOf: (...args: any[]) => args[Math.floor(Math.random() * args.length)],
+    round: (num: number) => Math.round(num),
+    floor: (num: number) => Math.floor(num),
+    ceil: (num: number) => Math.ceil(num),
+    capitalize: (str: string) => str.charAt(0).toUpperCase() + str.slice(1),
+    sum: (arr: any[], prop?: string) => {
+      if (prop) {
+        return arr.reduce((acc, item) => acc + (item[prop] || 0), 0);
+      }
+      return arr.reduce((acc, val) => acc + val, 0);
+    },
+    // min: (...args: number[]) => Math.min(...args),
+    // max: (...args: number[]) => Math.max(...args),
   };
   static grammar = ohm.grammar(source);
   static semantics = Deem.grammar.createSemantics().addOperation('eval(context)', {
     Exp(exp) { return exp.eval(this.args.context); },
     CompExp_lt(left, _, right) { return left.eval(this.args.context) < right.eval(this.args.context); },
     CompExp_gt(left, _, right) { return left.eval(this.args.context) > right.eval(this.args.context); },
+    CompExp_eq(left, _, right) { return left.eval(this.args.context) == right.eval(this.args.context); },
+    CompExp_neq(left, _, right) { return left.eval(this.args.context) != right.eval(this.args.context); },
+    CompExp_lte(left, _, right) { return left.eval(this.args.context) <= right.eval(this.args.context); },
+    CompExp_gte(left, _, right) { return left.eval(this.args.context) >= right.eval(this.args.context); },
     AddExp_plus(left, _, right) { return left.eval(this.args.context) + right.eval(this.args.context); },
+    AddExp_minus(left, _, right) { return left.eval(this.args.context) - right.eval(this.args.context); },
     MulExp_times(left, _, right) { return left.eval(this.args.context) * right.eval(this.args.context); },
+    MulExp_divide(left, _, right) { return left.eval(this.args.context) / right.eval(this.args.context); },
+    ExpExp_power(left, _, right) { return Math.pow(left.eval(this.args.context), right.eval(this.args.context)); },
     PriExp_paren(_open, exp, _close) { return exp.eval(this.args.context); },
     PriExp_pos(_plus, exp) { return exp.eval(this.args.context); },
     PriExp_neg(_minus, exp) { return -exp.eval(this.args.context); },
@@ -49,9 +70,9 @@ export default class Deem {
       let name = this.sourceString;
       if (name.startsWith('#')) {
         const key = name.slice(1);
-        const value = this.args.context?.[key];
+        const value = this.args.context?.[key] ?? Deem.magicVars[key];
         if (value === undefined) {
-          throw new Error(`Undefined variable: ${key}`);
+          throw new Error(`Undefined variable: ${key} (available: ${Object.keys(this.args.context || {}).join(', ')}); (magic: ${Object.keys(Deem.magicVars).join(', ')})`);
         }
         return value;
       }
@@ -72,8 +93,15 @@ export default class Deem {
     Exp(exp) { return exp.pretty; },
     CompExp_lt(left, _, right) { return `${left.pretty} < ${right.pretty}`; },
     CompExp_gt(left, _, right) { return `${left.pretty} > ${right.pretty}`; },
+    CompExp_lte(left, _, right) { return `${left.pretty} <= ${right.pretty}`; },
+    CompExp_gte(left, _, right) { return `${left.pretty} >= ${right.pretty}`; },
+    CompExp_eq(left, _, right) { return `${left.pretty} == ${right.pretty}`; },
+    CompExp_neq(left, _, right) { return `${left.pretty} != ${right.pretty}`; },
     AddExp_plus(left, _, right) { return `${left.pretty} + ${right.pretty}`; },
+    AddExp_minus(left, _, right) { return `${left.pretty} - ${right.pretty}`; },
     MulExp_times(left, _, right) { return `${left.pretty} * ${right.pretty}`; },
+    MulExp_divide(left, _, right) { return `${left.pretty} / ${right.pretty}`; },
+    ExpExp_power(left, _, right) { return `${left.pretty} ^ ${right.pretty}`; },
     PriExp_paren(_open, exp, _close) { return `(${exp.pretty})`; },
     PriExp_pos(_plus, exp) { return `+${exp.pretty}`; },
     PriExp_neg(_minus, exp) { return `-${exp.pretty}`; },
@@ -107,7 +135,7 @@ export default class Deem {
     const match = this.grammar.match(expression);
     if (match.succeeded()) {
       const sem = this.semantics(match);
-      const prettyExpr = sem.pretty;
+      // const prettyExpr = sem.pretty;
       // You _wish_ this worked => sem.context = context;
       const ret = sem.eval(context);
       // console.debug(

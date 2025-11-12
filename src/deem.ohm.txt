@@ -4,10 +4,10 @@ Deem {
   CompExp
     = CompExp "<" AddExp   -- lt
     | CompExp ">" AddExp   -- gt
-    // | CompExp "==" AddExp  -- eq
-    // | CompExp "!=" AddExp  -- neq
-    // | CompExp "<=" AddExp  -- lte
-    // | CompExp ">=" AddExp  -- gte
+    | CompExp "==" AddExp  -- eq
+    | CompExp "!=" AddExp  -- neq
+    | CompExp "<=" AddExp  -- lte
+    | CompExp ">=" AddExp  -- gte
     | AddExp
 
   AddExp
@@ -43,7 +43,8 @@ Deem {
     = Exp ("," Exp)*
 
   strlit
-    = "\"" (char)* "\""
+    = "\"" (double_quoted_char)* "\""
+    | "'" (single_quoted_char)* "'"
 
   bool
     = "true" | "false"
@@ -71,5 +72,7 @@ Deem {
     = digit* "." digit+  -- fract
     | digit+             -- whole
 
-  char = ~"\"" any
+  double_quoted_char = ~"\"" any
+
+  single_quoted_char = ~"'" any
 }

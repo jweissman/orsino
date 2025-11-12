@@ -1,139 +1,20 @@
 #!/usr/bin/env bun
 
-import { resolve } from 'node:path';
 import Orsino from '../src/orsino';
-import Combat, { Combatant, RollResult, Team } from '../src/orsino/Combat';
 import { GenerationTemplateType } from "../src/orsino/types/GenerationTemplateType";
 import { program } from 'commander';
-import readline from 'node:readline';
 
 program
   .name('orsino')
   .description('A versatile content generator for RPGs')
   .version('0.1.0');
 
-async function spinner(activity: string, duration: number, onCompleteMessage: string) {
-  const spinnerChars = ['|', '/', '-', '\\'];
-  let i = 0;
-  const interval = setInterval(() => {
-    process.stdout.write(`\r${activity}... ${spinnerChars[i++ % spinnerChars.length]}`);
-  }, 200);
-  await new Promise(resolve => setTimeout(resolve, duration));
-  clearInterval(interval);
-  process.stdout.write(`\r${onCompleteMessage}\n`);
-}
-
-async function waitForEnterAndSpin(waitMessage = 'Press enter to roll...', activity = "Rolling") {
-  return new Promise<void>((resolve) => {
-    process.stdout.write(`${waitMessage}`);
-    process.stdin.resume();
-    process.stdin.once('data', () => {
-      // clear previous line (user pressed enter so we need to clear the prompt)
-      // process.stdout.write("\r\r\\033[F\\033[K");
-      readline.moveCursor(process.stdout, 0, -1);
-      readline.clearLine(process.stdout, 0);
-      readline.cursorTo(process.stdout, 0);
-
-      const spinner = ['|', '/', '-', '\\'];
-      let i = 0;
-      const interval = setInterval(() => {
-        process.stdout.write(`\r${activity}... ${spinner[i++ % spinner.length]}`);
-      }, 100);
-      let wait = 500 + Math.random() * 1420;
-      setTimeout(() => {
-        clearInterval(interval);
-        process.stdout.write('\r');
-        resolve();
-      }, wait);
-    });
-  });
-}
-
-async function interactiveRoll(subject: Combatant, description: string, sides: number, dice: number): Promise<RollResult> {
-  if (!subject.playerControlled) {
-    const result = Combat.rollDie(subject, description, sides, dice);
-    await spinner(`${subject.name} is rolling`, 400 + Math.random() * 200, result.description);
-    return result;
-  }
-
-  await new Promise(resolve => setTimeout(resolve, 650));
-
-  await waitForEnterAndSpin(
-    `>>> ${subject.name} to roll ${dice}d${sides} ${description}... <<<`,
-    `Rolling ${dice}d${sides} ${description}`
-  );
-
-  // Then do the actual roll
-  let result = Combat.rollDie(subject, description, sides, dice);
-  console.log(result.description);
-  return result;
-}
-
-async function playCombatRound(combat: Combat, teams: Team[] = Combat.defaultTeams()) {
-  const initOrder = await combat.setUp(teams);
-  console.log(initOrder + '\n (press enter to start combat)');
-  console.log('Starting combat...');
-  while (!combat.isOver()) {
-    await combat.nextTurn(interactiveRoll);
-  }
-  console.log('Combat ended! Winner: ' + combat.winner);
-}
-
 program.command('play <type>')
   .description('Play a game based on the type')
   .option('-s, --setting <setting>', 'Specify the setting to use', 'fantasy')
-  .action(async (_type, options) => {
-    let playing = true;
-    const orsino = new Orsino(options.setting);
-    const combat = orsino.play("combat", {
-      roller: interactiveRoll
-    });
-    const teams = Combat.defaultTeams();
-    while (playing) {
-      teams.forEach(team => team.combatants.forEach(c => {
-        if (!c.playerControlled) {
-          c.hp = c.maxHp;
-        }
-      })); // reset HP for non-player combatants
-      await playCombatRound(combat, teams);
-      if (combat.winner === "Player") {
-        const playerCombatants = combat.teams[0].combatants.filter(c => c.playerControlled);
-        playerCombatants.forEach(c => {
-          c.xp ||= 0;
-          c.xp += 50 / playerCombatants.length;
-          c.gp ||= 0;
-          c.gp += 20 / playerCombatants.length;
-        });
-        console.log(`
-          Your team is victorious! You gain 50 XP and 20 GP.
-          Your current status is:
-            ${combat.allCombatants.filter(c => c.playerControlled).map(c => `${c.name} (HP: ${c.hp}/${c.maxHp}, XP: ${c.xp}, GP: ${c.gp})`).join(", ")}. 
-          Do you wish to continue playing? (y/n)
-        `);
-        const answer = await new Promise<string>((resolve) => {
-          process.stdin.resume();
-          process.stdin.once('data', (data) => {
-            resolve(data.toString().trim().toLowerCase());
-          });
-        });
-        if (answer !== 'y') {
-          playing = false;
-        }
-        // random chance to discover 10 hp potion
-        if (Math.random() < 0.5) {
-          console.log('You found a health potion!');
-          teams.forEach(team => team.combatants.forEach(c => {
-            if (c.playerControlled) {
-              c.hp = Math.min(c.maxHp, c.hp + 10);
-              console.log(`Healing ${c.name} for 10 HP (HP: ${c.hp}/${c.maxHp})`);
-            }
-          }));
-        }
-      } else {
-        playing = false;
-        console.warn('You lost the combat. Better luck next time!');
-      }
-    }
+  .action(async (options) => {
+    const orsino = new Orsino(options.setting || 'fantasy');
+    await orsino.play("combat");
     console.log('Thanks for playing!');
     process.exit(0);
   });
@@ -144,20 +25,23 @@ program
   .option('-c, --count <number>', 'Number of items to generate', '1')
   // .option('-g, --graph', 'Assign generated items in a topology with connected edges (implies --count >= 2)')
   .option('-s, --setting <setting>', 'Specify the setting to use', 'fantasy')
+  .option('--race <race>', 'Specify the racial group to use')
   .action(async (type, options) => {
     const orsino = new Orsino(options.setting);
     if (options.graph && parseInt(options.count) < 2) {
       console.error('Graph generation requires at least 2 items. Use --count to specify the number of items.');
       process.exit(1);
     }
-    const response = await orsino.gen(
+    const response = orsino.gen(
       type as GenerationTemplateType,
       {
+        ...options,
         __count: parseInt(options.count),
         __graph: options.graph
       }
     );
-    console.log(response);
+    // console.log(response);
+    process.stdout.write(JSON.stringify(response, null, 2));
   });
 
 program.parse(process.argv);

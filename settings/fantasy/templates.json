@@ -1,17 +1,87 @@
 {
   "pc": {
-    "gender": "=oneOf(male, female)",
-    "name": "=lookup(name, #gender)",
-    "class": "=oneOf(fighter, wizard, rogue)",
-    "str": "=3d6",
-    "hp": "=10 + #str"
+    "gender": "=oneOf(male, female, neutral)",
+    "race": "=oneOf(human, orc, elf, dwarf, halfling, gnome, fae)",
+    "class": "=oneOf(warrior, mage, thief, cleric, bard, ranger)",
+    "_surname": "=lookup(surname, #class)",
+    "forename": "=lookup(name, #gender)",
+    "name": "=#forename + \" \" + #_surname",
+    "str": "=1+3d6+if(#class == \"warrior\", 2, 0)",
+    "dex": "=1+3d6+if(#class == \"thief\", 2, 0)",
+    "int": "=1+3d6+if(#class == \"mage\", 2, 0)",
+    "wis": "=1+3d6+if(#class == \"cleric\", 2, 0)",
+    "cha": "=1+3d6+if(#class == \"bard\", 2, 0)",
+    "con": "=1+3d6+if(#class == \"ranger\", 2, 0)",
+    "maxHp": "=10 + round((#con-10)/2)",
+    "hp": "=#maxHp",
+    "level": 1,
+    "xp": 0,
+    "weapon": "=oneOf(lookup(weapon, #class))",
+    "attackRolls": "=if(#class == \"thief\", 2, 1)",
+    "damageDie": "=lookup(attackDice, #weapon)",
+    "armor": "=lookup(armor, #class)",
+    "ac": "=10 + lookup(armorClassBonus, #armor) + floor((#dex-10)/2)",
+    "gp": "=1d100"
+  },
+  "monster": {
+    "_terrain": "=oneOf(forest, cave, swamp, mountain, snow, desert)",
+    "race": "=oneOf(human, goblin, kobold, orc, ogre, troll, dragon)",
+    "type": "=lookup(monsterType, #race)",
+    "forename": "=lookup(monsterName, #race)",
+    "_class": "=capitalize(#race) + \" \" + #type",
+    "name": "=#forename + \", \" + #_class",
+    "_baseHp": "=lookup(monsterBaseHp, #race)",
+    "_hpVariance": "=lookup(monsterHpVariance, #race)",
+    "maxHp": "=#_baseHp + round(rand()*#_hpVariance)",
+    "hp": "=#maxHp",
+    "level": "=lookup(monsterLevel, #race)",
+    "str": "=lookup(monsterStr, #race)",
+    "dex": "=lookup(monsterDex, #race)",
+    "con": "=lookup(monsterCon, #race)",
+    "int": "=lookup(monsterInt, #race)",
+    "wis": "=lookup(monsterWis, #race)",
+    "cha": "=lookup(monsterCha, #race)",
+    "_naturalArmor": "=lookup(monsterNaturalArmor, #race)",
+    "ac": "=10 + #_naturalArmor + floor((#dex-10)/2)",
+    "attacks": "=lookup(monsterAttacks, #race)",
+    "weapon": "=lookup(monsterWeapon, #race)",
+    "damageDie": "=lookup(attackDice, #weapon)",
+    "_damageBonus": "=floor((#str-10)/2)",
+    "xpValue": "=lookup(monsterXp, #race)",
+    "goldDrop": "=lookup(monsterGold, #race)"
   },
   "encounter": {
-    "type": "=oneOf(goblin, dragon, bandit)",
-    "difficulty": "=oneOf(easy, medium, hard)"
+    "_monsterCount": "=1+2d4",
+    "monsters": "=genList(monster, #_monsterCount, \"=round(sum(#__items, 'level')/3) <= #targetCr\")",
+    "bonusGold": "=2d20 + 5 * count(#monsters)",
+    "cr": "=round(sum(#monsters, \"level\")/3)"
   },
   "room": {
-    "description": "=oneOf(dark_cavern, ancient_hall, forest_clearing)",
-    "encounter": "=if(rand() < 0.4, gen(encounter), nihil)"
+    "room_type": "=oneOf(chamber, corridor, alcove, hall, cell, armory, library, treasury)",
+    "narrative": "=lookup(roomNarrative, #room_type)",
+    "size": "=oneOf(small, medium, large)",
+    "_encounterChance": "=1",
+    "_treasureChance": "=if(#room_type == \"treasury\", 1.0, oneOf(0.5, 0.8))",
+    "targetCr": "=#_targetCr + #_index * 2",
+    "encounter": "=if(rand() < #_encounterChance, gen(encounter), nihil)",
+    "treasure": "=if(rand() < #_treasureChance, lookup(treasure, oneOf(negligible, minor)), nihil)"
+  },
+  "boss_room": {
+    "narrative": "=lookup(roomNarrative, oneOf(throne_room, lair, altar))",
+    "size": "=oneOf(medium, large)",
+    "targetCr": "=#_targetCr + #depth * 2 + 2",
+    "boss_encounter": "=gen(encounter)",
+    "treasure": "=lookup(treasure, oneOf(major, legendary))"
+  },
+  "dungeon": {
+    "dungeon_type": "=oneOf(cave, fortress, temple, tower, ruin)",
+    "race": "=oneOf(human, orc, goblin, kobold, ogre, troll, dragon)",
+    "theme": "=oneOf(pain, power, darkness, nature, fire, ice, shadow, light, chaos, order, water, air, earth, lightning, death, life, time, mystery)",
+    "aspect": "=oneOf(militarized, dreadful, ancient, cursed, hidden, forgotten, lost, sacred, profane, forbidden, haunted, mythical)",
+    "dungeon_name": "=capitalize(#aspect) + \" \" + capitalize(#race) + \" \" + capitalize(#dungeon_type) + \" of \" + capitalize(#theme)",
+    "depth": "=4",
+    "_targetCr": "=1",
+    "rooms": "=genList(room, #depth)",
+    "bossRoom": "=gen(boss_room)"
   }
 }

@@ -3,8 +3,13 @@ import { GenerationTemplateType } from "./orsino/types/GenerationTemplateType";
 import { Template } from "./orsino/Template";
 import { Table } from "./orsino/Table";
 import { loadSetting } from "./orsino/loader";
-import Combat, { PlaygroundType } from "./orsino/Combat";
+import Combat, { Combatant, Gauntlet, RollResult } from "./orsino/Combat";
+import Spinner from "./orsino/tui/Spinner";
+import { select, Separator } from '@inquirer/prompts';
+import Style from "./orsino/tui/Style";
+import deepCopy from "./orsino/deepCopy";
 
+type PlaygroundType = "combat" | "dungeon" | "world";
 export default class Orsino {
   setting: Record<GenerationTemplateType, Template | Table>;
 
@@ -12,29 +17,103 @@ export default class Orsino {
     this.setting = settingName ? loadSetting(settingName) : this.defaultSetting;
   }
 
-  play(
+  // private async genEncounter(cr: number): Promise<any> {
+  //   let batchSize = 20;
+  //   let possibleEncounters = this.genList("encounter", { setting: 'fantasy' }, batchSize);
+  //   let matchingEncounters = possibleEncounters.filter(e => e.cr == cr);
+  //   while (matchingEncounters.length === 0) {
+  //     possibleEncounters = this.genList("encounter", { setting: 'fantasy' }, batchSize);
+  //     matchingEncounters = possibleEncounters.filter(e => e.cr == cr);
+  //   }
+  //   return matchingEncounters[Math.floor(Math.random() * matchingEncounters.length)];
+  // }
+
+  async play(
     type: PlaygroundType,
     options: Record<string, any> = {}
   ) {
     if (type === "combat") {
-      return new Combat(options);
+      let gauntlet = (new Gauntlet({
+        ...options,
+        roller: Orsino.interactiveRoll,
+        select: Orsino.interactiveSelect,
+        outputSink: console.log,
+      }))
+
+      const partySize = options.partySize || Math.max(1, Math.floor(Math.random() * 3) + 1);
+      await gauntlet.run({
+        pcs: this.genList("pc", { setting: 'fantasy', ...options }, partySize),
+        encounterGen: (targetCr: number) => this.gen("encounter", { setting: 'fantasy', ...options, targetCr }),
+      });
     } else {
       throw new Error('Unsupported playground type: ' + type);
     }
   }
 
+  private static async interactiveSelect(
+    prompt: string,
+    options: (
+      readonly (string | Separator)[]
+    )
+  ): Promise<any> {
+    const config = { message: prompt, choices: options }
+    return await select(config)
+  }
+
+  private static async interactiveRoll(subject: Combatant, description: string, sides: number, dice: number): Promise<RollResult> {
+    if (!subject.playerControlled) {
+      const result = Combat.rollDie(subject, description, sides, dice);
+      await Spinner.run(`${subject.name} is rolling`, 400 + Math.random() * 200, result.description);
+      return result;
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 650));
+
+    await Spinner.waitForInputAndRun(
+      `>>> ${subject.name} to roll ${dice}d${sides} ${description}... <<<`,
+      `Rolling ${dice}d${sides} ${description}`
+    );
+
+    // Then do the actual roll
+    let result = Combat.rollDie(subject, description, sides, dice);
+    console.log(result.description);
+    return result;
+  }
+
   genList(
     type: GenerationTemplateType,
     options: Record<string, any> = {},
-    count: number = 1
+    count: number = 1,
+    condition?: string
   ): Record<string, any>[] {
-    return Array.from({ length: count }, () => this.gen(type, options));
+    // accumulate items gradually and put them in __items so that conditions can refer to them
+    const items: Record<string, any>[] = [];
+    let attempts = 0;
+    while (items.length < count && attempts++ < count * 10) {
+      const i = items.length;
+      const item = this.gen(type, deepCopy({ ...options, _index: i }));
+      items.push(item);
+      if (!condition) { continue }
+      Deem.magicVars = { __items: [...items] };
+      const conditionResult = Template.evaluatePropertyExpression(condition, deepCopy(options));
+      if (!conditionResult) {
+        items.pop();
+      }
+    }
+    if (items.length === 0) {
+      // generate one anyway
+      items.push(this.gen(type, options));
+    }
+    return items;
   }
 
   gen(
     type: GenerationTemplateType,
     options: Record<string, any> = {}
   ): Record<string, any> {
+    this.setting = this.setting || (options.setting ? loadSetting(options.setting) : this.defaultSetting);
+    // console.log(`Gen ${Style.format(type, 'bold')} with options: ${JSON.stringify(options)}`);
+
     const templ = this.generationSource(type);
     if (!templ) {
       throw new Error('No template found for type: ' + type);
@@ -44,11 +123,9 @@ export default class Orsino {
       return this.genList(type, { ...options, __count: undefined }, options.__count);
     }
 
-    Deem.stdlib.lookup = (tableName: GenerationTemplateType, groupName: string) => this.lookupInTable(tableName, groupName);
-    Deem.stdlib.gen = (type: GenerationTemplateType, options: Record<string, any> = {}) => this.gen(type, options);
-
     if (templ instanceof Template) {
-      return templ.assembleProperties(options)
+      let assembled = templ.assembleProperties(options, this);
+      return assembled;
     } else if (templ instanceof Table) {
       let group = options.group || 'default';
       if (options[templ.discriminator]) {
