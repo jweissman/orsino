@@ -6,13 +6,12 @@ Old-School TTRPG engine
 
 - OSR-style rules engine and template/table-based generation
 - `orsino gen ...` (Generate entities based on templates and tables)
-- `orsino play ...` (Play through geneated worlds -- for now just `combat` gauntlets)
+- `orsino play ...` (Play through geneated worlds -- for now just `combat` gauntlets and `dungeon`)
 
 # Deem, Templates and Tables
-
 ## Tables
 
-Tables are relatively straightforward: they are lists organized by a 'discriminator' or category.
+Tables are lists organized by a 'discriminator' or category.
 
 ```
 "hitPoints": {
@@ -30,14 +29,13 @@ Tables are relatively straightforward: they are lists organized by a 'discrimina
 
 Use Deem's builtin `lookup` to extract values (ie `lookup(hitPoints, "thief")` would retrieve the value 8.)
 
-If the value is an array, lookup will sample randomly -- so you can also use this to create bias tables.
+If the value is an array, lookup will sample randomly, so that you can also use this to create bias tables.
 
-## Tempaltes
+## Templates
 
-Templates are plain JSON objects whose values can have _Deem_ expressions and so
-will be interpreted. Consider this template that shows off a lot of the capabilities:
+Templates are plain JSON objects whose values can have _Deem_ expressions. Any key whose value is prefixed by `=` will be evaluated during generation. Consider this template that shows off a lot of the capabilities:
 
-```
+```json
 "monster": {
     "_terrain": "=oneOf(forest, cave, swamp, mountain, snow, desert)",
     "race": "=oneOf(goblin, kobold, orc, human, ogre, troll, dragon)",
@@ -98,12 +96,20 @@ construct complex assembly mechanisms. Here's some example output for this templ
 └───────────┴──────────────────────────────┘
 ```
 
-## Deem Capabilities
+## Deem Evaluation
 
-- Supports arithmetic, dice notation (`1d3`), comparisons, boolean logic
-- Expressions starting with `=` will get evaluated by the engine
-- Assembled values flow hierarchically down and are available in sub-generations (ie if you call `gen(entity)` or `genList(entity, count)`)
+All expressions starting with `=` will get evaluated by Deem. 
+Assembled values flow hierarchically down and are available in sub-generations (ie if you call `gen(entity)` or `genList(entity, count)` as part of an expression.)
+
+The engine supports the following features:
+
+- Arithmetic (eg `1+2`, `2*3^4`, `5/10`)
+- Dice notation (eg `1d3`, `2d10`)
+- Comparisons (`==`, `!=`, `>`, `<`, `>=`, `<=`)
+- Boolean logic (`||`, `&&`, unary not `!`)
 - Use `#variableName` to reference any other field already assembled in the template (`"name": "=#forename + \", \" + #type"`)
+
+Note there are special key structures that give additional hints to assembly:
 - Keys with `_` are omitted from final output structure so can be useful for intermediate values
 - Keys prefixed with `*` merge their result into the parent object. That is, if the result of evaluating a star-prefixed key is itself an object, all values are 'overlaid' onto matching already-assembled values (any values from the overlay object will be added to the assembled value matching that key). For instance, with the terrain modification above:
 
@@ -118,8 +124,14 @@ If `terrainMods` returns `{con: -1, dex: 1}`, those values are added to the mons
 
 - `oneOf(item1, item2...)`: select randomly from a list
 - `lookup(tableName, value)`: select randomly from a table, indexed by value
+- `if(condition, true_value, false_value)`: apply a logical condition
 - `gen()`: call generate again and create a subentity
 - `genList(entity, count)`.  Note `genList` can be used in combination with `sum(list, condition)` which is a specialized helper to help with constrained/budget-based list generation. Note condition _must_ be a string for this to work since we need to re-evaluate it to check we haven't fulfilled the condition yet! Within `condition` you can reference `__items` (the list as it is being constructed). `genList` will also inject `_index` to generated items.
+
+There are some simple math and lexical operations as well:
+- `round(number)` rounds to the nearest whole number
+- `ceil(number)` and `floor(number)` round up and down to the nearest whole number respectively
+- `capitalize(string)` returns the given string value with the first character capitalized
 
 # TODO
 
