@@ -1,0 +1,27 @@
+
+export interface Combatant {
+  name: string;
+  class?: string;
+  race?: string;
+  forename: string;
+  hp: number;
+  maxHp: number;
+  level: number;
+  ac: number;
+  str: number;
+  dex: number;
+  int: number;
+  wis: number;
+  cha: number;
+  con: number;
+  attackRolls: number;
+  damageDie: number;
+  playerControlled?: boolean;
+  xp?: number;
+  gp?: number;
+  // xpValue?: number;
+  // goldDrop?: string;
+  weapon: string;
+
+  turnBonus?: { [key: string]: any };
+}

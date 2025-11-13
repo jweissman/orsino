@@ -5,6 +5,7 @@ import { GenerationTemplateType } from "./types/GenerationTemplateType";
 
 export function loadSetting(name: string): Record<GenerationTemplateType, Template | Table> {
   const basePath = `./settings/${name}`;
+  console.log(`Loading setting: ${name} from ${basePath}`);
   
   // Load tables
   const tablesData = JSON.parse(fs.readFileSync(`${basePath}/tables.json`, 'utf-8'));

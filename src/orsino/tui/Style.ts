@@ -1,4 +1,4 @@
-export default class Style {
+export default class Stylist {
   static format = (text: string, style: 'bold' | 'italic' | 'underline') => {
     const styles: Record<string, string> = {
       bold: '\x1b[1m',
@@ -8,6 +8,10 @@ export default class Style {
     const reset = '\x1b[0m';
     return `${styles[style] || ''}${text}${reset}`;
   }
+
+  static bold = (text: string) => Stylist.format(text, 'bold');
+  static italic = (text: string) => Stylist.format(text, 'italic');
+  static underline = (text: string) => Stylist.format(text, 'underline');
 
   static colorize = (text: string, color: string) => {
     const colors: Record<string, string> = {

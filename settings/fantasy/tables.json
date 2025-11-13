@@ -2,196 +2,31 @@
   "surname": {
     "discriminator": "class",
     "groups": {
-      "warrior": [
-        "King",
-        "Prince",
-        "Ward",
-        "Reeve",
-        "Knight",
-        "Battleborn",
-        "Sixsmith",
-        "Strong",
-        "Mason",
-        "Stone",
-        "Iron",
-        "Oak",
-        "Steel",
-        "Bear"
-      ],
-      "mage": [
-        "Leach",
-        "Maze",
-        "Seer",
-        "Waerloch",
-        "Webber",
-        "Weaver",
-        "Marsh",
-        "Shadow",
-        "Highcold",
-        "Speaker",
-        "Marshman",
-        "Sage",
-        "Shriver",
-        "Page",
-        "Latimer",
-        "Alder",
-        "Blackwood",
-        "Bright",
-        "Tinker",
-        "Caldwell",
-        "Merrick",
-        "Spellman",
-        "Wick",
-        "Grimwood"
-      ],
-      "cleric": [
-        "Palmer",
-        "Proctor",
-        "Friar",
-        "Judge",
-        "Bishop",
-        "Cardinal",
-        "Abbott",
-        "Chancellor",
-        "Pious",
-        "Vicar"
-      ],
-      "bard": [
-        "Canter",
-        "Singer",
-        "Harper",
-        "Piper",
-        "Minstrel",
-        "Drummer",
-        "Playfair",
-        "Lyre",
-        "Silvertongue",
-        "Storykeeper",
-        "Fable",
-        "Ballard"
-      ],
-      "ranger": [
-        "Fowler",
-        "Hunter",
-        "Gardner",
-        "Woodwright",
-        "Fletcher",
-        "Wood",
-        "Ford",
-        "Rivers",
-        "Hill",
-        "Underhill",
-        "Field",
-        "Faulkner",
-        "Green",
-        "Camp",
-        "Hunter",
-        "Forster",
-        "Granger"
-      ],
-      "thief": [
-        "Swift",
-        "Purser",
-        "Locke",
-        "Fox",
-        "Raven",
-        "Quick",
-        "Fleet",
-        "Lightfoot",
-        "Slade",
-        "Glass",
-        "Black",
-        "Amber",
-        "Sable"
-      ]
+      "warrior": [ "King", "Prince", "Ward", "Reeve", "Knight", "Battleborn", "Sixsmith", "Strong", "Mason", "Stone", "Iron", "Oak", "Steel", "Bear" ],
+      "mage": [ "Leach", "Maze", "Seer", "Waerloch", "Webber", "Weaver", "Marsh", "Shadow", "Highcold", "Speaker", "Marshman", "Sage", "Shriver", "Page", "Latimer", "Alder", "Blackwood", "Bright", "Tinker", "Caldwell", "Merrick", "Spellman", "Wick", "Grimwood" ],
+      "cleric": [ "Palmer", "Proctor", "Friar", "Judge", "Bishop", "Cardinal", "Abbott", "Chancellor", "Pious", "Vicar" ],
+      "bard": [ "Canter", "Singer", "Harper", "Piper", "Minstrel", "Drummer", "Playfair", "Lyre", "Silvertongue", "Storykeeper", "Fable", "Ballard" ],
+      "ranger": [ "Fowler", "Hunter", "Gardner", "Woodwright", "Fletcher", "Wood", "Ford", "Rivers", "Hill", "Underhill", "Field", "Faulkner", "Green", "Camp", "Hunter", "Forster", "Granger" ],
+      "thief": [ "Swift", "Purser", "Locke", "Fox", "Raven", "Quick", "Fleet", "Lightfoot", "Slade", "Glass", "Black", "Amber", "Sable" ]
     }
   },
   "name": {
     "discriminator": "gender",
     "groups": {
-      "male": [
-        "Aldric",
-        "Borin",
-        "Cedric",
-        "Dorian",
-        "Eldric",
-        "Fenris",
-        "Gareth",
-        "Haldor",
-        "Ithric",
-        "Jareth",
-        "Kael",
-        "Loric",
-        "Marek",
-        "Nolan",
-        "Orin",
-        "Perrin",
-        "Quentin",
-        "Roderic",
-        "Soren",
-        "Theron",
-        "Ulric",
-        "Varric",
-        "Wulfric",
-        "Xander",
-        "Yorick",
-        "Zarek"
-      ],
-      "female": [
-        "Aria",
-        "Brenna",
-        "Celeste",
-        "Daria",
-        "Elara",
-        "Fiona",
-        "Giselle",
-        "Helena",
-        "Isolde",
-        "Jasmine",
-        "Kaela",
-        "Liora",
-        "Mira",
-        "Nina",
-        "Oria",
-        "Phaedra",
-        "Quilla",
-        "Rhea",
-        "Seraphina",
-        "Thalia",
-        "Ulina",
-        "Vera",
-        "Willow",
-        "Xenia",
-        "Yara",
-        "Zara"
-      ],
-      "neutral": [
-        "Ash",
-        "Blake",
-        "Casey",
-        "Drew",
-        "Emery",
-        "Finley",
-        "Gray",
-        "Harper",
-        "Indigo",
-        "Jordan",
-        "Kai",
-        "Logan",
-        "Morgan",
-        "Nico",
-        "Oakley",
-        "Parker",
-        "Quinn",
-        "Reese",
-        "Skyler",
-        "Taylor",
-        "Valen",
-        "Winter",
-        "Xenon",
-        "Yale",
-        "Zephyr"
-      ]
+      "male": [ "Aldric", "Borin", "Cedric", "Dorian", "Eldric", "Fenris", "Gareth", "Haldor", "Ithric", "Jareth", "Kael", "Loric", "Marek", "Nolan", "Orin", "Perrin", "Quentin", "Roderic", "Soren", "Theron", "Ulric", "Varric", "Wulfric", "Xander", "Yorick", "Zarek" ],
+      "female": [ "Aria", "Brenna", "Celeste", "Daria", "Elara", "Fiona", "Giselle", "Helena", "Isolde", "Jasmine", "Kaela", "Liora", "Mira", "Nina", "Oria", "Phaedra", "Quilla", "Rhea", "Seraphina", "Thalia", "Ulina", "Vera", "Willow", "Xenia", "Yara", "Zara" ],
+      "neutral": [ "Ash", "Blake", "Casey", "Drew", "Emery", "Finley", "Gray", "Harper", "Indigo", "Jordan", "Kai", "Logan", "Morgan", "Nico", "Oakley", "Parker", "Quinn", "Reese", "Skyler", "Taylor", "Valen", "Winter", "Xenon", "Yale", "Zephyr" ]
+    }
+  },
+  "hitPoints": {
+    "discriminator": "class",
+    "groups": {
+      "warrior": 10,
+      "mage": 6,
+      "thief": 8,
+      "cleric": 8,
+      "bard": 6,
+      "ranger": 8
     }
   },
   "treasure": {
@@ -218,45 +53,19 @@
   "attackDice": {
     "discriminator": "weapon",
     "groups": {
-      "staff": [
-        3
-      ],
-      "club": [
-        4
-      ],
-      "claws": [
-        4
-      ],
-      "dagger": [
-        4
-      ],
-      "bite": [
-        6
-      ],
-      "mace": [
-        6
-      ],
-      "axe": [
-        6
-      ],
-      "bow": [
-        6
-      ],
-      "polearm": [
-        8
-      ],
-      "spear": [
-        8
-      ],
-      "sword": [
-        10
-      ],
-      "greataxe": [
-        12
-      ],
-      "greatsword": [
-        20
-      ]
+      "staff": [ 3 ],
+      "club": [ 4 ],
+      "claws": [ 4 ],
+      "dagger": [ 4 ],
+      "bite": [ 6 ],
+      "mace": [ 6 ],
+      "axe": [ 6 ],
+      "bow": [ 6 ],
+      "polearm": [ 8 ],
+      "spear": [ 8 ],
+      "sword": [ 10 ],
+      "greataxe": [ 12 ],
+      "greatsword": [ 20 ]
     }
   },
   "weapon": {
@@ -390,98 +199,27 @@
     "discriminator": "race",
     "groups": {
       "kobold": [
-        "Azrak",
-        "Alarum",
-        "Abelo",
-        "Arkan",
-        "Barum",
-        "Bork",
-        "Breech",
-        "Bug",
-        "Chitter",
-        "Dax",
-        "Fizzle",
-        "Hiss",
-        "Jinx",
-        "Cinder",
-        "Drang",
-        "Ek",
-        "Folak",
-        "Grit",
-        "Hob",
-        "Krix",
-        "Lurk",
-        "Merk",
-        "Grim",
-        "Nix",
-        "Skrill",
-        "Slink",
-        "Scurry",
-        "Tink",
-        "Vex",
-        "Zot",
-        "Zizz"
+        "Azrak", "Alarum", "Abelo", "Arkan", "Barum", "Bork", "Breech", "Bug",
+        "Chitter", "Dax", "Fizzle", "Hiss", "Jinx", "Cinder", "Drang", "Ek",
+        "Folak", "Grit", "Hob", "Krix", "Lurk", "Merk", "Grim", "Nix", "Skrill",
+        "Slink", "Scurry", "Tink", "Vex", "Zot", "Zizz"
       ],
       "goblin": [
-        "Azog",
-        "Bree",
-        "Crag",
-        "Dreg",
-        "Esmer",
-        "Fenwick",
-        "Hib",
-        "Jax",
-        "Krag",
-        "Lork",
-        "Mig",
-        "Nau",
-        "Hobe",
-        "Glim",
-        "Snark",
-        "Grizzle",
-        "Fang",
-        "Skrag",
-        "Zig",
-        "Munt",
-        "Zorg",
-        "Urath",
-        "Viya"
+        "Azog", "Bree", "Crag", "Dreg", "Esmer", "Fenwick", "Hib", "Jax", "Krag",
+        "Lork", "Mig", "Nau", "Hobe", "Glim", "Snark", "Grizzle", "Fang", "Skrag",
+        "Zig", "Munt", "Zorg", "Urath", "Viya"
       ],
       "ogre": [
-        "Aghoa",
-        "Berend",
-        "Celes",
-        "Dithum",
-        "Earen",
-        "Fangor",
-        "Garg",
-        "Hroth",
-        "Ithil",
-        "Jorak",
-        "Grog",
-        "Lug",
-        "Thon",
-        "Guld",
-        "Mogen",
-        "Gronk"
+        "Aghoa", "Berend", "Celes", "Dithum", "Earen", "Fangor", "Garg", "Hroth",
+        "Ithil", "Jorak", "Grog", "Lug", "Thon", "Guld", "Mogen", "Gronk"
       ],
       "human": [
-        "Ragnar",
-        "Lena",
-        "Darius",
-        "Mira",
-        "Kara",
-        "Tobias",
-        "Elara",
-        "Jareth",
+        "Ragnar", "Lena", "Darius", "Mira", "Kara", "Tobias", "Elara", "Jareth",
         "Isolde"
       ],
       "orc": [
-        "Aloysius", "Azorn",
-        "Bretak", "Bufar",
-        "Crush", "Clunk",
-        "Dargin", "Dorn",
-        "Eflar", "Elcrest", "Elgroth", "Elnash",
+        "Aloysius", "Azorn", "Bretak", "Bufar", "Crush", "Clunk",
+        "Dargin", "Dorn", "Eflar", "Elcrest", "Elgroth", "Elnash",
         "Findar", "Fungorn", "Fugroth", "Fushnak",
         "Gorak", "Gorem", "Grishnak",
         "Hildamar", "Hegworth", "Hilnash",
@@ -498,32 +236,22 @@
         "Zara", "Zarnash", "Zarrot", "Zug", "Zugnash"
       ],
       "troll": [
-        "Abraxas", "Abrazar", "Abdruu", "Acarius",
-        "Balthazar", "Brom", "Borak", "Bodur", "Brutus",
-        "Crog", "Croszar", "Cumber",
-        "Daph", "Druun", "Durak", "Durne",
-        "Eavar", "Erak", "Edur", "Eldrax",
-        "Fu",
-        "Gorath", "Grendel",
-        "Hillock", "Hervon", "Hrothgar",
-        "Lubarius", "Lervon", "Ledrak",
+        "Abraxas", "Abrazar", "Abdruu", "Acarius", "Acathos",
+        "Balthazar", "Brom", "Borak", "Bodur", "Brutus", "Bosven",
+        "Crog", "Croszar", "Cumber", "Daph", "Druun", "Durak", "Durne",
+        "Eavar", "Erak", "Edur", "Eldrax", "Fu", "Funshnak", "Fugroth",
+        "Gorath", "Grendel", "Hillock", "Hervon", "Hrothgar", "Hescar",
+        "Lubarius", "Lervon", "Ledrak", "Lebrazar", "Luun", "Lurne",
         "Sedgwick", "Sedglock", "Skrull", "Slade", "Sven", "Skullcrusher",
-        "Tor", "Thonk", "Thrak", "Thrum", "Thul", "Thurg",
-        "Uarl", "Urth",
-        "Varg", "Vyxek", "Vyrn", "Vyrog",
-        "Zarok", "Zurg", "Zurlock", "Zurul"
+        "Tor", "Thonk", "Thrak", "Thrum", "Thul", "Thurg", "Uarl", "Urth",
+        "Varg", "Vyxek", "Vyrn", "Vyrog", "Vyraxas", "Vurnash",
+        "Zarok", "Zurg", "Zurlock", "Zurul", "Zug", "Zugor", "Zugthak"
       ],
       "dragon": [
-        "Sejanus",
-        "Vermithrax",
-        "Saphira",
-        "Gei-Zar",
-        "Whitefang",
-        "Silverscale",
-        "Firetongue",
-        "Draconius",
-        "Emberwing",
-        "Goldenheart"
+        "Sejanus", "Vermithrax", "Saphira", "Gei-Zar", "Whitefang", "Silverscale",
+        "Firetongue", "Draconius", "Emberwing", "Goldenheart", "Calder", "Zarathustra",
+        "Fafnir", "Smaug", "Glaurung", "Ancalagon", "Tiamat", "Bahamut", "Nidhogg",
+        "Alduin", "Paarthurnax", "Drogon", "Rhaegal", "Viserion", "Durnehviir", "Mirmulnir"
       ]
     }
   },
@@ -555,8 +283,8 @@
     "discriminator": "race",
     "groups": {
       "kobold": 1,
-      "goblin": 2,
-      "orc": 3,
+      "goblin": 1,
+      "orc": 2,
       "human": 3,
       "ogre": 5,
       "troll": 8,
@@ -717,6 +445,17 @@
       "ogre": "3d20",
       "troll": "5d20",
       "dragon": "1000 + 10d100"
+    }
+  },
+  "monsterTerrainModifier": {
+    "discriminator": "terrain",
+    "groups": {
+      "forest": { "str": 1, "dex": 1 },
+      "cave": { "str": 1, "con": 1 },
+      "swamp": { "con": -1 },
+      "mountain": { "str": 2 },
+      "snow": { "con": 1, "dex": -1 },
+      "desert": { "con": -1, "maxHp": 5 }
     }
   },
   "roomNarrative": {

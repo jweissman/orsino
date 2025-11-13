@@ -1,5 +1,11 @@
 Deem {
-  Exp = CompExp
+  Exp = LogExp
+
+  LogExp
+    = LogExp "&&" CompExp  -- and
+    | LogExp "||" CompExp  -- or
+    | "!" LogExp           -- not
+    | CompExp
 
   CompExp
     = CompExp "<" AddExp   -- lt

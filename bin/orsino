@@ -12,9 +12,9 @@ program
 program.command('play <type>')
   .description('Play a game based on the type')
   .option('-s, --setting <setting>', 'Specify the setting to use', 'fantasy')
-  .action(async (options) => {
+  .action(async (type, options) => {
     const orsino = new Orsino(options.setting || 'fantasy');
-    await orsino.play("combat");
+    await orsino.play(type as any, options);
     console.log('Thanks for playing!');
     process.exit(0);
   });
@@ -25,19 +25,25 @@ program
   .option('-c, --count <number>', 'Number of items to generate', '1')
   // .option('-g, --graph', 'Assign generated items in a topology with connected edges (implies --count >= 2)')
   .option('-s, --setting <setting>', 'Specify the setting to use', 'fantasy')
+  // .option('--config <config:value>')
   .option('--race <race>', 'Specify the racial group to use')
+  .option('--cr <cr>', 'Specify the challenge rating to target')
   .action(async (type, options) => {
     const orsino = new Orsino(options.setting);
-    if (options.graph && parseInt(options.count) < 2) {
-      console.error('Graph generation requires at least 2 items. Use --count to specify the number of items.');
-      process.exit(1);
-    }
+    // if (options.graph && parseInt(options.count) < 2) {
+    //   console.error('Graph generation requires at least 2 items. Use --count to specify the number of items.');
+    //   process.exit(1);
+    // }
+    let cr = options.cr ? parseInt(options.cr) : undefined;
+    delete options.cr;
+    
     const response = orsino.gen(
       type as GenerationTemplateType,
       {
         ...options,
-        __count: parseInt(options.count),
-        __graph: options.graph
+        _targetCr: cr,
+        // __count: parseInt(options.count) || undefined,
+        // __graph: options.graph
       }
     );
     // console.log(response);

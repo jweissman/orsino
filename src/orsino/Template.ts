@@ -1,5 +1,4 @@
 import Deem from "../deem";
-import deepCopy from "./deepCopy";
 import { GenerationTemplateType } from "./types/GenerationTemplateType";
 
 export class Template {
@@ -22,11 +21,9 @@ export class Template {
       };
       Deem.stdlib.lookup = (tableName: GenerationTemplateType, groupName: string) => orsino.lookupInTable(tableName, groupName);
       Deem.stdlib.gen = (type: GenerationTemplateType) => {
-        // console.log("Sub-genning", type, "with parent options:", options);
         return orsino.gen(type, { ...context })
       };
       Deem.stdlib.genList = (type: GenerationTemplateType, count: number = 1, condition?: string) => {
-        // console.log("Sub-genning list of", type, "with parent options:", options);
         return orsino.genList(type, { ...context }, count, condition);
       }
 
@@ -34,8 +31,20 @@ export class Template {
         localContext[key] !== undefined ? localContext[key] :
           Template.evaluatePropertyExpression(value, context);
 
-
       localContext[key] = assembled[key];
+
+      if (key.startsWith("*")) {
+        // we have evaluated the value (confirm we have gotten an object) 
+        if (typeof assembled[key] === 'object' && assembled[key] !== null) {
+          console.log(`Overlay properties from ${key} into context (${Object.keys(assembled[key]).join(', ')})`);
+        }
+        // then 'overlay' (add) each property onto the context
+        Object.entries(assembled[key] || {}).forEach(([k, v]) => {
+          console.log(`Adding ${k}=${v} to context (was ${localContext[k]})`);
+          assembled[k] = v + (assembled[k] || 0);
+          localContext[k] = assembled[k];
+        });
+      }
     });
 
     // omit internal properties starting with '_'
@@ -44,6 +53,16 @@ export class Template {
         delete assembled[key];
       }
     });
+
+    let assembledWithoutNested = { ...assembled };
+    Object.entries(assembled).forEach(([key, value]) => {
+      if (typeof value === 'object' && value !== null) {
+        // assembledWithoutNested[key] = undefined;
+        delete assembledWithoutNested[key];
+      }
+    });
+    console.log(`Generated ${this.type}:`);
+    console.table(assembledWithoutNested);
 
     return assembled;
   }

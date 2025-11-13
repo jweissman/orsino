@@ -30,11 +30,14 @@ export default class Deem {
       return arr.reduce((acc, val) => acc + val, 0);
     },
     // min: (...args: number[]) => Math.min(...args),
-    // max: (...args: number[]) => Math.max(...args),
+    max: (...args: number[]) => Math.max(...args),
   };
   static grammar = ohm.grammar(source);
   static semantics = Deem.grammar.createSemantics().addOperation('eval(context)', {
     Exp(exp) { return exp.eval(this.args.context); },
+    LogExp_and(left, _, right) { return left.eval(this.args.context) && right.eval(this.args.context); },
+    LogExp_or(left, _, right) { return left.eval(this.args.context) || right.eval(this.args.context); },
+    LogExp_not(_not, exp) { return !exp.eval(this.args.context); },
     CompExp_lt(left, _, right) { return left.eval(this.args.context) < right.eval(this.args.context); },
     CompExp_gt(left, _, right) { return left.eval(this.args.context) > right.eval(this.args.context); },
     CompExp_eq(left, _, right) { return left.eval(this.args.context) == right.eval(this.args.context); },
@@ -91,6 +94,9 @@ export default class Deem {
     }
   }).addAttribute('pretty', {
     Exp(exp) { return exp.pretty; },
+    LogExp_and(left, _, right) { return `${left.pretty} && ${right.pretty}`; },
+    LogExp_or(left, _, right) { return `${left.pretty} || ${right.pretty}`; },
+    LogExp_not(_not, exp) { return `!${exp.pretty}`; },
     CompExp_lt(left, _, right) { return `${left.pretty} < ${right.pretty}`; },
     CompExp_gt(left, _, right) { return `${left.pretty} > ${right.pretty}`; },
     CompExp_lte(left, _, right) { return `${left.pretty} <= ${right.pretty}`; },

@@ -1,150 +1,16 @@
-import { Answers } from "inquirer";
 import Choice from "inquirer/lib/objects/choice";
-import Style from "./tui/Style";
 import Deem from "../deem";
-
-export interface Combatant {
-  name: string;
-  class?: string
-  race?: string;
-  forename: string;
-  hp: number;
-  maxHp: number;
-  level: number;
-  ac: number;
-  str: number;
-  dex: number;
-  int: number;
-  wis: number;
-  cha: number;
-  con: number;
-  attackRolls: number;
-  damageDie: number;
-  playerControlled?: boolean;
-  xp?: number;
-  gp?: number;
-  xpValue?: number;
-  goldDrop?: string;
-}
-
-const capitalize = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1);
-
-const prettyCombatant = (combatant: Combatant, minimal = false) => {
-  let colors = ['red', 'orange', 'green', 'green', 'green', 'green', 'blue'];
-  const hpRatio = combatant.hp / combatant.maxHp;
-  const hpBar = Style.prettyValue(combatant.hp, combatant.maxHp);
-  const color = colors[Math.floor(hpRatio * (colors.length - 1))] || colors[0];
-
-  if (minimal) {
-    return `${Style.format(combatant.forename, 'bold')} ${Style.colorize(hpBar, color)} (${combatant.hp}/${combatant.maxHp}) [AC ${combatant.ac}]`;
-  }
-
-  const str = Style.colorize(Style.prettyValue(combatant.str, 20), 'red'); 
-  const dex = Style.colorize(Style.prettyValue(combatant.dex, 20), 'yellow');
-  const int = Style.colorize(Style.prettyValue(combatant.int, 20), 'green');
-  const wis = Style.colorize(Style.prettyValue(combatant.wis, 20), 'blue');
-  const cha = Style.colorize(Style.prettyValue(combatant.cha, 20), 'magenta');
-  const con = Style.colorize(Style.prettyValue(combatant.con, 20), 'cyan');
-
-  const stats = [str, dex, int, wis, cha, con].join('');
-
-  let classInfo = combatant.class ? `, ${capitalize(combatant?.race || 'human')} ${capitalize(combatant.class)} ` : '';
-
-  return `${Style.format(combatant.name, 'bold')}${classInfo} (${stats}, HP: ${Style.colorize(hpBar, color)} ${combatant.hp}/${combatant.maxHp})`;
-}
-export interface Team {
-  name: string;
-  combatants: Combatant[];
-}
-
-const prettyTeam = (team: Team) => {
-  return `${Style.format(team.name, 'italic')} (${team.combatants.map(c => prettyCombatant(c)).join("; ")})`;
-}
+import { Select } from "./types/Select";
+import { Combatant } from "./types/Combatant";
+import Presenter from "./tui/Presenter";
+import { Team } from "./types/Team";
+import { Roll } from "./types/Roll";
+import { Fighting } from "./rules/Fighting";
 
 export type RollResult = {
   amount: number;
   description: string;
 };
-type Roll = (subject: Combatant, description: string, sides: number, dice: number) => Promise<RollResult>;
-
-type Select<T extends Answers> = (prompt: string, options: Choice<T>[]) => Promise<T>;
-
-type AttackResult = {
-  success: boolean;
-  damage: number;
-  description: string;
-};
-
-class Fighting {
-  static thac0(level: number): number {
-    return 20 - Math.floor(level / 2);
-  }
-
-  static async attack(
-    roll: Roll,
-    attacker: Combatant,
-    defender: Combatant,
-    note: (message: string) => void = () => { }
-  ): Promise<AttackResult> {
-    note(`${prettyCombatant(attacker, true)} attacks ${prettyCombatant(defender, true)}... `);
-    let description = `${attacker.name} attacks ${defender.name}... `;
-    // const atkBonus = attacker.attackBonus || 0;
-    const thac0 = this.thac0(attacker.level);
-    const ac = defender.ac;
-    const whatNumberHits = thac0 - ac;
-    const attackRoll = await roll(attacker, `to attack (must roll ${whatNumberHits} or higher to hit)`, 20, 1); //.amount + (atkBonus || 0);
-    description += ` (Attacker THAC0: ${thac0}, Defender AC: ${ac}, What number hits: ${whatNumberHits}). `;
-    description += attackRoll.description;
-    let success = attackRoll.amount >= whatNumberHits;
-    if (attackRoll.amount === 0) {
-      description += ` ${attacker.name} rolled a natural 1 and misses!`;
-      note(`${attacker.name} rolled a natural 1 and misses!`);
-      return {
-        success: false,
-        damage: 0,
-        description
-      };
-    }
-
-    let damage = 0;
-    if (success) {
-      let damageMultiplier = 1;
-      if (attackRoll.amount >= 20) {
-        damageMultiplier = 1.2;
-        description += " Critical hit! ";
-        note("Critical hit!");
-      } else {
-        description += " Attack hits! ";
-        note("Attack hits!");
-      }
-      const attackRolls = await Promise.all(new Array(attacker.attackRolls).fill(0).map(() => roll(attacker, "for damage", attacker.damageDie, 1)));
-
-      description += attackRolls.map(r => r.description).join(" ");
-      let damage = attackRolls
-        .map(r => r.amount)
-        .reduce((sum: number, dmg: number) => sum + dmg, 0);
-
-      damage = Math.max(1, Math.round(damage * damageMultiplier));
-      if (damageMultiplier > 1) {
-        note("Damage increased to " + damage + " for critical hit!");
-        description += ` Damage multiplied by ${damageMultiplier} for critical hit!`;
-      }
-      defender.hp -= damage;
-      note(`${attacker.name} hits ${defender.name} for ${damage} damage (now at ${defender.hp}).`);
-      description += `\n*${attacker.name} hits ${defender.name} for ${damage} damage* (now at ${defender.hp}).`;
-    } else {
-      note(`${attacker.name} misses ${defender.name}.`);
-      description += `\n*${attacker.name} misses ${defender.name}.*`;
-    }
-
-    return {
-      success,
-      damage,
-      description
-    };
-  }
-}
-
 type CombatHistoryEntry = {
   turn: number;
   description: string;
@@ -172,7 +38,7 @@ export default class Combat {
   }
 
   async samplingSelect(prompt: string, options: Choice<any>[]): Promise<any> {
-    return options[Math.floor(Math.random() * options.length)];
+    return options[Math.floor(Math.random() * options.length)].value;
   }
 
   static defaultTeams(): Team[] {
@@ -184,16 +50,17 @@ export default class Combat {
           hp: 14, maxHp: 14, level: 1, ac: 10,
           dex: 11, str: 12, int: 10, wis: 10, cha: 10, con: 12,
           attackRolls: 1,
-          damageDie: 8, playerControlled: true, xp: 0, gp: 0
+          damageDie: 8, playerControlled: true, xp: 0, gp: 0,
+          weapon: "Short Sword"
         }]
       },
       {
         name: "Enemy", combatants: [
-          { forename: "Zok", name: "Goblin A", hp: 4, maxHp: 4, level: 1, ac: 17, attackRolls: 2, damageDie: 3, str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10 },
+          { forename: "Zok", name: "Goblin A", hp: 4, maxHp: 4, level: 1, ac: 17, attackRolls: 2, damageDie: 3, str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger" },
           {
             forename: "Mog", name: "Goblin B", hp: 4, maxHp: 4, level: 1, ac: 17, attackRolls: 2, damageDie: 3,
-            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10
-           }
+            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger"
+          }
         ]
       }
     ];
@@ -251,7 +118,106 @@ export default class Combat {
     return (`Combat starts! Initiative order: ${this.combatantsByInitiative.map(c => `${c.combatant.name} (Initiative: ${c.initiative})`).join(", ")}`);
   }
 
-  async nextTurn(roll = this.roller) {
+  async pcTurn(combatant: Combatant, validTargets: Combatant[]): Promise<string> {
+    let description = `${combatant.name}'s turn. `;
+    // Player chooses action
+    const action = await this.select(
+      `Your turn, ${Presenter.combatant(combatant)} - what do you do?`,
+      [
+        { disabled: false, short: "Attack!", name: "⚔️  Attack", value: "attack" },
+        { disabled: false, short: "Defend", name: "🛡️  Defend (gain +4 AC until your next turn)", value: "defend" },
+        { disabled: false, short: "First Aid", name: "🩹 First Aid (heal 1d4+1 HP to self or ally)", value: "heal" },
+      ]
+    );
+
+    combatant.turnBonus = combatant.turnBonus || {};
+    console.log('Action chosen:', action);
+    switch (action) {
+      case "attack":
+        // this.note(`${combatant.name} prepares to attack... (${validTargets.length} valid targets)`);
+        description += await this.pcAttacks(combatant, validTargets);
+        break;
+      case "defend":
+        description += `${combatant.name} takes a defensive stance, gaining +4 AC until their next turn.`;
+        combatant.turnBonus = { ac: -4 };
+        break;
+      case "heal":
+        // this.note(`${combatant.name} prepares to heal...`);
+        description += await this.pcHeal(combatant);
+        break;
+    }
+    return description;
+  }
+
+  async pcHeal(combatant: Combatant): Promise<string> {
+    let description = `${combatant.name} uses First Aid. `;
+    // this.note(`${combatant.name} prepares to heal...`);
+    const healAmount = Combat.rollDie(combatant, "for healing", 4, 1).amount + 1;
+    let validTargets = this.living(this.teams[0].combatants);
+    if (validTargets.length > 1) {
+      const targetOptions: Choice<Combatant>[] = validTargets.map(t => ({ name: t.name, short: t.forename.substring(0, 8), description: `${t.name} (HP: ${t.hp}/${t.maxHp})`, value: t, disabled: false }));
+      let target = (await this.select(`Select target for healing:`, targetOptions)); //.value;
+
+      // somehow we were getting a Choice object instead of the value, so added this check
+      // if (target?.value) { target = target.value; }
+      target.hp = Math.min(target.maxHp, target.hp + healAmount);
+      description += `${target.name} heals for ${healAmount} HP (HP: ${target.hp}/${target.maxHp}).`;
+      this.note(`${target.name} healed for ${healAmount} HP (HP: ${target.hp}/${target.maxHp}).`);
+    } else {
+      let target = validTargets[0];
+      target.hp = Math.min(target.maxHp, target.hp + healAmount);
+      description += `${target.name} heals for ${healAmount} HP (HP: ${target.hp}/${target.maxHp}).`;
+      this.note(`${target.name} healed for ${healAmount} HP (HP: ${target.hp}/${target.maxHp}).`);
+    }
+
+    return description;
+  }
+
+  async pcAttacks(combatant: Combatant, validTargets: Combatant[]): Promise<string> {
+    let description = `${combatant.name} attacks. `;
+    // this.note(`${combatant.name} prepares to attack... (${validTargets.length} valid targets)`);
+    let target = this.weakest(validTargets);
+    if (validTargets.length > 1) {
+      const targetOptions: Choice<Combatant>[] = validTargets.map(t => ({ name: t.name, short: t.forename.substring(0, 8), description: `${t.name} (HP: ${t.hp}/${t.maxHp})`, value: t, disabled: false }));
+      target = (await this.select(`Select target for ${combatant.name}:`, targetOptions)); //.value;
+
+      // somehow we were getting a Choice object instead of the value, so added this check
+      // if (target?.value) { target = target.value; }
+    }
+    const turnDescription = await Fighting.attack(this.roller, combatant, target, this.note.bind(this));
+    description += turnDescription;
+    if (target.hp <= 0) {
+      description += `\n${target.name} is defeated! `;
+      this.note(`${target.name} falls unconscious!`);
+    }
+    return description;
+  }
+
+  async turn(combatant: Combatant): Promise<string> {
+    let description = `${combatant.name}'s turn. `;
+    const targets = this.teams.find(team => team.combatants.includes(combatant)) === this.teams[0] ? (this.teams[1].combatants) : (this.teams[0].combatants);
+
+    let validTargets = this.living(targets);
+    if (validTargets.length === 0) {
+      return description + "No valid targets.";
+    }
+
+    if (combatant.playerControlled) {
+      description += await this.pcTurn(combatant, validTargets);
+    } else {
+      let target = this.weakest(validTargets);
+      const turnDescription = await Fighting.attack(this.roller, combatant, target, this.note.bind(this));
+      description += turnDescription;
+      if (target.hp <= 0) {
+        description += `\n${target.name} is defeated! `;
+        this.note(`${target.name} falls unconscious!`);
+      }
+    }
+
+    return description;
+  }
+
+  async nextTurn() { //}_roll = this.roller) {
     if (this.isOver()) {
       throw new Error('Combat is already over');
     }
@@ -261,28 +227,9 @@ export default class Combat {
     this.note(`Combatants: ${this.teams.map(t => `${t.name} (${this.living(t.combatants).map(c => `${c.name} (HP: ${c.hp}/${c.maxHp})`).join(", ")})`).join(" vs. ")}`);
     for (const { combatant } of this.combatantsByInitiative) {
       if (combatant.hp <= 0) continue; // Skip defeated combatants
-      const targets = this.teams.find(team => team.combatants.includes(combatant)) === this.teams[0] ? (this.teams[1].combatants) : (this.teams[0].combatants);
-      let validTargets = this.living(targets);
-      let target = this.weakest(validTargets);
-      if (combatant.playerControlled && validTargets.length > 1) {
-        const targetOptions: Choice<Combatant>[] = validTargets.map(t => ({ name: t.name, short: t.forename.substring(0, 8), description: `${t.name} (HP: ${t.hp}/${t.maxHp})`, value: t, disabled: false }));
-        target = (await this.select(`Select target for ${combatant.name}:`, targetOptions)); //.value;
-        if (target?.value) { target = target.value; }
-        // this.note(`${combatant.name} chooses ${target.name}.`);
-      }
-
-      // this.note(`${combatant.name} targets ${target.name}.`);
-      const result = await Fighting.attack(roll, combatant, target, this.note.bind(this));
-      // this.note(result.description);
-      description += `\n${result.description} `;
-      if (target.hp <= 0) {
-        description += `\n${target.name} is defeated! `;
-        this.note(`${target.name} falls unconscious!`);
-        if (this.living(this.teams[0].combatants).length === 0 || this.living(this.teams[1].combatants).length === 0) {
-          // description += `\nCombat ends! No more targets available.`;
-          break;
-        }
-      }
+      const turnDescription = await this.turn(combatant);
+      description += turnDescription + "\n";
+      // this.note(turnDescription);
     }
     for (const team of this.teams) {
       if (team.combatants.every((c: any) => c.hp <= 0)) {
@@ -314,18 +261,24 @@ export class Gauntlet {
   }
 
   static async singleCombat(
-    roller: Roll,
+    // roller: Roll,
     combat: Combat,
     teams: Team[] = Combat.defaultTeams()
   ) {
     const initOrder = await combat.setUp(teams);
     console.log(initOrder);
     while (!combat.isOver()) {
-      await combat.nextTurn(roller);
+      await combat.nextTurn() //roller);
     }
   }
 
-  xpForLevel(level: number): number { return (level * level * 125); }
+  static xpForLevel(level: number): number {
+    return (level * level * 125) + (level * 25) - 500;
+  }
+  static crForParty(party: Combatant[]): number {
+    const totalLevels = party.reduce((sum, c) => sum + c.level, 0);
+    return Math.max(1, Math.round(totalLevels / 3));
+  }
 
   async run(
     options: Record<string, any> = {}
@@ -335,9 +288,9 @@ export class Gauntlet {
     if (options.pcs) {
       teams[0].combatants = options.pcs;
       teams[0].combatants.forEach(c => c.playerControlled = true);
-      console.log('Player characters:', teams[0].combatants.map(c => prettyCombatant(c)).join(", "));
+      console.log('Player characters:', teams[0].combatants.map(c => Presenter.combatant(c)).join(", "));
     }
-    
+
     const combat = new Combat({
       ...options,
       select: this.select,
@@ -345,9 +298,10 @@ export class Gauntlet {
       outputSink: this.outputSink
     });
     while (playing) {
-      let encounter = null;
+      let encounter: Record<string, any> | null = null;
       if (options.encounterGen) {
-        let cr = Math.max(1, Math.round(teams[0].combatants.reduce((sum, c) => sum + c.level, 0)));
+        let cr = Gauntlet.crForParty(teams[0].combatants);
+        //Math.max(1, Math.round(teams[0].combatants.reduce((sum, c) => sum + c.level, 0)));
         let encounter = await options.encounterGen(cr);
         console.log('Encounter generated with actual CR', encounter.cr, " (target was " + cr + ") and gold bonus", encounter.bonusGold);
         teams[1].combatants = encounter.monsters;
@@ -359,15 +313,27 @@ export class Gauntlet {
         })); // reset HP for non-player combatants
       }
       this.outputSink(`\rYou encounter ${teams[1].name} (${teams[1].combatants.map(
-        c => prettyCombatant(c, false)
+        c => Presenter.combatant(c, false)
       ).join("; ")})!\n\n`);
-      await Gauntlet.singleCombat(this.roller, combat, teams);
+      await Gauntlet.singleCombat(combat, teams);
       if (combat.winner === "Player") {
-        const xpBonus = teams[1].combatants.reduce((sum, c) => sum + ((c?.xpValue || 1) * 10), 0);
-        const goldDrop = teams[1].combatants.reduce((sum, c) => sum + ((Number(Deem.evaluate(c.goldDrop || "1d4"))) || 0), 0) + (encounter?.bonusGold || 0);
+        const xpBonus = teams[1].combatants.reduce((sum, c) => sum + ((c?.xp || 1) * 10), 0);
+        const goldDrop = teams[1].combatants.reduce((sum, c) => sum + ((Number(Deem.evaluate(String(c.gp) || "1d4"))) || 0), 0); // + (encounter?.bonusGold || 0);
 
         this.outputSink("You win the combat! You gain " + xpBonus + " XP and " + goldDrop + " GP.");
         const playerCombatants = combat.teams[0].combatants.filter(c => c.playerControlled);
+        // random chance to discover 10 hp potion
+        if (Math.random() < 0.5) {
+          console.log('You found a health potion!');
+          // teams.forEach(team => team.combatants.forEach(c => {
+          // if (c.playerControlled) {
+          playerCombatants.forEach(c => {
+            c.hp = Math.min(c.maxHp, c.hp + 10);
+            console.log(`Healing ${c.name} for 10 HP (HP: ${c.hp}/${c.maxHp})`);
+          });
+          // }
+          // }));
+        }
         for (const c of playerCombatants) {
           c.xp ||= 0;
           c.xp += Math.round(xpBonus / playerCombatants.length);
@@ -379,6 +345,7 @@ export class Gauntlet {
 
           if (c.xp < nextLevelXp) {
             this.outputSink(`${c.name} needs to gain ${nextLevelXp - c.xp} more experience for level ${c.level + 1} (currently at ${c.xp}/${nextLevelXp}).`);
+
           }
           while (c.xp >= nextLevelXp) {
             c.level++;
@@ -394,15 +361,16 @@ export class Gauntlet {
               { disabled: false, name: `Charisma (${c.cha})`, value: 'cha', short: 'CHA' },
               { disabled: false, name: `Constitution (${c.con})`, value: 'con', short: 'CON' },
             ]);
-              c[stat] += 1;
-              this.outputSink(`${c.name}'s ${stat.toUpperCase()} increased to ${c[stat]}!`);
-          } 
+            // @ts-ignore
+            c[stat] += 1;
+            this.outputSink(`${c.name}'s ${stat.toUpperCase()} increased to ${c[stat]}!`);
+          }
         }
         console.log(`
           Your team is victorious! Your current status is:
           ${combat.allCombatants.filter(c => c.playerControlled)
-                                .map(c => ` - ${prettyCombatant(c)} (Level: ${c.level}, XP: ${c.xp}, GP: ${c.gp})`)
-                                .join("\n          ")}. 
+            .map(c => ` - ${prettyCombatant(c)} (Level: ${c.level}, XP: ${c.xp}, GP: ${c.gp})`)
+            .join("\n          ")}. 
           Do you wish to continue playing? (y/n)
         `);
         const answer = await new Promise<string>((resolve) => {
@@ -414,16 +382,7 @@ export class Gauntlet {
         if (answer !== 'y') {
           playing = false;
         }
-        // random chance to discover 10 hp potion
-        if (Math.random() < 0.5) {
-          console.log('You found a health potion!');
-          teams.forEach(team => team.combatants.forEach(c => {
-            if (c.playerControlled) {
-              c.hp = Math.min(c.maxHp, c.hp + 10);
-              console.log(`Healing ${c.name} for 10 HP (HP: ${c.hp}/${c.maxHp})`);
-            }
-          }));
-        }
+
       } else {
         playing = false;
         console.warn('You lost the combat. Better luck next time!');

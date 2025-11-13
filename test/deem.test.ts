@@ -45,6 +45,12 @@ describe('Deem', () => {
     });
   });
 
+  describe("logical operators", () => {
+    expectDeem('true && false', false);
+    expectDeem('true || false', true);
+    expectDeem('!true', false);
+  });
+
   it('should roll dice', () => {
     const result = Deem.evaluate('2d6');
     expect(result).toBeGreaterThanOrEqual(2);

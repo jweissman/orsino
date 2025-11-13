@@ -3,11 +3,13 @@ import { GenerationTemplateType } from "./orsino/types/GenerationTemplateType";
 import { Template } from "./orsino/Template";
 import { Table } from "./orsino/Table";
 import { loadSetting } from "./orsino/loader";
-import Combat, { Combatant, Gauntlet, RollResult } from "./orsino/Combat";
+import Combat, { Gauntlet, RollResult } from "./orsino/Combat";
+import { Combatant } from "./orsino/types/Combatant";
 import Spinner from "./orsino/tui/Spinner";
 import { select, Separator } from '@inquirer/prompts';
-import Style from "./orsino/tui/Style";
-import deepCopy from "./orsino/deepCopy";
+import deepCopy from "./orsino/util/deepCopy";
+import Dungeoneer from "./orsino/Dungeon";
+import Stylist from "./orsino/tui/Style";
 
 type PlaygroundType = "combat" | "dungeon" | "world";
 export default class Orsino {
@@ -16,17 +18,6 @@ export default class Orsino {
   constructor(public settingName?: string) {
     this.setting = settingName ? loadSetting(settingName) : this.defaultSetting;
   }
-
-  // private async genEncounter(cr: number): Promise<any> {
-  //   let batchSize = 20;
-  //   let possibleEncounters = this.genList("encounter", { setting: 'fantasy' }, batchSize);
-  //   let matchingEncounters = possibleEncounters.filter(e => e.cr == cr);
-  //   while (matchingEncounters.length === 0) {
-  //     possibleEncounters = this.genList("encounter", { setting: 'fantasy' }, batchSize);
-  //     matchingEncounters = possibleEncounters.filter(e => e.cr == cr);
-  //   }
-  //   return matchingEncounters[Math.floor(Math.random() * matchingEncounters.length)];
-  // }
 
   async play(
     type: PlaygroundType,
@@ -45,7 +36,25 @@ export default class Orsino {
         pcs: this.genList("pc", { setting: 'fantasy', ...options }, partySize),
         encounterGen: (targetCr: number) => this.gen("encounter", { setting: 'fantasy', ...options, targetCr }),
       });
-    } else {
+    }
+    else if (type === "dungeon") {
+      const partySize = options.partySize || 2;
+      const pcs = this.genList("pc", { setting: 'fantasy', ...options }, partySize);
+      const dungeoneer = new Dungeoneer({
+        roller: Orsino.interactiveRoll,
+        select: Orsino.interactiveSelect,
+        outputSink: console.log,
+        dungeonGen: () => this.gen("dungeon", { setting: 'fantasy', _targetCr: Math.round(partySize / 2), ...options }),
+        playerTeam: {
+          name: "Heroes",
+          combatants: pcs.map(pc => ({ ...pc, playerControlled: true }))
+        }
+      });
+
+      await dungeoneer.run();
+
+    }
+    else {
       throw new Error('Unsupported playground type: ' + type);
     }
   }
@@ -98,6 +107,8 @@ export default class Orsino {
       const conditionResult = Template.evaluatePropertyExpression(condition, deepCopy(options));
       if (!conditionResult) {
         items.pop();
+        console.warn(`Item ${i} did not meet condition: ${condition}`);
+        break;
       }
     }
     if (items.length === 0) {
@@ -112,7 +123,15 @@ export default class Orsino {
     options: Record<string, any> = {}
   ): Record<string, any> {
     this.setting = this.setting || (options.setting ? loadSetting(options.setting) : this.defaultSetting);
-    // console.log(`Gen ${Style.format(type, 'bold')} with options: ${JSON.stringify(options)}`);
+    console.log(`Gen ${Stylist.format(type, 'bold')} with options`);
+    let nonNestedOptions: Record<string, any> = {};
+    Object.entries(options).forEach(([key, value]) => {
+      if (typeof value !== 'object' || value === null) {
+        nonNestedOptions[key] = value;
+      }
+    });
+    // print options as nice table
+    console.table(nonNestedOptions);
 
     const templ = this.generationSource(type);
     if (!templ) {
@@ -151,6 +170,25 @@ export default class Orsino {
   }
 
   defaultSetting: Record<GenerationTemplateType, Template | Table> = {
+    dungeon: new Template('dungeon', {
+      name: '=oneOf("The Cursed Crypt", "The Forgotten Keep", "The Shadowed Caverns", "The Lost Temple", "The Haunted Catacombs")',
+      description: '=oneOf("A dark and eerie place filled with traps and monsters.", "An ancient ruin with hidden secrets.", "A labyrinthine cave system teeming with danger.", "A forgotten temple guarded by undead.", "A sprawling catacomb haunted by restless spirits.")',
+      difficulty: '=oneOf("Easy", "Medium", "Hard", "Deadly")',
+      size: '=oneOf("Small", "Medium", "Large")',
+      theme: '=oneOf("Undead", "Beasts", "Traps", "Magic", "Mixed")'
+    }),
+    monster: new Template('monster', {
+      name: '=oneOf("Goblin", "Orc", "Troll", "Bandit", "Skeleton")',
+      cr: '=oneOf(0.25, 0.5, 1, 2, 3)',
+      hp: '=lookup(name, cr) * 10 + rand(1, 10)',
+      ac: '=10 + floor(cr * 2)',
+      str: '=floor(cr * 2) + rand(1, 6)',
+      dex: '=floor(cr * 2) + rand(1, 6)',
+      con: '=floor(cr * 2) + rand(1, 6)',
+      int: '=floor(cr * 2) + rand(1, 6)',
+      wis: '=floor(cr * 2) + rand(1, 6)',
+      cha: '=floor(cr * 2) + rand(1, 6)',
+    }),
     treasure: new Table('treasure')
       .group('negligible', ['a rusty sword', 'a small pouch of coins', 'a healing potion', 'an old map', 'a silver ring'])
       .group('normal', ['a finely crafted dagger', 'a bag of gold coins', 'a potion of strength', 'a mysterious amulet', 'a rare gemstone'])
