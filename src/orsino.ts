@@ -44,7 +44,7 @@ export default class Orsino {
         roller: Orsino.interactiveRoll,
         select: Orsino.interactiveSelect,
         outputSink: console.log,
-        dungeonGen: () => this.gen("dungeon", { setting: 'fantasy', _targetCr: Math.round(partySize / 2), ...options }),
+        dungeonGen: () => this.gen("dungeon", { setting: 'fantasy', ...options, _targetCr: Math.round(partySize / 2) }),
         playerTeam: {
           name: "Heroes",
           combatants: pcs.map(pc => ({ ...pc, playerControlled: true }))

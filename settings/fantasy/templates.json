@@ -54,7 +54,7 @@
     "hp": "=#maxHp"
   },
   "encounter": {
-    "_monsterCount": "=1+1d4",
+    "_monsterCount": "=2+1d4",
     "monsters": "=genList(monster, #_monsterCount, \"=round(sum(#__items, 'level')) <= #targetCr\")",
     "bonusGold": "=2d20 + 5 * count(#monsters)",
     "cr": "=round(sum(#monsters, \"level\"))"
@@ -73,6 +73,7 @@
     "narrative": "=lookup(roomNarrative, oneOf(throne_room, lair, altar))",
     "size": "=oneOf(medium, large)",
     "targetCr": "=#_targetCr + #depth * 2 + 2",
+    "_monsterCount": "=3+1d4",
     "boss_encounter": "=gen(encounter)",
     "treasure": "=lookup(treasure, oneOf(major, legendary))"
   },
