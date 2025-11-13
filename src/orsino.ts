@@ -6,7 +6,7 @@ import { loadSetting } from "./orsino/loader";
 import Combat, { Gauntlet, RollResult } from "./orsino/Combat";
 import { Combatant } from "./orsino/types/Combatant";
 import Spinner from "./orsino/tui/Spinner";
-import { select, Separator } from '@inquirer/prompts';
+import select, { Separator } from '@inquirer/select';
 import deepCopy from "./orsino/util/deepCopy";
 import Dungeoneer from "./orsino/Dungeon";
 import Stylist from "./orsino/tui/Style";
