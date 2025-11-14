@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'bun:test';
 import Orsino from '../src/orsino';
 import Combat from '../src/orsino/Combat';
-import Dungeoneer from '../src/orsino/Dungeon';
+import Dungeoneer, { BossRoom, Room } from '../src/orsino/Dungeon';
 
 describe('Orsino', () => {
   const orsino = new Orsino('fantasy');
@@ -86,6 +86,7 @@ describe('Orsino', () => {
     expect(crawler.dungeon.rooms).toHaveLength(2);
     while (!crawler.isOver()) {
       const room = crawler.currentRoom;
+      crawler.enterRoom(room as Room);
       // console.log("Current room:", room);
       expect(room).toHaveProperty('narrative');
       expect(room).toHaveProperty('size');
@@ -96,6 +97,7 @@ describe('Orsino', () => {
         monster.hp = 0; // Simulate defeating the monster
       });
       crawler.nextRoom();
+      
     }
     expect(crawler.winner).toBeDefined();
     expect(crawler.winner).toMatch(/Player|Enemy/);

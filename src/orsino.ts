@@ -10,6 +10,7 @@ import { select, Separator } from '@inquirer/prompts';
 import deepCopy from "./orsino/util/deepCopy";
 import Dungeoneer from "./orsino/Dungeon";
 import Stylist from "./orsino/tui/Style";
+import Files from "./orsino/util/Files";
 
 type PlaygroundType = "combat" | "dungeon" | "world";
 export default class Orsino {
@@ -38,8 +39,31 @@ export default class Orsino {
       });
     }
     else if (type === "dungeon") {
-      const partySize = options.partySize || 2;
-      const pcs = this.genList("pc", { setting: 'fantasy', ...options }, partySize);
+      const partySize = options.partySize || 3;
+      const pcs = [];
+      if (await Files.countFiles(`${Dungeoneer.dataPath}/pcs`) > 0) {
+        // see if the user would like to select an existing PC
+        let shouldSelect = await Orsino.interactiveSelect(
+          'Existing PCs found. Would you like to select one to lead the dungeon crawl?',
+          ['Yes', 'No']
+        );
+        if (shouldSelect === 'Yes') {
+          const pcFiles = await Files.listFiles(`${Dungeoneer.dataPath}/pcs`);
+          const selectedPcName = await Orsino.interactiveSelect(
+            'Select a PC to lead the dungeon crawl:',
+            pcFiles.map(name => name.replace('.json', ''))
+          );
+          const selectedPc = await Files.readJSON(`${Dungeoneer.dataPath}/pcs/${selectedPcName}.json`) as Combatant;
+          pcs.push(selectedPc);
+        }
+      }
+      while (pcs.length < partySize) {
+        const pc = this.gen("pc", { setting: 'fantasy' });
+        if (!pcs.some(p => p.name === pc.name)) {
+          pcs.push(pc);
+        }
+      }
+      // this.genList("pc", { setting: 'fantasy', ...options }, partySize);
       const dungeoneer = new Dungeoneer({
         roller: Orsino.interactiveRoll,
         select: Orsino.interactiveSelect,

@@ -1,4 +1,10 @@
 export default class Words {
+  static a_an(phrase: string): string {
+    const firstLetter = phrase.trim().charAt(0).toLowerCase();
+    const vowels = ['a', 'e', 'i', 'o', 'u'];
+    const article = vowels.includes(firstLetter) ? 'an' : 'a';
+    return `${article} ${phrase}`;
+  }
   static capitalize = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1);
   static humanizeList = (arr: string[]): string => {
     if (arr.length === 0) return '';

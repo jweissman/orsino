@@ -49,7 +49,7 @@ export class Template {
 
     // omit internal properties starting with '_'
     Object.keys(assembled).forEach(key => {
-      if (key.startsWith('_')) {
+      if (key.startsWith('_') || key.startsWith('*')) {
         delete assembled[key];
       }
     });

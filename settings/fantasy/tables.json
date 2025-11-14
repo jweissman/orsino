@@ -13,8 +13,37 @@
   "name": {
     "discriminator": "gender",
     "groups": {
-      "male": [ "Aldric", "Borin", "Cedric", "Dorian", "Eldric", "Fenris", "Gareth", "Haldor", "Ithric", "Jareth", "Kael", "Loric", "Marek", "Nolan", "Orin", "Perrin", "Quentin", "Roderic", "Soren", "Theron", "Ulric", "Varric", "Wulfric", "Xander", "Yorick", "Zarek" ],
-      "female": [ "Aria", "Brenna", "Celeste", "Daria", "Elara", "Fiona", "Giselle", "Helena", "Isolde", "Jasmine", "Kaela", "Liora", "Mira", "Nina", "Oria", "Phaedra", "Quilla", "Rhea", "Seraphina", "Thalia", "Ulina", "Vera", "Willow", "Xenia", "Yara", "Zara" ],
+      "male": [
+        "Aldric", "Aleric",
+        "Borin", "Cedric", "Dorian", "Eldric", "Fenris", "Gareth", "Haldor", "Ithric", "Jareth", "Kael", "Loric", "Marek", "Nolan", "Orin", "Perrin", "Quentin", "Roderic", "Soren", "Theron", "Ulric", "Varric", "Wulfric", "Xander", "Yorick", "Zarek" ],
+      "female": [
+        "Aria", "Alma", "Aryel", "Amina", "Aliana", "Arwyn", "Aeline", 
+        "Barra", "Belinde", "Berwena", "Bren", "Burla", "Brenna", "Brina", "Briar",
+        "Celia", "Cassandra", "Casta", "Clara", "Cora", "Crysten", "Curwena", "Celeste", 
+        "Daphne", "Daria", "Delia", "Diana", "Druella", "Dara", "Dawn",
+        "Elara", "Elowen", "Elysia", "Ember", "Eira", "Evelyn", "Ewen",
+        "Farina", "Freyja", "Finna", "Fiona", "Fey", "Felicity", "Fiora", "Flora", "Fleur",
+        "Ganriel", "Gwyneth", "Gismane", "Gethsemane", "Ganymede", "Gloria", "Gwen", "Giselle", "Griselda", "Goldara",
+        "Helena", "Helene", "Hilda", "Haven", "Hestia", "Holly", "Honora", "Hunna", "Hazel", "Hera", "Hespera",
+        "Isolde", "Ismene", "Illyria", "Iris", "Ivana", "Ithil", "Isla", "Inara", "Indira",
+        "Jasmine", "Jade", "Jocelyn", "Juniper", "Jora", "Jessa", "Jenna", "Juniper", "Julia", "Jorella",
+        "Kaela", "Kaelyn", "Kara", "Kiera", "Kaea", "Kira", "Kestrel", "Kendra", "Kandra",
+        "Lavender", "Laura", "Luna", "Lirael", "Lysandra", "Liora", "Lirael", "Lysandra", "Lyra", "Luna", "Lorelei",
+        "Maria", "Mira", "Mara", "Maris", "Melina", "Mirella", "Morgana", "Myna", "Mirabel", "Miranda", "Mira",
+        "Nina", "Nora", "Nyssa", "Niamh", "Nessa", "Nimue", "Nara", "Naomi", "Nela", "Nixie", "Numina",
+        "Oana", "Olwen", "Orla", "Oriana", "Oria", "Oleanna", "Olana", "Omnia", "Orlyn", "Oriel", "Oulanda",
+        "Pandora", "Penelope", "Perinax", "Phaedra",
+        "Quinna", "Quilla", "Quentina", "Quintessa",
+        "Rachel", "Rhiannon", "Ravenna", "Rhea",
+        "Sabina", "Seraphina", "Sierra", "Sarina", "Selene", "Serena", "Sora", "Sylvia", "Sunna", "Sapphire",
+        "Talitha", "Talia", "Tamsin", "Tara", "Tiara", "Thea", "Talla", "Theodora", "Tuora", "Theresa", "Thalia",
+        "Uana", "Ulina",
+        "Vanna", "Vira", "Vesper", "Violet", "Vexana", "Vera",
+        "Wanda", "Wren", "Winona", "Wynne", "Willow",
+        "Xara", "Xanthe", "Xenia",
+        "Yara", "Yvonne", "Yelena", "Yara", "Yvaine",
+        "Zara", "Zelda", "Zinnia", "Zara", "Zora", "Zelena", "Zuora", "Zyra"
+      ],
       "neutral": [ "Ash", "Blake", "Casey", "Drew", "Emery", "Finley", "Gray", "Harper", "Indigo", "Jordan", "Kai", "Logan", "Morgan", "Nico", "Oakley", "Parker", "Quinn", "Reese", "Skyler", "Taylor", "Valen", "Winter", "Xenon", "Yale", "Zephyr" ]
     }
   },
@@ -214,6 +243,60 @@
         "Elder",
         "Fury"
       ]
+    }
+  },
+  "bossMonsterType": {
+    "discriminator": "race",
+    "groups": {
+      "goblin": ["King", "Hierophant", "Warlord" ],
+      "kobold": ["Chosen One", "Shaman King", "Warlord" ],
+      "human": ["Monarch", "Princeling", "Assassin", "General", "High Priest", "Archmage"],
+      "orc": ["Destroyer", "General", "Warlord"],
+      "ogre": ["Death Priest", "Warlord", "General"],
+      "troll": ["Destroyer", "General", "Warlord"],
+      "dragon": ["Hierophant", "King", "Lord"]
+    }
+  },
+  "monsterTypeModifier": {
+    "discriminator": "type",
+    "groups": {
+      "Runt": { "str": -2, "maxHp": -2 },
+      "Creep": { "str": -1, "dex": 1, "maxHp": -1 },
+      "Bandit": { "str": 1, "dex": 2, "maxHp": 1 },
+      "Thief": { "dex": 2, "cha": 1, "maxHp": 1 },
+      "Shaman": { "int": 2, "wis": 1, "maxHp": 1 },
+      "Slinger": { "dex": 3, "maxHp": 1 },
+      "Miner": { "con": 2, "str": 1, "maxHp": 1 },
+      "Peasant": { "str": 1, "dex": 1, "con": 1, "cha": 1, "maxHp": 1 },
+      "Loser": { "str": -1, "dex": -1, "con": -1, "cha": 2, "maxHp": -1 },
+      "Mercenary": { "str": 2, "dex": 2, "maxHp": 1 },
+      "Cultist": { "int": 2, "maxHp": 2 },
+      "Thug": { "str": 2, "maxHp": 2 },
+      "Cutthroat": { "str": 2, "dex": 2, "maxHp": 2 },
+      "Assassin": { "dex": 4, "str": 2, "maxHp": 3 },
+      "Bridgeminder": { "str": 2, "maxHp": 5 },
+      "Dweller": { "str": 2, "maxHp": 5 },
+      "Stalker": { "dex": 4, "maxHp": 5 },
+      "Warrior": { "str": 2, "maxHp": 5 },
+      "Miser": { "con": 4, "str": 2, "maxHp": 8, "level": 1 },
+      "Chieftain": { "str": 4, "maxHp": 8, "level": 1 },
+      "Brute": { "str": 4, "maxHp": 8, "level": 1 },
+      "Berserker": { "str": 6, "maxHp": 8, "level": 2 },
+      "Sage": { "int": 4, "maxHp": 9, "level": 1 },
+      "Guardian": { "con": 4, "maxHp": 10, "level": 2 },
+      "Elder": { "int": 6, "con": 4, "maxHp": 16, "level": 3 },
+      "Fury": { "str": 8, "con": 6, "maxHp": 20, "level": 4 },
+      "Princeling": { "str": 6, "con": 4, "int": 4, "dex": 2, "maxHp": 24, "level": 3 },
+      "Archmage": { "int": 8, "con": 4, "dex": 2, "str": 2, "maxHp": 24, "level": 4 },
+      "Shaman King": { "str": 4, "con": 4, "int": 6, "dex": 2, "wis": 6, "maxHp": 28, "level": 5 },
+      "Hierophant": { "int": 6, "con": 4, "dex": 2, "str": 2, "maxHp": 30, "level": 5 },
+      "General": { "str": 6, "con": 4, "int": 2, "dex": 2, "maxHp": 28, "level": 5 },
+      "Death Priest": { "str": 6, "con": 4, "int": 4, "dex": 2, "wis": 6, "maxHp": 32, "level": 5 },
+      "Chosen One": { "str": 5, "con": 5, "int": 5, "dex": 5, "wis": 5, "maxHp": 38, "level": 6 },
+      "Destroyer": { "str": 8, "con": 6, "int": 2, "dex": 2, "maxHp": 40, "level": 6 },
+      "King": { "str": 10, "con": 6, "int": 4, "dex": 2, "maxHp": 42, "level": 6 },
+      "Warlord": { "str": 7, "con": 6, "int": 5, "wis": 4, "dex": 3, "maxHp": 40, "level": 6 },
+      "Lord": { "str": 10, "con": 8, "int": 6, "wis": 6, "dex": 4, "maxHp": 50, "level": 7 }
     }
   },
   "monsterName": {
@@ -456,38 +539,7 @@
       "dragon": "1000 + 10d100"
     }
   },
-  "monsterTypeModifier": {
-    "discriminator": "type",
-    "groups": {
-      "Runt": { "str": -2, "maxHp": -2 },
-      "Creep": { "str": -1, "dex": 1, "maxHp": -1 },
-      "Bandit": { "str": 1, "dex": 2, "maxHp": 1 },
-      "Thief": { "dex": 2, "cha": 1, "maxHp": 1 },
-      "Shaman": { "int": 2, "wis": 1, "maxHp": 1 },
-      "Slinger": { "dex": 3, "maxHp": 1 },
-      "Miner": { "con": 2, "str": 1, "maxHp": 1 },
-      "Peasant": { "str": 1, "dex": 1, "con": 1, "cha": 1, "maxHp": 1 },
-      "Loser": { "str": -1, "dex": -1, "con": -1, "cha": 2, "maxHp": -1 },
-      "Mercenary": { "str": 2, "dex": 2, "maxHp": 1 },
-      "Cultist": { "int": 2, "maxHp": 2 },
-      "Thug": { "str": 2, "maxHp": 2 },
-      "Cutthroat": { "str": 2, "dex": 2, "maxHp": 2 },
-      "Assassin": { "dex": 4, "str": 2, "maxHp": 3 },
-      "Bridgeminder": { "str": 2, "maxHp": 5 },
-      "Dweller": { "str": 2, "maxHp": 5 },
-      "Stalker": { "dex": 4, "maxHp": 5 },
-      "Warrior": { "str": 2, "maxHp": 5 },
-      "Miser": { "con": 4, "str": 2, "maxHp": 10, "level": 1 },
-      "Chieftain": { "str": 4, "maxHp": 10, "level": 1 },
-      "Brute": { "str": 4, "maxHp": 10, "level": 1 },
-      "Berserker": { "str": 6, "maxHp": 15, "level": 2 },
-      "Sage": { "int": 4, "maxHp": 10, "level": 1 },
-      "Guardian": { "con": 4, "maxHp": 20, "level": 2 },
-      "Warlord": { "str": 6, "con": 4, "maxHp": 25, "level": 2 },
-      "Elder": { "int": 6, "con": 4, "maxHp": 30, "level": 3 },
-      "Fury": { "str": 8, "con": 6, "maxHp": 40, "level": 4 }
-    }
-  },
+
   "monsterTerrainModifier": {
     "discriminator": "terrain",
     "groups": {
@@ -503,7 +555,7 @@
     "discriminator": "building_type",
     "groups": {
       "temple": [["hall", "library", "library", "altar", "altar", "shrine", "sanctum", "reliquary"]],
-      "fortress": [["barracks", "armory", "guardroom", "watchtower", "cell", "hall"]],
+      "fortress": [["barracks", "barracks", "armory", "guardroom", "watchtower", "cell", "hall"]],
       "library": [["scriptorium", "archive", "study", "vault", "hall", "alcove"]],
       "tomb": [[ "chamber", "corridor", "cell" ]],
       "mine": [[ "corridor", "corridor", "corridor", "chamber", "lair" ]]
@@ -528,11 +580,37 @@
       "sanctum": [ "You enter a hidden sanctum, the air thick with mystery. The walls are adorned with ancient symbols, and a powerful aura emanates from the center." ],
       "scriptorium": [ "You step into a quiet scriptorium, the air filled with the scent of parchment and ink. The walls are lined with desks and quills, and you can hear the faint scratching of pens." ],
       "shrine": [ "You enter a sacred shrine, the air filled with reverence. The walls are adorned with ancient symbols and offerings, and a powerful aura emanates from the center." ],
+      "study": [ "You step into a quiet study, the air filled with the scent of old books and leather. The walls are lined with shelves of knowledge, and you can hear the faint scratching of quills." ],
       "tavern": [ "You enter a bustling tavern filled with the scent of ale and roasted meat. The air is thick with laughter and the clinking of mugs." ],
       "throne_room": [ "You enter a grand throne room, the walls lined with towering pillars and the floor covered in intricate mosaics. A majestic throne sits at the far end, guarded by a fearsome creature." ],
       "treasury": [ "You step into a glittering treasury, the walls lined with shelves of gold and jewels. The air is thick with the scent of wealth and power, and you can hear the faint clinking of coins." ],
       "vault": [ "You step into a secure vault, the air heavy with the scent of old wood and metal. The walls are lined with locked chests and safes, and you can hear the faint ticking of hidden mechanisms." ],
       "watchtower": [ "You climb into a watchtower, the air crisp and cold. The walls are lined with windows offering a panoramic view of the surrounding landscape, and you can hear the faint sound of birds." ]
+    }
+  },
+  "roomFeature": {
+    "discriminator": "d100",
+    "groups": {
+      "1":  "a torch",        "2":  "a brazier",    "3":  "a statue",         "4":  "an altar",     "5":  "a fountain",
+      "6":  "a chandelier",   "7":  "a tapestry",   "8":  "a mosaic",         "9":  "a painting",   "10": "a carpet",
+      "11": "a bookshelf",    "12": "a desk",       "13": "a bed",            "14": "a table",      "15": "a chair",
+      "16": "a chest",        "17": "a shelf",      "18": "a cabinet",        "19": "a rack",       "20": "a pillar",
+      "21": "a lockbox",      "22": "an inkbottle", "23": "a quill",          "24": "a skull",      "25": "a desk",
+      "26": "a sarcophagus",  "27": "a coffin",     "28": "an armamentarium", "29": "an astrolabe", "30": "a tomb",
+      "31": "a decanter",     "32": "a goblet",     "33": "a chalice",        "34": "a candelabra", "35": "a mirror",
+      "36": "a window",       "37": "a rug",        "38": "a curtain",        "39": "a banner",     "40": "a flag",
+      "41": "a book",         "42": "a letter",     "43": "a weapon rack",    "44": "a trophy",     "45": "a wardrobe",
+      "46": "a pedestal",     "47": "a sconce",     "48": "a lantern",        "49": "a torchiere",  "50": "a cage",
+      "51": "a blood stain",  "52": "a rune",       "53": "a glyph",          "54": "a sigil",      "55": "a symbol",
+      "56": "an inscription", "57": "a carving",    "58": "a graffiti",       "59": "a mural",      "60": "a fresco",
+      "61": "bones",          "62": "remains",      "63": "a corpse",         "64": "a skeleton",   "65": "a hipbone",
+      "66": "wanted poster",  "67": "a map",        "68": "an atlas",         "69": "a trinket",    "70": "trash",
+      "71": "rubble",         "72": "dust",         "73": "cobwebs",          "74": "mold",         "75": "fungus",
+      "76": "moss",           "77": "lichen",       "78": "slime",   "79": "ooze",    "80": "muck",
+      "81": "debris",         "82": "debris",       "83": "debris",  "84": "debris",  "85": "debris",
+      "86": "debris",         "87": "debris",       "88": "debris",  "89": "debris",  "90": "debris",
+      "91": "nothing",        "92": "nothing",      "93": "nothing", "94": "nothing", "95": "nothing",
+      "96": "nothing",        "97": "nothing",      "98": "nothing", "99": "nothing", "100": "nothing"
     }
   }
 }

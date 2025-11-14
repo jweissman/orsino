@@ -6,6 +6,8 @@ import { Select } from "./types/Select";
 import Words from "./tui/Words";
 import Stylist from "./tui/Style";
 import Deem from "../deem";
+import Files from "./util/Files";
+import { Fighting } from "./rules/Fighting";
 
 interface Encounter {
   monsters: Combatant[];
@@ -13,21 +15,23 @@ interface Encounter {
   cr?: number;
 }
 
-interface Room {
+export interface Room {
   room_type: string;
   narrative: string;
   size: 'small' | 'medium' | 'large';
   targetCr?: number;
   treasure: string | null;
   encounter: Encounter | null;
+  feature: string | null;
 }
 
-interface BossRoom {
+export interface BossRoom {
   narrative: string;
   size: 'small' | 'medium' | 'large';
   targetCr?: number;
   boss_encounter: Encounter | null;
   treasure: string | null;
+  feature: string | null;
 }
 
 interface Dungeon {
@@ -63,6 +67,8 @@ export default class Dungeoneer {
     }
 
     this.dungeon = this.dungeonGen();
+
+    this.outputSink(`Generated dungeon: ${this.dungeon.dungeon_name} (${this.dungeon.dungeon_type})`);
   }
 
   get rooms(): Room[] {
@@ -215,7 +221,17 @@ export default class Dungeoneer {
     }
   }
 
-  private async enterRoom(room: Room | BossRoom): Promise<void> {
+  static dataPath = "./data";
+  private persistCharacterRecords(): void {
+    for (const pc of this.playerTeam.combatants) {
+      // write pc record to file
+      Files.write(`${Dungeoneer.dataPath}/pcs/${pc.name}.json`, JSON.stringify(pc, null, 2));
+    }
+  }
+
+  async enterRoom(room: Room | BossRoom): Promise<void> {
+    this.persistCharacterRecords();
+
     if (this.isBossRoom) {
       this.outputSink(`\n${"═".repeat(70)}`);
       this.outputSink(`  💀 BOSS ROOM 💀`);
@@ -228,11 +244,18 @@ export default class Dungeoneer {
     }
 
     this.outputSink(room.narrative);
-    this.outputSink("");
 
     // if (room.treasure) {
     //   this.outputSink(`💎 Treasure: ${room.treasure}\n`);
     // }
+
+    if (room.feature === "nothing") {
+      this.outputSink(`The room would seem to contain nothing of interest.\n`);
+    } else {
+      this.outputSink(`This room contains ${room.feature}.\n`);
+    }
+
+    this.outputSink("");
 
     if (this.currentEncounter && this.currentEncounter.monsters.length > 0) {
       const monsters = this.currentEncounter.monsters.map(m => Presenter.combatant(m, false)).join(", ");
@@ -325,7 +348,57 @@ export default class Dungeoneer {
     // Placeholder for search/rest/etc
     // Can be expanded later
     // After clearing room:
-    const choice = await this.select("Rest here? (stabilize and restore 1+1d8 HP, 30% encounter)", [
+    let searched = false;
+    let done = false;
+    while (!done) {
+      this.outputSink(`\nWhat would you like to do?`);
+      const options = [
+        { name: "Search the room", value: "search", short: 'Search', disabled: searched },
+        { name: "Rest (restore HP, 30% encounter)", value: "rest", short: 'Rest', disabled: false },
+        { name: "Move on", value: "move", short: 'Continue', disabled: false }
+      ];
+      let choice = await this.select("Choose an action:", options);
+      console.log("Chosen action:", choice);
+      if (choice === "search") {
+        // choose a searcher and roll a DC 10 perception check to find hidden treasure
+        const searcher = await this.select("Who will search?", this.playerTeam.combatants.map(c => ({
+          name: `${c.name} (Perception: ${Stylist.prettyValue(Fighting.statMod(c.wis), 10)})`,
+          value: c,
+          short: c.name,
+          disabled: c.hp <= 0
+        })));
+        const perceptionRoll = await this.roller(searcher, "to search the room", 20, 1);
+        const perceptionTotal = perceptionRoll.amount + Fighting.statMod(searcher.wis);
+        if (perceptionTotal >= 10) {
+          this.outputSink(`\n🎉 ${searcher.name} finds a hidden stash!`);
+          if (room.treasure) {
+            const xpReward = 10 + Math.floor(Math.random() * 20);
+            this.outputSink(`💎 You found: ${room.treasure} (+${xpReward} XP)`);
+            await this.reward(xpReward, 0);
+          } else {
+            const stashGold = Deem.evaluate("2+1d20");
+            let share = Math.round(stashGold / this.playerTeam.combatants.length)
+            this.outputSink(`💰 Found ${stashGold} gold!`);
+            // this.playerTeam.combatants.forEach(c => {
+            //   console.log(`Adding ${share} gold to ${c.name}'s record.`);
+            //   c.gp = (c.gp || 0) + share;
+            // });
+            await this.reward(0, share);
+          }
+        }
+        searched = true;
+      } else if (choice === "rest") {
+        await this.rest(room);
+      } else {
+        this.outputSink(`\n🚶‍♂️ Moving on...`);
+        done = true;
+      }
+    }
+
+  }
+
+  private async rest(_room: Room | BossRoom): Promise<void> {
+    const choice = await this.select("Are you sure you want to rest in this room? (stabilize and restore 1+1d8 HP, 30% encounter)", [
       { disabled: false, short: 'Y', name: "Yes", value: "yes" },
       { disabled: false, short: 'N', name: "No",  value: "no" }
     ]);
@@ -368,11 +441,13 @@ export default class Dungeoneer {
         size: 'large',
         targetCr: 5,
         boss_encounter: {
+          cr: 5,
           monsters: [
             { forename: "Shadow Dragon", name: "Shadow Dragon", hp: 50, maxHp: 50, level: 5, ac: 18, dex: 14, str: 20, con: 16, int: 12, wis: 10, cha: 14, damageDie: 10, playerControlled: false, xp: 500, gp: 1000, attackRolls: 2, weapon: "Bite" }
           ]
         },
-        treasure: "A legendary sword and a chest of gold."
+        treasure: "A legendary sword and a chest of gold.",
+        feature: "a magical portal"
       },
       rooms: [
         {
@@ -380,7 +455,9 @@ export default class Dungeoneer {
           room_type: 'cave',
           size: 'small',
           treasure: "A rusty sword and a bag of gold coins.",
+          feature: "a hidden alcove",
           encounter: {
+            cr: 1,
             monsters: [
               { forename: "Goblin", name: "Goblin", hp: 7, maxHp: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, damageDie: 6, playerControlled: false, xp: 50, gp: 10, attackRolls: 1, weapon: "Dagger" }
             ]
@@ -391,7 +468,9 @@ export default class Dungeoneer {
           room_type: 'hall',
           size: 'large',
           treasure: "A magical amulet and a potion of healing.",
+          feature: "a crumbling statue",
           encounter: {
+            cr: 2,
             monsters: [
               { forename: "Orc", name: "Orc", hp: 15, maxHp: 15, level: 2, ac: 13, dex: 12, str: 16, con: 14, int: 8, wis: 10, cha: 8, damageDie: 8, playerControlled: false, xp: 100, gp: 20, attackRolls: 1, weapon: "Axe" }
             ]

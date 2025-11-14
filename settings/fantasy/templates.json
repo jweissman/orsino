@@ -70,15 +70,17 @@
     "_treasureChance": "=if(#room_type == \"treasury\", 1.0, oneOf(0.5, 0.8))",
     "targetCr": "=#_targetCr + round(#_index / 2)",
     "encounter": "=if(rand() < #_encounterChance, gen(encounter), nihil)",
-    "treasure": "=if(rand() < #_treasureChance, lookup(treasure, oneOf(negligible, minor)), nihil)"
+    "treasure": "=if(rand() < #_treasureChance, lookup(treasure, oneOf(negligible, minor)), nihil)",
+    "feature": "=lookup(roomFeature, 1d100)"
   },
   "boss_room": {
     "narrative": "=lookup(roomNarrative, oneOf(throne_room, lair, altar))",
     "size": "=oneOf(medium, large)",
     "targetCr": "=#_targetCr + round(#depth/2) + 2",
     "_monsterCount": "=3+1d4",
-    "boss_encounter": "=gen(encounter)",
-    "treasure": "=lookup(treasure, oneOf(major, legendary))"
+    "treasure": "=lookup(treasure, oneOf(major, legendary))",
+    "type": "=lookup(bossMonsterType, #race)",
+    "boss_encounter": "=gen(encounter)"
   },
   "dungeon": {
     "_targetCr": "=1",

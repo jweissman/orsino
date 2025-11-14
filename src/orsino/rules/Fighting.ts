@@ -61,9 +61,18 @@ export class Fighting {
     description += attackRoll.description;
     let success = attackRoll.amount >= whatNumberHits;
     let critical = false;
-    if (attackRoll.amount === 0) {
+    if (attackRoll.amount <= 1) {
       description += ` ${attacker.name} rolled a natural 1 and misses!`;
       note(`${attacker.name} rolled a natural 1 and misses!`);
+      if (Math.random() < 0.5) {
+        attacker.activeEffects = attacker.activeEffects || [];
+        attacker.activeEffects.push({
+          name: "Stumble",
+          effect: { toHit: -2 },
+          duration: 1
+        });
+        note(`${attacker.name} stumbles and takes a -2 penalty to hit on their next turn!`);
+      }
       return {
         success: false,
         damage: 0,
