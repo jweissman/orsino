@@ -142,12 +142,14 @@ export default class Combat {
       }
     ];
 
+    let spellSlotsRemaining = (combatant.spellSlots || 0) - (combatant.spellSlotsUsed || 0);
+    let pips = "⚡".repeat(spellSlotsRemaining) + "⚫".repeat((combatant.spellSlots || 0) - spellSlotsRemaining);
     if (combatant.class === "mage") {
-      choices.push({ disabled: false, short: "Magic Missile", name: "✨ Magic Missile (deal 3d6 damage to an enemy)", value: "missile" });
+      choices.push({ disabled: spellSlotsRemaining === 0, short: "Magic Missile " + pips, name: "✨ Magic Missile (deal 3d6 damage to an enemy)", value: "missile" });
     } else if (combatant.class === "bard") {
-      choices.push({ disabled: false, short: "Inspire", name: "🎶 Inspire (grant to-hit bonus for an ally until their next turn)", value: "inspire" });
+      choices.push({ disabled: spellSlotsRemaining === 0, short: "Inspire " + pips, name: "🎶 Inspire (grant to-hit bonus for an ally until their next turn)", value: "inspire" });
     } else if (combatant.class === "cleric") {
-      choices.push({ disabled: false, short: "Cure Wounds", name: "🙏 Cure Wounds (restore 2d6 HP to self or ally)", value: "cure" });
+      choices.push({ disabled: spellSlotsRemaining === 0, short: "Cure Wounds " + pips, name: "🙏 Cure Wounds (restore 2d6 HP to self or ally)", value: "cure" });
     }
 
     // Player chooses action
@@ -190,6 +192,7 @@ export default class Combat {
         inspireTarget.activeEffects = inspireTarget.activeEffects || [];
         inspireTarget.activeEffects.push({ name: "Inspired", effect: { toHit }, duration: 2 });
         this.note(`${inspireTarget.name} is inspired and gains +${toHit} to hit until their next turn.`);
+        combatant.spellSlotsUsed = (combatant.spellSlotsUsed || 0) + 1;
         break;
       case "cure":
         description += `${combatant.name} casts Cure Wounds. `;
@@ -204,11 +207,16 @@ export default class Combat {
         cureTarget.hp = Math.min(cureTarget.maxHp, cureTarget.hp + healAmount);
         description += `${cureTarget.name} heals for ${healAmount} HP (HP: ${cureTarget.hp}/${cureTarget.maxHp}).`;
         this.note(`${cureTarget.name} healed for ${healAmount} HP (HP: ${cureTarget.hp}/${cureTarget.maxHp}).`);
+        combatant.spellSlotsUsed = (combatant.spellSlotsUsed || 0) + 1;
         break;
       case "missile":
         description += `${combatant.name} casts Magic Missile! `;
         const target = await this.selectTarget(enemies, "casting of Magic Missile");
-        const attackRolls = await Promise.all(new Array(3).fill(0).map(() => this.roller(combatant, "for Magic Missile damage", 6, 1)));
+        // const attackRolls = await Promise.all(new Array(3).fill(0).map(() => this.roller(combatant, "for Magic Missile damage", 6, 1)));
+        const attackRolls = [];
+        for (let i = 0; i < 3; i++) {
+          attackRolls.push(await this.roller(combatant, `for Magic Missile damage (bolt ${i+1}/3)`, 4, 1));
+        }
         description += attackRolls.map(r => r.description).join(" ");
         let damage = attackRolls
           .map(r => r.amount)
@@ -225,6 +233,7 @@ export default class Combat {
           description += `\n${target.name} is defeated! `;
           this.note(`${target.name} falls unconscious!`);
         }
+        combatant.spellSlotsUsed = (combatant.spellSlotsUsed || 0) + 1;
         break;
     }
     return description;

@@ -22,7 +22,8 @@
     "attackRolls": "=lookup(attackRolls, #weapon)",
     "armor": "=lookup(armor, #class)",
     "ac": "=10 + lookup(armorClassBonus, #armor) + floor((#dex-10)/2)",
-    "gp": "=1d100"
+    "gp": "=1d100",
+    "spellSlots": "=if(#class == 'mage', 3, if(#class == 'cleric', 2, if(#class == 'bard', 2, 0)))"
   },
   "monster": {
     "_terrain": "=oneOf(forest, cave, swamp, mountain, snow, desert)",

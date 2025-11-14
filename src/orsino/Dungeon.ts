@@ -325,7 +325,7 @@ export default class Dungeoneer {
     // Placeholder for search/rest/etc
     // Can be expanded later
     // After clearing room:
-    const choice = await this.select("Rest here? (restores 1+1d8 HP, 30% encounter)", [
+    const choice = await this.select("Rest here? (stabilize and restore 1+1d8 HP, 30% encounter)", [
       { disabled: false, short: 'Y', name: "Yes", value: "yes" },
       { disabled: false, short: 'N', name: "No",  value: "no" }
     ]);
@@ -334,8 +334,11 @@ export default class Dungeoneer {
       this.outputSink(`\n💤 Resting...`);
       this.playerTeam.combatants.forEach(c => {
         const heal = Deem.evaluate("1+1d8");
+        if (c.hp <= 0) { c.hp = 1; } // Stabilize unconscious characters
         c.hp = Math.min(c.maxHp, c.hp + heal);
         this.outputSink(`Healed ${c.name} for ${heal} HP (HP: ${c.hp}/${c.maxHp})`);
+
+        c.spellSlotsUsed = 0; // Reset spell slots on rest
       });
 
       if (Math.random() < 0.3 && this.currentRoomIndex < this.rooms.length) {

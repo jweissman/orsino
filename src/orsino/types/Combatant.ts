@@ -24,7 +24,8 @@ export interface Combatant {
   weapon: string;
 
   spellSlots?: number;
-  
+  spellSlotsUsed?: number;
+
   activeEffects?: {
     name: string;
     effect: { [key: string]: any };
