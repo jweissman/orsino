@@ -13,6 +13,19 @@ export class Fighting {
     return Math.floor((stat - 10) / 2);
   }
 
+  static turnBonus(combatant: Combatant): { [key: string]: number } {
+    let bonuses: { [key: string]: number } = {};
+    if (combatant.activeEffects) {
+      combatant.activeEffects.forEach(it => {
+        Object.entries(it.effect).forEach(([key, value]) => {
+          bonuses[key] = (bonuses[key] || 0) + value;
+        });
+      });
+    }
+    return bonuses;
+  }
+
+
   static async attack(
     roll: Roll,
     attacker: Combatant,
@@ -26,17 +39,24 @@ export class Fighting {
         description: `${defender.name} is already defeated.`
       };
     }
-    note(`${Presenter.combatant(attacker, true)} attacks ${Presenter.combatant(defender, true)}... `);
     let description = `${attacker.name} attacks ${defender.name}... `;
     const strMod = this.statMod(attacker.str || 10);
     const dexMod = this.statMod(attacker.dex || 10);
-    const toHitBonus = dexMod;  // DEX affects accuracy
+    let toHitTurnBonus = this.turnBonus(attacker).toHit || 0;
+    const toHitBonus = dexMod  // DEX affects accuracy
+      + toHitTurnBonus; // Any temporary bonuses to hits
     const strengthDamageBonus = Math.max(0, strMod);  // STR affects damage (min 0)
 
     const thac0 = this.thac0(attacker.level);
-    const ac = defender.ac + (defender.turnBonus?.ac || 0);
+    const ac = defender.ac - (this.turnBonus(defender).ac || 0);
     const whatNumberHits = thac0 - ac - toHitBonus;
-    note(` (Attacker THAC0: ${thac0} (to hit bonus: ${toHitBonus}), Defender AC: ${ac}, What number hits: ${whatNumberHits}). `);
+
+    let bonusMessage = "";
+    if (toHitBonus > 0) {
+      bonusMessage += ` (+${toHitBonus} to hit)`;
+    }
+    note(`${Presenter.combatant(attacker, true)} (THAC0: ${thac0}${bonusMessage}) attacks ${Presenter.combatant(defender, true)} (AC: ${ac})... `);
+    // note(`Attacker THAC0: ${thac0}${bonusMessage}, Defender AC: ${ac}`); // What number hits: ${whatNumberHits} `);
     const attackRoll = await roll(attacker, `to attack (must roll ${whatNumberHits} or higher to hit)`, 20, 1);
     description += attackRoll.description;
     let success = attackRoll.amount >= whatNumberHits;
@@ -50,13 +70,14 @@ export class Fighting {
         description
       };
     }
-      if (attackRoll.amount >= 19) {
-        description += " Critical hit! ";
-        note(Stylist.colorize("Critical hit!", 'yellow'));
-      } else {
-        description += " Attack hits! ";
-        note("Attack hits!");
-      }
+    if (attackRoll.amount >= 19) {
+      critical = true;
+      description += " Critical hit! ";
+      note(Stylist.colorize("Critical hit!", 'yellow'));
+    } else {
+      description += " Attack hits! ";
+      // note("Attack hits!");
+    }
 
     let damage = 0;
     if (success) {
@@ -68,7 +89,7 @@ export class Fighting {
       damage = attackRolls
         .map(r => r.amount)
         .reduce((sum: number, dmg: number) => sum + dmg, 0);
-      
+
       if (critical) {
         criticalDamage = Math.max(1, Math.round(damage * 0.2 * Math.max(1, Math.floor(attacker.level / 5))));
       }

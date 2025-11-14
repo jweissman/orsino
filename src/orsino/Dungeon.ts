@@ -94,7 +94,8 @@ export default class Dungeoneer {
     const encounter = this.currentEncounter;
     return {
       name: "Enemies",
-      combatants: encounter?.monsters || []
+      combatants: encounter?.monsters || [],
+      healingPotions: 0
     };
   }
 
@@ -145,14 +146,39 @@ export default class Dungeoneer {
         attackRolls: 1,
         weapon: "Short Sword",
         damageDie: 8, playerControlled: true, xp: 0, gp: 0
-      }]
+      }],
+      healingPotions: 3
     };
+  }
+
+  static dungeonIcons = {
+    temple: "🏛️",
+    fortress: "🏯",
+    library: "📚",
+    tomb: "⚰️",
+    mine: "⛏️",
+    cave: "🕳️",
+    crypt: "⚰️",
+    tower: "🗼",
+  }
+
+  presentCharacterRecords(): void {
+    console.log("Your party:");
+    this.playerTeam.combatants.forEach(c => {
+      console.log(Presenter.combatant(c, false));
+      console.table(c);
+    });
   }
 
   // Main run loop
   async run(): Promise<void> {
+
+    this.presentCharacterRecords();
+
+    // @ts-ignore
+    let icon = (Dungeoneer.dungeonIcons[this.dungeon.dungeon_type]) || "🏰";
     this.outputSink(`\n${"=".repeat(70)}`);
-    this.outputSink(`  🏰 ${this.dungeon.dungeon_name.toUpperCase()} 🏰`);
+    this.outputSink(`  ${icon} ${this.dungeon.dungeon_name.toUpperCase()}`);
     this.outputSink(`  ${this.dungeon.depth} room ${this.dungeon.dungeon_type}`);
     this.outputSink(`  PCs: ${this.playerTeam.combatants.map(c => Presenter.combatant(c, false)).join(", ")}`);
     this.outputSink(`${"=".repeat(70)}\n`);
@@ -204,9 +230,9 @@ export default class Dungeoneer {
     this.outputSink(room.narrative);
     this.outputSink("");
 
-    if (room.treasure) {
-      this.outputSink(`💎 Treasure: ${room.treasure}\n`);
-    }
+    // if (room.treasure) {
+    //   this.outputSink(`💎 Treasure: ${room.treasure}\n`);
+    // }
 
     if (this.currentEncounter && this.currentEncounter.monsters.length > 0) {
       const monsters = this.currentEncounter.monsters.map(m => Presenter.combatant(m, false)).join(", ");
@@ -246,11 +272,12 @@ export default class Dungeoneer {
       this.outputSink(`\n✓ Victory! +${xp} XP, +${gold} GP\n`);
 
       if (Math.random() < 0.5) {
-        console.log('The monsters dropped a healing potion! Healing the party for 10 HP.');
-        this.playerTeam.combatants.forEach(c => {
-          c.hp = Math.min(c.maxHp, c.hp + 10);
-          console.log(`Healing ${c.name} for 10 HP (HP: ${c.hp}/${c.maxHp})`);
-        });
+        console.log('The monsters dropped a healing potion!');
+        this.playerTeam.healingPotions += 1;
+        // this.playerTeam.combatants.forEach(c => {
+        //   c.hp = Math.min(c.maxHp, c.hp + 10);
+        //   console.log(`Healing ${c.name} for 10 HP (HP: ${c.hp}/${c.maxHp})`);
+        // });
       }
 
       await this.reward(xp, gold);
@@ -261,7 +288,7 @@ export default class Dungeoneer {
   }
 
   private async reward(xp: number, gold: number): Promise<void> {
-    this.outputSink(`\n💰 Distributing rewards...`);
+    // this.outputSink(`\n💰 Distributing rewards...`);
     // this.playerTeam.combatants.forEach(async c => {
     for (const c of this.playerTeam.combatants) {
       c.xp = (c.xp || 0) + xp;
@@ -275,10 +302,10 @@ export default class Dungeoneer {
       while (c.xp >= nextLevelXp) {
         c.level++;
         nextLevelXp = Gauntlet.xpForLevel(c.level + 1);
-        c.maxHp += 1;
+        c.maxHp += 1 + Math.max(0, Math.floor(c.con / 2));
         c.hp = c.maxHp;
-        this.outputSink(`${c.name} leveled up to level ${c.level}!`);
-        const stat = await this.select(`Level up! ${c.name} is now level ${c.level}. Choose a stat to increase:`, [
+        this.outputSink(`${Presenter.combatant(c)} leveled up to level ${c.level}!`);
+        const stat = await this.select(`Choose a stat to increase:`, [
           { disabled: false, name: `Strength (${c.str})`, value: 'str', short: 'STR' },
           { disabled: false, name: `Dexterity (${c.dex})`, value: 'dex', short: 'DEX' },
           { disabled: false, name: `Intelligence (${c.int})`, value: 'int', short: 'INT' },
@@ -288,15 +315,41 @@ export default class Dungeoneer {
         ]);
         // @ts-ignore
         c[stat] += 1;
-        this.outputSink(`${c.name}'s ${stat.toUpperCase()} increased to ${c[stat]}!`);
+        this.outputSink(`${c.name}'s ${stat.toUpperCase()} increased to ${c[stat as keyof Combatant]}!`);
       }
     }
-    this.outputSink(`\n💰 Rewards distributed!`);
+    // this.outputSink(`\n💰 Rewards distributed!`);
   }
 
   private async roomActions(room: Room | BossRoom): Promise<void> {
     // Placeholder for search/rest/etc
     // Can be expanded later
+    // After clearing room:
+    const choice = await this.select("Rest here? (restores 1+1d8 HP, 30% encounter)", [
+      { disabled: false, short: 'Y', name: "Yes", value: "yes" },
+      { disabled: false, short: 'N', name: "No",  value: "no" }
+    ]);
+    if (choice === "yes") {
+      // Heal party, maybe trigger encounter
+      this.outputSink(`\n💤 Resting...`);
+      this.playerTeam.combatants.forEach(c => {
+        const heal = Deem.evaluate("1+1d8");
+        c.hp = Math.min(c.maxHp, c.hp + heal);
+        this.outputSink(`Healed ${c.name} for ${heal} HP (HP: ${c.hp}/${c.maxHp})`);
+      });
+
+      if (Math.random() < 0.3 && this.currentRoomIndex < this.rooms.length) {
+        this.outputSink(`\n👹 A wandering monster interrupts your rest!`);
+        // let encounter = this.encounterGen...
+        let room = this.currentRoom as Room;
+        room.encounter = {
+          monsters: [
+            { forename: "Goblin", name: "Goblin", hp: 7, maxHp: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, damageDie: 6, playerControlled: false, xp: 50, gp: 10, attackRolls: 1, weapon: "Dagger" }
+          ]
+        };
+        await this.runCombat();
+      }
+    }
   }
 
   static defaultGen(): Dungeon {

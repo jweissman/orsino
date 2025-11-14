@@ -19,6 +19,7 @@ export default class Deem {
     rand: () => Math.random(),
     if: (cond: any, trueVal: any, falseVal: any) => (cond ? trueVal : falseVal),
     oneOf: (...args: any[]) => args[Math.floor(Math.random() * args.length)],
+    pick: (arr: any[]) => arr[Math.floor(Math.random() * arr.length)],
     round: (num: number) => Math.round(num),
     floor: (num: number) => Math.floor(num),
     ceil: (num: number) => Math.ceil(num),

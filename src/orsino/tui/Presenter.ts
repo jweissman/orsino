@@ -4,13 +4,13 @@ import Words from "./Words";
 
 export default class Presenter {
   static combatant = (combatant: Combatant, minimal = false) => {
-    let colors = ['red', 'red', 'orange', 'orange', 'green', 'green', 'blue'];
+    let colors = ['magenta', 'red', 'yellow', 'yellow', 'yellow', 'green', 'green', 'green', 'green'];
     const hpRatio = combatant.hp / combatant.maxHp;
     const hpBar = Stylist.prettyValue(combatant.hp, combatant.maxHp);
     const color = colors[Math.floor(hpRatio * (colors.length - 1))] || colors[0];
 
     if (minimal) {
-      return `${Stylist.format(combatant.forename, 'bold')} ${Stylist.colorize(hpBar, color)} (${combatant.hp}/${combatant.maxHp}) [AC ${combatant.ac}]`;
+      return `${Stylist.format(combatant.forename, 'bold')} ${Stylist.colorize(hpBar, color)}` // (${combatant.hp}/${combatant.maxHp}) [AC ${combatant.ac}]`;
     }
 
     const str = Stylist.colorize(Stylist.prettyValue(combatant.str, 20), 'red');

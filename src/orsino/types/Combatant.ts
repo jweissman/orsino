@@ -23,5 +23,13 @@ export interface Combatant {
   // goldDrop?: string;
   weapon: string;
 
-  turnBonus?: { [key: string]: any };
+  spellSlots?: number;
+  
+  activeEffects?: {
+    name: string;
+    effect: { [key: string]: any };
+    duration: number;
+  }[];
+
+  // turnBonus?: { [key: string]: number };
 }

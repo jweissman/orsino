@@ -79,7 +79,7 @@ export default class Orsino {
     await new Promise(resolve => setTimeout(resolve, 650));
 
     await Spinner.waitForInputAndRun(
-      `>>> ${subject.name} to roll ${dice}d${sides} ${description}... <<<`,
+      `\n>>> ${subject.name} to roll ${dice}d${sides} ${description}... <<<`,
       `Rolling ${dice}d${sides} ${description}`
     );
 
@@ -107,7 +107,7 @@ export default class Orsino {
       const conditionResult = Template.evaluatePropertyExpression(condition, deepCopy(options));
       if (!conditionResult) {
         items.pop();
-        console.warn(`Item ${i} did not meet condition: ${condition}`);
+        // console.warn(`Item ${i} did not meet condition: ${condition}`);
         break;
       }
     }
@@ -123,7 +123,7 @@ export default class Orsino {
     options: Record<string, any> = {}
   ): Record<string, any> {
     this.setting = this.setting || (options.setting ? loadSetting(options.setting) : this.defaultSetting);
-    console.log(`Gen ${Stylist.format(type, 'bold')} with options`);
+    // console.log(`Gen ${Stylist.format(type, 'bold')} with options`);
     let nonNestedOptions: Record<string, any> = {};
     Object.entries(options).forEach(([key, value]) => {
       if (typeof value !== 'object' || value === null) {
@@ -131,7 +131,7 @@ export default class Orsino {
       }
     });
     // print options as nice table
-    console.table(nonNestedOptions);
+    // console.table(nonNestedOptions);
 
     const templ = this.generationSource(type);
     if (!templ) {

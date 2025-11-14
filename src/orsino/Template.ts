@@ -35,12 +35,12 @@ export class Template {
 
       if (key.startsWith("*")) {
         // we have evaluated the value (confirm we have gotten an object) 
-        if (typeof assembled[key] === 'object' && assembled[key] !== null) {
-          console.log(`Overlay properties from ${key} into context (${Object.keys(assembled[key]).join(', ')})`);
-        }
+        // if (typeof assembled[key] === 'object' && assembled[key] !== null) {
+        //   console.log(`Overlay properties from ${key} into context (${Object.keys(assembled[key]).join(', ')})`);
+        // }
         // then 'overlay' (add) each property onto the context
         Object.entries(assembled[key] || {}).forEach(([k, v]) => {
-          console.log(`Adding ${k}=${v} to context (was ${localContext[k]})`);
+          // console.log(`Adding ${k}=${v} to context (was ${localContext[k]})`);
           assembled[k] = v + (assembled[k] || 0);
           localContext[k] = assembled[k];
         });
@@ -61,8 +61,8 @@ export class Template {
         delete assembledWithoutNested[key];
       }
     });
-    console.log(`Generated ${this.type}:`);
-    console.table(assembledWithoutNested);
+    // console.log(`Generated ${this.type}:`);
+    // console.table(assembledWithoutNested);
 
     return assembled;
   }

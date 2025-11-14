@@ -50,22 +50,42 @@
       ]
     }
   },
-  "attackDice": {
+  "damageDie": {
     "discriminator": "weapon",
     "groups": {
-      "staff": [ 3 ],
-      "club": [ 4 ],
-      "claws": [ 4 ],
-      "dagger": [ 4 ],
-      "bite": [ 6 ],
-      "mace": [ 6 ],
-      "axe": [ 6 ],
-      "bow": [ 6 ],
-      "polearm": [ 8 ],
-      "spear": [ 8 ],
-      "sword": [ 10 ],
-      "greataxe": [ 12 ],
-      "greatsword": [ 20 ]
+      "staff": 3,
+      "club": 4,
+      "claws": 4,
+      "dagger": 4,
+      "sling": 4,
+      "bite": 6,
+      "mace": 6,
+      "axe": 6,
+      "bow": 6,
+      "polearm": 8,
+      "spear": 8,
+      "sword": 10,
+      "greataxe": 12,
+      "greatsword": 8
+    }
+  },
+  "attackRolls": {
+    "discriminator": "weapon",
+    "groups": {
+      "staff": 1,
+      "club": 1,
+      "claws": 2,
+      "dagger": 2,
+      "sling": 2,
+      "bite": 1,
+      "mace": 1,
+      "axe": 1,
+      "bow": 2,
+      "polearm": 1,
+      "spear": 1,
+      "sword": 1,
+      "greataxe": 2,
+      "greatsword": 3
     }
   },
   "weapon": {
@@ -140,6 +160,7 @@
         "Thief",
         "Shaman",
         "Warrior",
+        "Assassin",
         "Chieftain"
       ],
       "kobold": [
@@ -375,18 +396,6 @@
       "dragon": 6
     }
   },
-  "monsterAttacks": {
-    "discriminator": "race",
-    "groups": {
-      "human": 1,
-      "goblin": 1,
-      "kobold": 1,
-      "orc": 1,
-      "ogre": 1,
-      "troll": 2,
-      "dragon": 3
-    }
-  },
   "monsterWeapon": {
     "discriminator": "race",
     "groups": {
@@ -447,6 +456,38 @@
       "dragon": "1000 + 10d100"
     }
   },
+  "monsterTypeModifier": {
+    "discriminator": "type",
+    "groups": {
+      "Runt": { "str": -2, "maxHp": -2 },
+      "Creep": { "str": -1, "dex": 1, "maxHp": -1 },
+      "Bandit": { "str": 1, "dex": 2, "maxHp": 1 },
+      "Thief": { "dex": 2, "cha": 1, "maxHp": 1 },
+      "Shaman": { "int": 2, "wis": 1, "maxHp": 1 },
+      "Slinger": { "dex": 3, "maxHp": 1 },
+      "Miner": { "con": 2, "str": 1, "maxHp": 1 },
+      "Peasant": { "str": 1, "dex": 1, "con": 1, "cha": 1, "maxHp": 1 },
+      "Loser": { "str": -1, "dex": -1, "con": -1, "cha": 2, "maxHp": -1 },
+      "Mercenary": { "str": 2, "dex": 2, "maxHp": 1 },
+      "Cultist": { "int": 2, "maxHp": 2 },
+      "Thug": { "str": 2, "maxHp": 2 },
+      "Cutthroat": { "str": 2, "dex": 2, "maxHp": 2 },
+      "Assassin": { "dex": 4, "str": 2, "maxHp": 3 },
+      "Bridgeminder": { "str": 2, "maxHp": 5 },
+      "Dweller": { "str": 2, "maxHp": 5 },
+      "Stalker": { "dex": 4, "maxHp": 5 },
+      "Warrior": { "str": 2, "maxHp": 5 },
+      "Miser": { "con": 4, "str": 2, "maxHp": 10, "level": 1 },
+      "Chieftain": { "str": 4, "maxHp": 10, "level": 1 },
+      "Brute": { "str": 4, "maxHp": 10, "level": 1 },
+      "Berserker": { "str": 6, "maxHp": 15, "level": 2 },
+      "Sage": { "int": 4, "maxHp": 10, "level": 1 },
+      "Guardian": { "con": 4, "maxHp": 20, "level": 2 },
+      "Warlord": { "str": 6, "con": 4, "maxHp": 25, "level": 2 },
+      "Elder": { "int": 6, "con": 4, "maxHp": 30, "level": 3 },
+      "Fury": { "str": 8, "con": 6, "maxHp": 40, "level": 4 }
+    }
+  },
   "monsterTerrainModifier": {
     "discriminator": "terrain",
     "groups": {
@@ -458,45 +499,40 @@
       "desert": { "con": -1, "maxHp": 5 }
     }
   },
+  "roomBias": {
+    "discriminator": "building_type",
+    "groups": {
+      "temple": [["hall", "library", "library", "altar", "altar", "shrine", "sanctum", "reliquary"]],
+      "fortress": [["barracks", "armory", "guardroom", "watchtower", "cell", "hall"]],
+      "library": [["scriptorium", "archive", "study", "vault", "hall", "alcove"]],
+      "tomb": [[ "chamber", "corridor", "cell" ]],
+      "mine": [[ "corridor", "corridor", "corridor", "chamber", "lair" ]]
+    }
+  },
   "roomNarrative": {
     "discriminator": "type",
     "groups": {
-      "tavern": [
-        "You enter a bustling tavern filled with the scent of ale and roasted meat. The air is thick with laughter and the clinking of mugs."
-      ],
-      "chamber": [
-        "You step into a dimly lit chamber, the walls adorned with ancient tapestries. A faint glow emanates from a mysterious artifact in the center."
-      ],
-      "corridor": [
-        "You find yourself in a narrow corridor, the stone walls echoing your footsteps. The air is damp and musty, and you can hear distant sounds of movement."
-      ],
-      "alcove": [
-        "You enter a hidden alcove, tucked away behind a crumbling wall."
-      ],
-      "throne_room": [
-        "You enter a grand throne room, the walls lined with towering pillars and the floor covered in intricate mosaics. A majestic throne sits at the far end, guarded by a fearsome creature."
-      ],
-      "lair": [
-        "You descend into a dark lair, the air thick with the scent of decay. The walls are covered in strange markings, and you can hear the faint sound of breathing."
-      ],
-      "altar": [
-        "You step into a sacred altar, the air filled with the scent of incense. The walls are adorned with ancient symbols, and a powerful aura emanates from the center."
-      ],
-      "hall": [
-        "You enter a grand hall, the ceiling towering above you. The walls are lined with suits of armor and ancient weapons, and a sense of history hangs in the air."
-      ],
-      "cell": [
-        "You find yourself in a cold, damp cell. The walls are covered in scratches and graffiti, and the air is thick with despair."
-      ],
-      "armory": [
-        "You step into an armory, the walls lined with racks of weapons and armor. The air is filled with the scent of oil and metal, and you can hear the faint clanging of blacksmiths at work."
-      ],
-      "library": [
-        "You enter a dusty library, the shelves filled with ancient tomes and scrolls. The air is thick with the scent of old paper and ink, and you can hear the faint rustling of pages."
-      ],
-      "treasury": [
-        "You step into a glittering treasury, the walls lined with shelves of gold and jewels. The air is thick with the scent of wealth and power, and you can hear the faint clinking of coins."
-      ]
+      "alcove": [ "You enter a hidden alcove, tucked away behind a crumbling wall." ],
+      "altar": [ "You step into a sacred altar, the air filled with the scent of incense. The walls are adorned with ancient symbols, and a powerful aura emanates from the center." ],
+      "archive": [ "You enter a dusty archive, the shelves filled with ancient scrolls and tomes. The air is thick with the scent of old paper and ink, and you can hear the faint rustling of pages." ],
+      "armory": [ "You step into an armory, the walls lined with racks of weapons and armor. The air is filled with the scent of oil and metal, and you can hear the faint clanging of blacksmiths at work." ],
+      "barracks": [ "You enter a barracks, the air filled with the scent of sweat and leather. The walls are lined with bunks and lockers, and you can hear the faint snoring of soldiers." ],
+      "cell": [ "You find yourself in a cold, damp cell. The walls are covered in scratches and graffiti, and the air is thick with despair." ],
+      "chamber": [ "You step into a dimly lit chamber, the walls adorned with ancient tapestries. A faint glow emanates from a mysterious artifact in the center." ],
+      "corridor": [ "You find yourself in a narrow corridor, the stone walls echoing your footsteps. The air is damp and musty, and you can hear distant sounds of movement." ],
+      "guardroom": [ "You enter a guardroom, the air filled with the scent of sweat and metal. The walls are lined with weapons and armor, and you can hear the faint chatter of guards." ],
+      "hall": [ "You enter a grand hall, the ceiling towering above you. The walls are lined with suits of armor and ancient weapons, and a sense of history hangs in the air." ],
+      "lair": [ "You descend into a dark lair, the air thick with the scent of decay. The walls are covered in strange markings, and you can hear the faint sound of breathing." ],
+      "library": [ "You enter a dusty library, the shelves filled with ancient tomes and scrolls. The air is thick with the scent of old paper and ink, and you can hear the faint rustling of pages." ],
+      "reliquary": [ "You step into a sacred reliquary, the air filled with reverence. The walls are adorned with ancient relics and artifacts, and a powerful aura emanates from the center." ],
+      "sanctum": [ "You enter a hidden sanctum, the air thick with mystery. The walls are adorned with ancient symbols, and a powerful aura emanates from the center." ],
+      "scriptorium": [ "You step into a quiet scriptorium, the air filled with the scent of parchment and ink. The walls are lined with desks and quills, and you can hear the faint scratching of pens." ],
+      "shrine": [ "You enter a sacred shrine, the air filled with reverence. The walls are adorned with ancient symbols and offerings, and a powerful aura emanates from the center." ],
+      "tavern": [ "You enter a bustling tavern filled with the scent of ale and roasted meat. The air is thick with laughter and the clinking of mugs." ],
+      "throne_room": [ "You enter a grand throne room, the walls lined with towering pillars and the floor covered in intricate mosaics. A majestic throne sits at the far end, guarded by a fearsome creature." ],
+      "treasury": [ "You step into a glittering treasury, the walls lined with shelves of gold and jewels. The air is thick with the scent of wealth and power, and you can hear the faint clinking of coins." ],
+      "vault": [ "You step into a secure vault, the air heavy with the scent of old wood and metal. The walls are lined with locked chests and safes, and you can hear the faint ticking of hidden mechanisms." ],
+      "watchtower": [ "You climb into a watchtower, the air crisp and cold. The walls are lined with windows offering a panoramic view of the surrounding landscape, and you can hear the faint sound of birds." ]
     }
   }
 }
