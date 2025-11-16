@@ -135,6 +135,7 @@ export default class Orsino {
     let attempts = 0;
     while (items.length < count && attempts++ < count * 10) {
       const i = items.length;
+      // console.log(`Generating ${type} ${i + 1}/${count}...`);
       const item = this.gen(type, deepCopy({ ...options, _index: i }));
       items.push(item);
       if (!condition) { continue }

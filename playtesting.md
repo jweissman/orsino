@@ -1,6 +1,5 @@
 # Notes from Playtesting
 
-[ ] Finding rusted/silver/golden coins should grant XP bonus
 [ ] Loot should be accumulated ("X takes it" = added to a list on their pc record)
 [ ] Offer to take party to new dungeon if they beat it
 [ ] Maybe you can leave an offering (5gp) at a shrine for a blessing?
@@ -27,6 +26,11 @@
 [ ] A cage could have a chance to have a prisoner (who could become ally); incidentally would be nice for it to be more likely within a 'cell' room
 [ ] Maybe the PC hp curve should be flattened a bit too? (50 HP at level 5 seems like a lot??)
 [ ] Enemies should have spell slots (poison capsule could be a consumable for them?)
+---
+[ ] Enemy AC seems _really_ low -- a character with high dex is always getting 0 or less to hit! (maybe fixed by giving them armor?)
+[ ] Larger rooms could give more search opps?
+[ ] Adventuring kit could be a consumable that is needed to give first aid?
+[ ] Found treasure should be redeemable for gold
 
 ## Fixed
 [x] Healers healing themselves should say "X heals" not "X heals X"
@@ -40,6 +44,7 @@
 [x] Room names should not have underscores (throne_room) when presented to the player
 [x] Should only be able to inspire if you have conscious allies
 [x] Fear message should be clarified ("X is frightened" not "X is too frightened to act" since it may not be their turn at all (ie fear event isn't only used on failed flee anymore) [now just 'X is frightened']
+[x] Finding rusted/silver/golden coins should grant XP bonus
 
 ## Not really issues
 "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)"

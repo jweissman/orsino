@@ -3,6 +3,7 @@
 import Orsino from '../src/orsino';
 import { GenerationTemplateType } from "../src/orsino/types/GenerationTemplateType";
 import { program } from 'commander';
+import Files from '../src/orsino/util/Files';
 
 program
   .name('orsino')
@@ -34,20 +35,25 @@ program
     //   console.error('Graph generation requires at least 2 items. Use --count to specify the number of items.');
     //   process.exit(1);
     // }
-    let cr = options.cr ? parseInt(options.cr) : 1;
+    let cr = options.cr ? parseInt(options.cr) : null;
     delete options.cr;
+
+    if (cr !== null) {
+      options._targetCr = cr;
+    }
     
     const response = orsino.gen(
       type as GenerationTemplateType,
       {
         ...options,
-        targetCr: cr, // _targetCr: cr,
+        // _targetCr: cr, // _targetCr: cr,
         // __count: parseInt(options.count) || undefined,
         // __graph: options.graph
       }
     );
     // console.log(response);
     process.stdout.write(JSON.stringify(response, null, 2));
+    Files.write(`data/${type}s/${response['name']}.json`, JSON.stringify(response, null, 2));
   });
 
 program.parse(process.argv);

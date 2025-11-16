@@ -32,6 +32,7 @@ export default class Deem {
     },
     // min: (...args: number[]) => Math.min(...args),
     max: (...args: number[]) => Math.max(...args),
+    // eval: (expr: string, context: Record<string, any> = {}) => Deem.evaluate(expr, context),
   };
   static grammar = ohm.grammar(source);
   static semantics = Deem.grammar.createSemantics().addOperation('eval(context)', {

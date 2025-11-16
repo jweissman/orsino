@@ -141,7 +141,7 @@ export default class Combat {
     let standingAllies = this.living(allies);
     let pips = "⚡".repeat(spellSlotsRemaining) + "⚫".repeat((Combat.maxSpellSlotsForCombatant(combatant) || 0) - spellSlotsRemaining);
     if (combatant.class === "mage") {
-      choices.push({ disabled: spellSlotsRemaining === 0, short: "Magic Missile " + pips, name: "✨ Magic Missile (deal 3d6 damage to an enemy)", value: "missile" });
+      choices.push({ disabled: spellSlotsRemaining === 0, short: "Magic Missile " + pips, name: "✨ Magic Missile (deal 3d4 damage to an enemy)", value: "missile" });
     } else if (combatant.class === "bard") {
       choices.push({
         disabled: spellSlotsRemaining === 0 && standingAllies.length > 0, short: "Inspire " + pips, name: "🎶 Inspire (grant to-hit bonus for an ally until their next turn)", value: "inspire"

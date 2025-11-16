@@ -34,7 +34,7 @@
         "Jasmine", "Jade", "Jocelyn", "Juniper", "Jora", "Jessa", "Jenna", "Juniper", "Julia", "Jorella",
         "Kaela", "Kaelyn", "Kara", "Kiera", "Kaea", "Kira", "Kestrel", "Kendra", "Kandra",
         "Lavender", "Laura", "Luna", "Lirael", "Lysandra", "Liora", "Lirael", "Lysandra", "Lyra", "Luna", "Lorelei",
-        "Maria", "Mira", "Mara", "Maris", "Melina", "Mirella", "Morgana", "Myna", "Mirabel", "Miranda", "Mira",
+        "Maria", "Mira", "Mara", "Maris", "Melina", "Mirella", "Morgana", "Myna", "Mirabel", "Miranda",
         "Nina", "Nora", "Nyssa", "Niamh", "Nessa", "Nimue", "Nara", "Naomi", "Nela", "Nixie", "Numina",
         "Oana", "Olwen", "Orla", "Oriana", "Oria", "Oleanna", "Olana", "Omnia", "Orlyn", "Oriel", "Oulanda",
         "Pandora", "Penelope", "Perinax", "Phaedra",
@@ -180,10 +180,10 @@
   "armorClassBonus": {
     "discriminator": "armor",
     "groups": {
-      "robe": -1,
-      "leather": 1,
-      "chainmail": 2,
-      "plate": 3
+      "robe": 1,
+      "leather": 2,
+      "chainmail": 5,
+      "plate": 8
     }
   },
   "monsterType": {
@@ -298,6 +298,7 @@
       "Hierophant": { "int": 6, "con": 4, "dex": 2, "str": 2, "maxHp": 30, "level": 5 },
       "General": { "str": 6, "con": 4, "int": 2, "dex": 2, "maxHp": 28, "level": 5 },
       "Death Priest": { "str": 6, "con": 4, "int": 4, "dex": 2, "wis": 6, "maxHp": 32, "level": 5 },
+      "High Priest": { "str": 4, "con": 4, "int": 6, "dex": 2, "wis": 6, "maxHp": 30, "level": 5 },
       "Chosen One": { "str": 5, "con": 5, "int": 5, "dex": 5, "wis": 5, "maxHp": 38, "level": 6 },
       "Destroyer": { "str": 8, "con": 6, "int": 2, "dex": 2, "maxHp": 40, "level": 6 },
       "King": { "str": 10, "con": 6, "int": 4, "dex": 2, "maxHp": 42, "level": 6 },
@@ -327,19 +328,55 @@
         "Skrill", "Slink", "Scurry", "Tink", "Vex", "Zot", "Zizz"
       ],
       "goblin": [
-        "Aarok", "Azrak", "Aurak", "Azog",
-        "Bree", "Buzog", "Bozak",
-        "Crag", "Dreg", "Esmer", "Fenwick", "Hib", "Jax", "Krag",
-        "Lork", "Mig", "Nau", "Hobe", "Glim", "Snark", "Grizzle", "Fang", "Skrag",
-        "Zig", "Munt", "Zorg", "Urath", "Viya"
+        "Aarok", "Azrak", "Aurak", "Azog", "Auvak",
+        "Bree", "Buzog", "Baran", "Brog", "Barzak", "Burex",
+        "Crag", "Cress", "Cruzog", "Crush", "Calex",
+        "Dreg", "Duzog", "Dazrak", "Drung", "Duvak", "Durak",
+        "Esmer", "Earok", "Erull", "Ereg", "Ezog", "Earan",
+        "Fang", "Fiz", "Fuzog", "Furan", "Furak", "Fuzrak", "Furex",
+        "Grizzle", "Glim", "Guvak", "Grush", "Guzog", "Gurak", "Garak", "Gress",
+        "Hib", "Hezog", "Horan", "Huvak", "Hobe", 
+        "Iree", "Iaran", "Izog", "Iobe", "Iru",
+        "Jax", "Juzog", "Jush", "Jaran", "Jurex", "Juzrak",
+        "Krag", "Kureg", "Kuzrak", "Kung", "Kunog", "Krobb",
+        "Lork", "Larok", "Lozak", "Luruk", "Luzog", "Lurak", "Lazrak",
+        "Mig", "Mork", "Marok", "Mozak", "Muran", "Muren", "Munt", 
+        "Nau", "Nazak", "Nuzog", "Nush", "Nuun",
+        "Orrak", "Oruzog", "Oreg", "Ornak", "Ontak", "Oruv",
+        "Piya", "Perok", "Pog", "Puzog", "Pazrak", "Prush", "Puzrak",
+        "Qaz", "Quark", "Quuzog", "Qurex", "Quun", "Quuzrak",
+        "Rag", "Ruzak", "Ruag", "Rass", "Ruzrak", "Reslim", "Rizzle", "Riol",
+        "Snark", "Skrag", "Sarzak", "Skrush", "Skrak", "Siya",
+        "Tark", "Tazog", "Tesmer", "Tarok", "Truun", "Tulex", "Turess",
+        "Urrak", "Uruk", "Uruzog", "Urnak", "Uru", "Uzog", "Uruv", "Uzrak", "Urath",
+        "Viya", "Varg", "Vuzog", "Vazrak", "Vuzrak", "Varok", "Valex", "Viobe",
+        "Zig", "Zorg", "Zuzog", "Zarok", "Zuzrak", "Zaruk", "Zobe"
       ],
       "ogre": [
         "Aghoa", "Berend", "Celes", "Dithum", "Earen", "Fangor", "Garg", "Hroth",
         "Ithil", "Jorak", "Grog", "Lug", "Thon", "Guld", "Mogen", "Gronk"
       ],
       "human": [
-        "Ragnar", "Lena", "Darius", "Mira", "Kara", "Tobias", "Elara", "Jareth",
-        "Isolde"
+        "Abelard", "Anorius",
+        "Baldrus", "Beren", "Bran", "Brom", "Bryce",
+        "Cyril", "Cesar", "Cy",
+        "Darius", "Dorian", "Dara", "Dawn",
+        "Elara", "Elinde", "Elysia", "Ember", "Eira", "Evelyn",
+        "Fenwick", "Fox", "Felix", "Francis",
+        "Goron", "Gizon",
+        "Herbrand", "Hallon", "Hector", "Haldric", "Helena", "Hilda",
+        "Isolde", "Iaric", "Isla", "Indira", "Iamond", "Ithil",
+        "Jareth", "Jocelyn", "Jade", "Juniper", "Jora", "Jordan",
+        "Kara", "Keyl", "Kynes", "K'nar", "Kestrel", "Kendra",
+        "Lena", "Lothar", "Lunessa", "Lyrael", "Luthor", "Lazslo",
+        "Marina", "Mark", "Marissa", "Mel", "Mogan", "Mathias",
+        "Ragnar", "Ruth", "Rudolf", "Rudd", "Rucker",
+        "Sorgen", "Sienna", "Soben", "Sel",
+        "Tobias", "Tomas", "Thea", "Thal",
+        "Ulrith", "Ulara", "Uendra",
+        "Varric", "Violet", "Velana", "Veltris",
+        "Wend", "Woressa", "Wynd", "Wolf",
+        "Xyn", "Yoriel", "Zaron"
       ],
       "orc": [
         "Aloysius", "Azorn", "Bretak", "Bufar", "Crush", "Clunk",
@@ -506,6 +543,29 @@
       "desert": { "con": -1, "maxHp": 5 }
     }
   },
+
+  "dungeonAspect": {
+    "discriminator": "building_type",
+    "groups": {
+      "temple": ["sacred", "ancient", "mystical", "hallowed", "divine"],
+      "fortress": ["dread", "barricaded", "defensive", "military", "impenetrable"],
+      "library": ["dusty", "ancient", "arcane", "forgotten", "mysterious", "hidden"],
+      "tomb": ["dark", "haunted", "cursed", "forbidden", "sacred", "forgotten"],
+      "mine": ["abandoned", "dangerous", "treacherous", "forgotten", "hidden", "lost"]
+    }
+  },
+  "dungeonTypes": {
+    "discriminator": "building_type",
+    "groups": {
+      "temple": ["fane", "shrine", "sanctum", "reliquary", "sanctuary", "monastery", "cathedral"],
+      "fortress": ["tower", "keep", "stronghold", "citadel", "bastion", "redoubt"],
+      "library": ["library", "archive", "vault", "scriptorium", "repository"],
+      "tomb": ["tomb", "crypt", "catacomb", "mausoleum", "necropolis", "sepulcher"],
+      "mine": ["mine", "cave", "cavern", "lair", "delve", "tunnel", "hollow"]
+    }
+  },
+
+
   "roomBias": {
     "discriminator": "building_type",
     "groups": {
@@ -543,7 +603,7 @@
       "watchtower": [ "watchtower, the air crisp and cold. The walls are lined with windows offering a panoramic view of the surrounding landscape, and you can hear the faint sound of birds." ]
     }
   },
-  "roomFeature": {
+  "roomDecoration": {
     "discriminator": "d100",
     "groups": {
       "1":  "a torch",        "2":  "a brazier",    "3":  "a statue",         "4":  "an altar",     "5":  "a fountain",
@@ -566,6 +626,73 @@
       "86": "debris",         "87": "debris",       "88": "debris",  "89": "debris",  "90": "debris",
       "91": "nothing",        "92": "nothing",      "93": "nothing", "94": "nothing", "95": "nothing",
       "96": "nothing",        "97": "nothing",      "98": "nothing", "99": "nothing", "100": "nothing"
+    }
+  },
+  "dungeonRumor": {
+    "discriminator": "building_type",
+    "groups": {
+      "temple": [
+        "#race + \" heretics serve a dark master at their fane deep in the \" + #terrain",
+        "#race + \" cultists have been spotted near a hidden shrine \" + #direction + \" of here\""
+      ],
+      "fortress": [
+        "#race + \" raiders have been sighted in the old fort \" + #direction + \" of here\"",
+        "\"an army of \" + #race + \"s has been seen near a fortified \" + #dungeon_type"
+      ],
+      "library": [
+        "#race + \"s have been spotted near an old reliquary \" + #direction + \" of here\"",
+        "#race + \" scholars have been hoarding forbidden knowledge in a secret library\""
+      ],
+      "tomb": [
+        "\"watch out for \" + #race + \"s lurking in the \" + #direction + \"ern necropolis\"",
+        "\"the old catacombs have been taken over by \" + #race + \"s\"",
+        "#race + \"s have been seen near a haunted tomb \" + #direction + \" of here\""
+      ],
+      "mine": [
+        "\"the old delve just \" + #direction + \" of here is now home to a tribe of \" + #race + \"s\"",
+        "#race + \"s occupy an abandoned mine \" + #direction + \" of here\""
+      ]
+    }
+  },
+
+  "terrains": {
+    "discriminator": "d6",
+    "groups": {
+      "1": "forest", "2": "cave", "3": "swamp", "4": "mountain", "5": "snow", "6": "desert"
+    }
+  },
+  "terrainFeatures": {
+    "discriminator": "terrain",
+    "groups": {
+      "forest": ["wood", "green", "leaf", "tree", "bark", "fern", "bush"],
+      "cave": ["deep", "hollow", "dark", "rock"],
+      "swamp": ["marsh", "bog", "mire", "fen", "wash", "slough", "wet", "moss"],
+      "mountain": ["hill", "mont", "peak", "iron", "cold", "stone", "high"],
+      "snow": ["snow", "ice", "frost", "white", "chill", "cold"],
+      "desert": ["dune", "sand", "ember", "grit", "dry"]
+    }
+  },
+  "townPop": {
+    "discriminator": "size",
+    "groups": {
+      "hamlet": "1d20+10",
+      "village": "1d100*10",
+      "town": "1d100*100",
+      "city": "1d100*1000",
+      "metropolis": "1d100*10000",
+      "capital": "1d100*100000",
+      "oecumenopolis": "1d100*1000000"
+    }
+  },
+  "deity": {
+    "discriminator": "race",
+    "groups": {
+      "elf": [ "Lathander", "Corellon", "Sehanine", "Hanali", "Aerdrie", "Labelas", "Solonor" ],
+      "dwarf": [ "Marduk", "Ashurbanipal", "Nergal", "Enlil", "Ishtar", "Tiamat", "Ninurta" ],
+      "human": [ "Zeus", "Hera", "Poseidon", "Demeter", "Athena", "Apollo", "Artemis" ],
+      "halfling": [ "Yondalla", "Brandobaris", "Flandal", "Baervan" ],
+      "fae": [ "Oberon", "Titania", "Aelos", "Mab", "Arielon" ],
+      "gnome": [ "Eru Ilúvatar" ]
     }
   }
 }

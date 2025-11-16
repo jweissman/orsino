@@ -42,7 +42,9 @@
     "cha": "=lookup(monsterCha, #race)",
     "maxHp": "=#_baseHp + round(rand()*#_hpVariance) + #level * 3",
     "_naturalArmor": "=lookup(monsterNaturalArmor, #race)",
-    "ac": "=10 + #_naturalArmor + floor((#dex-10)/2)",
+    "armor": "=if(#level >= 5, 'plate', if(#level >= 3, 'chainmail', 'leather'))",
+    "armorBonus": "=lookup(armorClassBonus, #armor)",
+    "ac": "=10 + #_naturalArmor + floor((#dex-10)/2) + #armorBonus",
     "weapon": "=if(#type == 'slinger', 'sling', lookup(monsterWeapon, #race))",
     "damageDie": "=lookup(damageDie, #weapon)",
     "attackRolls": "=lookup(attackRolls, #weapon)",
@@ -54,47 +56,75 @@
     "hp": "=#maxHp"
   },
   "encounter": {
+    "targetCr": "=#_targetCr",
     "terrain": "=oneOf(forest, cave, swamp, mountain, snow, desert)",
-    "_monsterCount": "=2+2d6",
-    "monsters": "=genList(monster, #_monsterCount, \"=round(sum(#__items, 'level')) <= #targetCr\")",
+    "_monsterCount": "=2+1d4",
+    "monsters": "=genList(monster, #_monsterCount, \"=round(sum(#__items, 'level')/2) <= #targetCr\")",
     "bonusGold": "=2d20 + 5 * count(#monsters)",
-    "cr": "=round(sum(#monsters, \"level\"))"
+    "cr": "=round(sum(#monsters, \"level\")/2)"
   },
   "room": {
+    "_targetCr": "1",
+    "_index": "0",
     "_roomBias": "=lookup(roomBias, 'temple')",
     "room_type": "=pick(#_roomBias)",
     "narrative": "=lookup(roomNarrative, #room_type)",
     "room_size": "=oneOf(tiny, small, medium, large, enormous)",
     "_encounterChance": "=1",
     "_treasureChance": "=if(#room_type == \"treasury\", 1.0, oneOf(0.5, 0.8))",
-    "targetCr": "=#_targetCr + round(#_index / 2)",
+    "targetCr": "=#_targetCr + round(#_index * 2)",
     "encounter": "=if(rand() < #_encounterChance, gen(encounter), nihil)",
     "treasure": "=if(rand() < #_treasureChance, lookup(treasure, oneOf(negligible, minor)), nihil)",
-    "feature": "=lookup(roomFeature, 1d100)"
+    "feature": "=lookup(roomDecoration, 1d100)"
   },
   "boss_room": {
+    "_targetCr": "1",
+    "depth": "0",
+    "race": "goblin",
     "room_type": "=oneOf(throne_room, lair, altar)",
     "narrative": "=lookup(roomNarrative, #room_type)",
     "room_size": "=oneOf(medium, large, enormous, huge, colossal)",
-    "targetCr": "=#_targetCr + round(#depth/2) + 2",
-    "_monsterCount": "=3+1d4",
+    "targetCr": "=#_targetCr + round(#depth*2) + 2",
+    "_monsterCount": "=2+1d3",
     "treasure": "=lookup(treasure, oneOf(major, legendary))",
     "type": "=lookup(bossMonsterType, #race)",
     "boss_encounter": "=gen(encounter)",
-    "feature": "=lookup(roomFeature, 1d100)"
+    "feature": "=lookup(roomDecoration, 1d100)"
   },
   "dungeon": {
     "terrain": "=oneOf(forest, cave, swamp, mountain, snow, desert)",
-    "_targetCr": "=1",
+    "_index": "0",
+    "_targetCr": "=(#_index+1) * 2",
     "_building_type": "=oneOf(temple, fortress, library, tomb, mine)",
     "_roomBias": "=lookup(roomBias, #_building_type)",
-    "dungeon_type": "=oneOf(cave, cave, castle, fane, tower, crypt, ruin)",
+    "dungeon_type": "=lookup(dungeonTypes, #_building_type)",
     "race": "=if(#_targetCr <= 3, oneOf(goblin, kobold), if(#_targetCr <= 6, oneOf(orc, human), if(#_targetCr <= 10, oneOf(ogre, troll), oneOf(dragon))))",
     "theme": "=oneOf(pain, power, darkness, nature, fire, ice, shadow, light, chaos, order, water, air, earth, lightning, death, life, time, mystery)",
-    "aspect": "=oneOf(militarized, dreadful, ancient, cursed, hidden, forgotten, lost, sacred, profane, forbidden, haunted, mythical)",
+    "aspect": "=lookup(dungeonAspect, #_building_type)",
     "dungeon_name": "=capitalize(#aspect) + \" \" + capitalize(#race) + \" \" + capitalize(#dungeon_type) + \" of \" + capitalize(#theme)",
-    "depth": "=3+1d6",
+    "depth": "=1+1d3",
+    "dungeonIndex": "=#_index",
+    "intendedCr": "=#_targetCr",
     "rooms": "=genList(room, #depth)",
-    "bossRoom": "=gen(boss_room)"
+    "bossRoom": "=gen(boss_room)",
+    "direction": "=oneOf(north, south, east, west)",
+    "rumor": "=eval(lookup(dungeonRumor, #_building_type))"
+  },
+  "town": {
+    "terrain": "=lookup(terrains, 1d6)",
+    "size": "=oneOf(hamlet, village, town, city, metropolis, capital)",
+    "race":"=oneOf(human, elf, dwarf, halfling, gnome, fae)",
+    "deity": "=oneOf(lookup(deity, #race))",
+    "capital": "=#size == 'capital'",
+    "population": "=eval(lookup(townPop, #size))",
+    "_aspect": "=lookup(terrainFeatures, #terrain)",
+    "_suffix": "=oneOf(ford, haven, burg, port, dale, keep, watch, gate, rest, fall, ridge, wood, field, pass, hold)",
+    "name": "=capitalize(#_aspect + #_suffix)"
+  },
+  "module": {
+    "terrain": "=lookup(terrains, 1d6)",
+    "town": "=gen(town)",
+    "dungeons": "=genList(dungeon, 3+1d4)",
+    "name": "=oneOf('Quest', 'Adventure', 'Saga') + ' in the ' + capitalize(#terrain)"
   }
 }
