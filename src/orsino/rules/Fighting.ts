@@ -1,5 +1,3 @@
-import Presenter from "../tui/Presenter";
-import Stylist from "../tui/Style";
 import { AttackResult } from "../types/AttackResult";
 import { Combatant } from "../types/Combatant";
 import { Roll } from "../types/Roll";
@@ -25,18 +23,17 @@ export class Fighting {
     return bonuses;
   }
 
-
   static async attack(
     roll: Roll,
     attacker: Combatant,
     defender: Combatant,
-    note: (message: string) => void = () => { }
   ): Promise<AttackResult> {
     if (defender.hp <= 0) {
       return {
         success: false,
         damage: 0,
-        description: `${defender.name} is already defeated.`
+        description: `${defender.name} is already defeated.`,
+        critical: false
       };
     }
     let description = `${attacker.name} attacks ${defender.name}... `;
@@ -53,46 +50,43 @@ export class Fighting {
 
     let bonusMessage = "";
     if (toHitBonus > 0) {
-      bonusMessage += ` (+${toHitBonus} to hit)`;
+      bonusMessage += ` +${toHitBonus} to hit`;
     }
-    note(`${Presenter.combatant(attacker, true)} (THAC0: ${thac0}${bonusMessage}) attacks ${Presenter.combatant(defender, true)} (AC: ${ac})... `);
+    // note(`${Presenter.combatant(attacker, true)} (THAC0: ${thac0}${bonusMessage}) attacks ${Presenter.combatant(defender, true)} (AC: ${ac})... `);
     // note(`Attacker THAC0: ${thac0}${bonusMessage}, Defender AC: ${ac}`); // What number hits: ${whatNumberHits} `);
-    const attackRoll = await roll(attacker, `to attack (must roll ${whatNumberHits} or higher to hit)`, 20, 1);
+    const attackRoll = await roll(attacker, `to attack (must roll ${whatNumberHits} or higher to hit)`, 20);
     description += attackRoll.description;
     let success = attackRoll.amount >= whatNumberHits;
     let critical = false;
     if (attackRoll.amount <= 1) {
       description += ` ${attacker.name} rolled a natural 1 and misses!`;
-      note(`${attacker.name} rolled a natural 1 and misses!`);
-      if (Math.random() < 0.5) {
-        attacker.activeEffects = attacker.activeEffects || [];
-        attacker.activeEffects.push({
-          name: "Stumble",
-          effect: { toHit: -2 },
-          duration: 1
-        });
-        note(`${attacker.name} stumbles and takes a -2 penalty to hit on their next turn!`);
-      }
       return {
         success: false,
         damage: 0,
-        description
+        description,
+        critical: true
       };
     }
-    if (attackRoll.amount >= 19) {
+
+    if (attackRoll.amount >= 20) {
       critical = true;
       description += " Critical hit! ";
-      note(Stylist.colorize("Critical hit!", 'yellow'));
     } else {
       description += " Attack hits! ";
-      // note("Attack hits!");
     }
 
     let damage = 0;
     if (success) {
       let criticalDamage = 0;
 
-      const attackRolls = await Promise.all(new Array(attacker.attackRolls).fill(0).map(() => roll(attacker, "for damage", attacker.damageDie, 1)));
+      const attackRolls = [];
+      for (let i = 0; i < attacker.attackRolls; i++) {
+        let message = `for damage`;
+        if (attacker.attackRolls > 1) {
+          message = `for damage (attack ${i + 1}/${attacker.attackRolls})`;
+        }
+        attackRolls.push(await roll(attacker, message, attacker.damageDie));
+      }
 
       description += attackRolls.map(r => r.description).join(" ");
       damage = attackRolls
@@ -103,33 +97,35 @@ export class Fighting {
         criticalDamage = Math.max(1, Math.round(damage * 0.2 * Math.max(1, Math.floor(attacker.level / 5))));
       }
 
-      if (criticalDamage > 0) {
-        note(`Adding ${criticalDamage} damage for critical hit.`);
-      }
-      if (strengthDamageBonus > 0) {
-        note("Adding " + strengthDamageBonus + ` damage (from STR ${attacker.str})`);
-      }
+      // if (criticalDamage > 0) {
+      //   note(`Adding ${criticalDamage} damage for critical hit.`);
+      // }
+      // if (strengthDamageBonus > 0) {
+      //   note("Adding " + strengthDamageBonus + ` damage (from STR ${attacker.str})`);
+      // }
       damage = damage + criticalDamage + strengthDamageBonus;
-      if (criticalDamage > 0) {
-        note("Damage increased by " + criticalDamage + " to " + damage + " for critical hit!");
-        description += ` Damage increased by ${criticalDamage} for critical hit!`;
-      }
-      defender.hp -= damage;
-      note(
-        Stylist.colorize(
-          `${attacker.name} hits ${defender.name} with ${attacker.weapon} for ${damage} damage (now at ${defender.hp}).`,
-          'green')
-      );
+      // if (criticalDamage > 0) {
+      //   note("Damage increased by " + criticalDamage + " to " + damage + " for critical hit!");
+      //   description += ` Damage increased by ${criticalDamage} for critical hit!`;
+      // }
+      // defender.hp -= damage;
+      // note(
+      //   Stylist.colorize(
+      //     `${attacker.name} hits ${defender.name} with ${attacker.weapon} for ${damage} damage (now at ${defender.hp}).`,
+      //     attacker.playerControlled ? 'green' : 'red'
+      //   )
+      // );
       description += `\n*${attacker.name} hits ${defender.name} for ${damage} damage* (now at ${defender.hp}).`;
     } else {
-      note(Stylist.colorize(`${attacker.name} misses ${defender.name}.`, 'red'));
+      // note(`${attacker.name} misses ${defender.name}.`);
       description += `\n*${attacker.name} misses ${defender.name}.*`;
     }
 
     return {
       success,
       damage,
-      description
+      description,
+      critical
     };
   }
 }

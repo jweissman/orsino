@@ -12,4 +12,8 @@ export default class Words {
     if (arr.length === 2) return `${arr[0]} and ${arr[1]}`;
     return `${arr.slice(0, -1).join(', ')}, and ${arr[arr.length - 1]}`;
   }
+
+  static remove_article(phrase: string): string {
+    return phrase.replace(/^(a|an|the)\s+/i, '');
+  }
 }

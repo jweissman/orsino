@@ -23,7 +23,7 @@ export interface Combatant {
   // goldDrop?: string;
   weapon: string;
 
-  spellSlots?: number;
+  // spellSlots?: number;
   spellSlotsUsed?: number;
 
   activeEffects?: {
@@ -33,4 +33,5 @@ export interface Combatant {
   }[];
 
   // turnBonus?: { [key: string]: number };
+  type?: string; // monster type, e.g. "shaman", "brute", etc.
 }

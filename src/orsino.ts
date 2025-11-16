@@ -3,13 +3,13 @@ import { GenerationTemplateType } from "./orsino/types/GenerationTemplateType";
 import { Template } from "./orsino/Template";
 import { Table } from "./orsino/Table";
 import { loadSetting } from "./orsino/loader";
-import Combat, { Gauntlet, RollResult } from "./orsino/Combat";
+import Combat, { RollResult } from "./orsino/Combat";
+import { Gauntlet } from "./orsino/Gauntlet";
 import { Combatant } from "./orsino/types/Combatant";
 import Spinner from "./orsino/tui/Spinner";
 import { select, Separator } from '@inquirer/prompts';
 import deepCopy from "./orsino/util/deepCopy";
 import Dungeoneer from "./orsino/Dungeon";
-import Stylist from "./orsino/tui/Style";
 import Files from "./orsino/util/Files";
 
 type PlaygroundType = "combat" | "dungeon" | "world";
@@ -39,48 +39,61 @@ export default class Orsino {
       });
     }
     else if (type === "dungeon") {
-      const partySize = options.partySize || 3;
-      const pcs = [];
-      if (await Files.countFiles(`${Dungeoneer.dataPath}/pcs`) > 0) {
-        // see if the user would like to select an existing PC
-        let shouldSelect = await Orsino.interactiveSelect(
-          'Existing PCs found. Would you like to select one to lead the dungeon crawl?',
-          ['Yes', 'No']
-        );
-        if (shouldSelect === 'Yes') {
-          const pcFiles = await Files.listFiles(`${Dungeoneer.dataPath}/pcs`);
-          const selectedPcName = await Orsino.interactiveSelect(
-            'Select a PC to lead the dungeon crawl:',
-            pcFiles.map(name => name.replace('.json', ''))
-          );
-          const selectedPc = await Files.readJSON(`${Dungeoneer.dataPath}/pcs/${selectedPcName}.json`) as Combatant;
-          pcs.push(selectedPc);
-        }
-      }
-      while (pcs.length < partySize) {
-        const pc = this.gen("pc", { setting: 'fantasy' });
-        if (!pcs.some(p => p.name === pc.name)) {
-          pcs.push(pc);
-        }
-      }
+      const partySize = options.partySize || 2;
+      const pcs = await this.chooseParty(partySize);
+      const averageLevel = Math.round(pcs.reduce((sum, pc) => sum + pc.level, 0) / pcs.length);
+      const targetCr = Math.round(averageLevel * 0.75);
+      console.log(`Selected party of ${pcs.length} PCs (average level ${averageLevel}), targeting CR ${targetCr}`);
       // this.genList("pc", { setting: 'fantasy', ...options }, partySize);
       const dungeoneer = new Dungeoneer({
         roller: Orsino.interactiveRoll,
         select: Orsino.interactiveSelect,
         outputSink: console.log,
-        dungeonGen: () => this.gen("dungeon", { setting: 'fantasy', ...options, _targetCr: Math.round(partySize / 2) }),
+        dungeonGen: () => this.gen("dungeon", { setting: 'fantasy', ...options, _targetCr: targetCr }),
+        gen: this.gen.bind(this),
         playerTeam: {
           name: "Heroes",
-          combatants: pcs.map(pc => ({ ...pc, playerControlled: true }))
+          combatants: pcs.map(pc => ({ ...pc, playerControlled: true })),
+          healingPotions: 2,
         }
       });
 
       await dungeoneer.run();
-
     }
     else {
       throw new Error('Unsupported playground type: ' + type);
     }
+  }
+
+  private async chooseParty(partySize: number = 2): Promise<Combatant[]> {
+    let party: Combatant[] = [];
+    let hasExistingPcs = false;
+    if (await Files.countFiles(`${Dungeoneer.dataPath}/pcs`) > 0) {
+      hasExistingPcs = true;
+    }
+    while (party.length < partySize) {
+      let shouldSelect = await Orsino.interactiveSelect(
+        'Select an existing PC for the dungeon crawl?',
+        ['Yes', 'No']
+      );
+      if (shouldSelect === 'Yes') {
+        const pcFiles = await Files.listFiles(`${Dungeoneer.dataPath}/pcs`);
+        const selectedPcName = await Orsino.interactiveSelect(
+          'Select a PC to lead the dungeon crawl:',
+          pcFiles.map(name => name.replace('.json', ''))
+            .filter(name => party.every(p => p.name !== name))
+            .sort()
+        );
+        const selectedPc = await Files.readJSON(`${Dungeoneer.dataPath}/pcs/${selectedPcName}.json`) as Combatant;
+        party.push(selectedPc);
+      } else {
+        const pc: Combatant = this.gen("pc", { setting: 'fantasy' }) as Combatant;
+        if (!party.some(p => p.name === pc.name)) {
+          party.push(pc);
+        }
+      }
+    };
+    return party;
   }
 
   private static async interactiveSelect(
@@ -93,23 +106,21 @@ export default class Orsino {
     return await select(config)
   }
 
-  private static async interactiveRoll(subject: Combatant, description: string, sides: number, dice: number): Promise<RollResult> {
+  private static async interactiveRoll(subject: Combatant, description: string, sides: number): Promise<RollResult> {
     if (!subject.playerControlled) {
-      const result = Combat.rollDie(subject, description, sides, dice);
-      await Spinner.run(`${subject.name} is rolling`, 400 + Math.random() * 200, result.description);
+      const result = Combat.rollDie(subject, description, sides);
+      await Spinner.run(`${subject.name} is rolling ${description}`, 120 + Math.random() * 240, result.description);
       return result;
     }
 
-    await new Promise(resolve => setTimeout(resolve, 650));
-
+    await new Promise(resolve => setTimeout(resolve, 100));
     await Spinner.waitForInputAndRun(
-      `\n>>> ${subject.name} to roll ${dice}d${sides} ${description}... <<<`,
-      `Rolling ${dice}d${sides} ${description}`
+      `>>> ${subject.name} to roll d${sides} ${description}... <<<`,
+      `${subject.name} rolling d${sides} ${description}`
     );
-
     // Then do the actual roll
-    let result = Combat.rollDie(subject, description, sides, dice);
-    console.log(result.description);
+    let result = Combat.rollDie(subject, description, sides);
+    console.log("\r" + result.description);
     return result;
   }
 
@@ -117,7 +128,7 @@ export default class Orsino {
     type: GenerationTemplateType,
     options: Record<string, any> = {},
     count: number = 1,
-    condition?: string
+    condition?: string,
   ): Record<string, any>[] {
     // accumulate items gradually and put them in __items so that conditions can refer to them
     const items: Record<string, any>[] = [];
@@ -132,13 +143,15 @@ export default class Orsino {
       if (!conditionResult) {
         items.pop();
         // console.warn(`Item ${i} did not meet condition: ${condition}`);
-        break;
+        process.stdout.write(`.`);
+        // break;
       }
     }
     if (items.length === 0) {
       // generate one anyway
       items.push(this.gen(type, options));
     }
+    
     return items;
   }
 

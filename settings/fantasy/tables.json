@@ -7,17 +7,22 @@
       "cleric": [ "Palmer", "Proctor", "Friar", "Judge", "Bishop", "Cardinal", "Abbott", "Chancellor", "Pious", "Vicar" ],
       "bard": [ "Canter", "Singer", "Harper", "Piper", "Minstrel", "Drummer", "Playfair", "Lyre", "Silvertongue", "Storykeeper", "Fable", "Ballard" ],
       "ranger": [ "Fowler", "Hunter", "Gardner", "Woodwright", "Fletcher", "Wood", "Ford", "Rivers", "Hill", "Underhill", "Field", "Faulkner", "Green", "Camp", "Hunter", "Forster", "Granger" ],
-      "thief": [ "Swift", "Purser", "Locke", "Fox", "Raven", "Quick", "Fleet", "Lightfoot", "Slade", "Glass", "Black", "Amber", "Sable" ]
+      "thief": [
+        "Swift", "Purser", "Locke", "Fox", "Raven", "Quick", "Fleet", "Lightfoot", "Slade", "Glass", "Black", "Amber", "Sable", "Shade"
+      ]
     }
   },
   "name": {
     "discriminator": "gender",
     "groups": {
       "male": [
-        "Aldric", "Aleric",
-        "Borin", "Cedric", "Dorian", "Eldric", "Fenris", "Gareth", "Haldor", "Ithric", "Jareth", "Kael", "Loric", "Marek", "Nolan", "Orin", "Perrin", "Quentin", "Roderic", "Soren", "Theron", "Ulric", "Varric", "Wulfric", "Xander", "Yorick", "Zarek" ],
+        "Aldric", "Aleric", "Achelous", "Aeolus", "Asclepius", "Alpheus", "Ammon", "Arion", "Anteros", "Apollo",
+        "Borin", "Baldric", "Barin", "Bram", "Baldur", "Borin", "Bran", "Brom", "Bryce",
+        "Ctesibus", "Cedric", "Cyrus", "Caspian", "Corwin", "Caesar", "Cormac", "Clement", "Cith", "Cthon",
+        "Dorian", "Eldric", "Fenris", "Gareth", "Haldor", "Ithric", "Jareth", "Kael", "Loric", "Marek", "Nolan", "Orin", "Perrin", "Quentin", "Roderic", "Soren", "Theron", "Ulric", "Varric", "Wulfric", "Xander", "Yorick", "Zarek" ],
       "female": [
-        "Aria", "Alma", "Aryel", "Amina", "Aliana", "Arwyn", "Aeline", 
+        "Adrastea", "Aegina", "Ava", "Ariella", "Althea", "Aria", "Alma", "Aryel", "Amina", "Aliana", "Arwyn", "Aeline", 
+        "Aglaia", "Aidos", "Alara", "Averil", "Andromeda", "Alecto", "Amphitrite", "Aphrodite", 
         "Barra", "Belinde", "Berwena", "Bren", "Burla", "Brenna", "Brina", "Briar",
         "Celia", "Cassandra", "Casta", "Clara", "Cora", "Crysten", "Curwena", "Celeste", 
         "Daphne", "Daria", "Delia", "Diana", "Druella", "Dara", "Dawn",
@@ -63,7 +68,8 @@
     "groups": {
       "negligible": [
         "a rusty coin",
-        "a broken dagger"
+        "a broken dagger",
+        "a tattered map"
       ],
       "minor": [
         "a silver coin",
@@ -94,8 +100,8 @@
       "polearm": 8,
       "spear": 8,
       "sword": 10,
-      "greataxe": 12,
-      "greatsword": 8
+      "greataxe": 8,
+      "greatsword": 12
     }
   },
   "attackRolls": {
@@ -114,7 +120,7 @@
       "spear": 1,
       "sword": 1,
       "greataxe": 2,
-      "greatsword": 3
+      "greatsword": 1
     }
   },
   "weapon": {
@@ -296,20 +302,34 @@
       "Destroyer": { "str": 8, "con": 6, "int": 2, "dex": 2, "maxHp": 40, "level": 6 },
       "King": { "str": 10, "con": 6, "int": 4, "dex": 2, "maxHp": 42, "level": 6 },
       "Warlord": { "str": 7, "con": 6, "int": 5, "wis": 4, "dex": 3, "maxHp": 40, "level": 6 },
-      "Lord": { "str": 10, "con": 8, "int": 6, "wis": 6, "dex": 4, "maxHp": 50, "level": 7 }
+      "Lord": { "str": 10, "con": 8, "int": 6, "wis": 6, "dex": 4, "maxHp": 50, "level": 7 },
+      "Monarch": { "str": 10, "con": 8, "int": 6, "wis": 6, "dex": 4, "maxHp": 50, "level": 7 }
     }
   },
   "monsterName": {
     "discriminator": "race",
     "groups": {
       "kobold": [
-        "Azrak", "Alarum", "Abelo", "Arkan", "Barum", "Bork", "Breech", "Bug",
-        "Chitter", "Dax", "Fizzle", "Hiss", "Jinx", "Cinder", "Drang", "Ek",
-        "Folak", "Grit", "Hob", "Krix", "Lurk", "Merk", "Grim", "Nix", "Skrill",
-        "Slink", "Scurry", "Tink", "Vex", "Zot", "Zizz"
+        "Azrak", "Alarum", "Abelo", "Arkan", "Abiss", "Abgrim",
+        "Barum", "Bork", "Breech", "Bug", "Bix", "Bolak", "Bizz",
+        "Chitter", "Chobb", "Crizz", "Crulak", "Cinder",
+        "Dax", "Dezrak", "Dariss", "Dregrim", "Drazz", "Drang",
+        "Ek", "Eech", "Earum", "Erulak", "Eslin", "Ezz",
+        "Fizzle", "Fizrak", "Furix", "Fokris", "Folak", "Furk",
+        "Grit", "Garum", "Gork", "Gix", "Gizzak", "Gulak", "Grim",
+        "Hiss", "Hazarum", "Hulak", "Hekrak", "Hulgrim", "Hob",
+        "Izz", "Igrim", "Irill", "Irkan", "Ibaraum",
+        "Jinx", "Jollak", "Jit", "Jerrak", "Jeech",
+        "Krix", "Kob", "Krak", "Kizz", "Kruul", "Krobb",
+        "Lurk", "Lazrak", "Lork", "Lobb", "Legrim", "Lazek",
+        "Merk", "Mok", "Murk", "Mizz", "Mokan", "Mug", "Mozarum",
+        "Nix", "Noxarum", "Nulak", "Nixx", "Nob", "Narg",
+        "Skrill", "Slink", "Scurry", "Tink", "Vex", "Zot", "Zizz"
       ],
       "goblin": [
-        "Azog", "Bree", "Crag", "Dreg", "Esmer", "Fenwick", "Hib", "Jax", "Krag",
+        "Aarok", "Azrak", "Aurak", "Azog",
+        "Bree", "Buzog", "Bozak",
+        "Crag", "Dreg", "Esmer", "Fenwick", "Hib", "Jax", "Krag",
         "Lork", "Mig", "Nau", "Hobe", "Glim", "Snark", "Grizzle", "Fang", "Skrag",
         "Zig", "Munt", "Zorg", "Urath", "Viya"
       ],
@@ -410,121 +430,56 @@
   "monsterDex": {
     "discriminator": "race",
     "groups": {
-      "human": 10,
-      "goblin": 12,
-      "kobold": 9,
-      "orc": 12,
-      "ogre": 8,
-      "troll": 7,
-      "dragon": 16
+      "human": 10, "goblin": 12, "kobold": 9, "orc": 12, "ogre": 8, "troll": 7, "dragon": 16
     }
   },
   "monsterCon": {
     "discriminator": "race",
     "groups": {
-      "human": 10,
-      "goblin": 8,
-      "kobold": 6,
-      "orc": 16,
-      "ogre": 19,
-      "troll": 18,
-      "dragon": 23
+      "human": 10, "goblin": 8, "kobold": 6, "orc": 16, "ogre": 19, "troll": 18, "dragon": 23
     }
   },
   "monsterInt": {
     "discriminator": "race",
     "groups": {
-      "human": 10,
-      "goblin": 8,
-      "kobold": 6,
-      "orc": 8,
-      "ogre": 5,
-      "troll": 6,
-      "dragon": 18
+      "human": 10, "goblin": 8, "kobold": 6, "orc": 8, "ogre": 5, "troll": 6, "dragon": 18
     }
   },
   "monsterWis": {
     "discriminator": "race",
     "groups": {
-      "human": 10,
-      "goblin": 8,
-      "kobold": 6,
-      "orc": 8,
-      "ogre": 5,
-      "troll": 6,
-      "dragon": 18
+      "human": 10, "goblin": 8, "kobold": 6, "orc": 8, "ogre": 5, "troll": 6, "dragon": 18
     }
   },
   "monsterCha": {
     "discriminator": "race",
     "groups": {
-      "human": 10,
-      "goblin": 8,
-      "kobold": 6,
-      "orc": 8,
-      "ogre": 5,
-      "troll": 6,
-      "dragon": 18
+      "human": 10, "goblin": 8, "kobold": 6, "orc": 8, "ogre": 5, "troll": 6, "dragon": 18
     }
   },
   "monsterNaturalArmor": {
     "discriminator": "race",
     "groups": {
-      "goblin": -1,
-      "kobold": 0,
-      "human": 1,
-      "orc": 2,
-      "ogre": 3,
-      "troll": 4,
-      "dragon": 6
+      "goblin": -1, "kobold": 0, "human": 1, "orc": 2, "ogre": 3, "troll": 4, "dragon": 6
     }
   },
   "monsterWeapon": {
     "discriminator": "race",
     "groups": {
-      "human": [
-        "sword",
-        "axe",
-        "mace",
-        "spear"
-      ],
-      "goblin": [
-        "dagger",
-        "club"
-      ],
-      "kobold": [
-        "spear",
-        "club",
-        "dagger"
-      ],
-      "orc": [
-        "greataxe",
-        "mace",
-        "sword"
-      ],
-      "ogre": [
-        "club",
-        "axe",
-        "mace"
-      ],
-      "troll": [
-        "claws"
-      ],
-      "dragon": [
-        "bite"
-      ]
+      "human": [ "sword", "axe", "mace", "spear" ],
+      "goblin": [ "dagger", "club" ],
+      "kobold": [ "spear", "club", "dagger" ],
+      "orc": [ "greataxe", "mace", "sword" ],
+      "ogre": [ "club", "axe", "mace" ],
+      "troll": [ "claws" ],
+      "dragon": [ "bite" ]
     }
   },
   "monsterXp": {
     "discriminator": "race",
     "groups": {
-      "kobold": 15,
-      "goblin": 25,
-      "human": 30,
-      "orc": 50,
-      "ogre": 200,
-      "troll": 500,
-      "dragon": 2000
+      "kobold": 15, "goblin": 25, "human": 30, "orc": 50, "ogre": 200,
+      "troll": 500, "dragon": 2000
     }
   },
   "monsterGold": {
@@ -543,11 +498,11 @@
   "monsterTerrainModifier": {
     "discriminator": "terrain",
     "groups": {
-      "forest": { "str": 1, "dex": 1 },
+      "forest": { "str": 1, "dex": 1, "con": 1 },
       "cave": { "str": 1, "con": 1 },
-      "swamp": { "con": -1 },
-      "mountain": { "str": 2 },
-      "snow": { "con": 1, "dex": -1 },
+      "swamp": { "con": -1, "dex": -1, "int": 1 },
+      "mountain": { "str": 2, "con": 1, "dex": -1 },
+      "snow": { "con": 1, "dex": -1, "str": -1, "maxHp": 2 },
       "desert": { "con": -1, "maxHp": 5 }
     }
   },
@@ -564,28 +519,28 @@
   "roomNarrative": {
     "discriminator": "type",
     "groups": {
-      "alcove": [ "You enter a hidden alcove, tucked away behind a crumbling wall." ],
-      "altar": [ "You step into a sacred altar, the air filled with the scent of incense. The walls are adorned with ancient symbols, and a powerful aura emanates from the center." ],
-      "archive": [ "You enter a dusty archive, the shelves filled with ancient scrolls and tomes. The air is thick with the scent of old paper and ink, and you can hear the faint rustling of pages." ],
-      "armory": [ "You step into an armory, the walls lined with racks of weapons and armor. The air is filled with the scent of oil and metal, and you can hear the faint clanging of blacksmiths at work." ],
-      "barracks": [ "You enter a barracks, the air filled with the scent of sweat and leather. The walls are lined with bunks and lockers, and you can hear the faint snoring of soldiers." ],
-      "cell": [ "You find yourself in a cold, damp cell. The walls are covered in scratches and graffiti, and the air is thick with despair." ],
-      "chamber": [ "You step into a dimly lit chamber, the walls adorned with ancient tapestries. A faint glow emanates from a mysterious artifact in the center." ],
-      "corridor": [ "You find yourself in a narrow corridor, the stone walls echoing your footsteps. The air is damp and musty, and you can hear distant sounds of movement." ],
-      "guardroom": [ "You enter a guardroom, the air filled with the scent of sweat and metal. The walls are lined with weapons and armor, and you can hear the faint chatter of guards." ],
-      "hall": [ "You enter a grand hall, the ceiling towering above you. The walls are lined with suits of armor and ancient weapons, and a sense of history hangs in the air." ],
-      "lair": [ "You descend into a dark lair, the air thick with the scent of decay. The walls are covered in strange markings, and you can hear the faint sound of breathing." ],
-      "library": [ "You enter a dusty library, the shelves filled with ancient tomes and scrolls. The air is thick with the scent of old paper and ink, and you can hear the faint rustling of pages." ],
-      "reliquary": [ "You step into a sacred reliquary, the air filled with reverence. The walls are adorned with ancient relics and artifacts, and a powerful aura emanates from the center." ],
-      "sanctum": [ "You enter a hidden sanctum, the air thick with mystery. The walls are adorned with ancient symbols, and a powerful aura emanates from the center." ],
-      "scriptorium": [ "You step into a quiet scriptorium, the air filled with the scent of parchment and ink. The walls are lined with desks and quills, and you can hear the faint scratching of pens." ],
-      "shrine": [ "You enter a sacred shrine, the air filled with reverence. The walls are adorned with ancient symbols and offerings, and a powerful aura emanates from the center." ],
-      "study": [ "You step into a quiet study, the air filled with the scent of old books and leather. The walls are lined with shelves of knowledge, and you can hear the faint scratching of quills." ],
-      "tavern": [ "You enter a bustling tavern filled with the scent of ale and roasted meat. The air is thick with laughter and the clinking of mugs." ],
-      "throne_room": [ "You enter a grand throne room, the walls lined with towering pillars and the floor covered in intricate mosaics. A majestic throne sits at the far end, guarded by a fearsome creature." ],
-      "treasury": [ "You step into a glittering treasury, the walls lined with shelves of gold and jewels. The air is thick with the scent of wealth and power, and you can hear the faint clinking of coins." ],
-      "vault": [ "You step into a secure vault, the air heavy with the scent of old wood and metal. The walls are lined with locked chests and safes, and you can hear the faint ticking of hidden mechanisms." ],
-      "watchtower": [ "You climb into a watchtower, the air crisp and cold. The walls are lined with windows offering a panoramic view of the surrounding landscape, and you can hear the faint sound of birds." ]
+      "alcove": [ "hidden alcove, tucked away behind a crumbling wall." ],
+      "altar": [ "sacred altar, the air filled with the scent of incense. The walls are adorned with ancient symbols, and a powerful aura emanates from the center." ],
+      "archive": [ "dusty archive, the shelves filled with ancient scrolls and tomes. The air is thick with the scent of old paper and ink, and you can hear the faint rustling of pages." ],
+      "armory": [ "armory, the walls lined with racks of weapons and armor. The air is filled with the scent of oil and metal, and you can hear the faint clanging of blacksmiths at work." ],
+      "barracks": [ "barracks, the air filled with the scent of sweat and leather. The walls are lined with bunks and lockers, and you can hear the faint snoring of soldiers." ],
+      "cell": [ "damp cell. The walls are covered in scratches and graffiti, and the air is thick with despair." ],
+      "chamber": [ "dimly lit chamber, the walls adorned with ancient tapestries. A faint glow emanates from a mysterious artifact in the center." ],
+      "corridor": [ "corridor, the stone walls echoing your footsteps. The air is damp and musty, and you can hear distant sounds of movement." ],
+      "guardroom": [ "guardroom, the air filled with the scent of sweat and metal. The walls are lined with weapons and armor, and you can hear the faint chatter of guards." ],
+      "hall": [ "long hallway, the ceiling towering above you. The walls are lined with suits of armor and ancient weapons, and a sense of history hangs in the air." ],
+      "lair": [ "dark lair, the air thick with the scent of decay. The walls are covered in strange markings, and you can hear the faint sound of breathing." ],
+      "library": [ "dusty library, the shelves filled with ancient tomes and scrolls. The air is thick with the scent of old paper and ink, and you can hear the faint rustling of pages." ],
+      "reliquary": [ "sacred reliquary, the air filled with reverence. The walls are adorned with ancient relics and artifacts, and a powerful aura emanates from the center." ],
+      "sanctum": [ "hidden sanctum, the air thick with mystery. The walls are adorned with ancient symbols, and a powerful aura emanates from the center." ],
+      "scriptorium": [ "quiet scriptorium, the air filled with the scent of parchment and ink. The walls are lined with desks and quills, and you can hear the faint scratching of pens." ],
+      "shrine": [ "sacred shrine, the air filled with reverence. The walls are adorned with ancient symbols and offerings, and a powerful aura emanates from the center." ],
+      "study": [ "quiet study, the air filled with the scent of old books and leather. The walls are lined with shelves of knowledge, and you can hear the faint scratching of quills." ],
+      "tavern": [ "bustling tavern filled with the scent of ale and roasted meat. The air is thick with laughter and the clinking of mugs." ],
+      "throne_room": [ "grand throne room, the walls lined with towering pillars and the floor covered in intricate mosaics. A majestic throne sits at the far end, guarded by a fearsome creature." ],
+      "treasury": [ "glittering treasury, the walls lined with shelves of gold and jewels. The air is thick with the scent of wealth and power, and you can hear the faint clinking of coins." ],
+      "vault": [ "secure vault, the air heavy with the scent of old wood and metal. The walls are lined with locked chests and safes, and you can hear the faint ticking of hidden mechanisms." ],
+      "watchtower": [ "watchtower, the air crisp and cold. The walls are lined with windows offering a panoramic view of the surrounding landscape, and you can hear the faint sound of birds." ]
     }
   },
   "roomFeature": {

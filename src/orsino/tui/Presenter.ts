@@ -10,9 +10,26 @@ export default class Presenter {
     const color = colors[Math.floor(hpRatio * (colors.length - 1))] || colors[0];
 
     if (minimal) {
-      return `${Stylist.format(combatant.forename, 'bold')} ${Stylist.colorize(hpBar, color)}` // (${combatant.hp}/${combatant.maxHp}) [AC ${combatant.ac}]`;
+      let hpBar = Stylist.prettyValue(combatant.hp, combatant.maxHp);
+      let name = Stylist.format(combatant.forename, 'bold');
+      return `${Stylist.colorize(name, combatant.playerControlled ? 'cyan' : 'yellow')} ${Stylist.colorize(hpBar, color)}`;
     }
 
+    let combatClass = combatant.class || combatant.type;
+    let classInfo = combatClass ? `, ${Words.capitalize(combatant.race || '')} ${Words.capitalize(combatClass)} ` : '';
+    const stats = Presenter.statLine(combatant);
+
+    const activeEffectNames = combatant.activeEffects?.map(e => e.name) || [];
+    if (activeEffectNames.length > 0) {
+      classInfo += ` [${activeEffectNames.join(', ')}]`;
+    }
+
+    let lhs = `${Stylist.format(combatant.forename, 'bold')}${classInfo}`;
+    let rhs = `(${stats}, Level ${combatant.level}, HP: ${Stylist.colorize(hpBar, color)} ${combatant.hp}/${combatant.maxHp})`;
+    return `${lhs} ${rhs}`;
+  }
+
+  static statLine = (combatant: Combatant) => {
     const str = Stylist.colorize(Stylist.prettyValue(combatant.str, 20), 'red');
     const dex = Stylist.colorize(Stylist.prettyValue(combatant.dex, 20), 'yellow');
     const int = Stylist.colorize(Stylist.prettyValue(combatant.int, 20), 'green');
@@ -20,10 +37,6 @@ export default class Presenter {
     const cha = Stylist.colorize(Stylist.prettyValue(combatant.cha, 20), 'magenta');
     const con = Stylist.colorize(Stylist.prettyValue(combatant.con, 20), 'cyan');
 
-    const stats = [str, dex, int, wis, cha, con].join('');
-
-    let classInfo = combatant.class ? `, ${Words.capitalize(combatant?.race || 'human')} ${Words.capitalize(combatant.class)} ` : '';
-
-    return `${Stylist.format(combatant.name, 'bold')}${classInfo} (${stats}, HP: ${Stylist.colorize(hpBar, color)} ${combatant.hp}/${combatant.maxHp})`;
+    return [str, dex, int, wis, cha, con].join('');
   }
 }

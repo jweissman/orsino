@@ -34,14 +34,14 @@ program
     //   console.error('Graph generation requires at least 2 items. Use --count to specify the number of items.');
     //   process.exit(1);
     // }
-    let cr = options.cr ? parseInt(options.cr) : undefined;
+    let cr = options.cr ? parseInt(options.cr) : 1;
     delete options.cr;
     
     const response = orsino.gen(
       type as GenerationTemplateType,
       {
         ...options,
-        _targetCr: cr,
+        targetCr: cr, // _targetCr: cr,
         // __count: parseInt(options.count) || undefined,
         // __graph: options.graph
       }
