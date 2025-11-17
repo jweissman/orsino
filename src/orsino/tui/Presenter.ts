@@ -24,7 +24,10 @@ export default class Presenter {
       classInfo += ` [${activeEffectNames.join(', ')}]`;
     }
 
-    let lhs = `${Stylist.format(combatant.forename, 'bold')}${classInfo}`;
+    let lhs = `${Stylist.format(
+      Stylist.colorize(combatant.forename, combatant.playerControlled ? 'cyan' : 'yellow'),
+      'bold'
+    )}${classInfo}`;
     let rhs = `(${stats}, Level ${combatant.level}, HP: ${Stylist.colorize(hpBar, color)} ${combatant.hp}/${combatant.maxHp})`;
     return `${lhs} ${rhs}`;
   }

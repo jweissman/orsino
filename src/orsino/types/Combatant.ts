@@ -34,4 +34,6 @@ export interface Combatant {
 
   // turnBonus?: { [key: string]: number };
   type?: string; // monster type, e.g. "shaman", "brute", etc.
+
+  abilitiesUsed?: string[]; // Track which abilities have been used in the current combat
 }

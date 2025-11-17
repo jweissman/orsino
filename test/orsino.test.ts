@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'bun:test';
 import Orsino from '../src/orsino';
 import Combat from '../src/orsino/Combat';
-import Dungeoneer, { BossRoom, Room } from '../src/orsino/Dungeon';
+import Dungeoneer, { BossRoom, Room } from '../src/orsino/Dungeoneer';
+import { ModuleRunner } from '../src/orsino/ModuleRunner';
 
 describe('Orsino', () => {
   const orsino = new Orsino('fantasy');
@@ -100,4 +101,30 @@ describe('Orsino', () => {
     expect(crawler.winner).toBeDefined();
     expect(crawler.winner).toMatch(/Player|Enemy/);
   });
+
+  it('mod generator', async () => {
+    const mod = await orsino.gen("module", { setting: "fantasy" });
+    expect(mod).toHaveProperty('name');
+    expect(mod).toHaveProperty('terrain');
+    expect(mod).toHaveProperty('town');
+    expect(mod.town).toHaveProperty('name');
+    expect(mod.town).toHaveProperty('population');
+    expect(mod.town).toHaveProperty('deity');
+    expect(mod).toHaveProperty('dungeons');
+    expect(mod.dungeons).toBeInstanceOf(Array);
+
+    let explorer = new ModuleRunner({
+      moduleGen: () => Promise.resolve(mod),
+      pcs: [orsino.gen("pc", { setting: "fantasy" })]
+    });
+
+    await explorer.run();
+
+    expect(explorer.activeModule).toBeDefined();
+    expect(explorer.activeModule!.name).toBe(mod.name);
+    expect(explorer.activeModule!.terrain).toBe(mod.terrain);
+    expect(explorer.activeModule!.town).toEqual(mod.town);
+    expect(explorer.activeModule!.dungeons).toEqual(mod.dungeons);
+  });
+
 });

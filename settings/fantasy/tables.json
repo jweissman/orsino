@@ -19,37 +19,64 @@
         "Aldric", "Aleric", "Achelous", "Aeolus", "Asclepius", "Alpheus", "Ammon", "Arion", "Anteros", "Apollo",
         "Borin", "Baldric", "Barin", "Bram", "Baldur", "Borin", "Bran", "Brom", "Bryce",
         "Ctesibus", "Cedric", "Cyrus", "Caspian", "Corwin", "Caesar", "Cormac", "Clement", "Cith", "Cthon",
-        "Dorian", "Eldric", "Fenris", "Gareth", "Haldor", "Ithric", "Jareth", "Kael", "Loric", "Marek", "Nolan", "Orin", "Perrin", "Quentin", "Roderic", "Soren", "Theron", "Ulric", "Varric", "Wulfric", "Xander", "Yorick", "Zarek" ],
+        "Daren", "Damon", "Durin", "Daxius", "Dorian",
+        "Earendel", "Enoch", "Erevan", "Eryx", "Erebus", "Eldric",
+        "Fenris", "Fodor", "Falkor", "Fergus", "Fendrel", "Falkor", "Fennel",
+        "Gareth", "Garo", "Gideon", "Garrick", "Gawain", "Galen",
+        "Haldor", "Hector", "Hawke", "Hawthorne", "Hemlock", "Holden", "Haelric",
+        "Ithric", "Ithon", "Ing", "Icarion", "Istling", "Idris", "Irmac", "Ith", "Ion",
+        "Jareth", "Jamon", "Jeren", "Jaxion", "Jorund", "Jotun",
+        "Kael", "Kerrick", "Kieran", "Kalon", "Kermac", "Kane", "Kaldor", "Kerrigan",
+        "Laric", "Lamentis", "Leoric", "Leon", "Loric", "Levan", "Leander", "Lurigon", "Lith", "Lonn",
+        "Marek", "Maldric", "Merin", "Maro", "Mordecai", "Merrimac", "Marcel", "Mystos",
+        "Nabor", "Nael", "Nolan", "Neric", "Nestor", "Nixas", "Nimrod", "Niles", "Nero", "Nolan",
+        "Orin", "Oael", "Orion", "Ober", "Oren", "Oric", "Orrin", "Orson", "Othar", "Onerius", "Oleander", "Omnis",
+        "Pasquale", "Perseus", "Pentatheos", "Peregrin", "Perinath", "Perrin",
+        "Quentin", "Quark", "Quintus",
+        "Randall", "Renald", "Rugin", "Reynold", "Ron", "Roderic", "Ruger", "Ronan", "Rurik",
+        "Soren", "Sam", "Striker", "Stalwart", "Sage", "Solomon", "Septimus",
+        "Terrence", "Toran", "Thorin", "Thaddeus", "Thuun", "Therrick", "Theron", "Torg", "Talon", "Thane", "Tiberius", "Tessor", "Thalric", "Trimar", "Tristan",
+        "Ulric", "Ulysses", "Ulrich", "Urien", "Uther", "Uriel", "Ultimus",
+        "Varric", "Verys", "Vys", "Vaughn", "Vorn", "Virgil",
+        "Wayan", "William", "Wulf", "Warren", "Wyatt", "Wesley", "Wendell", "Winston", "Wade", "Warwick", "Willem", "Wulfric",
+        "Xael", "Xeryn", "Xith", "Xaelric", "Xander", "Xavier", "Xyron",
+        "Yael", "Yarel", "Yvaine", "Yperon", "Yorick", "Yure",
+        "Zak", "Zarek", "Zunobis", "Zuriel", "Zoltan", "Zigmun", "Zervan"
+      ],
       "female": [
-        "Adrastea", "Aegina", "Ava", "Ariella", "Althea", "Aria", "Alma", "Aryel", "Amina", "Aliana", "Arwyn", "Aeline", 
+        "Adrastea", "Aegina", "Ava", "Ariella", "Althea", "Aria", "Alma", "Aryel", "Amina", "Aliana", "Arwyn", "Aeline", "Amaryllis",
         "Aglaia", "Aidos", "Alara", "Averil", "Andromeda", "Alecto", "Amphitrite", "Aphrodite", 
         "Barra", "Belinde", "Berwena", "Bren", "Burla", "Brenna", "Brina", "Briar",
-        "Celia", "Cassandra", "Casta", "Clara", "Cora", "Crysten", "Curwena", "Celeste", 
-        "Daphne", "Daria", "Delia", "Diana", "Druella", "Dara", "Dawn",
+        "Celia", "Cassandra", "Casta", "Clara", "Cora", "Crysten", "Curwena", "Celeste", "Coral", "Cosmos", "Calathea", "Clementine", "Cyrene",
+        "Daphne", "Daria", "Delia", "Diana", "Druella", "Dara", "Dawn", "Daisy",
         "Elara", "Elowen", "Elysia", "Ember", "Eira", "Evelyn", "Ewen",
-        "Farina", "Freyja", "Finna", "Fiona", "Fey", "Felicity", "Fiora", "Flora", "Fleur",
-        "Ganriel", "Gwyneth", "Gismane", "Gethsemane", "Ganymede", "Gloria", "Gwen", "Giselle", "Griselda", "Goldara",
-        "Helena", "Helene", "Hilda", "Haven", "Hestia", "Holly", "Honora", "Hunna", "Hazel", "Hera", "Hespera",
-        "Isolde", "Ismene", "Illyria", "Iris", "Ivana", "Ithil", "Isla", "Inara", "Indira",
-        "Jasmine", "Jade", "Jocelyn", "Juniper", "Jora", "Jessa", "Jenna", "Juniper", "Julia", "Jorella",
+        "Farina", "Freyja", "Finna", "Fiona", "Fey", "Felicity", "Fiora", "Flora", "Fleur", "Fennel", "Foxglove", "Fern",
+        "Ganriel", "Gwyneth", "Gismane", "Gethsemane", "Ganymede", "Gloria", "Gwen", "Giselle", "Griselda", "Goldara", "Gerbera",
+        "Haleth", "Helena", "Helene", "Hilda", "Haven", "Hestia", "Holly", "Honora", "Hunna", "Hazel", "Hera", "Hespera", "Hellebore",
+        "Isolde", "Ismene", "Illyria", "Iris", "Ivana", "Ithil", "Isla", "Inara", "Indira", "Iris",
+        "Jasmine", "Jade", "Jocelyn", "Juniper", "Jora", "Jessa", "Jenna", "Juniper", "Julia", "Jorella", "Jasmine",
         "Kaela", "Kaelyn", "Kara", "Kiera", "Kaea", "Kira", "Kestrel", "Kendra", "Kandra",
-        "Lavender", "Laura", "Luna", "Lirael", "Lysandra", "Liora", "Lirael", "Lysandra", "Lyra", "Luna", "Lorelei",
-        "Maria", "Mira", "Mara", "Maris", "Melina", "Mirella", "Morgana", "Myna", "Mirabel", "Miranda",
+        "Lavender", "Laura", "Luna", "Lirael", "Lysandra", "Liora", "Lirael", "Lysandra", "Lyra", "Luna", "Lorelei", "Lily", "Lilith", "Linden",
+        "Maria", "Mira", "Mara", "Maris", "Melina", "Mirella", "Morgana", "Myna", "Mirabel", "Miranda", "Marigold", "Magnolia",
         "Nina", "Nora", "Nyssa", "Niamh", "Nessa", "Nimue", "Nara", "Naomi", "Nela", "Nixie", "Numina",
-        "Oana", "Olwen", "Orla", "Oriana", "Oria", "Oleanna", "Olana", "Omnia", "Orlyn", "Oriel", "Oulanda",
+        "Oana", "Olwen", "Orla", "Oriana", "Oria", "Oleanna", "Olana", "Omnia", "Orlyn", "Oriel", "Oulanda", "Orchid",
         "Pandora", "Penelope", "Perinax", "Phaedra",
         "Quinna", "Quilla", "Quentina", "Quintessa",
-        "Rachel", "Rhiannon", "Ravenna", "Rhea",
-        "Sabina", "Seraphina", "Sierra", "Sarina", "Selene", "Serena", "Sora", "Sylvia", "Sunna", "Sapphire",
-        "Talitha", "Talia", "Tamsin", "Tara", "Tiara", "Thea", "Talla", "Theodora", "Tuora", "Theresa", "Thalia",
+        "Rachel", "Rhiannon", "Ravenna", "Rhea", "Rose", "Rosemary", "Rue", "Ruthia", "Rosa",
+        "Sabina", "Seraphina", "Sierra", "Sarina", "Selene", "Serena", "Sora", "Sylvia", "Sunna", "Sapphire", "Snapdragon", "Sequoia", "Swan",
+        "Talitha", "Talia", "Tamsin", "Tara", "Tiara", "Thea", "Talla", "Theodora", "Tuora", "Theresa", "Thalia", "Tulip", "Tuesday",
         "Uana", "Ulina",
-        "Vanna", "Vira", "Vesper", "Violet", "Vexana", "Vera",
+        "Vanna", "Vira", "Violet", "Vexana", "Vera",
         "Wanda", "Wren", "Winona", "Wynne", "Willow",
         "Xara", "Xanthe", "Xenia",
         "Yara", "Yvonne", "Yelena", "Yara", "Yvaine",
-        "Zara", "Zelda", "Zinnia", "Zara", "Zora", "Zelena", "Zuora", "Zyra"
+        "Zara", "Zelda", "Zinnia", "Zara", "Zora", "Zelena", "Zuora", "Zyra", "Zinnia"
       ],
-      "neutral": [ "Ash", "Blake", "Casey", "Drew", "Emery", "Finley", "Gray", "Harper", "Indigo", "Jordan", "Kai", "Logan", "Morgan", "Nico", "Oakley", "Parker", "Quinn", "Reese", "Skyler", "Taylor", "Valen", "Winter", "Xenon", "Yale", "Zephyr" ]
+      "neutral": [
+        "Ash", "Blake", "Casey", "Drew", "Emery", "Finley", "Gray", "Harper", "Indigo", "Jordan", "Kai", "Logan", "Morgan", "Nico", "Oakley", "Parker", "Quinn", "Reese", "Skyler", "Taylor", "Valen", "Winter", "Xenon", "Yale", "Zephyr",
+        "Avery", "Bailey", "Cameron", "Dakota", "Elliot", "Frankie", "Gale", "Haydon", "Jesse", "Kendall", "Lane", "Mackenzie", "Nikita", "Peyton", "Riley", "Sagewood", "Tate", "Vesper", "Wren",
+        "Alex", "Charlie", "Devon", "Emerson", "Harley", "Jaden", "Kris", "Merritt", "Rory", "Sloan", "Toby", "Valentine", "Zola"
+      ]
     }
   },
   "hitPoints": {
@@ -89,9 +116,9 @@
     "discriminator": "weapon",
     "groups": {
       "staff": 3,
+      "dagger": 3,
       "club": 4,
       "claws": 4,
-      "dagger": 4,
       "sling": 4,
       "bite": 6,
       "mace": 6,
@@ -344,7 +371,7 @@
         "Nau", "Nazak", "Nuzog", "Nush", "Nuun",
         "Orrak", "Oruzog", "Oreg", "Ornak", "Ontak", "Oruv",
         "Piya", "Perok", "Pog", "Puzog", "Pazrak", "Prush", "Puzrak",
-        "Qaz", "Quark", "Quuzog", "Qurex", "Quun", "Quuzrak",
+        "Qaz", "Querk", "Quuzog", "Qurex", "Quun", "Quuzrak",
         "Rag", "Ruzak", "Ruag", "Rass", "Ruzrak", "Reslim", "Rizzle", "Riol",
         "Snark", "Skrag", "Sarzak", "Skrush", "Skrak", "Siya",
         "Tark", "Tazog", "Tesmer", "Tarok", "Truun", "Tulex", "Turess",
@@ -535,12 +562,12 @@
   "monsterTerrainModifier": {
     "discriminator": "terrain",
     "groups": {
-      "forest": { "str": 1, "dex": 1, "con": 1 },
-      "cave": { "str": 1, "con": 1 },
+      "forest": { "str": -1, "dex": 1, "con": 1, "maxHp": -1 },
       "swamp": { "con": -1, "dex": -1, "int": 1 },
-      "mountain": { "str": 2, "con": 1, "dex": -1 },
+      "mountain": { "str": 2, "con": 1, "dex": -1, "maxHp": 1 },
+      "cave": { "str": 1, "con": 1, "dex": 1, "maxHp": 1 },
       "snow": { "con": 1, "dex": -1, "str": -1, "maxHp": 2 },
-      "desert": { "con": -1, "maxHp": 5 }
+      "desert": { "str": 1, "con": -2, "maxHp": 5, "level": 1 }
     }
   },
 
@@ -633,23 +660,23 @@
     "groups": {
       "temple": [
         "#race + \" heretics serve a dark master at their fane deep in the \" + #terrain",
-        "#race + \" cultists have been spotted near a hidden shrine \" + #direction + \" of here\""
+        "#race + \" cultists have been spotted close to a hidden shrine \" + #direction + \" of us\""
       ],
       "fortress": [
-        "#race + \" raiders have been sighted in the old fort \" + #direction + \" of here\"",
-        "\"an army of \" + #race + \"s has been seen near a fortified \" + #dungeon_type"
+        "#race + \" raiders have been sighted near the fort \" + #direction + \" of here\"",
+        "\"an army of \" + #race + \"s was observed near the ancient \" + #dungeon_type"
       ],
       "library": [
-        "#race + \"s have been spotted near an old reliquary \" + #direction + \" of here\"",
+        "#race + \"s have been spotted in close proximity to a reliquary \" + #direction + \" of town\"",
         "#race + \" scholars have been hoarding forbidden knowledge in a secret library\""
       ],
       "tomb": [
         "\"watch out for \" + #race + \"s lurking in the \" + #direction + \"ern necropolis\"",
-        "\"the old catacombs have been taken over by \" + #race + \"s\"",
-        "#race + \"s have been seen near a haunted tomb \" + #direction + \" of here\""
+        "\"the catacombs have been taken over by \" + #race + \"s\"",
+        "#race + \"s have been seen revelling in a haunted tomb \" + #direction + \" of our location\""
       ],
       "mine": [
-        "\"the old delve just \" + #direction + \" of here is now home to a tribe of \" + #race + \"s\"",
+        "\"the old delve just \" + #direction + \" of town is now home to a tribe of \" + #race + \"s\"",
         "#race + \"s occupy an abandoned mine \" + #direction + \" of here\""
       ]
     }

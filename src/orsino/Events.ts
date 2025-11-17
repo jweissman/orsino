@@ -1,5 +1,6 @@
 import Presenter from "./tui/Presenter";
 import Stylist from "./tui/Style";
+import Words from "./tui/Words";
 import { Combatant } from "./types/Combatant";
 
 const never = <T>(_: never): T => {
@@ -30,6 +31,7 @@ export type PoisonCloudEvent = BaseEvent & { type: "poison_cloud" };
 export type PoisoningEvent = BaseEvent & { type: "poisoned" };
 export type PoisonDamageEvent = BaseEvent & { type: "poison" };
 export type ScreamEvent = BaseEvent & { type: "scream" };
+export type BlessEvent = BaseEvent & { type: "bless"; targets: Combatant[] };
 
 export type StatusExpireEvent = BaseEvent & { type: "statusExpire"; effectName: string };
 
@@ -50,6 +52,7 @@ export type CombatEvent = HitEvent
   | PoisonDamageEvent
   | PoisonCloudEvent
   | ScreamEvent
+  | BlessEvent
   | CombatEndEvent
   | RoundStartEvent;
 
@@ -90,6 +93,7 @@ export default class Events {
       case "poisoned_blade": return `${subject} coats their blade with poison.`;
       case "poisoned": return `${subject} is poisoned!`;
       case "poison": return `${subject} suffers poison damage.`;
+      case "bless": return `${subject} blesses ${Words.humanizeList(event.targets.map(t => t.forename))}.`;
       case "statusExpire":
         if (event.effectName === "Poisoned Blade") {
           return `${subject}'s blade is no longer coated in poison.`;

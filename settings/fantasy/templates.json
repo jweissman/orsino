@@ -7,12 +7,12 @@
     "_surname": "=lookup(surname, #class)",
     "forename": "=lookup(name, #gender)",
     "name": "=#forename + \" \" + #_surname",
-    "str": "=3+3d6+if(#class == \"warrior\", 2, 0)",
-    "dex": "=3+3d6+if(#class == \"thief\", 2, 0)",
-    "int": "=3+3d6+if(#class == \"mage\", 2, 0)",
-    "wis": "=3+3d6+if(#class == \"cleric\", 2, 0)",
-    "cha": "=3+3d6+if(#class == \"bard\", 2, 0)",
-    "con": "=3+3d6+if(#class == \"ranger\", 2, 0)",
+    "str": "=3d6+if(#class == \"warrior\", 3, 0)",
+    "dex": "=3d6+if(#class == \"thief\", 3, 0)",
+    "int": "=3d6+if(#class == \"mage\", 3, 0)",
+    "wis": "=3d6+if(#class == \"cleric\", 3, 0)",
+    "cha": "=3d6+if(#class == \"bard\", 3, 0)",
+    "con": "=3d6+if(#class == \"ranger\", 3, 0)",
     "maxHp": "=lookup(hitPoints, #class) + max(1,round((#con-10)/2))",
     "hp": "=#maxHp",
     "level": 1,
@@ -40,7 +40,7 @@
     "int": "=lookup(monsterInt, #race)",
     "wis": "=lookup(monsterWis, #race)",
     "cha": "=lookup(monsterCha, #race)",
-    "maxHp": "=#_baseHp + round(rand()*#_hpVariance) + #level * 3",
+    "maxHp": "=#_baseHp + round(rand()*#_hpVariance + #level / 2)",
     "_naturalArmor": "=lookup(monsterNaturalArmor, #race)",
     "armor": "=if(#level >= 5, 'plate', if(#level >= 3, 'chainmail', 'leather'))",
     "armorBonus": "=lookup(armorClassBonus, #armor)",
@@ -48,9 +48,8 @@
     "weapon": "=if(#type == 'slinger', 'sling', lookup(monsterWeapon, #race))",
     "damageDie": "=lookup(damageDie, #weapon)",
     "attackRolls": "=lookup(attackRolls, #weapon)",
-    "xp": "=lookup(monsterXp, #race)",
+    "xp": "=lookup(monsterXp, #race) * #level",
     "gp": "=lookup(monsterGold, #race)",
-
     "*terrainModifier": "=lookup(monsterTerrainModifier, #terrain)",
     "*typeModifier": "=lookup(monsterTypeModifier, #type)",
     "hp": "=#maxHp"
@@ -59,9 +58,9 @@
     "targetCr": "=#_targetCr",
     "terrain": "=oneOf(forest, cave, swamp, mountain, snow, desert)",
     "_monsterCount": "=2+1d4",
-    "monsters": "=genList(monster, #_monsterCount, \"=round(sum(#__items, 'level')/2) <= #targetCr\")",
+    "monsters": "=genList(monster, #_monsterCount, \"=round(sum(#__items, 'level')) <= #targetCr\")",
     "bonusGold": "=2d20 + 5 * count(#monsters)",
-    "cr": "=round(sum(#monsters, \"level\")/2)"
+    "cr": "=round(sum(#monsters, \"level\"))"
   },
   "room": {
     "_targetCr": "1",
@@ -72,7 +71,7 @@
     "room_size": "=oneOf(tiny, small, medium, large, enormous)",
     "_encounterChance": "=1",
     "_treasureChance": "=if(#room_type == \"treasury\", 1.0, oneOf(0.5, 0.8))",
-    "targetCr": "=#_targetCr + round(#_index * 2)",
+    "targetCr": "=#_targetCr + round(#_index+1)",
     "encounter": "=if(rand() < #_encounterChance, gen(encounter), nihil)",
     "treasure": "=if(rand() < #_treasureChance, lookup(treasure, oneOf(negligible, minor)), nihil)",
     "feature": "=lookup(roomDecoration, 1d100)"
@@ -84,7 +83,7 @@
     "room_type": "=oneOf(throne_room, lair, altar)",
     "narrative": "=lookup(roomNarrative, #room_type)",
     "room_size": "=oneOf(medium, large, enormous, huge, colossal)",
-    "targetCr": "=#_targetCr + round(#depth*2) + 2",
+    "targetCr": "=#_targetCr + round(#depth) + 1",
     "_monsterCount": "=2+1d3",
     "treasure": "=lookup(treasure, oneOf(major, legendary))",
     "type": "=lookup(bossMonsterType, #race)",
@@ -118,8 +117,9 @@
     "capital": "=#size == 'capital'",
     "population": "=eval(lookup(townPop, #size))",
     "_aspect": "=lookup(terrainFeatures, #terrain)",
-    "_suffix": "=oneOf(ford, haven, burg, port, dale, keep, watch, gate, rest, fall, ridge, wood, field, pass, hold)",
-    "name": "=capitalize(#_aspect + #_suffix)"
+    "_suffix": "=oneOf(ford, haven, burg, port, dale, keep, watch, gate, rest, fall, ridge, wood, field, pass, hold, stead, view, point, hill, bay, cliff, cross)",
+    "name": "=capitalize(#_aspect + #_suffix)",
+    "adjective": "=oneOf(peaceful, bustling, prosperous, decaying, ancient, vibrant, sleepy, lively, fair, grim, quaint, thriving, quiet, rustic, quaint, noble, humble, proud)"
   },
   "module": {
     "terrain": "=lookup(terrains, 1d6)",

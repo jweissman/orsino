@@ -38,7 +38,7 @@ export interface BossRoom {
   feature: string | null;
 }
 
-interface Dungeon {
+export interface Dungeon {
   dungeon_type: string;
   race: string;
   theme: string;
@@ -47,6 +47,11 @@ interface Dungeon {
   depth: number;
   rooms: Room[];
   bossRoom: BossRoom;
+
+  dungeonIndex?: number;
+  rumor: string;
+  direction: "north" | "south" | "east" | "west";
+  intendedCr: number;
 }
 
 export default class Dungeoneer {
@@ -68,22 +73,23 @@ export default class Dungeoneer {
 
   static dungeonIcons = { temple: "🏛️", fortress: "🏯", library: "📚", tomb: "⚰️", mine: "⛏️", cave: "🕳️", crypt: "⚰️", tower: "🗼", }
 
-  private roller: Roll; // (subject: Combatant, description: string, sides: number, dice: number) => Promise<RollResult>;
+  private roller: Roll;
   private select: Select<any>;
   private outputSink: (message: string) => void;
   private currentRoomIndex: number = 0;
   private journal: DungeonEvent[] = [];
 
-  protected playerTeam: Team;
   protected dungeonGen: () => Dungeon;
-  protected dungeon: Dungeon;
   protected encounterGen: (cr: number) => Encounter;
+
+  public playerTeam: Team;
+  public dungeon: Dungeon;
 
   constructor(
     options: Record<string, any> = {}
   ) {
-    this.roller = options.roller || this.autoroll;
-    this.select = options.select || this.autoselect;
+    this.roller = options.roller || Combat.rollDie;
+    this.select = options.select || Combat.samplingSelect;
     this.outputSink = options.outputSink || console.log;
     this.dungeonGen = options.dungeonGen || Dungeoneer.defaultGen;
     this.playerTeam = options.playerTeam || Dungeoneer.defaultTeam();
@@ -121,6 +127,7 @@ export default class Dungeoneer {
 
   // Main run loop
   async run(): Promise<void> {
+    // console.log("Dungeon details: " + JSON.stringify(this.dungeon, null, 2));
 
     this.presentCharacterRecords();
 
@@ -174,7 +181,9 @@ export default class Dungeoneer {
     console.log("Your party:");
     this.playerTeam.combatants.forEach(c => {
       console.log(Presenter.combatant(c, false));
-      console.table(c);
+      console.table(
+        { ...c, activeEffects: c.activeEffects?.map(e => e.name).join(", ") || "None" },
+      );
     });
   }
 
@@ -214,7 +223,7 @@ export default class Dungeoneer {
     this.note(this.describeRoom(room, ["enter", "step into", "find yourself in"][Math.floor(Math.random() * 3)]));
 
     if (this.currentEncounter && this.currentEncounter.monsters.length > 0) {
-      const monsters = this.currentEncounter.monsters.map(m => Presenter.combatant(m, false)).join(", ");
+      const monsters = this.currentEncounter.monsters.map(m => `\n - ${Presenter.combatant(m, false)}`).join(", ");
       this.note(`👹 Encounter: ${monsters} [CR: ${this.currentEncounter.cr}]\n`);
     }
 
@@ -228,6 +237,11 @@ export default class Dungeoneer {
       roller: this.roller,
       select: this.select,
       note: this.outputSink
+    });
+
+    this.playerTeam.combatants.forEach(pc => {
+      pc.hp = Math.max(1, pc.hp);
+      pc.abilitiesUsed = [];
     });
 
     // await combat.singleCombat([this.playerTeam, this.currentMonsterTeam]);
@@ -498,15 +512,15 @@ export default class Dungeoneer {
     return null;
   }
 
-  private autoroll = async (subject: Combatant, description: string, sides: number) => {
-    return Combat.rollDie(subject, description, sides);
-  }
+  // private autoroll = async (subject: Combatant, description: string, sides: number) => {
+  //   return Combat.rollDie(subject, description, sides);
+  // }
 
-  private autoselect = async (prompt: string, options: any[]) => {
-    this.note(prompt);
-    options.forEach((option, index) => {
-      this.note(`${index + 1}. ${option.name}`);
-    });
-    return options[0].value;
-  }
+  // private autoselect = async (prompt: string, options: any[]) => {
+  //   this.note(prompt);
+  //   options.forEach((option, index) => {
+  //     this.note(`${index + 1}. ${option.name}`);
+  //   });
+  //   return options[0].value;
+  // }
 }

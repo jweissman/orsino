@@ -6,7 +6,7 @@ import { Team } from "./types/Team";
 import { Roll } from "./types/Roll";
 import { Fighting } from "./rules/Fighting";
 import Stylist from "./tui/Style";
-import Events, { CombatEvent, InitiateCombatEvent, InspireEvent, HealEvent, MissEvent, HitEvent, FallenEvent, DefendEvent, FleeEvent, FearEvent, StatusExpireEvent, RoundStartEvent, CombatEndEvent, StumbleEvent, PoisonedBladeEvent, PoisonDamageEvent, PoisoningEvent, ScreamEvent, PoisonCloudEvent } from "./Events";
+import Events, { CombatEvent, InitiateCombatEvent, InspireEvent, HealEvent, MissEvent, HitEvent, FallenEvent, DefendEvent, FleeEvent, FearEvent, StatusExpireEvent, RoundStartEvent, CombatEndEvent, StumbleEvent, PoisonedBladeEvent, PoisonDamageEvent, PoisoningEvent, ScreamEvent, PoisonCloudEvent, BlessEvent } from "./Events";
 
 export type RollResult = {
   amount: number;
@@ -28,11 +28,11 @@ export default class Combat {
     options: Record<string, any> = {},
   ) {
     this.roller = options.roller || this.autoroll;
-    this.select = options.select || this.samplingSelect;
+    this.select = options.select || Combat.samplingSelect;
     this.outputSink = options.outputSink || console.debug;
   }
 
-  async samplingSelect(_prompt: string, options: Choice<any>[]): Promise<any> {
+  static async samplingSelect(_prompt: string, options: Choice<any>[]): Promise<any> {
     let enabledOptions = options.filter(
       (option) => !option.disabled
     )
@@ -147,11 +147,19 @@ export default class Combat {
         disabled: spellSlotsRemaining === 0 && standingAllies.length > 0, short: "Inspire " + pips, name: "🎶 Inspire (grant to-hit bonus for an ally until their next turn)", value: "inspire"
       });
     } else if (combatant.class === "cleric") {
-      choices.push({ disabled: spellSlotsRemaining === 0, short: "Cure Wounds " + pips, name: "🙏 Cure Wounds (restore 2d6 HP to self or ally)", value: "cure" });
+      choices.push({ disabled: spellSlotsRemaining === 0, short: "Cure Wounds " + pips, name: "❤️‍🩹 Cure Wounds (restore 2d6 HP to self or ally)", value: "cure" });
+      choices.push({ disabled: spellSlotsRemaining === 0, short: "Blessing " + pips, name: "🙏 Bless (grant +1 to hit for all allies for 10 turns)", value: "bless" });
     } else if (combatant.class === "thief") {
       if (!combatant.activeEffects?.some(e => e.name === "Poisoned Blade")) {
         choices.push({ disabled: false, short: "Poison Dagger", name: "🗡️ Poison Dagger (add 1d3 poison damage to next attack)", value: "poison" });
       }
+    } else if (combatant.class === "warrior") {
+      choices.push({
+        disabled: combatant.abilitiesUsed?.includes("charge") || false,
+        short: "Charge",
+        name: "🏇 Charge (chance to deal 1d6 bonus damage)",
+        value: "charge"
+      })
     }
 
     const action = await this.select(`Your turn, ${Presenter.combatant(combatant)} - what do you do?`, choices);
@@ -172,6 +180,26 @@ export default class Combat {
         break;
       case "heal":
         await this.pcFirstAid(combatant, this.wounded(allies));
+        break;
+      case "charge":
+        // normal attack flow
+        let hit = await this.pcAttacks(combatant, enemies);
+        if (hit.success) {
+          const bonusDamage = (await this.roller(combatant, "for charge bonus damage", 6)).amount;
+          if (bonusDamage >= 4) {
+            this.handleHit(combatant, hit.target, bonusDamage, false, "charge bonus damage", true);
+          }
+        }
+        combatant.abilitiesUsed = combatant.abilitiesUsed || [];
+        combatant.abilitiesUsed.push("charge");
+        break;
+      case "bless":
+        allies.forEach(pc => {
+          pc.activeEffects = pc.activeEffects || [];
+          pc.activeEffects.push({ name: `Blessing of ${combatant.forename}`, effect: { toHit: 1 }, duration: 10 });
+        });
+        this.emit({ type: "bless", subject: combatant, targets: allies } as Omit<BlessEvent, "turn">);
+        combatant.spellSlotsUsed = (combatant.spellSlotsUsed || 0) + 1;
         break;
       case "inspire":
         const inspireTarget = await this.selectTarget(allies, "inspiration");
@@ -217,11 +245,11 @@ export default class Combat {
   async handleHit(attacker: Combatant, defender: Combatant, damage: number, critical: boolean, by: string, success: boolean): Promise<void> {
     if (!success) {
       this.emit({ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">);
-      if (critical) {
+      if (critical && Math.random() < 0.15) {
         attacker.activeEffects = attacker.activeEffects || [];
         attacker.activeEffects.push({
           name: "stumbling",
-          effect: { toHit: -2, ac: 2 },
+          effect: { toHit: -2 },
           duration: 1
         });
         this.emit({ type: "stumble", subject: attacker } as Omit<StumbleEvent, "turn">);
@@ -272,11 +300,15 @@ export default class Combat {
     return target;
   }
 
-  async pcAttacks(combatant: Combatant, validTargets: Combatant[]) {
+  async pcAttacks(combatant: Combatant, validTargets: Combatant[]): Promise<{
+    success: boolean;
+    target: Combatant;
+  }> {
     let target = this.weakest(validTargets);
     if (validTargets.length > 1) { target = await this.selectTarget(validTargets, "attack with " + combatant.weapon); }
     const { damage, critical, success } = await Fighting.attack(this.roller, combatant, target);
     await this.handleHit(combatant, target, damage, critical, `${combatant.forename}'s ${combatant.weapon}`, success);
+    return { success, target };
   }
 
   async npcTurn(combatant: Combatant, enemies: Combatant[], allies: Combatant[]) {
@@ -292,12 +324,16 @@ export default class Combat {
         actions.push("fear");
       }
     } else if (combatant.type === "Mercenary" || combatant.type === "Bandit" || combatant.type === "Assassin" || combatant.type === "Thief") {
-      actions.push("poison");
+      if (!combatant.abilitiesUsed?.includes("poison")) {
+        actions.push("poison");
+      }
     } else if (
       combatant.type === "Warrior" || combatant.type === "Fury" || combatant.type === "Barbarian" || 
       combatant.type === "Brute" || combatant.type === "Berserker" || combatant.type === "Warlord" || combatant.type === "General"
     ) {
-      actions.push("charge");
+      if (!combatant.abilitiesUsed?.includes("charge")) {
+        actions.push("charge");
+      }
     } else if (combatant.hp < combatant.maxHp / 3) {
       actions.push("flee");
     }
@@ -316,19 +352,22 @@ export default class Combat {
       case "heal":
         const healTarget = this.weakest([...allies, combatant]);
         const healAmount = (await this.roller(combatant, "for healing", 4)).amount + Fighting.statMod(combatant.wis);
-
-        healTarget.hp = Math.min(healTarget.maxHp, healTarget.hp + healAmount);
-        this.emit({ type: "heal", subject: combatant, target: healTarget, amount: healAmount } as Omit<HealEvent, "turn">);
+        if (healAmount > 0) {
+          healTarget.hp = Math.min(healTarget.maxHp, healTarget.hp + healAmount);
+          this.emit({ type: "heal", subject: combatant, target: healTarget, amount: healAmount } as Omit<HealEvent, "turn">);
+        }
         break;
       case "charge":
         const chargeAttack = await Fighting.attack(this.roller, combatant, target); //, this._note.bind(this));
         await this.handleHit(combatant, target, chargeAttack.damage, chargeAttack.critical, `${combatant.forename}'s charge`, chargeAttack.success);
-        if (chargeAttack.success) {
+        if (chargeAttack.success && target.hp > 0) {
           const extraDamage = (await this.roller(combatant, "for charge damage", 6)).amount;
           await this.handleHit(combatant, target, extraDamage, false, `${combatant.forename}'s charge bonus damage`, true);
           // target.hp -= extraDamage;
           // this.note(`${target.name} takes an additional ${extraDamage} damage from the charge!`);
         }
+        combatant.abilitiesUsed = combatant.abilitiesUsed || [];
+        combatant.abilitiesUsed.push("charge");
         break;
       case "flee":
         const fleeRoll = await this.roller(combatant, "to flee", 20);
@@ -372,6 +411,8 @@ export default class Combat {
             });
           }
         }
+        combatant.abilitiesUsed = combatant.abilitiesUsed || [];
+        combatant.abilitiesUsed.push("poison");
         break;
     }
   }

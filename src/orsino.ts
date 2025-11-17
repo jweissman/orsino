@@ -9,104 +9,34 @@ import { Combatant } from "./orsino/types/Combatant";
 import Spinner from "./orsino/tui/Spinner";
 import { select, Separator } from '@inquirer/prompts';
 import deepCopy from "./orsino/util/deepCopy";
-import Dungeoneer from "./orsino/Dungeon";
+import Dungeoneer from "./orsino/Dungeoneer";
 import Files from "./orsino/util/Files";
+import { ModuleRunner } from "./orsino/ModuleRunner";
 
-type PlaygroundType = "combat" | "dungeon" | "world";
-export default class Orsino {
-  setting: Record<GenerationTemplateType, Template | Table>;
+export type Prompt = (message: string) => Promise<string>;
 
-  constructor(public settingName?: string) {
-    this.setting = settingName ? loadSetting(settingName) : this.defaultSetting;
-  }
-
-  async play(
-    type: PlaygroundType,
-    options: Record<string, any> = {}
-  ) {
-    if (type === "combat") {
-      let gauntlet = (new Gauntlet({
-        ...options,
-        roller: Orsino.interactiveRoll,
-        select: Orsino.interactiveSelect,
-        outputSink: console.log,
-      }))
-
-      const partySize = options.partySize || Math.max(1, Math.floor(Math.random() * 3) + 1);
-      await gauntlet.run({
-        pcs: this.genList("pc", { setting: 'fantasy', ...options }, partySize),
-        encounterGen: (targetCr: number) => this.gen("encounter", { setting: 'fantasy', ...options, targetCr }),
+export class User {
+  // print the message and return the user's input
+  static async interactivePrompt(message: string): Promise<any> {
+    process.stdout.write(message + " ");
+    return new Promise((resolve) => {
+      process.stdin.resume();
+      process.stdin.once("data", (data) => {
+        resolve(data.toString().trim());
       });
-    }
-    else if (type === "dungeon") {
-      const partySize = options.partySize || 2;
-      const pcs = await this.chooseParty(partySize);
-      const averageLevel = Math.round(pcs.reduce((sum, pc) => sum + pc.level, 0) / pcs.length);
-      const targetCr = Math.round(averageLevel * 0.75);
-      console.log(`Selected party of ${pcs.length} PCs (average level ${averageLevel}), targeting CR ${targetCr}`);
-      // this.genList("pc", { setting: 'fantasy', ...options }, partySize);
-      const dungeoneer = new Dungeoneer({
-        roller: Orsino.interactiveRoll,
-        select: Orsino.interactiveSelect,
-        outputSink: console.log,
-        dungeonGen: () => this.gen("dungeon", { setting: 'fantasy', ...options, _targetCr: targetCr }),
-        gen: this.gen.bind(this),
-        playerTeam: {
-          name: "Heroes",
-          combatants: pcs.map(pc => ({ ...pc, playerControlled: true })),
-          healingPotions: 2,
-        }
-      });
-
-      await dungeoneer.run();
-    }
-    else {
-      throw new Error('Unsupported playground type: ' + type);
-    }
+    });
   }
 
-  private async chooseParty(partySize: number = 2): Promise<Combatant[]> {
-    let party: Combatant[] = [];
-    let hasExistingPcs = false;
-    if (await Files.countFiles(`${Dungeoneer.dataPath}/pcs`) > 0) {
-      hasExistingPcs = true;
-    }
-    while (party.length < partySize) {
-      let shouldSelect = await Orsino.interactiveSelect(
-        'Select an existing PC for the dungeon crawl?',
-        ['Yes', 'No']
-      );
-      if (shouldSelect === 'Yes') {
-        const pcFiles = await Files.listFiles(`${Dungeoneer.dataPath}/pcs`);
-        const selectedPcName = await Orsino.interactiveSelect(
-          'Select a PC to lead the dungeon crawl:',
-          pcFiles.map(name => name.replace('.json', ''))
-            .filter(name => party.every(p => p.name !== name))
-            .sort()
-        );
-        const selectedPc = await Files.readJSON(`${Dungeoneer.dataPath}/pcs/${selectedPcName}.json`) as Combatant;
-        party.push(selectedPc);
-      } else {
-        const pc: Combatant = this.gen("pc", { setting: 'fantasy' }) as Combatant;
-        if (!party.some(p => p.name === pc.name)) {
-          party.push(pc);
-        }
-      }
-    };
-    return party;
-  }
-
-  private static async interactiveSelect(
-    prompt: string,
-    options: (
+  static async interactiveSelect(
+    message: string,
+    choices: (
       readonly (string | Separator)[]
     )
   ): Promise<any> {
-    const config = { message: prompt, choices: options }
-    return await select(config)
+    return await select({ message, choices })
   }
 
-  private static async interactiveRoll(subject: Combatant, description: string, sides: number): Promise<RollResult> {
+  static async interactiveRoll(subject: Combatant, description: string, sides: number): Promise<RollResult> {
     if (!subject.playerControlled) {
       const result = Combat.rollDie(subject, description, sides);
       await Spinner.run(`${subject.name} is rolling ${description}`, 120 + Math.random() * 240, result.description);
@@ -122,6 +52,130 @@ export default class Orsino {
     let result = Combat.rollDie(subject, description, sides);
     console.log("\r" + result.description);
     return result;
+  }
+}
+
+
+type PlaygroundType = "combat" | "dungeon" | "module";  // TODO "world";
+export default class Orsino {
+  setting: Record<GenerationTemplateType, Template | Table>;
+
+  constructor(public settingName?: string) {
+    this.setting = settingName ? loadSetting(settingName) : this.defaultSetting;
+  }
+
+  async play(
+    type: PlaygroundType,
+    options: Record<string, any> = {}
+  ) {
+    const partySize = options.partySize || 2;
+    const pcs = await this.chooseParty(partySize);
+    if (type === "combat") {
+      let gauntlet = (new Gauntlet({
+        ...options,
+        roller: User.interactiveRoll,
+        select: User.interactiveSelect,
+        outputSink: console.log,
+      }))
+
+      // const partySize = options.partySize || Math.max(1, Math.floor(Math.random() * 3) + 1);
+      await gauntlet.run({
+        pcs, //: this.genList("pc", { setting: 'fantasy', ...options }, partySize),
+        encounterGen: (targetCr: number) => this.gen("encounter", { setting: 'fantasy', ...options, targetCr }),
+      });
+    }
+    else if (type === "dungeon") {
+      const averageLevel = Math.round(pcs.reduce((sum, pc) => sum + pc.level, 0) / pcs.length);
+      const targetCr = Math.round(averageLevel * 0.75);
+      console.log(`Selected party of ${pcs.length} PCs (average level ${averageLevel}), targeting CR ${targetCr}`);
+      // this.genList("pc", { setting: 'fantasy', ...options }, partySize);
+      const dungeoneer = new Dungeoneer({
+        roller: User.interactiveRoll,
+        select: User.interactiveSelect,
+        outputSink: console.log,
+        dungeonGen: () => this.gen("dungeon", { setting: 'fantasy', ...options, _targetCr: targetCr }),
+        gen: this.gen.bind(this),
+        playerTeam: {
+          name: "Heroes",
+          combatants: pcs.map(pc => ({ ...pc, playerControlled: true })),
+          healingPotions: 2,
+        }
+      });
+
+      await dungeoneer.run();
+    } else if (type === "module") {
+      const moduleRunner = new ModuleRunner({
+        roller: User.interactiveRoll,
+        select: User.interactiveSelect,
+        prompt: User.interactivePrompt,
+        outputSink: console.log,
+        moduleGen: () => this.gen("module", { setting: 'fantasy', ...options }),
+        gen: this.gen.bind(this),
+        pcs: pcs.map(pc => ({ ...pc, playerControlled: true })),
+      });
+      await moduleRunner.run();
+    }
+    else {
+      throw new Error('Unsupported playground type: ' + type);
+    }
+  }
+
+  private async chooseParty(partySize: number = 2): Promise<Combatant[]> {
+    let party: Combatant[] = [];
+    let hasExistingPcs = false;
+    if (await Files.countFiles(`${Dungeoneer.dataPath}/pcs`) > 0) {
+      hasExistingPcs = true;
+    }
+    while (party.length < partySize) {
+      let whichPc = '(' + (party.length + 1) + '/' + partySize + ')';
+      let shouldWizard = await User.interactiveSelect(
+        'Would you like to customize this PC? ' + whichPc,
+        ['Yes', 'No']
+      );
+      if (shouldWizard === 'Yes') {
+        let raceSelect = await User.interactiveSelect(
+          'Select a race for this PC: ' + whichPc,
+          ['human', 'elf', 'dwarf', 'halfling', 'orc', 'fae']
+        );
+
+        let occupationSelect = await User.interactiveSelect(
+          'Select an occupation for this PC: ' + whichPc,
+          ['warrior', 'thief', 'mage', 'cleric', 'ranger', 'bard']
+        );
+
+        let wizardPc = this.gen("pc", { setting: 'fantasy', race: raceSelect, class: occupationSelect }) as Combatant;
+        console.table(wizardPc);
+        let confirm = await User.interactiveSelect(
+          'Do you want to use this PC? ' + whichPc,
+          ['Yes', 'No']
+        );
+        if (confirm === 'Yes') {
+          party.push(wizardPc);
+        }
+      } else {
+        let shouldSelect = await User.interactiveSelect(
+          'Would you like to select an existing PC? ' + whichPc,
+          ['Yes', 'No']
+        );
+        if (shouldSelect === 'Yes') {
+          const pcFiles = await Files.listFiles(`${Dungeoneer.dataPath}/pcs`);
+          const selectedPcName = await User.interactiveSelect(
+            'Select a PC to lead the dungeon crawl:',
+            pcFiles.map(name => name.replace('.json', ''))
+              .filter(name => party.every(p => p.name !== name))
+              .sort()
+          );
+          const selectedPc = await Files.readJSON(`${Dungeoneer.dataPath}/pcs/${selectedPcName}.json`) as Combatant;
+          party.push(selectedPc);
+        } else {
+          const pc: Combatant = this.gen("pc", { setting: 'fantasy' }) as Combatant;
+          if (!party.some(p => p.name === pc.name)) {
+            party.push(pc);
+          }
+        }
+      }
+    };
+    return party;
   }
 
   genList(
