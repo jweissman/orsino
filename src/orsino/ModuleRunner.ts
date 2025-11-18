@@ -37,7 +37,7 @@ interface GameState {
 export class ModuleRunner {
   private roller: Roll; // (subject: Combatant, description: string, sides: number, dice: number) => Promise<RollResult>;
   private select: Select<any>;
-  private prompt: (message: string) => Promise<string>;
+  private prompt: (message: string) => string;
 
   private outputSink: (message: string) => void;
   private moduleGen: () => CampaignModule;
@@ -48,7 +48,7 @@ export class ModuleRunner {
     completedDungeons: []
   };
 
-  private gen: (type: GenerationTemplateType, options?: Record<string, any>) => Promise<any>;
+  private gen: (type: GenerationTemplateType, options?: Record<string, any>) => any;
 
   activeModule: CampaignModule | null = null;
 
@@ -85,9 +85,9 @@ export class ModuleRunner {
     }
 
     this.outputSink("Generating module, please wait...");
-    this.activeModule = await this.moduleGen();
+    this.activeModule = this.moduleGen();
     // clear screen
-    this.outputSink("\x1Bc");
+    // this.outputSink("\x1Bc");
     this.outputSink(`Welcome to ${Stylist.bold(this.mod.name)}!`);
 
     await this.enter();
@@ -111,6 +111,7 @@ export class ModuleRunner {
     let days = 0;
     while (days++ < 30 && this.pcs.some(pc => pc.hp > 0)) {
       this.status(mod);
+      this.outputSink(`\n--- Day ${days}/30 ---`);
       const action = await this.menu();
       // this.outputSink(`You chose to ${action}.`);
 
@@ -253,7 +254,7 @@ export class ModuleRunner {
     return available[choice];
   }
 
-  static async randomInt(min: number, max: number): Promise<string> {
-    return String(Math.floor(Math.random() * (max - min + 1)) + min);
+  static async randomInt(_message: string): Promise<string> {
+    return String(Math.floor(Math.random() * 100) + 1);
   }
 }

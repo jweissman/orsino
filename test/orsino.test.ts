@@ -3,6 +3,7 @@ import Orsino from '../src/orsino';
 import Combat from '../src/orsino/Combat';
 import Dungeoneer, { BossRoom, Room } from '../src/orsino/Dungeoneer';
 import { ModuleRunner } from '../src/orsino/ModuleRunner';
+import AbilityHandler from '../src/orsino/Ability';
 
 describe('Orsino', () => {
   const orsino = new Orsino('fantasy');
@@ -56,14 +57,16 @@ describe('Orsino', () => {
 
   it('combat generator', async () => {
     let combat = new Combat();
-    combat.setUp(Combat.defaultTeams());
+    expect(combat.abilityHandler).toBeInstanceOf(AbilityHandler);
+
+    await combat.setUp(Combat.defaultTeams());
     expect(combat.isOver()).toBe(false);
     expect(combat.teams[0]).toHaveProperty('name');
     expect(combat.teams[1]).toHaveProperty('name');
     expect(combat.teams[0].combatants[0].hp).toBeGreaterThan(0);
     expect(combat.teams[1].combatants[0].hp).toBeGreaterThan(0);
 
-    await combat.setUp();
+    // await combat.setUp();
     let turn = await combat.round();
     expect(turn).toHaveProperty('number');
     // expect(turn).toHaveProperty('description');
@@ -103,7 +106,7 @@ describe('Orsino', () => {
   });
 
   it('mod generator', async () => {
-    const mod = await orsino.gen("module", { setting: "fantasy" });
+    const mod = orsino.gen("module", { setting: "fantasy" });
     expect(mod).toHaveProperty('name');
     expect(mod).toHaveProperty('terrain');
     expect(mod).toHaveProperty('town');
@@ -114,7 +117,7 @@ describe('Orsino', () => {
     expect(mod.dungeons).toBeInstanceOf(Array);
 
     let explorer = new ModuleRunner({
-      moduleGen: () => Promise.resolve(mod),
+      moduleGen: () => mod,
       pcs: [orsino.gen("pc", { setting: "fantasy" })]
     });
 

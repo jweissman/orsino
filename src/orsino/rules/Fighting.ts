@@ -1,3 +1,4 @@
+import Presenter from "../tui/Presenter";
 import { AttackResult } from "../types/AttackResult";
 import { Combatant } from "../types/Combatant";
 import { Roll } from "../types/Roll";
@@ -15,12 +16,39 @@ export class Fighting {
     let bonuses: { [key: string]: number } = {};
     if (combatant.activeEffects) {
       combatant.activeEffects.forEach(it => {
-        Object.entries(it.effect).forEach(([key, value]) => {
-          bonuses[key] = (bonuses[key] || 0) + value;
-        });
+        // console.log("Considering turn bonus effect:", it);
+        if (it.effect) {
+          Object.entries(it.effect).forEach(([key, value]) => {
+            bonuses[key] = (bonuses[key] || 0) + value;
+          });
+        }
       });
     }
     return bonuses;
+  }
+
+  static effectiveStats(combatant: Combatant): { [key: string]: number } {
+    let stats: { [key: string]: number } = {
+      str: combatant.str,
+      dex: combatant.dex,
+      int: combatant.int,
+      wis: combatant.wis,
+      cha: combatant.cha,
+      con: combatant.con,
+      ac: combatant.ac
+    };
+    if (combatant.activeEffects) {
+      combatant.activeEffects.forEach(it => {
+        if (it.effect) {
+          Object.entries(it.effect).forEach(([key, value]) => {
+            if (key in stats) {
+              stats[key] = (stats[key] || 0) + value;
+            }
+          });
+        }
+      });
+    }
+    return stats;
   }
 
   static async attack(
@@ -36,24 +64,29 @@ export class Fighting {
         critical: false
       };
     }
+    const effectiveAttacker = this.effectiveStats(attacker);
     let description = `${attacker.name} attacks ${defender.name}... `;
-    const strMod = this.statMod(attacker.str || 10);
-    const dexMod = this.statMod(attacker.dex || 10);
+    const strMod = this.statMod(effectiveAttacker.str || 10);
+    const dexMod = this.statMod(effectiveAttacker.dex || 10);
     let toHitTurnBonus = this.turnBonus(attacker).toHit || 0;
     const toHitBonus = dexMod  // DEX affects accuracy
       + toHitTurnBonus; // Any temporary bonuses to hits
     const strengthDamageBonus = Math.max(0, strMod);  // STR affects damage (min 0)
 
     const thac0 = this.thac0(attacker.level);
-    const ac = defender.ac - (this.turnBonus(defender).ac || 0);
+    // this causes an infinite loop somehow :()
+    const effectiveDefender = this.effectiveStats(defender);
+    const ac = effectiveDefender.ac - (this.turnBonus(defender).ac || 0);
+    // const ac = (defender.ac) - (this.turnBonus(defender).ac || 0);
     const whatNumberHits = thac0 - ac - toHitBonus;
 
     let bonusMessage = "";
     if (toHitBonus > 0) {
       bonusMessage += ` +${toHitBonus} to hit`;
     }
-    // note(`${Presenter.combatant(attacker, true)} (THAC0: ${thac0}${bonusMessage}) attacks ${Presenter.combatant(defender, true)} (AC: ${ac})... `);
-    // note(`Attacker THAC0: ${thac0}${bonusMessage}, Defender AC: ${ac}`); // What number hits: ${whatNumberHits} `);
+
+    console.log(`${Presenter.combatant(attacker, true)} (THAC0: ${thac0}${bonusMessage}) attacks ${Presenter.combatant(defender, true)} (AC: ${ac})... `);
+    console.log(`Attacker THAC0: ${thac0}${bonusMessage}, Defender AC: ${ac}`); // What number hits: ${whatNumberHits} `);
     const attackRoll = await roll(attacker, `to attack (must roll ${whatNumberHits} or higher to hit)`, 20);
     description += attackRoll.description;
     let success = attackRoll.amount >= whatNumberHits;

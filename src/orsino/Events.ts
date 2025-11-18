@@ -21,18 +21,19 @@ export type MissEvent = BaseEvent & { type: "miss"; };
 export type HealEvent = BaseEvent & { type: "heal"; amount: number };
 export type DefendEvent = BaseEvent & { type: "defend"; bonusAc: number };
 export type QuaffEvent = BaseEvent & { type: "quaff" };
-export type InspireEvent = BaseEvent & { type: "inspire"; target: Combatant; toHitBonus: number };
+// export type InspireEvent = BaseEvent & { type: "inspire"; target: Combatant; toHitBonus: number };
 export type FallenEvent = BaseEvent & { type: "fall" };
 export type FleeEvent = BaseEvent & { type: "flee" };
 export type FearEvent = BaseEvent & { type: "fear" };
-export type StumbleEvent = BaseEvent & { type: "stumble"; };
-export type PoisonedBladeEvent = BaseEvent & { type: "poisoned_blade" };
+// export type StumbleEvent = BaseEvent & { type: "stumble"; };
+// export type PoisonedBladeEvent = BaseEvent & { type: "poisoned_blade" };
 export type PoisonCloudEvent = BaseEvent & { type: "poison_cloud" };
 export type PoisoningEvent = BaseEvent & { type: "poisoned" };
-export type PoisonDamageEvent = BaseEvent & { type: "poison" };
+// export type PoisonDamageEvent = BaseEvent & { type: "poison" };
 export type ScreamEvent = BaseEvent & { type: "scream" };
-export type BlessEvent = BaseEvent & { type: "bless"; targets: Combatant[] };
+// export type BlessEvent = BaseEvent & { type: "bless"; targets: Combatant[] };
 
+export type StatusEffectEvent = BaseEvent & { type: "statusEffect"; effectName: string; effect: { [key: string]: any }; duration: number };
 export type StatusExpireEvent = BaseEvent & { type: "statusExpire"; effectName: string };
 
 export type CombatEvent = HitEvent
@@ -41,18 +42,19 @@ export type CombatEvent = HitEvent
   | DefendEvent
   | InitiateCombatEvent
   | QuaffEvent
-  | InspireEvent
+  // | InspireEvent
   | FallenEvent
   | FleeEvent
   | FearEvent
-  | StumbleEvent
+  // | StumbleEvent
+  | StatusEffectEvent
   | StatusExpireEvent
-  | PoisonedBladeEvent
+  // | PoisonedBladeEvent
   | PoisoningEvent
-  | PoisonDamageEvent
+  // | PoisonDamageEvent
   | PoisonCloudEvent
   | ScreamEvent
-  | BlessEvent
+  // | BlessEvent
   | CombatEndEvent
   | RoundStartEvent;
 
@@ -83,17 +85,18 @@ export default class Events {
       case "miss": return `${subject} attacks ${target} but misses.`;
       case "defend": return `${subject} takes a defensive stance, preparing to block incoming attacks.`;
       case "quaff": return `${subject} quaffs a healing potion.`;
-      case "inspire": return `${subject} inspires ${target}, granting +${event.toHitBonus} to hit.`;
+      // case "inspire": return `${subject} inspires ${target}, granting +${event.toHitBonus} to hit.`;
       case "fall": return `${subject} falls unconscious.`;
       case "flee": return `${subject} flees from combat.`;
       case "scream": return `${subject} lets out a terrifying scream!`;
       case "poison_cloud": return `${subject} shatters a capsule releasing a toxic cloud!`;
       case "fear": return `${subject} is frightened!`;
-      case "stumble": return `${subject} stumbles and loses their footing!`;
-      case "poisoned_blade": return `${subject} coats their blade with poison.`;
+      // case "stumble": return `${subject} stumbles and loses their footing!`;
+      // case "poisoned_blade": return `${subject} coats their blade with poison.`;
       case "poisoned": return `${subject} is poisoned!`;
-      case "poison": return `${subject} suffers poison damage.`;
-      case "bless": return `${subject} blesses ${Words.humanizeList(event.targets.map(t => t.forename))}.`;
+      // case "poison": return `${subject} suffers poison damage.`;
+      // case "bless": return `${subject} blesses ${Words.humanizeList(event.targets.map(t => t.forename))}.`;
+      case "statusEffect": return `${subject} is now ${event.effectName}! (${event.effect ? Object.entries({ ...event.effect, by: event.effect.by.forename }).map(([k, v]) => `${k}: ${v}`).join(", ") : "--"})`;
       case "statusExpire":
         if (event.effectName === "Poisoned Blade") {
           return `${subject}'s blade is no longer coated in poison.`;

@@ -1,6 +1,8 @@
 import Stylist from "./Style";
 import { Combatant } from "../types/Combatant";
 import Words from "./Words";
+import Combat from "../Combat";
+import { Fighting } from "../rules/Fighting";
 
 export default class Presenter {
   static combatant = (combatant: Combatant, minimal = false) => {
@@ -12,12 +14,15 @@ export default class Presenter {
     if (minimal) {
       let hpBar = Stylist.prettyValue(combatant.hp, combatant.maxHp);
       let name = Stylist.format(combatant.forename, 'bold');
-      return `${Stylist.colorize(name, combatant.playerControlled ? 'cyan' : 'yellow')} ${Stylist.colorize(hpBar, color)}`;
+      return `${Stylist.colorize(name, combatant.playerControlled ? 'cyan' : 'yellow')} ${Stylist.colorize(hpBar, color)} (${this.statLine(combatant)})`;
     }
 
     let combatClass = combatant.class || combatant.type;
     let classInfo = combatClass ? `, ${Words.capitalize(combatant.race || '')} ${Words.capitalize(combatClass)} ` : '';
-    const stats = Presenter.statLine(combatant);
+    const effective = Fighting.effectiveStats(combatant);
+    const stats = { STR: effective.str, DEX: effective.dex, INT: effective.int, WIS: effective.wis, CHA: effective.cha, CON: effective.con };
+    const statInfo = Object.entries(stats).map(([key, value]) => `${key}: ${value}`).join(', ');
+      //Presenter.statLine(combatant);
 
     const activeEffectNames = combatant.activeEffects?.map(e => e.name) || [];
     if (activeEffectNames.length > 0) {
@@ -28,7 +33,7 @@ export default class Presenter {
       Stylist.colorize(combatant.forename, combatant.playerControlled ? 'cyan' : 'yellow'),
       'bold'
     )}${classInfo}`;
-    let rhs = `(${stats}, Level ${combatant.level}, HP: ${Stylist.colorize(hpBar, color)} ${combatant.hp}/${combatant.maxHp})`;
+    let rhs = `(${statInfo}, Level ${combatant.level}, HP: ${Stylist.colorize(hpBar, color)} ${combatant.hp}/${combatant.maxHp}, AC: ${effective.ac})`;
     return `${lhs} ${rhs}`;
   }
 

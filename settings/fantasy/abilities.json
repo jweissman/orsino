@@ -1,0 +1,301 @@
+{
+  "wait": {
+    "name": "Wait",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Wait and do nothing this turn.",
+    "target": [
+      "self"
+    ],
+    "effects": []
+  },
+
+  "melee": {
+    "name": "Melee Attack",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Make a melee attack against an enemy with your primary weapon.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "attack"
+      }
+    ]
+  },
+
+  "ranged": {
+    "name": "Ranged Attack",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Make a ranged attack against an enemy with your primary weapon.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "attack"
+      }
+    ]
+  },
+
+  "defend": {
+    "name": "Defend",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Gain 4 AC until the start of your next turn.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Defending",
+          "effect": {
+            "ac": -4
+          },
+          "duration": 1
+        }
+      }
+    ]
+  },
+
+  "shield": {
+    "name": "Shield",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Grant yourself or an ally 2 AC for 3 rounds.",
+    "target": [ "self", "ally" ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Shielded",
+          "effect": {
+            "ac": -2
+          },
+          "duration": 3
+        }
+      }
+    ]
+  },
+
+  "charge": {
+    "name": "Charge",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Charge at an enemy, dealing 1d6 extra damage on a successful hit.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "attack"
+      },
+      {
+        "type": "damage",
+        "amount": "=1d6"
+      }
+    ]
+  },
+
+  "cure": {
+    "name": "Cure Major Wounds",
+    "type": "spell",
+    "aspect": "divine",
+    "description": "Heal yourself or an ally for 1d8 hit points.",
+    "target": [
+      "self",
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "heal",
+        "amount": "=1d8"
+      }
+    ]
+  },
+  "missile": {
+    "name": "Magic Missile",
+    "type": "spell",
+    "aspect": "arcane",
+    "description": "Fire three magical bolts that automatically hit and deal 1d4 damage each.",
+    "target": [ "randomEnemies", 3 ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d4"
+      }
+    ]
+  },
+  "bless": {
+    "name": "Bless",
+    "type": "skill",
+    "aspect": "divine",
+    "description": "Grant divine favor, adding +1 to all rolls for 6 rounds.",
+    "target": ["self", "ally"],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Blessed",
+          "duration": 6,
+          "effect": {
+            "allRolls": 1
+          }
+        }
+      }
+    ]
+  },
+  "inspire": {
+    "name": "Inspire",
+    "type": "skill",
+    "aspect": "social",
+    "description": "Inspire your allies, granting them a +2 bonus to attack rolls for the next 3 rounds.",
+    "target": [
+      "allies"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Inspired",
+          "effect": {
+            "toHit": 2
+          },
+          "duration": 3
+        }
+      }
+    ]
+  },
+  "poison_weapon": {
+    "name": "Poison Weapon",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Coat your weapon in poison for your next 2 attacks.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "poisoning blade",
+          "duration": 3,
+          "consumeOn": "attack",
+          "effect": {
+            "onAttackHit": [
+              {
+                "type": "debuff",
+                "status": {
+                  "name": "being poisoned",
+                  "duration": 3,
+                  "effect": {
+                    "onTurnEnd": [
+                      {
+                        "type": "damage",
+                        "amount": "=1d4"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+
+  "heal": {
+    "name": "Heal Ally",
+    "type": "skill",
+    "aspect": "divine",
+    "description": "Restore health to a wounded ally.",
+    "target": ["ally"],
+    "effects": [
+      {
+        "type": "heal",
+        "amount": "=1d4"
+      }
+    ]
+  },
+  
+  "fear": {
+    "name": "Terrifying Scream",
+    "type": "skill",
+    "aspect": "dark",
+    "description": "Let out a horrific scream, frightening nearby enemies.",
+    "target": ["enemies"],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Frightened",
+          "duration": 2,
+          "effect": {
+            "toHit": -2
+          }
+        },
+        "saveType": "wis",
+        "saveDC": 10
+      }
+    ]
+  },
+
+  "curse": {
+    "name": "Curse",
+    "type": "skill",
+    "aspect": "dark",
+    "description": "Curse an enemy, reducing all stats by 1.",
+    "target": ["enemy"],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Cursed",
+          "duration": 4,
+          "effect": {
+            "str": -1,
+            "dex": -1,
+            "int": -1,
+            "wis": -1,
+            "cha": -1,
+            "con": -1
+          }
+        },
+        "saveType": "wis",
+        "saveDC": 10
+      }
+    ]
+  },
+  
+  "poison_cloud": {
+    "name": "Poison Cloud",
+    "type": "skill",
+    "aspect": "toxic",
+    "description": "Release a cloud of toxic gas.",
+    "target": ["enemies"],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Poisoned",
+          "duration": 3,
+          "effect": {
+            "onTurnEnd": [
+              {
+                "type": "damage",
+                "amount": "=1d3"
+              }
+            ]
+          }
+        },
+        "saveType": "con",
+        "saveDC": 10
+      }
+    ]
+  }
+}

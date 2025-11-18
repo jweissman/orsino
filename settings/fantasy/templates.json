@@ -2,7 +2,7 @@
   "pc": {
     "gender": "=oneOf(male, female, neutral)",
     "race": "=oneOf(human, orc, elf, dwarf, halfling, gnome, fae)",
-    "class": "=oneOf(warrior, mage, thief, cleric, bard, ranger)",
+    "class": "=oneOf(warrior, mage, thief, cleric, bard, ranger, sage)",
     "age": "=16 + 2d20 + if(#race == \"elf\", 100, if(#race == \"dwarf\", 50, 0))",
     "_surname": "=lookup(surname, #class)",
     "forename": "=lookup(name, #gender)",
@@ -22,7 +22,8 @@
     "attackRolls": "=lookup(attackRolls, #weapon)",
     "armor": "=lookup(armor, #class)",
     "ac": "=10 + lookup(armorClassBonus, #armor) + floor((#dex-10)/2)",
-    "gp": "=1d100"
+    "gp": "=1d100",
+    "abilities": "=lookup(abilities, #class)"
   },
   "monster": {
     "terrain": "=oneOf(forest, cave, swamp, mountain, snow, desert)",
@@ -52,7 +53,8 @@
     "gp": "=lookup(monsterGold, #race)",
     "*terrainModifier": "=lookup(monsterTerrainModifier, #terrain)",
     "*typeModifier": "=lookup(monsterTypeModifier, #type)",
-    "hp": "=#maxHp"
+    "hp": "=#maxHp",
+    "abilities": "=lookup(monsterAbilities, #type)"
   },
   "encounter": {
     "targetCr": "=#_targetCr",

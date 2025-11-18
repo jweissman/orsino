@@ -12,10 +12,11 @@ import deepCopy from "./orsino/util/deepCopy";
 import Dungeoneer from "./orsino/Dungeoneer";
 import Files from "./orsino/util/Files";
 import { ModuleRunner } from "./orsino/ModuleRunner";
+import Choice from "inquirer/lib/objects/choice";
 
 export type Prompt = (message: string) => Promise<string>;
 
-export class User {
+class User {
   // print the message and return the user's input
   static async interactivePrompt(message: string): Promise<any> {
     process.stdout.write(message + " ");
@@ -30,10 +31,20 @@ export class User {
   static async interactiveSelect(
     message: string,
     choices: (
-      readonly (string | Separator)[]
-    )
+      readonly (string | Separator)[] | Choice<any>[] 
+    ),
+    subject?: Combatant,
   ): Promise<any> {
-    return await select({ message, choices })
+    if (choices.length === 0) {
+      throw new Error("No choices provided for selection");
+    }
+
+    if (subject && !subject.playerControlled) {
+      return Combat.samplingSelect(message, choices as any);
+    }
+
+    // console.log(`Selecting for ${subject?.name}: ${message}`);
+    return await select({ message, choices: choices as any })
   }
 
   static async interactiveRoll(subject: Combatant, description: string, sides: number): Promise<RollResult> {
@@ -140,11 +151,11 @@ export default class Orsino {
 
         let occupationSelect = await User.interactiveSelect(
           'Select an occupation for this PC: ' + whichPc,
-          ['warrior', 'thief', 'mage', 'cleric', 'ranger', 'bard']
+          ['warrior', 'thief', 'mage', 'cleric', 'ranger', 'bard', 'sage']
         );
 
         let wizardPc = this.gen("pc", { setting: 'fantasy', race: raceSelect, class: occupationSelect }) as Combatant;
-        console.table(wizardPc);
+        console.table({ ...wizardPc, abilities: wizardPc.abilities.join(", ") });
         let confirm = await User.interactiveSelect(
           'Do you want to use this PC? ' + whichPc,
           ['Yes', 'No']
@@ -248,7 +259,7 @@ export default class Orsino {
     }
   }
 
-  private lookupInTable(tableName: GenerationTemplateType, groupName: string): any {
+  public lookupInTable(tableName: GenerationTemplateType, groupName: string): any {
     const table = this.generationSource(tableName);
     if (!table || !(table instanceof Table)) {
       throw new Error(`Table not found: ${tableName}`);
@@ -262,6 +273,7 @@ export default class Orsino {
   }
 
   defaultSetting: Record<GenerationTemplateType, Template | Table> = {
+    module: new Template('module', {}),
     dungeon: new Template('dungeon', {
       name: '=oneOf("The Cursed Crypt", "The Forgotten Keep", "The Shadowed Caverns", "The Lost Temple", "The Haunted Catacombs")',
       description: '=oneOf("A dark and eerie place filled with traps and monsters.", "An ancient ruin with hidden secrets.", "A labyrinthine cave system teeming with danger.", "A forgotten temple guarded by undead.", "A sprawling catacomb haunted by restless spirits.")',

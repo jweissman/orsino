@@ -1,26 +1,29 @@
 import Choice from "inquirer/lib/objects/choice";
-import { Select } from "./types/Select";
 import { Combatant } from "./types/Combatant";
 import Presenter from "./tui/Presenter";
 import { Team } from "./types/Team";
 import { Roll } from "./types/Roll";
 import { Fighting } from "./rules/Fighting";
 import Stylist from "./tui/Style";
-import Events, { CombatEvent, InitiateCombatEvent, InspireEvent, HealEvent, MissEvent, HitEvent, FallenEvent, DefendEvent, FleeEvent, FearEvent, StatusExpireEvent, RoundStartEvent, CombatEndEvent, StumbleEvent, PoisonedBladeEvent, PoisonDamageEvent, PoisoningEvent, ScreamEvent, PoisonCloudEvent, BlessEvent } from "./Events";
+import Events, { CombatEvent, InitiateCombatEvent, HealEvent, MissEvent, HitEvent, FallenEvent, StatusExpireEvent, RoundStartEvent, CombatEndEvent, StatusEffectEvent } from "./Events";
+import AbilityHandler, { Ability } from "./Ability";
+import { Answers } from "inquirer";
 
 export type RollResult = {
   amount: number;
   description: string;
 };
 
+export type ChoiceSelector<T extends Answers> = (description: string, options: Choice<T>[], combatant?: Combatant) => Promise<T>;
 export default class Combat {
   private turnNumber: number = 0;
   public winner: string | null = null;
   public teams: Team[] = [];
+  public abilityHandler = new AbilityHandler();
   private combatantsByInitiative: { combatant: any; initiative: number }[] = [];
 
   protected roller: Roll;
-  protected select: Select<any>;
+  protected select: ChoiceSelector<any>;
   protected journal: CombatEvent[] = [];
   protected outputSink: (message: string) => void;
 
@@ -36,7 +39,7 @@ export default class Combat {
     let enabledOptions = options.filter(
       (option) => !option.disabled
     )
-    return enabledOptions[Math.floor(Math.random() * enabledOptions.length)].value;
+    return enabledOptions[Math.floor(Math.random() * enabledOptions.length)]?.value;
   }
 
   static defaultTeams(): Team[] {
@@ -49,15 +52,16 @@ export default class Combat {
           dex: 11, str: 12, int: 10, wis: 10, cha: 10, con: 12,
           attackRolls: 1,
           damageDie: 8, playerControlled: true, xp: 0, gp: 0,
-          weapon: "Short Sword"
+          weapon: "Short Sword",
+          abilities: ["melee"]
         }], healingPotions: 3
       },
       {
         name: "Enemy", combatants: [
-          { forename: "Zok", name: "Goblin A", hp: 4, maxHp: 4, level: 1, ac: 17, attackRolls: 2, damageDie: 3, str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger" },
+          { forename: "Zok", name: "Goblin A", hp: 4, maxHp: 4, level: 1, ac: 17, attackRolls: 2, damageDie: 3, str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", abilities: ["melee"] },
           {
             forename: "Mog", name: "Goblin B", hp: 4, maxHp: 4, level: 1, ac: 17, attackRolls: 2, damageDie: 3,
-            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger"
+            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", abilities: ["melee"]
           }
         ], healingPotions: 0
       }
@@ -88,7 +92,19 @@ export default class Combat {
   static rollDie(subject: Combatant, description: string, sides: number): RollResult {
     let result = Math.floor(Math.random() * sides) + 1;
     let prettyResult = Stylist.colorize(result.toString(), result === sides ? 'green' : result === 1 ? 'red' : 'yellow');
+
     let rollDescription = Stylist.italic(`${subject.name} rolled ${description} and got a ${prettyResult}.`);
+
+    if (subject.activeEffects) {
+      // check for 'allRolls' bonus effects
+      subject.activeEffects.forEach(status => {
+        if (status.effect && status.effect.allRolls) {
+          result += status.effect.allRolls;
+          rollDescription += ` ${subject.name} has the ${status.name} status, adding ${status.effect.allRolls} to the roll (roll is now ${result}).`;
+        }
+      });
+    }
+
     return { amount: result, description: rollDescription };
   }
 
@@ -110,6 +126,11 @@ export default class Combat {
 
     this.combatantsByInitiative = await this.determineInitiative();
     this.emit({ type: "initiate", order: this.combatantsByInitiative } as Omit<InitiateCombatEvent, "turn">);
+
+    this.allCombatants.forEach(c => c.abilitiesUsed = []);
+
+    await this.abilityHandler.loadAbilities();
+    console.log("Combat setup complete!");
   }
 
   static maxSpellSlotsForLevel(level: number): number { return Math.ceil(level / 2); }
@@ -125,135 +146,106 @@ export default class Combat {
     return 0;
   }
 
+  get commandHandlers() {
+    return {
+      roll: this.roller,
+      attack: this.pcAttacks.bind(this),
+      hit: this.handleHit.bind(this),
+      heal: this.handleHeal.bind(this),
+      status: this.handleStatusEffect.bind(this)
+    }
+  }
 
   async pcTurn(combatant: Combatant, enemies: Combatant[], allies: Combatant[]) {
-    const choices = [
-      { disabled: false, short: "Attack!", name: "⚔️ Attack", value: "attack" },
-      { disabled: false, short: "Defend", name: "🛡️ Defend (gain +4 AC until your next turn)", value: "defend" },
-      { disabled: this.wounded(allies).length == 0, short: "First Aid", name: "🩹 First Aid (heal 1d4 HP to ally)", value: "heal" },
-      {
-        short: "Quaff", name: `🍶 Quaff Potion (${this.teams[0].healingPotions})`, value: "quaff",
-        disabled: (this.teams[0].healingPotions === 0 || combatant.hp >= combatant.maxHp),
-      }
-    ];
+    console.log(`It's ${Presenter.combatant(combatant)}'s turn!`);
+    const choices: Choice<Ability>[] = [ ];
 
     let spellSlotsRemaining = (Combat.maxSpellSlotsForCombatant(combatant) || 0) - (combatant.spellSlotsUsed || 0);
-    let standingAllies = this.living(allies);
-    let pips = "⚡".repeat(spellSlotsRemaining) + "⚫".repeat((Combat.maxSpellSlotsForCombatant(combatant) || 0) - spellSlotsRemaining);
-    if (combatant.class === "mage") {
-      choices.push({ disabled: spellSlotsRemaining === 0, short: "Magic Missile " + pips, name: "✨ Magic Missile (deal 3d4 damage to an enemy)", value: "missile" });
-    } else if (combatant.class === "bard") {
-      choices.push({
-        disabled: spellSlotsRemaining === 0 && standingAllies.length > 0, short: "Inspire " + pips, name: "🎶 Inspire (grant to-hit bonus for an ally until their next turn)", value: "inspire"
-      });
-    } else if (combatant.class === "cleric") {
-      choices.push({ disabled: spellSlotsRemaining === 0, short: "Cure Wounds " + pips, name: "❤️‍🩹 Cure Wounds (restore 2d6 HP to self or ally)", value: "cure" });
-      choices.push({ disabled: spellSlotsRemaining === 0, short: "Blessing " + pips, name: "🙏 Bless (grant +1 to hit for all allies for 10 turns)", value: "bless" });
-    } else if (combatant.class === "thief") {
-      if (!combatant.activeEffects?.some(e => e.name === "Poisoned Blade")) {
-        choices.push({ disabled: false, short: "Poison Dagger", name: "🗡️ Poison Dagger (add 1d3 poison damage to next attack)", value: "poison" });
+    let pips = "";
+
+    let abilities = combatant.abilities.map(a => this.abilityHandler.getAbility(a)); //.filter(a => a);
+    abilities.forEach((ability: Ability) => {
+      let validTargets = this.abilityHandler.validTargets(ability, combatant, allies, enemies);
+      let disabled = validTargets.length === 0;
+      if (ability.target.includes("randomEnemies") && this.living(enemies).length > 0) {
+        disabled = false;
       }
-    } else if (combatant.class === "warrior") {
+      if (!disabled) {
+        if (ability.type == "spell") {
+          pips = "⚡".repeat(spellSlotsRemaining) + "⚫".repeat((Combat.maxSpellSlotsForCombatant(combatant) || 0) - spellSlotsRemaining);
+          disabled = spellSlotsRemaining === 0;
+        } else if (ability.type == "skill") {
+          // want to track consumption here
+          // console.log("Already used ", ability.name, "?", combatant.abilitiesUsed?.includes(ability.name) || false)
+          // disabled = !combatant.abilitiesUsed?.includes(ability.name);
+        } else {
+          throw new Error(`Unknown ability type: ${ability.type}`);
+        }
+      }
+
       choices.push({
-        disabled: combatant.abilitiesUsed?.includes("charge") || false,
-        short: "Charge",
-        name: "🏇 Charge (chance to deal 1d6 bonus damage)",
-        value: "charge"
+        disabled,
+        short: ability.name + " " + pips,
+        name: `${ability.name} (${ability.description})`,
+        value: ability
       })
+    });
+
+    const action: Ability = await this.select(`Your turn, ${Presenter.combatant(combatant)} - what do you do?`, choices, combatant);
+
+    let validTargets = this.abilityHandler.validTargets(action, combatant, allies, enemies);
+    let targetOrTargets = validTargets[0];
+    if (validTargets.length > 1) {
+      targetOrTargets = await this.select(`Select target(s) for ${action.name}:`, validTargets.map(t => ({
+        name: Array.isArray(t) ? t.map(c => Presenter.combatant(c)).join("; ") : t.name,
+        value: t,
+        short: Array.isArray(t) ? t.map(c => c.name).join(", ") : t.name,
+        disabled: false //Array.isArray(t) ? t.every(c => c.hp <= 0) : t.hp <= 0
+      })), combatant);
+    } else if (action.target.includes("randomEnemies") && action.target.length === 2) {
+      // pick random enemies
+      let count = action.target[1] as any as number;
+      let possibleTargets = this.living(enemies);
+      targetOrTargets = [];
+      for (let i = 0; i < count; i++) {
+        targetOrTargets.push(possibleTargets[Math.floor(Math.random() * possibleTargets.length)]);
+      }
     }
 
-    const action = await this.select(`Your turn, ${Presenter.combatant(combatant)} - what do you do?`, choices);
+    await AbilityHandler.perform(action, combatant, targetOrTargets, this.commandHandlers);
+  }
 
-    switch (action) {
-      case "attack":
-        await this.pcAttacks(combatant, enemies);
-        break;
-      case "defend":
-        combatant.activeEffects = combatant.activeEffects || [];
-        combatant.activeEffects.push({ name: "Defending", effect: { ac: 4 }, duration: 1 });
-        this.emit({ type: "defend", subject: combatant });
-        break;
-      case "quaff":
-        this.emit({ type: "quaff", subject: combatant });
-        combatant.hp = Math.min(combatant.maxHp, combatant.hp + 10);
-        this.teams[0].healingPotions = Math.max(0, this.teams[0].healingPotions - 1);
-        break;
-      case "heal":
-        await this.pcFirstAid(combatant, this.wounded(allies));
-        break;
-      case "charge":
-        // normal attack flow
-        let hit = await this.pcAttacks(combatant, enemies);
-        if (hit.success) {
-          const bonusDamage = (await this.roller(combatant, "for charge bonus damage", 6)).amount;
-          if (bonusDamage >= 4) {
-            this.handleHit(combatant, hit.target, bonusDamage, false, "charge bonus damage", true);
-          }
-        }
-        combatant.abilitiesUsed = combatant.abilitiesUsed || [];
-        combatant.abilitiesUsed.push("charge");
-        break;
-      case "bless":
-        allies.forEach(pc => {
-          pc.activeEffects = pc.activeEffects || [];
-          pc.activeEffects.push({ name: `Blessing of ${combatant.forename}`, effect: { toHit: 1 }, duration: 10 });
-        });
-        this.emit({ type: "bless", subject: combatant, targets: allies } as Omit<BlessEvent, "turn">);
-        combatant.spellSlotsUsed = (combatant.spellSlotsUsed || 0) + 1;
-        break;
-      case "inspire":
-        const inspireTarget = await this.selectTarget(allies, "inspiration");
-        let toHit = 2 + Fighting.statMod(combatant.cha);
-        inspireTarget.activeEffects = inspireTarget.activeEffects || [];
-        inspireTarget.activeEffects.push({ name: "Inspired", effect: { toHit }, duration: 2 });
-        this.emit({ type: "inspire", subject: combatant, target: inspireTarget, toHitBonus: toHit } as Omit<InspireEvent, "turn">);
-        combatant.spellSlotsUsed = (combatant.spellSlotsUsed || 0) + 1;
-        break;
-      case "cure":
-        const cureTarget = await this.selectTarget([...allies, combatant], "healing");
-        let healAmount = (await this.roller(combatant, "for healing", 6)).amount + (await this.roller(combatant, "for healing", 6)).amount + 2;
-        let wisMod = Math.max(0, Fighting.statMod(combatant.wis));
-        if (wisMod > 0) {
-          healAmount += wisMod;
-        }
-        cureTarget.hp = Math.min(cureTarget.maxHp, cureTarget.hp + healAmount);
-        this.emit({ type: "heal", subject: combatant, target: cureTarget, amount: healAmount } as Omit<HealEvent, "turn">);
-        combatant.spellSlotsUsed = (combatant.spellSlotsUsed || 0) + 1;
-        break;
-      case "missile":
-        const target = await this.selectTarget(enemies, "casting of Magic Missile");
-        const attackRolls = [];
-        for (let i = 0; i < 3; i++) {
-          attackRolls.push(await this.roller(combatant, `for Magic Missile damage (bolt ${i + 1}/3)`, 4));
-        }
-        let damage = attackRolls
-          .map(r => r.amount)
-          .reduce((sum: number, dmg: number) => sum + dmg, 0);
-        let intMod = Math.max(0, Fighting.statMod(combatant.int));
-        damage += intMod;
-        this.handleHit(combatant, target, damage, false, `${combatant.forename}'s magic missile`, true);
-        combatant.spellSlotsUsed = (combatant.spellSlotsUsed || 0) + 1;
-        break;
-      case "poison":
-        combatant.activeEffects = combatant.activeEffects || [];
-        combatant.activeEffects.push({ name: "Poisoned Blade", effect: { poisonDamage: "1d3" }, duration: 2 });
-        this.emit({ type: "poisoned_blade", subject: combatant } as Omit<PoisonedBladeEvent, "turn">);
-        break;
+  async handleStatusEffect(_user: Combatant, target: Combatant, name: string, effect: { [key: string]: any }, duration: number): Promise<void> {
+    // if they already have the effect, remove it and reapply it with the new duration
+    if (target.activeEffects) {
+      let existingEffectIndex = target.activeEffects.findIndex(e => e.name === name);
+      if (existingEffectIndex !== -1) {
+        target.activeEffects.splice(existingEffectIndex, 1);
+      }
     }
+
+    target.activeEffects = target.activeEffects || [];
+    target.activeEffects.push({ name, effect, duration });
+    this.emit({
+      type: "statusEffect", subject: target, effectName: name, effect, duration
+    } as Omit<StatusEffectEvent, "turn">);
+  }
+
+  async handleHeal(healer: Combatant, target: Combatant, amount: number): Promise<void> {
+    target.hp = Math.min(target.maxHp, target.hp + amount);
+    // add wis bonus to healing
+    const effective = Fighting.effectiveStats(healer);
+    const wisBonus = Math.max(0, Fighting.statMod(effective.wis));
+    if (wisBonus > 0) {
+      target.hp = Math.min(target.maxHp, target.hp + wisBonus);
+      amount += wisBonus;
+    }
+    this.emit({ type: "heal", subject: healer, target, amount } as Omit<HealEvent, "turn">);
   }
 
   async handleHit(attacker: Combatant, defender: Combatant, damage: number, critical: boolean, by: string, success: boolean): Promise<void> {
     if (!success) {
       this.emit({ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">);
-      if (critical && Math.random() < 0.15) {
-        attacker.activeEffects = attacker.activeEffects || [];
-        attacker.activeEffects.push({
-          name: "stumbling",
-          effect: { toHit: -2 },
-          duration: 1
-        });
-        this.emit({ type: "stumble", subject: attacker } as Omit<StumbleEvent, "turn">);
-      }
       return;
     }
 
@@ -261,160 +253,21 @@ export default class Combat {
     this.emit({ type: "hit", subject: attacker, target: defender, damage, success: true, critical, by } as Omit<HitEvent, "turn">);
     if (defender.hp <= 0) {
       this.emit({ type: "fall", subject: defender } as Omit<FallenEvent, "turn">);
-    } else {
-      if (by !== "poison") {
-        let hasPoisonedBlade = attacker.activeEffects?.some(e => e.name === "Poisoned Blade");
-        if (hasPoisonedBlade) {
-          const poisonDamage = (await this.roller(attacker, "for poison damage", 3)).amount;
-          this.emit({ type: "poisoned", subject: defender } as Omit<PoisoningEvent, "turn">);
-          // don't recurse here if we can avoid it -- await this.handleHit(defender, defender, poisonDamage, false, "poison", true);
-          defender.activeEffects = defender.activeEffects || [];
-          defender.activeEffects.push({
-            name: "Poisoned",
-            effect: { hpLoss: poisonDamage },
-            duration: 3
-          });
-        }
-      }
     }
   }
 
-  async pcFirstAid(healer: Combatant, allies: Combatant[]) {
-    let validTargets = this.living(allies);
-    let target = this.weakest(validTargets);
-    if (validTargets.length > 1) {
-      target = await this.selectTarget(validTargets, "first aid");
-    }
-    const wisBonus = Math.max(0, Fighting.statMod(healer.wis));
-    const healAmount = (await this.roller(healer, "for first aid", 4)).amount + wisBonus;
-    target.hp = Math.min(target.maxHp, target.hp + healAmount);
-    this.emit({ type: "heal", subject: healer, target, amount: healAmount } as Omit<HealEvent, "turn">);
-  }
-
-  async selectTarget(validTargets: Combatant[], action: string): Promise<Combatant> {
-    let target = validTargets[0];
-    if (validTargets.length > 1) {
-      const targetOptions: Choice<Combatant>[] = validTargets.map(t => ({ name: t.name, short: t.forename.substring(0, 8), description: Presenter.combatant(t), value: t, disabled: false }));
-      target = (await this.select(`Select target for ${action}:`, targetOptions));
-    }
-    return target;
-  }
-
-  async pcAttacks(combatant: Combatant, validTargets: Combatant[]): Promise<{
+  async pcAttacks(combatant: Combatant, target: Combatant, roller: Roll = this.roller): Promise<{
     success: boolean;
     target: Combatant;
   }> {
-    let target = this.weakest(validTargets);
-    if (validTargets.length > 1) { target = await this.selectTarget(validTargets, "attack with " + combatant.weapon); }
-    const { damage, critical, success } = await Fighting.attack(this.roller, combatant, target);
+    const { damage, critical, success } = await Fighting.attack(roller, combatant, target);
     await this.handleHit(combatant, target, damage, critical, `${combatant.forename}'s ${combatant.weapon}`, success);
     return { success, target };
   }
 
   async npcTurn(combatant: Combatant, enemies: Combatant[], allies: Combatant[]) {
-    let target = this.weakest(enemies);
-    let actions = ["attack", "defend"];
-
-    if (combatant.type === "Shaman" || combatant.type === "Sage" || combatant.type === "Hierophant" || combatant.type === "Death Priest") {
-      if (this.wounded([...allies, combatant]).length > 0) {
-        actions.push("heal");
-      }
-    } else if (combatant.type === "Hierophant" || combatant.type === "Archmage" || combatant.type === "Cultist" || combatant.type === "Stalker") {
-      if (this.living(enemies).length > 1) {
-        actions.push("fear");
-      }
-    } else if (combatant.type === "Mercenary" || combatant.type === "Bandit" || combatant.type === "Assassin" || combatant.type === "Thief") {
-      if (!combatant.abilitiesUsed?.includes("poison")) {
-        actions.push("poison");
-      }
-    } else if (
-      combatant.type === "Warrior" || combatant.type === "Fury" || combatant.type === "Barbarian" || 
-      combatant.type === "Brute" || combatant.type === "Berserker" || combatant.type === "Warlord" || combatant.type === "General"
-    ) {
-      if (!combatant.abilitiesUsed?.includes("charge")) {
-        actions.push("charge");
-      }
-    } else if (combatant.hp < combatant.maxHp / 3) {
-      actions.push("flee");
-    }
-
-    const action = actions[Math.floor(Math.random() * actions.length)];
-    switch (action) {
-      case "attack":
-        let attack = await Fighting.attack(this.roller, combatant, target);
-        await this.handleHit(combatant, target, attack.damage, attack.critical, `${combatant.forename}'s attack`, attack.success);
-        break;
-      case "defend":
-        combatant.activeEffects = combatant.activeEffects || [];
-        combatant.activeEffects.push({ name: "Defending", effect: { ac: 4 }, duration: 1 });
-        this.emit({ type: "defend", subject: combatant } as Omit<DefendEvent, "turn">);
-        break;
-      case "heal":
-        const healTarget = this.weakest([...allies, combatant]);
-        const healAmount = (await this.roller(combatant, "for healing", 4)).amount + Fighting.statMod(combatant.wis);
-        if (healAmount > 0) {
-          healTarget.hp = Math.min(healTarget.maxHp, healTarget.hp + healAmount);
-          this.emit({ type: "heal", subject: combatant, target: healTarget, amount: healAmount } as Omit<HealEvent, "turn">);
-        }
-        break;
-      case "charge":
-        const chargeAttack = await Fighting.attack(this.roller, combatant, target); //, this._note.bind(this));
-        await this.handleHit(combatant, target, chargeAttack.damage, chargeAttack.critical, `${combatant.forename}'s charge`, chargeAttack.success);
-        if (chargeAttack.success && target.hp > 0) {
-          const extraDamage = (await this.roller(combatant, "for charge damage", 6)).amount;
-          await this.handleHit(combatant, target, extraDamage, false, `${combatant.forename}'s charge bonus damage`, true);
-          // target.hp -= extraDamage;
-          // this.note(`${target.name} takes an additional ${extraDamage} damage from the charge!`);
-        }
-        combatant.abilitiesUsed = combatant.abilitiesUsed || [];
-        combatant.abilitiesUsed.push("charge");
-        break;
-      case "flee":
-        const fleeRoll = await this.roller(combatant, "to flee", 20);
-        if (fleeRoll.amount + Math.round((combatant.dex - 10) / 2) >= 10) {
-          this.emit({ type: "flee", subject: combatant } as Omit<FleeEvent, "turn">);
-          let team = this.teams.find(team => team.combatants.includes(combatant));
-          if (team) {
-            team.combatants = team.combatants.filter(c => c !== combatant);
-          }
-          // remove from initiative order
-          this.combatantsByInitiative = this.combatantsByInitiative.filter(c => c.combatant !== combatant);
-        } else {
-          combatant.activeEffects = combatant.activeEffects || [];
-          combatant.activeEffects.push({ name: "Frightened", effect: { toHit: -2 }, duration: 1 });
-          this.emit({ type: "fear", subject: combatant } as Omit<FearEvent, "turn">);
-        }
-        break;
-      case "fear":
-        // apply frightened status to all enemies (DC 10 wisdom check saves)
-        this.emit({ type: "scream", subject: combatant } as Omit<ScreamEvent, "turn">);
-        for (let enemy of enemies) {
-          const saveRoll = await this.roller(enemy, "to resist fear", 20);
-          if (saveRoll.amount + Math.round((enemy.wis - 10) / 2) < 10) {
-            enemy.activeEffects = enemy.activeEffects || [];
-            enemy.activeEffects.push({ name: "Frightened", effect: { toHit: -2 }, duration: 2 });
-            this.emit({ type: "fear", subject: enemy } as Omit<FearEvent, "turn">);
-          }
-        }
-        break;
-      case "poison":
-        this.emit({ type: "poison_cloud", subject: combatant } as Omit<PoisonCloudEvent, "turn">);
-        for (let enemy of enemies) {
-          const saveRoll = await this.roller(enemy, "to resist poison", 20);
-          if (saveRoll.amount + Math.round((enemy.con - 10) / 2) < 10) {
-            this.emit({ type: "poisoned", subject: enemy } as Omit<PoisoningEvent, "turn">);
-            enemy.activeEffects = enemy.activeEffects || [];
-            enemy.activeEffects.push({
-              name: "Poisoned",
-              effect: { hpLoss: (await this.roller(combatant, "for poison damage", 3)).amount },
-              duration: 3
-            });
-          }
-        }
-        combatant.abilitiesUsed = combatant.abilitiesUsed || [];
-        combatant.abilitiesUsed.push("poison");
-        break;
-    }
+    // TODO pick weakest enemy / apply AI behavior...
+    await this.pcTurn(combatant, enemies, allies);
   }
 
   async turn(combatant: Combatant) {
@@ -430,15 +283,8 @@ export default class Combat {
       for (const status of combatant.activeEffects) {
         if (status.duration === 0) {
           this.emit({ type: "statusExpire", subject: combatant, effectName: status.name } as Omit<StatusExpireEvent, "turn">);
-        } else {
-          switch (status.name) {
-            case "Poisoned":
-              await this.handleHit(combatant, combatant, status.effect.hpLoss, false, "poison", true);
-              break;
-          }
         }
       }
-      combatant.activeEffects = combatant.activeEffects.filter(it => it.duration > 0);
     }
 
     // don't attempt to act if we're already defeated
@@ -450,6 +296,19 @@ export default class Combat {
       await this.pcTurn(combatant, validTargets, allies);
     } else {
       await this.npcTurn(combatant, validTargets, allies);
+    }
+
+    if (combatant.activeEffects) {
+      combatant.activeEffects = combatant.activeEffects.filter(it => it.duration > 0);
+      // run onTurnEnd for all active effects
+      for (const status of combatant.activeEffects) {
+        if (status.effect['onTurnEnd']) {
+          for (const effect of status.effect['onTurnEnd']) {
+            // apply fx to self
+            await AbilityHandler.handleEffect(status.name, effect, effect.by || combatant, combatant, this.commandHandlers);
+          }
+        }
+      }
     }
   }
 

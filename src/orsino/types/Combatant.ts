@@ -1,5 +1,7 @@
+import { AbilityEffect } from "../Ability";
 
 export interface Combatant {
+  abilities: string[];
   name: string;
   class?: string;
   race?: string;
@@ -30,6 +32,9 @@ export interface Combatant {
     name: string;
     effect: { [key: string]: any };
     duration: number;
+
+    onAttack?: AbilityEffect[];
+    onTurnEnd?: AbilityEffect[];
   }[];
 
   // turnBonus?: { [key: string]: number };

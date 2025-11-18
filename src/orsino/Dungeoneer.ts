@@ -65,7 +65,8 @@ export default class Dungeoneer {
         dex: 11, str: 12, int: 10, wis: 10, cha: 10, con: 12,
         attackRolls: 1,
         weapon: "Short Sword",
-        damageDie: 8, playerControlled: true, xp: 0, gp: 0
+        damageDie: 8, playerControlled: true, xp: 0, gp: 0,
+        abilities: ["melee", "defend"]
       }],
       healingPotions: 3
     };
@@ -239,10 +240,8 @@ export default class Dungeoneer {
       note: this.outputSink
     });
 
-    this.playerTeam.combatants.forEach(pc => {
-      pc.hp = Math.max(1, pc.hp);
-      pc.abilitiesUsed = [];
-    });
+    // stabilize to 1 HP??
+    // this.playerTeam.combatants.forEach(pc => { pc.hp = Math.max(1, pc.hp); });
 
     // await combat.singleCombat([this.playerTeam, this.currentMonsterTeam]);
     await combat.setUp([this.playerTeam, this.currentMonsterTeam]);
@@ -404,6 +403,9 @@ export default class Dungeoneer {
   static defaultGen(): Dungeon {
     return {
       dungeon_name: 'The Cursed Caverns',
+      rumor: 'A dark cave rumored to be home to a fearsome Shadow Dragon.',
+      direction: 'north',
+      intendedCr: 3,
       depth: 2,
       dungeon_type: 'cave',
       race: 'dwarven',
@@ -417,7 +419,7 @@ export default class Dungeoneer {
         boss_encounter: {
           cr: 5,
           monsters: [
-            { forename: "Shadow Dragon", name: "Shadow Dragon", hp: 50, maxHp: 50, level: 5, ac: 18, dex: 14, str: 20, con: 16, int: 12, wis: 10, cha: 14, damageDie: 10, playerControlled: false, xp: 500, gp: 1000, attackRolls: 2, weapon: "Bite" }
+            { forename: "Shadow Dragon", name: "Shadow Dragon", hp: 50, maxHp: 50, level: 5, ac: 18, dex: 14, str: 20, con: 16, int: 12, wis: 10, cha: 14, damageDie: 10, playerControlled: false, xp: 500, gp: 1000, attackRolls: 2, weapon: "Bite", abilities: ["melee"] }
           ]
         },
         treasure: "A legendary sword and a chest of gold.",
@@ -433,7 +435,7 @@ export default class Dungeoneer {
           encounter: {
             cr: 1,
             monsters: [
-              { forename: "Goblin", name: "Goblin", hp: 7, maxHp: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, damageDie: 6, playerControlled: false, xp: 50, gp: 10, attackRolls: 1, weapon: "Dagger" }
+              { forename: "Goblin", name: "Goblin", hp: 7, maxHp: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, damageDie: 6, playerControlled: false, xp: 50, gp: 10, attackRolls: 1, weapon: "Dagger", abilities: ["melee"]}
             ]
           }
         },
@@ -446,7 +448,7 @@ export default class Dungeoneer {
           encounter: {
             cr: 2,
             monsters: [
-              { forename: "Orc", name: "Orc", hp: 15, maxHp: 15, level: 2, ac: 13, dex: 12, str: 16, con: 14, int: 8, wis: 10, cha: 8, damageDie: 8, playerControlled: false, xp: 100, gp: 20, attackRolls: 1, weapon: "Axe" }
+              { forename: "Orc", name: "Orc", hp: 15, maxHp: 15, level: 2, ac: 13, dex: 12, str: 16, con: 14, int: 8, wis: 10, cha: 8, damageDie: 8, playerControlled: false, xp: 100, gp: 20, attackRolls: 1, weapon: "Axe", abilities: ["melee"]},
             ]
           }
         }
@@ -511,16 +513,4 @@ export default class Dungeoneer {
     }
     return null;
   }
-
-  // private autoroll = async (subject: Combatant, description: string, sides: number) => {
-  //   return Combat.rollDie(subject, description, sides);
-  // }
-
-  // private autoselect = async (prompt: string, options: any[]) => {
-  //   this.note(prompt);
-  //   options.forEach((option, index) => {
-  //     this.note(`${index + 1}. ${option.name}`);
-  //   });
-  //   return options[0].value;
-  // }
 }
