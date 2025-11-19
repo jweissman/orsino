@@ -20,8 +20,8 @@ export default class Presenter {
     let combatClass = combatant.class || combatant.type;
     let classInfo = combatClass ? `, ${Words.capitalize(combatant.race || '')} ${Words.capitalize(combatClass)} ` : '';
     const effective = Fighting.effectiveStats(combatant);
-    const stats = { STR: effective.str, DEX: effective.dex, INT: effective.int, WIS: effective.wis, CHA: effective.cha, CON: effective.con };
-    const statInfo = Object.entries(stats).map(([key, value]) => `${key}: ${value}`).join(', ');
+    // const stats = { STR: effective.str, DEX: effective.dex, INT: effective.int, WIS: effective.wis, CHA: effective.cha, CON: effective.con };
+    // const statInfo = Object.entries(stats).map(([key, value]) => `${key}: ${value}`).join(', ');
       //Presenter.statLine(combatant);
 
     const activeEffectNames = combatant.activeEffects?.map(e => e.name) || [];
@@ -33,7 +33,7 @@ export default class Presenter {
       Stylist.colorize(combatant.forename, combatant.playerControlled ? 'cyan' : 'yellow'),
       'bold'
     )}${classInfo}`;
-    let rhs = `(${statInfo}, Level ${combatant.level}, HP: ${Stylist.colorize(hpBar, color)} ${combatant.hp}/${combatant.maxHp}, AC: ${effective.ac})`;
+    let rhs = `(HP: ${Stylist.colorize(hpBar, color)} ${combatant.hp}/${combatant.maxHp}, AC: ${effective.ac})`;
     return `${lhs} ${rhs}`;
   }
 

@@ -183,7 +183,11 @@ export default class Dungeoneer {
     this.playerTeam.combatants.forEach(c => {
       console.log(Presenter.combatant(c, false));
       console.table(
-        { ...c, activeEffects: c.activeEffects?.map(e => e.name).join(", ") || "None" },
+        {
+          ...c,
+          activeEffects: c.activeEffects?.map(e => e.name).join(", ") || "None",
+          abilities: c.abilities.join(", ")
+        },
       );
     });
   }

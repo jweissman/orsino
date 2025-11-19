@@ -59,6 +59,16 @@
 [ ] Should only be able to visit temple _once_ per long rest/visit in town
 [ ] Found "letter" and "wanted poster" items could have clues about the dungeon boss (if not other bosses etc)
 [ ] Reset 'used abilities' list for PCs between battles so they can charge more than once!! (this should be happening now!)
+---
+[ ] Bring back 'flee'/battle escape abilities
+[ ] range vs melee action is good flavor but -- should take account of current weapon! bows shouldn't melee etc (have 'fixed' by adjusting starting equipment but should be a deeper solution)
+[ ] Rolls should always indicate what die you are rolling...
+[ ] Successful resistance should give a message ("successfully resisted...")
+[ ] Should you roll your own poison damage? Feels strange -- maybe should just be automatic?
+[ ] Special abilities should be rarer (thief shouldn't have poison cloud, _maybe_ assassin does)
+[ ] Abilities even for npcs should be limited by spell slots
+[ ] Is poison damage even being applied??
+[ ] Poison damage should indicate who _inflicted_ it (this is tracked but not surfaced)
 
 ## Fixed
 [x] Temple/shrine to local deity to get a blessing
@@ -74,6 +84,7 @@
 [x] Should only be able to inspire if you have conscious allies
 [x] Fear message should be clarified: "X is frightened" not "X is too frightened to act" since it may not be their turn at all (ie fear event isn't only used on failed flee anymore) [now just 'X is frightened']
 [x] Finding rusted/silver/golden coins should grant XP bonus
+[x] Make 'wait' the _last_ option in the action list... (adjusted hardcoded starting ability list but could be better!)
 
 ## Not really issues
 "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)"

@@ -3,69 +3,15 @@ import { GenerationTemplateType } from "./orsino/types/GenerationTemplateType";
 import { Template } from "./orsino/Template";
 import { Table } from "./orsino/Table";
 import { loadSetting } from "./orsino/loader";
-import Combat, { RollResult } from "./orsino/Combat";
 import { Gauntlet } from "./orsino/Gauntlet";
 import { Combatant } from "./orsino/types/Combatant";
-import Spinner from "./orsino/tui/Spinner";
-import { select, Separator } from '@inquirer/prompts';
 import deepCopy from "./orsino/util/deepCopy";
 import Dungeoneer from "./orsino/Dungeoneer";
 import Files from "./orsino/util/Files";
 import { ModuleRunner } from "./orsino/ModuleRunner";
-import Choice from "inquirer/lib/objects/choice";
+import Interactive from "./orsino/tui/User";
 
 export type Prompt = (message: string) => Promise<string>;
-
-class User {
-  // print the message and return the user's input
-  static async interactivePrompt(message: string): Promise<any> {
-    process.stdout.write(message + " ");
-    return new Promise((resolve) => {
-      process.stdin.resume();
-      process.stdin.once("data", (data) => {
-        resolve(data.toString().trim());
-      });
-    });
-  }
-
-  static async interactiveSelect(
-    message: string,
-    choices: (
-      readonly (string | Separator)[] | Choice<any>[] 
-    ),
-    subject?: Combatant,
-  ): Promise<any> {
-    if (choices.length === 0) {
-      throw new Error("No choices provided for selection");
-    }
-
-    if (subject && !subject.playerControlled) {
-      return Combat.samplingSelect(message, choices as any);
-    }
-
-    // console.log(`Selecting for ${subject?.name}: ${message}`);
-    return await select({ message, choices: choices as any })
-  }
-
-  static async interactiveRoll(subject: Combatant, description: string, sides: number): Promise<RollResult> {
-    if (!subject.playerControlled) {
-      const result = Combat.rollDie(subject, description, sides);
-      await Spinner.run(`${subject.name} is rolling ${description}`, 120 + Math.random() * 240, result.description);
-      return result;
-    }
-
-    await new Promise(resolve => setTimeout(resolve, 100));
-    await Spinner.waitForInputAndRun(
-      `>>> ${subject.name} to roll d${sides} ${description}... <<<`,
-      `${subject.name} rolling d${sides} ${description}`
-    );
-    // Then do the actual roll
-    let result = Combat.rollDie(subject, description, sides);
-    console.log("\r" + result.description);
-    return result;
-  }
-}
-
 
 type PlaygroundType = "combat" | "dungeon" | "module";  // TODO "world";
 export default class Orsino {
@@ -84,8 +30,8 @@ export default class Orsino {
     if (type === "combat") {
       let gauntlet = (new Gauntlet({
         ...options,
-        roller: User.interactiveRoll,
-        select: User.interactiveSelect,
+        roller: Interactive.roll,
+        select: Interactive.selection,
         outputSink: console.log,
       }))
 
@@ -101,8 +47,8 @@ export default class Orsino {
       console.log(`Selected party of ${pcs.length} PCs (average level ${averageLevel}), targeting CR ${targetCr}`);
       // this.genList("pc", { setting: 'fantasy', ...options }, partySize);
       const dungeoneer = new Dungeoneer({
-        roller: User.interactiveRoll,
-        select: User.interactiveSelect,
+        roller: Interactive.roll,
+        select: Interactive.selection,
         outputSink: console.log,
         dungeonGen: () => this.gen("dungeon", { setting: 'fantasy', ...options, _targetCr: targetCr }),
         gen: this.gen.bind(this),
@@ -116,9 +62,9 @@ export default class Orsino {
       await dungeoneer.run();
     } else if (type === "module") {
       const moduleRunner = new ModuleRunner({
-        roller: User.interactiveRoll,
-        select: User.interactiveSelect,
-        prompt: User.interactivePrompt,
+        roller: Interactive.roll,
+        select: Interactive.selection,
+        prompt: Interactive.prompt,
         outputSink: console.log,
         moduleGen: () => this.gen("module", { setting: 'fantasy', ...options }),
         gen: this.gen.bind(this),
@@ -139,24 +85,24 @@ export default class Orsino {
     }
     while (party.length < partySize) {
       let whichPc = '(' + (party.length + 1) + '/' + partySize + ')';
-      let shouldWizard = await User.interactiveSelect(
+      let shouldWizard = await Interactive.selection(
         'Would you like to customize this PC? ' + whichPc,
         ['Yes', 'No']
       );
       if (shouldWizard === 'Yes') {
-        let raceSelect = await User.interactiveSelect(
+        let raceSelect = await Interactive.selection(
           'Select a race for this PC: ' + whichPc,
           ['human', 'elf', 'dwarf', 'halfling', 'orc', 'fae']
         );
 
-        let occupationSelect = await User.interactiveSelect(
+        let occupationSelect = await Interactive.selection(
           'Select an occupation for this PC: ' + whichPc,
           ['warrior', 'thief', 'mage', 'cleric', 'ranger', 'bard', 'sage']
         );
 
         let wizardPc = this.gen("pc", { setting: 'fantasy', race: raceSelect, class: occupationSelect }) as Combatant;
         console.table({ ...wizardPc, abilities: wizardPc.abilities.join(", ") });
-        let confirm = await User.interactiveSelect(
+        let confirm = await Interactive.selection(
           'Do you want to use this PC? ' + whichPc,
           ['Yes', 'No']
         );
@@ -164,13 +110,13 @@ export default class Orsino {
           party.push(wizardPc);
         }
       } else {
-        let shouldSelect = await User.interactiveSelect(
+        const pcFiles = await Files.listFiles(`${Dungeoneer.dataPath}/pcs`);
+        let shouldSelect = await Interactive.selection(
           'Would you like to select an existing PC? ' + whichPc,
           ['Yes', 'No']
         );
         if (shouldSelect === 'Yes') {
-          const pcFiles = await Files.listFiles(`${Dungeoneer.dataPath}/pcs`);
-          const selectedPcName = await User.interactiveSelect(
+          const selectedPcName = await Interactive.selection(
             'Select a PC to lead the dungeon crawl:',
             pcFiles.map(name => name.replace('.json', ''))
               .filter(name => party.every(p => p.name !== name))
@@ -217,7 +163,7 @@ export default class Orsino {
       // generate one anyway
       items.push(this.gen(type, options));
     }
-    
+
     return items;
   }
 

@@ -10,6 +10,20 @@
     "effects": []
   },
 
+  "flee": {
+    "name": "Escape",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Attempt to flee from combat.",
+    "target": [ "self" ],
+    "effects": [
+      {
+        "type": "flee",
+        "succeedDC": 15
+      }
+    ]
+  },
+
   "melee": {
     "name": "Melee Attack",
     "type": "skill",
@@ -75,6 +89,28 @@
           "name": "Shielded",
           "effect": {
             "ac": -2
+          },
+          "duration": 3
+        }
+      }
+    ]
+  },
+
+  "armor": {
+    "name": "Magic Armor",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Gain 4 AC for 3 rounds.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Mage-Armored",
+          "effect": {
+            "ac": -4
           },
           "duration": 3
         }
