@@ -8,7 +8,6 @@ import Stylist from "./tui/Style";
 import Events, { CombatEvent, InitiateCombatEvent, HealEvent, MissEvent, HitEvent, FallenEvent, StatusExpireEvent, RoundStartEvent, CombatEndEvent, StatusEffectEvent, FleeEvent } from "./Events";
 import AbilityHandler, { Ability } from "./Ability";
 import { Answers } from "inquirer";
-import { act, use } from "react";
 
 export type RollResult = {
   amount: number;
@@ -80,7 +79,9 @@ export default class Combat {
   private async determineInitiative(): Promise<{ combatant: any; initiative: number }[]> {
     let initiativeOrder = [];
     for (let c of this.allCombatants) {
-      const initiative = (await this.roller(c, "for initiative", 20)).amount + Fighting.statMod(c.dex);
+      let effective = Fighting.effectiveStats(c);
+      let initBonus = Fighting.turnBonus(c, ["initiative"]).initiative || 0;
+      const initiative = (await this.roller(c, "for initiative", 20)).amount + Fighting.statMod(effective.dex) + initBonus;
       initiativeOrder.push({ combatant: c, initiative });
     }
     return initiativeOrder.sort((a, b) => b.initiative - a.initiative);

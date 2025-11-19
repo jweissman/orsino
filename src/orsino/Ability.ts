@@ -320,14 +320,11 @@ export default class AbilityHandler {
       ) => Promise<void>;
     }
   ) {
-    // console.log(`Performing ability ${ability.name} by ${user.name} on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target.name}`);
     for (const effect of ability.effects) {
       let result = await this.handleEffect(ability.name, effect, user, target, { roll, attack, hit, heal, status });
       if (result === false) {
-        // console.log(`Ability ${ability.name} failed on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target.name}`);
         break;
       }
     }
-    // console.log("Finished performing ability:", ability.name);
   }
 }

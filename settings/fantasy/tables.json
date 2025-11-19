@@ -733,8 +733,8 @@
     "discriminator": "class",
     "groups": {
       "warrior": [[ "melee", "charge", "wait" ]],
-      "mage": [[ "melee", "missile", "wait" ]],
-      "cleric": [[ "melee", "cure", "bless", "wait" ]],
+      "mage": [[ "melee", "missile", "armor", "wait" ]],
+      "cleric": [[ "melee", "cure", "bless", "shield", "wait" ]],
       "ranger": [[ "ranged", "heal", "wait" ]],
       "thief": [[ "melee", "poison_weapon", "wait" ]],
       "bard": [[ "melee", "cure", "inspire", "wait" ]],
@@ -1584,10 +1584,10 @@
   "monsterBaseHp": {
     "discriminator": "race",
     "groups": {
-      "kobold": 2,
-      "goblin": 3,
-      "human": 5,
-      "orc": 7,
+      "kobold": 1,
+      "goblin": 2,
+      "human": 6,
+      "orc": 9,
       "ogre": 12,
       "troll": 15,
       "dragon": 36
@@ -1596,8 +1596,8 @@
   "monsterHpVariance": {
     "discriminator": "race",
     "groups": {
+      "kobold": 1,
       "goblin": 1,
-      "kobold": 2,
       "human": 2,
       "orc": 3,
       "ogre": 4,

@@ -96,6 +96,28 @@
     ]
   },
 
+  "armor": {
+    "name": "Magic Armor",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Gain 4 AC for 3 rounds.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Mage-Armored",
+          "effect": {
+            "ac": -4
+          },
+          "duration": 3
+        }
+      }
+    ]
+  },
+
   "charge": {
     "name": "Charge",
     "type": "skill",

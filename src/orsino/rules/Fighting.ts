@@ -39,7 +39,7 @@ export class Fighting {
       wis: combatant.wis,
       cha: combatant.cha,
       con: combatant.con,
-      ac: combatant.ac
+      ac: combatant.ac,
     };
     if (combatant.activeEffects) {
       combatant.activeEffects.forEach(it => {

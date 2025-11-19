@@ -13,7 +13,7 @@
     "wis": "=3d6+if(#class == \"cleric\", 3, 0)",
     "cha": "=3d6+if(#class == \"bard\", 3, 0)",
     "con": "=3d6+if(#class == \"ranger\", 3, 0)",
-    "maxHp": "=lookup(hitPoints, #class) + max(1,round((#con-10)/2))",
+    "maxHp": "=lookup(hitPoints, #class) + max(0,round((#con-10)/2))",
     "hp": "=#maxHp",
     "level": 1,
     "xp": 0,
@@ -95,7 +95,7 @@
   "dungeon": {
     "terrain": "=oneOf(forest, cave, swamp, mountain, snow, desert)",
     "_index": "0",
-    "_targetCr": "=(#_index+1) * 2",
+    "_targetCr": "=max(1, (#_index) * 2)",
     "_building_type": "=oneOf(temple, fortress, library, tomb, mine)",
     "_roomBias": "=lookup(roomBias, #_building_type)",
     "dungeon_type": "=lookup(dungeonTypes, #_building_type)",
