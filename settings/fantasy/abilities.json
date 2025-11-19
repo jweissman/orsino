@@ -10,6 +10,20 @@
     "effects": []
   },
 
+  "flee": {
+    "name": "Escape",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Attempt to flee from combat.",
+    "target": [ "self" ],
+    "effects": [
+      {
+        "type": "flee",
+        "succeedDC": 15
+      }
+    ]
+  },
+
   "melee": {
     "name": "Melee Attack",
     "type": "skill",

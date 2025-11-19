@@ -6,7 +6,7 @@ import Files from "./util/Files";
 type Target = "self" | "ally" | "enemy" | "allies" | "enemies" | "all" | "randomEnemies";
 
 export interface AbilityEffect {
-  type: "attack" | "damage" | "heal" | "buff" | "debuff";
+  type: "attack" | "damage" | "heal" | "buff" | "debuff" | "flee";
   stat?: "str" | "dex" | "con" | "int" | "wis" | "cha";
   amount?: string; // e.g. "=1d6", "=2d8", "3"
   duration?: number; // in turns
@@ -17,6 +17,9 @@ export interface AbilityEffect {
   }
   saveDC?: number;
   saveType?: keyof Combatant;
+  succeedDC?: number;
+  succeedType?: keyof Combatant;
+  chance?: number; // 0.0-1.0
 }
 
 export interface Ability {
@@ -65,6 +68,9 @@ export default class AbilityHandler {
 
         // we need to special case randomEnemies since we need to select them ourselves
         case "randomEnemies": break;
+
+        // default:
+          // throw new Error(`Unknown target type: ${t}`);
       }
     }
     return targets;
@@ -75,7 +81,7 @@ export default class AbilityHandler {
     if (amount.startsWith("=")) {
       const [num, sides] = amount.slice(1).split("d").map(Number);
       for (let i = 0; i < num; i++) {
-        let theRoll = await roll(user, `d${sides} for ${name}`, sides);
+        let theRoll = await roll(user, `for ${name}`, sides);
         result += theRoll.amount;
       }
     } else {
@@ -142,6 +148,7 @@ export default class AbilityHandler {
         return;
       }
     }
+
     if (effect.type === "attack") {
       let success = false;
       if (Array.isArray(target)) {
@@ -231,19 +238,48 @@ export default class AbilityHandler {
         if (Array.isArray(target)) {
           for (const t of target) {
             let resisted = await this.resist((effect.saveType || 'con'), effect.saveDC || 0, roll, t, effect.status.name);
-            if (!resisted) {
+            if (resisted) {
+              console.log(`${t.name} resists ${effect.status.name}!`);
+            } else {
               await status(user, t, effect.status.name, { ...effect.status.effect, by: user }, effect.status.duration);
             }
           }
         } else {
           // if (effect.type === "debuff" && !this.resist((effect.saveType || 'con'), effect.saveDC || 0, roll, target, effect.status.name)) {
           let resisted = await this.resist((effect.saveType || 'con'), effect.saveDC || 0, roll, target, effect.status.name);
-          if (!resisted) {
+          if (resisted) {
+            console.log(`${target.name} resists ${effect.status.name}!`);
+          } else {
             await status(user, target, effect.status.name, { ...effect.status.effect, by: user }, effect.status.duration);
           }
         }
       } else {
-        throw new Error(`Debugg effect must have a status defined`);
+        throw new Error(`Debuff effect must have a status defined`);
+      }
+    } else if (effect.type === "flee") {
+      const successful = async (combatant: Combatant) => {
+        let effective = Fighting.effectiveStats(combatant);
+        const stat = effective[(effect.succeedType || 'dex') as keyof Combatant] || 10;
+        let rolls = await roll(user, `to flee`, 20);
+        let total = rolls.amount + Fighting.statMod(stat);
+        return total >= (effect.succeedDC || 15); // default -- DC 15 to flee
+      }
+      if (Array.isArray(target)) {
+        for (const t of target) {
+          // if (chance === undefined || Math.random() < chance) {
+          if (await successful(t)) {
+            await status(user, t, "Fleeing", { flee: true }, 1);
+          } else {
+            console.log(`${t.name} tried to flee but failed!`);
+          }
+        }
+      } else {
+        // if (chance === undefined || Math.random() < chance) {
+        if (await successful(target)) {
+          await status(user, target, "Fleeing", { flee: true }, 1);
+        } else {
+          console.log(`${target.name} tried to flee but failed!`);
+        }
       }
     }
     

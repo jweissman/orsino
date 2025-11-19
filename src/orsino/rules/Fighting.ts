@@ -12,14 +12,18 @@ export class Fighting {
     return Math.floor((stat - 10) / 2);
   }
 
-  static turnBonus(combatant: Combatant): { [key: string]: number } {
+  static turnBonus(combatant: Combatant, keys: (string)[] = []): { [key: string]: number } {
     let bonuses: { [key: string]: number } = {};
     if (combatant.activeEffects) {
       combatant.activeEffects.forEach(it => {
         // console.log("Considering turn bonus effect:", it);
         if (it.effect) {
           Object.entries(it.effect).forEach(([key, value]) => {
-            bonuses[key] = (bonuses[key] || 0) + value;
+            if (typeof value === "number") {
+              if (keys.length === 0 || keys.includes(key)) {
+                bonuses[key] = (bonuses[key] || 0) + value;
+              }
+            }
           });
         }
       });
@@ -41,7 +45,7 @@ export class Fighting {
       combatant.activeEffects.forEach(it => {
         if (it.effect) {
           Object.entries(it.effect).forEach(([key, value]) => {
-            if (key in stats) {
+            if (key in stats && typeof value === "number") {
               stats[key] = (stats[key] || 0) + value;
             }
           });
@@ -68,7 +72,7 @@ export class Fighting {
     let description = `${attacker.name} attacks ${defender.name}... `;
     const strMod = this.statMod(effectiveAttacker.str || 10);
     const dexMod = this.statMod(effectiveAttacker.dex || 10);
-    let toHitTurnBonus = this.turnBonus(attacker).toHit || 0;
+    let toHitTurnBonus = this.turnBonus(attacker, ["toHit"]).toHit || 0;
     const toHitBonus = dexMod  // DEX affects accuracy
       + toHitTurnBonus; // Any temporary bonuses to hits
     const strengthDamageBonus = Math.max(0, strMod);  // STR affects damage (min 0)
@@ -76,17 +80,17 @@ export class Fighting {
     const thac0 = this.thac0(attacker.level);
     // this causes an infinite loop somehow :()
     const effectiveDefender = this.effectiveStats(defender);
-    const ac = effectiveDefender.ac - (this.turnBonus(defender).ac || 0);
+    const ac = effectiveDefender.ac; // - (this.turnBonus(defender).ac || 0);
     // const ac = (defender.ac) - (this.turnBonus(defender).ac || 0);
     const whatNumberHits = thac0 - ac - toHitBonus;
 
-    let bonusMessage = "";
-    if (toHitBonus > 0) {
-      bonusMessage += ` +${toHitBonus} to hit`;
-    }
+    // let bonusMessage = "";
+    // if (toHitBonus > 0) {
+    //   bonusMessage += ` (+${toHitBonus} to hit; DEX ${effectiveAttacker.dex} gives +${dexMod} and turn bonuses give +${toHitTurnBonus})`;
+    // }
 
-    console.log(`${Presenter.combatant(attacker, true)} (THAC0: ${thac0}${bonusMessage}) attacks ${Presenter.combatant(defender, true)} (AC: ${ac})... `);
-    console.log(`Attacker THAC0: ${thac0}${bonusMessage}, Defender AC: ${ac}`); // What number hits: ${whatNumberHits} `);
+    // console.log(`${Presenter.combatant(attacker, true)} (THAC0: ${thac0}${bonusMessage}) attacks ${Presenter.combatant(defender, true)} (AC: ${ac})... `);
+    // console.log(`Attacker THAC0: ${thac0}${bonusMessage}, Defender AC: ${ac}`); // What number hits: ${whatNumberHits} `);
     const attackRoll = await roll(attacker, `to attack (must roll ${whatNumberHits} or higher to hit)`, 20);
     description += attackRoll.description;
     let success = attackRoll.amount >= whatNumberHits;
@@ -128,6 +132,9 @@ export class Fighting {
 
       if (critical) {
         criticalDamage = Math.max(1, Math.round(damage * 0.2 * Math.max(1, Math.floor(attacker.level / 5))));
+        if (criticalDamage > 0) {
+          console.log(`Damage increased by ${criticalDamage} for critical hit!`);
+        }
       }
 
       // if (criticalDamage > 0) {
@@ -136,6 +143,9 @@ export class Fighting {
       // if (strengthDamageBonus > 0) {
       //   note("Adding " + strengthDamageBonus + ` damage (from STR ${attacker.str})`);
       // }
+      if (strengthDamageBonus > 0) {
+        console.log("Damage increased by " + strengthDamageBonus + ` for STR ${attacker.str}`);
+      }
       damage = damage + criticalDamage + strengthDamageBonus;
       // if (criticalDamage > 0) {
       //   note("Damage increased by " + criticalDamage + " to " + damage + " for critical hit!");
@@ -148,10 +158,10 @@ export class Fighting {
       //     attacker.playerControlled ? 'green' : 'red'
       //   )
       // );
-      description += `\n*${attacker.name} hits ${defender.name} for ${damage} damage* (now at ${defender.hp}).`;
+      // description += `\n*${attacker.name} hits ${defender.name} for ${damage} damage* (now at ${defender.hp}).`;
     } else {
       // note(`${attacker.name} misses ${defender.name}.`);
-      description += `\n*${attacker.name} misses ${defender.name}.*`;
+      // description += `\n*${attacker.name} misses ${defender.name}.*`;
     }
 
     return {

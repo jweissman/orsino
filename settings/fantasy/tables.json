@@ -648,16 +648,16 @@
       "staff": 1,
       "club": 1,
       "claws": 2,
-      "dagger": 2,
-      "sling": 2,
+      "dagger": 1,
+      "sling": 1,
       "bite": 1,
       "mace": 1,
       "axe": 1,
-      "bow": 2,
+      "bow": 1,
       "polearm": 1,
       "spear": 1,
       "sword": 1,
-      "greataxe": 2,
+      "greataxe": 1,
       "greatsword": 1
     }
   },
@@ -687,7 +687,6 @@
         "staff"
       ],
       "ranger": [
-        "sword",
         "bow"
       ]
     }
@@ -733,13 +732,13 @@
   "abilities": {
     "discriminator": "class",
     "groups": {
-      "warrior": [[ "wait", "melee", "charge" ]],
-      "mage": [[ "wait", "melee", "missile" ]],
-      "cleric": [[ "wait", "melee", "cure", "bless" ]],
-      "ranger": [[ "wait", "melee" ]],
-      "thief": [[ "wait", "melee", "poison_weapon" ]],
-      "bard": [[ "wait", "melee", "cure", "inspire" ]],
-      "sage": [[ "wait", "melee", "heal", "poison_cloud", "shield", "fear", "curse" ]]
+      "warrior": [[ "melee", "charge", "wait" ]],
+      "mage": [[ "melee", "missile", "wait" ]],
+      "cleric": [[ "melee", "cure", "bless", "wait" ]],
+      "ranger": [[ "ranged", "heal", "wait" ]],
+      "thief": [[ "melee", "poison_weapon", "wait" ]],
+      "bard": [[ "melee", "cure", "inspire", "wait" ]],
+      "sage": [[ "melee", "heal", "poison_cloud", "shield", "fear", "curse", "wait" ]]
     }
   },
   "monsterType": {
@@ -769,25 +768,25 @@
   "monsterAbilities": {
     "discriminator": "type",
     "groups": {
-      "Runt": [[ "wait", "melee" ]],
-      "Creep": [[ "wait", "ranged" ]],
+      "Runt": [[ "wait", "melee", "flee" ]],
+      "Creep": [[ "wait", "ranged", "flee" ]],
       "Bandit": [[ "wait", "melee" ]],
-      "Thief": [[ "wait", "melee", "poison_cloud" ]],
+      "Thief": [[ "wait", "melee", "poison_cloud", "flee" ]],
       "Shaman": [[ "wait", "melee", "heal" ]],
       "Slinger": [[ "wait", "ranged" ]],
       "Miner": [[ "wait", "melee" ]],
-      "Peasant": [[ "wait", "melee" ]],
-      "Loser": [[ "wait", "melee" ]],
+      "Peasant": [[ "wait", "melee", "flee" ]],
+      "Loser": [[ "wait", "melee", "flee" ]],
       "Mercenary": [[ "defend", "melee" ]],
       "Cultist": [[ "wait", "melee", "curse", "fear" ]],
-      "Thug": [[ "wait", "melee", "charge" ]],
+      "Thug": [[ "wait", "melee", "charge", "flee" ]],
       "Cutthroat": [[ "wait", "melee" ]],
-      "Assassin": [[ "wait", "melee", "poison_cloud" ]],
+      "Assassin": [[ "wait", "melee", "poison_cloud", "flee" ]],
       "Bridgeminder": [[ "wait", "melee" ]],
       "Dweller": [[ "wait", "melee" ]],
       "Stalker": [[ "defend", "ranged" ]],
       "Warrior": [[ "wait", "melee", "charge" ]],
-      "Miser": [[ "wait", "melee" ]],
+      "Miser": [[ "wait", "melee", "flee" ]],
       "Chieftain": [[ "defend", "melee", "charge" ]],
       "Brute": [[ "wait", "melee" ]],
       "Berserker": [[ "defend", "melee", "charge" ]],
@@ -800,13 +799,14 @@
       "Warlord": [[ "defend", "melee", "charge" ]],
       "Chosen One": [[ "defend", "melee", "heal" ]],
       "Shaman King": [[ "defend", "melee", "heal", "fear", "curse", "poison_cloud" ]],
-      "Monarch": [[ "defend", "melee", "charge" ]],
+      "Monarch": [[ "defend", "melee", "charge", "heal", "curse", "flee" ]],
       "Princeling": [[ "defend", "melee", "heal" ]],
       "Archmage": [[ "defend", "melee", "heal", "missile", "curse", "poison_cloud", "fear", "shield" ]],
       "General": [[ "defend", "melee", "charge" ]],
       "High Priest": [[ "defend", "melee", "heal", "curse" ]],
       "Destroyer": [[ "defend", "melee", "charge" ]],
-      "Lord": [[ "defend", "melee", "heal", "curse" ]]
+      "Lord": [[ "defend", "melee", "heal", "curse" ]],
+      "Death Priest": [[ "defend", "melee", "heal", "curse", "fear" ]]
     }
   },
 
@@ -1584,25 +1584,25 @@
   "monsterBaseHp": {
     "discriminator": "race",
     "groups": {
-      "kobold": 4,
-      "goblin": 5,
-      "human": 7,
-      "orc": 8,
-      "ogre": 14,
-      "troll": 20,
-      "dragon": 40
+      "kobold": 2,
+      "goblin": 3,
+      "human": 5,
+      "orc": 7,
+      "ogre": 12,
+      "troll": 15,
+      "dragon": 36
     }
   },
   "monsterHpVariance": {
     "discriminator": "race",
     "groups": {
-      "goblin": 4,
-      "kobold": 3,
-      "human": 5,
-      "orc": 6,
-      "ogre": 10,
-      "troll": 20,
-      "dragon": 40
+      "goblin": 1,
+      "kobold": 2,
+      "human": 2,
+      "orc": 3,
+      "ogre": 4,
+      "troll": 5,
+      "dragon": 10
     }
   },
   "monsterLevel": {
@@ -1796,7 +1796,7 @@
       "desert": {
         "str": 1,
         "con": -2,
-        "maxHp": 5,
+        "maxHp": 3,
         "level": 1
       }
     }

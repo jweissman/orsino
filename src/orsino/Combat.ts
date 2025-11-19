@@ -5,9 +5,10 @@ import { Team } from "./types/Team";
 import { Roll } from "./types/Roll";
 import { Fighting } from "./rules/Fighting";
 import Stylist from "./tui/Style";
-import Events, { CombatEvent, InitiateCombatEvent, HealEvent, MissEvent, HitEvent, FallenEvent, StatusExpireEvent, RoundStartEvent, CombatEndEvent, StatusEffectEvent } from "./Events";
+import Events, { CombatEvent, InitiateCombatEvent, HealEvent, MissEvent, HitEvent, FallenEvent, StatusExpireEvent, RoundStartEvent, CombatEndEvent, StatusEffectEvent, FleeEvent } from "./Events";
 import AbilityHandler, { Ability } from "./Ability";
 import { Answers } from "inquirer";
+import { act, use } from "react";
 
 export type RollResult = {
   amount: number;
@@ -156,12 +157,11 @@ export default class Combat {
     }
   }
 
-  async pcTurn(combatant: Combatant, enemies: Combatant[], allies: Combatant[]) {
-    console.log(`It's ${Presenter.combatant(combatant)}'s turn!`);
-    const choices: Choice<Ability>[] = [ ];
+  validActions(combatant: Combatant, allies: Combatant[], enemies: Combatant[]): Ability[] {
+    const validAbilities: Ability[] = [];
 
     let spellSlotsRemaining = (Combat.maxSpellSlotsForCombatant(combatant) || 0) - (combatant.spellSlotsUsed || 0);
-    let pips = "";
+    // let pips = "";
 
     let abilities = combatant.abilities.map(a => this.abilityHandler.getAbility(a)); //.filter(a => a);
     abilities.forEach((ability: Ability) => {
@@ -170,24 +170,55 @@ export default class Combat {
       if (ability.target.includes("randomEnemies") && this.living(enemies).length > 0) {
         disabled = false;
       }
+
+      // if _only_ a healing effect and target is ally/self/allies and NO wounded allies, disable
+      if (!disabled && ability.effects.every(e => e.type === "heal")) {
+        if (this.wounded([...allies, combatant]).length === 0) {
+          disabled = true;
+        } else if (ability.target.includes("self") && combatant.hp === combatant.maxHp) {
+          disabled = ability.target.length === 1; // if only self-targeting, disable; if also allies, allow
+        } else if (ability.target.includes("allies") && this.wounded(allies).length === 0) {
+          disabled = ability.target.length === 1; // if only allies-targeting, disable; if also self, allow
+        }
+      }
+
       if (!disabled) {
         if (ability.type == "spell") {
-          pips = "⚡".repeat(spellSlotsRemaining) + "⚫".repeat((Combat.maxSpellSlotsForCombatant(combatant) || 0) - spellSlotsRemaining);
+          // pips = "⚡".repeat(spellSlotsRemaining) + "⚫".repeat((Combat.maxSpellSlotsForCombatant(combatant) || 0) - spellSlotsRemaining);
           disabled = spellSlotsRemaining === 0;
-        } else if (ability.type == "skill") {
-          // want to track consumption here
+        } else if (ability.type == "skill") { 
+          // want to track consumption here...
           // console.log("Already used ", ability.name, "?", combatant.abilitiesUsed?.includes(ability.name) || false)
-          // disabled = !combatant.abilitiesUsed?.includes(ability.name);
+          if (!ability.name.match(/melee|ranged|wait/i)) {
+            disabled = combatant.abilitiesUsed?.includes(ability.name) || false;
+          }
         } else {
           throw new Error(`Unknown ability type: ${ability.type}`);
         }
       }
 
-      choices.push({
-        disabled,
-        short: ability.name + " " + pips,
-        name: `${ability.name} (${ability.description})`,
-        value: ability
+      if (!disabled) {
+        validAbilities.push(ability);
+      }
+    });
+
+    return validAbilities;
+  }
+
+  async pcTurn(combatant: Combatant, enemies: Combatant[], allies: Combatant[]) {
+    this.note(`It's ${Presenter.combatant(combatant)}'s turn!`);
+
+    let validAbilities = this.validActions(combatant, allies, enemies);
+    let allAbilities = combatant.abilities.map(a => this.abilityHandler.getAbility(a)); //.filter(a => a);
+
+    let pips = "";
+    pips += "⚡".repeat((Combat.maxSpellSlotsForCombatant(combatant) || 0) - ((combatant.spellSlotsUsed || 0))) + "⚫".repeat(combatant.spellSlotsUsed || 0);
+    let choices = allAbilities.map(ability => {
+      return ({
+        value: ability,
+        name: `${ability.name.padEnd(15)} (${ability.description}/${ability.type === "spell" ? pips : "skill"})`,
+        short: ability.name,
+        disabled: !validAbilities.some(a => a.name === ability.name)
       })
     });
 
@@ -210,6 +241,13 @@ export default class Combat {
       for (let i = 0; i < count; i++) {
         targetOrTargets.push(possibleTargets[Math.floor(Math.random() * possibleTargets.length)]);
       }
+    }
+
+    if (action.type === "skill" && !action.name.match(/melee|ranged|wait/i)) {
+      combatant.abilitiesUsed = combatant.abilitiesUsed || [];
+      combatant.abilitiesUsed.push(action.name);
+    } else if (action.type === "spell") {
+      combatant.spellSlotsUsed = (combatant.spellSlotsUsed || 0) + 1;
     }
 
     await AbilityHandler.perform(action, combatant, targetOrTargets, this.commandHandlers);
@@ -239,6 +277,7 @@ export default class Combat {
     if (wisBonus > 0) {
       target.hp = Math.min(target.maxHp, target.hp + wisBonus);
       amount += wisBonus;
+      console.log(`Healing increased by ${wisBonus} for WIS ${healer.wis}`);
     }
     this.emit({ type: "heal", subject: healer, target, amount } as Omit<HealEvent, "turn">);
   }
@@ -246,6 +285,12 @@ export default class Combat {
   async handleHit(attacker: Combatant, defender: Combatant, damage: number, critical: boolean, by: string, success: boolean): Promise<void> {
     if (!success) {
       this.emit({ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">);
+      return;
+    }
+
+    if (defender.hp <= 0) {
+      // this.emit({ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">);
+      console.warn(`${Presenter.combatant(defender)} is already defeated. No damage applied.`);
       return;
     }
 
@@ -266,8 +311,146 @@ export default class Combat {
   }
 
   async npcTurn(combatant: Combatant, enemies: Combatant[], allies: Combatant[]) {
-    // TODO pick weakest enemy / apply AI behavior...
-    await this.pcTurn(combatant, enemies, allies);
+    let validAbilities = this.validActions(combatant, allies, enemies);
+    let scoredAbilities = validAbilities.map(ability => ({
+      ability,
+      score: this.scoreAbility(ability, combatant, allies, enemies)
+    }));
+    console.log(`NPC ${combatant.forename} consiers abilities:`, scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`).join(", "));
+    scoredAbilities.sort((a, b) => b.score - a.score);
+    const action = scoredAbilities[0]?.ability;
+    let targetOrTargets: Combatant | Combatant[] = this.bestAbilityTarget(action, combatant, allies, enemies);
+
+    combatant.abilitiesUsed = combatant.abilitiesUsed || [];
+    if (action && action.type === "skill" && !action.name.match(/melee|ranged|wait/i)) {
+      combatant.abilitiesUsed.push(action.name);
+    }
+
+    // use spell slots
+    if (action && action.type === "spell") {
+      combatant.spellSlotsUsed = (combatant.spellSlotsUsed || 0) + 1;
+    }
+
+    if (!action) {
+      this.note(`${Presenter.combatant(combatant)} has no valid actions and skips their turn.`);
+      return;
+    }
+
+    // invoke the action
+    let verb = action.type === "spell" ? 'casts' : 'uses';
+    this.note(Presenter.combatant(combatant) + ` ${verb} ` + action.name + "!");
+    await AbilityHandler.perform(action, combatant, targetOrTargets, this.commandHandlers);
+  }
+
+  bestAbilityTarget(ability: Ability, user: Combatant, allies: Combatant[], enemies: Combatant[]): Combatant | Combatant[] {
+    let validTargets = this.abilityHandler.validTargets(ability, user, allies, enemies);
+    if (validTargets.length === 0) {
+      // return null;
+      throw new Error(`No valid targets for ${ability.name}`);
+    } else if (validTargets.length === 1) {
+      return validTargets[0];
+    }
+
+    if (ability.target.includes("randomEnemies") && ability.target.length === 2) {
+      // pick random enemies
+      let count = ability.target[1] as any as number;
+      let possibleTargets = this.living(enemies);
+      let targetOrTargets: Combatant[] = [];
+      for (let i = 0; i < count; i++) {
+        targetOrTargets.push(possibleTargets[Math.floor(Math.random() * possibleTargets.length)]);
+      }
+      return targetOrTargets;
+    } else {
+      // pick the weakest/most wounded of the targets
+      if (!Array.isArray(validTargets[0])) {
+        if (ability.effects.some(e => e.type === "heal")) {
+          return this.wounded(validTargets as Combatant[]).sort((a, b) => (a.hp / a.maxHp) - (b.hp / b.maxHp))[0];
+        }
+
+        return this.weakest(validTargets as Combatant[]);
+      }
+      return validTargets[0];
+    }
+  }
+
+  scoreAbility(ability: Ability, user: Combatant, allies: Combatant[], enemies: Combatant[]): number {
+    let score = 0;
+    let analysis = this.analyzeAbility(ability);
+    if (analysis.flee) {
+      // is my hp low?
+      const hpRatio = user.hp / user.maxHp;
+      score += (1 - hpRatio) * 15; // higher score for lower hp
+    } else if (analysis.heal) {
+      // any allies <= 50% hp?
+      allies.forEach(ally => {
+        if (ally.hp / ally.maxHp <= 0.5) {
+          score += 10;
+        }
+      });
+    } else if (analysis.aoe) {
+      score += enemies.filter(e => e.hp > 0).length * 7;
+    } else if (analysis.debuff) {
+      // are there enemies with higher hp than us?
+      enemies.forEach(enemy => {
+        if (enemy.hp > 0 && enemy.hp > user.hp) {
+          score += 5;
+        }
+      });
+    } else if (analysis.defense) {
+      // are we low on hp?
+      if (user.hp / user.maxHp <= 0.5) {
+        score += 5;
+      }
+    } else if (analysis.buff) {
+      // if we already _have_ this buff and it targets ["self"] -- don't use it
+      if (ability.target.includes("self") && ability.target.length === 1 &&
+        user.activeEffects?.some(e => e.name === ability.effects[0].status?.name)) {
+        return -10;
+      }
+
+      score += 3;
+      // are we near full hp?
+      if (user.hp / user.maxHp >= 0.8) {
+        score += 5;
+      }
+    } else if (analysis.damage) {
+      score += 6;
+      // are enemies low on hp?
+      enemies.forEach(enemy => {
+        if (enemy.hp > 0 && enemy.hp / enemy.maxHp <= 0.5) {
+          score += 5;
+        }
+      });
+    }
+
+    // if a skill and already used, give -10 penalty
+    if (ability.type === "skill" && user.abilitiesUsed?.includes(ability.name)) {
+      score -= 10;
+    }
+    
+    // if a spell and no spell slots remaining, give -10 penalty
+    if (ability.type === "spell") {
+      let spellSlotsRemaining = (Combat.maxSpellSlotsForCombatant(user) || 0) - (user.spellSlotsUsed || 0);
+      if (spellSlotsRemaining <= 0) {
+        score -= 10;
+      }
+    }
+
+    return score;
+  }
+
+  analyzeAbility(ability: Ability): {
+    heal: boolean; damage: boolean; buff: boolean; debuff: boolean; defense: boolean; aoe: boolean; flee: boolean
+  } {
+    let damage = ability.effects.some(e => e.type === "damage" || e.type === "attack");
+    let heal = ability.effects.some(e => e.type === "heal");
+    let aoe = ability.target.includes("enemies");
+    let buff = ability.effects.some(e => e.type === "buff");
+    let debuff = ability.effects.some(e => e.type === "debuff");
+    let defense = ability.effects.some(e => e.type === "buff" && e.status?.effect.ac);
+    let flee = ability.effects.some(e => e.type === "flee");
+
+    return { heal, damage, buff, debuff, defense, aoe, flee };
   }
 
   async turn(combatant: Combatant) {
@@ -278,14 +461,8 @@ export default class Combat {
       return;
     }
 
-    if (combatant.activeEffects) {
-      combatant.activeEffects.forEach(it => it.duration--);
-      for (const status of combatant.activeEffects) {
-        if (status.duration === 0) {
-          this.emit({ type: "statusExpire", subject: combatant, effectName: status.name } as Omit<StatusExpireEvent, "turn">);
-        }
-      }
-    }
+    // if (combatant.activeEffects) {
+    // }
 
     // don't attempt to act if we're already defeated
     if (combatant.hp <= 0) { return; }
@@ -299,6 +476,12 @@ export default class Combat {
     }
 
     if (combatant.activeEffects) {
+      combatant.activeEffects.forEach(it => it.duration--);
+      for (const status of combatant.activeEffects) {
+        if (status.duration === 0) {
+          this.emit({ type: "statusExpire", subject: combatant, effectName: status.name } as Omit<StatusExpireEvent, "turn">);
+        }
+      }
       combatant.activeEffects = combatant.activeEffects.filter(it => it.duration > 0);
       // run onTurnEnd for all active effects
       for (const status of combatant.activeEffects) {
@@ -320,6 +503,19 @@ export default class Combat {
     this.emit({
       type: "roundStart", combatants: this.living(this.combatantsByInitiative.map(c => c.combatant))
     } as Omit<RoundStartEvent, "turn">);
+
+    // check for escape conditions (if 'flee' status is active, remove the combatant from combat)
+    this.allCombatants.forEach(combatant => {
+      if (combatant.activeEffects?.some(e => e.effect?.flee)) {
+        // remove from combatants / teams
+        this.teams.forEach(team => {
+          team.combatants = team.combatants.filter(c => c !== combatant);
+        });
+        this.combatantsByInitiative = this.combatantsByInitiative.filter(c => c.combatant !== combatant);
+
+        this.emit({ type: "flee", subject: combatant } as Omit<FleeEvent, "turn">);
+      }
+    });
 
     for (const { combatant } of this.combatantsByInitiative) {
       if (combatant.hp <= 0) continue; // Skip defeated combatants
