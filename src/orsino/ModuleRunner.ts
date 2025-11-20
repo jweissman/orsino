@@ -40,7 +40,7 @@ export class ModuleRunner {
   private prompt: (message: string) => string;
 
   private outputSink: (message: string) => void;
-  private moduleGen: () => CampaignModule;
+  private moduleGen: () => Promise<CampaignModule>;
   private state: GameState = {
     party: [],
     sharedGold: 100,
@@ -53,7 +53,7 @@ export class ModuleRunner {
   activeModule: CampaignModule | null = null;
 
   constructor(options: Record<string, any> = {}) {
-    this.roller = options.roller || Combat.rollDie;
+    this.roller = options.roller || Combat.roll;
     this.select = options.select || Combat.samplingSelect;
     this.prompt = options.prompt || ModuleRunner.randomInt;
     this.outputSink = options.outputSink || console.log;
@@ -85,7 +85,10 @@ export class ModuleRunner {
     }
 
     this.outputSink("Generating module, please wait...");
-    this.activeModule = this.moduleGen();
+    this.activeModule = await this.moduleGen();
+    this.outputSink(`Module "${this.activeModule.name}" generated: ${
+      this.activeModule.terrain} terrain, ${this.activeModule.town.name} town, ${this.activeModule.dungeons.length} dungeons
+    }`);
     // clear screen
     // this.outputSink("\x1Bc");
     this.outputSink(`Welcome to ${Stylist.bold(this.mod.name)}!`);
@@ -108,6 +111,7 @@ export class ModuleRunner {
   }
 
   async enter(mod: CampaignModule = this.mod): Promise<void> {
+    this.outputSink(`You arrive at the ${mod.town.adjective} ${Words.capitalize(mod.town.race)} ${mod.town.size} of ${Stylist.bold(mod.town.name)}.`);
     let days = 0;
     while (days++ < 30 && this.pcs.some(pc => pc.hp > 0)) {
       this.status(mod);
@@ -148,9 +152,9 @@ export class ModuleRunner {
         this.pcs.forEach(pc => {
           pc.activeEffects = pc.activeEffects || [];
           if (!pc.activeEffects.some(e => e.name === `Blessing of ${mod.town.deity}`)) {
-            this.outputSink(`The priest blesses ${pc.name}. You gain +1 to hit, 2 AC and +3 initiative for the next 10 turns.`);
+            this.outputSink(`The priest blesses ${pc.name}. You gain +1 to hit and +3 initiative for the next 10 turns.`);
             pc.activeEffects.push({
-              name: `Blessing of ${mod.town.deity}`, duration: 10, effect: { toHit: 1, ac: -2, initiative: 3 }
+              name: `Blessing of ${mod.town.deity}`, duration: 10, effect: { toHit: 1, initiative: 3 }
             });
           }
         });

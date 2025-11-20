@@ -30,48 +30,87 @@ export default class Deem {
       }
       return arr.reduce((acc, val) => acc + val, 0);
     },
-    // min: (...args: number[]) => Math.min(...args),
+    min: (...args: number[]) => Math.min(...args),
     max: (...args: number[]) => Math.max(...args),
-    // eval: (expr: string, context: Record<string, any> = {}) => Deem.evaluate(expr, context),
+    concat: (...args: any[]) => args.flat(),
   };
   static grammar = ohm.grammar(source);
   static semantics = Deem.grammar.createSemantics().addOperation('eval(context)', {
-    Exp(exp) { return exp.eval(this.args.context); },
-    LogExp_and(left, _, right) { return left.eval(this.args.context) && right.eval(this.args.context); },
-    LogExp_or(left, _, right) { return left.eval(this.args.context) || right.eval(this.args.context); },
-    LogExp_not(_not, exp) { return !exp.eval(this.args.context); },
-    CompExp_lt(left, _, right) { return left.eval(this.args.context) < right.eval(this.args.context); },
-    CompExp_gt(left, _, right) { return left.eval(this.args.context) > right.eval(this.args.context); },
-    CompExp_eq(left, _, right) { return left.eval(this.args.context) == right.eval(this.args.context); },
-    CompExp_neq(left, _, right) { return left.eval(this.args.context) != right.eval(this.args.context); },
-    CompExp_lte(left, _, right) { return left.eval(this.args.context) <= right.eval(this.args.context); },
-    CompExp_gte(left, _, right) { return left.eval(this.args.context) >= right.eval(this.args.context); },
-    AddExp_plus(left, _, right) { return left.eval(this.args.context) + right.eval(this.args.context); },
-    AddExp_minus(left, _, right) { return left.eval(this.args.context) - right.eval(this.args.context); },
-    MulExp_times(left, _, right) { return left.eval(this.args.context) * right.eval(this.args.context); },
-    MulExp_divide(left, _, right) { return left.eval(this.args.context) / right.eval(this.args.context); },
-    ExpExp_power(left, _, right) { return Math.pow(left.eval(this.args.context), right.eval(this.args.context)); },
-    PriExp_paren(_open, exp, _close) { return exp.eval(this.args.context); },
-    PriExp_pos(_plus, exp) { return exp.eval(this.args.context); },
-    PriExp_neg(_minus, exp) { return -exp.eval(this.args.context); },
-    FunctionCall(ident, _open, argList, _close) {
-      const funcName = ident.eval(this.args.context);
-      const args = argList.children.map(arg => arg.eval(this.args.context)).flat();
+    async Exp(exp) { return await exp.eval(this.args.context); },
+    async LogExp_and(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) && (await right.eval(ctx)); },
+    async LogExp_or(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) || (await right.eval(ctx)); },
+    async LogExp_not(_not, exp) { let ctx = this.args.context;  return !(await exp.eval(ctx)); },
+    async CompExp_lt(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) < (await right.eval(ctx)); },
+    async CompExp_gt(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) > (await right.eval(ctx)); },
+    async CompExp_eq(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) == (await right.eval(ctx)); },
+    async CompExp_neq(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) != (await right.eval(ctx)); },
+    async CompExp_lte(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) <= (await right.eval(ctx)); },
+    async CompExp_gte(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) >= (await right.eval(ctx)); },
+    async AddExp_plus(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) + (await right.eval(ctx)); },
+    async AddExp_minus(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) - (await right.eval(ctx)); },
+    async MulExp_times(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) * (await right.eval(ctx)); },
+    async MulExp_divide(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) / (await right.eval(ctx)); },
+    async ExpExp_power(left, _, right) { let ctx = this.args.context;  return Math.pow(await left.eval(ctx), await right.eval(ctx)); },
+    async PriExp_paren(_open, exp, _close) { let ctx = this.args.context;  return await exp.eval(ctx); },
+    async PriExp_pos(_plus, exp) { let ctx = this.args.context;  return await exp.eval(ctx); },
+    async PriExp_neg(_minus, exp) { let ctx = this.args.context;  return -(await exp.eval(ctx)); },
+    async FunctionCall(ident, _open, argList, _close) {
+      // console.log("[FuncCall] Evaluating:", ident.sourceString, argList.sourceString);
+      // console.log("Context for function call:", this.args.context);
+      let ctx = this.args.context || {};
+      const funcName = await ident.eval(ctx); //this.args.context);
+      // const args = argList.children.map(async arg => await arg.eval(this.args?.context)).flat();
+      // This returns an array of Promises
+      const args = [];  //argList.children.map(async arg => await arg.eval(this.args.context));
+      for (const arg of argList.children) {
+        const argValue = await arg.eval(ctx);  //this.args.context);
+        args.push(argValue);
+      }
+      // console.log("[FuncCall] Evaluated arguments:", args);
+
+      // Wait for all promises to resolve
+      // const args = (await Promise.all(argPromises)).flat();
       const func = Deem.stdlib[funcName];
+      // console.log(`Calling function: ${funcName}(${args.join(', ')})`);
       if (!func) {
         throw new Error(`Unknown function: ${funcName}`);
       }
-      const ret = func(...args);
-      // console.log(`Called function: ${funcName}(${args.join(', ')}) => ${ret}`);
+
+      let isFuncAsync = func.constructor.name === 'AsyncFunction';
+      let ret = null;
+      if (isFuncAsync) {
+        ret = await func(...args.flat());
+      } else {
+        ret = func(...args.flat());
+      }
+
+      // const ret = func(...args.flat());
+      // console.log(`Called function: ${funcName}(${args.join(', ')}) => ${JSON.stringify(ret, null, 2)}`);
       return ret;
     },
-    ArgList(first, _comma, rest) {
-      return [first.eval(this.args.context), ...rest.children.map(arg => arg.eval(this.args.context))];
+    async ArgList(first, _comma, rest) {
+      let ctx = this.args.context;
+      // Same pattern - map to promises, then Promise.all
+      // const restPromises = rest.children.map(async arg => await arg.eval(this.args.context));
+      const firstValue = await first.eval(ctx);  //this.args.context);
+      // const restValues = await Promise.all(restPromises);
+      const restValues = [];
+      for (const arg of rest.children) {
+        const argValue = await arg.eval(ctx); //this.args.context);
+        restValues.push(argValue);
+      }
+      const args = [firstValue, ...restValues];
+      // console.log("[ArgList] Evaluated arguments:", args);
+      return args;
     },
-    bool(_val) { return this.sourceString === 'true'; },
-    number(_num) { return parseFloat(this.sourceString); },
-    nihil(_val) { return null; },
-    ident(_initial, _rest) {
+    // async ArgList(first, _comma, rest) {
+    //   console.log("Evaluating arguments:", first.sourceString, rest.children.map(c => c.sourceString));
+    //   return [(await first.eval(this.args.context)), ...rest.children.map(async arg => await arg.eval(this.args.context))];
+    // },
+    async bool(_val) { return this.sourceString === 'true'; },
+    async number(_num) { return parseFloat(this.sourceString); },
+    async nihil(_val) { return null; },
+    async ident(_initial, _rest) {
       let name = this.sourceString;
       if (name.startsWith('#')) {
         const key = name.slice(1);
@@ -83,15 +122,41 @@ export default class Deem {
       }
       return this.sourceString;
     },
-    strlit(_open, chars, _close) {
+    async strlit(_open, chars, _close) {
       return chars.sourceString;
     },
-    dice_multi(count, _d, sides) {
+    async dice_multi(count, _d, sides) {
+      // if (isNaN(parseInt(count.sourceString)) || isNaN(parseInt(sides.sourceString))) {
+      //   throw new Error(`Invalid dice expression: ${count.sourceString}d${sides.sourceString}`);
+      // }
+      let ctx = this.args.context;
+      if (ctx.roll !== undefined) {
+        let sum = 0;
+        for (let i = 0; i < parseInt(count.sourceString); i++) {
+          const result = await ctx.roll(
+            ctx.subject,
+            ctx.description,
+            parseInt(sides.sourceString)
+          );
+          sum += result.amount;
+        }
+        return sum;
+      }
+
       const rolls = Array.from({ length: parseInt(count.sourceString) }, () => Math.floor(Math.random() * parseInt(sides.sourceString)) + 1);
       const sum = rolls.reduce((a, b) => a + b, 0);
       return sum;
     },
-    dice_single(_d, sides) {
+    async dice_single(_d, sides) {
+      if (this.args.context.roll) {
+        const rollFunc = this.args.context.roll;
+        const result = await rollFunc(
+          this.args.context.subject,
+          this.args.context.description,
+          parseInt(sides.sourceString)
+        );
+        return result.amount;
+      }
       return Math.floor(Math.random() * parseInt(sides.sourceString)) + 1;
     }
   }).addAttribute('pretty', {
@@ -136,16 +201,16 @@ export default class Deem {
     dice_single(_d, sides) { return `d${sides.sourceString}`; }
   });
 
-  static evaluate(
+  static async evaluate(
     expression: string,
     context: Record<string, any> = {}
-  ): any {
+  ): Promise<any> {
     const match = this.grammar.match(expression);
     if (match.succeeded()) {
       const sem = this.semantics(match);
       // const prettyExpr = sem.pretty;
       // You _wish_ this worked => sem.context = context;
-      const ret = sem.eval(context);
+      const ret = await sem.eval(context);
       // console.debug(
       //   `${this.colorize(prettyExpr, this.colors.black)} =>`,
       //   this.colorize(ret, this.colors.yellow),

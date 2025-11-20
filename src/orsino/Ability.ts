@@ -1,12 +1,15 @@
+import Deem from "../deem";
+import { CommandHandlers } from "./Combat";
 import { Fighting } from "./rules/Fighting";
 import { Combatant } from "./types/Combatant";
 import { Roll } from "./types/Roll";
+import { Team } from "./types/Team";
 import Files from "./util/Files";
 
 type Target = "self" | "ally" | "enemy" | "allies" | "enemies" | "all" | "randomEnemies";
 
 export interface AbilityEffect {
-  type: "attack" | "damage" | "heal" | "buff" | "debuff" | "flee";
+  type: "attack" | "damage" | "heal" | "buff" | "debuff" | "flee" | "removeItem";
   stat?: "str" | "dex" | "con" | "int" | "wis" | "cha";
   amount?: string; // e.g. "=1d6", "=2d8", "3"
   duration?: number; // in turns
@@ -20,11 +23,12 @@ export interface AbilityEffect {
   succeedDC?: number;
   succeedType?: keyof Combatant;
   chance?: number; // 0.0-1.0
+  item?: string;
 }
 
 export interface Ability {
   name: string;
-  type: "spell" | "skill";
+  type: "spell" | "skill" | "potion";
   description: string;
   aspect: "arcane" | "physical" | "divine" | "social";
   target: Target[];
@@ -79,11 +83,14 @@ export default class AbilityHandler {
   static async rollAmount(name: string, amount: string, roll: Roll, user: Combatant): Promise<number> {
     let result = 0;
     if (amount.startsWith("=")) {
-      const [num, sides] = amount.slice(1).split("d").map(Number);
-      for (let i = 0; i < num; i++) {
-        let theRoll = await roll(user, `for ${name}`, sides);
-        result += theRoll.amount;
-      }
+      // const [num, sides] = amount.slice(1).split("d").map(Number);
+      // for (let i = 0; i < num; i++) {
+      //   let theRoll = await roll(user, `for ${name}`, sides);
+      //   result += theRoll.amount;
+      // }
+
+      // let's parse with Deem instead and try to pass our custom roll function to it
+      result = await Deem.evaluate(amount.slice(1), { roll, subject: user, ...user, description: name })
     } else {
       result = parseInt(amount);
     }
@@ -109,34 +116,7 @@ export default class AbilityHandler {
   static async handleEffect(
     name: string,
     effect: AbilityEffect, user: Combatant, target: Combatant | Combatant[],
-    { roll, attack, hit, heal, status }: {
-      roll: Roll;
-      attack: (
-        combatant: Combatant,
-        target: Combatant,
-        // roller: Roll
-      ) => Promise<{ success: boolean, target: Combatant }>;
-      hit: (
-        attacker: Combatant,
-        defender: Combatant,
-        damage: number,
-        critical: boolean,
-        by: string,
-        success: boolean
-      ) => Promise<void>;
-      heal: (
-        healer: Combatant,
-        target: Combatant,
-        amount: number
-      ) => Promise<void>;
-      status: (
-        user: Combatant,
-        target: Combatant,
-        name: string,
-        effect: { [key: string]: any },
-        duration: number
-      ) => Promise<void>;
-    }
+    { roll, attack, hit, heal, status, removeItem }: CommandHandlers
   ) {
     if (Array.isArray(target)) {
       // if all are dead, skip
@@ -182,7 +162,7 @@ export default class AbilityHandler {
             if (e.effect['onAttackHit']) {
               // console.log(`Triggering onAttack effect: ${e.name}`);
               e.effect['onAttackHit'].forEach(async (attackFx: AbilityEffect) => {
-                await this.handleEffect(e.name, attackFx, user, target, { roll, attack, hit, heal, status });
+                await this.handleEffect(e.name, attackFx, user, target, { roll, attack, hit, heal, status, removeItem });
               })
             }
           }
@@ -268,7 +248,7 @@ export default class AbilityHandler {
         for (const t of target) {
           // if (chance === undefined || Math.random() < chance) {
           if (await successful(t)) {
-            await status(user, t, "Fleeing", { flee: true }, 1);
+            await status(user, t, "Fleeing", { flee: true }, 2);
           } else {
             console.log(`${t.name} tried to flee but failed!`);
           }
@@ -276,10 +256,21 @@ export default class AbilityHandler {
       } else {
         // if (chance === undefined || Math.random() < chance) {
         if (await successful(target)) {
-          await status(user, target, "Fleeing", { flee: true }, 1);
+          await status(user, target, "Fleeing", { flee: true }, 2);
         } else {
           console.log(`${target.name} tried to flee but failed!`);
         }
+      }
+    } else if (effect.type === "removeItem") {
+      if (!effect.item) {
+        throw new Error(`removeItem effect must specify an item`);
+      }
+      if (Array.isArray(target)) {
+        for (const t of target) {
+          await removeItem(t, effect.item as keyof Team);
+        }
+      } else {
+        await removeItem(target, effect.item as keyof Team);
       }
     }
     
@@ -292,36 +283,10 @@ export default class AbilityHandler {
 
   static async perform(
     ability: Ability, user: Combatant, target: Combatant | Combatant[],
-    { roll, attack, hit, heal, status }: {
-      roll: Roll;
-      attack: (
-        combatant: Combatant,
-        target: Combatant,
-      ) => Promise<{ success: boolean, target: Combatant }>;
-      hit: (
-        attacker: Combatant,
-        defender: Combatant,
-        damage: number,
-        critical: boolean,
-        by: string,
-        success: boolean
-      ) => Promise<void>;
-      heal: (
-        healer: Combatant,
-        target: Combatant,
-        amount: number
-      ) => Promise<void>;
-      status: (
-        user: Combatant,
-        target: Combatant,
-        name: string,
-        effect: { [key: string]: any },
-        duration: number
-      ) => Promise<void>;
-    }
+    { roll, attack, hit, heal, status, removeItem }: CommandHandlers
   ) {
     for (const effect of ability.effects) {
-      let result = await this.handleEffect(ability.name, effect, user, target, { roll, attack, hit, heal, status });
+      let result = await this.handleEffect(ability.name, effect, user, target, { roll, attack, hit, heal, status, removeItem });
       if (result === false) {
         break;
       }

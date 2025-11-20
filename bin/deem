@@ -3,13 +3,38 @@
 import Deem from '../src/deem';
 
 console.log('Deem console');
-while (true) {
-  const input = prompt('> ');
-  if (input === null) break; // Exit on Ctrl+D
+// basic
+// while (true) {
+//   const input = prompt('> ');
+//   if (input === null) break; // Exit on Ctrl+D
+//   try {
+//     const result = await Deem.evaluate(input);
+//     console.log(result);
+//   } catch (err) {
+//     console.error('Error:', err);
+//   }
+// }
+
+// with readline (history, editing)
+import readline from 'readline';
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+  prompt: '> ',
+});
+
+rl.prompt();
+
+rl.on('line', async (line) => {
   try {
-    const result = Deem.evaluate(input);
+    const result = await Deem.evaluate(line);
     console.log(result);
   } catch (err) {
     console.error('Error:', err);
   }
-}
+  rl.prompt();
+}).on('close', () => {
+  console.log('Exiting Deem console.');
+  process.exit(0);
+});

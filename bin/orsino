@@ -42,7 +42,7 @@ program
       options._targetCr = cr;
     }
     
-    const response = orsino.gen(
+    const response = await orsino.gen(
       type as GenerationTemplateType,
       {
         ...options,

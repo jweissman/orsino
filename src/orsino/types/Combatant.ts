@@ -41,4 +41,7 @@ export interface Combatant {
   type?: string; // monster type, e.g. "shaman", "brute", etc.
 
   abilitiesUsed?: string[]; // Track which abilities have been used in the current combat
+
+  // number of sides on the hit die for this combatant
+  hitDie?: number;
 }

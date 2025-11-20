@@ -7,30 +7,32 @@ export class Template {
     public props: Record<string, any> = {}
   ) { }
 
-  assembleProperties(
+  async assembleProperties(
     options: Record<string, any> = {},
     orsino: any
-  ): Record<string, any> {
+  ): Promise<Record<string, any>> {
     const localContext = { ...options };
     let assembled: Record<string, any> = {};
 
-    Object.entries(this.props).forEach(([key, value]) => {
+    // Object.entries(this.props).forEach(([key, value]) => {
+    for (const [key, value] of Object.entries(this.props)) {
+      // console.log(`Assembling property: ${key} with value:`, value);
       const context: Record<string, any> = {
         ...localContext,
         ...assembled
       };
       Deem.stdlib.lookup = (tableName: GenerationTemplateType, groupName: string) => orsino.lookupInTable(tableName, groupName);
-      Deem.stdlib.gen = (type: GenerationTemplateType) => {
-        return orsino.gen(type, { ...context })
+      Deem.stdlib.gen = async (type: GenerationTemplateType) => {
+        return await orsino.gen(type, { ...context })
       };
-      Deem.stdlib.genList = (type: GenerationTemplateType, count: number = 1, condition?: string) => {
-        return orsino.genList(type, { ...context }, count, condition);
+      Deem.stdlib.genList = async (type: GenerationTemplateType, count: number = 1, condition?: string) => {
+        return await orsino.genList(type, { ...context }, count, condition);
       }
-      Deem.stdlib.eval = (expr: string) => Deem.evaluate(expr, context);
+      Deem.stdlib.eval = async (expr: string) => await Deem.evaluate(expr, context);
 
       assembled[key] =
         localContext[key] !== undefined ? localContext[key] :
-          Template.evaluatePropertyExpression(value, context);
+          (await Template.evaluatePropertyExpression(value, context));
 
       localContext[key] = assembled[key];
 
@@ -43,7 +45,7 @@ export class Template {
           localContext[k] = assembled[k];
         });
       }
-    });
+    }
 
     // omit internal properties starting with '_'
     Object.keys(assembled).forEach(key => {
@@ -64,14 +66,14 @@ export class Template {
     return assembled;
   }
 
-  static evaluatePropertyExpression(expr: any, context: Record<string, any>): any {
+  static async evaluatePropertyExpression(expr: any, context: Record<string, any>): Promise<any> {
     if (!expr || typeof expr !== 'string') {
       return expr;
     }
 
     if (expr.startsWith("=")) {
       try {
-        return Deem.evaluate(expr.slice(1), context);
+        return await Deem.evaluate(expr.slice(1), context);
       } catch (e) {
         console.error(`Error evaluating expression ${expr}`, e);
         // return null;
