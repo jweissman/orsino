@@ -185,6 +185,23 @@
       }
     ]
   },
+  "smite": {
+    "name": "Smite",
+    "type": "skill",
+    "aspect": "divine",
+    "description": "Smite an enemy, dealing 2d6 per level radiant damage after a successful hit.",
+    "target": ["enemy"],
+    "effects": [
+      {
+        "type": "attack"
+      },
+      {
+        "type": "damage",
+        "amount": "=#level * 2d6"
+      }
+    ]
+  },
+
   "inspire": {
     "name": "Inspire",
     "type": "skill",

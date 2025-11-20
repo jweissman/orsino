@@ -25,7 +25,7 @@ export default class Orsino {
     type: PlaygroundType,
     options: Record<string, any> = {}
   ) {
-    const partySize = options.partySize || 2;
+    const partySize = options.partySize || 3;
     const pcs = await this.chooseParty(partySize);
     if (type === "combat") {
       let gauntlet = (new Gauntlet({
@@ -77,7 +77,7 @@ export default class Orsino {
     }
   }
 
-  private async chooseParty(partySize: number = 2): Promise<Combatant[]> {
+  private async chooseParty(partySize: number = 3): Promise<Combatant[]> {
     let party: Combatant[] = [];
     let hasExistingPcs = false;
     if (await Files.countFiles(`${Dungeoneer.dataPath}/pcs`) > 0) {
@@ -100,7 +100,7 @@ export default class Orsino {
           ['warrior', 'thief', 'mage', 'cleric', 'ranger', 'bard', 'sage']
         );
 
-        let wizardPc = this.gen("pc", { setting: 'fantasy', race: raceSelect, class: occupationSelect }) as Combatant;
+        let wizardPc = await this.gen("pc", { setting: 'fantasy', race: raceSelect, class: occupationSelect }) as Combatant;
         console.table({ ...wizardPc, abilities: wizardPc.abilities.join(", ") });
         let confirm = await Interactive.selection(
           'Do you want to use this PC? ' + whichPc,
@@ -110,48 +110,48 @@ export default class Orsino {
           party.push(wizardPc);
         }
       } else {
-        const pcFiles = await Files.listFiles(`${Dungeoneer.dataPath}/pcs`);
-        let shouldSelect = await Interactive.selection(
-          'Would you like to select an existing PC? ' + whichPc,
-          ['Yes', 'No']
-        );
-        if (shouldSelect === 'Yes') {
-          const selectedPcName = await Interactive.selection(
-            'Select a PC to lead the dungeon crawl:',
-            pcFiles.map(name => name.replace('.json', ''))
-              .filter(name => party.every(p => p.name !== name))
-              .sort()
-          );
-          const selectedPc = await Files.readJSON(`${Dungeoneer.dataPath}/pcs/${selectedPcName}.json`) as Combatant;
-          party.push(selectedPc);
-        } else {
-          const pc: Combatant = this.gen("pc", { setting: 'fantasy' }) as Combatant;
+        // const pcFiles = await Files.listFiles(`${Dungeoneer.dataPath}/pcs`);
+        // let shouldSelect = await Interactive.selection(
+        //   'Would you like to select an existing PC? ' + whichPc,
+        //   ['Yes', 'No']
+        // );
+        // if (shouldSelect === 'Yes') {
+        //   const selectedPcName = await Interactive.selection(
+        //     'Select a PC to lead the dungeon crawl:',
+        //     pcFiles.map(name => name.replace('.json', ''))
+        //       .filter(name => party.every(p => p.name !== name))
+        //       .sort()
+        //   );
+        //   const selectedPc = await Files.readJSON(`${Dungeoneer.dataPath}/pcs/${selectedPcName}.json`) as Combatant;
+        //   party.push(selectedPc);
+        // } else {
+          const pc: Combatant = await this.gen("pc", { setting: 'fantasy' }) as Combatant;
           if (!party.some(p => p.name === pc.name)) {
             party.push(pc);
           }
-        }
+        // }
       }
     };
     return party;
   }
 
-  genList(
+  async genList(
     type: GenerationTemplateType,
     options: Record<string, any> = {},
     count: number = 1,
     condition?: string,
-  ): Record<string, any>[] {
+  ): Promise<Record<string, any>[]> {
     // accumulate items gradually and put them in __items so that conditions can refer to them
     const items: Record<string, any>[] = [];
     let attempts = 0;
     while (items.length < count && attempts++ < count * 10) {
       const i = items.length;
       // console.log(`Generating ${type} ${i + 1}/${count}...`);
-      const item = this.gen(type, deepCopy({ ...options, _index: i }));
+      const item = await this.gen(type, deepCopy({ ...options, _index: i }));
       items.push(item);
       if (!condition) { continue }
       Deem.magicVars = { __items: [...items] };
-      const conditionResult = Template.evaluatePropertyExpression(condition, deepCopy(options));
+      const conditionResult = await Template.evaluatePropertyExpression(condition, deepCopy(options));
       if (!conditionResult) {
         items.pop();
         // console.warn(`Item ${i} did not meet condition: ${condition}`);
@@ -161,16 +161,16 @@ export default class Orsino {
     }
     if (items.length === 0) {
       // generate one anyway
-      items.push(this.gen(type, options));
+      items.push(await this.gen(type, options));
     }
 
     return items;
   }
 
-  gen(
+  async gen(
     type: GenerationTemplateType,
     options: Record<string, any> = {}
-  ): Record<string, any> {
+  ): Promise<Record<string, any>> {
     this.setting = this.setting || (options.setting ? loadSetting(options.setting) : this.defaultSetting);
     // console.log(`Gen ${Stylist.format(type, 'bold')} with options`);
     let nonNestedOptions: Record<string, any> = {};
@@ -188,11 +188,11 @@ export default class Orsino {
     }
 
     if (options.__count && options.__count > 1) {
-      return this.genList(type, { ...options, __count: undefined }, options.__count);
+      return await this.genList(type, { ...options, __count: undefined }, options.__count);
     }
 
     if (templ instanceof Template) {
-      let assembled = templ.assembleProperties(options, this);
+      let assembled = await templ.assembleProperties(options, this);
       return assembled;
     } else if (templ instanceof Table) {
       let group = options.group || 'default';

@@ -96,7 +96,11 @@ export default class Events {
       case "poisoned": return `${subject} is poisoned!`;
       // case "poison": return `${subject} suffers poison damage.`;
       // case "bless": return `${subject} blesses ${Words.humanizeList(event.targets.map(t => t.forename))}.`;
-      case "statusEffect": return `${subject} is now ${event.effectName}! (${event.effect ? Object.entries({ ...event.effect, by: event.effect.by.forename }).map(([k, v]) => `${k}: ${v}`).join(", ") : "--"})`;
+      case "statusEffect":
+        if (event.effect.by) {
+          return `${subject} is ${event.effectName} by ${event.effect.by.forename}.`
+        }
+        return `${subject} is ${event.effectName}.`
       case "statusExpire":
         if (event.effectName === "Poisoned Blade") {
           return `${subject}'s blade is no longer coated in poison.`;

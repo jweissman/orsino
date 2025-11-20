@@ -12,7 +12,7 @@ export function loadSetting(name: string): Record<GenerationTemplateType, Templa
   const tables = Object.entries(tablesData).map(([name, data]: any) => {
     const table = new Table(data.discriminator);
     Object.entries(data.groups).forEach(([group, items]) => {
-      table.group(group, items);
+      table.group(group, items as any);
     });
     return [name, table];
   });
@@ -20,7 +20,7 @@ export function loadSetting(name: string): Record<GenerationTemplateType, Templa
   // Load templates
   const templatesData = JSON.parse(fs.readFileSync(`${basePath}/templates.json`, 'utf-8'));
   const templates = Object.entries(templatesData).map(([name, props]) => {
-    return [name, new Template(name as GenerationTemplateType, props)];
+    return [name, new Template(name as GenerationTemplateType, props as Record<string, any>)];
   });
   
   return Object.fromEntries([...tables, ...templates]);

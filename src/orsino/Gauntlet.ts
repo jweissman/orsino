@@ -74,7 +74,13 @@ export class Gauntlet {
       await Gauntlet.singleCombat(combat, teams);
       if (combat.winner === "Player") {
         const xpBonus = teams[1].combatants.reduce((sum, c) => sum + ((c?.xp || 1) * 10), 0);
-        const goldDrop = teams[1].combatants.reduce((sum, c) => sum + ((Number(Deem.evaluate(String(c.gp) || "1d4"))) || 0), 0); // + (encounter?.bonusGold || 0);
+        // const goldDrop = teams[1].combatants.reduce((sum, c) => sum + ((Number(Deem.evaluate(String(c.gp) || "1d4"))) || 0), 0); // + (encounter?.bonusGold || 0);
+        let goldDrop = 0;
+        for (const c of teams[1].combatants) {
+          const monsterGold = await Deem.evaluate(String(c.gp) || "1d4");
+          goldDrop += monsterGold;
+        }
+        // goldDrop += encounter?.bonusGold || 0;
 
         this.outputSink("You win the combat! You gain " + xpBonus + " XP and " + goldDrop + " GP.");
         const playerCombatants = combat.teams[0].combatants.filter(c => c.playerControlled);

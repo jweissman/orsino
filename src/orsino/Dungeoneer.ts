@@ -80,11 +80,11 @@ export default class Dungeoneer {
   private currentRoomIndex: number = 0;
   private journal: DungeonEvent[] = [];
 
-  protected dungeonGen: () => Dungeon;
-  protected encounterGen: (cr: number) => Encounter;
+  protected dungeonGen: () => Promise<Dungeon>;
+  protected encounterGen: (cr: number) => Promise<Encounter>;
 
   public playerTeam: Team;
-  public dungeon: Dungeon;
+  public dungeon: Dungeon | null = null;
 
   constructor(
     options: Record<string, any> = {}
@@ -99,12 +99,11 @@ export default class Dungeoneer {
       throw new Error('dungeonGen is required');
     }
 
-    this.dungeon = this.dungeonGen();
     // this.note(`Generated dungeon: ${this.dungeon.dungeon_name} (${this.dungeon.dungeon_type})`);
 
-    this.encounterGen = ((cr: number) => {
+    this.encounterGen = (async (cr: number) => {
       if (options.gen) {
-        return options.gen("encounter", { ...this.dungeon, targetCr: cr });
+        return await options.gen("encounter", { ...this.dungeon!, targetCr: cr });
       } else {
         return {
           monsters: [
@@ -123,21 +122,28 @@ export default class Dungeoneer {
   }
 
   get icon() {
-    return Dungeoneer.dungeonIcons[this.dungeon.dungeon_type as keyof typeof Dungeoneer.dungeonIcons] || "🏰";
+    return Dungeoneer.dungeonIcons[this.dungeon!.dungeon_type as keyof typeof Dungeoneer.dungeonIcons] || "🏰";
+  }
+
+  async setUp() {
+    this.dungeon = await this.dungeonGen();
+    // console.log("Dungeon details: " + JSON.stringify(this.dungeon, null, 2));
   }
 
   // Main run loop
   async run(): Promise<void> {
-    // console.log("Dungeon details: " + JSON.stringify(this.dungeon, null, 2));
+    if (!this.dungeon) {
+      await this.setUp();
+    }
 
     this.presentCharacterRecords();
 
     this.emit({
       type: "enterDungeon",
-      dungeonName: this.dungeon.dungeon_name,
+      dungeonName: this.dungeon!.dungeon_name,
       dungeonIcon: this.icon,
-      dungeonType: this.dungeon.dungeon_type,
-      depth: this.dungeon.depth
+      dungeonType: this.dungeon!.dungeon_type,
+      depth: this.dungeon!.depth
     });
 
     while (!this.isOver()) {
@@ -268,8 +274,13 @@ export default class Dungeoneer {
         xp = enemies.reduce((sum, m) => sum + (m.xp || 0), 0)
           + (monsterCount * monsterCount * 10)
           + 25;
-        gold = (encounter.bonusGold || 0) +
-          enemies.reduce((sum, m) => sum + (Deem.evaluate(String(m.gp) || "1+1d2")), 0);
+
+        // gold = (encounter.bonusGold || 0) +
+        //   enemies.reduce((sum, m) => sum + (Deem.evaluate(String(m.gp) || "1+1d2")), 0);
+        for (const m of enemies) {
+          const monsterGold = (await Deem.evaluate(String(m.gp))) || 0;
+          gold += monsterGold;
+        }
 
         this.note(`\n✓ Victory! +${xp} XP, +${gold} GP\n`);
       }
@@ -300,9 +311,12 @@ export default class Dungeoneer {
       while (c.xp >= nextLevelXp) {
         c.level++;
         nextLevelXp = Gauntlet.xpForLevel(c.level + 1);
-        c.maxHp += 1 + Math.max(0, Math.floor(c.con / 2));
+        let hitPointIncrease = (await this.roller(c, "hit point growth", c.hitDie || 4)).amount;
+        hitPointIncrease += Math.max(0, Math.floor((c.con - 10) / 2));
+        c.maxHp += hitPointIncrease;
         c.hp = c.maxHp;
         this.note(`${Presenter.combatant(c)} leveled up to level ${c.level}!`);
+        this.note(`Hit points increased by ${hitPointIncrease} to ${c.maxHp}.`);
         const stat = await this.select(`Choose a stat to increase:`, [
           { disabled: false, name: `Strength (${c.str})`, value: 'str', short: 'Strength' },
           { disabled: false, name: `Dexterity (${c.dex})`, value: 'dex', short: 'Dexterity' },
@@ -348,7 +362,7 @@ export default class Dungeoneer {
             }
             await this.reward(xpReward, 0);
           } else {
-            const stashGold = Deem.evaluate("2+1d20");
+            const stashGold = await Deem.evaluate("2+1d20");
             let share = Math.round(stashGold / this.playerTeam.combatants.length)
             this.note(`Found ${stashGold} gold!`);
             await this.reward(0, share);
@@ -362,7 +376,7 @@ export default class Dungeoneer {
       } else if (choice === "examine") {
         let check = await this.skillCheck(`to examine ${room.feature}`, "int", 10);
         if (check.success) {
-          let gp = Deem.evaluate("1+1d20");
+          let gp = await Deem.evaluate("1+1d20");
           this.note(`${check.actor.forename} found a hidden compartment in ${room.feature} containing ${gp} gold coins!`);
           await this.reward(0, gp);
         } else {
@@ -383,19 +397,20 @@ export default class Dungeoneer {
     if (choice === "yes") {
       // Heal party, maybe trigger encounter
       this.note(`\n💤 Resting...`);
-      this.playerTeam.combatants.forEach(c => {
-        const heal = Deem.evaluate("1+1d8");
+      // this.playerTeam.combatants.forEach(c => {
+      for (const c of this.playerTeam.combatants) {
+        const heal = await Deem.evaluate("1+1d8");
         if (c.hp <= 0) { c.hp = 1; } // Stabilize unconscious characters
         c.hp = Math.min(c.maxHp, c.hp + heal);
         this.note(`Healed ${c.name} for ${heal} HP (HP: ${c.hp}/${c.maxHp})`);
 
         c.spellSlotsUsed = 0; // Reset spell slots on rest
-      });
+      }
 
       if (Math.random() < 0.6 && this.currentRoomIndex < this.rooms.length) {
         // let encounter = this.encounterGen...
         let room = this.currentRoom as Room;
-        room.encounter = this.encounterGen(room.targetCr || 1);
+        room.encounter = await this.encounterGen(room.targetCr || 1);
         this.note(`\n👹 Wandering monsters interrupt your rest: ${Words.humanizeList(room.encounter.monsters.map(m => m.name))} [CR ${
           room.encounter.cr
         }]`);

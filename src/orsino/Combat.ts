@@ -15,6 +15,15 @@ export type RollResult = {
 };
 
 export type ChoiceSelector<T extends Answers> = (description: string, options: Choice<T>[], combatant?: Combatant) => Promise<T>;
+
+export type CommandHandlers = {
+  roll: Roll;
+  attack: (combatant: Combatant, target: Combatant, roller?: Roll) => Promise<{ success: boolean; target: Combatant }>;
+  hit: (attacker: Combatant, defender: Combatant, damage: number, critical: boolean, by: string, success: boolean) => Promise<void>;
+  heal: (healer: Combatant, target: Combatant, amount: number) => Promise<void>;
+  status: (user: Combatant, target: Combatant, name: string, effect: { [key: string]: any }, duration: number) => Promise<void>;
+  removeItem: (user: Combatant, item: keyof Team) => Promise<void>;
+}
 export default class Combat {
   private turnNumber: number = 0;
   public winner: string | null = null;
@@ -148,13 +157,23 @@ export default class Combat {
     return 0;
   }
 
-  get commandHandlers() {
+  get commandHandlers(): CommandHandlers {
     return {
       roll: this.roller,
       attack: this.pcAttacks.bind(this),
       hit: this.handleHit.bind(this),
       heal: this.handleHeal.bind(this),
-      status: this.handleStatusEffect.bind(this)
+      status: this.handleStatusEffect.bind(this),
+      removeItem: async (user: Combatant, item: keyof Team) => { //}'healingPotions') => {
+        // find team and remove item
+        let team = this.teams.find(t => t.combatants.includes(user));
+        if (team) {
+          console.log("Removing item", item, "from", team.name);
+          // @ts-ignore
+          team[item] = Math.max(0, (team[item] as number || 0) - 1);
+          console.log("Team", team.name, "now has", team[item], item);
+        }
+      }
     }
   }
 
@@ -222,6 +241,16 @@ export default class Combat {
         disabled: !validAbilities.some(a => a.name === ability.name)
       })
     });
+
+    // if we have potions, add a quaff potion action
+    if (this.teams[0].healingPotions > 0) {
+      choices.push({
+        value: { name: "Quaff", type: "potion", description: "Drink a healing potion to restore 2d4+2 HP.", aspect: "divine", target: ["self"], effects: [{ type: "heal", amount: "=2d4+2" }, { type: "removeItem", item: "healingPotions" }] },
+        name: "Quaff Potion (Heal 2d4+2 HP)",
+        short: "Quaff Potion",
+        disabled: false
+      });
+    }
 
     const action: Ability = await this.select(`Your turn, ${Presenter.combatant(combatant)} - what do you do?`, choices, combatant);
 
@@ -317,7 +346,7 @@ export default class Combat {
       ability,
       score: this.scoreAbility(ability, combatant, allies, enemies)
     }));
-    console.log(`NPC ${combatant.forename} consiers abilities:`, scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`).join(", "));
+    console.log(`NPC ${combatant.forename} rates abilities:`, scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`).join(", "));
     scoredAbilities.sort((a, b) => b.score - a.score);
     const action = scoredAbilities[0]?.ability;
     let targetOrTargets: Combatant | Combatant[] = this.bestAbilityTarget(action, combatant, allies, enemies);

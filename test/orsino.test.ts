@@ -33,7 +33,7 @@ describe('Orsino', () => {
   });
 
   it('pc gen', async () => {
-    const pc = orsino.gen("pc", { setting: "fantasy" });
+    const pc = await orsino.gen("pc", { setting: "fantasy" });
     console.log(pc);
     expect(pc).toHaveProperty('name');
     expect(pc.name).toMatch(/[A-Z][a-z]+/);
@@ -81,10 +81,13 @@ describe('Orsino', () => {
 
   it('dungeon generator', async () => {
     let crawler = new Dungeoneer(
-      { dungeonGen: () => orsino.gen("dungeon", { depth: 2 }) },
+      { dungeonGen: async () => await orsino.gen("dungeon", { depth: 2 }) },
     );
+    await crawler.setUp();
     expect(crawler.isOver()).toBe(false);
-    expect(crawler.dungeon.rooms).toHaveLength(2);
+    expect(crawler.dungeon).toBeDefined();
+    expect(crawler.dungeon).toHaveProperty('dungeon_name');
+    expect(crawler.dungeon!.rooms).toHaveLength(2);
     while (!crawler.isOver()) {
       const room = crawler.currentRoom;
       crawler.enterRoom(room as Room);
@@ -106,7 +109,7 @@ describe('Orsino', () => {
   });
 
   it('mod generator', async () => {
-    const mod = orsino.gen("module", { setting: "fantasy" });
+    const mod = await orsino.gen("module", { setting: "fantasy" });
     expect(mod).toHaveProperty('name');
     expect(mod).toHaveProperty('terrain');
     expect(mod).toHaveProperty('town');
@@ -118,7 +121,10 @@ describe('Orsino', () => {
 
     let explorer = new ModuleRunner({
       moduleGen: () => mod,
-      pcs: [orsino.gen("pc", { setting: "fantasy" })]
+      pcs: [{
+        ...await orsino.gen("pc", { setting: "fantasy" }),
+        playerControlled: true
+      }]
     });
 
     await explorer.run();
