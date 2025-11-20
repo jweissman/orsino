@@ -38,7 +38,7 @@ export default class User {
 
   static async roll(subject: Combatant, description: string, sides: number): Promise<RollResult> {
     if (!subject.playerControlled) {
-      const result = Combat.rollDie(subject, description, sides);
+      const result = Combat.roll(subject, description, sides);
       await Spinner.run(`${subject.name} is rolling ${description}`, 120 + Math.random() * 240, result.description);
       return result;
     }
@@ -49,7 +49,7 @@ export default class User {
       `${subject.name} rolling d${sides} ${description}`
     );
     // Then do the actual roll
-    let result = Combat.rollDie(subject, description, sides);
+    let result = Combat.roll(subject, description, sides);
     console.log("\r" + result.description);
     return result;
   }

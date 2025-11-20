@@ -89,7 +89,7 @@ export default class Dungeoneer {
   constructor(
     options: Record<string, any> = {}
   ) {
-    this.roller = options.roller || Combat.rollDie;
+    this.roller = options.roller || Combat.roll;
     this.select = options.select || Combat.samplingSelect;
     this.outputSink = options.outputSink || console.log;
     this.dungeonGen = options.dungeonGen || Dungeoneer.defaultGen;

@@ -78,10 +78,8 @@ export class Fighting {
     const strengthDamageBonus = Math.max(0, strMod);  // STR affects damage (min 0)
 
     const thac0 = this.thac0(attacker.level);
-    // this causes an infinite loop somehow :()
     const effectiveDefender = this.effectiveStats(defender);
-    const ac = effectiveDefender.ac; // - (this.turnBonus(defender).ac || 0);
-    // const ac = (defender.ac) - (this.turnBonus(defender).ac || 0);
+    const ac = effectiveDefender.ac;
     const whatNumberHits = thac0 - ac - toHitBonus;
 
     // let bonusMessage = "";

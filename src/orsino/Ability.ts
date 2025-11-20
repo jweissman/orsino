@@ -90,7 +90,6 @@ export default class AbilityHandler {
       // }
 
       // let's parse with Deem instead and try to pass our custom roll function to it
-      // console.log("Eval amount with Deem:", amount.slice(1), { subject: user, description: name });
       result = await Deem.evaluate(amount.slice(1), { roll, subject: user, ...user, description: name })
     } else {
       result = parseInt(amount);
@@ -118,34 +117,6 @@ export default class AbilityHandler {
     name: string,
     effect: AbilityEffect, user: Combatant, target: Combatant | Combatant[],
     { roll, attack, hit, heal, status, removeItem }: CommandHandlers
-    // {
-    //   roll: Roll;
-    //   attack: (
-    //     combatant: Combatant,
-    //     target: Combatant,
-    //     // roller: Roll
-    //   ) => Promise<{ success: boolean, target: Combatant }>;
-    //   hit: (
-    //     attacker: Combatant,
-    //     defender: Combatant,
-    //     damage: number,
-    //     critical: boolean,
-    //     by: string,
-    //     success: boolean
-    //   ) => Promise<void>;
-    //   heal: (
-    //     healer: Combatant,
-    //     target: Combatant,
-    //     amount: number
-    //   ) => Promise<void>;
-    //   status: (
-    //     user: Combatant,
-    //     target: Combatant,
-    //     name: string,
-    //     effect: { [key: string]: any },
-    //     duration: number
-    //   ) => Promise<void>;
-    // }
   ) {
     if (Array.isArray(target)) {
       // if all are dead, skip
@@ -301,14 +272,6 @@ export default class AbilityHandler {
       } else {
         await removeItem(target, effect.item as keyof Team);
       }
-      // consume a potion
-      // if (user.healingPotions > 0) {
-      //   user.healingPotions--;
-      //   let amount = await AbilityHandler.rollAmount(name, effect.amount || "2d4+2", roll, user);
-      //   await heal(user, user, amount);
-      // } else {
-      //   console.log(`${user.name} has no potions left!`);
-      // }
     }
     
     else {
@@ -321,32 +284,6 @@ export default class AbilityHandler {
   static async perform(
     ability: Ability, user: Combatant, target: Combatant | Combatant[],
     { roll, attack, hit, heal, status, removeItem }: CommandHandlers
-      // roll: Roll;
-      // attack: (
-      //   combatant: Combatant,
-      //   target: Combatant,
-      // ) => Promise<{ success: boolean, target: Combatant }>;
-      // hit: (
-      //   attacker: Combatant,
-      //   defender: Combatant,
-      //   damage: number,
-      //   critical: boolean,
-      //   by: string,
-      //   success: boolean
-      // ) => Promise<void>;
-      // heal: (
-      //   healer: Combatant,
-      //   target: Combatant,
-      //   amount: number
-      // ) => Promise<void>;
-      // status: (
-      //   user: Combatant,
-      //   target: Combatant,
-      //   name: string,
-      //   effect: { [key: string]: any },
-      //   duration: number
-      // ) => Promise<void>;
-    // }
   ) {
     for (const effect of ability.effects) {
       let result = await this.handleEffect(ability.name, effect, user, target, { roll, attack, hit, heal, status, removeItem });

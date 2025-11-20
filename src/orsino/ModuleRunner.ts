@@ -53,7 +53,7 @@ export class ModuleRunner {
   activeModule: CampaignModule | null = null;
 
   constructor(options: Record<string, any> = {}) {
-    this.roller = options.roller || Combat.rollDie;
+    this.roller = options.roller || Combat.roll;
     this.select = options.select || Combat.samplingSelect;
     this.prompt = options.prompt || ModuleRunner.randomInt;
     this.outputSink = options.outputSink || console.log;
@@ -152,9 +152,9 @@ export class ModuleRunner {
         this.pcs.forEach(pc => {
           pc.activeEffects = pc.activeEffects || [];
           if (!pc.activeEffects.some(e => e.name === `Blessing of ${mod.town.deity}`)) {
-            this.outputSink(`The priest blesses ${pc.name}. You gain +1 to hit, 2 AC and +3 initiative for the next 10 turns.`);
+            this.outputSink(`The priest blesses ${pc.name}. You gain +1 to hit and +3 initiative for the next 10 turns.`);
             pc.activeEffects.push({
-              name: `Blessing of ${mod.town.deity}`, duration: 10, effect: { toHit: 1, ac: -2, initiative: 3 }
+              name: `Blessing of ${mod.town.deity}`, duration: 10, effect: { toHit: 1, initiative: 3 }
             });
           }
         });

@@ -42,11 +42,11 @@
     "int": "=lookup(monsterInt, #race)",
     "wis": "=lookup(monsterWis, #race)",
     "cha": "=lookup(monsterCha, #race)",
-    "maxHp": "=#_baseHp + round(rand()*#_hpVariance + #level / 3)",
+    "maxHp": "=max(1, #_baseHp + round(rand()*#_hpVariance + #level / 3))",
     "_naturalArmor": "=lookup(monsterNaturalArmor, #race)",
     "armor": "=if(#level >= 5, 'plate', if(#level >= 3, 'chainmail', 'leather'))",
     "armorBonus": "=lookup(armorClassBonus, #armor)",
-    "ac": "=10 + #_naturalArmor - floor((#dex-10)/2) - #armorBonus",
+    "ac": "=10 - #_naturalArmor - floor((#dex-10)/2) - #armorBonus",
     "weapon": "=if(#type == 'Slinger', 'sling', lookup(monsterWeapon, #race))",
     "damageDie": "=lookup(damageDie, #weapon)",
     "attackRolls": "=lookup(attackRolls, #weapon)",
@@ -76,7 +76,7 @@
     "damageDie": "=lookup(damageDie, #weapon)",
     "attackRolls": "=lookup(attackRolls, #weapon)",
     "_naturalArmor": "=lookup(animalNaturalArmor, #animal_type)",
-    "ac": "=10 + #_naturalArmor - floor((#dex-10)/2)",
+    "ac": "=10 - #_naturalArmor - floor((#dex-10)/2)",
     "abilities": ["melee", "defend", "flee"],
     "xp": "=2 * #level",
     "gp": 0
@@ -84,12 +84,12 @@
   "encounter": {
     "targetCr": "=#_targetCr",
     "terrain": "=oneOf(forest, cave, swamp, mountain, snow, desert)",
-    "_monsterCount": "=1d3",
+    "_monsterCount": "=1+1d3",
     "_npcs": "=genList(monster, #_monsterCount, \"=round(sum(#__items, 'level')) <= #targetCr\")",
     "_companions": "=genList(animal, 1d2)",
     "monsters": "=concat(#_npcs, #_companions)",
     "bonusGold": "=2d20 + 5 * count(#monsters)",
-    "cr": "=round(sum(#monsters, \"level\"))"
+    "cr": "=round(sum(#_npcs, 'level'))"
   },
   "room": {
     "_targetCr": "1",

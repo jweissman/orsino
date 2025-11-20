@@ -39,7 +39,7 @@ export default class Combat {
   constructor(
     options: Record<string, any> = {},
   ) {
-    this.roller = options.roller || this.autoroll;
+    this.roller = options.roller || Combat.roll;
     this.select = options.select || Combat.samplingSelect;
     this.outputSink = options.outputSink || console.debug;
   }
@@ -100,11 +100,11 @@ export default class Combat {
     return this.teams.flatMap(team => team.combatants);
   }
 
-  static rollDie(subject: Combatant, description: string, sides: number): RollResult {
+  static roll(subject: Combatant, description: string, sides: number): RollResult {
     let result = Math.floor(Math.random() * sides) + 1;
     let prettyResult = Stylist.colorize(result.toString(), result === sides ? 'green' : result === 1 ? 'red' : 'yellow');
 
-    let rollDescription = Stylist.italic(`${subject.name} rolled ${description} and got a ${prettyResult}.`);
+    let rollDescription = Stylist.italic(`${subject.name} rolled d${sides} ${description} and got a ${prettyResult}.`);
 
     if (subject.activeEffects) {
       // check for 'allRolls' bonus effects
@@ -119,7 +119,7 @@ export default class Combat {
     return { amount: result, description: rollDescription };
   }
 
-  autoroll = async (subject: Combatant, description: string, sides: number) => Combat.rollDie(subject, description, sides);
+  // autoroll = async (subject: Combatant, description: string, sides: number) => Combat.rollDie(subject, description, sides);
   living(combatants: Combatant[] = this.allCombatants): Combatant[] { return combatants.filter(c => c.hp > 0); }
   wounded(combatants: Combatant[] = this.allCombatants): Combatant[] { return combatants.filter(c => c.hp > 0 && c.hp < c.maxHp); }
   weakest(combatants: Combatant[] = this.living(this.allCombatants)): Combatant {
