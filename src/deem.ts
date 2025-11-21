@@ -1,18 +1,10 @@
 import * as ohm from 'ohm-js';
 import source from './deem.ohm.txt';
+import { count } from 'console';
 
 export default class Deem {
   static magicVars: Record<string, any> = {};
-  static colors = {
-    black: '30',
-    red: '31',
-    green: '32',
-    yellow: '33',
-    blue: '34',
-    magenta: '35',
-    cyan: '36',
-    white: '37',
-  };
+  // static colors = { black: '30', red: '31', green: '32', yellow: '33', blue: '34', magenta: '35', cyan: '36', white: '37', };
   static colorize = (str: string, color: string) => `\x1b[${color}m${str}\x1b[0m`;
   static stdlib: { [key: string]: (...args: any[]) => any } = {
     count: (arr: any[]) => arr.length,
@@ -23,7 +15,7 @@ export default class Deem {
     round: (num: number) => Math.round(num),
     floor: (num: number) => Math.floor(num),
     ceil: (num: number) => Math.ceil(num),
-    capitalize: (str: string) => str.charAt(0).toUpperCase() + str.slice(1),
+    capitalize: (str: string) => str && str.charAt(0).toUpperCase() + str.slice(1),
     sum: (arr: any[], prop?: string) => {
       if (prop) {
         return arr.reduce((acc, item) => acc + (item[prop] || 0), 0);
@@ -33,6 +25,21 @@ export default class Deem {
     min: (...args: number[]) => Math.min(...args),
     max: (...args: number[]) => Math.max(...args),
     concat: (...args: any[]) => args.flat(),
+    rollWithDrop: (count: number, sides: number) => {
+      const rolls = Array.from({ length: count }, () => Math.floor(Math.random() * sides) + 1);
+      rolls.sort((a, b) => a - b);
+      rolls.shift(); // drop the lowest
+      return rolls.reduce((a, b) => a + b, 0);
+    },
+    statMod: (stat: number) => {
+      if (stat >= 15) {
+        return 1 + Math.round((stat - 15) / 2);
+      } else if (stat <= 5) {
+        return (-1) + Math.round((stat - 5) / 2);
+      } else {
+        return 0;
+      }
+    }
   };
   static grammar = ohm.grammar(source);
   static semantics = Deem.grammar.createSemantics().addOperation('eval(context)', {
@@ -55,23 +62,14 @@ export default class Deem {
     async PriExp_pos(_plus, exp) { let ctx = this.args.context;  return await exp.eval(ctx); },
     async PriExp_neg(_minus, exp) { let ctx = this.args.context;  return -(await exp.eval(ctx)); },
     async FunctionCall(ident, _open, argList, _close) {
-      // console.log("[FuncCall] Evaluating:", ident.sourceString, argList.sourceString);
-      // console.log("Context for function call:", this.args.context);
       let ctx = this.args.context || {};
-      const funcName = await ident.eval(ctx); //this.args.context);
-      // const args = argList.children.map(async arg => await arg.eval(this.args?.context)).flat();
-      // This returns an array of Promises
-      const args = [];  //argList.children.map(async arg => await arg.eval(this.args.context));
+      const funcName = await ident.eval(ctx);
+      const args = [];
       for (const arg of argList.children) {
-        const argValue = await arg.eval(ctx);  //this.args.context);
+        const argValue = await arg.eval(ctx);
         args.push(argValue);
       }
-      // console.log("[FuncCall] Evaluated arguments:", args);
-
-      // Wait for all promises to resolve
-      // const args = (await Promise.all(argPromises)).flat();
       const func = Deem.stdlib[funcName];
-      // console.log(`Calling function: ${funcName}(${args.join(', ')})`);
       if (!func) {
         throw new Error(`Unknown function: ${funcName}`);
       }
@@ -83,30 +81,19 @@ export default class Deem {
       } else {
         ret = func(...args.flat());
       }
-
-      // const ret = func(...args.flat());
-      // console.log(`Called function: ${funcName}(${args.join(', ')}) => ${JSON.stringify(ret, null, 2)}`);
       return ret;
     },
     async ArgList(first, _comma, rest) {
       let ctx = this.args.context;
-      // Same pattern - map to promises, then Promise.all
-      // const restPromises = rest.children.map(async arg => await arg.eval(this.args.context));
-      const firstValue = await first.eval(ctx);  //this.args.context);
-      // const restValues = await Promise.all(restPromises);
+      const firstValue = await first.eval(ctx);
       const restValues = [];
       for (const arg of rest.children) {
-        const argValue = await arg.eval(ctx); //this.args.context);
+        const argValue = await arg.eval(ctx);
         restValues.push(argValue);
       }
       const args = [firstValue, ...restValues];
-      // console.log("[ArgList] Evaluated arguments:", args);
       return args;
     },
-    // async ArgList(first, _comma, rest) {
-    //   console.log("Evaluating arguments:", first.sourceString, rest.children.map(c => c.sourceString));
-    //   return [(await first.eval(this.args.context)), ...rest.children.map(async arg => await arg.eval(this.args.context))];
-    // },
     async bool(_val) { return this.sourceString === 'true'; },
     async number(_num) { return parseFloat(this.sourceString); },
     async nihil(_val) { return null; },
@@ -116,6 +103,9 @@ export default class Deem {
         const key = name.slice(1);
         const value = this.args.context?.[key] ?? Deem.magicVars[key];
         if (value === undefined) {
+          if (Object.keys(this.args.context).includes(key)) {
+            return null;
+          }
           throw new Error(`Undefined variable: ${key} (available: ${Object.keys(this.args.context || {}).join(', ')}); (magic: ${Object.keys(Deem.magicVars).join(', ')})`);
         }
         return value;

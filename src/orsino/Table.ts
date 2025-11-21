@@ -15,6 +15,11 @@ export class Table {
       options = allItems[Math.floor(Math.random() * allItems.length)];
     }
 
+    if (groupName === null) {
+      // console.warn(`No group name provided for table ${this.discriminator}`);
+      return {};
+    }
+
     const group = this.groups[groupName];
     if (group === undefined) {
       throw new Error(`Group not found: ${groupName}`);

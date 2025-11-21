@@ -233,6 +233,45 @@
     }
   },
   
+  "backgroundModifier": {
+    "discriminator": "background",
+    "groups": {
+      "noble": { "str": 1, "int": 1, "cha": 2, "con": -1, "gp": 50 },
+      "soldier": { "str": 2, "con": 1, "dex": 1, "gp": 20 },
+      "outlander": { "str": 1, "dex": 1, "con": 1, "gp": 10 },
+      "scholar": { "int": 2, "wis": 1, "cha": -1, "gp": 5 },
+      "criminal": { "dex": 2, "cha": 1, "int": -1, "gp": 15 },
+      "artisan": { "int": 1, "wis": 1, "cha": 1, "gp": 20 },
+      "acolyte": { "wis": 2, "int": 1, "gp": 5 },
+      "hermit": { "con": 2, "wis": 1, "cha": -2, "gp": 5 }
+    }
+  },
+
+  "racialModifier": {
+    "discriminator": "race",
+    "groups": {
+      "human": { "str": 1, "dex": 1, "con": 1, "int": 1, "wis": 1, "cha": 1 },
+      "orc": { "str": 2, "con": 1, "int": -1 },
+      "elf": { "dex": 2, "int": 1, "con": -1 },
+      "dwarf": { "con": 2, "str": 1, "cha": -1 },
+      "halfling": { "dex": 2, "cha": 1, "str": -1 },
+      "gnome": { "int": 2, "wis": 1, "str": -1 },
+      "fae": { "cha": 3, "int": 2, "wis": 1, "con": -2 }
+    }
+  },
+
+  "traits": {
+    "discriminator": "race",
+    "groups": {
+      "human": ["adaptable", "versatile"],
+      "orc": ["resilient", "fierce"],
+      "elf": ["agile", "perceptive"],
+      "dwarf": ["sturdy", "tough"],
+      "halfling": ["nimble", "lucky"],
+      "gnome": ["inventive", "curious"],
+      "fae": ["mysterious", "enchanting"]
+    }
+  },
 
   "hitPoints": {
     "discriminator": "class",
@@ -383,11 +422,11 @@
     "groups": {
       "warrior": [[ "melee", "charge", "wait" ]],
       "mage": [[ "melee", "missile", "armor", "wait" ]],
-      "cleric": [[ "melee", "smite", "cure", "bless", "shield", "wait" ]],
+      "cleric": [[ "melee", "smite", "cure", "bless", "wait" ]],
       "ranger": [[ "ranged", "heal", "wait" ]],
       "thief": [[ "melee", "poison_weapon", "wait" ]],
       "bard": [[ "melee", "cure", "inspire", "wait" ]],
-      "sage": [[ "melee", "heal", "poison_cloud", "shield", "fear", "curse", "wait" ]]
+      "sage": [[ "melee", "heal", "fear", "curse", "wait" ]]
     }
   },
   "hitDie": {
@@ -433,7 +472,7 @@
       "Runt": [[ "wait", "melee", "flee" ]],
       "Creep": [[ "wait", "ranged", "flee" ]],
       "Bandit": [[ "wait", "melee" ]],
-      "Thief": [[ "wait", "melee", "poison_cloud", "flee" ]],
+      "Thief": [[ "wait", "melee", "flee" ]],
       "Shaman": [[ "wait", "melee", "heal" ]],
       "Slinger": [[ "wait", "ranged" ]],
       "Miner": [[ "wait", "melee" ]],
@@ -475,113 +514,28 @@
   "monsterTypeModifier": {
     "discriminator": "type",
     "groups": {
-      "Runt": {
-        "str": -2,
-        "maxHp": -2
-      },
-      "Creep": {
-        "str": -1,
-        "dex": 1,
-        "maxHp": -1
-      },
-      "Bandit": {
-        "str": 1,
-        "dex": 2,
-        "maxHp": 1
-      },
-      "Thief": {
-        "dex": 2,
-        "cha": 1,
-        "maxHp": 1
-      },
-      "Shaman": {
-        "int": 2,
-        "wis": 1,
-        "maxHp": 1
-      },
-      "Slinger": {
-        "dex": 3,
-        "maxHp": 1
-      },
-      "Miner": {
-        "con": 2,
-        "str": 1,
-        "maxHp": 1
-      },
-      "Peasant": {
-        "str": 1,
-        "dex": 1,
-        "con": 1,
-        "cha": 1,
-        "maxHp": 1
-      },
-      "Loser": {
-        "str": -1,
-        "dex": -1,
-        "con": -1,
-        "cha": 2,
-        "maxHp": -1
-      },
-      "Mercenary": {
-        "str": 2,
-        "dex": 2,
-        "maxHp": 1
-      },
-      "Cultist": {
-        "int": 2,
-        "maxHp": 2
-      },
-      "Thug": {
-        "str": 2,
-        "maxHp": 2
-      },
-      "Cutthroat": {
-        "str": 2,
-        "dex": 2,
-        "maxHp": 2
-      },
-      "Assassin": {
-        "dex": 4,
-        "str": 2,
-        "maxHp": 3
-      },
-      "Bridgeminder": {
-        "str": 2,
-        "maxHp": 5
-      },
-      "Dweller": {
-        "str": 2,
-        "maxHp": 5
-      },
-      "Stalker": {
-        "dex": 4,
-        "maxHp": 5
-      },
-      "Warrior": {
-        "str": 2,
-        "maxHp": 5
-      },
-      "Miser": {
-        "con": 4,
-        "str": 2,
-        "maxHp": 8,
-        "level": 1
-      },
-      "Chieftain": {
-        "str": 4,
-        "maxHp": 8,
-        "level": 1
-      },
-      "Brute": {
-        "str": 4,
-        "maxHp": 8,
-        "level": 1
-      },
-      "Berserker": {
-        "str": 6,
-        "maxHp": 8,
-        "level": 2
-      },
+      "Runt": { "str": -2, "maxHp": -1 },
+      "Creep": { "str": -1, "dex": 1, "maxHp": -1 },
+      "Bandit": { "str": 1, "dex": 2, "maxHp": 1 },
+      "Thief": { "dex": 2, "cha": 1, "maxHp": 1 },
+      "Shaman": { "int": 2, "wis": 1, "maxHp": 1 },
+      "Slinger": { "dex": 3, "maxHp": 1 },
+      "Miner": { "con": 2, "str": 1, "maxHp": 2 },
+      "Peasant": { "str": 1, "dex": 1, "con": 1, "cha": 1, "maxHp": 1 },
+      "Loser": { "str": -1, "dex": -1, "con": -1, "cha": 2, "maxHp": -1 },
+      "Mercenary": { "str": 2, "dex": 2, "maxHp": 1 },
+      "Cultist": { "int": 2, "maxHp": 2 },
+      "Thug": { "str": 2, "maxHp": 4 },
+      "Cutthroat": { "str": 2, "dex": 2, "maxHp": 2 },
+      "Assassin": { "dex": 4, "str": 2, "maxHp": 3 },
+      "Bridgeminder": { "str": 2, "maxHp": 5 },
+      "Dweller": { "str": 2, "maxHp": 5 },
+      "Stalker": { "dex": 4, "maxHp": 5 },
+      "Warrior": { "str": 2, "maxHp": 5 },
+      "Miser": { "con": 4, "str": 2, "maxHp": 8, "level": 1 },
+      "Chieftain": { "str": 4, "maxHp": 8, "level": 1 },
+      "Brute": { "str": 4, "maxHp": 8, "level": 1 },
+      "Berserker": { "str": 6, "maxHp": 8, "level": 2 },
       "Sage": {
         "int": 4,
         "maxHp": 9,
@@ -1327,7 +1281,7 @@
     "groups": {
       "goblin": 0,
       "kobold": 0,
-      "human": 1,
+      "human": 2,
       "orc": 2,
       "ogre": 3,
       "troll": 5,
@@ -2029,9 +1983,9 @@
   "animalNaturalArmor": {
     "discriminator": "type",
     "groups": {
-      "bat": 0, "bear": 2, "boar": 1,
-      "falcon": 0, "hound": 1, "pseudodragon": 2,
-      "rat": 0, "snake": 1, "spider": 0,
+      "bat": -2, "bear": 1, "boar": 1,
+      "falcon": 0, "hound": 0, "pseudodragon": 2,
+      "rat": -4, "snake": 0, "spider": -1,
       "wolf": 1, "wyrm": 4,
       "eagle": 0, "tiger": 1, "panther": 1, "lion": 1
     }
@@ -2055,6 +2009,28 @@
       "boar": [ "Tusker", "Gore", "Snout", "Bristle", "Porker" ],
       "falcon": [ "Sky", "Hawk", "Raven", "Falco", "Sparrow" ],
       "hound": [ "Rover", "Fido", "Spot", "Buddy", "Max", "Rex", "Lassie" ]
+    }
+  },
+  "companionAspect": {
+    "discriminator": "d6",
+    "groups": {
+      "1": "giant",
+      "2": "ferocious",
+      "3": "venomous",
+      "4": "cunning",
+      "5": "alpha",
+      "6": "vicious"
+    }
+  },
+  "companionAspectOverlay": {
+    "discriminator": "aspect",
+    "groups": {
+      "giant": { "hp": 8, "str": 4, "ac": -2 },
+      "ferocious": { "hp": 5, "str": 2, "dex": 1, "ac": -1, "abilities": ["charge"] },
+      "venomous": { "hp": 3, "abilities": ["poison_bite"] },
+      "cunning": { "hp": 2, "dex": 2, "int": 1, "ac": -1, "abilities": ["hide", "wait"] },
+      "alpha": { "hp": 5, "str": 2, "dex": 1, "con": 1, "int": 1, "ac": -1 },
+      "vicious": { "hp": 4, "str": 3, "dex": 1, "ac": -1, "abilities": ["maul"] }
     }
   }
 }

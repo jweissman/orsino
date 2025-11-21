@@ -1,6 +1,5 @@
 import Presenter from "./tui/Presenter";
 import Stylist from "./tui/Style";
-import Words from "./tui/Words";
 import { Combatant } from "./types/Combatant";
 
 const never = <T>(_: never): T => {
@@ -14,24 +13,22 @@ type BaseEvent = {
 };
 
 export type InitiateCombatEvent = BaseEvent & { type: "initiate", order: { combatant: Combatant; initiative: number }[] };
-export type RoundStartEvent = BaseEvent & { type: "roundStart", combatants: Combatant[] };
 export type CombatEndEvent = BaseEvent & { type: "combatEnd"; winner: string };
+
+export type RoundStartEvent = BaseEvent & { type: "roundStart", combatants: Combatant[] };
+export type TurnStartEvent = BaseEvent & { type: "turnStart", combatants: Combatant[] };
+
 export type HitEvent = BaseEvent & { type: "hit"; damage: number; success: boolean; critical: boolean; by: string };
 export type MissEvent = BaseEvent & { type: "miss"; };
 export type HealEvent = BaseEvent & { type: "heal"; amount: number };
 export type DefendEvent = BaseEvent & { type: "defend"; bonusAc: number };
 export type QuaffEvent = BaseEvent & { type: "quaff" };
-// export type InspireEvent = BaseEvent & { type: "inspire"; target: Combatant; toHitBonus: number };
 export type FallenEvent = BaseEvent & { type: "fall" };
 export type FleeEvent   = BaseEvent & { type: "flee" };
-export type FearEvent   = BaseEvent & { type: "fear" };
-// export type StumbleEvent = BaseEvent & { type: "stumble"; };
-// export type PoisonedBladeEvent = BaseEvent & { type: "poisoned_blade" };
-export type PoisonCloudEvent = BaseEvent & { type: "poison_cloud" };
-export type PoisoningEvent = BaseEvent & { type: "poisoned" };
-// export type PoisonDamageEvent = BaseEvent & { type: "poison" };
-export type ScreamEvent = BaseEvent & { type: "scream" };
-// export type BlessEvent = BaseEvent & { type: "bless"; targets: Combatant[] };
+// export type FearEvent   = BaseEvent & { type: "fear" };
+// export type PoisonCloudEvent = BaseEvent & { type: "poison_cloud" };
+// export type PoisoningEvent = BaseEvent & { type: "poisoned" };
+// export type ScreamEvent = BaseEvent & { type: "scream" };
 
 export type StatusEffectEvent = BaseEvent & { type: "statusEffect"; effectName: string; effect: { [key: string]: any }; duration: number };
 export type StatusExpireEvent = BaseEvent & { type: "statusExpire"; effectName: string };
@@ -42,21 +39,17 @@ export type CombatEvent = HitEvent
   | DefendEvent
   | InitiateCombatEvent
   | QuaffEvent
-  // | InspireEvent
   | FallenEvent
   | FleeEvent
-  | FearEvent
-  // | StumbleEvent
+  // | FearEvent
   | StatusEffectEvent
   | StatusExpireEvent
-  // | PoisonedBladeEvent
-  | PoisoningEvent
-  // | PoisonDamageEvent
-  | PoisonCloudEvent
-  | ScreamEvent
-  // | BlessEvent
+  // | PoisoningEvent
+  // | PoisonCloudEvent
+  // | ScreamEvent
   | CombatEndEvent
-  | RoundStartEvent;
+  | RoundStartEvent
+  | TurnStartEvent;
 
 type BaseDungeonEvent = Omit<BaseEvent, "turn">;
 export type EnterDungeon = BaseDungeonEvent & { type: "enterDungeon"; dungeonName: string; dungeonIcon: string; dungeonType: string, depth: number };
@@ -85,17 +78,8 @@ export default class Events {
       case "miss": return `${subject} attacks ${target} but misses.`;
       case "defend": return `${subject} takes a defensive stance, preparing to block incoming attacks.`;
       case "quaff": return `${subject} quaffs a healing potion.`;
-      // case "inspire": return `${subject} inspires ${target}, granting +${event.toHitBonus} to hit.`;
       case "fall": return `${subject} falls unconscious.`;
       case "flee": return `${subject} flees from combat.`;
-      case "scream": return `${subject} lets out a terrifying scream!`;
-      case "poison_cloud": return `${subject} shatters a capsule releasing a toxic cloud!`;
-      case "fear": return `${subject} is frightened!`;
-      // case "stumble": return `${subject} stumbles and loses their footing!`;
-      // case "poisoned_blade": return `${subject} coats their blade with poison.`;
-      case "poisoned": return `${subject} is poisoned!`;
-      // case "poison": return `${subject} suffers poison damage.`;
-      // case "bless": return `${subject} blesses ${Words.humanizeList(event.targets.map(t => t.forename))}.`;
       case "statusEffect":
         if (event.effect.by) {
           return `${subject} is ${event.effectName} by ${event.effect.by.forename}.`
@@ -108,11 +92,19 @@ export default class Events {
         return `${subject} is no longer ${event.effectName}.`;
       case "combatEnd": return `Combat ends! ${event.winner} victorious.`;
       case "initiate":
-        return `Turn order: ${event.order.map((o, i) => `\n ${i + 1}. ${Presenter.combatant(o.combatant, true)} (init: ${o.initiative})`).join(", ")}`;
+        return `Turn order: ${event.order.map((o, i) => `\n ${i + 1}. ${Presenter.minimalCombatant(o.combatant)} (init: ${o.initiative})`).join(", ")}`;
       case "roundStart":
-        let heading = `\n=== Round ${event.turn} ===`;
-        let combatants = event.combatants.map(c => `\n- ${Presenter.combatant(c, false)}`).join("");
-        return `${heading}${combatants}`;
+        // let heading = `\n=== Round ${event.turn} ===`;
+        // let combatants = event.combatants.map(c => `\n- ${Presenter.combatant(c)}`).join("");
+        // return `${heading}${combatants}`;
+        // return `\n=== Round ${event.turn} ===\n${Presenter.combatants(event.combatants)}`;
+        return `It is round ${event.turn}.`;
+      case "turnStart":
+        // let heading = `It's ${subject}'s turn!`;
+        // let combatants = event.combatants.map(c => `\n- ${Presenter.combatant(c)}`).join("");
+        // return `${heading}${combatants}`;
+        return event.subject?.playerControlled ?
+          `\n--- ${subject}'s turn ---\n${Presenter.combatants(event.combatants, true)}` : '';
       case "hit":
         let message = `${target} takes ${event.damage} damage from ${event.by}.`;
         if (event.critical) {

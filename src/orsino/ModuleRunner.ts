@@ -152,10 +152,17 @@ export class ModuleRunner {
         this.pcs.forEach(pc => {
           pc.activeEffects = pc.activeEffects || [];
           if (!pc.activeEffects.some(e => e.name === `Blessing of ${mod.town.deity}`)) {
-            this.outputSink(`The priest blesses ${pc.name}. You gain +1 to hit and +3 initiative for the next 10 turns.`);
+            this.outputSink(`The priest blesses ${pc.name}.`);
+            const blessing = { toHit: 1, initiative: 2 };
+            const duration = 5;
             pc.activeEffects.push({
-              name: `Blessing of ${mod.town.deity}`, duration: 10, effect: { toHit: 1, initiative: 3 }
+              name: `Blessing of ${mod.town.deity}`, duration, effect: blessing
             });
+            this.outputSink(`${pc.name} gains ${
+              Words.humanizeList(
+                Object.entries(blessing).map(([k, v]) => `${v > 0 ? "+" : ""}${v} ${k}`)
+              )
+            } for ${duration} turns!`)
           }
         });
       }
@@ -183,7 +190,7 @@ export class ModuleRunner {
     this.outputSink(`(Pop.: ${mod.town.population.toLocaleString()})`);
     this.outputSink(`\n🧙‍ Your Party:`);
     this.pcs.forEach(pc => {
-      this.outputSink(`  ${pc.name}: Level ${pc.level} ${pc.race} ${pc.class}, ${pc.hp}/${pc.maxHp} HP`);
+      this.outputSink(`  - the ${pc.race} ${pc.class} ${Stylist.bold(pc.name)} (${pc.gender} ${pc.background}, ${pc.age})`);
     });
     this.outputSink(`💰 Gold: ${this.sharedGold}g`);
     this.outputSink(`🧪 Potions: ${this.sharedPotions}`);

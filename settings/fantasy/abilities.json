@@ -98,8 +98,8 @@
 
   "armor": {
     "name": "Magic Armor",
-    "type": "skill",
-    "aspect": "physical",
+    "type": "spell",
+    "aspect": "arcane",
     "description": "Gain 4 AC for 3 rounds.",
     "target": [
       "self"
@@ -157,12 +157,12 @@
     "name": "Magic Missile",
     "type": "spell",
     "aspect": "arcane",
-    "description": "Fire three magical bolts that automatically hit and deal 1d4 damage each.",
+    "description": "Fire three magical bolts that automatically hit and deal 1d3 damage each.",
     "target": [ "randomEnemies", 3 ],
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d4"
+        "amount": "=1d3"
       }
     ]
   },
@@ -324,7 +324,100 @@
       }
     ]
   },
-  
+
+  "maul": {
+    "name": "Maul",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Make a powerful attack that deals 1d6 extra damage and inflicts Bleed on a successful hit.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "attack"
+      },
+      {
+        "type": "damage",
+        "amount": "=1d6"
+      },
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Bleeding",
+          "duration": 3,
+          "effect": {
+            "onTurnEnd": [
+              {
+                "type": "damage",
+                "amount": "=1d4"
+              }
+            ]
+          }
+        },
+        "saveType": "con",
+        "saveDC": 10
+      }
+    ]
+  },
+
+  "hide": {
+    "name": "Hide",
+    "type": "skill",
+    "aspect": "stealth",
+    "description": "Attempt to hide from enemies.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Hidden",
+          "duration": 1,
+          "effect": {
+            "ac": -10,
+            "onAttack": [
+              {
+                "type": "removeStatus",
+                "statusName": "Hidden"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "poison_bite": {
+    "name": "Poison Bite",
+    "type": "skill",
+    "aspect": "toxic",
+    "description": "Bite an enemy, dealing 1d4 damage and poisoning them.",
+    "target": ["enemy"],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d4"
+      },
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Poisoned",
+          "duration": 3,
+          "effect": {
+            "onTurnEnd": [
+              {
+                "type": "damage",
+                "amount": "=1d3"
+              }
+            ]
+          }
+        },
+        "saveType": "con",
+        "saveDC": 10
+      }
+    ]
+  },
   "poison_cloud": {
     "name": "Poison Cloud",
     "type": "skill",

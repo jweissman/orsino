@@ -40,8 +40,14 @@ export class Template {
         // we have evaluated the value (confirm we have gotten an object) 
         // then 'overlay' (add) each property onto the context
         Object.entries(assembled[key] || {}).forEach(([k, v]) => {
-          // console.log(`Adding ${k}=${v} to context (was ${localContext[k]})`);
-          assembled[k] = v + (assembled[k] || 0);
+          // if it's an array, we want to concatenate it
+          if (Array.isArray(v)) {
+            assembled[k] = (assembled[k] || []).concat(v);
+          } else {
+            // console.log(`Adding ${k}=${v} to context (was ${localContext[k]})`);
+            assembled[k] = v + (assembled[k] || 0);
+            // localContext[k] = assembled[k];
+          }
           localContext[k] = assembled[k];
         });
       }

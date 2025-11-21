@@ -62,15 +62,15 @@ export default class Combat {
           attackRolls: 1,
           damageDie: 8, playerControlled: true, xp: 0, gp: 0,
           weapon: "Short Sword",
-          abilities: ["melee"]
+          abilities: ["melee"], traits: []
         }], healingPotions: 3
       },
       {
         name: "Enemy", combatants: [
-          { forename: "Zok", name: "Goblin A", hp: 4, maxHp: 4, level: 1, ac: 17, attackRolls: 2, damageDie: 3, str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", abilities: ["melee"] },
+          { forename: "Zok", name: "Goblin A", hp: 4, maxHp: 4, level: 1, ac: 17, attackRolls: 2, damageDie: 3, str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", abilities: ["melee"], traits: [] },
           {
             forename: "Mog", name: "Goblin B", hp: 4, maxHp: 4, level: 1, ac: 17, attackRolls: 2, damageDie: 3,
-            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", abilities: ["melee"]
+            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", abilities: ["melee"], traits: []
           }
         ], healingPotions: 0
       }
@@ -114,6 +114,12 @@ export default class Combat {
           rollDescription += ` ${subject.name} has the ${status.name} status, adding ${status.effect.allRolls} to the roll (roll is now ${result}).`;
         }
       });
+    }
+
+    if (result === 1 && subject.traits?.includes("lucky")) {
+      rollDescription += ` ${subject.name} is Lucky and rolled a 1, so they get to re-roll!`;
+      // re-roll a 1
+      return Combat.roll(subject, description + " (re-roll)", sides);
     }
 
     return { amount: result, description: rollDescription };
@@ -160,7 +166,7 @@ export default class Combat {
   get commandHandlers(): CommandHandlers {
     return {
       roll: this.roller,
-      attack: this.pcAttacks.bind(this),
+      attack: this.handleAttack.bind(this),
       hit: this.handleHit.bind(this),
       heal: this.handleHeal.bind(this),
       status: this.handleStatusEffect.bind(this),
@@ -226,7 +232,7 @@ export default class Combat {
   }
 
   async pcTurn(combatant: Combatant, enemies: Combatant[], allies: Combatant[]) {
-    this.note(`It's ${Presenter.combatant(combatant)}'s turn!`);
+    // this.note(`It's ${Presenter.combatant(combatant)}'s turn!`);
 
     let validAbilities = this.validActions(combatant, allies, enemies);
     let allAbilities = combatant.abilities.map(a => this.abilityHandler.getAbility(a)); //.filter(a => a);
@@ -252,7 +258,7 @@ export default class Combat {
       });
     }
 
-    const action: Ability = await this.select(`Your turn, ${Presenter.combatant(combatant)} - what do you do?`, choices, combatant);
+    const action: Ability = await this.select(`Your turn, ${Presenter.minimalCombatant(combatant)} - what do you do?`, choices, combatant);
 
     let validTargets = this.abilityHandler.validTargets(action, combatant, allies, enemies);
     let targetOrTargets = validTargets[0];
@@ -320,18 +326,28 @@ export default class Combat {
 
     if (defender.hp <= 0) {
       // this.emit({ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">);
-      console.warn(`${Presenter.combatant(defender)} is already defeated. No damage applied.`);
+      this.note(`${Presenter.combatant(defender)} is already defeated. No damage applied.`);
       return;
     }
 
+    let originalHp = defender.hp;
     defender.hp -= damage;
+
+    if (defender.hp <= 0 && originalHp >= defender.maxHp / 2) {
+      // if we have resilient trait, we drop to 1 hp instead of 0
+      if (defender.traits?.includes("resilient")) {
+        defender.hp = 1;
+        this.note(`${Presenter.combatant(defender)} is resilient and drops to 1 HP instead of 0!`);
+      }
+    }
+
     this.emit({ type: "hit", subject: attacker, target: defender, damage, success: true, critical, by } as Omit<HitEvent, "turn">);
     if (defender.hp <= 0) {
       this.emit({ type: "fall", subject: defender } as Omit<FallenEvent, "turn">);
     }
   }
 
-  async pcAttacks(combatant: Combatant, target: Combatant, roller: Roll = this.roller): Promise<{
+  async handleAttack(combatant: Combatant, target: Combatant, roller: Roll = this.roller): Promise<{
     success: boolean;
     target: Combatant;
   }> {
@@ -346,7 +362,7 @@ export default class Combat {
       ability,
       score: this.scoreAbility(ability, combatant, allies, enemies)
     }));
-    console.log(`NPC ${combatant.forename} rates abilities:`, scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`).join(", "));
+    // console.log(`NPC ${combatant.forename} rates abilities:`, scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`).join(", "));
     scoredAbilities.sort((a, b) => b.score - a.score);
     const action = scoredAbilities[0]?.ability;
     let targetOrTargets: Combatant | Combatant[] = this.bestAbilityTarget(action, combatant, allies, enemies);
@@ -418,12 +434,12 @@ export default class Combat {
         }
       });
     } else if (analysis.aoe) {
-      score += enemies.filter(e => e.hp > 0).length * 7;
+      score += enemies.filter(e => e.hp > 0).length * 3;
     } else if (analysis.debuff) {
       // are there enemies with higher hp than us?
       enemies.forEach(enemy => {
         if (enemy.hp > 0 && enemy.hp > user.hp) {
-          score += 5;
+          score += 4;
         }
       });
     } else if (analysis.defense) {
@@ -484,6 +500,8 @@ export default class Combat {
   }
 
   async turn(combatant: Combatant) {
+    this.emit({ type: "turnStart", subject: combatant, combatants: this.allCombatants } as Omit<CombatEvent, "turn">);
+
     const targets = this.teams.find(team => team.combatants.includes(combatant)) === this.teams[0] ? (this.teams[1].combatants) : (this.teams[0].combatants);
 
     let validTargets = this.living(targets);

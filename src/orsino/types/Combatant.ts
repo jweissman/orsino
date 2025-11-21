@@ -1,6 +1,8 @@
 import { AbilityEffect } from "../Ability";
 
+type Trait = "lucky" | "resilient";
 export interface Combatant {
+  traits: Trait[];
   abilities: string[];
   name: string;
   class?: string;
@@ -44,4 +46,9 @@ export interface Combatant {
 
   // number of sides on the hit die for this combatant
   hitDie?: number;
+
+  // demographic info
+  age?: any;
+  gender?: any;
+  background?: any;
 }
