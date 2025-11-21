@@ -262,6 +262,22 @@
     ]
   },
 
+  "second_wind": {
+    "name": "Second Wind",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Regain 1d10 + level hit points.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "heal",
+        "amount": "=1d10 + #level"
+      }
+    ]
+  },
+
   "heal": {
     "name": "Heal Ally",
     "type": "skill",

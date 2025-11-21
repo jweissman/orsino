@@ -317,7 +317,8 @@ export default class Dungeoneer {
         c.level++;
         nextLevelXp = Gauntlet.xpForLevel(c.level + 1);
         let hitPointIncrease = (await this.roller(c, "hit point growth", c.hitDie || 4)).amount;
-        hitPointIncrease += Math.max(0, Math.floor((c.con - 10) / 2));
+        hitPointIncrease += Fighting.statMod(c.con || 10);
+        hitPointIncrease = Math.max(1, hitPointIncrease);
         c.maxHp += hitPointIncrease;
         c.hp = c.maxHp;
         this.note(`${Presenter.combatant(c)} leveled up to level ${c.level}!`);

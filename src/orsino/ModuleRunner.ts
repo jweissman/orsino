@@ -132,7 +132,10 @@ export class ModuleRunner {
             playerTeam: { name: "War Party", combatants: this.pcs, healingPotions: this.sharedPotions },
           });
           await dungeoneer.run();  //dungeon, this.pcs);
-          this.markDungeonCompleted(dungeon.dungeonIndex || 0);
+
+          if (dungeoneer.winner === "Player") {
+            this.markDungeonCompleted(dungeon.dungeonIndex || 0);
+          }
 
           this.state.sharedGold += dungeoneer.playerTeam.combatants
             .reduce((sum, pc) => sum + (pc.gp || 0), 0);
