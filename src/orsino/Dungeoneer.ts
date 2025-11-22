@@ -13,7 +13,7 @@ import { Roll } from "./types/Roll";
 import Events, { DungeonEvent } from "./Events";
 
 interface Encounter {
-  monsters: Combatant[];
+  creatures: Combatant[];
   bonusGold?: number;
   cr?: number;
 }
@@ -66,7 +66,8 @@ export default class Dungeoneer {
         attackRolls: 1,
         weapon: "Short Sword",
         damageDie: 8, playerControlled: true, xp: 0, gp: 0,
-        abilities: ["melee", "defend"]
+        abilities: ["melee", "defend"],
+        traits: ["lucky"],
       }],
       healingPotions: 3
     };
@@ -106,7 +107,7 @@ export default class Dungeoneer {
         return await options.gen("encounter", { ...this.dungeon!, targetCr: cr });
       } else {
         return {
-          monsters: [
+          creatures: [
             { forename: "Goblin", name: "Goblin", hp: 7, maxHp: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, damageDie: 6, playerControlled: false, xp: 50, gp: 10, attackRolls: 1, weapon: "Dagger" }
           ]
         }
@@ -150,13 +151,17 @@ export default class Dungeoneer {
       const room = this.currentRoom;
       if (!room) break;
       await this.enterRoom(room);
-      if (this.currentEncounter && this.currentEncounter.monsters.length > 0) {
+      if (this.currentEncounter && this.currentEncounter.creatures.length > 0) {
         const survived = await this.runCombat();
         if (!survived) break;
       }
 
       this.emit({ type: "roomCleared" });
-      await this.roomActions(room);
+      let result = await this.roomActions(room);
+      if (result.leaving) {
+        this.note(`\nYou decide to leave the dungeon.`);
+        return;
+      }
       this.nextRoom();
     }
 
@@ -173,7 +178,7 @@ export default class Dungeoneer {
     success: boolean;
   }> {
     const actor = await this.select(`Who will attempt ${action}?`, this.playerTeam.combatants.map(c => ({
-      name: `${c.name} ${Stylist.prettyValue(Fighting.statMod(c[skill] as number), 10)}`,
+      name: `${c.name} ${Presenter.stat(skill, c[skill])} (${Presenter.statMod(c[skill])})`,
       value: c,
       short: c.name,
       disabled: c.hp <= 0
@@ -187,7 +192,7 @@ export default class Dungeoneer {
   presentCharacterRecords(): void {
     console.log("Your party:");
     this.playerTeam.combatants.forEach(c => {
-      console.log(Presenter.combatant(c, false));
+      console.log(Presenter.minimalCombatant(c));
       console.table(
         {
           ...c,
@@ -233,27 +238,26 @@ export default class Dungeoneer {
 
     this.note(this.describeRoom(room, ["enter", "step into", "find yourself in"][Math.floor(Math.random() * 3)]));
 
-    if (this.currentEncounter && this.currentEncounter.monsters.length > 0) {
-      const monsters = this.currentEncounter.monsters.map(m => `\n - ${Presenter.combatant(m, false)}`).join(", ");
+    if (this.currentEncounter && this.currentEncounter.creatures.length > 0) {
+      const monsters = this.currentEncounter.creatures.map(m => `\n - ${Presenter.combatant(m)}`).join(", ");
       this.note(`👹 Encounter: ${monsters} [CR: ${this.currentEncounter.cr}]\n`);
     }
 
     // display current party status
-    const partyStatus = this.playerTeam.combatants.map(c => Presenter.combatant(c, true)).join("\n");
+    const partyStatus = this.playerTeam.combatants.map(c => Presenter.minimalCombatant(c)).join("\n");
     this.note(`🧙‍ Party Status:\n${partyStatus}\n`);
   }
 
   private async runCombat(): Promise<boolean> {
+    if (Combat.living(this.currentMonsterTeam.combatants).length === 0) {
+      return true;
+    }
     const combat = new Combat({
       roller: this.roller,
       select: this.select,
       note: this.outputSink
     });
 
-    // stabilize to 1 HP??
-    // this.playerTeam.combatants.forEach(pc => { pc.hp = Math.max(1, pc.hp); });
-
-    // await combat.singleCombat([this.playerTeam, this.currentMonsterTeam]);
     await combat.setUp([this.playerTeam, this.currentMonsterTeam]);
     while (!combat.isOver()) {
       await combat.round();
@@ -261,7 +265,7 @@ export default class Dungeoneer {
 
     // Award XP/gold
     if (combat.winner === this.playerTeam.name) {
-      const encounter = this.currentEncounter!;
+      // const encounter = this.currentEncounter!;
       const enemies = combat.teams.find(t => t.name === "Enemies")?.combatants || [];
 
       let xp = 0;
@@ -312,7 +316,8 @@ export default class Dungeoneer {
         c.level++;
         nextLevelXp = Gauntlet.xpForLevel(c.level + 1);
         let hitPointIncrease = (await this.roller(c, "hit point growth", c.hitDie || 4)).amount;
-        hitPointIncrease += Math.max(0, Math.floor((c.con - 10) / 2));
+        hitPointIncrease += Fighting.statMod(c.con || 10);
+        hitPointIncrease = Math.max(1, hitPointIncrease);
         c.maxHp += hitPointIncrease;
         c.hp = c.maxHp;
         this.note(`${Presenter.combatant(c)} leveled up to level ${c.level}!`);
@@ -333,20 +338,23 @@ export default class Dungeoneer {
   }
 
   // After clearing room
-  private async roomActions(room: Room | BossRoom): Promise<void> {
+  private async roomActions(room: Room | BossRoom): Promise<{
+    leaving: boolean
+  }> {
     this.note(this.describeRoom(room));
 
     let searched = false, examinedFeature = false;
     let done = false;
     while (!done) {
       const options = [
-        { name: "Move on", value: "move", short: 'Continue', disabled: false },
-        { name: "Rest (restore HP, 30% encounter)", value: "rest", short: 'Rest', disabled: false },
+        { name: "Move to next room", value: "move", short: 'Continue', disabled: room === this.dungeon!.bossRoom },
+        { name: "Rest (stabilize unconscious party members, 30% encounter)", value: "rest", short: 'Rest', disabled: false },
         { name: "Search the room", value: "search", short: 'Search', disabled: searched },
       ];
       if (room.feature && room.feature !== "nothing") {
         options.push({ name: `Examine ${Words.remove_article(room.feature!)}`, value: "examine", short: 'Examine', disabled: examinedFeature });
       }
+      options.push({ name: "Leave the dungeon", value: "leave", short: 'Leave', disabled: false });
 
       let choice = await this.select("What would you like to do?", options);
       if (choice === "search") {
@@ -383,37 +391,61 @@ export default class Dungeoneer {
           this.note(`${check.actor.forename} inspected ${room.feature} thoroughly, but could find nothing out of the ordinary.`);
         }
         examinedFeature = true;
-      } else {
+      } else if (choice === "leave") {
+        const confirm = await this.select("Are you sure you want to leave the dungeon?", [
+          { name: "Yes", value: "yes", short: 'Y', disabled: false },
+          { name: "No", value: "no", short: 'N', disabled: false },
+        ]);
+        if (confirm === "yes") {
+          return { leaving: true };
+        }
+      }
+      else {
         done = true;
       }
     }
+    return { leaving: false };
   }
 
   private async rest(_room: Room | BossRoom): Promise<void> {
-    const choice = await this.select("Are you sure you want to rest in this room? (stabilize and restore 1+1d8 HP, 60% encounter)", [
+    const choice = await this.select("Are you sure you want to rest in this room? (stabilize unconscious party members to 1HP, 30% encounter)", [
       { disabled: false, short: 'Y', name: "Yes", value: "yes" },
       { disabled: false, short: 'N', name: "No", value: "no" }
     ]);
     if (choice === "yes") {
       // Heal party, maybe trigger encounter
       this.note(`\n💤 Resting...`);
-      // this.playerTeam.combatants.forEach(c => {
       for (const c of this.playerTeam.combatants) {
-        const heal = await Deem.evaluate("1+1d8");
-        if (c.hp <= 0) { c.hp = 1; } // Stabilize unconscious characters
-        c.hp = Math.min(c.maxHp, c.hp + heal);
-        this.note(`Healed ${c.name} for ${heal} HP (HP: ${c.hp}/${c.maxHp})`);
-
-        c.spellSlotsUsed = 0; // Reset spell slots on rest
+        if (c.hp <= 0) {
+          c.hp = 1;
+          this.note(`Stabilized ${c.name} at 1 HP.`);
+        } // Stabilize unconscious characters
       }
 
-      if (Math.random() < 0.6 && this.currentRoomIndex < this.rooms.length) {
+      // ask if they want to use consumables/healing spells?
+      let someoneWounded = this.playerTeam.combatants.some(c => c.hp < c.maxHp);
+      if ((this.playerTeam.healingPotions > 0) && someoneWounded) {
+        let usePotions = await this.select("Use healing potions?", [
+          { name: "Yes", value: "yes", short: 'Y', disabled: false },
+          { name: "No", value: "no", short: 'N', disabled: false }
+        ]);
+        if (usePotions === "yes") {
+          for (const c of this.playerTeam.combatants) {
+            if (c.hp < c.maxHp && this.playerTeam.healingPotions > 0) {
+              c.hp = Math.min(c.maxHp, c.hp + await Deem.evaluate("2d4+2"));
+              this.playerTeam.healingPotions -= 1;
+              this.note(`Used a healing potion on ${c.name} (HP is now ${c.hp}/${c.maxHp}).`);
+            }
+          }
+        }
+      }
+
+      if (Math.random() < 0.3 && this.currentRoomIndex < this.rooms.length) {
         // let encounter = this.encounterGen...
         let room = this.currentRoom as Room;
         room.encounter = await this.encounterGen(room.targetCr || 1);
-        this.note(`\n👹 Wandering monsters interrupt your rest: ${Words.humanizeList(room.encounter.monsters.map(m => m.name))} [CR ${
-          room.encounter.cr
-        }]`);
+        this.note(`\n👹 Wandering monsters interrupt your rest: ${Words.humanizeList(room.encounter.creatures.map(m => m.name))} [CR ${room.encounter.cr
+          }]`);
         await this.runCombat();
       }
     }
@@ -437,8 +469,8 @@ export default class Dungeoneer {
         targetCr: 5,
         boss_encounter: {
           cr: 5,
-          monsters: [
-            { forename: "Shadow Dragon", name: "Shadow Dragon", hp: 50, maxHp: 50, level: 5, ac: 18, dex: 14, str: 20, con: 16, int: 12, wis: 10, cha: 14, damageDie: 10, playerControlled: false, xp: 500, gp: 1000, attackRolls: 2, weapon: "Bite", abilities: ["melee"] }
+          creatures: [
+            { forename: "Shadow Dragon", name: "Shadow Dragon", hp: 50, maxHp: 50, level: 5, ac: 18, dex: 14, str: 20, con: 16, int: 12, wis: 10, cha: 14, damageDie: 10, playerControlled: false, xp: 500, gp: 1000, attackRolls: 2, weapon: "Bite", abilities: ["melee"], traits: [] }
           ]
         },
         treasure: "A legendary sword and a chest of gold.",
@@ -453,8 +485,8 @@ export default class Dungeoneer {
           feature: "a hidden alcove",
           encounter: {
             cr: 1,
-            monsters: [
-              { forename: "Goblin", name: "Goblin", hp: 7, maxHp: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, damageDie: 6, playerControlled: false, xp: 50, gp: 10, attackRolls: 1, weapon: "Dagger", abilities: ["melee"]}
+            creatures: [
+              { forename: "Goblin", name: "Goblin", hp: 7, maxHp: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, damageDie: 6, playerControlled: false, xp: 50, gp: 10, attackRolls: 1, weapon: "Dagger", abilities: ["melee"], traits: [] }
             ]
           }
         },
@@ -466,8 +498,8 @@ export default class Dungeoneer {
           feature: "a crumbling statue",
           encounter: {
             cr: 2,
-            monsters: [
-              { forename: "Orc", name: "Orc", hp: 15, maxHp: 15, level: 2, ac: 13, dex: 12, str: 16, con: 14, int: 8, wis: 10, cha: 8, damageDie: 8, playerControlled: false, xp: 100, gp: 20, attackRolls: 1, weapon: "Axe", abilities: ["melee"]},
+            creatures: [
+              { forename: "Orc", name: "Orc", hp: 15, maxHp: 15, level: 2, ac: 13, dex: 12, str: 16, con: 14, int: 8, wis: 10, cha: 8, damageDie: 8, playerControlled: false, xp: 100, gp: 20, attackRolls: 1, weapon: "Axe", abilities: ["melee"], traits: [] },
             ]
           }
         }
@@ -476,14 +508,14 @@ export default class Dungeoneer {
   }
 
   get rooms(): Room[] {
-    return this.dungeon.rooms;
+    return this.dungeon!.rooms;
   }
 
   get currentRoom(): Room | BossRoom | null {
     if (this.currentRoomIndex < this.rooms.length) {
       return this.rooms[this.currentRoomIndex];
     } else if (this.currentRoomIndex === this.rooms.length) {
-      return this.dungeon.bossRoom;
+      return this.dungeon!.bossRoom;
     }
     return null;
   }
@@ -504,7 +536,7 @@ export default class Dungeoneer {
     const encounter = this.currentEncounter;
     return {
       name: "Enemies",
-      combatants: encounter?.monsters || [],
+      combatants: encounter?.creatures || [],
       healingPotions: 0
     };
   }

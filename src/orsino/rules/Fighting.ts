@@ -9,7 +9,14 @@ export class Fighting {
   }
 
   static statMod(stat: number): number {
-    return Math.floor((stat - 10) / 2);
+    // return Math.floor((stat - 10) / 2);
+    if (stat >= 15) {
+      return 1 + Math.round((stat - 15) / 2);
+    } else if (stat <= 5) {
+      return (-1) + Math.round((stat - 5) / 2);
+    } else {
+      return 0;
+    }
   }
 
   static turnBonus(combatant: Combatant, keys: (string)[] = []): { [key: string]: number } {

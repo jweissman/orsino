@@ -29,7 +29,8 @@ export class Gauntlet {
   }
 
   static xpForLevel(level: number): number {
-    return (level * level * 125) + (level * 25) - 500;
+    // return (level * level * 125) + (level * 25) - 500;
+    return (level * level * 150) + (level * 50) + 300;
   }
   static crForParty(party: Combatant[]): number {
     const totalLevels = party.reduce((sum, c) => sum + c.level, 0);
@@ -69,7 +70,7 @@ export class Gauntlet {
         })); // reset HP for non-player combatants
       }
       this.outputSink(`\rYou encounter ${teams[1].name} (${teams[1].combatants.map(
-        c => Presenter.combatant(c, false)
+        c => Presenter.combatant(c)
       ).join("; ")})!\n\n`);
       await Gauntlet.singleCombat(combat, teams);
       if (combat.winner === "Player") {

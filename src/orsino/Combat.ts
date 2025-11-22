@@ -62,15 +62,15 @@ export default class Combat {
           attackRolls: 1,
           damageDie: 8, playerControlled: true, xp: 0, gp: 0,
           weapon: "Short Sword",
-          abilities: ["melee"]
+          abilities: ["melee"], traits: []
         }], healingPotions: 3
       },
       {
         name: "Enemy", combatants: [
-          { forename: "Zok", name: "Goblin A", hp: 4, maxHp: 4, level: 1, ac: 17, attackRolls: 2, damageDie: 3, str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", abilities: ["melee"] },
+          { forename: "Zok", name: "Goblin A", hp: 4, maxHp: 4, level: 1, ac: 17, attackRolls: 2, damageDie: 3, str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", abilities: ["melee"], traits: [] },
           {
             forename: "Mog", name: "Goblin B", hp: 4, maxHp: 4, level: 1, ac: 17, attackRolls: 2, damageDie: 3,
-            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", abilities: ["melee"]
+            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", abilities: ["melee"], traits: []
           }
         ], healingPotions: 0
       }
@@ -116,13 +116,19 @@ export default class Combat {
       });
     }
 
+    if (result === 1 && subject.traits?.includes("lucky")) {
+      rollDescription += ` ${subject.name} is Lucky and rolled a 1, so they get to re-roll!`;
+      // re-roll a 1
+      return Combat.roll(subject, description + " (re-roll)", sides);
+    }
+
     return { amount: result, description: rollDescription };
   }
 
   // autoroll = async (subject: Combatant, description: string, sides: number) => Combat.rollDie(subject, description, sides);
-  living(combatants: Combatant[] = this.allCombatants): Combatant[] { return combatants.filter(c => c.hp > 0); }
-  wounded(combatants: Combatant[] = this.allCombatants): Combatant[] { return combatants.filter(c => c.hp > 0 && c.hp < c.maxHp); }
-  weakest(combatants: Combatant[] = this.living(this.allCombatants)): Combatant {
+  static living(combatants: Combatant[]): Combatant[] { return combatants.filter(c => c.hp > 0); }
+  static wounded(combatants: Combatant[]): Combatant[] { return combatants.filter(c => c.hp > 0 && c.hp < c.maxHp); }
+  static weakest(combatants: Combatant[]): Combatant {
     return this.living(combatants).reduce((weakest, current) => {
       return current.hp < weakest.hp ? current : weakest;
     }, this.living(combatants)[0]);
@@ -144,7 +150,7 @@ export default class Combat {
     console.log("Combat setup complete!");
   }
 
-  static maxSpellSlotsForLevel(level: number): number { return Math.ceil(level / 2); }
+  static maxSpellSlotsForLevel(level: number): number { return 1 + Math.ceil(level / 2); }
   static maxSpellSlotsForCombatant(combatant: Combatant): number {
     if (combatant.class === "mage") {
       return Combat.maxSpellSlotsForLevel(combatant.level || 1) + Math.max(0, Fighting.statMod(combatant.int));
@@ -160,7 +166,7 @@ export default class Combat {
   get commandHandlers(): CommandHandlers {
     return {
       roll: this.roller,
-      attack: this.pcAttacks.bind(this),
+      attack: this.handleAttack.bind(this),
       hit: this.handleHit.bind(this),
       heal: this.handleHeal.bind(this),
       status: this.handleStatusEffect.bind(this),
@@ -187,17 +193,17 @@ export default class Combat {
     abilities.forEach((ability: Ability) => {
       let validTargets = this.abilityHandler.validTargets(ability, combatant, allies, enemies);
       let disabled = validTargets.length === 0;
-      if (ability.target.includes("randomEnemies") && this.living(enemies).length > 0) {
+      if (ability.target.includes("randomEnemies") && Combat.living(enemies).length > 0) {
         disabled = false;
       }
 
       // if _only_ a healing effect and target is ally/self/allies and NO wounded allies, disable
-      if (!disabled && ability.effects.every(e => e.type === "heal")) {
-        if (this.wounded([...allies, combatant]).length === 0) {
+      if (!disabled && ability.effects.every(e => e.type === "heal") && ability.effects.length > 0) {
+        if (Combat.wounded([...allies, combatant]).length === 0) {
           disabled = true;
         } else if (ability.target.includes("self") && combatant.hp === combatant.maxHp) {
           disabled = ability.target.length === 1; // if only self-targeting, disable; if also allies, allow
-        } else if (ability.target.includes("allies") && this.wounded(allies).length === 0) {
+        } else if (ability.target.includes("allies") && Combat.wounded(allies).length === 0) {
           disabled = ability.target.length === 1; // if only allies-targeting, disable; if also self, allow
         }
       }
@@ -206,7 +212,7 @@ export default class Combat {
         if (ability.type == "spell") {
           // pips = "⚡".repeat(spellSlotsRemaining) + "⚫".repeat((Combat.maxSpellSlotsForCombatant(combatant) || 0) - spellSlotsRemaining);
           disabled = spellSlotsRemaining === 0;
-        } else if (ability.type == "skill") { 
+        } else if (ability.type == "skill") {
           // want to track consumption here...
           // console.log("Already used ", ability.name, "?", combatant.abilitiesUsed?.includes(ability.name) || false)
           if (!ability.name.match(/melee|ranged|wait/i)) {
@@ -226,7 +232,7 @@ export default class Combat {
   }
 
   async pcTurn(combatant: Combatant, enemies: Combatant[], allies: Combatant[]) {
-    this.note(`It's ${Presenter.combatant(combatant)}'s turn!`);
+    // this.note(`It's ${Presenter.combatant(combatant)}'s turn!`);
 
     let validAbilities = this.validActions(combatant, allies, enemies);
     let allAbilities = combatant.abilities.map(a => this.abilityHandler.getAbility(a)); //.filter(a => a);
@@ -252,7 +258,7 @@ export default class Combat {
       });
     }
 
-    const action: Ability = await this.select(`Your turn, ${Presenter.combatant(combatant)} - what do you do?`, choices, combatant);
+    const action: Ability = await this.select(`Your turn, ${Presenter.minimalCombatant(combatant)} - what do you do?`, choices, combatant);
 
     let validTargets = this.abilityHandler.validTargets(action, combatant, allies, enemies);
     let targetOrTargets = validTargets[0];
@@ -260,13 +266,13 @@ export default class Combat {
       targetOrTargets = await this.select(`Select target(s) for ${action.name}:`, validTargets.map(t => ({
         name: Array.isArray(t) ? t.map(c => Presenter.combatant(c)).join("; ") : t.name,
         value: t,
-        short: Array.isArray(t) ? t.map(c => c.name).join(", ") : t.name,
+        short: Array.isArray(t) ? t.map(c => Presenter.combatant(c)).join(", ") : t.name,
         disabled: false //Array.isArray(t) ? t.every(c => c.hp <= 0) : t.hp <= 0
       })), combatant);
     } else if (action.target.includes("randomEnemies") && action.target.length === 2) {
       // pick random enemies
       let count = action.target[1] as any as number;
-      let possibleTargets = this.living(enemies);
+      let possibleTargets = Combat.living(enemies);
       targetOrTargets = [];
       for (let i = 0; i < count; i++) {
         targetOrTargets.push(possibleTargets[Math.floor(Math.random() * possibleTargets.length)]);
@@ -320,18 +326,50 @@ export default class Combat {
 
     if (defender.hp <= 0) {
       // this.emit({ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">);
-      console.warn(`${Presenter.combatant(defender)} is already defeated. No damage applied.`);
+      this.note(`${Presenter.combatant(defender)} is already defeated. No damage applied.`);
       return;
     }
 
+    // if there is an evasion effect, check for it
+    if (defender.activeEffects?.some(e => e.effect.evasion)) {
+      const evasionEffect = defender.activeEffects.find(e => e.effect.evasion);
+      const evasionBonus = evasionEffect?.effect.evasion || 0;
+      let whatNumberEvades = 15 - evasionBonus;
+      const evasionRoll = await this.roller(defender, `for evasion (must roll ${whatNumberEvades} or higher)`, 20);
+      if (evasionRoll.amount + evasionBonus >= 15) {
+        this.note(`${Presenter.combatant(defender)} evades the attack!`);
+        this.emit({ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">);
+        return;
+      }
+    }
+
+    // does the combatant has a bonus damage effect?
+    if (defender.activeEffects?.some(e => e.effect.bonusDamage)) {
+      const bonusDamageEffect = defender.activeEffects.find(e => e.effect.bonusDamage);
+      const bonusDamage = bonusDamageEffect?.effect.bonusDamage || 0;
+      damage += bonusDamage;
+      this.note(`${Presenter.combatant(defender)} has a bonus damage effect, adding ${bonusDamage} damage!`);
+    }
+
+    // apply damage
+    let originalHp = defender.hp;
     defender.hp -= damage;
+
+    if (defender.hp <= 0 && originalHp >= defender.maxHp / 2) {
+      // if we have resilient trait, we drop to 1 hp instead of 0
+      if (defender.traits?.includes("resilient")) {
+        defender.hp = 1;
+        this.note(`${Presenter.combatant(defender)} is resilient and drops to 1 HP instead of 0!`);
+      }
+    }
+
     this.emit({ type: "hit", subject: attacker, target: defender, damage, success: true, critical, by } as Omit<HitEvent, "turn">);
     if (defender.hp <= 0) {
       this.emit({ type: "fall", subject: defender } as Omit<FallenEvent, "turn">);
     }
   }
 
-  async pcAttacks(combatant: Combatant, target: Combatant, roller: Roll = this.roller): Promise<{
+  async handleAttack(combatant: Combatant, target: Combatant, roller: Roll = this.roller): Promise<{
     success: boolean;
     target: Combatant;
   }> {
@@ -346,7 +384,7 @@ export default class Combat {
       ability,
       score: this.scoreAbility(ability, combatant, allies, enemies)
     }));
-    console.log(`NPC ${combatant.forename} rates abilities:`, scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`).join(", "));
+    // console.log(`NPC ${combatant.forename} rates abilities:`, scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`).join(", "));
     scoredAbilities.sort((a, b) => b.score - a.score);
     const action = scoredAbilities[0]?.ability;
     let targetOrTargets: Combatant | Combatant[] = this.bestAbilityTarget(action, combatant, allies, enemies);
@@ -381,10 +419,19 @@ export default class Combat {
       return validTargets[0];
     }
 
+    // are we being taunted?
+    let tauntEffect = user.activeEffects?.find(e => e.effect.forceTarget);
+    if (tauntEffect) {
+      if (validTargets.some(t => t === tauntEffect.effect.by)) {
+        this.note(`${Presenter.combatant(user)} is taunted by ${Presenter.combatant(tauntEffect.effect.by)} and must target them!`);
+        return tauntEffect.effect.by;
+      }
+    }
+
     if (ability.target.includes("randomEnemies") && ability.target.length === 2) {
       // pick random enemies
       let count = ability.target[1] as any as number;
-      let possibleTargets = this.living(enemies);
+      let possibleTargets = Combat.living(enemies);
       let targetOrTargets: Combatant[] = [];
       for (let i = 0; i < count; i++) {
         targetOrTargets.push(possibleTargets[Math.floor(Math.random() * possibleTargets.length)]);
@@ -394,10 +441,10 @@ export default class Combat {
       // pick the weakest/most wounded of the targets
       if (!Array.isArray(validTargets[0])) {
         if (ability.effects.some(e => e.type === "heal")) {
-          return this.wounded(validTargets as Combatant[]).sort((a, b) => (a.hp / a.maxHp) - (b.hp / b.maxHp))[0];
+          return Combat.wounded(validTargets as Combatant[]).sort((a, b) => (a.hp / a.maxHp) - (b.hp / b.maxHp))[0];
         }
 
-        return this.weakest(validTargets as Combatant[]);
+        return Combat.weakest(validTargets as Combatant[]);
       }
       return validTargets[0];
     }
@@ -418,12 +465,12 @@ export default class Combat {
         }
       });
     } else if (analysis.aoe) {
-      score += enemies.filter(e => e.hp > 0).length * 7;
+      score += enemies.filter(e => e.hp > 0).length * 3;
     } else if (analysis.debuff) {
       // are there enemies with higher hp than us?
       enemies.forEach(enemy => {
         if (enemy.hp > 0 && enemy.hp > user.hp) {
-          score += 5;
+          score += 4;
         }
       });
     } else if (analysis.defense) {
@@ -457,7 +504,7 @@ export default class Combat {
     if (ability.type === "skill" && user.abilitiesUsed?.includes(ability.name)) {
       score -= 10;
     }
-    
+
     // if a spell and no spell slots remaining, give -10 penalty
     if (ability.type === "spell") {
       let spellSlotsRemaining = (Combat.maxSpellSlotsForCombatant(user) || 0) - (user.spellSlotsUsed || 0);
@@ -484,9 +531,18 @@ export default class Combat {
   }
 
   async turn(combatant: Combatant) {
+    this.emit({ type: "turnStart", subject: combatant, combatants: this.allCombatants } as Omit<CombatEvent, "turn">);
+
+    // if we have an 'inactive' status (eg from sleep spell) skip our turn
+    if (combatant.activeEffects?.some(e => e.effect.noActions)) {
+      let status = combatant.activeEffects.find(e => e.effect.noActions);
+      this.note(`${Presenter.combatant(combatant)} is ${status!.name} and skips their turn!`);
+      return;
+    }
+
     const targets = this.teams.find(team => team.combatants.includes(combatant)) === this.teams[0] ? (this.teams[1].combatants) : (this.teams[0].combatants);
 
-    let validTargets = this.living(targets);
+    let validTargets = Combat.living(targets);
     if (validTargets.length === 0) {
       return;
     }
@@ -498,21 +554,32 @@ export default class Combat {
     if (combatant.hp <= 0) { return; }
 
     let allies = this.teams.find(team => team.combatants.includes(combatant))?.combatants || [];
-    allies = this.living(allies).filter(c => c !== combatant);
-    if (combatant.playerControlled) {
-      await this.pcTurn(combatant, validTargets, allies);
-    } else {
-      await this.npcTurn(combatant, validTargets, allies);
+    allies = Combat.living(allies).filter(c => c !== combatant);
+
+    // do we have an effect changing our allegiance? in which case -- flip our allies/enemies
+    let allegianceEffect = combatant.activeEffects?.find(e => e.effect.changeAllegiance);
+    if (allegianceEffect) {
+      this.note(`${Presenter.combatant(combatant)} is under the effect of ${allegianceEffect.name} and has switched sides!`);
+      [allies, validTargets] = [validTargets, allies];
+    }
+
+    let attacksPerTurn = combatant.attacksPerTurn || 1;
+    for (let i = 0; i < attacksPerTurn; i++) {
+      if (combatant.playerControlled) {
+        await this.pcTurn(combatant, validTargets, allies);
+      } else {
+        await this.npcTurn(combatant, validTargets, allies);
+      }
     }
 
     if (combatant.activeEffects) {
-      combatant.activeEffects.forEach(it => it.duration--);
-      for (const status of combatant.activeEffects) {
-        if (status.duration === 0) {
-          this.emit({ type: "statusExpire", subject: combatant, effectName: status.name } as Omit<StatusExpireEvent, "turn">);
-        }
-      }
-      combatant.activeEffects = combatant.activeEffects.filter(it => it.duration > 0);
+      //combatant.activeEffects.forEach(it => it.duration--);
+      //for (const status of combatant.activeEffects) {
+      //  if (status.duration === 0) {
+      //    this.emit({ type: "statusExpire", subject: combatant, effectName: status.name } as Omit<StatusExpireEvent, "turn">);
+      //  }
+      //}
+      // combatant.activeEffects = combatant.activeEffects.filter(it => it.duration > 0);
       // run onTurnEnd for all active effects
       for (const status of combatant.activeEffects) {
         if (status.effect['onTurnEnd']) {
@@ -531,7 +598,7 @@ export default class Combat {
     }
     this.turnNumber++;
     this.emit({
-      type: "roundStart", combatants: this.living(this.combatantsByInitiative.map(c => c.combatant))
+      type: "roundStart", combatants: Combat.living(this.combatantsByInitiative.map(c => c.combatant))
     } as Omit<RoundStartEvent, "turn">);
 
     // check for escape conditions (if 'flee' status is active, remove the combatant from combat)
@@ -551,6 +618,19 @@ export default class Combat {
       if (combatant.hp <= 0) continue; // Skip defeated combatants
       await this.turn(combatant);
     }
+
+    // tick down status
+    this.allCombatants.forEach(combatant => {
+      if (combatant.activeEffects) {
+        combatant.activeEffects.forEach(it => it.duration--);
+        for (const status of combatant.activeEffects) {
+          if (status.duration === 0) {
+            this.emit({ type: "statusExpire", subject: combatant, effectName: status.name } as Omit<StatusExpireEvent, "turn">);
+          }
+        }
+      }
+      combatant.activeEffects = combatant.activeEffects?.filter(it => it.duration > 0) || [];
+    });
 
     for (const team of this.teams) {
       if (team.combatants.every((c: any) => c.hp <= 0)) {

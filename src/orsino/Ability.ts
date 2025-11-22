@@ -9,7 +9,7 @@ import Files from "./util/Files";
 type Target = "self" | "ally" | "enemy" | "allies" | "enemies" | "all" | "randomEnemies";
 
 export interface AbilityEffect {
-  type: "attack" | "damage" | "heal" | "buff" | "debuff" | "flee" | "removeItem";
+  type: "attack" | "damage" | "heal" | "buff" | "debuff" | "flee" | "removeItem" | "drain";
   stat?: "str" | "dex" | "con" | "int" | "wis" | "cha";
   amount?: string; // e.g. "=1d6", "=2d8", "3"
   duration?: number; // in turns
@@ -131,6 +131,19 @@ export default class AbilityHandler {
 
     if (effect.type === "attack") {
       let success = false;
+
+      // if we have an onAttack effect... handle here
+      if (user.activeEffects?.some(e => e.effect['onAttack'])) {
+        // handle onAttack effects with this/these enemies as targets
+        for (const e of user.activeEffects) {
+          if (e.effect['onAttack']) {
+            e.effect['onAttack'].forEach(async (attackFx: AbilityEffect) => {
+              await this.handleEffect(e.name, attackFx, user, target, { roll, attack, hit, heal, status, removeItem });
+            })
+          }
+        }
+      }
+
       if (Array.isArray(target)) {
         for (const t of target) {
           let result = await attack(user, t);
@@ -144,7 +157,7 @@ export default class AbilityHandler {
         // console.log(`${user.name}'s ${name} missed!`);
         return false;
       } else {
-        // if all targets are dead, skip
+        // if all targets are dead, skip further effects
         if (Array.isArray(target)) {
           if (target.every(t => t.hp <= 0)) {
             return true;
@@ -154,7 +167,7 @@ export default class AbilityHandler {
             return true;
           }
         }
-        // if we have an onAttack effect... we could handle here
+        // if we have an onAttackHit effect... we could handle here
         // console.log("Checking for onAttack effects...", user.activeEffects);
         if (user.activeEffects?.some(e => e.effect['onAttackHit'])) {
           // handle onAttack effects with this/these enemies as targets
@@ -182,6 +195,7 @@ export default class AbilityHandler {
             t,
             amount,
             false, // critical
+            
             `${user.forename}'s ${name}`,
             true // success
           );
@@ -199,6 +213,19 @@ export default class AbilityHandler {
       } else {
         let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
         await heal(user, target, amount);
+      }
+    } else if (effect.type === "drain") {
+      // heal self + drain target
+      if (Array.isArray(target)) {
+        for (const t of target) {
+          let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
+          await heal(user, user, amount);
+          await hit(user, t, amount, false, `${user.forename}'s ${name} (drain)`, true);
+        }
+      } else {
+        let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
+        await heal(user, user, amount);
+        await hit(user, target, amount, false, `${user.forename}'s ${name} (drain)`, true);
       }
     } else if (effect.type === "buff") { //} || effect.type === "debuff") {
       if (effect.status) {
