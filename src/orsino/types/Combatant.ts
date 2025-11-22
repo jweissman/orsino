@@ -1,6 +1,17 @@
 import { AbilityEffect } from "../Ability";
 
 type Trait = "lucky" | "resilient";
+
+type StatusEffect = {
+  name: string;
+  effect: { [key: string]: any };
+  duration: number;
+
+  by?: Combatant;
+  onAttack?: AbilityEffect[];
+  onTurnEnd?: AbilityEffect[];
+}
+
 export interface Combatant {
   traits: Trait[];
   abilities: string[];
@@ -30,14 +41,7 @@ export interface Combatant {
   // spellSlots?: number;
   spellSlotsUsed?: number;
 
-  activeEffects?: {
-    name: string;
-    effect: { [key: string]: any };
-    duration: number;
-
-    onAttack?: AbilityEffect[];
-    onTurnEnd?: AbilityEffect[];
-  }[];
+  activeEffects?: StatusEffect[];
 
   // turnBonus?: { [key: string]: number };
   type?: string; // monster type, e.g. "shaman", "brute", etc.
@@ -51,4 +55,6 @@ export interface Combatant {
   age?: any;
   gender?: any;
   background?: any;
+
+  attacksPerTurn?: number;
 }

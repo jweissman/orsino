@@ -166,6 +166,107 @@
       }
     ]
   },
+  "burning_hands": {
+    "name": "Burning Hands",
+    "type": "spell",
+    "aspect": "arcane",
+    "description": "Unleash a cone of fire, dealing 1d6 damage to all enemies in the area.",
+    "target": [ "enemies" ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d6"
+      }
+    ]
+  },
+  "shocking_grasp": {
+    "name": "Shocking Grasp",
+    "type": "spell",
+    "aspect": "arcane",
+    "description": "Deliver a jolt of electricity, dealing 1d4 damage and stunning the target for 2 rounds.",
+    "target": [ "enemy" ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d4"
+      },
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Stunned",
+          "duration": 2,
+          "effect": {
+            "noActions": true
+          }
+        },
+        "saveType": "con",
+        "saveDC": 10
+      }
+    ]
+  },
+  "charm": {
+    "name": "Charm Person",
+    "type": "spell",
+    "aspect": "social",
+    "description": "Attempt to charm an enemy, making them friendly towards you for 3 rounds.",
+    "target": ["enemy"],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Charmed",
+          "duration": 3,
+          "effect": {
+            "changeAllegiance": true
+          }
+        },
+        "saveType": "wis",
+        "saveDC": 10
+      }
+    ]
+  },
+  "blur": {
+    "name": "Blur",
+    "type": "spell",
+    "aspect": "arcane",
+    "description": "Become blurred, granting you a 50% chance to avoid attacks for 3 rounds.",
+    "target": ["self"],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Blurred",
+          "duration": 3,
+          "effect": {
+            "evasion": 5
+          }
+        }
+      }
+    ]
+  },
+
+  "sleep": {
+    "name": "Sleep",
+    "type": "spell",
+    "aspect": "arcane",
+    "description": "Put an enemy to sleep for 2 rounds.",
+    "target": ["enemy"],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Asleep",
+          "duration": 3,
+          "effect": {
+            "noActions": true
+          }
+        },
+        "saveType": "wis",
+        "saveDC": 10
+      }
+    ]
+  },
+
   "bless": {
     "name": "Bless",
     "type": "skill",
@@ -274,6 +375,28 @@
       {
         "type": "heal",
         "amount": "=1d10 + #level"
+      }
+    ]
+  },
+
+  "taunt": {
+    "name": "Taunt",
+    "type": "skill",
+    "aspect": "social",
+    "description": "Taunt an enemy, forcing them to target you on their next turn.",
+    "target": ["enemy"],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": {
+          "name": "taunted",
+          "duration": 4,
+          "effect": {
+            "forceTarget": true
+          }
+        },
+        "saveType": "wis",
+        "saveDC": 15
       }
     ]
   },
@@ -418,7 +541,7 @@
       {
         "type": "debuff",
         "status": {
-          "name": "Poisoned",
+          "name": "being poisoned",
           "duration": 3,
           "effect": {
             "onTurnEnd": [
@@ -444,7 +567,7 @@
       {
         "type": "debuff",
         "status": {
-          "name": "Poisoned",
+          "name": "being poisoned",
           "duration": 3,
           "effect": {
             "onTurnEnd": [
@@ -457,6 +580,116 @@
         },
         "saveType": "con",
         "saveDC": 10
+      }
+    ]
+  },
+  "psionic_blast": {
+    "name": "Psionic Blast",
+    "type": "skill",
+    "aspect": "psychic",
+    "description": "Invade minds of all enemies, dealing 1d6 psychic damage and stunning them.",
+    "target": ["enemies"],
+    "effects": [
+      { "type": "damage", "amount": "=1d6" },
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Stunned",
+          "duration": 1,
+          "effect": { "noActions": true }
+        },
+        "saveType": "wis",
+        "saveDC": 12
+      }
+    ]
+  },
+  "life_drain": {
+    "name": "Life Drain",
+    "type": "spell",
+    "aspect": "necrotic",
+    "description": "Drain life from an enemy, healing yourself for damage dealt.",
+    "target": ["enemy"],
+    "effects": [
+      { "type": "drain", "amount": "=1d6", "damageType": "necrotic" }
+    ]
+  },
+  "lightning_strike": {
+    "name": "Lightning Strike",
+    "type": "spell",
+    "aspect": "electric",
+    "description": "Strike random enemies with lightning, dealing 1d8 damage and paralyzing them for 1 round.",
+    "target": ["randomEnemies", 2],
+    "effects": [
+      { "type": "damage", "amount": "=1d8" },
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Paralyzed",
+          "duration": 1,
+          "effect": { "noActions": true }
+        },
+        "saveType": "con",
+        "saveDC": 12
+      }
+    ]
+  },
+  "earthquake": {
+    "name": "Earthquake",
+    "type": "spell",
+    "aspect": "earth",
+    "description": "Cause the ground to shake, dealing 1d6 damage to all enemies and knocking them prone.",
+    "target": ["enemies"],
+    "effects": [
+      { "type": "damage", "amount": "=1d6" },
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Prone",
+          "duration": 2,
+          "effect": { "noActions": true }
+        },
+        "saveType": "dex",
+        "saveDC": 12
+      }
+    ]
+  },
+  "drench": {
+    "name": "Drench",
+    "type": "spell",
+    "aspect": "water",
+    "description": "Drench an enemy, reducing their attack rolls by 2 for 3 rounds.",
+    "target": ["enemy"],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Drenched",
+          "duration": 3,
+          "effect": { "toHit": -2 }
+        },
+        "saveType": "dex",
+        "saveDC": 10
+      }
+    ]
+  },
+  "enrage": {
+    "name": "Enrage",
+    "type": "skill",
+    "aspect": "feral",
+    "description": "Enter a frenzied state, gaining +2 to damage rolls and +1 toHit but degrades AC for 3 rounds.",
+    "target": ["self"],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Enraged",
+          "duration": 3,
+          "effect": {
+            "toHit": 1,
+            "bonusDamage": 2,
+            "ac": 3
+          }
+        }
       }
     ]
   }

@@ -13,7 +13,7 @@ import { Roll } from "./types/Roll";
 import Events, { DungeonEvent } from "./Events";
 
 interface Encounter {
-  monsters: Combatant[];
+  creatures: Combatant[];
   bonusGold?: number;
   cr?: number;
 }
@@ -107,7 +107,7 @@ export default class Dungeoneer {
         return await options.gen("encounter", { ...this.dungeon!, targetCr: cr });
       } else {
         return {
-          monsters: [
+          creatures: [
             { forename: "Goblin", name: "Goblin", hp: 7, maxHp: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, damageDie: 6, playerControlled: false, xp: 50, gp: 10, attackRolls: 1, weapon: "Dagger" }
           ]
         }
@@ -151,7 +151,7 @@ export default class Dungeoneer {
       const room = this.currentRoom;
       if (!room) break;
       await this.enterRoom(room);
-      if (this.currentEncounter && this.currentEncounter.monsters.length > 0) {
+      if (this.currentEncounter && this.currentEncounter.creatures.length > 0) {
         const survived = await this.runCombat();
         if (!survived) break;
       }
@@ -238,8 +238,8 @@ export default class Dungeoneer {
 
     this.note(this.describeRoom(room, ["enter", "step into", "find yourself in"][Math.floor(Math.random() * 3)]));
 
-    if (this.currentEncounter && this.currentEncounter.monsters.length > 0) {
-      const monsters = this.currentEncounter.monsters.map(m => `\n - ${Presenter.combatant(m)}`).join(", ");
+    if (this.currentEncounter && this.currentEncounter.creatures.length > 0) {
+      const monsters = this.currentEncounter.creatures.map(m => `\n - ${Presenter.combatant(m)}`).join(", ");
       this.note(`👹 Encounter: ${monsters} [CR: ${this.currentEncounter.cr}]\n`);
     }
 
@@ -249,16 +249,15 @@ export default class Dungeoneer {
   }
 
   private async runCombat(): Promise<boolean> {
+    if (Combat.living(this.currentMonsterTeam.combatants).length === 0) {
+      return true;
+    }
     const combat = new Combat({
       roller: this.roller,
       select: this.select,
       note: this.outputSink
     });
 
-    // stabilize to 1 HP??
-    // this.playerTeam.combatants.forEach(pc => { pc.hp = Math.max(1, pc.hp); });
-
-    // await combat.singleCombat([this.playerTeam, this.currentMonsterTeam]);
     await combat.setUp([this.playerTeam, this.currentMonsterTeam]);
     while (!combat.isOver()) {
       await combat.round();
@@ -266,7 +265,7 @@ export default class Dungeoneer {
 
     // Award XP/gold
     if (combat.winner === this.playerTeam.name) {
-      const encounter = this.currentEncounter!;
+      // const encounter = this.currentEncounter!;
       const enemies = combat.teams.find(t => t.name === "Enemies")?.combatants || [];
 
       let xp = 0;
@@ -349,7 +348,7 @@ export default class Dungeoneer {
     while (!done) {
       const options = [
         { name: "Move to next room", value: "move", short: 'Continue', disabled: room === this.dungeon!.bossRoom },
-        { name: "Rest (restore HP, 30% encounter)", value: "rest", short: 'Rest', disabled: false },
+        { name: "Rest (stabilize unconscious party members, 30% encounter)", value: "rest", short: 'Rest', disabled: false },
         { name: "Search the room", value: "search", short: 'Search', disabled: searched },
       ];
       if (room.feature && room.feature !== "nothing") {
@@ -409,7 +408,7 @@ export default class Dungeoneer {
   }
 
   private async rest(_room: Room | BossRoom): Promise<void> {
-    const choice = await this.select("Are you sure you want to rest in this room? (stabilize unconscious party members to 1HP, 60% encounter)", [
+    const choice = await this.select("Are you sure you want to rest in this room? (stabilize unconscious party members to 1HP, 30% encounter)", [
       { disabled: false, short: 'Y', name: "Yes", value: "yes" },
       { disabled: false, short: 'N', name: "No", value: "no" }
     ]);
@@ -441,13 +440,12 @@ export default class Dungeoneer {
         }
       }
 
-      if (Math.random() < 0.6 && this.currentRoomIndex < this.rooms.length) {
+      if (Math.random() < 0.3 && this.currentRoomIndex < this.rooms.length) {
         // let encounter = this.encounterGen...
         let room = this.currentRoom as Room;
         room.encounter = await this.encounterGen(room.targetCr || 1);
-        this.note(`\n👹 Wandering monsters interrupt your rest: ${Words.humanizeList(room.encounter.monsters.map(m => m.name))} [CR ${
-          room.encounter.cr
-        }]`);
+        this.note(`\n👹 Wandering monsters interrupt your rest: ${Words.humanizeList(room.encounter.creatures.map(m => m.name))} [CR ${room.encounter.cr
+          }]`);
         await this.runCombat();
       }
     }
@@ -471,8 +469,8 @@ export default class Dungeoneer {
         targetCr: 5,
         boss_encounter: {
           cr: 5,
-          monsters: [
-            { forename: "Shadow Dragon", name: "Shadow Dragon", hp: 50, maxHp: 50, level: 5, ac: 18, dex: 14, str: 20, con: 16, int: 12, wis: 10, cha: 14, damageDie: 10, playerControlled: false, xp: 500, gp: 1000, attackRolls: 2, weapon: "Bite", abilities: ["melee"], traits: []}
+          creatures: [
+            { forename: "Shadow Dragon", name: "Shadow Dragon", hp: 50, maxHp: 50, level: 5, ac: 18, dex: 14, str: 20, con: 16, int: 12, wis: 10, cha: 14, damageDie: 10, playerControlled: false, xp: 500, gp: 1000, attackRolls: 2, weapon: "Bite", abilities: ["melee"], traits: [] }
           ]
         },
         treasure: "A legendary sword and a chest of gold.",
@@ -487,8 +485,8 @@ export default class Dungeoneer {
           feature: "a hidden alcove",
           encounter: {
             cr: 1,
-            monsters: [
-              { forename: "Goblin", name: "Goblin", hp: 7, maxHp: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, damageDie: 6, playerControlled: false, xp: 50, gp: 10, attackRolls: 1, weapon: "Dagger", abilities: ["melee"], traits: []}
+            creatures: [
+              { forename: "Goblin", name: "Goblin", hp: 7, maxHp: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, damageDie: 6, playerControlled: false, xp: 50, gp: 10, attackRolls: 1, weapon: "Dagger", abilities: ["melee"], traits: [] }
             ]
           }
         },
@@ -500,8 +498,8 @@ export default class Dungeoneer {
           feature: "a crumbling statue",
           encounter: {
             cr: 2,
-            monsters: [
-              { forename: "Orc", name: "Orc", hp: 15, maxHp: 15, level: 2, ac: 13, dex: 12, str: 16, con: 14, int: 8, wis: 10, cha: 8, damageDie: 8, playerControlled: false, xp: 100, gp: 20, attackRolls: 1, weapon: "Axe", abilities: ["melee"], traits: []},
+            creatures: [
+              { forename: "Orc", name: "Orc", hp: 15, maxHp: 15, level: 2, ac: 13, dex: 12, str: 16, con: 14, int: 8, wis: 10, cha: 8, damageDie: 8, playerControlled: false, xp: 100, gp: 20, attackRolls: 1, weapon: "Axe", abilities: ["melee"], traits: [] },
             ]
           }
         }
@@ -538,7 +536,7 @@ export default class Dungeoneer {
     const encounter = this.currentEncounter;
     return {
       name: "Enemies",
-      combatants: encounter?.monsters || [],
+      combatants: encounter?.creatures || [],
       healingPotions: 0
     };
   }

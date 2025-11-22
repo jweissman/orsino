@@ -310,6 +310,7 @@
   "damageDie": {
     "discriminator": "weapon",
     "groups": {
+      "slam": 1,
       "claws": 2,
       "bite": 3,
       "talons": 4,
@@ -325,12 +326,14 @@
       "spear": 8,
       "sword": 10,
       "greataxe": 8,
-      "greatsword": 12
+      "greatsword": 12,
+      "tentacles": 6
     }
   },
   "attackRolls": {
     "discriminator": "weapon",
     "groups": {
+      "slam": 2,
       "claws": 1,
       "bite": 1,
       "talons": 1,
@@ -346,7 +349,8 @@
       "spear": 1,
       "sword": 1,
       "greataxe": 1,
-      "greatsword": 1
+      "greatsword": 1,
+      "tentacles": 1
     }
   },
   "weapon": {
@@ -411,22 +415,22 @@
   "armorClassBonus": {
     "discriminator": "armor",
     "groups": {
-      "robe": 1,
-      "leather": 2,
-      "chainmail": 5,
-      "plate": 8
+      "robe": 0,
+      "leather": 1,
+      "chainmail": 2,
+      "plate": 4
     }
   },
   "abilities": {
     "discriminator": "class",
     "groups": {
-      "warrior": [[ "melee", "charge", "second_wind", "wait" ]],
-      "mage": [[ "melee", "missile", "armor", "wait" ]],
-      "cleric": [[ "melee", "smite", "cure", "bless", "wait" ]],
-      "ranger": [[ "ranged", "heal", "wait" ]],
-      "thief": [[ "melee", "poison_weapon", "wait" ]],
-      "bard": [[ "melee", "cure", "inspire", "wait" ]],
-      "sage": [[ "melee", "heal", "fear", "curse", "wait" ]]
+      "warrior": [[ "melee", "charge", "second_wind", "taunt" ]],
+      "mage": [[ "melee" ]],
+      "cleric": [[ "melee", "smite", "cure", "bless" ]],
+      "ranger": [[ "ranged", "heal" ]],
+      "thief": [[ "melee", "poison_weapon", "hide" ]],
+      "bard": [[ "melee", "cure", "inspire", "charm" ]],
+      "sage": [[ "melee", "heal", "fear", "curse" ]]
     }
   },
   "hitDie": {
@@ -442,7 +446,7 @@
     }
   },
 
-  "monsterType": {
+  "npcType": {
     "discriminator": "race",
     "groups": {
       "goblin": [ "Runt", "Bandit", "Thief", "Shaman", "Warrior", "Assassin", "Chieftain" ],
@@ -466,7 +470,7 @@
       "dragon": [ "Hierophant", "King", "Lord" ]
     }
   },
-  "monsterAbilities": {
+  "npcAbilities": {
     "discriminator": "type",
     "groups": {
       "Runt": [[ "wait", "melee", "flee" ]],
@@ -511,232 +515,78 @@
     }
   },
 
-  "monsterTypeModifier": {
+  "npcTypeModifier": {
     "discriminator": "type",
     "groups": {
       "Runt": { "str": -2, "maxHp": -1 },
       "Creep": { "str": -1, "dex": 1, "maxHp": -1 },
       "Bandit": { "str": 1, "dex": 2, "maxHp": 1 },
       "Thief": { "dex": 2, "cha": 1, "maxHp": 1 },
-      "Shaman": { "int": 2, "wis": 1, "maxHp": 1 },
+      "Shaman": { "int": 2, "wis": 1, "maxHp": 1, "abilities": [ "heal" ] },
       "Slinger": { "dex": 3, "maxHp": 1 },
       "Miner": { "con": 2, "str": 1, "maxHp": 2 },
       "Peasant": { "str": 1, "dex": 1, "con": 1, "cha": 1, "maxHp": 1 },
       "Loser": { "str": -1, "dex": -1, "con": -1, "cha": 2, "maxHp": -1 },
       "Mercenary": { "str": 2, "dex": 2, "maxHp": 1 },
-      "Cultist": { "int": 2, "maxHp": 2 },
+      "Cultist": { "int": 2, "maxHp": 2, "abilities": [ "curse", "fear" ] },
       "Thug": { "str": 2, "maxHp": 4 },
       "Cutthroat": { "str": 2, "dex": 2, "maxHp": 2 },
-      "Assassin": { "dex": 4, "str": 2, "maxHp": 3 },
+      "Assassin": { "dex": 4, "str": 2, "maxHp": 3, "abilities": [ "hide", "poison_weapon" ] },
       "Bridgeminder": { "str": 2, "maxHp": 5 },
       "Dweller": { "str": 2, "maxHp": 5 },
       "Stalker": { "dex": 4, "maxHp": 5 },
-      "Warrior": { "str": 2, "maxHp": 5 },
+      "Warrior": { "str": 2, "maxHp": 5, "abilities": [ "second_wind", "charge" ] },
       "Miser": { "con": 4, "str": 2, "maxHp": 8, "level": 1 },
-      "Chieftain": { "str": 4, "maxHp": 8, "level": 1 },
-      "Brute": { "str": 4, "maxHp": 8, "level": 1 },
-      "Berserker": { "str": 6, "maxHp": 8, "level": 2 },
-      "Sage": {
-        "int": 4,
-        "maxHp": 9,
-        "level": 1
-      },
-      "Guardian": {
-        "con": 4,
-        "maxHp": 10,
-        "level": 2
-      },
-      "Elder": {
-        "int": 6,
-        "con": 4,
-        "maxHp": 16,
-        "level": 3
-      },
-      "Fury": {
-        "str": 8,
-        "con": 6,
-        "maxHp": 20,
-        "level": 4
-      },
-      "Princeling": {
-        "str": 6,
-        "con": 4,
-        "int": 4,
-        "dex": 2,
-        "maxHp": 24,
-        "level": 3
-      },
-      "Archmage": {
-        "int": 8,
-        "con": 4,
-        "dex": 2,
-        "str": 2,
-        "maxHp": 24,
-        "level": 4
-      },
-      "Shaman King": {
-        "str": 4,
-        "con": 4,
-        "int": 6,
-        "dex": 2,
-        "wis": 6,
-        "maxHp": 28,
-        "level": 5
-      },
-      "Hierophant": {
-        "int": 6,
-        "con": 4,
-        "dex": 2,
-        "str": 2,
-        "maxHp": 30,
-        "level": 5
-      },
-      "General": {
-        "str": 6,
-        "con": 4,
-        "int": 2,
-        "dex": 2,
-        "maxHp": 28,
-        "level": 5
-      },
-      "Death Priest": {
-        "str": 6,
-        "con": 4,
-        "int": 4,
-        "dex": 2,
-        "wis": 6,
-        "maxHp": 32,
-        "level": 5
-      },
-      "High Priest": {
-        "str": 4,
-        "con": 4,
-        "int": 6,
-        "dex": 2,
-        "wis": 6,
-        "maxHp": 30,
-        "level": 5
-      },
-      "Chosen One": {
-        "str": 5,
-        "con": 5,
-        "int": 5,
-        "dex": 5,
-        "wis": 5,
-        "maxHp": 38,
-        "level": 6
-      },
-      "Destroyer": {
-        "str": 8,
-        "con": 6,
-        "int": 2,
-        "dex": 2,
-        "maxHp": 40,
-        "level": 6
-      },
-      "King": {
-        "str": 10,
-        "con": 6,
-        "int": 4,
-        "dex": 2,
-        "maxHp": 42,
-        "level": 6
-      },
-      "Warlord": {
-        "str": 7,
-        "con": 6,
-        "int": 5,
-        "wis": 4,
-        "dex": 3,
-        "maxHp": 40,
-        "level": 6
-      },
-      "Lord": {
-        "str": 10,
-        "con": 8,
-        "int": 6,
-        "wis": 6,
-        "dex": 4,
-        "maxHp": 50,
-        "level": 7
-      },
-      "Monarch": {
-        "str": 10,
-        "con": 8,
-        "int": 6,
-        "wis": 6,
-        "dex": 4,
-        "maxHp": 50,
-        "level": 7
-      }
+      "Chieftain": { "str": 4, "maxHp": 8, "level": 1, "abilities": [ "enrage" ] },
+      "Brute": { "str": 4, "maxHp": 8, "level": 1, "abilities": [ "enrage", "charge" ] },
+      "Berserker": { "str": 6, "maxHp": 8, "level": 2, "abilities": [ "enrage", "charge" ] },
+      "Sage": { "int": 4, "maxHp": 9, "level": 1, "abilities": [ "heal", "curse", "fear" ] },
+      "Guardian": { "con": 4, "maxHp": 10, "level": 2 },
+      "Elder": { "int": 6, "con": 4, "maxHp": 16, "level": 3 },
+      "Fury": { "str": 8, "con": 6, "maxHp": 20, "level": 4, "abilities": [ "enrage", "charge" ] },
+      "Princeling": { "str": 6, "con": 4, "int": 4, "dex": 2, "maxHp": 24, "level": 3, "abilities": [ "inspire", "fear" ] },
+      "Archmage": { "int": 8, "con": 4, "dex": 2, "str": 2, "maxHp": 24, "level": 4, "abilities": [ "armor", "missile", "life_drain", "shocking_grasp", "sleep" ] },
+      "Shaman King": { "str": 4, "con": 4, "int": 6, "dex": 2, "wis": 6, "maxHp": 28, "level": 5, "abilities": [ "heal", "curse", "fear" ] },
+      "Hierophant": { "int": 6, "con": 4, "dex": 2, "str": 2, "maxHp": 30, "level": 5, "abilities": [ "sleep", "curse", "fear", "life_drain", "poison_cloud" ] },
+      "General": { "str": 6, "con": 4, "int": 2, "dex": 2, "maxHp": 28, "level": 5, "abilities": [ "enrage", "charge", "inspire", "second_wind" ] },
+      "Death Priest": { "str": 6, "con": 4, "int": 4, "dex": 2, "wis": 6, "maxHp": 32, "level": 5, "abilities": [ "heal", "curse", "fear", "life_drain" ] },
+      "High Priest": { "str": 4, "con": 4, "int": 6, "dex": 2, "wis": 6, "maxHp": 30, "level": 5, "abilities": [ "bless", "curse", "inspire", "heal" ] },
+      "Chosen One": { "str": 5, "con": 5, "int": 5, "dex": 5, "wis": 5, "maxHp": 38, "level": 6, "abilities": [ "heal", "inspire", "curse", "fear" ]  },
+      "Destroyer": { "str": 8, "con": 6, "int": 2, "dex": 2, "maxHp": 40, "level": 6, "abilities": [ "fear", "maul", "curse", "enrage", "charge" ] },
+      "King": { "str": 10, "con": 6, "int": 4, "dex": 2, "maxHp": 42, "level": 6, "abilities": [ "enrage", "charge", "heal" ] },
+      "Warlord": { "str": 7, "con": 6, "int": 5, "wis": 4, "dex": 3, "maxHp": 40, "level": 6, "abilities": [ "enrage", "charge", "heal" ] },
+      "Lord": { "str": 10, "con": 8, "int": 6, "wis": 6, "dex": 4, "maxHp": 50, "level": 7, "abilities": [ "enrage", "charge", "heal" ] },
+      "Monarch": { "str": 10, "con": 8, "int": 6, "wis": 6, "dex": 4, "maxHp": 50, "level": 7, "abilities": [ "inspire", "enrage", "charge", "heal" ] }
     }
   },
-  "monsterName": {
+  "npcName": {
     "discriminator": "race",
     "groups": {
       "kobold": [
-        "Azrak",
-        "Alarum",
-        "Abelo",
-        "Arkan",
-        "Abiss",
-        "Abgrim",
-        "Barum",
-        "Bork",
-        "Breech",
-        "Bug",
-        "Bix",
-        "Bolak",
-        "Bizz",
-        "Chitter",
-        "Chobb",
-        "Crizz",
-        "Crulak",
-        "Cinder",
-        "Dax",
-        "Dezrak",
-        "Dariss",
-        "Dregrim",
-        "Drazz",
-        "Drang",
+        "Azrak", "Alarum", "Abelo", "Arkan", "Abiss", "Abgrim", "Aurum",
+        "Barum", "Bork", "Breech", "Bug", "Bix", "Bolak", "Bizz",
+        "Chitter", "Chobb", "Crizz", "Crulak", "Cinder",
+        "Dax", "Dezrak", "Dariss", "Dregrim", "Drazz", "Drang",
         "Ek", "Eech", "Earum", "Erulak", "Eslin", "Ezz",
         "Fizzle", "Fizrak", "Furix", "Fokris", "Folak", "Furk",
         "Grit", "Garum", "Gork", "Gix", "Gizzak", "Gulak", "Grim",
         "Hiss", "Hazarum", "Hulak", "Hekrak", "Hulgrim", "Hob",
         "Izz", "Igrim", "Irill", "Irkan", "Ibaraum",
         "Jinx", "Jollak", "Jit", "Jerrak", "Jeech",
-        "Krix",
-        "Kob",
-        "Krak",
-        "Kizz",
-        "Kruul",
-        "Krobb",
-        "Lurk",
-        "Lazrak",
-        "Lork",
-        "Lobb",
-        "Legrim",
-        "Lazek",
-        "Merk",
-        "Mok",
-        "Murk",
-        "Mizz",
-        "Mokan",
-        "Mug",
-        "Mozarum",
-        "Nix",
-        "Noxarum",
-        "Nulak",
-        "Nixx",
-        "Nob",
-        "Narg",
-        "Skrill",
-        "Slink",
-        "Scurry",
-        "Tink",
-        "Vex",
-        "Zot",
-        "Zizz"
+        "Krix", "Kob", "Krak", "Kizz", "Kruul", "Krobb",
+        "Lurk", "Lazrak", "Lork", "Lobb", "Legrim", "Lazek",
+        "Merk", "Mok", "Murk", "Mizz", "Mokan", "Mug", "Mozarum",
+        "Nix", "Noxarum", "Nulak", "Nixx", "Nob", "Narg", "Nill",
+        "Orrak", "Oruv", "Ork", "Ozz", "Orrum",
+        "Pizrak", "Pazrak", "Pruv", "Puzrak", "Pazek", "Pruv",
+        "Qix", "Quark", "Quaz", "Quark", "Quuz", "Qurex",
+        "Rix", "Rok", "Ruzak", "Rulak", "Rizz", "Rulak",
+        "Skrag", "Skrull", "Skrill", "Slink", "Scurry",
+        "Tink", "Tulak", "Tazrak", "Trizz", "Trulak", "Tob",
+        "Urrak", "Urk", "Uzz", "Ubarum",
+        "Vark", "Vulak", "Vex", "Vizrak", "Vulgrim", "Vulak",
+        "Wob", "Warum", "Weslin", "Wiz", "Wulak",
+        "Zot", "Zizz", "Zulak", "Zarum", "Zulgrim", "Zulak"
       ],
       "goblin": [
         "Aarok",
@@ -1168,7 +1018,7 @@
       ]
     }
   },
-  "monsterBaseHp": {
+  "npcBaseHp": {
     "discriminator": "race",
     "groups": {
       "kobold": 1,
@@ -1180,7 +1030,7 @@
       "dragon": 36
     }
   },
-  "monsterHpVariance": {
+  "npcHpVariance": {
     "discriminator": "race",
     "groups": {
       "kobold": 1,
@@ -1192,7 +1042,7 @@
       "dragon": 10
     }
   },
-  "monsterLevel": {
+  "npcLevel": {
     "discriminator": "race",
     "groups": {
       "kobold": 1,
@@ -1204,7 +1054,7 @@
       "dragon": 12
     }
   },
-  "monsterStr": {
+  "npcStr": {
     "discriminator": "race",
     "groups": {
       "human": 10,
@@ -1216,7 +1066,7 @@
       "dragon": 23
     }
   },
-  "monsterDex": {
+  "npcDex": {
     "discriminator": "race",
     "groups": {
       "human": 10,
@@ -1228,7 +1078,7 @@
       "dragon": 16
     }
   },
-  "monsterCon": {
+  "npcCon": {
     "discriminator": "race",
     "groups": {
       "human": 10,
@@ -1240,7 +1090,7 @@
       "dragon": 23
     }
   },
-  "monsterInt": {
+  "npcInt": {
     "discriminator": "race",
     "groups": {
       "human": 10,
@@ -1252,7 +1102,7 @@
       "dragon": 18
     }
   },
-  "monsterWis": {
+  "npcWis": {
     "discriminator": "race",
     "groups": {
       "human": 10,
@@ -1264,7 +1114,7 @@
       "dragon": 18
     }
   },
-  "monsterCha": {
+  "npcCha": {
     "discriminator": "race",
     "groups": {
       "human": 10,
@@ -1276,19 +1126,19 @@
       "dragon": 18
     }
   },
-  "monsterNaturalArmor": {
+  "npcNaturalArmor": {
     "discriminator": "race",
     "groups": {
       "goblin": 0,
       "kobold": 0,
-      "human": 2,
-      "orc": 2,
-      "ogre": 3,
-      "troll": 5,
-      "dragon": 8
+      "human": 1,
+      "orc": 1,
+      "ogre": 2,
+      "troll": 3,
+      "dragon": 10
     }
   },
-  "monsterWeapon": {
+  "npcWeapon": {
     "discriminator": "race",
     "groups": {
       "human": [
@@ -1324,7 +1174,7 @@
       ]
     }
   },
-  "monsterXp": {
+  "npcXp": {
     "discriminator": "race",
     "groups": {
       "kobold": 15,
@@ -1336,7 +1186,7 @@
       "dragon": 2000
     }
   },
-  "monsterGold": {
+  "npcGold": {
     "discriminator": "race",
     "groups": {
       "human": "1d10",
@@ -1348,7 +1198,7 @@
       "dragon": "1000 + 10d100"
     }
   },
-  "monsterTerrainModifier": {
+  "terrainModifier": {
     "discriminator": "terrain",
     "groups": {
       "forest": {
@@ -1392,18 +1242,20 @@
     "discriminator": "building_type",
     "groups": {
       "temple": [
-        "sacred",
         "ancient",
-        "mystical",
+        "beloved",
+        "divine",
         "hallowed",
-        "divine"
+        "mystical",
+        "sacred"
       ],
       "fortress": [
+        "colonial",
         "dread",
         "barricaded",
-        "defensive",
-        "military",
-        "impenetrable"
+        "militarized",
+        "impenetrable",
+        "treacherous"
       ],
       "library": [
         "dusty",
@@ -1411,7 +1263,7 @@
         "arcane",
         "forgotten",
         "mysterious",
-        "hidden"
+        "secret"
       ],
       "tomb": [
         "dark",
@@ -1419,15 +1271,15 @@
         "cursed",
         "forbidden",
         "sacred",
-        "forgotten"
+        "unholy"
       ],
       "mine": [
         "abandoned",
         "dangerous",
         "treacherous",
-        "forgotten",
         "hidden",
-        "lost"
+        "lost",
+        "darkened"
       ]
     }
   },
@@ -2031,6 +1883,168 @@
       "cunning": { "maxHp": 2, "dex": 2, "int": 1, "ac": -1, "abilities": ["hide", "wait"] },
       "alpha": { "maxHp": 5, "str": 2, "dex": 1, "con": 1, "int": 1, "ac": -1 },
       "vicious": { "maxHp": 4, "str": 3, "dex": 1, "ac": -1, "abilities": ["maul"] }
+    }
+  },
+
+  "monsterKind": {
+    "discriminator": "monster_type",
+    "groups": {
+      "giant": ["Titan", "Behemoth", "Tarasque", "Colossus"],
+      "undead": ["Lich", "Vampire", "Wraith", "Banshee"],
+      "demon": ["Balor", "Marilith", "Fiend"],
+      "elemental": ["Sprite", "Spirit", "Ifrit", "Ooze"],
+      "aberration": ["Mind Destroyer", "Discerner", "Mouther"],
+      "construct": ["Golem", "Automaton", "Clockwork Soldier"],
+      "celestial": ["Angel", "Archon", "Deva", "Solar"],
+      "fey": ["Dryad", "Satyr", "Nymph", "Pixie"],
+      "beast": ["Owlbear", "Nightmare", "Wendigo", "Chimera"]
+    }
+  },
+
+  "monsterStatBase": {
+    "discriminator": "monster_type",
+    "groups": {
+      "giant": 16,
+      "beast": 5,
+      "undead": 7,
+      "demon": 15,
+      "elemental": 12,
+      "aberration": 18,
+      "construct": 10,
+      "celestial": 15,
+      "fey": 6
+    }
+  },
+  "monsterStat": {
+    "discriminator": "monster_type",
+    "groups": {
+      "giant": { "hp": 20, "str": 5, "dex": -2, "con": 3, "int": -2, "wis": 0, "cha": -1 },
+      "beast": { "hp": 10, "str": 2, "dex": 1, "con": 1, "int": -2, "wis": 0, "cha": -1 },
+      "undead": { "hp": 15, "str": 0, "dex": 0, "con": -2, "int": 2, "wis": 1, "cha": -3 },
+      "demon": { "hp": 18, "str": 4, "dex": 2, "con": 2, "int": 1, "wis": 0, "cha": -2 },
+      "elemental": { "hp": 12, "str": 0, "dex": 3, "con": 0, "int": 0, "wis": 1, "cha": 0 },
+      "aberration": { "hp": 26, "str": 2, "dex": 1, "con": 2, "int": 3, "wis": 1, "cha": -2 },
+      "construct": { "hp": 14, "str": 3, "dex": -1, "con": 4, "int": 0, "wis": 0, "cha": -1 },
+      "celestial": { "hp": 18, "str": 2, "dex": 1, "con": 2, "int": 1, "wis": 3, "cha": 2 },
+      "fey": { "hp": 10, "str": -1, "dex": 2, "con": 0, "int": 1, "wis": 2, "cha": 3 }
+    }
+  },
+  "monsterXp": {
+    "discriminator": "monster_type",
+    "groups": {
+      "giant": 500,
+      "undead": 300,
+      "demon": 400,
+      "elemental": 200,
+      "aberration": 600,
+      "construct": 350,
+      "celestial": 450,
+      "fey": 250,
+      "beast": 150
+    }
+  },
+  "monsterGold": {
+    "discriminator": "monster_type",
+    "groups": {
+      "giant": "5d10",
+      "undead": "2d10",
+      "demon": "3d10",
+      "elemental": "1d10",
+      "aberration": "4d10",
+      "construct": "2d10",
+      "celestial": "3d10",
+      "fey": "1d10",
+      "beast": "1d6"
+    }
+  },
+  "monsterLevel": {
+    "discriminator": "monster_type",
+    "groups": {
+      "giant": 5,
+      "undead": 3,
+      "demon": 4,
+      "elemental": 2,
+      "aberration": 6,
+      "construct": 4,
+      "celestial": 5,
+      "fey": 3,
+      "beast": 4
+    }
+  },
+  "monsterAbilities": {
+    "discriminator": "monster_type",
+    "groups": {
+      "giant": [["melee", "maul", "charge", "taunt"]],
+      "undead": [["melee", "curse", "fear", "life_drain"]],
+      "demon": [["melee", "curse", "fear", "burning_hands"]],
+      "elemental": [["melee", "defend"]],
+      "aberration": [["melee", "fear", "curse", "sleep", "charm", "psionic_blast"]],
+      "construct": [["melee", "defend", "charge"]],
+      "celestial": [["melee", "smite", "heal", "bless"]],
+      "fey": [["melee", "charm", "sleep", "hide"]],
+      "beast": [["melee", "maul", "charge", "enrage", "poison_bite"]]
+    }
+  },
+  "elements": {
+    "discriminator": "terrain",
+    "groups": {
+      "forest": "earth",
+      "cave": "earth",
+      "swamp": "water",
+      "mountain": "earth",
+      "snow": "air",
+      "desert": "fire"
+    }
+  },
+  "elementalAbilities": {
+    "discriminator": "elemental_type",
+    "groups": {
+      "fire": ["burning_hands"],
+      "water": ["drench"],
+      "earth": ["earthquake"],
+      "air": ["lightning_strike"]
+    }
+  },
+  "monsterWeapon": {
+    "discriminator": "monster_type",
+    "groups": {
+      "giant": "sword",
+      "undead": "claws",
+      "demon": "claws",
+      "elemental": "slam",
+      "aberration": "tentacles",
+      "construct": "slam",
+      "celestial": "sword",
+      "fey": "dagger",
+      "beast": "claws"
+    }
+  },
+  "monsterNaturalArmor": {
+    "discriminator": "monster_type",
+    "groups": {
+      "giant": 2,
+      "undead": 0,
+      "demon": 1,
+      "elemental": 3,
+      "aberration": 2,
+      "construct": 4,
+      "celestial": 2,
+      "fey": 1,
+      "beast": 1
+    }
+  },
+  "monsterAttacksPerTurn": {
+    "discriminator": "monster_type",
+    "groups": {
+      "giant": 2,
+      "undead": 1,
+      "demon": 2,
+      "elemental": 1,
+      "aberration": 1,
+      "construct": 1,
+      "celestial": 2,
+      "fey": 1,
+      "beast": 2
     }
   }
 }

@@ -24,7 +24,7 @@ export default class Deem {
     },
     min: (...args: number[]) => Math.min(...args),
     max: (...args: number[]) => Math.max(...args),
-    concat: (...args: any[]) => args.flat(),
+    concat: (...args: any[]) => args.flat().filter((x) => x !== null && x !== undefined),
     rollWithDrop: (count: number, sides: number) => {
       const rolls = Array.from({ length: count }, () => Math.floor(Math.random() * sides) + 1);
       rolls.sort((a, b) => a - b);
@@ -39,6 +39,9 @@ export default class Deem {
       } else {
         return 0;
       }
+    },
+    dig: (obj: any, ...path: string[]) => {
+      return path.reduce((acc, key) => (acc && acc[key] !== undefined) ? acc[key] : null, obj);
     }
   };
   static grammar = ohm.grammar(source);

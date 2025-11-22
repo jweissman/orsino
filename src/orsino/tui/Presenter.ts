@@ -37,7 +37,7 @@ export default class Presenter {
     }
 
     let lhs = `${Stylist.format(
-      Stylist.colorize(combatant.name, combatant.playerControlled ? 'cyan' : 'yellow'),
+      Stylist.colorize(combatant.forename, combatant.playerControlled ? 'cyan' : 'yellow'),
       'bold'
     )}${classInfo}`;
     let rhs = `(${this.statLine(combatant)}, HP: ${Stylist.colorize(hpBar, color)} ${combatant.hp}/${combatant.maxHp}, AC: ${effective.ac})`;

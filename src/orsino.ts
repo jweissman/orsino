@@ -14,6 +14,22 @@ import Interactive from "./orsino/tui/User";
 export type Prompt = (message: string) => Promise<string>;
 
 type PlaygroundType = "combat" | "dungeon" | "module";  // TODO "world";
+
+class Sample {
+  static count<T>(n: number, ...items: T[]): T[] {
+    const results: any[] = [];
+    const population = [...items];
+    for (let i = 0; i < n; i++) {
+      const item = population[Math.floor(Math.random() * population.length)];
+      population.splice(population.indexOf(item), 1);
+      console.log(`Sampled item: ${item}`);
+      results.push(item);
+    }
+    console.log(`Sampled ${n} items: ${results.join(", ")}`);
+    return results;
+  }
+}
+
 export default class Orsino {
   setting: Record<GenerationTemplateType, Template | Table>;
 
@@ -100,36 +116,46 @@ export default class Orsino {
           ['warrior', 'thief', 'mage', 'cleric', 'ranger', 'bard', 'sage']
         );
 
-        let wizardPc = await this.gen("pc", { setting: 'fantasy', race: raceSelect, class: occupationSelect }) as Combatant;
-        console.table({ ...wizardPc, abilities: wizardPc.abilities.join(", ") });
+        let spellbook = [];
+        if (occupationSelect === 'mage') {
+          spellbook = await Interactive.multiSelect(
+            "Select spells for this PC",
+            ['missile', 'armor', 'blur', 'charm', 'shocking_grasp', 'burning_hands', 'sleep']
+          );
+        }
+
+        let pc = await this.gen("pc", { setting: 'fantasy', race: raceSelect, class: occupationSelect }) as Combatant;
+        // spellbook.forEach((spell: string) => pc.abilities.unshift(spell));
+        pc.abilities.unshift(...spellbook);
+        pc.abilities.push("wait");
+
+        console.table({ ...pc, abilities: pc.abilities.join(", ") });
         let confirm = await Interactive.selection(
           'Do you want to use this PC? ' + whichPc,
           ['Yes', 'No']
         );
         if (confirm === 'Yes') {
-          party.push(wizardPc);
+          party.push(pc);
         }
       } else {
-        // const pcFiles = await Files.listFiles(`${Dungeoneer.dataPath}/pcs`);
-        // let shouldSelect = await Interactive.selection(
-        //   'Would you like to select an existing PC? ' + whichPc,
-        //   ['Yes', 'No']
-        // );
-        // if (shouldSelect === 'Yes') {
-        //   const selectedPcName = await Interactive.selection(
-        //     'Select a PC to lead the dungeon crawl:',
-        //     pcFiles.map(name => name.replace('.json', ''))
-        //       .filter(name => party.every(p => p.name !== name))
-        //       .sort()
-        //   );
-        //   const selectedPc = await Files.readJSON(`${Dungeoneer.dataPath}/pcs/${selectedPcName}.json`) as Combatant;
-        //   party.push(selectedPc);
-        // } else {
-          const pc: Combatant = await this.gen("pc", { setting: 'fantasy' }) as Combatant;
-          if (!party.some(p => p.name === pc.name)) {
+        const pc: Combatant = await this.gen("pc", { setting: 'fantasy' }) as Combatant;
+        if (pc.class === 'mage') {
+          pc.abilities = ['melee']; // don't know why this is necessary, but it is??
+          const spells = Sample.count(3, 'missile', 'armor', 'blur', 'charm', 'shocking_grasp', 'burning_hands', 'sleep')
+          console.log("Adding to " + pc.name + "'s spellbook: " + spells.join(", ") + " (already has " + pc.abilities.join(", ") + ")");
+          pc.abilities.unshift(...spells);
+        }
+
+        if (!party.some(p => p.name === pc.name)) {
+          console.table({ ...pc, abilities: pc.abilities.join(", ") });
+          let confirm = await Interactive.selection(
+            'Do you want to use this PC? ' + whichPc,
+            ['Yes', 'No']
+          );
+          if (confirm === 'Yes') {
             party.push(pc);
           }
-        // }
+        }
       }
     };
     return party;
@@ -141,6 +167,9 @@ export default class Orsino {
     count: number = 1,
     condition?: string,
   ): Promise<Record<string, any>[]> {
+    if (count === 0) {
+      return [];
+    }
     // accumulate items gradually and put them in __items so that conditions can refer to them
     const items: Record<string, any>[] = [];
     let attempts = 0;
@@ -189,6 +218,8 @@ export default class Orsino {
 
     if (options.__count && options.__count > 1) {
       return await this.genList(type, { ...options, __count: undefined }, options.__count);
+    } else if (options.count && options.count > 1) {
+      return await this.genList(type, { ...options, count: undefined }, options.count);
     }
 
     if (templ instanceof Template) {

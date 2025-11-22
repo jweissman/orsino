@@ -9,7 +9,7 @@ import Files from "./util/Files";
 type Target = "self" | "ally" | "enemy" | "allies" | "enemies" | "all" | "randomEnemies";
 
 export interface AbilityEffect {
-  type: "attack" | "damage" | "heal" | "buff" | "debuff" | "flee" | "removeItem";
+  type: "attack" | "damage" | "heal" | "buff" | "debuff" | "flee" | "removeItem" | "drain";
   stat?: "str" | "dex" | "con" | "int" | "wis" | "cha";
   amount?: string; // e.g. "=1d6", "=2d8", "3"
   duration?: number; // in turns
@@ -195,6 +195,7 @@ export default class AbilityHandler {
             t,
             amount,
             false, // critical
+            
             `${user.forename}'s ${name}`,
             true // success
           );
@@ -212,6 +213,19 @@ export default class AbilityHandler {
       } else {
         let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
         await heal(user, target, amount);
+      }
+    } else if (effect.type === "drain") {
+      // heal self + drain target
+      if (Array.isArray(target)) {
+        for (const t of target) {
+          let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
+          await heal(user, user, amount);
+          await hit(user, t, amount, false, `${user.forename}'s ${name} (drain)`, true);
+        }
+      } else {
+        let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
+        await heal(user, user, amount);
+        await hit(user, target, amount, false, `${user.forename}'s ${name} (drain)`, true);
       }
     } else if (effect.type === "buff") { //} || effect.type === "debuff") {
       if (effect.status) {

@@ -1,5 +1,6 @@
 import { select } from "@inquirer/prompts";
 import { Separator } from "@inquirer/select";
+import inquirer from "inquirer";
 import Choice from "inquirer/lib/objects/choice";
 import Combat, { RollResult } from "../Combat";
 import { Combatant } from "../types/Combatant";
@@ -15,6 +16,30 @@ export default class User {
         resolve(data.toString().trim());
       });
     });
+  }
+
+  static async multiSelect(
+    message: string,
+    choices: string[], //(readonly (string | Separator)[] | Choice<any>[]),
+    count: number = 3
+  ): Promise<any[]> {
+    if (choices.length === 0) {
+      throw new Error("No choices provided for selection");
+    }
+
+    // return await inquirer.prompt(message, { choices, type: 'checkbox'});
+    let selections: string[] = [];
+    while (selections.length < count) {
+      const answer = await select<string>({
+        message: `${message} (${selections.length + 1}/${count})`,
+        choices: choices.filter(c => !selections.includes(c))
+      });
+      if (!selections.includes(answer)) {
+        selections.push(answer);
+      }
+    }
+    console.log(`You selected: ${selections.join(", ")}`);
+    return selections;
   }
 
   static async selection(
@@ -39,11 +64,11 @@ export default class User {
   static async roll(subject: Combatant, description: string, sides: number): Promise<RollResult> {
     if (!subject.playerControlled) {
       const result = Combat.roll(subject, description, sides);
-      await Spinner.run(`${subject.name} is rolling ${description}`, 120 + Math.random() * 240, result.description);
+      await Spinner.run(`${subject.name} is rolling ${description}`, 20 + Math.random() * 140, result.description);
       return result;
     }
 
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // await new Promise(resolve => setTimeout(resolve, 100));
     await Spinner.waitForInputAndRun(
       `>>> ${subject.name} to roll d${sides} ${description}... <<<`,
       `${subject.name} rolling d${sides} ${description}`

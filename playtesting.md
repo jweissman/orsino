@@ -51,15 +51,17 @@
 [ ] range vs melee action is good flavor but -- should take account of current weapon! bows shouldn't melee etc (have 'fixed' by adjusting starting equipment but should be a deeper solution)
 [ ] Successful resistance should give a message ("successfully resisted...")
 [ ] Should you roll your own poison damage? Feels strange -- maybe should just be automatic?
-[ ] Poison damage should indicate who _inflicted_ it (this is tracked but not surfaced)
+[ ] Poison damage should indicate who _inflicted_ it (this is sort of tracked but not surfaced...)
 ---
 [ ] Unconscious allies shouldn't get XP?
-[ ] Should be able to go back to a dungeon you _haven't_ completed yet...
 [ ] Should reset abilities used on long rest? (why isn't this happening)
 [ ] It would be nice to able to explore more freely (move back to previous rooms?)
 [ ] Show party status before asking to rest
 [ ] Losing a wandering monster battle should not leave you in the room waiting to decide what to do!
 [ ] You should be able to visit the Inn even if at full HP?
+---
+[ ] Temple blessings should take account of the deity somehow... (war gods give toHit, love goddess grants chance to charm on hit etc)
+
 
 ## Fixed
 [x] Temple/shrine to local deity to get a blessing
@@ -93,6 +95,7 @@
 [x] Charge ability for player warriors? Some buff/bless ability for clerics?? (implemented charge for warriors, bless for clerics)
 [x] Enemies should have spell slots/dwindling resources (poison capsule could be a consumable for them -- can't just throw capsules all day!) (should now have slots and abilitiesUsed tracker...)
 [x] Colorize stats consistently (ie when search/examine we should see the appropriate color for int/wis as in the statline rainbow) (done for search/examine!)
+[x] Should be able to go back to a dungeon you _haven't_ completed yet... (think this is true now)
 
 ## Not really issues
 "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]

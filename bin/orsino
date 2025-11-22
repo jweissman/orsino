@@ -28,6 +28,7 @@ program
   .option('-s, --setting <setting>', 'Specify the setting to use', 'fantasy')
   // .option('--config <config:value>')
   .option('--race <race>', 'Specify the racial group to use')
+  .option('--class <class>', 'Specify the class to use')
   .option('--cr <cr>', 'Specify the challenge rating to target')
   .action(async (type, options) => {
     const orsino = new Orsino(options.setting);
