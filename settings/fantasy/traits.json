@@ -1,0 +1,252 @@
+{
+  "lucky": {
+    "type": "racial",
+    "description": "Fortunate",
+    "requirements": {
+      "race": "halfling"
+    },
+    "statuses": [
+      {
+        "name": "Not How I Remember It",
+        "description": "You reroll a natural 1 on any roll.",
+        "effect": {
+          "rerollNaturalOnes": true
+        }
+      }
+    ]
+  },
+
+  "resilient": {
+    "type": "racial",
+    "description": "Resilient",
+    "requirements": {
+      "race": "orc"
+    },
+    "statuses": [
+      {
+        "name": "Dread Fortitude",
+        "description": "Gain +10 to save vs death and 10% resistance to necrotic damage.",
+        "effect": {
+          "resistNecrotic": 0.1,
+          "saveVersusDeath": 10
+        }
+      }
+    ]
+  },
+
+  "sturdy": {
+    "type": "racial",
+    "description": "Sturdy",
+    "requirements": {
+      "race": "dwarf"
+    },
+    "statuses": [
+      {
+        "name": "Stout Constitution",
+        "description": "Gain +1 to all saving throws.",
+        "effect": {
+          "saveVersusPoison": 1,
+          "saveVersusDisease": 1,
+          "saveVersusDeath": 1,
+          "saveVersusMagic": 1,
+          "saveVersusInsanity": 1,
+          "saveVersusCharm": 1,
+          "saveVersusFear": 1,
+          "saveVersusStun": 1,
+          "saveVersusWill": 1
+        }
+      },
+      {
+        "name": "Hemlock Drinker",
+        "description": "Resist half of poison damage.",
+        "effect": {
+          "resistPoison": 0.5
+        }
+      }
+    ]
+  },
+
+  "perinath": {
+    "type": "party",
+    "description": "Halfling Band",
+    "requirements": {
+      "races": ["halfling", "halfling", "halfling"]
+    },
+    "statuses": [
+      {
+        "name": "Moral Economy",
+        "description": "When you heal an ally, heal yourself for half the amount as well.",
+        "onHealAlly": {
+          "bonus": { "selfHealing": "=round(#amount/2)" } 
+        }
+      }
+    ]
+  },
+
+  "elvenkin": {
+    "type": "party",
+    "description": "Elven Tribe",
+    "requirements": {
+      "races": ["elf", "elf", "elf"]
+    },
+    "statuses": [
+      {
+        "name": "Wildwood Grace",
+        "description": "Gain +1 to all rolls when in a forest environment.",
+        "whileEnvironment": "forest",
+        "effect": {
+          "allRolls": 1
+        }
+      }
+    ]
+  },
+  "deepfolk": {
+    "type": "party",
+    "description": "Dwarf Clan",
+    "requirements": {
+      "races": ["dwarf", "dwarf", "dwarf"]
+    },
+    "statuses": [
+      {
+        "name": "Stonecunning",
+        "description": "Gain +1 to all rolls when underground.",
+        "whileEnvironment": "cave",
+        "effect": {
+          "allRolls": 1
+        }
+      }
+    ]
+  },
+
+  "warbander": {
+    "type": "party",
+    "description": "War Band",
+    "requirements": {
+      "formation": ["warrior", "warrior", "warrior"]
+    },
+    "statuses": [
+      {
+        "name": "Battle Hardened",
+        "description": "Gain extra 1d6 HP whenever you level up.",
+        "onLevelUp": {
+          "bonus": { "hp": "=1d6" }
+        }
+      },
+      {
+        "name": "Martial Focus",
+        "description": "Gain +1 to hit",
+        "effect": {
+          "toHit": 1
+        }
+      }
+    ]
+  },
+  "academician": {
+    "type": "party",
+    "description": "Academy",
+    "requirements": {
+      "formation": ["mage", "mage", "mage"]
+    },
+    "statuses": [
+      {
+        "name": "Arcane Insight",
+        "description": "Whenever you cast a spell, add an additional 1d3 to the spell's damage.",
+        "onCastSpell": {
+          "bonus": { "damage": "=1d3" }
+        }
+      }
+    ]
+  },
+  "synodist": {
+    "type": "party",
+    "description": "Clerical Synod",
+    "requirements": {
+      "formation": ["cleric", "cleric", "cleric"]
+    },
+    "statuses": [
+      {
+        "name": "Herbal Remedies",
+        "description": "Whenever you heal, add an additional 1d4 HP.",
+        "onHeal": {
+          "bonus": { "healing": "=1d4" }
+        }
+      }
+    ]
+  },
+  "wildfolk": {
+    "type": "party",
+    "description": "Circle",
+    "requirements": {
+      "formation": ["ranger", "ranger", "ranger"]
+    },
+    "statuses": [
+      {
+        "name": "Natural Sympathy",
+        "description": "Summon stronger animal companions (+1 to rolls on animal summoning table).",
+        "onSummon": {
+          "bonus": { "effectiveLevel": 1 }
+        }
+      }
+    ]
+  },
+  "tragedian": {
+    "type": "party",
+    "description": "Troupe",
+    "requirements": {
+      "formation": ["bard", "bard", "bard"]
+    },
+    "statuses": [
+      {
+        "name": "Resonant Harmony",
+        "description": "All status effects you apply last 1 additional turn.",
+        "onApplyStatus": {
+          "bonus": { "statusDuration": 1 }
+        }
+      }
+    ]
+  },
+
+  "adventurer": {
+    "type": "party",
+    "description": "Adventuring Party",
+    "requirements": {
+      "formation": ["warrior", "mage", "cleric"]
+    },
+    "statuses": [
+      {
+        "name": "Lisan Al-Gaib",
+        "description": "Gain +1 to all rolls and +2 to Hit while in the desert.",
+        "whileEnvironment": "desert",
+        "effect": {
+          "allRolls": 1,
+          "toHit": 2
+        }
+      }
+    ]
+  },
+
+  "oligarch": {
+    "type": "party",
+    "description": "Oligarchy",
+    "requirements": {
+      "formation": ["warrior", "cleric", "thief"]
+    },
+    "statuses": [
+      {
+        "name": "Corruption",
+        "description": "Gain +1 to all rolls when in a city environment.",
+        "whileEnvironment": "urban",
+        "effect": {
+          "allRolls": 1
+        }
+      },
+      {
+        "name": "Bountiful Spoils",
+        "description": "Receive bonus gold and XP per kill.",
+        "onKill": {
+          "bonus": { "gold": 10, "xp": 20 }
+        }
+      }
+    ]
+  }
+}

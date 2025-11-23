@@ -1,4 +1,32 @@
 {
+  "damageKind": {
+    "discriminator": "weapon",
+    "groups": {
+      "sword": "slashing",
+      "greatsword": "slashing",
+      "axe": "slashing",
+      "dagger": "piercing",
+      "spear": "piercing",
+      "bow": "piercing",
+      "crossbow": "piercing",
+      "club": "bludgeoning",
+      "mace": "bludgeoning",
+      "staff": "bludgeoning",
+      "fist": "bludgeoning",
+      "claws": "slashing",
+      "fangs": "piercing",
+      "bite": "piercing",
+      "sting": "piercing",
+      "horns": "piercing",
+      "slam": "bludgeoning",
+      "talons": "slashing",
+      "tusks": "piercing",
+      "sling": "bludgeoning",
+      "polearm": "slashing",
+      "greataxe": "slashing",
+      "tentacles": "bludgeoning"
+    }
+  },
   "surname": {
     "discriminator": "class",
     "groups": {
@@ -263,13 +291,13 @@
   "traits": {
     "discriminator": "race",
     "groups": {
-      "human": ["adaptable", "versatile"],
-      "orc": ["resilient", "fierce"],
-      "elf": ["agile", "perceptive"],
-      "dwarf": ["sturdy", "tough"],
-      "halfling": ["nimble", "lucky"],
-      "gnome": ["inventive", "curious"],
-      "fae": ["mysterious", "enchanting"]
+      "human": [["adaptable", "versatile"]],
+      "orc": [["resilient", "fierce"]],
+      "elf": [["agile", "perceptive"]],
+      "dwarf": [["sturdy", "tough"]],
+      "halfling": [["nimble", "lucky"]],
+      "gnome": [["inventive", "curious"]],
+      "fae": [["mysterious", "enchanting"]]
     }
   },
 
@@ -473,45 +501,45 @@
   "npcAbilities": {
     "discriminator": "type",
     "groups": {
-      "Runt": [[ "wait", "melee", "flee" ]],
-      "Creep": [[ "wait", "ranged", "flee" ]],
-      "Bandit": [[ "wait", "melee" ]],
-      "Thief": [[ "wait", "melee", "flee" ]],
-      "Shaman": [[ "wait", "melee", "heal" ]],
-      "Slinger": [[ "wait", "ranged" ]],
-      "Miner": [[ "wait", "melee" ]],
-      "Peasant": [[ "wait", "melee", "flee" ]],
-      "Loser": [[ "wait", "melee", "flee" ]],
-      "Mercenary": [[ "defend", "melee" ]],
-      "Cultist": [[ "wait", "melee", "curse", "fear" ]],
-      "Thug": [[ "wait", "melee", "charge", "flee" ]],
-      "Cutthroat": [[ "wait", "melee" ]],
-      "Assassin": [[ "wait", "melee", "poison_cloud", "flee" ]],
-      "Bridgeminder": [[ "wait", "melee" ]],
-      "Dweller": [[ "wait", "melee" ]],
-      "Stalker": [[ "defend", "ranged" ]],
-      "Warrior": [[ "wait", "melee", "charge" ]],
-      "Miser": [[ "wait", "melee", "flee" ]],
-      "Chieftain": [[ "defend", "melee", "charge" ]],
-      "Brute": [[ "wait", "melee" ]],
-      "Berserker": [[ "defend", "melee", "charge" ]],
-      "Sage": [[ "wait", "melee", "heal" ]],
-      "Guardian": [[ "wait", "melee", "shield" ]],
-      "Elder": [[ "defend", "melee", "heal" ]],
-      "Fury": [[ "wait", "melee", "charge" ]],
-      "King": [[ "defend", "melee", "charge", "heal", "curse" ]],
-      "Hierophant": [[ "defend", "melee", "heal", "fear" ]],
-      "Warlord": [[ "defend", "melee", "charge" ]],
-      "Chosen One": [[ "defend", "melee", "heal" ]],
-      "Shaman King": [[ "defend", "melee", "heal", "fear", "curse", "poison_cloud" ]],
-      "Monarch": [[ "defend", "melee", "charge", "heal", "curse", "flee" ]],
-      "Princeling": [[ "defend", "melee", "heal" ]],
-      "Archmage": [[ "defend", "melee", "heal", "missile", "curse", "poison_cloud", "fear", "shield" ]],
-      "General": [[ "defend", "melee", "charge" ]],
-      "High Priest": [[ "defend", "melee", "heal", "curse" ]],
-      "Destroyer": [[ "defend", "melee", "charge" ]],
-      "Lord": [[ "defend", "melee", "heal", "curse" ]],
-      "Death Priest": [[ "defend", "melee", "heal", "curse", "fear" ]]
+      "Runt": [[ "melee", "hide" ]],
+      "Creep": [[ "melee", "hide" ]],
+      "Bandit": [[ "melee" ]],
+      "Thief": [[ "melee" ]],
+      "Shaman": [[ "melee", "heal" ]],
+      "Slinger": [[ "ranged" ]],
+      "Miner": [[ "melee" ]],
+      "Peasant": [[ "melee" ]],
+      "Loser": [[ "melee", "hide" ]],
+      "Mercenary": [[ "melee", "charge" ]],
+      "Cultist": [[ "melee", "curse", "fear" ]],
+      "Thug": [[ "melee", "charge", "enrage" ]],
+      "Cutthroat": [[ "melee" ]],
+      "Assassin": [[ "melee", "hide", "poison_cloud" ]],
+      "Bridgeminder": [[ "melee" ]],
+      "Dweller": [[ "melee" ]],
+      "Stalker": [[ "ranged", "hide" ]],
+      "Warrior": [[ "melee", "charge" ]],
+      "Miser": [[ "melee", "enrage" ]],
+      "Chieftain": [[ "melee", "charge", "inspire" ]],
+      "Brute": [[ "melee", "charge", "maul" ]],
+      "Berserker": [[ "melee", "charge", "enrage" ]],
+      "Sage": [[ "melee", "heal", "curse", "fear" ]],
+      "Guardian": [[ "melee", "shield", "second_wind" ]],
+      "Elder": [[ "melee", "heal" ]],
+      "Fury": [[ "melee", "charge" ]],
+      "King": [[ "melee", "charge", "heal", "curse" ]],
+      "Hierophant": [[ "melee", "heal", "fear", "drain_life" ]],
+      "Warlord": [[ "melee", "charge" ]],
+      "Chosen One": [[ "melee", "heal", "inspire", "fear", "enrage", "curse" ]],
+      "Shaman King": [[ "melee", "heal", "fear", "curse", "inspire", "charm" ]],
+      "Monarch": [[ "melee", "charge", "heal", "curse", "flee" ]],
+      "Princeling": [[ "melee", "heal", "inspire", "charm" ]],
+      "Archmage": [[ "melee", "heal", "missile", "curse", "poison_cloud", "fear", "shield", "sleep", "shocking_grasp" ]],
+      "General": [[ "melee", "charge", "inspire" ]],
+      "High Priest": [[ "melee", "heal", "curse", "smite", "bless" ]],
+      "Destroyer": [[ "melee", "charge", "enrage", "blur", "maul", "flee" ]],
+      "Lord": [[ "melee", "heal", "curse" ]],
+      "Death Priest": [[ "melee", "heal", "curse", "fear", "burning_hands" ]]
     }
   },
 
@@ -1204,8 +1232,7 @@
       "forest": {
         "str": -1,
         "dex": 1,
-        "con": 1,
-        "maxHp": -1
+        "con": 1
       },
       "swamp": {
         "con": -1,
@@ -1564,24 +1591,33 @@
     "groups": {
       "temple": [
         "#race + \" heretics serve a dark master at their fane deep in the \" + #terrain",
-        "#race + \" cultists have been spotted close to a hidden shrine \" + #direction + \" of us\""
+        "#race + \" cultists have been spotted close to a hidden shrine \" + #direction + \" of us\"",
+        "#bossName + \" is hiding in a secret sanctum \" + #direction + \" of here\"",
+        "#bossName + \" is holed up in a sacred reliquary to the \" + #direction + \" of town\""
       ],
       "fortress": [
         "#race + \" raiders have been sighted near the fort \" + #direction + \" of here\"",
-        "\"an army of \" + #race + \"s was observed near the ancient \" + #dungeon_type"
+        "\"an army of \" + #race + \"s was observed near the ancient \" + #dungeon_type",
+        "#bossName + \" is holed up in a fortress \" + #direction + \" of here\"",
+        "#bossName + \" leads a band of \" + #race + \"s in a stronghold \" + #direction + \" of here\""
       ],
       "library": [
         "#race + \"s have been spotted in close proximity to a reliquary \" + #direction + \" of town\"",
-        "#race + \" scholars have been hoarding forbidden knowledge in a secret library\""
+        "#race + \" scholars have been hoarding forbidden knowledge in a secret library\"",
+        "#bossName + \" is said to be hiding in a hidden archive \" + #direction + \" of here\"",
+        "'travelers speak of ' + #bossName + ' and their ' + #race + ' cult seeking a hidden scriptorium'"
       ],
       "tomb": [
         "\"watch out for \" + #race + \"s lurking in the \" + #direction + \"ern necropolis\"",
         "\"the catacombs have been taken over by \" + #race + \"s\"",
-        "#race + \"s have been seen revelling in a haunted tomb \" + #direction + \" of our location\""
+        "#race + \"s have been seen revelling in a haunted tomb \" + #direction + \" of our location\"",
+        "#bossName + \" is said to be hiding in a secret crypt \" + #direction + \" of here\""
       ],
       "mine": [
         "\"the old delve just \" + #direction + \" of town is now home to a tribe of \" + #race + \"s\"",
-        "#race + \"s occupy an abandoned mine \" + #direction + \" of here\""
+        "#race + \"s occupy an abandoned mine \" + #direction + \" of here\"",
+        "#bossName + \" is hiding in a hidden cavern \" + #direction + \" of here\"",
+        "#bossName + \" is said to be holed up in a secret lair in the \" + #direction"
       ]
     }
   },
@@ -1599,55 +1635,12 @@
   "terrainFeatures": {
     "discriminator": "terrain",
     "groups": {
-      "forest": [
-        "wood",
-        "green",
-        "leaf",
-        "tree",
-        "bark",
-        "fern",
-        "bush"
-      ],
-      "cave": [
-        "deep",
-        "hollow",
-        "dark",
-        "rock"
-      ],
-      "swamp": [
-        "marsh",
-        "bog",
-        "mire",
-        "fen",
-        "wash",
-        "slough",
-        "wet",
-        "moss"
-      ],
-      "mountain": [
-        "hill",
-        "mont",
-        "peak",
-        "iron",
-        "cold",
-        "stone",
-        "high"
-      ],
-      "snow": [
-        "snow",
-        "ice",
-        "frost",
-        "white",
-        "chill",
-        "cold"
-      ],
-      "desert": [
-        "dune",
-        "sand",
-        "ember",
-        "grit",
-        "dry"
-      ]
+      "forest": [ "acorn", "bark", "bush", "fern", "flower", "green", "leaf", "sap", "tree", "wood" ],
+      "cave": [ "deep", "hollow", "dark", "rock" ],
+      "swamp": [ "marsh", "bog", "mire", "fen", "wash", "slough", "wet", "moss" ],
+      "mountain": [ "hill", "mont", "peak", "iron", "cold", "stone", "high" ],
+      "snow": [ "snow", "ice", "frost", "white", "chill", "cold" ],
+      "desert": [ "dune", "sand", "ember", "grit", "dry" ]
     }
   },
   "townPop": {
@@ -1665,49 +1658,13 @@
   "deity": {
     "discriminator": "race",
     "groups": {
-      "elf": [
-        "Lathander",
-        "Corellon",
-        "Sehanine",
-        "Hanali",
-        "Aerdrie",
-        "Labelas",
-        "Solonor"
-      ],
-      "dwarf": [
-        "Marduk",
-        "Ashurbanipal",
-        "Nergal",
-        "Enlil",
-        "Ishtar",
-        "Tiamat",
-        "Ninurta"
-      ],
-      "human": [
-        "Zeus",
-        "Hera",
-        "Poseidon",
-        "Demeter",
-        "Athena",
-        "Apollo",
-        "Artemis"
-      ],
-      "halfling": [
-        "Yondalla",
-        "Brandobaris",
-        "Flandal",
-        "Baervan"
-      ],
-      "fae": [
-        "Oberon",
-        "Titania",
-        "Aelos",
-        "Mab",
-        "Arielon"
-      ],
-      "gnome": [
-        "Eru Ilúvatar"
-      ]
+      "elf": [ "Lathander", "Corellon", "Sehanine", "Hanali", "Aerdrie", "Labelas", "Solonor" ],
+      "dwarf": [ "Marduk", "Ashurbanipal", "Nergal", "Enlil", "Ishtar", "Tiamat", "Ninurta" ],
+      "human": [ "Zeus", "Hera", "Poseidon", "Demeter", "Athena", "Apollo", "Artemis" ],
+      "halfling": [ "Yondalla", "Brandobaris", "Flandal", "Baervan" ],
+      "fae": [ "Oberon", "Titania", "Aelos" ],
+      "gnome": [ "Eru Ilúvatar", "Mandos", "Nienna", "Vairë", "Lórien", "Tulkas", "Ulmo" ],
+      "orc": [ "Melkor" ]
     }
   },
   "companionType": {
@@ -1725,21 +1682,17 @@
   "companionLevel": {
     "discriminator": "type",
     "groups": {
-      "bat": 1,
-      "bear": 3,
-      "boar": 2,
+      "bat": 1, "bear": 3, "boar": 2,
+      "eagle": 2,
       "falcon": 1,
       "hound": 1,
-      "pseudodragon": 4,
+      "lion": 4,
+      "panther": 3, "pseudodragon": 4,
       "rat": 1,
-      "snake": 1,
-      "spider": 1,
-      "wolf": 2,
-      "wyrm": 5,
-      "eagle": 2,
+      "snake": 1, "spider": 1,
       "tiger": 4,
-      "panther": 3,
-      "lion": 4
+      "wolf": 2,
+      "wyrm": 5
     }
   },
   "animalStrength": {
@@ -1845,16 +1798,23 @@
   "companionName": {
     "discriminator": "animal_type",
     "groups": {
-      "wolf": [ "Fenrir", "Skoll", "Hati", "Geri", "Freki" ],
-      "bear": [ "Ursus", "Bruno", "Grizzly", "Kodiak", "Baloo" ],
+      "wolf": [ "Fenrir", "Skoll", "Hati", "Geri", "Freki", "Akela", "Balto", "Shadow", "Ghost", "Luna", "Fang" ],
+      "bear": [ "Ursus", "Bruno", "Grizzly", "Kodiak", "Baloo", "Yogi", "Paddington", "Winnie", "Smokey", "Teddy" ],
       "eagle": [ "Aquila", "Gryphon", "Horus", "Soren", "Talos" ],
       "lion": [ "Leo", "Simba", "Aslan", "Mufasa", "Nala" ],
       "tiger": [ "Shere Khan", "Tigris", "Rajah", "Saber", "Stripes" ],
       "panther": [ "Shadow", "Midnight", "Onyx", "Luna", "Nyx" ],
-      "rat": [ "Remy", "Rizzo", "Splinter", "Templeton", "Gus", "Rattus" ],
+      "rat": [
+        "Remy", "Rizzo", "Splinter", "Templeton", "Gus", "Rattus", "Squeakers", "Whiskers", "Nibbles", "Scabbers",
+        "Ratticus", "Squeaky", "Ratty", "Ratsy", "Verm"
+      ],
       "cat": [ "Whiskers", "Mittens", "Salem", "Garfield", "Felix" ],
       "snake": [ "Nagini", "Kaa", "Seraphina", "Viper", "Slytherin" ],
-      "spider": [ "Aragog", "Shelob", "Anansi", "Arachne", "Webster" ],
+      "spider": [
+        "Aragog", "Shelob", "Anansi", "Arachne", "Webster", "Spinner", "Silk", "Venom", "Charlotte", "Spindly", "Eightlegs",
+        "Creepy", "Crawly", "Eightlegs", "Webber", "Spidey", "Eyes", "Fonsy", "Skitter", "Spindle", "Spinneret", "Longlegs",
+        "Teensy", "Orbweaver", "Recluse", "Widow", "Gardener"
+      ],
       "wyrm": [ "Drake", "Wyvern", "Serpent", "Hydra", "Naga" ],
       "pseudodragon": [ "Puff", "Saphira", "Smaug", "Glaurung", "Fafnir" ],
       "bat": [ "Vlad", "Nosferatu", "Drack", "Sanguine", "Von" ],
@@ -1863,26 +1823,46 @@
       "hound": [ "Rover", "Fido", "Spot", "Buddy", "Max", "Rex", "Lassie" ]
     }
   },
-  "companionAspect": {
-    "discriminator": "d6",
+
+  "creatureAspectTypes": {
+    "discriminator": "rarity",
     "groups": {
-      "1": "giant",
-      "2": "ferocious",
-      "3": "venomous",
-      "4": "cunning",
-      "5": "alpha",
-      "6": "vicious"
+      "common": [ "agile", "nimble", "sturdy", "swift", "ferocious", "cunning", "vicious" ], 
+      "uncommon": [ "cruel", "savage", "dread", "beloved", "forgotten", "mysterious", "terrifying", "curious" ],
+      "rare": [ "venomous", "alpha", "sacred", "cursed", "blessed", "noble", "majestic" ],
+      "legendary": [ "ancient", "spectral", "giant", "warped" ]
     }
   },
-  "companionAspectOverlay": {
-    "discriminator": "aspect",
+
+  "creatureAspects": {
+    "discriminator": "type",
     "groups": {
-      "giant": { "maxHp": 8, "str": 4, "ac": -2 },
+      "agile": { "dex": 2, "ac": -1 },
+      "nimble": { "dex": 3, "abilities": ["hide"] },
+      "sturdy": { "maxHp": 5, "con": 2 },
+      "swift": { "dex": 2  },
+      "cruel": { "str": 2, "cha": -2, "abilities": ["enrage"] },
+      "savage": { "str": 3, "int": -1, "abilities": ["charge"] },
+      "dread": { "cha": 3, "abilities": ["fear"] },
+      "beloved": { "cha": 3, "wis": 2, "abilities": ["inspire"] },
+      "forgotten": { "ac": -2, "abilities": ["hide"] },
+      "sacred": { "wis": 3, "cha": 2, "abilities": ["bless", "heal"] },
+      "cursed": { "wis": 3, "int": 2, "abilities": ["curse", "fear"] },
+      "blessed": { "maxHp": 4, "cha": 2, "abilities": ["bless", "inspire", "heal", "shield"] },
       "ferocious": { "maxHp": 5, "str": 2, "dex": 1, "ac": -1, "abilities": ["charge"] },
       "venomous": { "maxHp": 3, "abilities": ["poison_bite"] },
+      "noble": { "str": 2, "cha": 3, "abilities": ["inspire", "charm"] },
+      "mysterious": { "int": 2, "wis": 2, "abilities": ["blur", "hide"] },
+      "terrifying": { "maxHp": 3, "cha": 3, "abilities": ["fear"] },
+      "majestic": { "maxHp": 4, "str": 3, "con": 2, "cha": 3, "abilities": ["inspire", "bless"] },
       "cunning": { "maxHp": 2, "dex": 2, "int": 1, "ac": -1, "abilities": ["hide", "wait"] },
+      "curious": { "maxHp": 3, "int": 4, "cha": 2 },
       "alpha": { "maxHp": 5, "str": 2, "dex": 1, "con": 1, "int": 1, "ac": -1 },
-      "vicious": { "maxHp": 4, "str": 3, "dex": 1, "ac": -1, "abilities": ["maul"] }
+      "vicious": { "maxHp": 4, "str": 3, "dex": 1, "ac": -1, "abilities": ["maul"] },
+      "ancient": { "maxHp": 10, "str": 2, "con": 2, "int": 3, "wis": 3, "ac": -2 },
+      "spectral": { "ac": -5, "abilities": ["blur", "life_drain"] },
+      "warped": { "level": 1, "maxHp": 6, "str": -2, "int": 2, "con": -2, "dex": 2, "abilities": ["curse", "charm", "enrage", "psionic_blast"] },
+      "giant": { "level": 2, "maxHp": 8, "str": 4, "con": 2, "ac": -2 }
     }
   },
 
@@ -1979,7 +1959,7 @@
       "demon": [["melee", "curse", "fear", "burning_hands"]],
       "elemental": [["melee", "defend"]],
       "aberration": [["melee", "fear", "curse", "sleep", "charm", "psionic_blast"]],
-      "construct": [["melee", "defend", "charge"]],
+      "construct": [["melee", "defend", "charge", "hide"]],
       "celestial": [["melee", "smite", "heal", "bless"]],
       "fey": [["melee", "charm", "sleep", "hide"]],
       "beast": [["melee", "maul", "charge", "enrage", "poison_bite"]]
@@ -2036,11 +2016,11 @@
   "monsterAttacksPerTurn": {
     "discriminator": "monster_type",
     "groups": {
-      "giant": 2,
+      "giant": 1,
       "undead": 1,
       "demon": 2,
       "elemental": 1,
-      "aberration": 1,
+      "aberration": 2,
       "construct": 1,
       "celestial": 2,
       "fey": 1,

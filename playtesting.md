@@ -1,13 +1,13 @@
 # Notes from Playtesting
 
 [ ] Loot should be accumulated ("X takes it" = added to a list on their pc record)
-[ ] Maybe you can leave an offering (5gp) at a shrine for a blessing?
+[ ] Maybe you can leave an offering (5gp) at a (dungeon) shrine for a blessing?
 ---
-[ ] Load all PCs on party select so we can show their race/class
+[ ] Load all PCs on party select so we can show their race/class (no longer even letting you load PCs from file but we're still persisting them every room...)
 ---
 [ ] A room generated with multiple monsters with the same name (humans may need more names as a race but also maybe we could _specifically_ try to prevent this?) [genList would need a dedupe pass to really be _certain_ of this]
-[ ] CR scaling still not working great for deeper rooms?
-[ ] 20 should be stat max until level 10
+[ ] CR scaling still not working great for deeper rooms? (seems to be vaguely more reasonable now but also we've kind of nerfed CR checks by _only_ checking NPCs when there are also true monsters and animal companions now -- we can constrain-gen them independently but seems subtle too somehow)
+[ ] 20 should be stat max until level 10 (maybe 18 until level 5...)
 [ ] High-level enemies should have much higher dex (tried to adjust although maybe _too_ high now?)
 ---
 [ ] Rest could reset status effects? (would be nice to do this _before_ persisting PCs?)
@@ -61,6 +61,9 @@
 [ ] You should be able to visit the Inn even if at full HP?
 ---
 [ ] Temple blessings should take account of the deity somehow... (war gods give toHit, love goddess grants chance to charm on hit etc)
+---
+[ ] Bring back status displays
+[ ] Show full enemy name more often (we often default to just the forename ie 'minimal' combatant view with forename + HP but this is ... not very much information)
 
 
 ## Fixed

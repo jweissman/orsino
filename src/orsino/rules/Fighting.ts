@@ -26,6 +26,9 @@ export class Fighting {
         // console.log("Considering turn bonus effect:", it);
         if (it.effect) {
           Object.entries(it.effect).forEach(([key, value]) => {
+            if (key === 'by') {
+              return;
+            }
             if (typeof value === "number") {
               if (keys.length === 0 || keys.includes(key)) {
                 bonuses[key] = (bonuses[key] || 0) + value;
@@ -35,6 +38,7 @@ export class Fighting {
         }
       });
     }
+    // delete bonuses.by;
     return bonuses;
   }
 
@@ -60,6 +64,39 @@ export class Fighting {
       });
     }
     return stats;
+  }
+
+  // gather all current passive + active effects and try to calculate any cumulative bonuses
+  static gatherEffects(combatant: Combatant): { [key: string]: number } {
+    let effectList = [
+      ...(combatant.passiveEffects || []),
+      ...(combatant.activeEffects || [])
+    ];
+    let resultingEffects: { [key: string]: number } = {
+      // could gather effective resistances/saves here too if the combatant has them specified in their record?
+    };
+    // effectList.forEach(it => {
+    for (let it of effectList) {
+      if (it.whileEnvironment) { //} && combatant.environment === it.effect.environment) {
+        if (combatant.currentEnvironment === it.whileEnvironment) {
+          console.log(`Applying environment effect ${it.name} for ${combatant.name} in ${combatant.currentEnvironment}`);
+        } else {
+          continue;
+        }
+      }
+
+      if (it.effect) {
+        Object.entries(it.effect).forEach(([key, value]) => {
+          if (typeof value === "number") {
+            resultingEffects[key] = (resultingEffects[key] || 0) + value;
+          } else {
+            resultingEffects[key] = value;
+          }
+        });
+      }
+    }
+    // console.log("Gathered effect stack for", combatant.name, ":", resultingEffects);
+    return resultingEffects;
   }
 
   static async attack(

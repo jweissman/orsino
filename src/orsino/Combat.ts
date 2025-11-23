@@ -6,8 +6,9 @@ import { Roll } from "./types/Roll";
 import { Fighting } from "./rules/Fighting";
 import Stylist from "./tui/Style";
 import Events, { CombatEvent, InitiateCombatEvent, HealEvent, MissEvent, HitEvent, FallenEvent, StatusExpireEvent, RoundStartEvent, CombatEndEvent, StatusEffectEvent, FleeEvent } from "./Events";
-import AbilityHandler, { Ability } from "./Ability";
+import AbilityHandler, { Ability, DamageKind, SaveKind } from "./Ability";
 import { Answers } from "inquirer";
+import Words from "./tui/Words";
 
 export type RollResult = {
   amount: number;
@@ -19,10 +20,11 @@ export type ChoiceSelector<T extends Answers> = (description: string, options: C
 export type CommandHandlers = {
   roll: Roll;
   attack: (combatant: Combatant, target: Combatant, roller?: Roll) => Promise<{ success: boolean; target: Combatant }>;
-  hit: (attacker: Combatant, defender: Combatant, damage: number, critical: boolean, by: string, success: boolean) => Promise<void>;
+  hit: (attacker: Combatant, defender: Combatant, damage: number, critical: boolean, by: string, success: boolean, damageKind: DamageKind) => Promise<void>;
   heal: (healer: Combatant, target: Combatant, amount: number) => Promise<void>;
   status: (user: Combatant, target: Combatant, name: string, effect: { [key: string]: any }, duration: number) => Promise<void>;
   removeItem: (user: Combatant, item: keyof Team) => Promise<void>;
+  save: (target: Combatant, saveType: SaveKind, dc?: number) => Promise<boolean>;
 }
 export default class Combat {
   private turnNumber: number = 0;
@@ -62,15 +64,16 @@ export default class Combat {
           attackRolls: 1,
           damageDie: 8, playerControlled: true, xp: 0, gp: 0,
           weapon: "Short Sword",
+          damageKind: "slashing",
           abilities: ["melee"], traits: []
         }], healingPotions: 3
       },
       {
         name: "Enemy", combatants: [
-          { forename: "Zok", name: "Goblin A", hp: 4, maxHp: 4, level: 1, ac: 17, attackRolls: 2, damageDie: 3, str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", abilities: ["melee"], traits: [] },
+          { forename: "Zok", name: "Goblin A", hp: 4, maxHp: 4, level: 1, ac: 17, attackRolls: 2, damageDie: 3, str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: [] },
           {
             forename: "Mog", name: "Goblin B", hp: 4, maxHp: 4, level: 1, ac: 17, attackRolls: 2, damageDie: 3,
-            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", abilities: ["melee"], traits: []
+            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: []
           }
         ], healingPotions: 0
       }
@@ -103,24 +106,43 @@ export default class Combat {
   static roll(subject: Combatant, description: string, sides: number): RollResult {
     let result = Math.floor(Math.random() * sides) + 1;
     let prettyResult = Stylist.colorize(result.toString(), result === sides ? 'green' : result === 1 ? 'red' : 'yellow');
-
     let rollDescription = Stylist.italic(`${subject.name} rolled d${sides} ${description} and got a ${prettyResult}.`);
 
-    if (subject.activeEffects) {
-      // check for 'allRolls' bonus effects
-      subject.activeEffects.forEach(status => {
-        if (status.effect && status.effect.allRolls) {
-          result += status.effect.allRolls;
-          rollDescription += ` ${subject.name} has the ${status.name} status, adding ${status.effect.allRolls} to the roll (roll is now ${result}).`;
-        }
-      });
+    let effectStack = Fighting.gatherEffects(subject);
+    if (effectStack.rerollNaturalOnes && result === 1) {
+      rollDescription += ` ${subject.name} has an effect that allows re-rolling natural 1s, so they get to re-roll!`;
+      let { amount: newAmount, description: newDescription } = Combat.roll(subject, description + " (re-roll)", sides);
+      result = newAmount;
+      rollDescription += " " + newDescription;
     }
 
-    if (result === 1 && subject.traits?.includes("lucky")) {
-      rollDescription += ` ${subject.name} is Lucky and rolled a 1, so they get to re-roll!`;
-      // re-roll a 1
-      return Combat.roll(subject, description + " (re-roll)", sides);
+    if (effectStack.allRolls) {
+      result += effectStack.allRolls;
+      rollDescription += ` ${subject.name} adds ${effectStack.allRolls} to all rolls, so the total is now ${result}.`;
     }
+
+
+    // if (subject.activeEffects) {
+    //   // check for 'allRolls' bonus effects
+    //   subject.activeEffects.forEach(status => {
+    //     if (status.effect && status.effect.allRolls) {
+    //       result += status.effect.allRolls;
+    //       rollDescription += ` ${subject.name} has the ${status.name} status, adding ${status.effect.allRolls} to the roll (roll is now ${result}).`;
+    //     }
+
+    //     if (status.effect && status.effect.rerollNaturalOnes && result === 1) {
+    //       rollDescription += ` ${subject.name} has the ${status.name} status and rolled a natural 1, so they get to re-roll!`;
+    //       return Combat.roll(subject, description + " (re-roll)", sides);
+    //     }
+    //   });
+    // }
+
+    // instead of hardcoding the check for "lucky", we can check for any trait that allows re-rolling 1s
+    // if (result === 1 && subject.traits?.includes("lucky")) {
+    //   rollDescription += ` ${subject.name} is Lucky and rolled a 1, so they get to re-roll!`;
+    //   // re-roll a 1
+    //   return Combat.roll(subject, description + " (re-roll)", sides);
+    // }
 
     return { amount: result, description: rollDescription };
   }
@@ -147,7 +169,7 @@ export default class Combat {
     this.allCombatants.forEach(c => c.abilitiesUsed = []);
 
     await this.abilityHandler.loadAbilities();
-    console.log("Combat setup complete!");
+    // console.log("Combat setup complete!");
   }
 
   static maxSpellSlotsForLevel(level: number): number { return 1 + Math.ceil(level / 2); }
@@ -170,14 +192,15 @@ export default class Combat {
       hit: this.handleHit.bind(this),
       heal: this.handleHeal.bind(this),
       status: this.handleStatusEffect.bind(this),
+      save: this.handleSave.bind(this),
       removeItem: async (user: Combatant, item: keyof Team) => { //}'healingPotions') => {
         // find team and remove item
         let team = this.teams.find(t => t.combatants.includes(user));
         if (team) {
-          console.log("Removing item", item, "from", team.name);
+          // console.log("Removing item", item, "from", team.name);
           // @ts-ignore
           team[item] = Math.max(0, (team[item] as number || 0) - 1);
-          console.log("Team", team.name, "now has", team[item], item);
+          this.note(`${user.forename} consumed ${Words.a_an(item)}. ${team.name} now has ${team[item]} ${item}.`);
         }
       }
     }
@@ -258,7 +281,7 @@ export default class Combat {
       });
     }
 
-    const action: Ability = await this.select(`Your turn, ${Presenter.minimalCombatant(combatant)} - what do you do?`, choices, combatant);
+    const action: Ability = await this.select(`Your turn, ${Presenter.combatant(combatant)} - what do you do?`, choices, combatant);
 
     let validTargets = this.abilityHandler.validTargets(action, combatant, allies, enemies);
     let targetOrTargets = validTargets[0];
@@ -318,7 +341,31 @@ export default class Combat {
     this.emit({ type: "heal", subject: healer, target, amount } as Omit<HealEvent, "turn">);
   }
 
-  async handleHit(attacker: Combatant, defender: Combatant, damage: number, critical: boolean, by: string, success: boolean): Promise<void> {
+  async handleSave(
+    target: Combatant,
+    saveType: SaveKind, // ie "poison" | "disease" | "magic" | "death" | "madness",
+    dc: number = 15
+  ): Promise<boolean> {
+    let targetFx = Fighting.gatherEffects(target);
+    let saveVersusType = `saveVersus${saveType.charAt(0).toUpperCase() + saveType.slice(1)}`;
+    const saveVersus = dc - (targetFx[saveVersusType] || 0) - target.level;
+    let saved = false;
+    if (saveVersus <= 20) {
+      const saveRoll = await this.roller(target, `for Save vs ${saveType} (must roll ${saveVersus} or higher)`, 20);
+      if (saveRoll.amount >= saveVersus) {
+        this.note(`${Presenter.combatant(target)} succeeds on their Save vs ${saveType}!`);
+        saved = true;
+      } else {
+        this.note(`${Presenter.combatant(target)} fails their Save vs ${saveType}!`);
+      }
+    }
+
+    return saved;
+  }
+
+  async handleHit(
+    attacker: Combatant, defender: Combatant, damage: number, critical: boolean, by: string, success: boolean, damageKind: DamageKind
+  ): Promise<void> {
     if (!success) {
       this.emit({ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">);
       return;
@@ -330,10 +377,13 @@ export default class Combat {
       return;
     }
 
-    // if there is an evasion effect, check for it
-    if (defender.activeEffects?.some(e => e.effect.evasion)) {
-      const evasionEffect = defender.activeEffects.find(e => e.effect.evasion);
-      const evasionBonus = evasionEffect?.effect.evasion || 0;
+    this.note(Stylist.bold(`${Presenter.combatant(defender)} defending against ${damage} ${damageKind} damage...`));
+
+    let defenderEffects = Fighting.gatherEffects(defender);
+    let attackerEffects = Fighting.gatherEffects(attacker);
+
+    if (defenderEffects.evasion) {
+      let evasionBonus = defenderEffects.evasion;
       let whatNumberEvades = 15 - evasionBonus;
       const evasionRoll = await this.roller(defender, `for evasion (must roll ${whatNumberEvades} or higher)`, 20);
       if (evasionRoll.amount + evasionBonus >= 15) {
@@ -343,23 +393,60 @@ export default class Combat {
       }
     }
 
-    // does the combatant has a bonus damage effect?
-    if (defender.activeEffects?.some(e => e.effect.bonusDamage)) {
-      const bonusDamageEffect = defender.activeEffects.find(e => e.effect.bonusDamage);
-      const bonusDamage = bonusDamageEffect?.effect.bonusDamage || 0;
+    if (attackerEffects.bonusDamage) {
+      let bonusDamage = attackerEffects.bonusDamage;
       damage += bonusDamage;
-      this.note(`${Presenter.combatant(defender)} has a bonus damage effect, adding ${bonusDamage} damage!`);
+      this.note(`${Presenter.combatant(attacker)} has a bonus damage effect, adding ${bonusDamage} damage!`);
+    }
+
+    // Apply resistances FIRST
+    if (damageKind) {
+      const defEffects = Fighting.gatherEffects(defender);
+      let resistanceName = `resist${damageKind.charAt(0).toUpperCase() + damageKind.slice(1)}`;
+      // const resistance = defenderEffects.resistances?.[damageKind] ?? 1.0;
+      const resistance = defEffects[resistanceName] ?? 0.0;
+
+
+      if (resistance === 0) {
+        // this.note(`${defender.name} is immune to ${damageKind}!`);
+        // return;
+      } else {
+        const originalDamage = damage;
+        if (resistance > 0.0) {
+          damage = Math.floor(originalDamage * (1 - resistance));
+        } else if (resistance <= 0) {
+          // this is a vulnerability, so we increase damage by the percentage below zero?
+          damage = originalDamage + Math.floor(originalDamage * (1 - resistance));
+        }
+        this.note(`${Presenter.combatant(defender)} has ${resistance > 0 ? "resistance" : resistance < 0 ? "vulnerability" : "no resistance"} to ${damageKind}, modifying damage from ${originalDamage} to ${damage}.`);
+      }
+
+
+      // if (resistance < 1.0) {
+      //   this.note(`${defender.name} resists ${damageKind}! (${originalDamage} → ${damage})`);
+      // } else if (resistance > 1.0) {
+      //   this.note(`${defender.name} is vulnerable to ${damageKind}! (${originalDamage} → ${damage})`);
+      // }
+    }
+
+    if (defenderEffects.damageReduction) {
+      let reduction = defenderEffects.damageReduction;
+      damage = Math.max(0, damage - reduction);
+      this.note(`${Presenter.combatant(defender)} has a damage reduction effect, reducing damage by ${reduction}!`);
     }
 
     // apply damage
     let originalHp = defender.hp;
     defender.hp -= damage;
 
-    if (defender.hp <= 0 && originalHp >= defender.maxHp / 2) {
-      // if we have resilient trait, we drop to 1 hp instead of 0
-      if (defender.traits?.includes("resilient")) {
+    if (defender.hp <= 0) { //} && originalHp >= defender.maxHp / 2) {
+      // give a DC 25 save vs death
+      let saved = await this.handleSave(defender, "death", 25);
+      if (saved) {
         defender.hp = 1;
-        this.note(`${Presenter.combatant(defender)} is resilient and drops to 1 HP instead of 0!`);
+        this.note(`${Presenter.combatant(defender)} drops to 1 HP instead of 0!`);
+      } else {
+        this.note(`${Presenter.combatant(defender)} is defeated!`);
       }
     }
 
@@ -374,7 +461,7 @@ export default class Combat {
     target: Combatant;
   }> {
     const { damage, critical, success } = await Fighting.attack(roller, combatant, target);
-    await this.handleHit(combatant, target, damage, critical, `${combatant.forename}'s ${combatant.weapon}`, success);
+    await this.handleHit(combatant, target, damage, critical, `${combatant.forename}'s ${combatant.weapon}`, success, combatant.damageKind || "true");
     return { success, target };
   }
 
@@ -384,7 +471,7 @@ export default class Combat {
       ability,
       score: this.scoreAbility(ability, combatant, allies, enemies)
     }));
-    // console.log(`NPC ${combatant.forename} rates abilities:`, scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`).join(", "));
+    console.log(`NPC ${combatant.forename} rates abilities:`, scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`).join(", "));
     scoredAbilities.sort((a, b) => b.score - a.score);
     const action = scoredAbilities[0]?.ability;
     let targetOrTargets: Combatant | Combatant[] = this.bestAbilityTarget(action, combatant, allies, enemies);
@@ -465,7 +552,7 @@ export default class Combat {
         }
       });
     } else if (analysis.aoe) {
-      score += enemies.filter(e => e.hp > 0).length * 3;
+      score += enemies.filter(e => e.hp > 0).length * 8;
     } else if (analysis.debuff) {
       // are there enemies with higher hp than us?
       enemies.forEach(enemy => {
@@ -500,6 +587,7 @@ export default class Combat {
       });
     }
 
+    // note: ideally these shouldn't be valid actions in the first place!!
     // if a skill and already used, give -10 penalty
     if (ability.type === "skill" && user.abilitiesUsed?.includes(ability.name)) {
       score -= 10;
@@ -602,7 +690,7 @@ export default class Combat {
     } as Omit<RoundStartEvent, "turn">);
 
     // check for escape conditions (if 'flee' status is active, remove the combatant from combat)
-    this.allCombatants.forEach(combatant => {
+    Combat.living(this.allCombatants).forEach(combatant => {
       if (combatant.activeEffects?.some(e => e.effect?.flee)) {
         // remove from combatants / teams
         this.teams.forEach(team => {
@@ -620,16 +708,16 @@ export default class Combat {
     }
 
     // tick down status
-    this.allCombatants.forEach(combatant => {
+    Combat.living(this.allCombatants).forEach(combatant => {
       if (combatant.activeEffects) {
-        combatant.activeEffects.forEach(it => it.duration--);
+        combatant.activeEffects.forEach(it => { if (it.duration) { it.duration-- } });
         for (const status of combatant.activeEffects) {
           if (status.duration === 0) {
             this.emit({ type: "statusExpire", subject: combatant, effectName: status.name } as Omit<StatusExpireEvent, "turn">);
           }
         }
       }
-      combatant.activeEffects = combatant.activeEffects?.filter(it => it.duration > 0) || [];
+      combatant.activeEffects = combatant.activeEffects?.filter(it => (it.duration || 0) > 0) || [];
     });
 
     for (const team of this.teams) {

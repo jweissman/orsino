@@ -132,7 +132,8 @@
       },
       {
         "type": "damage",
-        "amount": "=1d6"
+        "amount": "=1d6",
+        "kind": "bludgeoning"
       }
     ]
   },
@@ -162,7 +163,8 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d3"
+        "amount": "=1d3",
+        "kind": "force"
       }
     ]
   },
@@ -175,7 +177,8 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d6"
+        "amount": "=1d6",
+        "kind": "fire"
       }
     ]
   },
@@ -188,7 +191,8 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d4"
+        "amount": "=1d4",
+        "kind": "lightning"
       },
       {
         "type": "debuff",
@@ -220,8 +224,8 @@
             "changeAllegiance": true
           }
         },
-        "saveType": "wis",
-        "saveDC": 10
+        "saveType": "charm",
+        "saveDC": 16
       }
     ]
   },
@@ -244,7 +248,6 @@
       }
     ]
   },
-
   "sleep": {
     "name": "Sleep",
     "type": "spell",
@@ -261,12 +264,11 @@
             "noActions": true
           }
         },
-        "saveType": "wis",
-        "saveDC": 10
+        "saveType": "will",
+        "saveDC": 12
       }
     ]
   },
-
   "bless": {
     "name": "Bless",
     "type": "skill",
@@ -298,7 +300,8 @@
       },
       {
         "type": "damage",
-        "amount": "=#level * 2d6"
+        "amount": "=#level * 2d6",
+        "kind": "radiant"
       }
     ]
   },
@@ -350,7 +353,8 @@
                     "onTurnEnd": [
                       {
                         "type": "damage",
-                        "amount": "=1d4"
+                        "amount": "=1d4",
+                        "kind": "poison"
                       }
                     ]
                   }
@@ -395,8 +399,8 @@
             "forceTarget": true
           }
         },
-        "saveType": "wis",
-        "saveDC": 15
+        "saveType": "will",
+        "saveDC": 18
       }
     ]
   },
@@ -431,8 +435,8 @@
             "toHit": -2
           }
         },
-        "saveType": "wis",
-        "saveDC": 10
+        "saveType": "fear",
+        "saveDC": 12
       }
     ]
   },
@@ -458,7 +462,7 @@
             "con": -1
           }
         },
-        "saveType": "wis",
+        "saveType": "will",
         "saveDC": 10
       }
     ]
@@ -478,7 +482,8 @@
       },
       {
         "type": "damage",
-        "amount": "=1d6"
+        "amount": "=1d6",
+        "kind": "bludgeoning"
       },
       {
         "type": "debuff",
@@ -489,12 +494,13 @@
             "onTurnEnd": [
               {
                 "type": "damage",
-                "amount": "=1d4"
+                "amount": "=1d4",
+                "kind": "bleed"
               }
             ]
           }
         },
-        "saveType": "con",
+        "saveType": "will",
         "saveDC": 10
       }
     ]
@@ -536,7 +542,8 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d4"
+        "amount": "=1d4",
+        "kind": "poison"
       },
       {
         "type": "debuff",
@@ -547,12 +554,13 @@
             "onTurnEnd": [
               {
                 "type": "damage",
-                "amount": "=1d3"
+                "amount": "=1d3",
+                "kind": "poison"
               }
             ]
           }
         },
-        "saveType": "con",
+        "saveType": "poison",
         "saveDC": 10
       }
     ]
@@ -573,12 +581,13 @@
             "onTurnEnd": [
               {
                 "type": "damage",
-                "amount": "=1d3"
+                "amount": "=1d3",
+                "kind": "poison"
               }
             ]
           }
         },
-        "saveType": "con",
+        "saveType": "poison",
         "saveDC": 10
       }
     ]
@@ -590,7 +599,7 @@
     "description": "Invade minds of all enemies, dealing 1d6 psychic damage and stunning them.",
     "target": ["enemies"],
     "effects": [
-      { "type": "damage", "amount": "=1d6" },
+      { "type": "damage", "amount": "=1d6", "kind": "psychic" },
       {
         "type": "debuff",
         "status": {
@@ -598,7 +607,17 @@
           "duration": 1,
           "effect": { "noActions": true }
         },
-        "saveType": "wis",
+        "saveType": "stun",
+        "saveDC": 15
+      },
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Chaos",
+          "duration": 1,
+          "effect": { "changeAllegiance": true }
+        },
+        "saveType": "insanity",
         "saveDC": 12
       }
     ]
@@ -620,7 +639,7 @@
     "description": "Strike random enemies with lightning, dealing 1d8 damage and paralyzing them for 1 round.",
     "target": ["randomEnemies", 2],
     "effects": [
-      { "type": "damage", "amount": "=1d8" },
+      { "type": "damage", "amount": "=1d8", "kind": "electric" },
       {
         "type": "debuff",
         "status": {
@@ -628,7 +647,7 @@
           "duration": 1,
           "effect": { "noActions": true }
         },
-        "saveType": "con",
+        "saveType": "will",
         "saveDC": 12
       }
     ]
@@ -640,7 +659,7 @@
     "description": "Cause the ground to shake, dealing 1d6 damage to all enemies and knocking them prone.",
     "target": ["enemies"],
     "effects": [
-      { "type": "damage", "amount": "=1d6" },
+      { "type": "damage", "amount": "=1d6", "kind": "bludgeoning" },
       {
         "type": "debuff",
         "status": {
@@ -648,7 +667,7 @@
           "duration": 2,
           "effect": { "noActions": true }
         },
-        "saveType": "dex",
+        "saveType": "stun",
         "saveDC": 12
       }
     ]
@@ -676,20 +695,71 @@
     "name": "Enrage",
     "type": "skill",
     "aspect": "feral",
-    "description": "Enter a frenzied state, gaining +2 to damage rolls and +1 toHit but degrades AC for 3 rounds.",
+    "description": "Enter a frenzied state, gaining +2 to damage rolls and +1 toHit but degrading AC for by 3.",
     "target": ["self"],
     "effects": [
       {
         "type": "buff",
         "status": {
           "name": "Enraged",
-          "duration": 3,
+          "duration": 4,
           "effect": {
             "toHit": 1,
             "bonusDamage": 2,
             "ac": 3
           }
         }
+      }
+    ]
+  },
+
+  "acid_arrow": {
+    "name": "Acid Arrow",
+    "type": "spell",
+    "aspect": "acid",
+    "description": "Fire an arrow of acid, dealing 1d4 damage and applying Acid Burn.",
+    "target": ["enemy"],
+    "effects": [
+      { "type": "damage", "amount": "=1d4", "kind": "acid" },
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Acid Burn",
+          "duration": 3,
+          "effect": {
+            "onTurnEnd": [
+              {
+                "type": "damage",
+                "amount": "=1d3",
+                "kind": "acid"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+
+  "ray_of_frost": {
+    "name": "Ray of Frost",
+    "type": "spell",
+    "aspect": "ice",
+    "description": "Fire a ray of frost, dealing 1d4 damage and reducing the target's speed by 10 feet for 3 rounds.",
+    "target": ["enemy"],
+    "effects": [
+      { "type": "damage", "amount": "=1d4", "kind": "ice" },
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Frozen",
+          "duration": 3,
+          "effect": {
+            "noActions": true,
+            "dex": -5
+          }
+        },
+        "saveType": "con",
+        "saveDC": 10
       }
     ]
   }

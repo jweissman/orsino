@@ -7,6 +7,7 @@ import Choice from "inquirer/lib/objects/choice";
 import { GenerationTemplateType } from "./types/GenerationTemplateType";
 import Stylist from "./tui/Style";
 import Words from "./tui/Words";
+import Presenter from "./tui/Presenter";
 
 type TownSize = 'hamlet' | 'village' | 'town' | 'city' | 'metropolis' | 'capital';
 type Race = 'human' | 'elf' | 'dwarf' | 'halfling' | 'gnome' | 'orc' | 'fae';
@@ -168,6 +169,12 @@ export class ModuleRunner {
             } for ${duration} turns!`)
           }
         });
+      } else if (action === "show") {
+        this.outputSink("\n📜 Party Records:")
+        for (const pc of this.pcs) {
+          this.outputSink(`\n${Stylist.bold(pc.name)} -- ${Presenter.combatant(pc)}`);
+          Presenter.printCharacterRecord(pc);
+        }
       }
     }
 
@@ -206,10 +213,13 @@ export class ModuleRunner {
       { short: "Shop", value: "shop",   name: "Visit the Alchemist (buy potions, 50g each)", disabled: this.sharedGold < 50 },
       { short: "Chat", value: "rumors", name: "Visit the Tavern (hear rumors about the region)", disabled: available.length === 0 },
       { short: "Pray", value: "pray",   name: `Visit the Temple to ${Words.capitalize(this.mod.town.deity)}`, disabled: this.sharedGold < 10 },
+      { short: "Show", value: "show",   name: `Show Party Status/Character Records`, disabled: false },
     ];
 
     if (available.length > 0) {
       options.push({ short: "Seek", value: "embark", name: "⚔️ Embark on a Quest", disabled: false });
+    } else {
+      // options.push({ short: "Journey", value: "embark", name: "⚔️ Journey to the next region", disabled: false });
     }
 
     return await this.select("What would you like to do?", options);

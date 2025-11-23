@@ -25,10 +25,6 @@ export type DefendEvent = BaseEvent & { type: "defend"; bonusAc: number };
 export type QuaffEvent = BaseEvent & { type: "quaff" };
 export type FallenEvent = BaseEvent & { type: "fall" };
 export type FleeEvent   = BaseEvent & { type: "flee" };
-// export type FearEvent   = BaseEvent & { type: "fear" };
-// export type PoisonCloudEvent = BaseEvent & { type: "poison_cloud" };
-// export type PoisoningEvent = BaseEvent & { type: "poisoned" };
-// export type ScreamEvent = BaseEvent & { type: "scream" };
 
 export type StatusEffectEvent = BaseEvent & { type: "statusEffect"; effectName: string; effect: { [key: string]: any }; duration: number };
 export type StatusExpireEvent = BaseEvent & { type: "statusExpire"; effectName: string };
@@ -41,12 +37,8 @@ export type CombatEvent = HitEvent
   | QuaffEvent
   | FallenEvent
   | FleeEvent
-  // | FearEvent
   | StatusEffectEvent
   | StatusExpireEvent
-  // | PoisoningEvent
-  // | PoisonCloudEvent
-  // | ScreamEvent
   | CombatEndEvent
   | RoundStartEvent
   | TurnStartEvent;
@@ -62,34 +54,34 @@ type GameEvent = CombatEvent | DungeonEvent;
 
 export default class Events {
   static present(event: GameEvent): string {
-    let subject = event.subject ? event.subject.forename : null;
-    let target = event.target ? event.target.forename : null;
+    let subjectName = event.subject ? event.subject.forename : null;
+    let targetName = event.target ? event.target.forename : null;
     switch (event.type) {
       case "enterDungeon":
         return `${"=====".repeat(8)}\n${event.dungeonIcon} ${event.dungeonName.toUpperCase()}\n\n  * ${event.depth}-room ${event.dungeonType}\n${"=====".repeat(8)}`;
       case "roomCleared": return `The room is pacified.`;
 
       case "heal":
-        if (subject === target) {
-          return `${subject} heals themselves for ${event.amount} HP.`;
+        if (subjectName === targetName) {
+          return `${subjectName} heals themselves for ${event.amount} HP.`;
         } else {
-          return `${subject} heals ${target} for ${event.amount} HP.`;
+          return `${subjectName} heals ${targetName} for ${event.amount} HP.`;
         }
-      case "miss": return `${subject} attacks ${target} but misses.`;
-      case "defend": return `${subject} takes a defensive stance, preparing to block incoming attacks.`;
-      case "quaff": return `${subject} quaffs a healing potion.`;
-      case "fall": return `${subject} falls unconscious.`;
-      case "flee": return `${subject} flees from combat.`;
+      case "miss": return `${subjectName} attacks ${targetName} but misses.`;
+      case "defend": return `${subjectName} takes a defensive stance, preparing to block incoming attacks.`;
+      case "quaff": return `${subjectName} quaffs a healing potion.`;
+      case "fall": return `${subjectName} falls unconscious.`;
+      case "flee": return `${subjectName} flees from combat.`;
       case "statusEffect":
-        if (event.effect.by) {
-          return `${subject} is ${event.effectName} by ${event.effect.by.forename}.`
+        if (event.effect.by && event.effect.by.forename !== subjectName) {
+          return `${subjectName} is ${event.effectName} by ${event.effect.by.forename}.`
         }
-        return `${subject} is ${event.effectName}.`
+        return `${subjectName} is ${event.effectName}.`
       case "statusExpire":
         if (event.effectName === "Poisoned Blade") {
-          return `${subject}'s blade is no longer coated in poison.`;
+          return `${subjectName}'s blade is no longer coated in poison.`;
         }
-        return `${subject} is no longer ${event.effectName}.`;
+        return `${subjectName} is no longer ${event.effectName}.`;
       case "combatEnd": return `Combat ends! ${event.winner} victorious.`;
       case "initiate":
         return `Turn order: ${event.order.map((o, i) => `\n ${i + 1}. ${Presenter.minimalCombatant(o.combatant)} (init: ${o.initiative})`).join(", ")}`;
@@ -104,9 +96,9 @@ export default class Events {
         // let combatants = event.combatants.map(c => `\n- ${Presenter.combatant(c)}`).join("");
         // return `${heading}${combatants}`;
         return event.subject?.playerControlled ?
-          `\n--- ${subject}'s turn ---\n${Presenter.combatants(event.combatants, true)}` : '';
+          `\n--- ${subjectName}'s turn ---\n${Presenter.combatants(event.combatants, true)}` : '';
       case "hit":
-        let message = `${target} takes ${event.damage} damage from ${event.by}.`;
+        let message = `${targetName} takes ${event.damage} damage from ${event.by}.`;
         if (event.critical) {
           message += " Critical hit!";
         }

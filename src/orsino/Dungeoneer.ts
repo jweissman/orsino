@@ -39,6 +39,7 @@ export interface BossRoom {
 }
 
 export interface Dungeon {
+  terrain: "forest" | "cave" | "swamp" | "mountain" | "snow" | "desert";
   dungeon_type: string;
   race: string;
   theme: string;
@@ -68,6 +69,7 @@ export default class Dungeoneer {
         damageDie: 8, playerControlled: true, xp: 0, gp: 0,
         abilities: ["melee", "defend"],
         traits: ["lucky"],
+        damageKind: "slashing",
       }],
       healingPotions: 3
     };
@@ -147,6 +149,9 @@ export default class Dungeoneer {
       depth: this.dungeon!.depth
     });
 
+    // assign dungeon environment to each combatants currentEnvironment
+    this.playerTeam.combatants.forEach(c => c.currentEnvironment = this.dungeon!.terrain);
+
     while (!this.isOver()) {
       const room = this.currentRoom;
       if (!room) break;
@@ -193,22 +198,18 @@ export default class Dungeoneer {
     console.log("Your party:");
     this.playerTeam.combatants.forEach(c => {
       console.log(Presenter.minimalCombatant(c));
-      console.table(
-        {
-          ...c,
-          activeEffects: c.activeEffects?.map(e => e.name).join(", ") || "None",
-          abilities: c.abilities.join(", ")
-        },
-      );
+      Presenter.printCharacterRecord(c);
     });
   }
 
   static dataPath = "./data"; // path.resolve(process.cwd() + "/data");
 
+  // skipping for now -- running into cyclic structure issues :/
   private persistCharacterRecords(): void {
     for (const pc of this.playerTeam.combatants) {
-      // write pc record to file
-      Files.write(`${Dungeoneer.dataPath}/pcs/${pc.name}.json`, JSON.stringify(pc, null, 2));
+      // write pc record to file (running into cyclic structure issues!!)
+      let safePc = { ...pc, activeEffects: [], passiveEffects: [] }; // will need to recompute effects on load...
+      Files.write(`${Dungeoneer.dataPath}/pcs/${pc.name}.json`, JSON.stringify(safePc, null, 2));
     }
   }
 
@@ -454,6 +455,7 @@ export default class Dungeoneer {
   static defaultGen(): Dungeon {
     return {
       dungeon_name: 'The Cursed Caverns',
+      terrain: 'cave',
       rumor: 'A dark cave rumored to be home to a fearsome Shadow Dragon.',
       direction: 'north',
       intendedCr: 3,
@@ -470,7 +472,7 @@ export default class Dungeoneer {
         boss_encounter: {
           cr: 5,
           creatures: [
-            { forename: "Shadow Dragon", name: "Shadow Dragon", hp: 50, maxHp: 50, level: 5, ac: 18, dex: 14, str: 20, con: 16, int: 12, wis: 10, cha: 14, damageDie: 10, playerControlled: false, xp: 500, gp: 1000, attackRolls: 2, weapon: "Bite", abilities: ["melee"], traits: [] }
+            { forename: "Shadow Dragon", name: "Shadow Dragon", hp: 50, maxHp: 50, level: 5, ac: 18, dex: 14, str: 20, con: 16, int: 12, wis: 10, cha: 14, damageDie: 10, playerControlled: false, xp: 500, gp: 1000, attackRolls: 2, weapon: "Bite", damageKind: "piercing", abilities: ["melee"], traits: [] }
           ]
         },
         treasure: "A legendary sword and a chest of gold.",
@@ -486,7 +488,7 @@ export default class Dungeoneer {
           encounter: {
             cr: 1,
             creatures: [
-              { forename: "Goblin", name: "Goblin", hp: 7, maxHp: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, damageDie: 6, playerControlled: false, xp: 50, gp: 10, attackRolls: 1, weapon: "Dagger", abilities: ["melee"], traits: [] }
+              { forename: "Goblin", name: "Goblin", hp: 7, maxHp: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, damageDie: 6, playerControlled: false, xp: 50, gp: 10, attackRolls: 1, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: [] }
             ]
           }
         },
@@ -499,7 +501,7 @@ export default class Dungeoneer {
           encounter: {
             cr: 2,
             creatures: [
-              { forename: "Orc", name: "Orc", hp: 15, maxHp: 15, level: 2, ac: 13, dex: 12, str: 16, con: 14, int: 8, wis: 10, cha: 8, damageDie: 8, playerControlled: false, xp: 100, gp: 20, attackRolls: 1, weapon: "Axe", abilities: ["melee"], traits: [] },
+              { forename: "Orc", name: "Orc", hp: 15, maxHp: 15, level: 2, ac: 13, dex: 12, str: 16, con: 14, int: 8, wis: 10, cha: 8, damageDie: 8, playerControlled: false, xp: 100, gp: 20, attackRolls: 1, weapon: "Axe", damageKind: "slashing", abilities: ["melee"], traits: [] },
             ]
           }
         }

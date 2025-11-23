@@ -1,5 +1,6 @@
 import Deem from "../deem";
 import { GenerationTemplateType } from "./types/GenerationTemplateType";
+import deepCopy from "./util/deepCopy";
 
 export class Template {
   constructor(
@@ -30,9 +31,9 @@ export class Template {
       }
       Deem.stdlib.eval = async (expr: string) => await Deem.evaluate(expr, context);
 
-      assembled[key] =
-        localContext[key] !== undefined ? localContext[key] :
+      let resolved = localContext[key] !== undefined ? localContext[key] :
           (await Template.evaluatePropertyExpression(value, context));
+      assembled[key] = deepCopy(resolved);
 
       localContext[key] = assembled[key];
 

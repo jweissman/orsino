@@ -7,23 +7,43 @@ import { Team } from "./types/Team";
 import Files from "./util/Files";
 
 type Target = "self" | "ally" | "enemy" | "allies" | "enemies" | "all" | "randomEnemies";
+export type DamageKind =  "bleed" | "poison" | "psychic" | "lightning" | "earth" | "fire" | "ice" | "bludgeoning" | "piercing" | "slashing" | "force" | "radiant" | "necrotic" | "acid" | "true";
+export type SaveKind = "poison" | "disease" | "death" | "magic" | "insanity" | "charm" | "fear" | "stun" | "will";
+
+export interface StatusEffect {
+  name: string;
+  effect: { [key: string]: any };
+  duration?: number;
+  by?: Combatant;
+  whileEnvironment?: string;
+
+  onAttack?: AbilityEffect[];
+  onAttackHit?: AbilityEffect[];
+  onTurnEnd?: AbilityEffect[];
+  // onCastSpell?: AbilityEffect[];
+  // onHit?: AbilityEffect[];
+  // onKillEnemy?: AbilityEffect[];
+  // onTakeDamage?: AbilityEffect[];
+  // onGiveHealing?: AbilityEffect[];
+  // onBuff?: AbilityEffect[];
+}
 
 export interface AbilityEffect {
+  kind?: DamageKind;
   type: "attack" | "damage" | "heal" | "buff" | "debuff" | "flee" | "removeItem" | "drain";
   stat?: "str" | "dex" | "con" | "int" | "wis" | "cha";
+
   amount?: string; // e.g. "=1d6", "=2d8", "3"
   duration?: number; // in turns
-  status?: {
-    name: string;
-    effect: { [key: string]: any };
-    duration: number;
-  }
+  status?: StatusEffect;
   saveDC?: number;
-  saveType?: keyof Combatant;
+  saveType?: SaveKind;
   succeedDC?: number;
   succeedType?: keyof Combatant;
   chance?: number; // 0.0-1.0
   item?: string;
+
+  bonus?: { [key: string]: any };
 }
 
 export interface Ability {
@@ -47,7 +67,7 @@ export default class AbilityHandler {
   // load abilities from JSON file
   async loadAbilities() {
     let data = await Files.readJSON<AbilityDictionary>("./settings/fantasy/abilities.json");
-      console.log("Loaded", Object.keys(data).length, "abilities!");
+      // console.log("Loaded", Object.keys(data).length, "abilities!");
       this.abilities = data;
   }
 
@@ -97,26 +117,28 @@ export default class AbilityHandler {
     return result;
   }
 
-  // Check if target can save
-  static async resist(saveType: keyof Combatant, saveDC: number, roll: Roll, target: Combatant, name: string): Promise<boolean> {
-    if (saveType && saveDC) {
-      const saveRoll = await roll(target, `to resist ${name}`, 20);
-      const effective = Fighting.effectiveStats(target);
-      const saveMod = Fighting.statMod(effective[saveType] as number);
-      const saveTotal = saveRoll.amount + saveMod;
+  // Check if target can save (use builtin save from combat command api)
+  // static async resist(saveType: keyof Combatant, saveDC: number, roll: Roll, target: Combatant, name: string): Promise<boolean> {
+  //   if (saveType && saveDC) {
+  //     const saveRoll = await roll(target, `to resist ${name}`, 20);
+  //     const effective = Fighting.effectiveStats(target);
+  //     const saveMod = Fighting.statMod(effective[saveType] as number);
+  //     const saveTotal = saveRoll.amount + saveMod;
 
-      if (saveTotal >= saveDC) {
-        // console.log(`${target.name} resists ${name}!`);
-        return true; // Effect resisted, continue to next effect
-      }
-    }
-    return false; // Effect applies
-  }
+  //     if (saveTotal >= saveDC) {
+  //       // console.log(`${target.name} resists ${name}!`);
+  //       return true; // Effect resisted, continue to next effect
+  //     }
+  //   }
+  //   return false; // Effect applies
+  // }
 
   static async handleEffect(
     name: string,
-    effect: AbilityEffect, user: Combatant, target: Combatant | Combatant[],
-    { roll, attack, hit, heal, status, removeItem }: CommandHandlers
+    effect: AbilityEffect,
+    user: Combatant,
+    target: Combatant | Combatant[],
+    { roll, attack, hit, heal, status, removeItem, save }: CommandHandlers
   ) {
     if (Array.isArray(target)) {
       // if all are dead, skip
@@ -138,7 +160,7 @@ export default class AbilityHandler {
         for (const e of user.activeEffects) {
           if (e.effect['onAttack']) {
             e.effect['onAttack'].forEach(async (attackFx: AbilityEffect) => {
-              await this.handleEffect(e.name, attackFx, user, target, { roll, attack, hit, heal, status, removeItem });
+              await this.handleEffect(e.name, attackFx, user, target, { roll, attack, hit, heal, status, removeItem, save });
             })
           }
         }
@@ -175,7 +197,7 @@ export default class AbilityHandler {
             if (e.effect['onAttackHit']) {
               // console.log(`Triggering onAttack effect: ${e.name}`);
               e.effect['onAttackHit'].forEach(async (attackFx: AbilityEffect) => {
-                await this.handleEffect(e.name, attackFx, user, target, { roll, attack, hit, heal, status, removeItem });
+                await this.handleEffect(e.name, attackFx, user, target, { roll, attack, hit, heal, status, removeItem, save });
               })
             }
           }
@@ -196,13 +218,14 @@ export default class AbilityHandler {
             amount,
             false, // critical
             
-            `${user.forename}'s ${name}`,
-            true // success
+            `${user.forename}'s ${name} (${effect.kind || "damage"})`,
+            true, // success
+            effect.kind || "true"
           );
         }
       } else {
         let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
-        await hit(user, target, amount, false, `${user.forename}'s ${name}`, true);
+        await hit(user, target, amount, false, `${user.forename}'s ${name} (${effect.kind || "damage"})`, true, effect.kind || "true");
       }
     } else if (effect.type === "heal") {
       if (Array.isArray(target)) {
@@ -220,21 +243,21 @@ export default class AbilityHandler {
         for (const t of target) {
           let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
           await heal(user, user, amount);
-          await hit(user, t, amount, false, `${user.forename}'s ${name} (drain)`, true);
+          await hit(user, t, amount, false, `${user.forename}'s ${name} (drain)`, true, effect.kind || "true");
         }
       } else {
         let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
         await heal(user, user, amount);
-        await hit(user, target, amount, false, `${user.forename}'s ${name} (drain)`, true);
+        await hit(user, target, amount, false, `${user.forename}'s ${name} (drain)`, true, effect.kind || "true");
       }
     } else if (effect.type === "buff") { //} || effect.type === "debuff") {
       if (effect.status) {
         if (Array.isArray(target)) {
           for (const t of target) {
-              await status(user, t, effect.status.name, { ...effect.status.effect, by: user }, effect.status.duration);
+              await status(user, t, effect.status.name, { ...effect.status.effect, by: user }, effect.status.duration || 3);
           }
         } else {
-            await status(user, target, effect.status.name, { ...effect.status.effect, by: user }, effect.status.duration);
+            await status(user, target, effect.status.name, { ...effect.status.effect, by: user }, effect.status.duration || 3);
         }
       } else {
         throw new Error(`Buff effect must have a status defined`);
@@ -244,20 +267,19 @@ export default class AbilityHandler {
       if (effect.status) {
         if (Array.isArray(target)) {
           for (const t of target) {
-            let resisted = await this.resist((effect.saveType || 'con'), effect.saveDC || 0, roll, t, effect.status.name);
-            if (resisted) {
+            let saved = await save(t, effect.saveType || "magic", effect.saveDC || 15); //, roll, effect.status.name);
+            if (saved) {
               console.log(`${t.name} resists ${effect.status.name}!`);
             } else {
-              await status(user, t, effect.status.name, { ...effect.status.effect, by: user }, effect.status.duration);
+              await status(user, t, effect.status.name, { ...effect.status.effect, by: user }, effect.status.duration || 3);
             }
           }
         } else {
-          // if (effect.type === "debuff" && !this.resist((effect.saveType || 'con'), effect.saveDC || 0, roll, target, effect.status.name)) {
-          let resisted = await this.resist((effect.saveType || 'con'), effect.saveDC || 0, roll, target, effect.status.name);
-          if (resisted) {
+          let saved = await save(target, effect.saveType || "magic", effect.saveDC || 15); //, roll, effect.status.name);
+          if (saved) {
             console.log(`${target.name} resists ${effect.status.name}!`);
           } else {
-            await status(user, target, effect.status.name, { ...effect.status.effect, by: user }, effect.status.duration);
+            await status(user, target, effect.status.name, { ...effect.status.effect, by: user }, effect.status.duration || 3);
           }
         }
       } else {
@@ -310,10 +332,10 @@ export default class AbilityHandler {
 
   static async perform(
     ability: Ability, user: Combatant, target: Combatant | Combatant[],
-    { roll, attack, hit, heal, status, removeItem }: CommandHandlers
+    { roll, attack, hit, heal, status, removeItem, save }: CommandHandlers
   ) {
     for (const effect of ability.effects) {
-      let result = await this.handleEffect(ability.name, effect, user, target, { roll, attack, hit, heal, status, removeItem });
+      let result = await this.handleEffect(ability.name, effect, user, target, { roll, attack, hit, heal, status, removeItem, save });
       if (result === false) {
         break;
       }

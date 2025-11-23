@@ -3,9 +3,29 @@ import { Combatant } from "../types/Combatant";
 import Words from "./Words";
 import Combat from "../Combat";
 import { Fighting } from "../rules/Fighting";
+import { act } from "react";
 
 export default class Presenter {
   static colors = ['magenta', 'red', 'yellow', 'yellow', 'yellow', 'green', 'green', 'green', 'green'];
+
+  static printCharacterRecord = (combatant: Combatant) => {
+    let record = ({
+      ...combatant,
+      effects: [
+        ...(combatant.activeEffects || []),
+        ...(combatant.passiveEffects || [])
+      ].map(e => e.name).join(", ") || "None",
+      abilities: combatant.abilities.join(", "),
+      traits: combatant.traits.join(", ")
+    });
+
+    // delete active/passives
+    delete record.activeEffects;
+    delete record.passiveEffects;
+
+    console.table(record);
+  }
+
   static minimalCombatant = (combatant: Combatant) => {
     const hpRatio = combatant.hp / combatant.maxHp;
     const hpBar = Stylist.prettyValue(combatant.hp, combatant.maxHp);
@@ -16,7 +36,7 @@ export default class Presenter {
       Stylist.colorize(hpBar, color),
       `(${combatant.hp}/${combatant.maxHp})`
     ].join(' ');
-      //  `; // (${this.statLine(combatant)})`;
+    //  `; // (${this.statLine(combatant)})`;
   }
 
   static combatant = (combatant: Combatant) => {
@@ -89,8 +109,8 @@ export default class Presenter {
 
   static combatants = (combatants: Combatant[], minimal: boolean = false) => {
     return combatants
-            .filter(c => c.hp > 0)
-            .map(c => minimal ? this.minimalCombatant(c) : this.combatant(c)).join(minimal ? ", " : "\n");
+      .filter(c => c.hp > 0)
+      .map(c => minimal ? this.minimalCombatant(c) : this.combatant(c)).join(minimal ? ", " : "\n");
     // return combatants.map(c => this.combatant(c)).join('\n');
   }
 }
