@@ -21,8 +21,12 @@ export class Fighting {
 
   static turnBonus(combatant: Combatant, keys: (string)[] = []): { [key: string]: number } {
     let bonuses: { [key: string]: number } = {};
-    if (combatant.activeEffects) {
-      combatant.activeEffects.forEach(it => {
+    let fx = [ 
+      ...(combatant.passiveEffects || []),
+      ...(combatant.activeEffects || [])
+    ]
+    // if (combatant.activeEffects) {
+      fx.forEach(it => {
         // console.log("Considering turn bonus effect:", it);
         if (it.effect) {
           Object.entries(it.effect).forEach(([key, value]) => {
@@ -37,7 +41,7 @@ export class Fighting {
           });
         }
       });
-    }
+    // }
     // delete bonuses.by;
     return bonuses;
   }
@@ -67,12 +71,12 @@ export class Fighting {
   }
 
   // gather all current passive + active effects and try to calculate any cumulative bonuses
-  static gatherEffects(combatant: Combatant): { [key: string]: number } {
+  static gatherEffects(combatant: Combatant): { [key: string]: number | string | boolean | Array<any> } {
     let effectList = [
       ...(combatant.passiveEffects || []),
       ...(combatant.activeEffects || [])
     ];
-    let resultingEffects: { [key: string]: number } = {
+    let resultingEffects: { [key: string]: number | string | Array<any> } = {
       // could gather effective resistances/saves here too if the combatant has them specified in their record?
     };
     // effectList.forEach(it => {
@@ -87,15 +91,25 @@ export class Fighting {
 
       if (it.effect) {
         Object.entries(it.effect).forEach(([key, value]) => {
-          if (typeof value === "number") {
+          if (key === 'by') {
+            return;
+          }
+
+          if (typeof value === "number" && typeof resultingEffects[key] === "number") {
             resultingEffects[key] = (resultingEffects[key] || 0) + value;
+          } else if (Array.isArray(value) && Array.isArray(resultingEffects[key])) {
+            resultingEffects[key] = (resultingEffects[key] || []).concat(value);
           } else {
+            // console.warn(`Overriding effect ${key} with value ${value} (was ${resultingEffects[key]})`);
             resultingEffects[key] = value;
           }
         });
       }
     }
-    // console.log("Gathered effect stack for", combatant.name, ":", resultingEffects);
+    // delete resultingEffects.by;
+    // if (Object.keys(resultingEffects).length > 0) {
+    //   console.log("Gathered effect stack for", combatant.name, ":", resultingEffects);
+    // }
     return resultingEffects;
   }
 
@@ -126,14 +140,7 @@ export class Fighting {
     const ac = effectiveDefender.ac;
     const whatNumberHits = thac0 - ac - toHitBonus;
 
-    // let bonusMessage = "";
-    // if (toHitBonus > 0) {
-    //   bonusMessage += ` (+${toHitBonus} to hit; DEX ${effectiveAttacker.dex} gives +${dexMod} and turn bonuses give +${toHitTurnBonus})`;
-    // }
-
-    // console.log(`${Presenter.combatant(attacker, true)} (THAC0: ${thac0}${bonusMessage}) attacks ${Presenter.combatant(defender, true)} (AC: ${ac})... `);
-    // console.log(`Attacker THAC0: ${thac0}${bonusMessage}, Defender AC: ${ac}`); // What number hits: ${whatNumberHits} `);
-    const attackRoll = await roll(attacker, `to attack (must roll ${whatNumberHits} or higher to hit)`, 20);
+    const attackRoll = await roll(attacker, `to attack ${defender.forename} (must roll ${whatNumberHits} or higher to hit)`, 20);
     description += attackRoll.description;
     let success = attackRoll.amount >= whatNumberHits;
     let critical = false;
@@ -174,36 +181,15 @@ export class Fighting {
 
       if (critical) {
         criticalDamage = Math.max(1, Math.round(damage * 0.2 * Math.max(1, Math.floor(attacker.level / 5))));
-        if (criticalDamage > 0) {
-          console.log(`Damage increased by ${criticalDamage} for critical hit!`);
-        }
+        // if (criticalDamage > 0) {
+        //   console.log(`Damage increased by ${criticalDamage} for critical hit!`);
+        // }
       }
 
-      // if (criticalDamage > 0) {
-      //   note(`Adding ${criticalDamage} damage for critical hit.`);
-      // }
       // if (strengthDamageBonus > 0) {
-      //   note("Adding " + strengthDamageBonus + ` damage (from STR ${attacker.str})`);
+      //   console.log("Damage increased by " + strengthDamageBonus + ` for STR ${attacker.str}`);
       // }
-      if (strengthDamageBonus > 0) {
-        console.log("Damage increased by " + strengthDamageBonus + ` for STR ${attacker.str}`);
-      }
       damage = damage + criticalDamage + strengthDamageBonus;
-      // if (criticalDamage > 0) {
-      //   note("Damage increased by " + criticalDamage + " to " + damage + " for critical hit!");
-      //   description += ` Damage increased by ${criticalDamage} for critical hit!`;
-      // }
-      // defender.hp -= damage;
-      // note(
-      //   Stylist.colorize(
-      //     `${attacker.name} hits ${defender.name} with ${attacker.weapon} for ${damage} damage (now at ${defender.hp}).`,
-      //     attacker.playerControlled ? 'green' : 'red'
-      //   )
-      // );
-      // description += `\n*${attacker.name} hits ${defender.name} for ${damage} damage* (now at ${defender.hp}).`;
-    } else {
-      // note(`${attacker.name} misses ${defender.name}.`);
-      // description += `\n*${attacker.name} misses ${defender.name}.*`;
     }
 
     return {

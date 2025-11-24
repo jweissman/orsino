@@ -62,9 +62,17 @@
 ---
 [ ] Temple blessings should take account of the deity somehow... (war gods give toHit, love goddess grants chance to charm on hit etc)
 ---
-[ ] Bring back status displays
+[ ] Bring back status displays on the per turn overview...
 [ ] Show full enemy name more often (we often default to just the forename ie 'minimal' combatant view with forename + HP but this is ... not very much information)
-
+---
+[ ] Player party _must_ be able to attempt to flee intentionally (could be a dex skill check?)
+[ ] They should also have a chance to flee 'involuntarily' if they fail a save vs fear? (don't necessarily want to model 'splitting the party' but ... they could find individually-flown characters in previous rooms of the dungeon?)
+[ ] Need save events (system-level SaveEvent propagated upward by save command handler to represent succeeding or failing a save roll)
+[ ] Defend doesn't last long enough? Any effect with a duration of 1 only lasts until the end of the _current_ round (we moved to the end of the round for the check instead of individual turn beginning for clarity but maybe clearer to have co-located in flow with the individual combatant turn)
+[ ] Why is save vs Bleed a will check? Seems weird?
+[ ] Are we adding stat bonuses to save checks? (Probably not but maybe we should in at least some cases?)
+[ ] Unconscious characters should not roll init
+[ ] Some statuses still sound weird ("[defender] is Chaos by [inflicter]" - odd)
 
 ## Fixed
 [x] Temple/shrine to local deity to get a blessing

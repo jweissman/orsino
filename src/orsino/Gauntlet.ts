@@ -1,5 +1,6 @@
 import Deem from "../deem";
 import Combat from "./Combat";
+import CharacterRecord from "./rules/CharacterRecord";
 import Presenter from "./tui/Presenter";
 import { Combatant } from "./types/Combatant";
 import { Roll } from "./types/Roll";
@@ -28,14 +29,6 @@ export class Gauntlet {
     }
   }
 
-  static xpForLevel(level: number): number {
-    // return (level * level * 125) + (level * 25) - 500;
-    return (level * level * 150) + (level * 50) + 300;
-  }
-  static crForParty(party: Combatant[]): number {
-    const totalLevels = party.reduce((sum, c) => sum + c.level, 0);
-    return Math.max(1, Math.round(totalLevels / 3));
-  }
 
   async run(
     options: Record<string, any> = {}
@@ -97,7 +90,7 @@ export class Gauntlet {
           c.gp += Math.round(goldDrop / playerCombatants.length);
 
           let nextLevelXp = //(c.level * c.level * 25) + 25;
-            Gauntlet.xpForLevel(c.level + 1);
+            CharacterRecord.xpForLevel(c.level + 1);
 
           if (c.xp < nextLevelXp) {
             this.outputSink(`${c.name} needs to gain ${nextLevelXp - c.xp} more experience for level ${c.level + 1} (currently at ${c.xp}/${nextLevelXp}).`);
@@ -105,7 +98,7 @@ export class Gauntlet {
           }
           while (c.xp >= nextLevelXp) {
             c.level++;
-            nextLevelXp = Gauntlet.xpForLevel(c.level + 1);
+            nextLevelXp = CharacterRecord.xpForLevel(c.level + 1);
             c.maxHp += 1;
             c.hp = c.maxHp;
             this.outputSink(`${c.name} leveled up to level ${c.level}!`);

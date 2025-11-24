@@ -4,17 +4,19 @@ import Combat from '../src/orsino/Combat';
 import Dungeoneer, { BossRoom, Room } from '../src/orsino/Dungeoneer';
 import { ModuleRunner } from '../src/orsino/ModuleRunner';
 import AbilityHandler from '../src/orsino/Ability';
+import { GenerationTemplateType } from '../src/orsino/types/GenerationTemplateType';
+import Generator from '../src/orsino/Generator';
 
 describe('Orsino', () => {
   const orsino = new Orsino('fantasy');
   it('generate male name', async () => {
-    const response = await orsino.gen("name", { group: 'male' });
+    const response = await Generator.gen("name", { group: 'male' });
     // expect(response).toMatch(/John|Michael|David|James|Robert/);
     expect(response).toMatch(/[A-Z][a-z]+/);
   });
   
   it('generate female name', async () => {
-    const response = await orsino.gen("name", { gender: 'female' });
+    const response = await Generator.gen("name", { gender: 'female' });
     // expect(response).toMatch(/Jane|Emily|Sarah|Jessica|Lisa/);
     expect(response).toMatch(/[A-Z][a-z]+/);
   });
@@ -27,13 +29,13 @@ describe('Orsino', () => {
   // });
 
   it("generate room", async () => {
-    const response = await orsino.gen("room", { targetCr: 12 });
+    const response = await Generator.gen("room", { targetCr: 12 });
     expect(response.narrative).toMatch(/[A-Z][a-z]+/);
     expect(response.room_size).toMatch(/tiny|small|medium|large|enormous/);
   });
 
   it('pc gen', async () => {
-    const pc = await orsino.gen("pc", { setting: "fantasy" });
+    const pc = await Generator.gen("pc", { setting: "fantasy" });
     console.log(pc);
     expect(pc).toHaveProperty('name');
     expect(pc.name).toMatch(/[A-Z][a-z]+/);
@@ -81,7 +83,7 @@ describe('Orsino', () => {
 
   it('dungeon generator', async () => {
     let crawler = new Dungeoneer(
-      { dungeonGen: async () => await orsino.gen("dungeon", { depth: 2 }) },
+      { dungeonGen: async () => await Generator.gen("dungeon", { depth: 2 }) },
     );
     await crawler.setUp();
     expect(crawler.isOver()).toBe(false);
@@ -109,7 +111,7 @@ describe('Orsino', () => {
   });
 
   it('mod generator', async () => {
-    const mod = await orsino.gen("module", { setting: "fantasy" });
+    const mod = await Generator.gen("module", { setting: "fantasy" });
     expect(mod).toHaveProperty('name');
     expect(mod).toHaveProperty('terrain');
     expect(mod).toHaveProperty('town');
@@ -120,11 +122,15 @@ describe('Orsino', () => {
     expect(mod.dungeons).toBeInstanceOf(Array);
 
     let explorer = new ModuleRunner({
+      gen: async (type: GenerationTemplateType, options: Record<string, any>) => {
+        return await Generator.gen(type, options);
+      },
       moduleGen: () => mod,
-      pcs: [{
-        ...await orsino.gen("pc", { setting: "fantasy" }),
-        playerControlled: true
-      }]
+      pcs: [
+        { ...await Generator.gen("pc", { setting: "fantasy", class: "ranger" }), playerControlled: true },
+        { ...await Generator.gen("pc", { setting: "fantasy", class: "ranger" }), playerControlled: true },
+        { ...await Generator.gen("pc", { setting: "fantasy", class: "ranger" }), playerControlled: true }
+      ]
     });
 
     await explorer.run();

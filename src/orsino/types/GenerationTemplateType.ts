@@ -7,5 +7,6 @@ export type GenerationTemplateType = 'name'
   | 'treasure'
   | 'encounter'
   | 'monster'
+  | 'animal'
   | 'dungeon'
   | 'module';

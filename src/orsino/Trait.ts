@@ -27,7 +27,7 @@ export default class TraitHandler {
 
   async loadTraits() {
     let data = await Files.readJSON<TraitDictionary>("./settings/fantasy/traits.json");
-    console.log("Loaded", Object.keys(data).length, "traits!");
+    // console.log("Loaded", Object.keys(data).length, "traits!");
     // add trait name to each trait object
     this.traits = data;
     Object.entries(this.traits).forEach(([key, trait]) => {

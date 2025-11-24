@@ -24,7 +24,13 @@
       "sling": "bludgeoning",
       "polearm": "slashing",
       "greataxe": "slashing",
-      "tentacles": "bludgeoning"
+      "tentacles": "bludgeoning",
+      "kick": "bludgeoning",
+      "headbutt": "bludgeoning",
+      "antlers": "piercing",
+      "beak": "piercing",
+      "flutter": "bludgeoning",
+      "quills": "piercing"
     }
   },
   "surname": {
@@ -293,7 +299,7 @@
     "groups": {
       "human": [["adaptable", "versatile"]],
       "orc": [["resilient", "fierce"]],
-      "elf": [["agile", "perceptive"]],
+      "elf": [["agile", "perceptive", "vitalist"]],
       "dwarf": [["sturdy", "tough"]],
       "halfling": [["nimble", "lucky"]],
       "gnome": [["inventive", "curious"]],
@@ -338,6 +344,16 @@
   "damageDie": {
     "discriminator": "weapon",
     "groups": {
+      "fist": 1,
+      "kick": 1,
+      "antlers": 1,
+      "headbutt": 1,
+      "beak": 1,
+      "flutter": 1,
+      "fangs": 1,
+      "quills": 1,
+      "horns": 1,
+      "sting": 1,
       "slam": 1,
       "claws": 2,
       "bite": 3,
@@ -361,6 +377,16 @@
   "attackRolls": {
     "discriminator": "weapon",
     "groups": {
+      "fist": 1,
+      "kick": 1,
+      "antlers": 1,
+      "headbutt": 1,
+      "beak": 1,
+      "flutter": 1,
+      "fangs": 1,
+      "quills": 1,
+      "horns": 1,
+      "sting": 1,
       "slam": 2,
       "claws": 1,
       "bite": 1,
@@ -452,11 +478,11 @@
   "abilities": {
     "discriminator": "class",
     "groups": {
-      "warrior": [[ "melee", "charge", "second_wind", "taunt" ]],
+      "warrior": [[ "melee", "charge", "second_wind", "roundhouse", "taunt" ]],
       "mage": [[ "melee" ]],
       "cleric": [[ "melee", "smite", "cure", "bless" ]],
-      "ranger": [[ "ranged", "heal" ]],
-      "thief": [[ "melee", "poison_weapon", "hide" ]],
+      "ranger": [[ "ranged", "heal", "summon_animal" ]],
+      "thief": [[ "melee", "poison_weapon", "hide", "backstab" ]],
       "bard": [[ "melee", "cure", "inspire", "charm" ]],
       "sage": [[ "melee", "heal", "fear", "curse" ]]
     }
@@ -469,8 +495,7 @@
       "cleric": 8,
       "bard": 6,
       "ranger": 8,
-      "mage": 4,
-      "sage": 4
+      "mage": 4
     }
   },
 
@@ -478,11 +503,11 @@
     "discriminator": "race",
     "groups": {
       "goblin": [ "Runt", "Bandit", "Thief", "Shaman", "Warrior", "Assassin", "Chieftain" ],
-      "kobold": [ "Creep", "Slinger", "Miner", "Shaman", "Warrior", "Chieftain" ],
-      "human": [ "Peasant", "Loser", "Bandit", "Thief", "Mercenary", "Cultist", "Thug", "Cutthroat", "Assassin" ],
-      "orc": [ "Brute", "Shaman", "Warrior", "Chieftain", "Berserker" ],
-      "ogre": [ "Brute", "Shaman", "Warrior", "Chieftain", "Berserker" ],
-      "troll": [ "Bridgeminder", "Dweller", "Stalker", "Thug", "Shaman", "Warrior", "Chieftain", "Berserker" ],
+      "kobold": [ "Creep", "Dweller", "Slinger", "Miner", "Shaman", "Warrior", "Chieftain" ],
+      "human":  [ "Peasant", "Loser", "Bandit", "Thief", "Mercenary", "Cultist", "Thug", "Cutthroat", "Assassin" ],
+      "orc":    [ "Brute", "Shaman", "Warrior", "Chieftain", "Berserker" ],
+      "ogre":   [ "Brute", "Shaman", "Warrior", "Chieftain", "Berserker" ],
+      "troll":  [ "Bridgeminder", "Dweller", "Stalker", "Thug", "Shaman", "Warrior", "Chieftain", "Berserker" ],
       "dragon": [ "Miser", "Guardian", "Sage", "Warlord", "Elder", "Fury" ]
     }
   },
@@ -528,7 +553,7 @@
       "Elder": [[ "melee", "heal" ]],
       "Fury": [[ "melee", "charge" ]],
       "King": [[ "melee", "charge", "heal", "curse" ]],
-      "Hierophant": [[ "melee", "heal", "fear", "drain_life" ]],
+      "Hierophant": [[ "melee", "heal", "fear", "life_drain" ]],
       "Warlord": [[ "melee", "charge" ]],
       "Chosen One": [[ "melee", "heal", "inspire", "fear", "enrage", "curse" ]],
       "Shaman King": [[ "melee", "heal", "fear", "curse", "inspire", "charm" ]],
@@ -1676,93 +1701,52 @@
       "orc": [ "wolf", "bear", "boar" ],
       "ogre": [ "bear", "boar", "wolf", "eagle" ],
       "troll": [ "bear", "tiger", "panther", "lion" ],
-      "dragon": [ "wyrm", "snake", "pseudodragon" ]
+      "dragon": [ "wyrm", "snake", "pseudodragon" ],
+      "elf": ["deer", "owl", "fox", "hawk"],
+      "dwarf": ["badger", "ram", "mole", "raven"],
+      "halfling": ["rabbit", "ferret", "pony", "goat"],
+      "gnome": ["squirrel", "hedgehog", "stoat", "crow"],
+      "fae": ["butterfly", "dragonfly", "hummingbird", "moth"]
     }
   },
-  "companionLevel": {
+  "animalStat": {
     "discriminator": "type",
     "groups": {
-      "bat": 1, "bear": 3, "boar": 2,
-      "eagle": 2,
-      "falcon": 1,
-      "hound": 1,
-      "lion": 4,
-      "panther": 3, "pseudodragon": 4,
-      "rat": 1,
-      "snake": 1, "spider": 1,
-      "tiger": 4,
-      "wolf": 2,
-      "wyrm": 5
-    }
-  },
-  "animalStrength": {
-    "discriminator": "type",
-    "groups": {
-      "bat": 1, "bear": 8, "boar": 6,
-      "falcon": 3, "hound": 4, "pseudodragon": 5,
-      "rat": 1, "snake": 4, "spider": 2,
-      "wolf": 5, "wyrm": 10,
-      "eagle": 2, "tiger": 4, "panther": 3, "lion": 4
-    }
-  },
-  "animalDex": {
-    "discriminator": "type",
-    "groups": {
-      "bat": 3, "bear": 2, "boar": 2,
-      "falcon": 5, "hound": 4, "pseudodragon": 4,
-      "rat": 2, "snake": 3, "spider": 4,
-      "wolf": 3, "wyrm": 2,
-      "eagle": 5, "tiger": 4, "panther": 4, "lion": 3
-    }
-  },
-  "animalCon": {
-    "discriminator": "type",
-    "groups": {
-      "bat": 1, "bear": 8, "boar": 6,
-      "falcon": 3, "hound": 4, "pseudodragon": 5,
-      "rat": 1, "snake": 4, "spider": 2,
-      "wolf": 5, "wyrm": 10,
-      "eagle": 2, "tiger": 4, "panther": 3, "lion": 4
-    }
-  },
-  "animalInt": {
-    "discriminator": "type",
-    "groups": {
-      "bat": 1, "bear": 2, "boar": 2,
-      "falcon": 3, "hound": 4, "pseudodragon": 5,
-      "rat": 1, "snake": 3, "spider": 2,
-      "wolf": 4, "wyrm": 8,
-      "eagle": 2, "tiger": 3, "panther": 3, "lion": 2
-    }
-  },
-  "animalWis": {
-    "discriminator": "type",
-    "groups": {
-      "bat": 1, "bear": 2, "boar": 2,
-      "falcon": 3, "hound": 4, "pseudodragon": 5,
-      "rat": 1, "snake": 3, "spider": 2,
-      "wolf": 4, "wyrm": 8,
-      "eagle": 2, "tiger": 3, "panther": 3, "lion": 2
-    }
-  },
-  "animalCha": {
-    "discriminator": "type",
-    "groups": {
-      "bat": 1, "bear": 2, "boar": 2,
-      "falcon": 3, "hound": 4, "pseudodragon": 5,
-      "rat": 1, "snake": 3, "spider": 2,
-      "wolf": 4, "wyrm": 8,
-      "eagle": 2, "tiger": 3, "panther": 3, "lion": 4
-    }
-  },
-  "animalHp": {
-    "discriminator": "type",
-    "groups": {
-      "bat": 1, "bear": 8, "boar": 4,
-      "falcon": 1, "hound": 2, "pseudodragon": 6,
-      "rat": 1, "snake": 1, "spider": 1,
-      "wolf": 3, "wyrm": 10,
-      "eagle": 2, "tiger": 5, "panther": 4, "lion": 6
+      "bat":          { "level": 1, "hp": 1, "str": 1, "dex": 3, "con": 1, "int": 1, "wis": 2, "cha": 3 },
+      "bear":         { "level": 1, "hp": 4, "str": 8, "dex": 2, "con": 8, "int": 2, "wis": 2, "cha": 2 },
+      "boar":         { "level": 1, "hp": 3, "str": 6, "dex": 2, "con": 6, "int": 2, "wis": 2, "cha": 2 },
+      "eagle":        { "level": 1, "hp": 3, "str": 2, "dex": 5, "con": 2, "int": 2, "wis": 3, "cha": 2 },
+      "falcon":       { "level": 1, "hp": 3, "str": 3, "dex": 3, "con": 3, "int": 3, "wis": 3, "cha": 3 },
+      "hound":        { "level": 1, "hp": 3, "str": 4, "dex": 4, "con": 4, "int": 4, "wis": 4, "cha": 4 },
+      "pseudodragon": { "level": 1, "hp": 3, "str": 5, "dex": 4, "con": 5, "int": 5, "wis": 5, "cha": 5 },
+      "rat":          { "level": 1, "hp": 2, "str": 1, "dex": 2, "con": 1, "int": 1, "wis": 1, "cha": 1 },
+      "snake":        { "level": 1, "hp": 3, "str": 4, "dex": 3, "con": 4, "int": 3, "wis": 3, "cha": 3 },
+      "spider":       { "level": 1, "hp": 2, "str": 2, "dex": 4, "con": 2, "int": 2, "wis": 2, "cha": 2 },
+      "wolf":         { "level": 1, "hp": 3, "str": 5, "dex": 3, "con": 5, "int": 4, "wis": 4, "cha": 4 },
+      "wyrm":         { "level": 1, "hp": 3, "str": 7, "dex": 2, "con": 6, "int": 8, "wis": 8, "cha": 7 },
+      "tiger":        { "level": 1, "hp": 5, "str": 4, "dex": 4, "con": 4, "int": 3, "wis": 3, "cha": 3 },
+      "panther":      { "level": 1, "hp": 4, "str": 3, "dex": 4, "con": 3, "int": 3, "wis": 3, "cha": 3 },
+      "lion":         { "level": 1, "hp": 4, "str": 4, "dex": 3, "con": 4, "int": 2, "wis": 2, "cha": 4 },
+      "deer":         { "level": 1, "hp": 3, "str": 2, "dex": 4, "con": 2, "int": 2, "wis": 3, "cha": 2 },
+      "owl":          { "level": 1, "hp": 3, "str": 2, "dex": 4, "con": 2, "int": 3, "wis": 4, "cha": 2 },
+      "fox":          { "level": 1, "hp": 3, "str": 3, "dex": 4, "con": 3, "int": 3, "wis": 3, "cha": 3 },
+      "hawk":         { "level": 1, "hp": 3, "str": 3, "dex": 4, "con": 3, "int": 3, "wis": 4, "cha": 3 },
+      "badger":       { "level": 1, "hp": 3, "str": 3, "dex": 2, "con": 3, "int": 2, "wis": 2, "cha": 2 },
+      "ram":          { "level": 1, "hp": 4, "str": 4, "dex": 2, "con": 4, "int": 2, "wis": 2, "cha": 2 },
+      "mole":         { "level": 1, "hp": 3, "str": 2, "dex": 3, "con": 2, "int": 2, "wis": 2, "cha": 2 },
+      "raven":        { "level": 1, "hp": 2, "str": 2, "dex": 4, "con": 2, "int": 3, "wis": 3, "cha": 3 },
+      "rabbit":       { "level": 1, "hp": 4, "str": 1, "dex": 3, "con": 2, "int": 2, "wis": 3, "cha": 2 },
+      "ferret":       { "level": 1, "hp": 3, "str": 2, "dex": 4, "con": 3, "int": 3, "wis": 3, "cha": 3 },
+      "pony":         { "level": 1, "hp": 4, "str": 4, "dex": 3, "con": 4, "int": 2, "wis": 2, "cha": 3 },
+      "goat":         { "level": 1, "hp": 3, "str": 3, "dex": 2, "con": 3, "int": 2, "wis": 2, "cha": 3 },
+      "squirrel":     { "level": 1, "hp": 1, "str": 1, "dex": 4, "con": 2, "int": 3, "wis": 3, "cha": 2 },
+      "hedgehog":     { "level": 1, "hp": 2, "str": 2, "dex": 2, "con": 3, "int": 2, "wis": 3, "cha": 2 },
+      "stoat":        { "level": 1, "hp": 3, "str": 2, "dex": 4, "con": 3, "int": 3, "wis": 3, "cha": 3 },
+      "crow":         { "level": 1, "hp": 2, "str": 2, "dex": 5, "con": 2, "int": 5, "wis": 3, "cha": 3 },
+      "butterfly":    { "level": 1, "hp": 2, "str": 1, "dex": 5, "con": 2, "int": 2, "wis": 3, "cha": 4 },
+      "dragonfly":    { "level": 1, "hp": 2, "str": 1, "dex": 5, "con": 2, "int": 2, "wis": 3, "cha": 6 },
+      "hummingbird":  { "level": 1, "hp": 2, "str": 1, "dex": 5, "con": 2, "int": 2, "wis": 3, "cha": 4 },
+      "moth":         { "level": 1, "hp": 2, "str": 1, "dex": 5, "con": 2, "int": 2, "wis": 3, "cha": 4 }
     }
   },
   "animalWeapon": {
@@ -1782,17 +1766,39 @@
       "eagle": "talons",
       "tiger": "claws",
       "panther": "claws",
-      "lion": "claws"
+      "lion": "claws",
+      "deer": "antlers",
+      "owl": "talons",
+      "fox": "bite",
+      "hawk": "talons",
+      "badger": "claws",
+      "ram": "horns",
+      "mole": "claws",
+      "raven": "beak",
+      "rabbit": "bite",
+      "ferret": "bite",
+      "pony": "kick",
+      "goat": "headbutt",
+      "squirrel": "bite",
+      "hedgehog": "quills",
+      "stoat": "bite",
+      "crow": "beak",
+      "butterfly": "flutter",
+      "dragonfly": "flutter",
+      "hummingbird": "flutter",
+      "moth": "flutter"
     }
   },
   "animalNaturalArmor": {
     "discriminator": "type",
     "groups": {
-      "bat": -2, "bear": 1, "boar": 1,
-      "falcon": 0, "hound": 0, "pseudodragon": 2,
-      "rat": -4, "snake": 0, "spider": -1,
-      "wolf": 1, "wyrm": 4,
-      "eagle": 0, "tiger": 1, "panther": 1, "lion": 1
+      "bat": -2, "bear": 1, "boar": 1, "falcon": 0, "hound": 0, "pseudodragon": 2,
+      "rat": -4, "snake": 0, "spider": -1, "wolf": 1, "wyrm": 4,
+      "eagle": 0, "tiger": 1, "panther": 1, "lion": 1,
+      "deer": 0, "owl": 0, "fox": 0, "hawk": 0, "badger": 1,
+      "ram": 1, "mole": -2, "raven": 0, "rabbit": -2, "ferret": -2,
+      "pony": 1, "goat": 1, "squirrel": -2, "hedgehog": 1,
+      "stoat": -2, "crow": 0, "butterfly": -4, "dragonfly": -4, "hummingbird": -4, "moth": -4
     }
   },
   "companionName": {
@@ -1804,23 +1810,36 @@
       "lion": [ "Leo", "Simba", "Aslan", "Mufasa", "Nala" ],
       "tiger": [ "Shere Khan", "Tigris", "Rajah", "Saber", "Stripes" ],
       "panther": [ "Shadow", "Midnight", "Onyx", "Luna", "Nyx" ],
-      "rat": [
-        "Remy", "Rizzo", "Splinter", "Templeton", "Gus", "Rattus", "Squeakers", "Whiskers", "Nibbles", "Scabbers",
-        "Ratticus", "Squeaky", "Ratty", "Ratsy", "Verm"
-      ],
+      "rat": [ "Remy", "Rizzo", "Splinter", "Templeton", "Gus", "Rattus", "Squeakers", "Whiskers", "Nibbles", "Scabbers", "Ratticus", "Squeaky", "Ratty", "Ratsy", "Verm" ],
       "cat": [ "Whiskers", "Mittens", "Salem", "Garfield", "Felix" ],
       "snake": [ "Nagini", "Kaa", "Seraphina", "Viper", "Slytherin" ],
-      "spider": [
-        "Aragog", "Shelob", "Anansi", "Arachne", "Webster", "Spinner", "Silk", "Venom", "Charlotte", "Spindly", "Eightlegs",
-        "Creepy", "Crawly", "Eightlegs", "Webber", "Spidey", "Eyes", "Fonsy", "Skitter", "Spindle", "Spinneret", "Longlegs",
-        "Teensy", "Orbweaver", "Recluse", "Widow", "Gardener"
-      ],
+      "spider": [ "Aragog", "Shelob", "Anansi", "Arachne", "Webster", "Spinner", "Silk", "Venom", "Charlotte", "Spindly", "Eightlegs", "Creepy", "Crawly", "Eightlegs", "Webber", "Spidey", "Eyes", "Fonsy", "Skitter", "Spindle", "Spinneret", "Longlegs", "Teensy", "Orbweaver", "Recluse", "Widow", "Gardener" ],
       "wyrm": [ "Drake", "Wyvern", "Serpent", "Hydra", "Naga" ],
       "pseudodragon": [ "Puff", "Saphira", "Smaug", "Glaurung", "Fafnir" ],
       "bat": [ "Vlad", "Nosferatu", "Drack", "Sanguine", "Von" ],
       "boar": [ "Tusker", "Gore", "Snout", "Bristle", "Porker" ],
       "falcon": [ "Sky", "Hawk", "Raven", "Falco", "Sparrow" ],
-      "hound": [ "Rover", "Fido", "Spot", "Buddy", "Max", "Rex", "Lassie" ]
+      "hound": [ "Rover", "Fido", "Spot", "Buddy", "Max", "Rex", "Lassie" ],
+      "deer": [ "Bambi" ],
+      "owl": [ "Hedwig", "Archimedes", "Athena", "Owlbert", "Nocturne" ],
+      "fox": [ "Foxy", "Reynard", "Vixen", "Sly", "Fennec", "Rusty" ],
+      "hawk": [ "Hawkeye", "Falcon", "Sky", "Aquila", "Talons" ],
+      "badger": [ "Badges", "Bramble", "Bracken", "Bumble", "Burrow" ],
+      "ram": [ "Rambler", "Bighorn", "Horns", "Goliath", "Bunctious" ],
+      "mole": [ "Moley", "Diggs", "Burrower", "Digger", "Tunnel" ],
+      "raven": [ "Ravenclaw", "Edgar", "Poe", "Nevermore", "Caw" ],
+      "rabbit": [ "Bun", "Flopsy", "Thumper", "Hopper", "Cottontail" ],
+      "ferret": [ "Fuzzy", "Slinky", "Whiskers", "Nibbler", "Slink" ],
+      "pony": [ "Pippin", "Shadowfax", "Gandalf", "Frodo", "Bilbo" ],
+      "goat": [ "Billy", "Nanny", "Goliath", "Bleat", "Horns" ],
+      "squirrel": [ "Nutty", "Acorn", "Chipper", "Whiskers", "Scrat", "Chippy", "Dale" ],
+      "hedgehog": [ "Spike", "Prickles", "Quill", "Hedgy", "Sonic" ],
+      "stoat": [ "Stoatie", "Weasel", "Furball", "Sneaky", "Slink" ],
+      "crow": [ "Caw", "Raven", "Corvus", "Feather", "Blackie" ],
+      "butterfly": [ "Flutter", "Wings", "Monarch", "Papillon", "Dewdrop" ],
+      "dragonfly": [ "Dart", "Glide", "Wings", "Skimmer", "Dewdrop" ],
+      "hummingbird": [ "Hum", "Buzz", "Wings", "Flit", "Dewdrop" ],
+      "moth": [ "Flutter", "Wings", "Nocturne", "Luna", "Silk", "Dewdrop" ]
     }
   },
 

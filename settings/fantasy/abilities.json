@@ -19,7 +19,8 @@
     "effects": [
       {
         "type": "flee",
-        "succeedDC": 15
+        "succeedDC": 15,
+        "succeedType": "will"
       }
     ]
   },
@@ -70,8 +71,23 @@
           "effect": {
             "ac": -4
           },
-          "duration": 1
+          "duration": 2
         }
+      }
+    ]
+  },
+
+  "roundhouse": {
+    "name": "Roundhouse Kick",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Make a powerful kick that strikes all enemies.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "attack"
       }
     ]
   },
@@ -252,8 +268,8 @@
     "name": "Sleep",
     "type": "spell",
     "aspect": "arcane",
-    "description": "Put an enemy to sleep for 2 rounds.",
-    "target": ["enemy"],
+    "description": "Put all enemies to sleep for 2 rounds.",
+    "target": ["enemies"],
     "effects": [
       {
         "type": "debuff",
@@ -519,7 +535,7 @@
         "type": "buff",
         "status": {
           "name": "Hidden",
-          "duration": 1,
+          "duration": 5,
           "effect": {
             "ac": -10,
             "onAttack": [
@@ -533,6 +549,30 @@
       }
     ]
   },
+
+  "backstab": {
+    "name": "Backstab",
+    "type": "skill",
+    "aspect": "stealth",
+    "description": "Attack an enemy from behind, dealing 1d6 extra damage.",
+    "target": [
+      "enemy"
+    ],
+    "condition": {
+      "status": "Hidden"
+    },
+    "effects": [
+      {
+        "type": "attack"
+      },
+      {
+        "type": "damage",
+        "amount": "=1d6",
+        "kind": "piercing"
+      }
+    ]
+  },
+
   "poison_bite": {
     "name": "Poison Bite",
     "type": "skill",
@@ -760,6 +800,20 @@
         },
         "saveType": "con",
         "saveDC": 10
+      }
+    ]
+  },
+
+  "summon_animal": {
+    "name": "Summon Animal",
+    "type": "skill",
+    "aspect": "nature",
+    "description": "Summon a random animal to fight for you.",
+    "target": ["self"],
+    "effects": [
+      {
+        "type": "summon",
+        "creature": "animal"
       }
     ]
   }

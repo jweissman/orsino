@@ -1,4 +1,119 @@
 {
+  "accordant": {
+    "type": "party",
+    "description": "Human Accord",
+    "requirements": {
+      "races": [
+        "human",
+        "human",
+        "human"
+      ]
+    },
+    "statuses": [
+      {
+        "name": "Cosmopolitan",
+        "description": "Gain +2 to all rolls and +10 to search when in a city environment.",
+        "whileEnvironment": "urban",
+        "effect": {
+          "allRolls": 2,
+          "searchBonus": 10
+        }
+      }
+    ]
+  },
+  "versatile": {
+    "type": "racial",
+    "description": "Versatile",
+    "requirements": {
+      "race": "human"
+    },
+    "statuses": [
+      {
+        "name": "Jack of All Trades",
+        "description": "+1 to all skill checks outside combat.",
+        "effect": {
+          "searchBonus": 1,
+          "examineBonus": 1,
+          "pickLockBonus": 1,
+          "disarmTrapBonus": 1
+        }
+      }
+    ]
+  },
+  "adaptable": {
+    "type": "racial",
+    "description": "Adaptable",
+    "requirements": {
+      "race": "human"
+    },
+    "statuses": [
+      {
+        "name": "Fast Learner",
+        "description": "+10% XP gain.",
+        "effect": {
+          "xpMultiplier": 1.1
+        }
+      }
+    ]
+  },
+  "perceptive": {
+    "type": "racial",
+    "description": "Perceptive",
+    "requirements": {
+      "race": "elf"
+    },
+    "statuses": [
+      {
+        "name": "Keen Senses",
+        "description": "Immune to surprise, +4 to search checks.",
+        "effect": {
+          "immuneSurprise": true,
+          "searchBonus": 4
+        }
+      }
+    ]
+  },
+  "agile": {
+    "type": "racial",
+    "description": "Agile",
+    "requirements": {
+      "race": "elf"
+    },
+    "statuses": [
+      {
+        "name": "Graceful",
+        "description": "+1 AC and +1 to save vs magic.",
+        "effect": {
+          "ac": -1,
+          "saveVersusMagic": 1
+        }
+      }
+    ]
+  },
+  "vitalist": {
+    "type": "racial",
+    "description": "Vitalism",
+    "requirements": {
+      "race": "elf"
+    },
+    "statuses": [
+      {
+        "name": "Undying",
+        "description": "On successful attack hit, heal yourself for 1 HP.",
+        "effect": {
+          "onAttackHit": [
+            {
+              "type": "heal",
+              "target": [
+                "self"
+              ],
+              "amount": 1
+            }
+          ]
+        }
+      }
+    ]
+  },
   "lucky": {
     "type": "racial",
     "description": "Fortunate",
@@ -15,7 +130,106 @@
       }
     ]
   },
-
+  "nimble": {
+    "type": "racial",
+    "description": "Nimble",
+    "requirements": {
+      "race": "halfling"
+    },
+    "statuses": [
+      {
+        "name": "Small and Quick",
+        "description": "Improve AC by 2 and gain +2 bonus to evasion.",
+        "effect": {
+          "ac": -2,
+          "evasion": 2
+        }
+      }
+    ]
+  },
+  "curious": {
+    "type": "racial",
+    "description": "Curious",
+    "requirements": {
+      "race": "gnome"
+    },
+    "statuses": [
+      {
+        "name": "Inquisitive Mind",
+        "description": "+4 to examine checks, +10% XP gain.",
+        "effect": {
+          "examineBonus": 4,
+          "xpMultiplier": 1.1
+        }
+      }
+    ]
+  },
+  "inventive": {
+    "type": "racial",
+    "description": "Inventive",
+    "requirements": {
+      "race": "gnome"
+    },
+    "statuses": [
+      {
+        "name": "Tinker",
+        "description": "Consumables are 25% more effective.",
+        "effect": {
+          "consumableMultiplier": 1.25
+        }
+      }
+    ]
+  },
+  "mysterious": {
+    "type": "racial",
+    "description": "Mysterious",
+    "requirements": {
+      "race": "fae"
+    },
+    "statuses": [
+      {
+        "name": "Ethereal Form",
+        "description": "+1 AC, -2 max HP, immune to charm.",
+        "effect": {
+          "ac": -1,
+          "maxHp": -2,
+          "immuneCharm": true
+        }
+      }
+    ]
+  },
+  "enchanting": {
+    "type": "racial",
+    "description": "Enchanting",
+    "requirements": {
+      "race": "fae"
+    },
+    "statuses": [
+      {
+        "name": "Faerie Charm",
+        "description": "Status effects last 1 extra turn.",
+        "effect": {
+          "statusDuration": 1
+        }
+      }
+    ]
+  },
+  "fierce": {
+    "type": "racial",
+    "description": "Fierce",
+    "requirements": {
+      "race": "orc"
+    },
+    "statuses": [
+      {
+        "name": "Berserker Rage",
+        "description": "+2 bonus damage on all attacks.",
+        "effect": {
+          "bonusDamage": 2
+        }
+      }
+    ]
+  },
   "resilient": {
     "type": "racial",
     "description": "Resilient",
@@ -33,7 +247,6 @@
       }
     ]
   },
-
   "sturdy": {
     "type": "racial",
     "description": "Sturdy",
@@ -65,29 +278,63 @@
       }
     ]
   },
-
-  "perinath": {
-    "type": "party",
-    "description": "Halfling Band",
+  "tough": {
+    "type": "racial",
+    "description": "Tough",
     "requirements": {
-      "races": ["halfling", "halfling", "halfling"]
+      "race": "dwarf"
     },
     "statuses": [
       {
-        "name": "Moral Economy",
-        "description": "When you heal an ally, heal yourself for half the amount as well.",
-        "onHealAlly": {
-          "bonus": { "selfHealing": "=round(#amount/2)" } 
+        "name": "Enduring",
+        "description": "+1d4 HP per level.",
+        "effect": {
+          "onLevelUp": [
+            {
+              "type": "upgrade",
+              "stat": "maxHp",
+              "amount": "1d4"
+            }
+          ]
         }
       }
     ]
   },
-
+  "perinath": {
+    "type": "party",
+    "description": "Halfling Band",
+    "requirements": {
+      "races": [
+        "halfling",
+        "halfling",
+        "halfling"
+      ]
+    },
+    "statuses": [
+      {
+        "name": "Moral Economy",
+        "description": "When you heal an ally, heal yourself for 1d3 as well.",
+        "effect": {
+          "onHeal": [
+            {
+              "type": "heal",
+              "target": "self",
+              "amount": "=1d3"
+            }
+          ]
+        }
+      }
+    ]
+  },
   "elvenkin": {
     "type": "party",
     "description": "Elven Tribe",
     "requirements": {
-      "races": ["elf", "elf", "elf"]
+      "races": [
+        "elf",
+        "elf",
+        "elf"
+      ]
     },
     "statuses": [
       {
@@ -104,7 +351,11 @@
     "type": "party",
     "description": "Dwarf Clan",
     "requirements": {
-      "races": ["dwarf", "dwarf", "dwarf"]
+      "races": [
+        "dwarf",
+        "dwarf",
+        "dwarf"
+      ]
     },
     "statuses": [
       {
@@ -117,19 +368,99 @@
       }
     ]
   },
-
+  "feywild": {
+    "type": "party",
+    "description": "Fey Court",
+    "requirements": {
+      "races": [
+        "fae",
+        "fae",
+        "fae"
+      ]
+    },
+    "statuses": [
+      {
+        "name": "Fortunate Fairy",
+        "description": "Gain +2 to all rolls.",
+        "effect": {
+          "allRolls": 2
+        }
+      }
+    ]
+  },
+  "foundrywork": {
+    "type": "party",
+    "description": "Foundry",
+    "requirements": {
+      "races": [
+        "gnome",
+        "gnome",
+        "gnome"
+      ]
+    },
+    "statuses": [
+      {
+        "name": "Jury Rigging",
+        "description": "Find extra consumables when searching (+1 items found).",
+        "effect": {
+          "lootBonus": 1
+        }
+      }
+    ]
+  },
+  "hordeling": {
+    "type": "party",
+    "description": "War Horde",
+    "requirements": {
+      "races": [
+        "orc",
+        "orc",
+        "orc"
+      ]
+    },
+    "statuses": [
+      {
+        "name": "Blood Frenzy",
+        "description": "Gain +1d4 damage for a turn after kill.",
+        "effect": {
+          "onKill": [
+            {
+              "type": "buff",
+              "status": {
+                "name": "Blood Frenzy",
+                "duration": 1,
+                "effect": {
+                  "bonusDamage": "1d4"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
   "warbander": {
     "type": "party",
     "description": "War Band",
     "requirements": {
-      "formation": ["warrior", "warrior", "warrior"]
+      "formation": [
+        "warrior",
+        "warrior",
+        "warrior"
+      ]
     },
     "statuses": [
       {
         "name": "Battle Hardened",
         "description": "Gain extra 1d6 HP whenever you level up.",
-        "onLevelUp": {
-          "bonus": { "hp": "=1d6" }
+        "effect": {
+          "onLevelUp": [
+            {
+              "type": "upgrade",
+              "stat": "maxHp",
+              "amount": "1d6"
+            }
+          ]
         }
       },
       {
@@ -145,14 +476,24 @@
     "type": "party",
     "description": "Academy",
     "requirements": {
-      "formation": ["mage", "mage", "mage"]
+      "formation": [
+        "mage",
+        "mage",
+        "mage"
+      ]
     },
     "statuses": [
       {
         "name": "Arcane Insight",
-        "description": "Whenever you cast a spell, add an additional 1d3 to the spell's damage.",
-        "onCastSpell": {
-          "bonus": { "damage": "=1d3" }
+        "description": "Whenever you cast an offensive spell, add an additional 1d3 true damage to the spell.",
+        "effect": {
+          "onOffensiveCasting": [
+            {
+              "type": "damage",
+              "amount": "=1d3",
+              "damageType": "true"
+            }
+          ]
         }
       }
     ]
@@ -161,14 +502,23 @@
     "type": "party",
     "description": "Clerical Synod",
     "requirements": {
-      "formation": ["cleric", "cleric", "cleric"]
+      "formation": [
+        "cleric",
+        "cleric",
+        "cleric"
+      ]
     },
     "statuses": [
       {
         "name": "Herbal Remedies",
         "description": "Whenever you heal, add an additional 1d4 HP.",
-        "onHeal": {
-          "bonus": { "healing": "=1d4" }
+        "effect": {
+          "onHeal": [
+            {
+              "type": "heal",
+              "amount": "=1d4"
+            }
+          ]
         }
       }
     ]
@@ -177,14 +527,18 @@
     "type": "party",
     "description": "Circle",
     "requirements": {
-      "formation": ["ranger", "ranger", "ranger"]
+      "formation": [
+        "ranger",
+        "ranger",
+        "ranger"
+      ]
     },
     "statuses": [
       {
         "name": "Natural Sympathy",
         "description": "Summon stronger animal companions (+1 to rolls on animal summoning table).",
-        "onSummon": {
-          "bonus": { "effectiveLevel": 1 }
+        "effect": {
+          "summonAnimalBonus": 1
         }
       }
     ]
@@ -193,24 +547,31 @@
     "type": "party",
     "description": "Troupe",
     "requirements": {
-      "formation": ["bard", "bard", "bard"]
+      "formation": [
+        "bard",
+        "bard",
+        "bard"
+      ]
     },
     "statuses": [
       {
         "name": "Resonant Harmony",
         "description": "All status effects you apply last 1 additional turn.",
-        "onApplyStatus": {
-          "bonus": { "statusDuration": 1 }
+        "effect": {
+          "statusDuration": 1
         }
       }
     ]
   },
-
   "adventurer": {
     "type": "party",
     "description": "Adventuring Party",
     "requirements": {
-      "formation": ["warrior", "mage", "cleric"]
+      "formation": [
+        "warrior",
+        "mage",
+        "cleric"
+      ]
     },
     "statuses": [
       {
@@ -224,12 +585,15 @@
       }
     ]
   },
-
   "oligarch": {
     "type": "party",
     "description": "Oligarchy",
     "requirements": {
-      "formation": ["warrior", "cleric", "thief"]
+      "formation": [
+        "warrior",
+        "cleric",
+        "thief"
+      ]
     },
     "statuses": [
       {
@@ -242,9 +606,45 @@
       },
       {
         "name": "Bountiful Spoils",
-        "description": "Receive bonus gold and XP per kill.",
-        "onKill": {
-          "bonus": { "gold": 10, "xp": 20 }
+        "description": "Receive 2d6 bonus gold and 2d4 XP per kill.",
+        "effect": {
+          "onKill": [
+            {
+              "type": "gold",
+              "amount": "=2d6"
+            },
+            {
+              "type": "xp",
+              "amount": "=2d4"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "guild": {
+    "type": "party",
+    "description": "Thieves' Guild",
+    "requirements": {
+      "formation": [
+        "thief",
+        "thief",
+        "thief"
+      ]
+    },
+    "statuses": [
+      {
+        "name": "Coordinated Strike",
+        "description": "Backstab damage increased by 50%.",
+        "effect": {
+          "backstabMultiplier": 1.5
+        }
+      },
+      {
+        "name": "Master Thieves",
+        "description": "+50% gold from all sources.",
+        "effect": {
+          "goldMultiplier": 1.5
         }
       }
     ]

@@ -42,7 +42,8 @@ export default class Deem {
     },
     dig: (obj: any, ...path: string[]) => {
       return path.reduce((acc, key) => (acc && acc[key] !== undefined) ? acc[key] : null, obj);
-    }
+    },
+    uniq: (arr: any[]) => Array.from(new Set(arr)),
   };
   static grammar = ohm.grammar(source);
   static semantics = Deem.grammar.createSemantics().addOperation('eval(context)', {
@@ -198,6 +199,11 @@ export default class Deem {
     expression: string,
     context: Record<string, any> = {}
   ): Promise<any> {
+    // if we have a leading =, then we can remove it
+    if (expression.startsWith('=')) {
+      expression = expression.slice(1);
+    }
+
     const match = this.grammar.match(expression);
     if (match.succeeded()) {
       const sem = this.semantics(match);

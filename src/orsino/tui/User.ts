@@ -2,9 +2,11 @@ import { select } from "@inquirer/prompts";
 import { Separator } from "@inquirer/select";
 import inquirer from "inquirer";
 import Choice from "inquirer/lib/objects/choice";
-import Combat, { RollResult } from "../Combat";
+import Combat from "../Combat";
+import { RollResult } from "../types/RollResult";
 import { Combatant } from "../types/Combatant";
 import Spinner from "./Spinner";
+import { Commands } from "../rules/Commands";
 
 export default class User {
   // print the message and return the user's input
@@ -63,7 +65,7 @@ export default class User {
 
   static async roll(subject: Combatant, description: string, sides: number): Promise<RollResult> {
     if (!subject.playerControlled) {
-      const result = Combat.roll(subject, description, sides);
+      const result = Commands.roll(subject, description, sides);
       await Spinner.run(`${subject.name} is rolling ${description}`, 20 + Math.random() * 140, result.description);
       return result;
     }
@@ -74,7 +76,7 @@ export default class User {
       `${subject.name} rolling d${sides} ${description}`
     );
     // Then do the actual roll
-    let result = Combat.roll(subject, description, sides);
+    let result = Commands.roll(subject, description, sides);
     console.log("\r" + result.description);
     return result;
   }

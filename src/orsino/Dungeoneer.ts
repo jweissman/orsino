@@ -1,5 +1,4 @@
-import Combat, { RollResult } from "./Combat";
-import { Gauntlet } from "./Gauntlet";
+import Combat from "./Combat";
 import { Team } from "./types/Team";
 import Presenter from "./tui/Presenter";
 import { Combatant } from "./types/Combatant";
@@ -11,6 +10,11 @@ import Files from "./util/Files";
 import { Fighting } from "./rules/Fighting";
 import { Roll } from "./types/Roll";
 import Events, { DungeonEvent } from "./Events";
+import AbilityHandler, { AbilityEffect } from "./Ability";
+import { Commands } from "./rules/Commands";
+import CharacterRecord from "./rules/CharacterRecord";
+
+type SkillType = "search" | "examine"; // | "disarm" | "pickLock" | "climb" | "swim" | "jump" | "listen" | "spot";
 
 interface Encounter {
   creatures: Combatant[];
@@ -92,7 +96,7 @@ export default class Dungeoneer {
   constructor(
     options: Record<string, any> = {}
   ) {
-    this.roller = options.roller || Combat.roll;
+    this.roller = options.roller || Commands.roll;
     this.select = options.select || Combat.samplingSelect;
     this.outputSink = options.outputSink || console.log;
     this.dungeonGen = options.dungeonGen || Dungeoneer.defaultGen;
@@ -106,7 +110,7 @@ export default class Dungeoneer {
 
     this.encounterGen = (async (cr: number) => {
       if (options.gen) {
-        return await options.gen("encounter", { ...this.dungeon!, targetCr: cr });
+        return await options.gen("encounter", { race: this.dungeon!.race, terrain: this.dungeon!.terrain, targetCr: cr });
       } else {
         return {
           creatures: [
@@ -139,7 +143,7 @@ export default class Dungeoneer {
       await this.setUp();
     }
 
-    this.presentCharacterRecords();
+    // this.presentCharacterRecords();
 
     this.emit({
       type: "enterDungeon",
@@ -178,7 +182,7 @@ export default class Dungeoneer {
     }
   }
 
-  async skillCheck(action: string, skill: keyof Combatant, dc: number): Promise<{
+  async skillCheck(type: SkillType, action: string, skill: keyof Combatant, dc: number): Promise<{
     actor: Combatant;
     success: boolean;
   }> {
@@ -188,9 +192,15 @@ export default class Dungeoneer {
       short: c.name,
       disabled: c.hp <= 0
     })));
-    // this.note(`\n🎲 ${actor.name} attempts ${action}...`);
+
+    let actorFx = Fighting.gatherEffects(actor);
+    let skillBonusName = `${type}Bonus`;
+    let skillBonus = actorFx[skillBonusName] as number || 0;
+    let skillMod = Fighting.statMod(actor[skill] as number);
+
+    this.note(`${actor.name} attempts ${action} with modifier ${skillMod} ` + (skillBonus > 0 ? ` and +${skillBonus} bonus.` : '.'));
     const roll = await this.roller(actor, action, 20);
-    const total = roll.amount + Fighting.statMod(actor[skill] as number);
+    const total = roll.amount + skillMod + skillBonus;
     return { actor, success: total >= dc };
   }
 
@@ -264,6 +274,8 @@ export default class Dungeoneer {
       await combat.round();
     }
 
+    console.log(`Combat complete. Winner: '${combat.winner}'`);
+
     // Award XP/gold
     if (combat.winner === this.playerTeam.name) {
       // const encounter = this.currentEncounter!;
@@ -306,16 +318,21 @@ export default class Dungeoneer {
 
   private async reward(xp: number, gold: number): Promise<void> {
     for (const c of this.playerTeam.combatants) {
-      c.xp = (c.xp || 0) + xp;
-      c.gp = (c.gp || 0) + gold;
-      let nextLevelXp = Gauntlet.xpForLevel(c.level + 1);
+      let fx = Fighting.gatherEffects(c);
+      let xpMultiplier = fx.xpMultiplier as number || 1;
+      let gpMultiplier = fx.goldMultiplier as number || 1;
+
+      c.xp = Math.round((c.xp || 0) + xp * xpMultiplier);
+      c.gp = Math.round((c.gp || 0) + gold * gpMultiplier);
+
+      let nextLevelXp = CharacterRecord.xpForLevel(c.level + 1);
 
       if (xp > 0 && c.xp < nextLevelXp) {
         this.note(`${c.name} needs to gain ${nextLevelXp - c.xp} more experience for level ${c.level + 1} (currently at ${c.xp}/${nextLevelXp}).`);
       }
       while (c.xp >= nextLevelXp) {
         c.level++;
-        nextLevelXp = Gauntlet.xpForLevel(c.level + 1);
+        nextLevelXp = CharacterRecord.xpForLevel(c.level + 1);
         let hitPointIncrease = (await this.roller(c, "hit point growth", c.hitDie || 4)).amount;
         hitPointIncrease += Fighting.statMod(c.con || 10);
         hitPointIncrease = Math.max(1, hitPointIncrease);
@@ -324,16 +341,29 @@ export default class Dungeoneer {
         this.note(`${Presenter.combatant(c)} leveled up to level ${c.level}!`);
         this.note(`Hit points increased by ${hitPointIncrease} to ${c.maxHp}.`);
         const stat = await this.select(`Choose a stat to increase:`, [
-          { disabled: false, name: `Strength (${c.str})`, value: 'str', short: 'Strength' },
-          { disabled: false, name: `Dexterity (${c.dex})`, value: 'dex', short: 'Dexterity' },
-          { disabled: false, name: `Intelligence (${c.int})`, value: 'int', short: 'Intelligence' },
-          { disabled: false, name: `Wisdom (${c.wis})`, value: 'wis', short: 'Wisdom' },
-          { disabled: false, name: `Charisma (${c.cha})`, value: 'cha', short: 'Charisma' },
-          { disabled: false, name: `Constitution (${c.con})`, value: 'con', short: 'Constitution' },
+          { disabled: c.str >= 18, name: `Strength (${c.str})`, value: 'str', short: 'Strength' },
+          { disabled: c.dex >= 18, name: `Dexterity (${c.dex})`, value: 'dex', short: 'Dexterity' },
+          { disabled: c.int >= 18, name: `Intelligence (${c.int})`, value: 'int', short: 'Intelligence' },
+          { disabled: c.wis >= 18, name: `Wisdom (${c.wis})`, value: 'wis', short: 'Wisdom' },
+          { disabled: c.cha >= 18, name: `Charisma (${c.cha})`, value: 'cha', short: 'Charisma' },
+          { disabled: c.con >= 18, name: `Constitution (${c.con})`, value: 'con', short: 'Constitution' },
+          // just in case they're 18 across!
+          { disabled: false, name: `Max HP (${c.maxHp})`, value: 'maxHp', short: 'HP' },
         ]);
         // @ts-ignore
         c[stat] += 1;
         // this.note(`${c.name}'s ${stat.toUpperCase()} increased to ${c[stat as keyof Combatant]}!`);
+
+        if (fx.onLevelUp) {
+          for (const effect of fx.onLevelUp as AbilityEffect[]) {
+            // execute the effect
+            this.note(`Applying level-up effect to ${c.name}...`);
+            let { events } = await AbilityHandler.handleEffect(
+              'onLevelUp', effect, c, c, Commands.handlers(this.roller, this.playerTeam)
+            );
+            events.forEach(e => this.emit({ ...e, turn: 0 } as DungeonEvent));
+          }
+        }
       }
     }
   }
@@ -348,42 +378,27 @@ export default class Dungeoneer {
     let done = false;
     while (!done) {
       const options = [
-        { name: "Move to next room", value: "move", short: 'Continue', disabled: room === this.dungeon!.bossRoom },
+        { name: "Move to next room", value: "move", short: 'Continue', disabled: false }, //room === this.dungeon!.bossRoom },
         { name: "Rest (stabilize unconscious party members, 30% encounter)", value: "rest", short: 'Rest', disabled: false },
         { name: "Search the room", value: "search", short: 'Search', disabled: searched },
       ];
       if (room.feature && room.feature !== "nothing") {
         options.push({ name: `Examine ${Words.remove_article(room.feature!)}`, value: "examine", short: 'Examine', disabled: examinedFeature });
       }
-      options.push({ name: "Leave the dungeon", value: "leave", short: 'Leave', disabled: false });
+      // options.push({ name: "Leave the dungeon", value: "leave", short: 'Leave', disabled: false });
 
       let choice = await this.select("What would you like to do?", options);
       if (choice === "search") {
-        let { actor, success } = await this.skillCheck(`to search the ${room.room_type.replaceAll("_", " ")}`, "wis", 10);
-        if (success) {
-          this.note(`${actor.forename} finds a hidden stash!`);
-          if (room.treasure) {
-            const xpReward = 10 + Math.floor(Math.random() * 20);
-            this.note(`💎 You find ${room.treasure} (+${xpReward} XP)`);
-            if (room.treasure == "a healing potion") {
-              this.playerTeam.healingPotions = (this.playerTeam.healingPotions || 0) + 1;
-              this.note(`You add the healing potion to your bag. (Total owned: ${this.playerTeam.healingPotions})`);
-            }
-            await this.reward(xpReward, 0);
-          } else {
-            const stashGold = await Deem.evaluate("2+1d20");
-            let share = Math.round(stashGold / this.playerTeam.combatants.length)
-            this.note(`Found ${stashGold} gold!`);
-            await this.reward(0, share);
-          }
-        } else {
-          this.note(`\n${actor.forename} fails to find anything.`);
-        }
+        await this.search(room);
         searched = true;
       } else if (choice === "rest") {
-        await this.rest(room);
+        const survivedNap = await this.rest(room);
+        if (!survivedNap) {
+          console.warn("The party was ambushed during their rest and defeated...");
+        }
+        return { leaving: true }
       } else if (choice === "examine") {
-        let check = await this.skillCheck(`to examine ${room.feature}`, "int", 10);
+        let check = await this.skillCheck("examine", `to examine ${room.feature}`, "int", 10);
         if (check.success) {
           let gp = await Deem.evaluate("1+1d20");
           this.note(`${check.actor.forename} found a hidden compartment in ${room.feature} containing ${gp} gold coins!`);
@@ -408,7 +423,40 @@ export default class Dungeoneer {
     return { leaving: false };
   }
 
-  private async rest(_room: Room | BossRoom): Promise<void> {
+  private async search(room: Room | BossRoom): Promise<void> {
+    let { actor, success } = await this.skillCheck("search", `to search the ${room.room_type.replaceAll("_", " ")}`, "wis", 10);
+    if (success) {
+      this.note(`${actor.forename} finds a hidden stash!`);
+      if (room.treasure) {
+        const xpReward = 10 + Math.floor(Math.random() * 20);
+        this.note(`💎 You find ${room.treasure} (+${xpReward} XP)`);
+        if (room.treasure == "a healing potion") {
+          this.playerTeam.healingPotions = (this.playerTeam.healingPotions || 0) + 1;
+          this.note(`You add the healing potion to your bag. (Total owned: ${this.playerTeam.healingPotions})`);
+        }
+        await this.reward(xpReward, 0);
+      } else {
+        const stashGold = await Deem.evaluate("2+1d20");
+        let share = Math.round(stashGold / this.playerTeam.combatants.length)
+        this.note(`Found ${stashGold} gold!`);
+        await this.reward(0, share);
+
+        let lootBonus = 0;
+        let fx = Fighting.gatherEffects(actor);
+        lootBonus += fx.lootBonus as number || 0;
+        const potions = lootBonus + await Deem.evaluate("1d2");
+        if (potions > 0) {
+          this.note(`You found ${potions} healing potion${potions > 1 ? 's' : ''}!`);
+          this.playerTeam.healingPotions = (this.playerTeam.healingPotions || 0) + potions;
+          this.note(`You add the healing potion${potions > 1 ? 's' : ''} to your bag. (Total owned: ${this.playerTeam.healingPotions})`);
+        }
+      }
+    } else {
+      this.note(`\n${actor.forename} fails to find anything.`);
+    }
+  }
+
+  private async rest(_room: Room | BossRoom): Promise<boolean> {
     const choice = await this.select("Are you sure you want to rest in this room? (stabilize unconscious party members to 1HP, 30% encounter)", [
       { disabled: false, short: 'Y', name: "Yes", value: "yes" },
       { disabled: false, short: 'N', name: "No", value: "no" }
@@ -447,9 +495,10 @@ export default class Dungeoneer {
         room.encounter = await this.encounterGen(room.targetCr || 1);
         this.note(`\n👹 Wandering monsters interrupt your rest: ${Words.humanizeList(room.encounter.creatures.map(m => m.name))} [CR ${room.encounter.cr
           }]`);
-        await this.runCombat();
+        return await this.runCombat();
       }
     }
+    return true;
   }
 
   static defaultGen(): Dungeon {

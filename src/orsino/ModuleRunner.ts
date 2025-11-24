@@ -8,6 +8,7 @@ import { GenerationTemplateType } from "./types/GenerationTemplateType";
 import Stylist from "./tui/Style";
 import Words from "./tui/Words";
 import Presenter from "./tui/Presenter";
+import { Commands } from "./rules/Commands";
 
 type TownSize = 'hamlet' | 'village' | 'town' | 'city' | 'metropolis' | 'capital';
 type Race = 'human' | 'elf' | 'dwarf' | 'halfling' | 'gnome' | 'orc' | 'fae';
@@ -54,7 +55,7 @@ export class ModuleRunner {
   activeModule: CampaignModule | null = null;
 
   constructor(options: Record<string, any> = {}) {
-    this.roller = options.roller || Combat.roll;
+    this.roller = options.roller || Commands.roll;
     this.select = options.select || Combat.samplingSelect;
     this.prompt = options.prompt || ModuleRunner.randomInt;
     this.outputSink = options.outputSink || console.log;
@@ -114,9 +115,9 @@ export class ModuleRunner {
   async enter(mod: CampaignModule = this.mod): Promise<void> {
     this.outputSink(`You arrive at the ${mod.town.adjective} ${Words.capitalize(mod.town.race)} ${mod.town.size} of ${Stylist.bold(mod.town.name)}.`);
     let days = 0;
-    while (days++ < 30 && this.pcs.some(pc => pc.hp > 0)) {
+    while (days++ < 120 && this.pcs.some(pc => pc.hp > 0)) {
       this.status(mod);
-      this.outputSink(`\n--- Day ${days}/30 ---`);
+      this.outputSink(`\n--- Day ${days}/120 ---`);
       const action = await this.menu();
       // this.outputSink(`You chose to ${action}.`);
 
@@ -143,6 +144,13 @@ export class ModuleRunner {
 
           this.state.sharedPotions = dungeoneer.playerTeam.healingPotions;
 
+          // stabilize unconscious PC to 1 HP
+          this.pcs.forEach(pc => {
+            if (pc.hp <= 0) {
+              pc.hp = 1;
+              this.outputSink(`⚠️ ${pc.name} was stabilized to 1 HP!`);
+            }
+          });
         }
       } else if (action === "rest") {
         this.rest(this.pcs);
@@ -178,11 +186,12 @@ export class ModuleRunner {
       }
     }
 
-    if (this.pcs.every(pc => pc.hp <= 0)) {
-      this.outputSink("Game over... but thanks for playing " + mod.name + "!");
-    } else {
-      this.outputSink("Congratulations! You've completed the module: " + mod.name);
-    }
+    // if (this.pcs.every(pc => pc.hp <= 0)) {
+    //   this.outputSink("Game over... but thanks for playing " + mod.name + "!");
+    // } else {
+    //   this.outputSink("Congratulations! You've completed the module: " + mod.name);
+    // }
+    this.outputSink(`\nGame over! You survived ${days} days in ${mod.name}.`);
   }
 
   static townIcons = {
@@ -209,11 +218,11 @@ export class ModuleRunner {
   private async menu(): Promise<string> {
     const available = this.availableDungeons;
     const options: Choice<any>[] = [
-      { short: "Rest", value: "rest",   name: "Visit the Inn (restore HP/slots)", disabled: this.pcs.every(pc => pc.hp === pc.maxHp) },
-      { short: "Shop", value: "shop",   name: "Visit the Alchemist (buy potions, 50g each)", disabled: this.sharedGold < 50 },
-      { short: "Chat", value: "rumors", name: "Visit the Tavern (hear rumors about the region)", disabled: available.length === 0 },
+      // { short: "Rest", value: "rest",   name: "Visit the Inn (restore HP/slots)", disabled: this.pcs.every(pc => pc.hp === pc.maxHp) },
+      // { short: "Shop", value: "shop",   name: "Visit the Alchemist (buy potions, 50g each)", disabled: this.sharedGold < 50 },
+      // { short: "Chat", value: "rumors", name: "Visit the Tavern (hear rumors about the region)", disabled: available.length === 0 },
       { short: "Pray", value: "pray",   name: `Visit the Temple to ${Words.capitalize(this.mod.town.deity)}`, disabled: this.sharedGold < 10 },
-      { short: "Show", value: "show",   name: `Show Party Status/Character Records`, disabled: false },
+      // { short: "Show", value: "show",   name: `Show Party Status/Character Records`, disabled: false },
     ];
 
     if (available.length > 0) {

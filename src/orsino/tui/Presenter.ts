@@ -1,9 +1,7 @@
 import Stylist from "./Style";
 import { Combatant } from "../types/Combatant";
 import Words from "./Words";
-import Combat from "../Combat";
 import { Fighting } from "../rules/Fighting";
-import { act } from "react";
 
 export default class Presenter {
   static colors = ['magenta', 'red', 'yellow', 'yellow', 'yellow', 'green', 'green', 'green', 'green'];
@@ -15,13 +13,15 @@ export default class Presenter {
         ...(combatant.activeEffects || []),
         ...(combatant.passiveEffects || [])
       ].map(e => e.name).join(", ") || "None",
-      abilities: combatant.abilities.join(", "),
-      traits: combatant.traits.join(", ")
+      abilities: (combatant.abilities||[]).join(", "),
+      traits: (combatant.traits||[]).join(", ")
     });
 
     // delete active/passives
     delete record.activeEffects;
     delete record.passiveEffects;
+    delete record.abilityCooldowns;
+    delete record.abilitiesUsed;
 
     console.table(record);
   }

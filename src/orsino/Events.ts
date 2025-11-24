@@ -25,6 +25,7 @@ export type DefendEvent = BaseEvent & { type: "defend"; bonusAc: number };
 export type QuaffEvent = BaseEvent & { type: "quaff" };
 export type FallenEvent = BaseEvent & { type: "fall" };
 export type FleeEvent   = BaseEvent & { type: "flee" };
+export type SummonEvent = BaseEvent & { type: "summon"; summoned: Combatant[] };
 
 export type StatusEffectEvent = BaseEvent & { type: "statusEffect"; effectName: string; effect: { [key: string]: any }; duration: number };
 export type StatusExpireEvent = BaseEvent & { type: "statusExpire"; effectName: string };
@@ -39,6 +40,7 @@ export type CombatEvent = HitEvent
   | FleeEvent
   | StatusEffectEvent
   | StatusExpireEvent
+  | SummonEvent
   | CombatEndEvent
   | RoundStartEvent
   | TurnStartEvent;
@@ -46,13 +48,38 @@ export type CombatEvent = HitEvent
 type BaseDungeonEvent = Omit<BaseEvent, "turn">;
 export type EnterDungeon = BaseDungeonEvent & { type: "enterDungeon"; dungeonName: string; dungeonIcon: string; dungeonType: string, depth: number };
 export type RoomCleared  = BaseDungeonEvent & { type: "roomCleared"; };
+export type UpgradeEvent = BaseEvent & { type: "upgrade"; stat: keyof Combatant; amount: number, newValue: number };
 
 export type DungeonEvent = EnterDungeon
-  | RoomCleared;
+  | RoomCleared
+  | UpgradeEvent;
 
-type GameEvent = CombatEvent | DungeonEvent;
+export type GameEvent = CombatEvent | DungeonEvent;
 
 export default class Events {
+  static iconForEvent(event: GameEvent): string {
+    switch (event.type) {
+      case "enterDungeon": return event.dungeonIcon;
+      case "roomCleared": return "🗝️";
+      case "miss": return "❌";
+      case "heal": return "💖";
+      case "defend": return "🛡️";
+      case "quaff": return "🧪";
+      case "fall": return "💤";
+      case "flee": return "🏃‍♂️";
+      case "statusEffect": return "✨";
+      case "statusExpire": return "⏳";
+      case "initiate": return "⚔️";
+      case "roundStart": return "🔄";
+      case "turnStart": return "➡️";
+      case "combatEnd": return "🏁";
+      case "upgrade": return "⬆️";
+      case "hit": return event.critical ? "💥" : "⚔️";
+      case "summon": return "😽";
+      default: return never(event);
+    }
+  }
+
   static present(event: GameEvent): string {
     let subjectName = event.subject ? event.subject.forename : null;
     let targetName = event.target ? event.target.forename : null;
@@ -82,7 +109,6 @@ export default class Events {
           return `${subjectName}'s blade is no longer coated in poison.`;
         }
         return `${subjectName} is no longer ${event.effectName}.`;
-      case "combatEnd": return `Combat ends! ${event.winner} victorious.`;
       case "initiate":
         return `Turn order: ${event.order.map((o, i) => `\n ${i + 1}. ${Presenter.minimalCombatant(o.combatant)} (init: ${o.initiative})`).join(", ")}`;
       case "roundStart":
@@ -96,7 +122,12 @@ export default class Events {
         // let combatants = event.combatants.map(c => `\n- ${Presenter.combatant(c)}`).join("");
         // return `${heading}${combatants}`;
         return event.subject?.playerControlled ?
-          `\n--- ${subjectName}'s turn ---\n${Presenter.combatants(event.combatants, true)}` : '';
+          `${subjectName}'s turn\n${Presenter.combatants(event.combatants, true)}` : `It's ${subjectName}'s turn!`;
+      case "combatEnd": return `Combat ends! ${event.winner} victorious.`;
+
+      case "upgrade":
+        return `${subjectName} upgrades ${event.stat} by ${event.amount} (now ${event.newValue})!`;
+
       case "hit":
         let message = `${targetName} takes ${event.damage} damage from ${event.by}.`;
         if (event.critical) {
@@ -109,6 +140,8 @@ export default class Events {
         }
         return message;
 
+      case "summon":
+        return `${subjectName} summons ${event.summoned.map(s => s.name).join(", ")}!`;
       default:
         return never(event);
     }

@@ -1,4 +1,4 @@
-import { RollResult } from "../Combat";
+import { RollResult } from "./RollResult";
 import { Combatant } from "./Combatant";
 
 export type Roll = (

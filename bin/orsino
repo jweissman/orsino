@@ -4,6 +4,7 @@ import Orsino from '../src/orsino';
 import { GenerationTemplateType } from "../src/orsino/types/GenerationTemplateType";
 import { program } from 'commander';
 import Files from '../src/orsino/util/Files';
+import Generator from '../src/orsino/Generator';
 
 program
   .name('orsino')
@@ -31,7 +32,7 @@ program
   .option('--class <class>', 'Specify the class to use')
   .option('--cr <cr>', 'Specify the challenge rating to target')
   .action(async (type, options) => {
-    const orsino = new Orsino(options.setting);
+    // const orsino = new Orsino(options.setting);
     // if (options.graph && parseInt(options.count) < 2) {
     //   console.error('Graph generation requires at least 2 items. Use --count to specify the number of items.');
     //   process.exit(1);
@@ -43,7 +44,7 @@ program
       options._targetCr = cr;
     }
     
-    const response = await orsino.gen(
+    const response = await Generator.gen(
       type as GenerationTemplateType,
       {
         ...options,

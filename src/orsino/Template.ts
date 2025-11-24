@@ -33,6 +33,8 @@ export class Template {
 
       let resolved = localContext[key] !== undefined ? localContext[key] :
           (await Template.evaluatePropertyExpression(value, context));
+
+      // it felt like we needed deep copy here to prevent any mutations from affecting the original template
       assembled[key] = deepCopy(resolved);
 
       localContext[key] = assembled[key];
