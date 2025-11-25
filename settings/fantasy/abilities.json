@@ -537,7 +537,7 @@
           "name": "Hidden",
           "duration": 5,
           "effect": {
-            "ac": -10,
+            "ac": -4,
             "onAttack": [
               {
                 "type": "removeStatus",

@@ -189,10 +189,9 @@
     "statuses": [
       {
         "name": "Ethereal Form",
-        "description": "+1 AC, -2 max HP, immune to charm.",
+        "description": "You gain +1 AC and immunity to charm effects.",
         "effect": {
           "ac": -1,
-          "maxHp": -2,
           "immuneCharm": true
         }
       }

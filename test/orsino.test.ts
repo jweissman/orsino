@@ -127,9 +127,9 @@ describe('Orsino', () => {
       },
       moduleGen: () => mod,
       pcs: [
-        { ...await Generator.gen("pc", { setting: "fantasy", class: "ranger" }), playerControlled: true },
-        { ...await Generator.gen("pc", { setting: "fantasy", class: "ranger" }), playerControlled: true },
-        { ...await Generator.gen("pc", { setting: "fantasy", class: "ranger" }), playerControlled: true }
+        { ...await Generator.gen("pc", { setting: "fantasy" }), playerControlled: true },
+        { ...await Generator.gen("pc", { setting: "fantasy" }), playerControlled: true },
+        { ...await Generator.gen("pc", { setting: "fantasy" }), playerControlled: true }
       ]
     });
 

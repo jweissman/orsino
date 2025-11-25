@@ -59,7 +59,7 @@ export class AbilityScoring {
         }
       });
     } else if (analysis.aoe) {
-      score += enemies.filter(e => e.hp > 0).length * 8;
+      score += enemies.filter(e => e.hp > 0).length * 3;
     } else if (analysis.debuff) {
       // are there enemies with higher hp than us?
       enemies.forEach(enemy => {

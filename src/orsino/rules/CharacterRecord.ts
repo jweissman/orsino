@@ -8,9 +8,7 @@ import Sample from "../util/Sample";
 export default class CharacterRecord {
 
   static xpForLevel(level: number): number {
-    // return (level * level * 125) + (level * 25) - 500;
-    // return (level * level * 150) + (level * 50) + 300;
-    return (level * level * 280) + (level * 200) - 520;
+    return  (level * level * level * 100) + (level * level * 500) + (level * 1000) - 3800;
   }
   static crForParty(party: Combatant[]): number {
     const totalLevels = party.reduce((sum, c) => sum + c.level, 0);

@@ -1,38 +1,5 @@
 {
-  "damageKind": {
-    "discriminator": "weapon",
-    "groups": {
-      "sword": "slashing",
-      "greatsword": "slashing",
-      "axe": "slashing",
-      "dagger": "piercing",
-      "spear": "piercing",
-      "bow": "piercing",
-      "crossbow": "piercing",
-      "club": "bludgeoning",
-      "mace": "bludgeoning",
-      "staff": "bludgeoning",
-      "fist": "bludgeoning",
-      "claws": "slashing",
-      "fangs": "piercing",
-      "bite": "piercing",
-      "sting": "piercing",
-      "horns": "piercing",
-      "slam": "bludgeoning",
-      "talons": "slashing",
-      "tusks": "piercing",
-      "sling": "bludgeoning",
-      "polearm": "slashing",
-      "greataxe": "slashing",
-      "tentacles": "bludgeoning",
-      "kick": "bludgeoning",
-      "headbutt": "bludgeoning",
-      "antlers": "piercing",
-      "beak": "piercing",
-      "flutter": "bludgeoning",
-      "quills": "piercing"
-    }
-  },
+
   "surname": {
     "discriminator": "class",
     "groups": {
@@ -43,7 +10,7 @@
       "warrior": [
         "Battleborn", "Bear", "Bull",
         "Carpenter", "Clay",
-        "Dale", "Draco",
+        "Dale", "Draco", "Daniel",
         "Edward", "Edge",
         "Fletch", "Fitz",
         "Graves", "Gearworth",
@@ -86,53 +53,18 @@
         "Vicar"
       ],
       "bard": [
-        "Canter",
-        "Singer",
-        "Harper",
-        "Piper",
-        "Minstrel",
-        "Drummer",
-        "Playfair",
-        "Lyre",
-        "Silvertongue",
-        "Storykeeper",
-        "Fable",
-        "Ballard"
+        "Canter", "Singer", "Harper", "Piper", "Minstrel", "Joy",
+        "Drummer", "Playfair", "Lyre", "Silvertongue", "Storykeeper",
+        "Fable", "Ballard", "Wren", "Lark", "Rhymer", "Plainsong", "Goldsound"
       ],
       "ranger": [
-        "Fowler",
-        "Hunter",
-        "Gardner",
-        "Woodwright",
-        "Fletcher",
-        "Wood",
-        "Ford",
-        "Rivers",
-        "Hill",
-        "Underhill",
-        "Field",
-        "Faulkner",
-        "Green",
-        "Camp",
-        "Hunter",
-        "Forster",
-        "Granger"
+        "Fowler", "Hunter", "Gardner", "Woodwright", "Fletcher", "Wood",
+        "Ford", "Rivers", "Hill", "Underhill", "Walker", "Brooks", "Gates",
+        "Field", "Faulkner", "Green", "Camp", "Hunter", "Forster", "Granger"
       ],
       "thief": [
-        "Swift",
-        "Purser",
-        "Locke",
-        "Fox",
-        "Raven",
-        "Quick",
-        "Fleet",
-        "Lightfoot",
-        "Slade",
-        "Glass",
-        "Black",
-        "Amber",
-        "Sable",
-        "Shade"
+        "Swift", "Purser", "Locke", "Fox", "Raven", "Quick", "Fleet",
+        "Lightfoot", "Slade", "Glass", "Black", "Amber", "Sable", "Shade"
       ]
     }
   },
@@ -188,81 +120,24 @@
         "Rachel", "Rhiannon", "Ravenna", "Rhea", "Rose", "Rosemary", "Rue", "Ruthia", "Rosa",
         "Sabina", "Seraphina", "Sierra", "Sarina", "Selene", "Serena", "Sora", "Sylvia", "Sunna", "Sapphire", "Snapdragon", "Sequoia", "Swan",
         "Talitha", "Talia", "Tamsin", "Tara", "Tiara", "Thea", "Talla", "Theodora", "Tuora", "Theresa", "Thalia", "Tulip", "Tuesday",
-        "Uana",
-        "Ulina",
-        "Vanna",
-        "Vira",
-        "Violet",
-        "Vexana",
-        "Vera",
-        "Wanda",
-        "Wren",
-        "Winona",
-        "Wynne",
-        "Willow",
-        "Xara",
-        "Xanthe",
-        "Xenia",
-        "Yara",
-        "Yvonne",
-        "Yelena",
-        "Yara",
-        "Yvaine",
-        "Zara",
-        "Zelda",
-        "Zinnia",
-        "Zara",
-        "Zora",
-        "Zelena",
-        "Zuora",
-        "Zyra",
-        "Zinnia"
+        "Uana", "Ulina", "Vanna",
+        "Vira", "Violet", "Vexana", "Vera", "Wanda", "Wren", "Winona", "Wynne",
+        "Willow", "Xara", "Xanthe", "Xenia", "Yara", "Yvonne", "Yelena", "Yara",
+        "Yvaine", "Zara", "Zelda", "Zinnia", "Zara", "Zora", "Zelena", "Zuora",
+        "Zyra", "Zinnia"
       ],
       "neutral": [
-        "Alex", "Ash", "Avery", "Auren",
-        "Bailey", "Blake", "Blair", 
+        "Alex", "Ash", "Avery", "Auren", "Bailey", "Blake", "Blair", 
         "Cameron", "Casey", "Charlie", "Cuthbert",
         "Dakota", "Devon", "Drew", "Dylan",
         "Ember", "Elliot", "Emerson", "Emery",
-        "Finley", "Frankie",
-        "Gale", "Garnet", "Golden", "Gray",
-        "Harley", "Harper", "Haydon",
-        "Indigo",
-        "Jaden",
-        "Jesse",
-        "Jordan",
-        "Kai",
-        "Kendall",
-        "Kris",
-        "Lane",
-        "Logan",
-        "Mackenzie",
-        "Merritt",
-        "Morgan",
-        "Nico",
-        "Nikita",
-        "Oakley",
-        "Parker",
-        "Peyton",
-        "Quinn",
-        "Reese",
-        "Riley",
-        "Rory",
-        "Sagewood",
-        "Skyler",
-        "Sloan",
-        "Tate",
-        "Taylor",
-        "Toby",
-        "Valen",
-        "Valentine",
-        "Vesper",
-        "Winter",
-        "Wren",
-        "Xenon",
-        "Yale",
-        "Zephyr",
-        "Zola"
+        "Finley", "Frankie", "Gale", "Garnet", "Golden", "Gray",
+        "Harley", "Harper", "Haydon", "Indigo",
+        "Jaden", "Jesse", "Jordan", "Kai", "Kendall", "Kris", "Lane", "Logan",
+        "Mackenzie", "Merritt", "Morgan", "Nico", "Nikita", "Oakley", "Parker",
+        "Peyton", "Quinn", "Reese", "Riley", "Rory", "Sagewood", "Skyler",
+        "Sloan", "Tate", "Taylor", "Toby", "Valen", "Valentine", "Vesper",
+        "Winter", "Wren", "Xenon", "Yale", "Zephyr", "Zola"
       ]
     }
   },
@@ -341,140 +216,196 @@
       ]
     }
   },
-  "damageDie": {
-    "discriminator": "weapon",
+
+  "masterArmor": {
+    "discriminator": "kind",
     "groups": {
-      "fist": 1,
-      "kick": 1,
-      "antlers": 1,
-      "headbutt": 1,
-      "beak": 1,
-      "flutter": 1,
-      "fangs": 1,
-      "quills": 1,
-      "horns": 1,
-      "sting": 1,
-      "slam": 1,
-      "claws": 2,
-      "bite": 3,
-      "talons": 4,
-      "tusks": 4,
-      "staff": 3,
-      "dagger": 3,
-      "club": 4,
-      "sling": 4,
-      "mace": 6,
-      "axe": 6,
-      "bow": 6,
-      "polearm": 8,
-      "spear": 8,
-      "sword": 10,
-      "greataxe": 8,
-      "greatsword": 12,
-      "tentacles": 6
+      "cloth": 0,
+      "hide": 1,
+      "leather": 2,
+      "ring": 3,
+      "studded": 3,
+      "scale": 4,
+      "chainmail": 5,
+      "banded": 6,
+      "splint": 6,
+      "plate": 7
     }
   },
-  "attackRolls": {
-    "discriminator": "weapon",
+
+  "masterWeapon": {
+    "discriminator": "kind",
     "groups": {
-      "fist": 1,
-      "kick": 1,
-      "antlers": 1,
-      "headbutt": 1,
-      "beak": 1,
-      "flutter": 1,
-      "fangs": 1,
-      "quills": 1,
-      "horns": 1,
-      "sting": 1,
-      "slam": 2,
-      "claws": 1,
-      "bite": 1,
-      "talons": 1,
-      "tusks": 2,
-      "staff": 1,
-      "club": 1,
-      "dagger": 1,
-      "sling": 1,
-      "mace": 1,
-      "axe": 1,
-      "bow": 1,
-      "polearm": 1,
-      "spear": 1,
-      "sword": 1,
-      "greataxe": 1,
-      "greatsword": 1,
-      "tentacles": 1
+      "fist":            { "damage": "1d2", "type": "bludgeoning"  },
+      "kick":            { "damage": "1d2", "type": "bludgeoning"  },
+
+      "battleaxe":       { "damage": "1d8",   "type": "slashing" },
+      "handaxe":         { "damage": "1d6",   "type": "slashing" },
+      "club":            { "damage": "1d4",   "type": "bludgeoning" },
+      "dagger":          { "damage": "1d4",   "type": "piercing" },
+      "dart":            { "damage": "1d3",   "type": "piercing" },
+      "heavy_flail":     { "damage": "1d6+1", "type": "bludgeoning" },
+      "light_flail":     { "damage": "1d4+1", "type": "bludgeoning" },
+      "halberd":         { "damage": "1d10",  "type": "slashing" },
+      "heavy_warhammer": { "damage": "1d6+1", "type": "bludgeoning" },
+      "light_warhammer": { "damage": "1d4+1", "type": "bludgeoning" },
+      "javelin":         { "damage": "1d6",   "type": "piercing", "intercept": true },
+      "lance":           { "damage": "2d4+1", "type": "piercing", "intercept": true },
+      "heavy_mace":      { "damage": "1d6+1", "type": "bludgeoning" },
+      "light_mace":      { "damage": "1d4+1", "type": "bludgeoning" },
+      "morningstar":     { "damage": "2d4",   "type": "piercing" },
+      "heavy_pick":      { "damage": "1d6+1", "type": "piercing" },
+      "light_pick":      { "damage": "1d4+1", "type": "piercing" },
+      "pole_arm":        { "damage": "1d6+1", "type": "piercing", "intercept": true },
+      "spear":           { "damage": "1d6",   "type": "piercing", "intercept": true },
+      "staff":           { "damage": "1d6",   "type": "bludgeoning" },
+      "claymore":        { "damage": "2d4",   "type": "slashing" },
+      "broadsword":      { "damage": "2d4",  "type": "slashing" },
+      "longsword":       { "damage": "1d8",  "type": "slashing" },
+      "scimitar":        { "damage": "1d8",  "type": "slashing" },
+      "shortsword":      { "damage": "1d6",  "type": "slashing" },
+      "greatsword":      { "damage": "1d10", "type": "slashing" },
+      "trident":         { "damage": "1d6+1", "type": "piercing", "intercept": true },
+
+      "sling":         { "damage": "1d4", "type": "bludgeoning", "missile": true },
+      "crossbow":      { "damage": "1d6", "type": "piercing", "missile": true },
+
+      "antlers":       { "damage": "1d6", "type": "piercing" },
+      "bite":          { "damage": "1d6", "type": "piercing" },
+      "claws":         { "damage": "1d4", "type": "slashing" },
+      "sting":         { "damage": "1d3", "type": "piercing" },
+      "horns":         { "damage": "1d4", "type": "bludgeoning" },
+      "slam":          { "damage": "1d6", "type": "piercing" },
+      "talons":        { "damage": "1d8", "type": "piercing" },
+      "tusks":         { "damage": "1d8", "type": "piercing" },
+      "quills":        { "damage": "1d3", "type": "piercing"  },
+      "headbutt":      { "damage": "1d4", "type": "bludgeoning"  },
+      "beak":          { "damage": "1d4", "type": "piercing"  },
+      "flutter":       { "damage": "1d2", "type": "bludgeoning"  },
+
+      "tentacles":     { "damage": "8d2+1", "type": "bludgeoning" }
     }
   },
+
+  "masterGear": {
+    "discriminator": "kind",
+    "groups": {
+      "ale": { "type": "consumable", "effect": [{ "type": "heal", "amount": "3d4" }] },
+      "backpack": { "type": "container", "capacity": 30 },
+      "barrel": { "type": "container", "capacity": 50 },
+      "bedroll": { "type": "camping" },
+      "bell": { "type": "tool" },
+      "blanket": { "type": "camping" },
+      "boots": { "type": "clothing" },
+      "wine": { "type": "consumable", "effect": [{ "type": "heal", "amount": "2d4" }] },
+      "box": { "type": "container", "capacity": 20 },
+      "bracers": { "type": "clothing" },
+      "caltrops": { "type": "tool" },
+      "candle": { "type": "light source", "duration": 6 },
+      "canvas": { "type": "tool" },
+      "chain": { "type": "tool" },
+      "chalk": { "type": "tool" },
+      "cloak": { "type": "clothing" },
+      "crowbar": { "type": "tool" },
+      "dice": { "type": "tool" },
+      "doublet": { "type": "clothing" },
+      "firewood": { "type": "camping" },
+      "flask": { "type": "container", "capacity": 5 },
+      "fish_hook": { "type": "tool" },
+      "fishing_net": { "type": "tool" },
+      "flint_and_steel": { "type": "tool" },
+      "gloves": { "type": "clothing" },
+      "gown": { "type": "clothing" },
+      "hammer": { "type": "tool" },
+      "holy_symbol": { "type": "tool" },
+      "hose": { "type": "tool" },
+      "iron_spikes": { "type": "tool" },
+      "ladder": { "type": "tool" },
+      "lamp": { "type": "light source", "duration": 12 },
+      "lantern": { "type": "light source", "duration": 24 },
+      "lock": { "type": "tool" },
+      "manacles": { "type": "tool" },
+      "mirror": { "type": "tool" },
+      "musical_instrument": { "type": "tool" },
+      "needle_and_thread": { "type": "tool" },
+      "cloak_pin": { "type": "tool" },
+      "piton": { "type": "tool" },
+      "pole": { "type": "tool" },
+      "pot": { "type": "container", "capacity": 10 },
+      "pouch": { "type": "container", "capacity": 5 },
+      "quill": { "type": "tool" },
+      "quiver": { "type": "container", "capacity": 20 },
+      "rations": { "type": "consumable", "effect": [{ "type": "heal", "amount": "1d4" }] },
+      "robe": { "type": "clothing" },
+      "rope": { "type": "tool" },
+      "sack": { "type": "container", "capacity": 15 },
+      "satchel": { "type": "container", "capacity": 10 },
+      "scrollcase": { "type": "container", "capacity": 5 },
+      "shoes": { "type": "clothing" },
+      "shovel": { "type": "tool" },
+      "signal_whistle": { "type": "tool" },
+      "skillet": { "type": "tool" },
+      "soap": { "type": "tool" },
+      "spellbook": { "type": "tool" },
+      "tent": { "type": "camping" },
+      "thieves_tools": { "type": "tool" },
+      "torch": { "type": "light source", "duration": 4 },
+      "tunic": { "type": "clothing" },
+      "twine": { "type": "tool" },
+      "vellum": { "type": "tool" },
+      "holy_water": { "type": "consumable", "effect": [{ "type": "damage", "amount": "2d6", "target": "undead" }] },
+      "waterskin": { "type": "container", "capacity": 10 },
+      "whetstone": { "type": "tool" },
+      "wind_chime": { "type": "tool" }
+    }
+  },
+
+
   "weapon": {
     "discriminator": "class",
     "groups": {
-      "warrior": [
-        "sword",
-        "axe",
-        "polearm",
-        "greatsword"
-      ],
-      "sage": [
-        "staff"
-      ],
-      "mage": [
-        "staff"
-      ],
-      "thief": [
-        "dagger"
-      ],
-      "cleric": [
-        "mace"
-      ],
-      "bard": [
-        "dagger",
-        "staff"
-      ],
-      "ranger": [
-        "bow"
-      ]
+      "warrior": [ "broadsword", "claymore", "battleaxe", "pole_arm", "greatsword", "spear" ],
+      "mage": [ "staff", "dagger" ],
+      "thief": [ "dagger", "dart" ],
+      "cleric": [ "light_mace", "light_warhammer" ],
+      "bard": [ "dagger", "staff", "shortsword"],
+      "ranger": [ "longsword", "spear", "javelin" ]
     }
   },
   "armor": {
     "discriminator": "class",
     "groups": {
-      "sage": [
-        "robe"
-      ],
       "warrior": [
         "plate",
+        "scale",
         "chainmail"
       ],
       "mage": [
-        "robe"
+        "cloth"
       ],
       "thief": [
-        "leather"
+        "leather",
+        "studded"
       ],
       "cleric": [
+        "studded",
+        "splint",
         "chainmail"
       ],
       "bard": [
         "leather",
-        "robe"
+        "cloth",
+        "studded"
       ],
       "ranger": [
         "leather",
-        "chainmail"
+        "chainmail",
+        "studded",
+        "scale"
       ]
     }
   },
-  "armorClassBonus": {
-    "discriminator": "armor",
-    "groups": {
-      "robe": 0,
-      "leather": 1,
-      "chainmail": 2,
-      "plate": 4
-    }
-  },
+  
   "abilities": {
     "discriminator": "class",
     "groups": {
@@ -642,601 +573,156 @@
         "Zot", "Zizz", "Zulak", "Zarum", "Zulgrim", "Zulak"
       ],
       "goblin": [
-        "Aarok",
-        "Azrak",
-        "Aurak",
-        "Azog",
-        "Auvak",
-        "Bree",
-        "Buzog",
-        "Baran",
-        "Brog",
-        "Barzak",
-        "Burex",
-        "Crag",
-        "Cress",
-        "Cruzog",
-        "Crush",
-        "Calex",
-        "Dreg",
-        "Duzog",
-        "Dazrak",
-        "Drung",
-        "Duvak",
-        "Durak",
-        "Esmer",
-        "Earok",
-        "Erull",
-        "Ereg",
-        "Ezog",
-        "Earan",
-        "Fang",
-        "Fiz",
-        "Fuzog",
-        "Furan",
-        "Furak",
-        "Fuzrak",
-        "Furex",
-        "Grizzle",
-        "Glim",
-        "Guvak",
-        "Grush",
-        "Guzog",
-        "Gurak",
-        "Garak",
-        "Gress",
-        "Hib",
-        "Hezog",
-        "Horan",
-        "Huvak",
-        "Hobe",
-        "Iree",
-        "Iaran",
-        "Izog",
-        "Iobe",
-        "Iru",
-        "Jax",
-        "Juzog",
-        "Jush",
-        "Jaran",
-        "Jurex",
-        "Juzrak",
-        "Krag",
-        "Kureg",
-        "Kuzrak",
-        "Kung",
-        "Kunog",
-        "Krobb",
-        "Lork",
-        "Larok",
-        "Lozak",
-        "Luruk",
-        "Luzog",
-        "Lurak",
-        "Lazrak",
-        "Mig",
-        "Mork",
-        "Marok",
-        "Mozak",
-        "Muran",
-        "Muren",
-        "Munt",
-        "Nau",
-        "Nazak",
-        "Nuzog",
-        "Nush",
-        "Nuun",
-        "Orrak",
-        "Oruzog",
-        "Oreg",
-        "Ornak",
-        "Ontak",
-        "Oruv",
-        "Piya",
-        "Perok",
-        "Pog",
-        "Puzog",
-        "Pazrak",
-        "Prush",
-        "Puzrak",
-        "Qaz",
-        "Querk",
-        "Quuzog",
-        "Qurex",
-        "Quun",
-        "Quuzrak",
-        "Rag",
-        "Ruzak",
-        "Ruag",
-        "Rass",
-        "Ruzrak",
-        "Reslim",
-        "Rizzle",
-        "Riol",
-        "Snark",
-        "Skrag",
-        "Sarzak",
-        "Skrush",
-        "Skrak",
-        "Siya",
-        "Tark",
-        "Tazog",
-        "Tesmer",
-        "Tarok",
-        "Truun",
-        "Tulex",
-        "Turess",
-        "Urrak",
-        "Uruk",
-        "Uruzog",
-        "Urnak",
-        "Uru",
-        "Uzog",
-        "Uruv",
-        "Uzrak",
-        "Urath",
-        "Viya",
-        "Varg",
-        "Vuzog",
-        "Vazrak",
-        "Vuzrak",
-        "Varok",
-        "Valex",
-        "Viobe",
-        "Zig",
-        "Zorg",
-        "Zuzog",
-        "Zarok",
-        "Zuzrak",
-        "Zaruk",
-        "Zobe"
+        "Aarok", "Azrak", "Aurak", "Azog", "Auvak",
+        "Bree", "Buzog", "Baran", "Brog", "Barzak", "Burex",
+        "Crag", "Cress", "Cruzog", "Crush", "Calex",
+        "Dreg", "Duzog", "Dazrak", "Drung", "Duvak", "Durak",
+        "Esmer", "Earok", "Erull", "Ereg", "Ezog", "Earan",
+        "Fang", "Fiz", "Fuzog", "Furan", "Furak", "Fuzrak", "Furex",
+        "Grizzle", "Glim", "Guvak", "Grush", "Guzog", "Gurak", "Garak", "Gress",
+        "Hib", "Hezog", "Horan", "Huvak", "Hobe",
+        "Iree", "Iaran", "Izog", "Iobe", "Iru",
+        "Jax", "Juzog", "Jush", "Jaran", "Jurex", "Juzrak",
+        "Krag", "Kureg", "Kuzrak", "Kung", "Kunog", "Krobb",
+        "Lork", "Larok", "Lozak", "Luruk", "Luzog", "Lurak", "Lazrak",
+        "Mig", "Mork", "Marok", "Mozak", "Muran", "Muren", "Munt",
+        "Nau", "Nazak", "Nuzog", "Nush", "Nuun",
+        "Orrak", "Oruzog", "Oreg", "Ornak", "Ontak", "Oruv",
+        "Piya", "Perok", "Pog", "Puzog", "Pazrak", "Prush", "Puzrak",
+        "Qaz", "Querk", "Quuzog", "Qurex", "Quun", "Quuzrak",
+        "Rag", "Ruzak", "Ruag", "Rass", "Ruzrak", "Reslim", "Rizzle", "Riol",
+        "Snark", "Skrag", "Sarzak", "Skrush", "Skrak", "Siya",
+        "Tark", "Tazog", "Tesmer", "Tarok", "Truun", "Tulex", "Turess",
+        "Urrak", "Uruk", "Uruzog", "Urnak", "Uru", "Uzog", "Uruv", "Uzrak", "Urath",
+        "Viya", "Varg", "Vuzog", "Vazrak", "Vuzrak", "Varok", "Valex", "Viobe",
+        "Zig", "Zorg", "Zuzog", "Zarok", "Zuzrak", "Zaruk", "Zobe"
       ],
       "ogre": [
-        "Aghoa",
-        "Berend",
-        "Celes",
-        "Dithum",
-        "Earen",
-        "Fangor",
-        "Garg",
-        "Hroth",
-        "Ithil",
-        "Jorak",
-        "Grog",
-        "Lug",
-        "Thon",
-        "Guld",
-        "Mogen",
-        "Gronk"
+        "Aghoa", "Berend", "Celes", "Dithum", "Earen", "Fangor", "Garg", "Hroth",
+        "Ithil", "Jorak", "Grog", "Lug", "Thon", "Guld", "Mogen", "Gronk"
       ],
       "human": [
-        "Abelard",
-        "Anorius",
-        "Baldrus",
-        "Beren",
-        "Bran",
-        "Brom",
-        "Bryce",
-        "Cyril",
-        "Cesar",
-        "Cy",
-        "Darius",
-        "Dorian",
-        "Dara",
-        "Dawn",
-        "Elara",
-        "Elinde",
-        "Elysia",
-        "Ember",
-        "Eira",
-        "Evelyn",
-        "Fenwick",
-        "Fox",
-        "Felix",
-        "Francis",
-        "Goron",
-        "Gizon",
-        "Herbrand",
-        "Hallon",
-        "Hector",
-        "Haldric",
-        "Helena",
-        "Hilda",
-        "Isolde",
-        "Iaric",
-        "Isla",
-        "Indira",
-        "Iamond",
-        "Ithil",
-        "Jareth",
-        "Jocelyn",
-        "Jade",
-        "Juniper",
-        "Jora",
-        "Jordan",
-        "Kara",
-        "Keyl",
-        "Kynes",
-        "K'nar",
-        "Kestrel",
-        "Kendra",
-        "Lena",
-        "Lothar",
-        "Lunessa",
-        "Lyrael",
-        "Luthor",
-        "Lazslo",
-        "Marina",
-        "Mark",
-        "Marissa",
-        "Mel",
-        "Mogan",
-        "Mathias",
-        "Ragnar",
-        "Ruth",
-        "Rudolf",
-        "Rudd",
-        "Rucker",
-        "Sorgen",
-        "Sienna",
-        "Soben",
-        "Sel",
-        "Tobias",
-        "Tomas",
-        "Thea",
-        "Thal",
-        "Ulrith",
-        "Ulara",
-        "Uendra",
-        "Varric",
-        "Violet",
-        "Velana",
-        "Veltris",
-        "Wend",
-        "Woressa",
-        "Wynd",
-        "Wolf",
-        "Xyn",
-        "Yoriel",
-        "Zaron"
+        "Abelard", "Anorius", "Baldrus", "Beren", "Bran", "Brom", "Bryce", "Cyril",
+        "Cesar", "Cy", "Darius", "Dorian", "Dara", "Dawn", "Elara", "Elinde", "Elysia",
+        "Ember", "Eira", "Evelyn", "Fenwick", "Fox", "Felix", "Francis", "Goron", "Gizon",
+        "Herbrand", "Hallon", "Hector", "Haldric", "Helena", "Hilda", "Isolde", "Iaric",
+        "Isla", "Indira", "Iamond", "Ithil", "Jareth", "Jocelyn", "Jade", "Juniper", "Jora",
+        "Jordan", "Kara", "Keyl", "Kynes", "K'nar", "Kestrel", "Kendra", "Lena", "Lothar",
+        "Lunessa", "Lyrael", "Luthor", "Lazslo", "Marina", "Mark", "Marissa", "Mel", "Mogan",
+        "Mathias", "Ragnar", "Ruth", "Rudolf", "Rudd", "Rucker", "Sorgen", "Sienna", "Soben",
+        "Sel", "Tobias", "Tomas", "Thea", "Thal", "Ulrith", "Ulara", "Uendra", "Varric", "Violet",
+        "Velana", "Veltris", "Wend", "Woressa", "Wynd", "Wolf", "Xyn", "Yoriel", "Zaron"
       ],
       "orc": [
-        "Aloysius",
-        "Azorn",
-        "Bretak",
-        "Bufar",
-        "Crush",
-        "Clunk",
-        "Dargin",
-        "Dorn",
-        "Eflar",
-        "Elcrest",
-        "Elgroth",
-        "Elnash",
-        "Findar",
-        "Fungorn",
-        "Fugroth",
-        "Fushnak",
-        "Gorak",
-        "Gorem",
-        "Grishnak",
-        "Hildamar",
-        "Hegworth",
-        "Hilnash",
-        "Ithrak",
-        "Iol",
-        "Ing",
-        "Ithrot",
-        "Irgash",
-        "Juthak",
-        "Jornash",
-        "Joxen",
-        "Jogroth",
-        "Karg",
-        "Kroth",
-        "Kartak",
-        "Kazorn",
-        "Lug",
-        "Lugash",
-        "Luxen",
-        "Lugroth",
-        "Mog",
-        "Mugon",
-        "Muzorn",
-        "Mugrot",
-        "Multak",
-        "Narg",
-        "Nok",
-        "Norgrin",
-        "Norgorak",
-        "Norgrish",
-        "O'Grim",
-        "Othar",
-        "O'Gash",
-        "O'Nak",
-        "O'Gor",
-        "Tavok",
-        "Tharg",
-        "Thok",
-        "Thargorn",
-        "Thrak",
-        "Uthan",
-        "Urt",
-        "Urak",
-        "Urthing",
-        "Utheen",
-        "Virge",
-        "Vok",
-        "Vulnash",
-        "Vulith",
-        "Zara",
-        "Zarnash",
-        "Zarrot",
-        "Zug",
-        "Zugnash"
+        "Aloysius", "Azorn", "Bretak", "Bufar", "Crush", "Clunk", "Dargin", "Dorn", "Eflar", "Elcrest",
+        "Elgroth", "Elnash", "Findar", "Fungorn", "Fugroth", "Fushnak", "Gorak", "Gorem", "Grishnak",
+        "Hildamar", "Hegworth", "Hilnash", "Ithrak", "Iol", "Ing", "Ithrot", "Irgash", "Juthak", "Jornash",
+        "Joxen", "Jogroth", "Karg", "Kroth", "Kartak", "Kazorn", "Lug", "Lugash", "Luxen", "Lugroth", "Mog",
+        "Mugon", "Muzorn", "Mugrot", "Multak", "Narg", "Nok", "Norgrin", "Norgorak", "Norgrish", "O'Grim",
+        "Othar", "O'Gash", "O'Nak", "O'Gor", "Tavok", "Tharg", "Thok", "Thargorn", "Thrak", "Uthan", "Urt", "Urak",
+        "Urthing", "Utheen", "Virge", "Vok", "Vulnash", "Vulith", "Zara", "Zarnash", "Zarrot", "Zug", "Zugnash"
       ],
       "troll": [
-        "Abraxas",
-        "Abrazar",
-        "Abdruu",
-        "Acarius",
-        "Acathos",
-        "Balthazar",
-        "Brom",
-        "Borak",
-        "Bodur",
-        "Brutus",
-        "Bosven",
-        "Crog",
-        "Croszar",
-        "Cumber",
-        "Daph",
-        "Duun",
-        "Durak",
-        "Durne",
-        "Eavar",
-        "Erak",
-        "Edur",
-        "Eldrax",
-        "Fu",
-        "Funshnak",
-        "Fugroth",
-        "Gorath",
-        "Grendel",
-        "Hillock",
-        "Hervon",
-        "Hrothgar",
-        "Hescar",
-        "Lubarius",
-        "Lervon",
-        "Ledrak",
-        "Lebrazar",
-        "Luun",
-        "Lurne",
-        "Sedgwick",
-        "Sedglock",
-        "Skrull",
-        "Slade",
-        "Sven",
-        "Skullcrusher",
-        "Tor",
-        "Thonk",
-        "Thrak",
-        "Thrum",
-        "Thul",
-        "Thurg",
-        "Uarl",
-        "Urth",
-        "Varg",
-        "Vyxek",
-        "Vyrn",
-        "Vyrog",
-        "Vyraxas",
-        "Vurnash",
-        "Zarok",
-        "Zurg",
-        "Zurlock",
-        "Zurul",
-        "Zug",
-        "Zugor",
-        "Zugthak"
+        "Abraxas", "Abrazar", "Abdruu", "Acarius", "Acathos", "Balthazar", "Brom", "Borak", "Bodur", "Brutus", "Bosven",
+        "Crog", "Croszar", "Cumber", "Daph", "Duun", "Durak", "Durne", "Eavar", "Erak", "Edur", "Eldrax",
+        "Fu", "Funshnak", "Fugroth", "Gorath", "Grendel", "Hillock", "Hervon", "Hrothgar", "Hescar", "Lubarius",
+        "Lervon", "Ledrak", "Lebrazar", "Luun", "Lurne", "Sedgwick", "Sedglock", "Skrull", "Slade", "Sven",
+        "Skullcrusher", "Tor", "Thonk", "Thrak", "Thrum", "Thul", "Thurg", "Uarl", "Urth", "Varg", "Vyxek", "Vyrn",
+        "Vyrog", "Vyraxas", "Vurnash", "Zarok", "Zurg", "Zurlock", "Zurul", "Zug", "Zugor", "Zugthak"
       ],
       "dragon": [
-        "Sejanus",
-        "Vermithrax",
-        "Saphira",
-        "Gei-Zar",
-        "Whitefang",
-        "Silverscale",
-        "Firetongue",
-        "Draconius",
-        "Emberwing",
-        "Goldenheart",
-        "Calder",
-        "Zarathustra",
-        "Fafnir",
-        "Smaug",
-        "Glaurung",
-        "Ancalagon",
-        "Tiamat",
-        "Bahamut",
-        "Nidhogg",
-        "Alduin",
-        "Paarthurnax",
-        "Drogon",
-        "Rhaegal",
-        "Viserion",
-        "Durnehviir",
-        "Mirmulnir"
+        "Sejanus", "Vermithrax", "Saphira", "Gei-Zar", "Whitefang", "Silverscale", "Firetongue", "Draconius", "Emberwing",
+        "Goldenheart", "Calder", "Zarathustra", "Fafnir", "Smaug", "Glaurung", "Ancalagon", "Tiamat", "Bahamut", "Nidhogg",
+        "Alduin", "Paarthurnax", "Drogon", "Rhaegal", "Viserion", "Durnehviir", "Mirmulnir", "Norbert"
       ]
     }
   },
   "npcBaseHp": {
     "discriminator": "race",
-    "groups": {
-      "kobold": 1,
-      "goblin": 2,
-      "human": 6,
-      "orc": 9,
-      "ogre": 12,
-      "troll": 15,
-      "dragon": 36
-    }
+    "groups": { "kobold": 1, "goblin": 2, "human": 6, "orc": 9, "ogre": 12, "troll": 15, "dragon": 36 }
   },
   "npcHpVariance": {
     "discriminator": "race",
-    "groups": {
-      "kobold": 1,
-      "goblin": 1,
-      "human": 2,
-      "orc": 3,
-      "ogre": 4,
-      "troll": 5,
-      "dragon": 10
-    }
+    "groups": { "kobold": 1, "goblin": 1, "human": 2, "orc": 3, "ogre": 4, "troll": 5, "dragon": 10 }
   },
   "npcLevel": {
     "discriminator": "race",
-    "groups": {
-      "kobold": 1,
-      "goblin": 1,
-      "orc": 2,
-      "human": 3,
-      "ogre": 5,
-      "troll": 8,
-      "dragon": 12
-    }
+    "groups": { "kobold": 1, "goblin": 1, "orc": 2, "human": 3, "ogre": 5, "troll": 8, "dragon": 12 }
   },
   "npcStr": {
     "discriminator": "race",
-    "groups": {
-      "human": 10,
-      "goblin": 8,
-      "kobold": 6,
-      "orc": 16,
-      "ogre": 19,
-      "troll": 18,
-      "dragon": 23
-    }
+    "groups": { "human": 10, "goblin": 8, "kobold": 6, "orc": 16, "ogre": 19, "troll": 18, "dragon": 23 }
   },
   "npcDex": {
     "discriminator": "race",
-    "groups": {
-      "human": 10,
-      "goblin": 12,
-      "kobold": 9,
-      "orc": 12,
-      "ogre": 8,
-      "troll": 7,
-      "dragon": 16
-    }
+    "groups": { "human": 10, "goblin": 12, "kobold": 9, "orc": 12, "ogre": 8, "troll": 7, "dragon": 16 }
   },
   "npcCon": {
     "discriminator": "race",
-    "groups": {
-      "human": 10,
-      "goblin": 8,
-      "kobold": 6,
-      "orc": 16,
-      "ogre": 19,
-      "troll": 18,
-      "dragon": 23
-    }
+    "groups": { "human": 10, "goblin": 8, "kobold": 6, "orc": 16, "ogre": 19, "troll": 18, "dragon": 23 }
   },
   "npcInt": {
     "discriminator": "race",
-    "groups": {
-      "human": 10,
-      "goblin": 8,
-      "kobold": 6,
-      "orc": 8,
-      "ogre": 5,
-      "troll": 6,
-      "dragon": 18
-    }
+    "groups": { "human": 10, "goblin": 8, "kobold": 6, "orc": 8, "ogre": 5, "troll": 6, "dragon": 18 }
   },
   "npcWis": {
     "discriminator": "race",
-    "groups": {
-      "human": 10,
-      "goblin": 8,
-      "kobold": 6,
-      "orc": 8,
-      "ogre": 5,
-      "troll": 6,
-      "dragon": 18
-    }
+    "groups": { "human": 10, "goblin": 8, "kobold": 6, "orc": 8, "ogre": 5, "troll": 6, "dragon": 18 }
   },
   "npcCha": {
     "discriminator": "race",
-    "groups": {
-      "human": 10,
-      "goblin": 8,
-      "kobold": 6,
-      "orc": 8,
-      "ogre": 5,
-      "troll": 6,
-      "dragon": 18
-    }
+    "groups": { "human": 10, "goblin": 8, "kobold": 6, "orc": 8, "ogre": 5, "troll": 6, "dragon": 18 }
   },
   "npcNaturalArmor": {
     "discriminator": "race",
-    "groups": {
-      "goblin": 0,
-      "kobold": 0,
-      "human": 1,
-      "orc": 1,
-      "ogre": 2,
-      "troll": 3,
-      "dragon": 10
-    }
+    "groups": { "goblin": 0, "kobold": 0, "human": 1, "orc": 1, "ogre": 2, "troll": 3, "dragon": 10 }
   },
+
   "npcWeapon": {
     "discriminator": "race",
     "groups": {
       "human": [
-        "sword",
-        "axe",
-        "mace",
-        "spear"
+        "longsword", "handaxe", "light_mace", "spear", "pole_arm"
       ],
       "goblin": [
-        "dagger",
-        "club"
+        "dagger", "club", "javelin", "shortsword"
       ],
       "kobold": [
-        "spear",
-        "club",
-        "dagger"
+        "spear", "club", "dagger", "halberd", "light_warhammer"
       ],
       "orc": [
-        "greataxe",
-        "mace",
-        "sword"
+        "battleaxe", "heavy_mace", "heavy_flail", "greatsword", "claymore"
       ],
       "ogre": [
-        "club",
-        "axe",
-        "mace"
+        "club", "heavy_mace", "battleaxe", "trident"
       ],
       "troll": [
-        "claws"
+        "claws", "club", "scimitar", "morningstar"
       ],
       "dragon": [
-        "bite"
+        "bite", "claws"
       ]
     }
   },
+
+  "npcArmor": {
+    "discriminator": "race",
+    "groups": {
+      "human": [ "cloth", "leather", "chainmail", "scale" ],
+      "goblin": [ "cloth", "leather", "hide" ],
+      "kobold": [ "cloth", "studded" ],
+      "orc": [ "scale", "plate", "ring" ],
+      "ogre": [ "hide", "leather" ],
+      "troll": [ "hide", "leather" ],
+      "dragon": [ "cloth" ]
+    }
+  },
+
   "npcXp": {
     "discriminator": "race",
     "groups": {
-      "kobold": 15,
-      "goblin": 25,
-      "human": 30,
-      "orc": 50,
-      "ogre": 200,
-      "troll": 500,
-      "dragon": 2000
+      "kobold": 15, "goblin": 25, "human": 30, "orc": 50,
+      "ogre": 200, "troll": 500, "dragon": 2000
     }
   },
   "npcGold": {
@@ -1294,44 +780,19 @@
     "discriminator": "building_type",
     "groups": {
       "temple": [
-        "ancient",
-        "beloved",
-        "divine",
-        "hallowed",
-        "mystical",
-        "sacred"
+        "ancient", "beloved", "divine", "hallowed", "mystical", "sacred"
       ],
       "fortress": [
-        "colonial",
-        "dread",
-        "barricaded",
-        "militarized",
-        "impenetrable",
-        "treacherous"
+        "colonial", "dread", "barricaded", "militarized", "impenetrable", "treacherous"
       ],
       "library": [
-        "dusty",
-        "ancient",
-        "arcane",
-        "forgotten",
-        "mysterious",
-        "secret"
+        "dusty", "ancient", "arcane", "forgotten", "mysterious", "secret"
       ],
       "tomb": [
-        "dark",
-        "haunted",
-        "cursed",
-        "forbidden",
-        "sacred",
-        "unholy"
+        "dark", "haunted", "cursed", "forbidden", "sacred", "unholy"
       ],
       "mine": [
-        "abandoned",
-        "dangerous",
-        "treacherous",
-        "hidden",
-        "lost",
-        "darkened"
+        "abandoned", "dangerous", "treacherous", "hidden", "lost", "darkened"
       ]
     }
   },
@@ -1339,45 +800,19 @@
     "discriminator": "building_type",
     "groups": {
       "temple": [
-        "fane",
-        "shrine",
-        "sanctum",
-        "reliquary",
-        "sanctuary",
-        "monastery",
-        "cathedral"
+        "fane", "shrine", "sanctum", "reliquary", "sanctuary", "monastery", "cathedral"
       ],
       "fortress": [
-        "tower",
-        "keep",
-        "stronghold",
-        "citadel",
-        "bastion",
-        "redoubt"
+        "tower", "keep", "stronghold", "citadel", "bastion", "redoubt"
       ],
       "library": [
-        "library",
-        "archive",
-        "vault",
-        "scriptorium",
-        "repository"
+        "library", "archive", "vault", "scriptorium", "repository", "bookhouse"
       ],
       "tomb": [
-        "tomb",
-        "crypt",
-        "catacomb",
-        "mausoleum",
-        "necropolis",
-        "sepulcher"
+        "tomb", "crypt", "catacomb", "mausoleum", "necropolis", "sepulcher", "charnel"
       ],
       "mine": [
-        "mine",
-        "cave",
-        "cavern",
-        "lair",
-        "delve",
-        "tunnel",
-        "hollow"
+        "mine", "cave", "cavern", "lair", "delve", "tunnel", "hollow"
       ]
     }
   },
@@ -1386,51 +821,27 @@
     "groups": {
       "temple": [
         [
-          "hall",
-          "library",
-          "library",
-          "altar",
-          "altar",
-          "shrine",
-          "sanctum",
-          "reliquary"
+          "hall", "library", "library", "altar", "altar", "shrine", "sanctum", "reliquary"
         ]
       ],
       "fortress": [
         [
-          "barracks",
-          "barracks",
-          "armory",
-          "guardroom",
-          "watchtower",
-          "cell",
-          "hall"
+          "barracks", "barracks", "armory", "guardroom", "watchtower", "cell", "hall"
         ]
       ],
       "library": [
         [
-          "scriptorium",
-          "archive",
-          "study",
-          "vault",
-          "hall",
-          "alcove"
+          "scriptorium", "archive", "study", "vault", "hall", "alcove"
         ]
       ],
       "tomb": [
         [
-          "chamber",
-          "corridor",
-          "cell"
+          "chamber", "chamber", "corridor", "cell", "cell", "hall", "reliquary"
         ]
       ],
       "mine": [
         [
-          "corridor",
-          "corridor",
-          "corridor",
-          "chamber",
-          "lair"
+          "corridor", "corridor", "corridor", "chamber", "lair"
         ]
       ]
     }
@@ -1439,7 +850,9 @@
     "discriminator": "type",
     "groups": {
       "alcove": [
-        "hidden alcove, tucked away behind a crumbling wall."
+        "hidden alcove, tucked away behind a crumbling wall.",
+        "secret alcove, filled with ancient artifacts and treasures.",
+        "undisturbed alcove, the air thick with dust and cobwebs."
       ],
       "altar": [
         "sacred altar, the air filled with the scent of incense. The walls are adorned with ancient symbols, and a powerful aura emanates from the center."
@@ -2007,13 +1420,13 @@
   "monsterWeapon": {
     "discriminator": "monster_type",
     "groups": {
-      "giant": "sword",
+      "giant": "greatsword",
       "undead": "claws",
       "demon": "claws",
       "elemental": "slam",
       "aberration": "tentacles",
       "construct": "slam",
-      "celestial": "sword",
+      "celestial": "longsword",
       "fey": "dagger",
       "beast": "claws"
     }

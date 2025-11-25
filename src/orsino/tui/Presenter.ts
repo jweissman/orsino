@@ -14,7 +14,8 @@ export default class Presenter {
         ...(combatant.passiveEffects || [])
       ].map(e => e.name).join(", ") || "None",
       abilities: (combatant.abilities||[]).join(", "),
-      traits: (combatant.traits||[]).join(", ")
+      traits: (combatant.traits || []).join(", "),
+      gear: (combatant.gear || []).join(", "),
     });
 
     // delete active/passives
@@ -57,10 +58,10 @@ export default class Presenter {
     }
 
     let lhs = `${Stylist.format(
-      Stylist.colorize(combatant.forename, combatant.playerControlled ? 'cyan' : 'yellow'),
+      Stylist.colorize(combatant.name, combatant.playerControlled ? 'cyan' : 'yellow'),
       'bold'
     )}${classInfo}`;
-    let rhs = `(${this.statLine(combatant)}, HP: ${Stylist.colorize(hpBar, color)} ${combatant.hp}/${combatant.maxHp}, AC: ${effective.ac})`;
+    let rhs = `(${this.statLine(combatant)}, HP: ${Stylist.colorize(hpBar, color)} ${combatant.hp}/${combatant.maxHp}, AC: ${effective.ac}, Level: ${combatant.level})`;
     return `${lhs} ${rhs}`;
   }
 

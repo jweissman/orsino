@@ -46,15 +46,22 @@ export default class Combat {
           forename: "Hero", name: "Hero",
           hp: 14, maxHp: 14, level: 1, ac: 10,
           dex: 11, str: 12, int: 10, wis: 10, cha: 10, con: 12,
-          attackRolls: 1, damageDie: 8, playerControlled: true, xp: 0, gp: 0,
+          // attackRolls: 1, damageDie: 8,
+          attackDie: "1d8",
+          playerControlled: true, xp: 0, gp: 0,
           weapon: "Short Sword", damageKind: "slashing", abilities: ["melee"], traits: []
         }], healingPotions: 3
       },
       {
         name: "Enemy", combatants: [
-          { forename: "Zok", name: "Goblin A", hp: 4, maxHp: 4, level: 1, ac: 17, attackRolls: 2, damageDie: 3, str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: [] },
           {
-            forename: "Mog", name: "Goblin B", hp: 4, maxHp: 4, level: 1, ac: 17, attackRolls: 2, damageDie: 3,
+            forename: "Zok", name: "Goblin A", hp: 4, maxHp: 4, level: 1, ac: 17, //attackRolls: 2, damageDie: 3,
+            attackDie: "1d3",
+            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: []
+          },
+          {
+            forename: "Mog", name: "Goblin B", hp: 4, maxHp: 4, level: 1, ac: 17, //attackRolls: 2, damageDie: 3,
+            attackDie: "1d3",
             str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: []
           }
         ], healingPotions: 0
@@ -121,7 +128,8 @@ export default class Combat {
     const validAbilities: Ability[] = [];
 
     let spellSlotsRemaining = (Combat.maxSpellSlotsForCombatant(combatant) || 0) - (combatant.spellSlotsUsed || 0);
-    let abilities = combatant.abilities.map(a => this.abilityHandler.getAbility(a)); //.filter(a => a);
+    let uniqAbilities = Array.from(new Set(combatant.abilities));
+    let abilities = uniqAbilities.map(a => this.abilityHandler.getAbility(a)); //.filter(a => a);
     abilities.forEach((ability: Ability) => {
       let validTargets = AbilityHandler.validTargets(ability, combatant, allies, enemies);
       let disabled = validTargets.length === 0;

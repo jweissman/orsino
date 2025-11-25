@@ -328,7 +328,11 @@ export default class AbilityHandler {
       events.push({ type: "xp", subject: user, amount } as any);
       success = true;
     } else if (effect.type === "summon") {
+      // let userFx = Fighting.gatherEffects(user);
       let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
+      // if (userFx.summonAnimalBonus) {
+      //   amount += (userFx.summonAnimalBonus || 0) as number;
+      // }
       // could add summon ability bonus here
       let summoned: Combatant[] = [];
       for (let i = 0; i < amount; i++) {

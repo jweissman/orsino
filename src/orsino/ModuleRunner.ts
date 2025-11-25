@@ -119,7 +119,7 @@ export class ModuleRunner {
       this.status(mod);
       this.outputSink(`\n--- Day ${days}/120 ---`);
       const action = await this.menu();
-      // this.outputSink(`You chose to ${action}.`);
+      this.outputSink(`You chose to ${action}.`);
 
       if (action === "embark") {
         const dungeon = await this.selectDungeon();
@@ -150,7 +150,10 @@ export class ModuleRunner {
               pc.hp = 1;
               this.outputSink(`⚠️ ${pc.name} was stabilized to 1 HP!`);
             }
+            pc.activeEffects = [];
           });
+        } else {
+          this.outputSink("No available dungeons to embark on!");
         }
       } else if (action === "rest") {
         this.rest(this.pcs);
@@ -209,7 +212,7 @@ export class ModuleRunner {
     this.outputSink(`(Pop.: ${mod.town.population.toLocaleString()})`);
     this.outputSink(`\n🧙‍ Your Party:`);
     this.pcs.forEach(pc => {
-      this.outputSink(`  - the ${pc.race} ${pc.class} ${Stylist.bold(pc.name)} (${pc.gender} ${pc.background}, ${pc.age})`);
+      this.outputSink(`  - ${Presenter.combatant(pc)} (${pc.gender} ${pc.background}, ${pc.age})`);
     });
     this.outputSink(`💰 Gold: ${this.sharedGold}g`);
     this.outputSink(`🧪 Potions: ${this.sharedPotions}`);
@@ -218,15 +221,15 @@ export class ModuleRunner {
   private async menu(): Promise<string> {
     const available = this.availableDungeons;
     const options: Choice<any>[] = [
-      // { short: "Rest", value: "rest",   name: "Visit the Inn (restore HP/slots)", disabled: this.pcs.every(pc => pc.hp === pc.maxHp) },
+      { short: "Rest", value: "rest",   name: "Visit the Inn (restore HP/slots)", disabled: this.pcs.every(pc => pc.hp === pc.maxHp) },
       // { short: "Shop", value: "shop",   name: "Visit the Alchemist (buy potions, 50g each)", disabled: this.sharedGold < 50 },
       // { short: "Chat", value: "rumors", name: "Visit the Tavern (hear rumors about the region)", disabled: available.length === 0 },
-      { short: "Pray", value: "pray",   name: `Visit the Temple to ${Words.capitalize(this.mod.town.deity)}`, disabled: this.sharedGold < 10 },
+      // { short: "Pray", value: "pray",   name: `Visit the Temple to ${Words.capitalize(this.mod.town.deity)}`, disabled: this.sharedGold < 10 },
       // { short: "Show", value: "show",   name: `Show Party Status/Character Records`, disabled: false },
     ];
 
     if (available.length > 0) {
-      options.push({ short: "Seek", value: "embark", name: "⚔️ Embark on a Quest", disabled: false });
+      options.push({ short: "Seek", value: "embark", name: "⚔️ Embark on a Quest", disabled: available.length === 0 });
     } else {
       // options.push({ short: "Journey", value: "embark", name: "⚔️ Journey to the next region", disabled: false });
     }
@@ -282,7 +285,7 @@ export class ModuleRunner {
         value: d.dungeonIndex,
         name: `${d.dungeon_name} (${d.direction}, CR ${d.intendedCr})`,
         disabled: this.state.completedDungeons.includes(d.dungeonIndex!)
-          || d.intendedCr > Math.round(this.pcs.map(pc => pc.level).reduce((a, b) => a + b, 0) + 5), // Disable if CR is too high
+          || d.intendedCr > Math.round(this.pcs.map(pc => pc.level).reduce((a, b) => a + b, 0) + 2), // Disable if CR is too high
       }))
     );
 

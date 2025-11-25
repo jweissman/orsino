@@ -17,8 +17,8 @@ export interface Combatant {
   wis: number;
   cha: number;
   con: number;
-  attackRolls: number;
-  damageDie: number;
+  // attackRolls: number;
+  // damageDie: number;
   playerControlled?: boolean;
   xp?: number;
   gp?: number;
@@ -42,7 +42,11 @@ export interface Combatant {
   age?: any;
   gender?: any;
   background?: any;
+
+  attackDie: string;
   damageKind: DamageKind;
 
   currentEnvironment?: string;
+
+  gear?: string[];
 }

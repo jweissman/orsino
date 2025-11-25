@@ -1,4 +1,5 @@
 import Deem from "../deem";
+import Generator from "./Generator";
 import { GenerationTemplateType } from "./types/GenerationTemplateType";
 import deepCopy from "./util/deepCopy";
 
@@ -10,7 +11,7 @@ export class Template {
 
   async assembleProperties(
     options: Record<string, any> = {},
-    orsino: any
+    generator: any
   ): Promise<Record<string, any>> {
     const localContext = { ...options };
     let assembled: Record<string, any> = {};
@@ -22,12 +23,13 @@ export class Template {
         ...localContext,
         ...assembled
       };
-      Deem.stdlib.lookup = (tableName: GenerationTemplateType, groupName: string) => orsino.lookupInTable(tableName, groupName);
+      Deem.stdlib.lookup = (tableName: GenerationTemplateType, groupName: string) => generator.lookupInTable(tableName, groupName);
+      Deem.stdlib.gather = (tableName: GenerationTemplateType, count: number) => generator.gatherKeysFromTable(tableName, count);
       Deem.stdlib.gen = async (type: GenerationTemplateType) => {
-        return await orsino.gen(type, { ...context })
+        return await generator.gen(type, { ...context })
       };
       Deem.stdlib.genList = async (type: GenerationTemplateType, count: number = 1, condition?: string) => {
-        return await orsino.genList(type, { ...context }, count, condition);
+        return await generator.genList(type, { ...context }, count, condition);
       }
       Deem.stdlib.eval = async (expr: string) => await Deem.evaluate(expr, context);
 

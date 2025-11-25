@@ -122,7 +122,7 @@ export default class Events {
         // let combatants = event.combatants.map(c => `\n- ${Presenter.combatant(c)}`).join("");
         // return `${heading}${combatants}`;
         return event.subject?.playerControlled ?
-          `${subjectName}'s turn\n${Presenter.combatants(event.combatants, true)}` : `It's ${subjectName}'s turn!`;
+          `${subjectName}'s turn\n${Presenter.combatants(event.combatants, true)}` : `It's ${Presenter.combatant(event.subject!)}'s turn!`;
       case "combatEnd": return `Combat ends! ${event.winner} victorious.`;
 
       case "upgrade":

@@ -44,7 +44,12 @@ export class Commands {
       },
       summon: async (user: Combatant, summoned: Combatant[]) => {
         console.log(`${user.name} summons ${summoned.map(s => s.name).join(", ")}!`);
-        team.combatants.push(...summoned);
+        // team.combatants.push(...summoned);
+        for (let s of summoned) {
+          if (team.combatants.length < 6) {
+            team.combatants.push(s);
+          }
+        }
         return [{ type: "summon", subject: user, summoned } as Omit<SummonEvent, "turn">];
       }
     }

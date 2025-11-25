@@ -1,4 +1,6 @@
+import Deem from "../../deem";
 import Presenter from "../tui/Presenter";
+import Words from "../tui/Words";
 import { AttackResult } from "../types/AttackResult";
 import { Combatant } from "../types/Combatant";
 import { Roll } from "../types/Roll";
@@ -137,7 +139,8 @@ export class Fighting {
 
     const thac0 = this.thac0(attacker.level);
     const effectiveDefender = this.effectiveStats(defender);
-    const ac = effectiveDefender.ac;
+    const defenderAcBonus = this.statMod(effectiveDefender.dex || 10);
+    const ac = effectiveDefender.ac - defenderAcBonus;
     const whatNumberHits = thac0 - ac - toHitBonus;
 
     const attackRoll = await roll(attacker, `to attack ${defender.forename} (must roll ${whatNumberHits} or higher to hit)`, 20);
@@ -165,19 +168,27 @@ export class Fighting {
     if (success) {
       let criticalDamage = 0;
 
-      const attackRolls = [];
-      for (let i = 0; i < attacker.attackRolls; i++) {
-        let message = `for damage`;
-        if (attacker.attackRolls > 1) {
-          message = `for damage (attack ${i + 1}/${attacker.attackRolls})`;
-        }
-        attackRolls.push(await roll(attacker, message, attacker.damageDie));
+      if (!attacker.attackDie) {
+        throw new Error(`Attacker ${attacker.name} does not have an attackDie defined.`);
       }
 
-      description += attackRolls.map(r => r.description).join(" ");
-      damage = attackRolls
-        .map(r => r.amount)
-        .reduce((sum: number, dmg: number) => sum + dmg, 0);
+      let weaponVerb = attacker.damageKind.replace(/ing$/,''); // crude way to get verb from damage kind
+      damage = await Deem.evaluate(attacker.attackDie, {
+        roll, subject: attacker,
+        description: `to ${weaponVerb} ${defender.forename} with ${Words.humanize(attacker.weapon)}`
+      });
+      // const attackRolls = [];
+      // for (let i = 0; i < attacker.attackRolls; i++) {
+      //   let message = `for damage`;
+      //   if (attacker.attackRolls > 1) {
+      //     message = `for damage (attack ${i + 1}/${attacker.attackRolls})`;
+      //   }
+      //   attackRolls.push(await roll(attacker, message, attacker.damageDie));
+      // }
+      // description += attackRolls.map(r => r.description).join(" ");
+      // damage = attackRolls
+      //   .map(r => r.amount)
+      //   .reduce((sum: number, dmg: number) => sum + dmg, 0);
 
       if (critical) {
         criticalDamage = Math.max(1, Math.round(damage * 0.2 * Math.max(1, Math.floor(attacker.level / 5))));

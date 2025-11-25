@@ -92,6 +92,15 @@ export default class Generator {
     return ret;
   }
 
+  public static gatherKeysFromTable(tableName: GenerationTemplateType, count: number): any[] {
+    const table = this.generationSource(tableName);
+    if (!table || !(table instanceof Table)) {
+      throw new Error(`Table not found: ${tableName}`);
+    }
+    const ret = table.gatherKeys(count);
+    return ret;
+  }
+
   static generationSource(type: GenerationTemplateType): Template | Table | null {
     return this.setting[type] || null;
   }

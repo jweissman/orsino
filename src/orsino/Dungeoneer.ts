@@ -68,9 +68,9 @@ export default class Dungeoneer {
         name: "Hero",
         hp: 14, maxHp: 14, level: 1, ac: 10,
         dex: 11, str: 12, int: 10, wis: 10, cha: 10, con: 12,
-        attackRolls: 1,
         weapon: "Short Sword",
-        damageDie: 8, playerControlled: true, xp: 0, gp: 0,
+        hitDie: 8, attackDie: "1d20",
+        playerControlled: true, xp: 0, gp: 0,
         abilities: ["melee", "defend"],
         traits: ["lucky"],
         damageKind: "slashing",
@@ -160,7 +160,7 @@ export default class Dungeoneer {
       const room = this.currentRoom;
       if (!room) break;
       await this.enterRoom(room);
-      if (this.currentEncounter && this.currentEncounter.creatures.length > 0) {
+      if (this.currentEncounter && Combat.living(this.playerTeam.combatants).length > 0) {
         const survived = await this.runCombat();
         if (!survived) break;
       }
@@ -249,7 +249,7 @@ export default class Dungeoneer {
 
     this.note(this.describeRoom(room, ["enter", "step into", "find yourself in"][Math.floor(Math.random() * 3)]));
 
-    if (this.currentEncounter && this.currentEncounter.creatures.length > 0) {
+    if (this.currentEncounter && Combat.living(this.currentEncounter.creatures).length > 0) {
       const monsters = this.currentEncounter.creatures.map(m => `\n - ${Presenter.combatant(m)}`).join(", ");
       this.note(`👹 Encounter: ${monsters} [CR: ${this.currentEncounter.cr}]\n`);
     }
@@ -379,7 +379,7 @@ export default class Dungeoneer {
     while (!done) {
       const options = [
         { name: "Move to next room", value: "move", short: 'Continue', disabled: false }, //room === this.dungeon!.bossRoom },
-        { name: "Rest (stabilize unconscious party members, 30% encounter)", value: "rest", short: 'Rest', disabled: false },
+        // { name: "Rest (stabilize unconscious party members, 30% encounter)", value: "rest", short: 'Rest', disabled: false },
         { name: "Search the room", value: "search", short: 'Search', disabled: searched },
       ];
       if (room.feature && room.feature !== "nothing") {
@@ -521,7 +521,11 @@ export default class Dungeoneer {
         boss_encounter: {
           cr: 5,
           creatures: [
-            { forename: "Shadow Dragon", name: "Shadow Dragon", hp: 50, maxHp: 50, level: 5, ac: 18, dex: 14, str: 20, con: 16, int: 12, wis: 10, cha: 14, damageDie: 10, playerControlled: false, xp: 500, gp: 1000, attackRolls: 2, weapon: "Bite", damageKind: "piercing", abilities: ["melee"], traits: [] }
+            {
+              forename: "Shadow Dragon", name: "Shadow Dragon", hp: 50, maxHp: 50, level: 5, ac: 18, dex: 14, str: 20, con: 16, int: 12, wis: 10, cha: 14,
+              attackDie: "1d20", hitDie: 12,
+              playerControlled: false, xp: 500, gp: 1000, weapon: "Bite", damageKind: "piercing", abilities: ["melee"], traits: []
+            }
           ]
         },
         treasure: "A legendary sword and a chest of gold.",
@@ -537,7 +541,11 @@ export default class Dungeoneer {
           encounter: {
             cr: 1,
             creatures: [
-              { forename: "Goblin", name: "Goblin", hp: 7, maxHp: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, damageDie: 6, playerControlled: false, xp: 50, gp: 10, attackRolls: 1, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: [] }
+              {
+                forename: "Goblin", name: "Goblin", hp: 7, maxHp: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, 
+                attackDie: "1d20", hitDie: 6,
+                playerControlled: false, xp: 50, gp: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: []
+              }
             ]
           }
         },
@@ -550,7 +558,11 @@ export default class Dungeoneer {
           encounter: {
             cr: 2,
             creatures: [
-              { forename: "Orc", name: "Orc", hp: 15, maxHp: 15, level: 2, ac: 13, dex: 12, str: 16, con: 14, int: 8, wis: 10, cha: 8, damageDie: 8, playerControlled: false, xp: 100, gp: 20, attackRolls: 1, weapon: "Axe", damageKind: "slashing", abilities: ["melee"], traits: [] },
+              {
+                forename: "Orc", name: "Orc", hp: 15, maxHp: 15, level: 2, ac: 13, dex: 12, str: 16, con: 14, int: 8, wis: 10, cha: 8,
+                attackDie: "1d20", hitDie: 8,
+                playerControlled: false, xp: 100, gp: 20, weapon: "Axe", damageKind: "slashing", abilities: ["melee"], traits: []
+              },
             ]
           }
         }

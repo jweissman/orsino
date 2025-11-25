@@ -73,6 +73,18 @@
 [ ] Are we adding stat bonuses to save checks? (Probably not but maybe we should in at least some cases?)
 [ ] Unconscious characters should not roll init
 [ ] Some statuses still sound weird ("[defender] is Chaos by [inflicter]" - odd)
+---
+[ ] Align npc occupations with dungeon type ...
+[ ] Show nicer character record with details/descriptions about traits
+[ ] Show sources of passive/trait-based effects (awkward since we erase when we coalesce fx!)
+[ ] Statuses like 'defending' really need to expire at end of next _turn_ not end of _round_
+[ ] Humanize weapon names in damage description ("takes 5 damage from Valen's light_mace" => "Light Mace", maybe add damage type here?)
+[ ] AI should not use buffs that only target allies if all allies are dead
+[ ] "Heal 1 every successful hit" is too powerful ('vitalist' trait shared by all elves -- and note elves already get multiple very powerful passives?)
+[ ] Dungeons with multiple floors (levels in principle seem relatively straightforward but we'd need to adapt dungeoneer to handle them...)
+---
+[ ] Set limit on saves vs death (3 per combat?)
+[ ] Smite scaling 2d6 * level is way too powerful at higher levels
 
 ## Fixed
 [x] Temple/shrine to local deity to get a blessing

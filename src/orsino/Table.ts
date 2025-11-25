@@ -8,6 +8,17 @@ export class Table {
     return this;
   }
 
+  gatherKeys(count: number): any[] {
+    let allKeys = Object.keys(this.groups);
+    let keys: any[] = [];
+    for (let i = 0; i < count; i++) {
+      let key = allKeys[Math.floor(Math.random() * allKeys.length)];
+      keys.push(key);
+    }
+
+    return keys;
+  }
+
   pick(groupName: string): any {
     let options = [];
     if (groupName === 'default') {

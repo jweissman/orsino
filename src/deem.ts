@@ -25,6 +25,11 @@ export default class Deem {
     min: (...args: number[]) => Math.min(...args),
     max: (...args: number[]) => Math.max(...args),
     concat: (...args: any[]) => args.flat().filter((x) => x !== null && x !== undefined),
+    roll: (count: number, sides: number) => {
+      const rolls = Array.from({ length: count }, () => Math.floor(Math.random() * sides) + 1);
+      const sum = rolls.reduce((a, b) => a + b, 0);
+      return sum;
+    },
     rollWithDrop: (count: number, sides: number) => {
       const rolls = Array.from({ length: count }, () => Math.floor(Math.random() * sides) + 1);
       rolls.sort((a, b) => a - b);
