@@ -127,13 +127,15 @@ describe('Orsino', () => {
       },
       moduleGen: () => mod,
       pcs: [
-        { ...await Generator.gen("pc", { setting: "fantasy" }), playerControlled: true },
-        { ...await Generator.gen("pc", { setting: "fantasy" }), playerControlled: true },
-        { ...await Generator.gen("pc", { setting: "fantasy" }), playerControlled: true }
+        { ...await Generator.gen("pc", { setting: "fantasy", class: "warrior" }), playerControlled: true },
+        { ...await Generator.gen("pc", { setting: "fantasy", class: "warrior" }), playerControlled: true },
+        { ...await Generator.gen("pc", { setting: "fantasy", class: "warrior" }), playerControlled: true }
       ]
     });
 
     await explorer.run();
+
+    // console.log("Active module after run:", explorer.activeModule);
 
     expect(explorer.activeModule).toBeDefined();
     expect(explorer.activeModule!.name).toBe(mod.name);

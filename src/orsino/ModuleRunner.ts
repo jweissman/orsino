@@ -96,6 +96,8 @@ export class ModuleRunner {
     this.outputSink(`Welcome to ${Stylist.bold(this.mod.name)}!`);
 
     await this.enter();
+
+    this.outputSink("\nThank you for playing!");
   }
 
   private async defaultModuleGen(): Promise<CampaignModule> {
@@ -145,11 +147,20 @@ export class ModuleRunner {
           this.state.sharedPotions = dungeoneer.playerTeam.healingPotions;
 
           // stabilize unconscious PC to 1 HP
+          // this.pcs.forEach(pc => {
+          //   if (pc.hp <= 0) {
+          //     pc.hp = 1;
+          //     this.outputSink(`⚠️ ${pc.name} was stabilized to 1 HP!`);
+          //   }
+          //   pc.activeEffects = [];
+          // });
+
+          // heal PCs for next adventure
           this.pcs.forEach(pc => {
-            if (pc.hp <= 0) {
-              pc.hp = 1;
-              this.outputSink(`⚠️ ${pc.name} was stabilized to 1 HP!`);
-            }
+            const healAmount = Math.floor(pc.maxHp * 0.5);
+            pc.hp = Math.max(1, Math.min(pc.maxHp, pc.hp + healAmount));
+            this.outputSink(`💖 ${pc.name} recovers ${healAmount} HP after the adventure.`);
+            pc.spellSlotsUsed = 0;
             pc.activeEffects = [];
           });
         } else {

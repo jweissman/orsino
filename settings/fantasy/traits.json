@@ -1,4 +1,24 @@
 {
+  "fellowship": {
+    "type": "party",
+    "description": "Free Fellowship",
+    "requirements": {
+      "races": [
+        "human",
+        "elf",
+        "dwarf"
+      ]
+    },
+    "statuses": [
+      {
+        "name": "Geas of Unity",
+        "description": "Gain +2 to all rolls.",
+        "effect": {
+          "allRolls": 2
+        }
+      }
+    ]
+  },
   "accordant": {
     "type": "party",
     "description": "Human Accord",
@@ -647,5 +667,127 @@
         }
       }
     ]
+  },
+
+  "battle_cry": {
+    "type": "feat",
+    "description": "Battle Cry",
+    "requirements": {
+      "level": 1,
+      "class": "warrior"
+    },
+    "statuses": [
+      {
+        "name": "Fearsome Shout",
+        "description": "After killing an enemy, gain +1d3 damage for your next attack.",
+        "effect": {
+          "onKill": [
+            {
+              "type": "buff",
+              "status": {
+                "name": "Hollering",
+                "duration": 1,
+                "effect": {
+                  "bonusDamage": "1d3"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+
+  "mana_focusing": {
+    "type": "feat",
+    "description": "Mana Focusing",
+    "requirements": {
+      "level": 1,
+      "class": "mage"
+    },
+    "statuses": [
+      {
+        "name": "Focused Casting",
+        "description": "Improve spell slots by 3.",
+        "effect": {
+          "bonusSpellSlots": 3
+        }
+      }
+    ]
+  },
+
+  "stealthy": {
+    "type": "feat",
+    "description": "Stealthy",
+    "requirements": {
+      "level": 1,
+      "class": "thief"
+    },
+    "statuses": [
+      {
+        "name": "Silent Footsteps",
+        "description": "+4 to stealth checks and +2 to pick lock checks. Backstab damage increased by 25%.",
+        "effect": {
+          "stealthBonus": 4,
+          "pickLockBonus": 2,
+          "backstabMultiplier": 1.25
+        }
+      }
+    ]
+  },
+
+  "piety": {
+    "type": "feat",
+    "description": "Piety",
+    "requirements": {
+      "level": 1,
+      "class": "cleric"
+    },
+    "statuses": [
+      {
+        "name": "Divine Favor",
+        "description": "+1d4 healing on all healing spells.",
+        "effect": {
+          "bonusHealing": "1d4"
+        }
+      }
+    ]
+  },
+
+  "natural_bond": {
+    "type": "feat",
+    "description": "Natural Bond",
+    "requirements": {
+      "level": 1,
+      "class": "ranger"
+    },
+    "statuses": [
+      {
+        "name": "Animal Companion",
+        "description": "Summon an extra animal companion when you call one.",
+        "effect": {
+          "summonAnimalBonus": 1
+        }
+      }
+    ]
+  },
+
+  "rhythm_rhyme": {
+    "type": "feat",
+    "description": "Rhythm and Rhyme",
+    "requirements": {
+      "level": 1,
+      "class": "bard"
+    },
+    "statuses": [
+      {
+        "name": "Rousing Performance",
+        "description": "All status effects you apply last 2 additional turns.",
+        "effect": {
+          "statusDuration": 2
+        }
+      }
+    ]
   }
+
 }

@@ -4,9 +4,10 @@ import Files from "./util/Files";
 
 export interface Trait {
   name: string;
-  type: "party" | "racial" | "class";
+  type: "party" | "racial" | "class" | "feat";
   description: string;
   requirements: {
+    level?: number;
     // for racial/class traits
     race?: "human" | "elf" | "dwarf" | "halfling" | "orc" | "gnome" | "fae";
     class?: "mage" | "warrior" | "thief" | "ranger" | "cleric" | "bard";
@@ -72,6 +73,33 @@ export default class TraitHandler {
     });
 
     return synergies;
+  }
+
+  classFeatures(pcClass: string, level: number): Trait[] {
+    let features: Trait[] = [];
+    Object.values(this.traits).forEach(trait => {
+      if (trait.type === "feat" && trait.requirements.class === pcClass && trait.requirements.level !== undefined && trait.requirements.level <= level) {
+        features.push(trait);
+      }
+    });
+    console.log(`Class features for ${pcClass} level ${level}:`, features.map(f => f.name));
+    return features;
+  }
+
+  featsForCombatant(pc: Combatant): Trait[] {
+    if (!pc.class) {
+      console.warn("No class for combatant", pc.name);
+      return [];
+    }
+
+    let feats: Trait[] = [];
+    for (let feat of this.classFeatures(pc.class, pc.level)) {
+      if (!pc.traits.includes(feat.name)) {
+        feats.push(feat);
+      }
+    }
+
+    return feats;
   }
 
 }

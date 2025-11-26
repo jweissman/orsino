@@ -3,6 +3,7 @@ import { GameEvent, UpgradeEvent } from "./Events";
 import Generator from "./Generator";
 import { CommandHandlers } from "./rules/Commands";
 import { Fighting } from "./rules/Fighting";
+import Words from "./tui/Words";
 import { Combatant } from "./types/Combatant";
 import { GenerationTemplateType } from "./types/GenerationTemplateType";
 import { Roll } from "./types/Roll";
@@ -11,7 +12,7 @@ import Files from "./util/Files";
 
 type Target = "self" | "ally" | "enemy" | "allies" | "enemies" | "all" | "randomEnemies";
 export type DamageKind = "bleed" | "poison" | "psychic" | "lightning" | "earth" | "fire" | "ice" | "bludgeoning" | "piercing" | "slashing" | "force" | "radiant" | "necrotic" | "acid" | "true";
-export type SaveKind = "poison" | "disease" | "death" | "magic" | "insanity" | "charm" | "fear" | "stun" | "will";
+export type SaveKind = "poison" | "disease" | "death" | "magic" | "insanity" | "charm" | "fear" | "stun" | "will" | "breath" | "paralyze";
 
 export interface StatusEffect {
   name: string;
@@ -56,10 +57,12 @@ export interface Ability {
   name: string;
   type: "spell" | "skill" | "potion";
   description: string;
+  level?: number;
   aspect: "arcane" | "physical" | "divine" | "social" | "stealth" | "nature";
   target: Target[];
   effects: AbilityEffect[];
   condition?: {
+    hasInterceptWeapon?: boolean;
     status?: string;
   };
   cooldown?: number;
@@ -86,7 +89,6 @@ export default class AbilityHandler {
 
     let coreLists = [
       ...Object.values(tables['abilities']['groups']),
-      ...Object.values(tables['npcAbilities']['groups']),
     ];
     coreLists.forEach((abilities: any) => {
       let abilityNames = abilities[0] as string[];
@@ -115,9 +117,19 @@ export default class AbilityHandler {
   getAbility(name: string): Ability {
     let ability = this.abilities[name];
     if (!ability) {
-      throw new Error(`Ability not found: ${name} (known abilities: ${Object.keys(this.abilities).join(", ") || "none"})`);
+      // throw new Error(`Ability not found: ${name} (known abilities: ${Object.keys(this.abilities).join(", ") || "none"})`);
+      // is it the .name of an ability?
+      ability = Object.values(this.abilities).find(ab => ab.name === name) as Ability;
+      if (!ability) {
+        throw new Error(`Ability not found: ${name} (known abilities: ${Object.keys(this.abilities).join(", ") || "none"})`);
+      }
     }
     return ability;
+  }
+
+  get spells(): Ability[] {
+    return Object.values(this.abilities).filter(ab => ab.type === 'spell');
+    // same as above, but we need to map the _key_ into the structure so we can add it correctly
   }
 
   static validTargets(ability: Ability, user: Combatant, allies: Combatant[], enemies: Combatant[]): (Combatant | Combatant[])[] {
@@ -171,6 +183,11 @@ export default class AbilityHandler {
         events.push(...result.events);
       }
     } else {
+      if (!target) {
+        // throw new Error(`No target provided for effect ${effect.type} in ability ${name}`);
+        return { success: false, events };
+      }
+
       let result = await this.handleSingleEffect(name, effect, user, target, handlers);
       success = result.success;
       events.push(...result.events);
@@ -350,6 +367,23 @@ export default class AbilityHandler {
       throw new Error(`Unknown effect type: ${effect.type}`);
     }
 
+    let targetFx = Fighting.gatherEffects(targetCombatant);
+    // handle generic onEnemy[ActionName] effects
+    if (success && targetFx[`onEnemy${Words.capitalize(name)}`]) {
+      let reactionEffects = targetFx[`onEnemy${Words.capitalize(name)}`] as Array<AbilityEffect>;
+      for (const reactionEffect of reactionEffects) {
+        let fxTarget: Combatant | Combatant[] = targetCombatant;
+        if (reactionEffect.target) {
+          fxTarget = this.validTargets({ target: reactionEffect.target } as Ability, user, [], [targetCombatant])[0];
+        }
+        let { events: reactionEvents } = await this.handleEffect(
+          (reactionEffect.status?.name || name) + " Reaction",
+          reactionEffect, user, fxTarget, handlers
+        );
+        events.push(...reactionEvents);
+      }
+    }
+
     return { success, events };
   }
 
@@ -394,6 +428,7 @@ export default class AbilityHandler {
         }
       }
     }
+
 
     // console.log(`Performed ${ability.name} on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target.name} with result: ${result}`);
     // // console.log(`Events:`, events);

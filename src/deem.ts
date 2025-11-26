@@ -1,6 +1,7 @@
 import * as ohm from 'ohm-js';
 import source from './deem.ohm.txt';
 import { count } from 'console';
+import { Fighting } from './orsino/rules/Fighting';
 
 export default class Deem {
   static magicVars: Record<string, any> = {};
@@ -37,13 +38,14 @@ export default class Deem {
       return rolls.reduce((a, b) => a + b, 0);
     },
     statMod: (stat: number) => {
-      if (stat >= 15) {
-        return 1 + Math.round((stat - 15) / 2);
-      } else if (stat <= 5) {
-        return (-1) + Math.round((stat - 5) / 2);
-      } else {
-        return 0;
-      }
+      // if (stat >= 15) {
+      //   return 1 + Math.round((stat - 15) / 2);
+      // } else if (stat <= 5) {
+      //   return (-1) + Math.round((stat - 5) / 2);
+      // } else {
+      //   return 0;
+      // }
+      return Fighting.statMod(stat);
     },
     dig: (obj: any, ...path: string[]) => {
       return path.reduce((acc, key) => (acc && acc[key] !== undefined) ? acc[key] : null, obj);

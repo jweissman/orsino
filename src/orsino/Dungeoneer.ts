@@ -1,4 +1,4 @@
-import Combat from "./Combat";
+import Combat, { ChoiceSelector } from "./Combat";
 import { Team } from "./types/Team";
 import Presenter from "./tui/Presenter";
 import { Combatant } from "./types/Combatant";
@@ -74,6 +74,7 @@ export default class Dungeoneer {
         abilities: ["melee", "defend"],
         traits: ["lucky"],
         damageKind: "slashing",
+        hasMissileWeapon: false
       }],
       healingPotions: 3
     };
@@ -83,6 +84,7 @@ export default class Dungeoneer {
 
   private roller: Roll;
   private select: Select<any>;
+  // protected select: ChoiceSelector<any>;
   private outputSink: (message: string) => void;
   private currentRoomIndex: number = 0;
   private journal: DungeonEvent[] = [];
@@ -325,45 +327,9 @@ export default class Dungeoneer {
       c.xp = Math.round((c.xp || 0) + xp * xpMultiplier);
       c.gp = Math.round((c.gp || 0) + gold * gpMultiplier);
 
-      let nextLevelXp = CharacterRecord.xpForLevel(c.level + 1);
-
-      if (xp > 0 && c.xp < nextLevelXp) {
-        this.note(`${c.name} needs to gain ${nextLevelXp - c.xp} more experience for level ${c.level + 1} (currently at ${c.xp}/${nextLevelXp}).`);
-      }
-      while (c.xp >= nextLevelXp) {
-        c.level++;
-        nextLevelXp = CharacterRecord.xpForLevel(c.level + 1);
-        let hitPointIncrease = (await this.roller(c, "hit point growth", c.hitDie || 4)).amount;
-        hitPointIncrease += Fighting.statMod(c.con || 10);
-        hitPointIncrease = Math.max(1, hitPointIncrease);
-        c.maxHp += hitPointIncrease;
-        c.hp = c.maxHp;
-        this.note(`${Presenter.combatant(c)} leveled up to level ${c.level}!`);
-        this.note(`Hit points increased by ${hitPointIncrease} to ${c.maxHp}.`);
-        const stat = await this.select(`Choose a stat to increase:`, [
-          { disabled: c.str >= 18, name: `Strength (${c.str})`, value: 'str', short: 'Strength' },
-          { disabled: c.dex >= 18, name: `Dexterity (${c.dex})`, value: 'dex', short: 'Dexterity' },
-          { disabled: c.int >= 18, name: `Intelligence (${c.int})`, value: 'int', short: 'Intelligence' },
-          { disabled: c.wis >= 18, name: `Wisdom (${c.wis})`, value: 'wis', short: 'Wisdom' },
-          { disabled: c.cha >= 18, name: `Charisma (${c.cha})`, value: 'cha', short: 'Charisma' },
-          { disabled: c.con >= 18, name: `Constitution (${c.con})`, value: 'con', short: 'Constitution' },
-          // just in case they're 18 across!
-          { disabled: false, name: `Max HP (${c.maxHp})`, value: 'maxHp', short: 'HP' },
-        ]);
-        // @ts-ignore
-        c[stat] += 1;
-        // this.note(`${c.name}'s ${stat.toUpperCase()} increased to ${c[stat as keyof Combatant]}!`);
-
-        if (fx.onLevelUp) {
-          for (const effect of fx.onLevelUp as AbilityEffect[]) {
-            // execute the effect
-            this.note(`Applying level-up effect to ${c.name}...`);
-            let { events } = await AbilityHandler.handleEffect(
-              'onLevelUp', effect, c, c, Commands.handlers(this.roller, this.playerTeam)
-            );
-            events.forEach(e => this.emit({ ...e, turn: 0 } as DungeonEvent));
-          }
-        }
+      if (xp > 0) {
+        let events = await CharacterRecord.levelUp(c, this.playerTeam, this.roller, this.select);
+        events.forEach(e => this.emit({ ...e, turn: -1 } as DungeonEvent));
       }
     }
   }
@@ -523,7 +489,7 @@ export default class Dungeoneer {
           creatures: [
             {
               forename: "Shadow Dragon", name: "Shadow Dragon", hp: 50, maxHp: 50, level: 5, ac: 18, dex: 14, str: 20, con: 16, int: 12, wis: 10, cha: 14,
-              attackDie: "1d20", hitDie: 12,
+              attackDie: "1d20", hitDie: 12, hasMissileWeapon: false,
               playerControlled: false, xp: 500, gp: 1000, weapon: "Bite", damageKind: "piercing", abilities: ["melee"], traits: []
             }
           ]
@@ -543,7 +509,7 @@ export default class Dungeoneer {
             creatures: [
               {
                 forename: "Goblin", name: "Goblin", hp: 7, maxHp: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, 
-                attackDie: "1d20", hitDie: 6,
+                attackDie: "1d20", hitDie: 6, hasMissileWeapon: false,
                 playerControlled: false, xp: 50, gp: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: []
               }
             ]
@@ -560,7 +526,7 @@ export default class Dungeoneer {
             creatures: [
               {
                 forename: "Orc", name: "Orc", hp: 15, maxHp: 15, level: 2, ac: 13, dex: 12, str: 16, con: 14, int: 8, wis: 10, cha: 8,
-                attackDie: "1d20", hitDie: 8,
+                attackDie: "1d20", hitDie: 8, hasMissileWeapon: false,
                 playerControlled: false, xp: 100, gp: 20, weapon: "Axe", damageKind: "slashing", abilities: ["melee"], traits: []
               },
             ]

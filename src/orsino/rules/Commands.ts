@@ -105,6 +105,13 @@ export class Commands {
     let saveVersusType = `saveVersus${saveType.charAt(0).toUpperCase() + saveType.slice(1)}`;
     const saveVersus = dc - (targetFx[saveVersusType] as number || 0) - target.level;
     let saved = false;
+    target.savedTimes = target.savedTimes || {};
+    let saveCount = target.savedTimes[saveType] || 0;
+    if (saveCount >= 3) {
+      console.warn(`${Presenter.combatant(target)} has already succeeded on 3 saves vs ${saveType} and cannot save again!`);
+      return false;
+    }
+
     if (saveVersus <= 20) {
       const saveRoll = await roll(target, `for Save vs ${saveType} (must roll ${saveVersus} or higher)`, 20);
       if (saveRoll.amount >= saveVersus) {
@@ -112,6 +119,8 @@ export class Commands {
         console.warn(`${Presenter.combatant(target)} succeeds on their Save vs ${saveType}!`);
         // this.note(`${Presenter.combatant(target)} succeeds on their Save vs ${saveType}!`);
         saved = true;
+
+        target.savedTimes[saveType] = (target.savedTimes[saveType] || 0) + 1;
       } else {
         console.warn(`${Presenter.combatant(target)} fails their Save vs ${saveType}!`);
         // this.note(`${Presenter.combatant(target)} fails their Save vs ${saveType}!`);
@@ -236,7 +245,7 @@ export class Commands {
     target: Combatant;
     events: TimelessEvent[];
   }> {
-    const { damage, critical, success } = await Fighting.attack(roller, combatant, target);
+    const { damage, critical, success } = await Fighting.attack(roller, combatant, target, combatant.hasMissileWeapon);
     let events = await Commands.handleHit(
       combatant, target, damage, critical, `${combatant.forename}'s ${combatant.weapon}`, success, combatant.damageKind || "true", roller
     );

@@ -1,14 +1,22 @@
+import AbilityHandler, { AbilityEffect } from "../Ability";
+import { ChoiceSelector } from "../Combat";
+import { DungeonEvent } from "../Events";
 import TraitHandler, { Trait } from "../Trait";
 import Presenter from "../tui/Presenter";
+import Stylist from "../tui/Style";
 import User from "../tui/User";
 import Words from "../tui/Words";
 import { Combatant } from "../types/Combatant";
+import { Roll } from "../types/Roll";
+import { Team } from "../types/Team";
 import Sample from "../util/Sample";
+import { Commands } from "./Commands";
+import { Fighting } from "./Fighting";
 
 export default class CharacterRecord {
 
   static xpForLevel(level: number): number {
-    return  (level * level * level * 100) + (level * level * 500) + (level * 1000) - 3800;
+    return (level * level * level * 100) + (level * level * 500) + (level * 1000) - 3800;
   }
   static crForParty(party: Combatant[]): number {
     const totalLevels = party.reduce((sum, c) => sum + c.level, 0);
@@ -93,7 +101,11 @@ export default class CharacterRecord {
     await traitHandler.loadTraits();
     let partyPassives: Trait[] = traitHandler.partyTraits(party);
     if (partyPassives.length > 0) {
-      console.log(`Your party forms ${Words.humanizeList(partyPassives.map((t: Trait) => Words.a_an(Words.capitalize(t.description))))}`);
+      console.log(`Your party forms ${Words.humanizeList(partyPassives.map((t: Trait) => (
+        Stylist.bold(
+          Words.a_an(Words.capitalize(t.description))
+        )
+      )))}.`);
       party.forEach(c => {
         // let otherPassives = traitHandler.personalTraits(c);
         partyPassives.forEach(trait => {
@@ -124,5 +136,103 @@ export default class CharacterRecord {
     // }
 
     return party;
+  }
+
+  static async levelUp(pc: Combatant, team: Team, roller: Roll, select: ChoiceSelector<any>): Promise<DungeonEvent[]> {
+    let events: DungeonEvent[] = [];
+    let nextLevelXp = CharacterRecord.xpForLevel(pc.level + 1);
+
+    if (pc.xp < nextLevelXp) {
+      console.warn(`${pc.name} needs to gain ${nextLevelXp - pc.xp} more experience for level ${pc.level + 1} (currently at ${pc.xp}/${nextLevelXp}).`);
+    }
+    while (pc.xp >= nextLevelXp) {
+      pc.level++;
+      nextLevelXp = CharacterRecord.xpForLevel(pc.level + 1);
+      let hitPointIncrease = (await roller(pc, "hit point growth", pc.hitDie || 4)).amount;
+      hitPointIncrease += Fighting.statMod(pc.con || 10);
+      hitPointIncrease = Math.max(1, hitPointIncrease);
+      pc.maxHp += hitPointIncrease;
+      pc.hp = pc.maxHp;
+      console.log(`${Presenter.combatant(pc)} leveled up to level ${pc.level}!`);
+      console.log(`Hit points increased by ${hitPointIncrease} to ${pc.maxHp}.`);
+      const stat = await select(`Choose a stat to increase:`, [
+        { disabled: pc.str >= 18, name: `Strength (${pc.str})`, value: 'str', short: 'Strength' },
+        { disabled: pc.dex >= 18, name: `Dexterity (${pc.dex})`, value: 'dex', short: 'Dexterity' },
+        { disabled: pc.int >= 18, name: `Intelligence (${pc.int})`, value: 'int', short: 'Intelligence' },
+        { disabled: pc.wis >= 18, name: `Wisdom (${pc.wis})`, value: 'wis', short: 'Wisdom' },
+        { disabled: pc.cha >= 18, name: `Charisma (${pc.cha})`, value: 'cha', short: 'Charisma' },
+        { disabled: pc.con >= 18, name: `Constitution (${pc.con})`, value: 'con', short: 'Constitution' },
+        // just in case they're 18 across!
+        { disabled: false, name: `Max HP (${pc.maxHp})`, value: 'maxHp', short: 'HP' },
+      ]);
+      // @ts-ignore
+      pc[stat] += 1;
+      // this.note(`${c.name}'s ${stat.toUpperCase()} increased to ${c[stat as keyof Combatant]}!`);
+
+      let fx = Fighting.gatherEffects(pc);
+      if (fx.onLevelUp) {
+        for (const effect of fx.onLevelUp as AbilityEffect[]) {
+          // execute the effect
+          console.log(`Applying level-up effect to ${pc.name}...`);
+          let { events: levelUpEvents } = await AbilityHandler.handleEffect(
+            'onLevelUp', effect, pc, pc, Commands.handlers(roller, team) // this.roller, this.playerTeam)
+          );
+          // events.forEach(e => this.emit({ ...e, turn: 0 } as DungeonEvent));
+          events.push(...levelUpEvents as DungeonEvent[]);
+        }
+      }
+
+      if (pc.class === "mage") {
+        // gain spells
+        let abilityHandler = new AbilityHandler();
+        await abilityHandler.loadAbilities();
+        let allSpells = abilityHandler.spells.filter(ab => ab.aspect === 'arcane');
+        let newSpells = allSpells.filter(spell => spell.level !== undefined && spell.level <= Math.ceil(pc.level / 2))
+          .filter(spell => !pc.abilities.includes(spell.name));
+
+        if (newSpells.length > 0) {
+          let spellChoices = newSpells.map(spell => ({
+            name: Words.capitalize(spell.name) + ': ' + spell.description,
+            value: spell,
+            short: spell.name,
+            disabled: false
+          }));
+          let chosenSpell = await select(`Select a new spell for ${pc.name}:`, spellChoices);
+          console.log(`${Presenter.combatant(pc)} learned the spell: ${JSON.stringify(chosenSpell)}`);
+          pc.abilities.unshift(chosenSpell.name);
+        } else {
+          console.log(`${Presenter.combatant(pc)} has learned all available spells for their level.`);
+        }
+      }
+
+      if (pc.level >= 20) {
+        // epic feats...
+      } else if (pc.level % 5 === 0) {
+        // feat selection
+        console.log(`${Presenter.combatant(pc)} can select a new feat!`);
+        let traitHandler = new TraitHandler();
+        await traitHandler.loadTraits();
+        let availableFeats = traitHandler.featsForCombatant(pc);
+        if (availableFeats.length === 0) {
+          console.log(`But there are no available feats for ${Presenter.combatant(pc)} at this time.`);
+          continue;
+        }
+
+        let chosenFeat = await select(`Select a feat for ${pc.name}:`, availableFeats.map(trait => ({
+          name: Words.capitalize(trait.name) + ': ' + trait.description,
+          value: trait,
+          short: trait.name,
+          disabled: false
+        })));
+        console.log(`${Presenter.combatant(pc)} selected the feat: ${JSON.stringify(chosenFeat)}`);
+        pc.traits.push(chosenFeat.name);
+        // apply any passive effects from the feat
+        pc.passiveEffects ||= [];
+        pc.passiveEffects.push(...chosenFeat.statuses);
+        console.log(`${Presenter.combatant(pc)} gained the feat: ${Words.capitalize(chosenFeat.name)}.`);
+      }
+    }
+
+    return events;
   }
 }

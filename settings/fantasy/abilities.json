@@ -9,13 +9,14 @@
     ],
     "effects": []
   },
-
   "flee": {
     "name": "Escape",
     "type": "skill",
     "aspect": "physical",
     "description": "Attempt to flee from combat.",
-    "target": [ "self" ],
+    "target": [
+      "self"
+    ],
     "effects": [
       {
         "type": "flee",
@@ -24,7 +25,6 @@
       }
     ]
   },
-
   "melee": {
     "name": "Melee Attack",
     "type": "skill",
@@ -39,7 +39,6 @@
       }
     ]
   },
-
   "ranged": {
     "name": "Ranged Attack",
     "type": "skill",
@@ -54,7 +53,6 @@
       }
     ]
   },
-
   "defend": {
     "name": "Defend",
     "type": "skill",
@@ -76,7 +74,6 @@
       }
     ]
   },
-
   "roundhouse": {
     "name": "Roundhouse Kick",
     "type": "skill",
@@ -91,13 +88,15 @@
       }
     ]
   },
-
   "shield": {
     "name": "Shield",
     "type": "skill",
     "aspect": "physical",
     "description": "Grant yourself or an ally 2 AC for 3 rounds.",
-    "target": [ "self", "ally" ],
+    "target": [
+      "self",
+      "ally"
+    ],
     "effects": [
       {
         "type": "buff",
@@ -111,10 +110,10 @@
       }
     ]
   },
-
   "armor": {
     "name": "Magic Armor",
     "type": "spell",
+    "level": 1,
     "aspect": "arcane",
     "description": "Gain 4 AC for 3 rounds.",
     "target": [
@@ -133,7 +132,35 @@
       }
     ]
   },
-
+  "prepare_charge": {
+    "name": "Prepare Charge",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Prepare to charge on your next turn, gaining +2 to hit and +2 damage.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Preparing to Charge",
+          "effect": {
+            "toHit": 2,
+            "bonusDamage": 2,
+            "compelNextMove": "charge",
+            "onAttack": [
+              {
+                "type": "removeStatus",
+                "statusName": "Preparing to Charge"
+              }
+            ]
+          },
+          "duration": 2
+        }
+      }
+    ]
+  },
   "charge": {
     "name": "Charge",
     "type": "skill",
@@ -142,6 +169,9 @@
     "target": [
       "enemy"
     ],
+    "condition": {
+      "status": "Preparing to Charge"
+    },
     "effects": [
       {
         "type": "attack"
@@ -153,10 +183,41 @@
       }
     ]
   },
-
+  "set_spear": {
+    "name": "Set Spear",
+    "condition": { "hasInterceptWeapon": true },
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Brace your spear to intercept a charging enemy, dealing 3d8 damage and granting +4 to hit when they charge you next turn.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Braced",
+          "duration": 1,
+          "effect": {
+            "onEnemyCharge": [
+              {
+                "type": "attack"
+              },
+              {
+                "type": "damage",
+                "kind": "piercing",
+                "amount": "=3d8+10"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
   "cure": {
     "name": "Cure Major Wounds",
     "type": "spell",
+    "level": 2,
     "aspect": "divine",
     "description": "Heal yourself or an ally for 1d8 hit points.",
     "target": [
@@ -173,9 +234,13 @@
   "missile": {
     "name": "Magic Missile",
     "type": "spell",
+    "level": 1,
     "aspect": "arcane",
     "description": "Fire three magical bolts that automatically hit and deal 1d3 damage each.",
-    "target": [ "randomEnemies", 3 ],
+    "target": [
+      "randomEnemies",
+      3
+    ],
     "effects": [
       {
         "type": "damage",
@@ -187,9 +252,12 @@
   "burning_hands": {
     "name": "Burning Hands",
     "type": "spell",
+    "level": 1,
     "aspect": "arcane",
     "description": "Unleash a cone of fire, dealing 1d6 damage to all enemies in the area.",
-    "target": [ "enemies" ],
+    "target": [
+      "enemies"
+    ],
     "effects": [
       {
         "type": "damage",
@@ -201,9 +269,12 @@
   "shocking_grasp": {
     "name": "Shocking Grasp",
     "type": "spell",
+    "level": 1,
     "aspect": "arcane",
     "description": "Deliver a jolt of electricity, dealing 1d4 damage and stunning the target for 2 rounds.",
-    "target": [ "enemy" ],
+    "target": [
+      "enemy"
+    ],
     "effects": [
       {
         "type": "damage",
@@ -227,9 +298,12 @@
   "charm": {
     "name": "Charm Person",
     "type": "spell",
+    "level": 1,
     "aspect": "social",
     "description": "Attempt to charm an enemy, making them friendly towards you for 3 rounds.",
-    "target": ["enemy"],
+    "target": [
+      "enemy"
+    ],
     "effects": [
       {
         "type": "buff",
@@ -248,9 +322,12 @@
   "blur": {
     "name": "Blur",
     "type": "spell",
+    "level": 1,
     "aspect": "arcane",
     "description": "Become blurred, granting you a 50% chance to avoid attacks for 3 rounds.",
-    "target": ["self"],
+    "target": [
+      "self"
+    ],
     "effects": [
       {
         "type": "buff",
@@ -267,9 +344,12 @@
   "sleep": {
     "name": "Sleep",
     "type": "spell",
+    "level": 1,
     "aspect": "arcane",
     "description": "Put all enemies to sleep for 2 rounds.",
-    "target": ["enemies"],
+    "target": [
+      "enemies"
+    ],
     "effects": [
       {
         "type": "debuff",
@@ -290,7 +370,10 @@
     "type": "skill",
     "aspect": "divine",
     "description": "Grant divine favor, adding +1 to all rolls for 6 rounds.",
-    "target": ["self", "ally"],
+    "target": [
+      "self",
+      "ally"
+    ],
     "effects": [
       {
         "type": "buff",
@@ -309,19 +392,20 @@
     "type": "skill",
     "aspect": "divine",
     "description": "Smite an enemy, dealing 2d6 * level radiant damage after a successful hit.",
-    "target": ["enemy"],
+    "target": [
+      "enemy"
+    ],
     "effects": [
       {
         "type": "attack"
       },
       {
         "type": "damage",
-        "amount": "=#level * 2d6",
+        "amount": "=#level + 2d6",
         "kind": "radiant"
       }
     ]
   },
-
   "inspire": {
     "name": "Inspire",
     "type": "skill",
@@ -382,7 +466,6 @@
       }
     ]
   },
-
   "second_wind": {
     "name": "Second Wind",
     "type": "skill",
@@ -398,13 +481,14 @@
       }
     ]
   },
-
   "taunt": {
     "name": "Taunt",
     "type": "skill",
     "aspect": "social",
     "description": "Taunt an enemy, forcing them to target you on their next turn.",
-    "target": ["enemy"],
+    "target": [
+      "enemy"
+    ],
     "effects": [
       {
         "type": "debuff",
@@ -420,13 +504,14 @@
       }
     ]
   },
-
   "heal": {
     "name": "Heal Ally",
     "type": "skill",
     "aspect": "divine",
     "description": "Restore health to a wounded ally.",
-    "target": ["ally"],
+    "target": [
+      "ally"
+    ],
     "effects": [
       {
         "type": "heal",
@@ -434,13 +519,14 @@
       }
     ]
   },
-  
   "fear": {
     "name": "Terrifying Scream",
     "type": "skill",
     "aspect": "dark",
     "description": "Let out a horrific scream, frightening nearby enemies.",
-    "target": ["enemies"],
+    "target": [
+      "enemies"
+    ],
     "effects": [
       {
         "type": "debuff",
@@ -456,13 +542,14 @@
       }
     ]
   },
-
   "curse": {
     "name": "Curse",
     "type": "skill",
     "aspect": "dark",
     "description": "Curse an enemy, reducing all stats by 1.",
-    "target": ["enemy"],
+    "target": [
+      "enemy"
+    ],
     "effects": [
       {
         "type": "debuff",
@@ -483,7 +570,6 @@
       }
     ]
   },
-
   "maul": {
     "name": "Maul",
     "type": "skill",
@@ -521,7 +607,6 @@
       }
     ]
   },
-
   "hide": {
     "name": "Hide",
     "type": "skill",
@@ -549,7 +634,6 @@
       }
     ]
   },
-
   "backstab": {
     "name": "Backstab",
     "type": "skill",
@@ -572,13 +656,14 @@
       }
     ]
   },
-
   "poison_bite": {
     "name": "Poison Bite",
     "type": "skill",
     "aspect": "toxic",
     "description": "Bite an enemy, dealing 1d4 damage and poisoning them.",
-    "target": ["enemy"],
+    "target": [
+      "enemy"
+    ],
     "effects": [
       {
         "type": "damage",
@@ -610,7 +695,9 @@
     "type": "skill",
     "aspect": "toxic",
     "description": "Release a cloud of toxic gas.",
-    "target": ["enemies"],
+    "target": [
+      "enemies"
+    ],
     "effects": [
       {
         "type": "debuff",
@@ -637,15 +724,23 @@
     "type": "skill",
     "aspect": "psychic",
     "description": "Invade minds of all enemies, dealing 1d6 psychic damage and stunning them.",
-    "target": ["enemies"],
+    "target": [
+      "enemies"
+    ],
     "effects": [
-      { "type": "damage", "amount": "=1d6", "kind": "psychic" },
+      {
+        "type": "damage",
+        "amount": "=1d6",
+        "kind": "psychic"
+      },
       {
         "type": "debuff",
         "status": {
           "name": "Stunned",
           "duration": 1,
-          "effect": { "noActions": true }
+          "effect": {
+            "noActions": true
+          }
         },
         "saveType": "stun",
         "saveDC": 15
@@ -655,7 +750,9 @@
         "status": {
           "name": "Chaos",
           "duration": 1,
-          "effect": { "changeAllegiance": true }
+          "effect": {
+            "changeAllegiance": true
+          }
         },
         "saveType": "insanity",
         "saveDC": 12
@@ -665,27 +762,44 @@
   "life_drain": {
     "name": "Life Drain",
     "type": "spell",
+    "level": 1,
     "aspect": "necrotic",
     "description": "Drain life from an enemy, healing yourself for damage dealt.",
-    "target": ["enemy"],
+    "target": [
+      "enemy"
+    ],
     "effects": [
-      { "type": "drain", "amount": "=1d6", "damageType": "necrotic" }
+      {
+        "type": "drain",
+        "amount": "=1d6",
+        "damageType": "necrotic"
+      }
     ]
   },
   "lightning_strike": {
     "name": "Lightning Strike",
     "type": "spell",
+    "level": 1,
     "aspect": "electric",
     "description": "Strike random enemies with lightning, dealing 1d8 damage and paralyzing them for 1 round.",
-    "target": ["randomEnemies", 2],
+    "target": [
+      "randomEnemies",
+      2
+    ],
     "effects": [
-      { "type": "damage", "amount": "=1d8", "kind": "electric" },
+      {
+        "type": "damage",
+        "amount": "=1d8",
+        "kind": "electric"
+      },
       {
         "type": "debuff",
         "status": {
           "name": "Paralyzed",
           "duration": 1,
-          "effect": { "noActions": true }
+          "effect": {
+            "noActions": true
+          }
         },
         "saveType": "will",
         "saveDC": 12
@@ -695,17 +809,26 @@
   "earthquake": {
     "name": "Earthquake",
     "type": "spell",
+    "level": 2,
     "aspect": "earth",
     "description": "Cause the ground to shake, dealing 1d6 damage to all enemies and knocking them prone.",
-    "target": ["enemies"],
+    "target": [
+      "enemies"
+    ],
     "effects": [
-      { "type": "damage", "amount": "=1d6", "kind": "bludgeoning" },
+      {
+        "type": "damage",
+        "amount": "=1d6",
+        "kind": "bludgeoning"
+      },
       {
         "type": "debuff",
         "status": {
           "name": "Prone",
           "duration": 2,
-          "effect": { "noActions": true }
+          "effect": {
+            "noActions": true
+          }
         },
         "saveType": "stun",
         "saveDC": 12
@@ -715,16 +838,21 @@
   "drench": {
     "name": "Drench",
     "type": "spell",
+    "level": 1,
     "aspect": "water",
     "description": "Drench an enemy, reducing their attack rolls by 2 for 3 rounds.",
-    "target": ["enemy"],
+    "target": [
+      "enemy"
+    ],
     "effects": [
       {
         "type": "debuff",
         "status": {
           "name": "Drenched",
           "duration": 3,
-          "effect": { "toHit": -2 }
+          "effect": {
+            "toHit": -2
+          }
         },
         "saveType": "dex",
         "saveDC": 10
@@ -736,7 +864,9 @@
     "type": "skill",
     "aspect": "feral",
     "description": "Enter a frenzied state, gaining +2 to damage rolls and +1 toHit but degrading AC for by 3.",
-    "target": ["self"],
+    "target": [
+      "self"
+    ],
     "effects": [
       {
         "type": "buff",
@@ -752,15 +882,21 @@
       }
     ]
   },
-
   "acid_arrow": {
     "name": "Acid Arrow",
     "type": "spell",
+    "level": 1,
     "aspect": "acid",
     "description": "Fire an arrow of acid, dealing 1d4 damage and applying Acid Burn.",
-    "target": ["enemy"],
+    "target": [
+      "enemy"
+    ],
     "effects": [
-      { "type": "damage", "amount": "=1d4", "kind": "acid" },
+      {
+        "type": "damage",
+        "amount": "=1d4",
+        "kind": "acid"
+      },
       {
         "type": "debuff",
         "status": {
@@ -779,15 +915,21 @@
       }
     ]
   },
-
   "ray_of_frost": {
     "name": "Ray of Frost",
     "type": "spell",
+    "level": 1,
     "aspect": "ice",
     "description": "Fire a ray of frost, dealing 1d4 damage and reducing the target's speed by 10 feet for 3 rounds.",
-    "target": ["enemy"],
+    "target": [
+      "enemy"
+    ],
     "effects": [
-      { "type": "damage", "amount": "=1d4", "kind": "ice" },
+      {
+        "type": "damage",
+        "amount": "=1d4",
+        "kind": "ice"
+      },
       {
         "type": "debuff",
         "status": {
@@ -803,13 +945,14 @@
       }
     ]
   },
-
   "summon_animal": {
     "name": "Summon Animal",
     "type": "skill",
     "aspect": "nature",
     "description": "Summon a random animal to fight for you.",
-    "target": ["self"],
+    "target": [
+      "self"
+    ],
     "effects": [
       {
         "type": "summon",

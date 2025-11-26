@@ -115,10 +115,17 @@ export class Fighting {
     return resultingEffects;
   }
 
+  static weaponDamageKindVerbs: { [key: string]: string } = {
+    slashing: "slash",
+    piercing: "stab",
+    bludgeoning: "bludgeon",
+  };
+
   static async attack(
     roll: Roll,
     attacker: Combatant,
     defender: Combatant,
+    isMissile: boolean
   ): Promise<AttackResult> {
     if (defender.hp <= 0) {
       return {
@@ -130,12 +137,14 @@ export class Fighting {
     }
     const effectiveAttacker = this.effectiveStats(attacker);
     let description = `${attacker.name} attacks ${defender.name}... `;
+
     const strMod = this.statMod(effectiveAttacker.str || 10);
     const dexMod = this.statMod(effectiveAttacker.dex || 10);
+
     let toHitTurnBonus = this.turnBonus(attacker, ["toHit"]).toHit || 0;
-    const toHitBonus = dexMod  // DEX affects accuracy
-      + toHitTurnBonus; // Any temporary bonuses to hits
-    const strengthDamageBonus = Math.max(0, strMod);  // STR affects damage (min 0)
+    const toHitBonus = (isMissile ? dexMod : strMod)  // DEX affects accuracy for missiles
+                    + toHitTurnBonus;                 // Any temporary bonuses to hits
+    const damageBonus = isMissile ? Math.max(0, dexMod) : Math.max(0, strMod);
 
     const thac0 = this.thac0(attacker.level);
     const effectiveDefender = this.effectiveStats(defender);
@@ -172,35 +181,17 @@ export class Fighting {
         throw new Error(`Attacker ${attacker.name} does not have an attackDie defined.`);
       }
 
-      let weaponVerb = attacker.damageKind.replace(/ing$/,''); // crude way to get verb from damage kind
+      let weaponVerb = this.weaponDamageKindVerbs[attacker.damageKind || "slashing"] || "strike";
+        // attacker.damageKind.replace(/ing$/, ''); // crude way to get verb from damage kind
       damage = await Deem.evaluate(attacker.attackDie, {
         roll, subject: attacker,
         description: `to ${weaponVerb} ${defender.forename} with ${Words.humanize(attacker.weapon)}`
       });
-      // const attackRolls = [];
-      // for (let i = 0; i < attacker.attackRolls; i++) {
-      //   let message = `for damage`;
-      //   if (attacker.attackRolls > 1) {
-      //     message = `for damage (attack ${i + 1}/${attacker.attackRolls})`;
-      //   }
-      //   attackRolls.push(await roll(attacker, message, attacker.damageDie));
-      // }
-      // description += attackRolls.map(r => r.description).join(" ");
-      // damage = attackRolls
-      //   .map(r => r.amount)
-      //   .reduce((sum: number, dmg: number) => sum + dmg, 0);
-
       if (critical) {
         criticalDamage = Math.max(1, Math.round(damage * 0.2 * Math.max(1, Math.floor(attacker.level / 5))));
-        // if (criticalDamage > 0) {
-        //   console.log(`Damage increased by ${criticalDamage} for critical hit!`);
-        // }
       }
 
-      // if (strengthDamageBonus > 0) {
-      //   console.log("Damage increased by " + strengthDamageBonus + ` for STR ${attacker.str}`);
-      // }
-      damage = damage + criticalDamage + strengthDamageBonus;
+      damage = damage + criticalDamage + damageBonus;
     }
 
     return {

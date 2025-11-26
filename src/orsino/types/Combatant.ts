@@ -1,4 +1,4 @@
-import { DamageKind, StatusEffect } from "../Ability";
+import { DamageKind, SaveKind, StatusEffect } from "../Ability";
 
 export interface Combatant {
   traits: string[];
@@ -20,8 +20,8 @@ export interface Combatant {
   // attackRolls: number;
   // damageDie: number;
   playerControlled?: boolean;
-  xp?: number;
-  gp?: number;
+  xp: number;
+  gp: number;
   weapon: string;
 
   spellSlotsUsed?: number;
@@ -49,4 +49,10 @@ export interface Combatant {
   currentEnvironment?: string;
 
   gear?: string[];
+
+  // todo count saves and prevent more than 3 saves from death
+  savedTimes?: { [key in SaveKind]?: number };
+
+  hasMissileWeapon?: boolean;
+  hasInterceptWeapon?: boolean;
 }

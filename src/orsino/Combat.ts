@@ -49,7 +49,8 @@ export default class Combat {
           // attackRolls: 1, damageDie: 8,
           attackDie: "1d8",
           playerControlled: true, xp: 0, gp: 0,
-          weapon: "Short Sword", damageKind: "slashing", abilities: ["melee"], traits: []
+          weapon: "Short Sword", damageKind: "slashing", abilities: ["melee"], traits: [],
+          hasMissileWeapon: false
         }], healingPotions: 3
       },
       {
@@ -57,12 +58,12 @@ export default class Combat {
           {
             forename: "Zok", name: "Goblin A", hp: 4, maxHp: 4, level: 1, ac: 17, //attackRolls: 2, damageDie: 3,
             attackDie: "1d3",
-            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: []
+            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: [], hasMissileWeapon: false
           },
           {
             forename: "Mog", name: "Goblin B", hp: 4, maxHp: 4, level: 1, ac: 17, //attackRolls: 2, damageDie: 3,
             attackDie: "1d3",
-            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: []
+            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: [], hasMissileWeapon: false
           }
         ], healingPotions: 0
       }
@@ -111,7 +112,7 @@ export default class Combat {
     await this.abilityHandler.loadAbilities();
   }
 
-  static maxSpellSlotsForLevel(level: number): number { return 1 + Math.ceil(level / 2); }
+  static maxSpellSlotsForLevel(level: number): number { return 2 + Math.ceil(level); }
   static maxSpellSlotsForCombatant(combatant: Combatant): number {
     if (combatant.class === "mage") {
       return Combat.maxSpellSlotsForLevel(combatant.level || 1) + Math.max(0, Fighting.statMod(combatant.int));
@@ -126,6 +127,16 @@ export default class Combat {
 
   validActions(combatant: Combatant, allies: Combatant[], enemies: Combatant[]): Ability[] {
     const validAbilities: Ability[] = [];
+
+    // do we have a 'compelNextMove' effect?
+    let activeFx = Fighting.gatherEffects(combatant);
+    if (activeFx.compelNextMove) {
+      let compelledAbility = this.abilityHandler.getAbility(activeFx.compelNextMove as string);
+      let validTargets = AbilityHandler.validTargets(compelledAbility, combatant, allies, enemies);
+      if (compelledAbility && validTargets.length > 0) {
+        return [compelledAbility];
+      }
+    }
 
     let spellSlotsRemaining = (Combat.maxSpellSlotsForCombatant(combatant) || 0) - (combatant.spellSlotsUsed || 0);
     let uniqAbilities = Array.from(new Set(combatant.abilities));
@@ -158,6 +169,10 @@ export default class Combat {
         if (!combatant.activeEffects?.map(e => e.name).includes(ability.condition.status)) {
           disabled = true;
         }
+      }
+
+      if (ability.condition?.hasInterceptWeapon) {
+        disabled = !combatant.hasInterceptWeapon;
       }
 
       if (!disabled) {
