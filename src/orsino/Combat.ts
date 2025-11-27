@@ -9,14 +9,23 @@ import AbilityHandler, { Ability } from "./Ability";
 import { Answers } from "inquirer";
 import { AbilityScoring } from "./tactics/AbilityScoring";
 import { Commands } from "./rules/Commands";
+import Deem from "../deem";
 
 export type ChoiceSelector<T extends Answers> = (description: string, options: Choice<T>[], combatant?: Combatant) => Promise<T>;
 
 export default class Combat {
+  static statistics = {
+    combats: 0,
+    victories: 0,
+    defeats: 0,
+    totalRounds: 0,
+  }
+
   private turnNumber: number = 0;
   public winner: string | null = null;
   public teams: Team[] = [];
-  public abilityHandler = new AbilityHandler();
+  public abilityHandler = AbilityHandler.instance;
+    //new AbilityHandler();
   private combatantsByInitiative: { combatant: any; initiative: number }[] = [];
 
   protected roller: Roll;
@@ -58,12 +67,12 @@ export default class Combat {
           {
             forename: "Zok", name: "Goblin A", hp: 4, maxHp: 4, level: 1, ac: 17, //attackRolls: 2, damageDie: 3,
             attackDie: "1d3",
-            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: [], hasMissileWeapon: false
+            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: [], hasMissileWeapon: false, xp: 0, gp: 0
           },
           {
             forename: "Mog", name: "Goblin B", hp: 4, maxHp: 4, level: 1, ac: 17, //attackRolls: 2, damageDie: 3,
             attackDie: "1d3",
-            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: [], hasMissileWeapon: false
+            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: [], hasMissileWeapon: false, xp: 0, gp: 0
           }
         ], healingPotions: 0
       }
@@ -85,7 +94,8 @@ export default class Combat {
     for (let c of this.allCombatants) {
       let effective = Fighting.effectiveStats(c);
       let initBonus = Fighting.turnBonus(c, ["initiative"]).initiative || 0;
-      const initiative = (await this.roller(c, "for initiative", 20)).amount + Fighting.statMod(effective.dex) + initBonus;
+      const initiative = Commands.roll(c, "for initiative", 20).amount + Fighting.statMod(effective.dex) + initBonus;
+         // (await this.roller(c, "for initiative", 20)).amount + Fighting.statMod(effective.dex) + initBonus;
       initiativeOrder.push({ combatant: c, initiative });
     }
     return initiativeOrder.sort((a, b) => b.initiative - a.initiative);
@@ -108,8 +118,14 @@ export default class Combat {
     this.teams = teams;
     // this.combatantsByInitiative = await this.determineInitiative();
     this.emit({ type: "initiate", order: this.combatantsByInitiative } as Omit<InitiateCombatEvent, "turn">);
-    this.allCombatants.forEach(c => c.abilitiesUsed = []);
+    this.allCombatants.forEach(c => {
+      c.abilitiesUsed = [];
+      c.abilityCooldowns = {};
+      c.savedTimes = {};
+    });
     await this.abilityHandler.loadAbilities();
+
+    Combat.statistics.combats += 1;
   }
 
   static maxSpellSlotsForLevel(level: number): number { return 2 + Math.ceil(level); }
@@ -144,6 +160,7 @@ export default class Combat {
     abilities.forEach((ability: Ability) => {
       let validTargets = AbilityHandler.validTargets(ability, combatant, allies, enemies);
       let disabled = validTargets.length === 0;
+      // let abilityTarget = ability.target.map(async t => t.startsWith("=") ? await Deem.evaluate(t) : t);
       if (ability.target.includes("randomEnemies") && Combat.living(enemies).length > 0) {
         // note we need a special case here since randomEnemies doesn't have valid targets until we select them
         disabled = false;
@@ -243,7 +260,8 @@ export default class Combat {
       })), combatant);
     } else if (action.target.includes("randomEnemies") && action.target.length === 2) {
       // pick random enemies
-      let count = action.target[1] as any as number;
+      let count = await Deem.evaluate(action.target[1], { ...combatant }); // as any as number;
+      console.log(`Selecting ${count} random enemy targets for ${action.name}...`);
       let possibleTargets = Combat.living(enemies);
       targetOrTargets = [];
       for (let i = 0; i < count; i++) {
@@ -276,11 +294,14 @@ export default class Combat {
       ability,
       score: AbilityScoring.scoreAbility(ability, combatant, allies, enemies)
     }));
-    console.log(`NPC ${combatant.forename} rates abilities:`, scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`).join(", "));
+    // console.log(`NPC ${combatant.forename} rates abilities:`, scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`).join(", "));
     scoredAbilities.sort((a, b) => b.score - a.score);
     const action = scoredAbilities[
       Math.floor(Math.random() * Math.min(2, scoredAbilities.length))
     ]?.ability;
+    // console.log(
+    //   `Considering best targets for ${action?.name}...`, { allies: allies.map(a => a.name), enemies: enemies.map(e => e.name) }
+    // )
     let targetOrTargets: Combatant | Combatant[] = AbilityScoring.bestAbilityTarget(action, combatant, allies, enemies);
 
     combatant.abilitiesUsed = combatant.abilitiesUsed || [];
@@ -374,6 +395,8 @@ export default class Combat {
   }
 
   async round() {
+    Combat.statistics.totalRounds += 1;
+
     if (this.isOver()) {
       throw new Error('Combat is already over');
     }

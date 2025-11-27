@@ -6,6 +6,10 @@ import { ModuleRunner } from '../src/orsino/ModuleRunner';
 import AbilityHandler from '../src/orsino/Ability';
 import { GenerationTemplateType } from '../src/orsino/types/GenerationTemplateType';
 import Generator from '../src/orsino/Generator';
+import CharacterRecord from '../src/orsino/rules/CharacterRecord';
+import { Combatant } from '../src/orsino/types/Combatant';
+import Presenter from '../src/orsino/tui/Presenter';
+import TraitHandler from '../src/orsino/Trait';
 
 describe('Orsino', () => {
   const orsino = new Orsino('fantasy');
@@ -110,7 +114,31 @@ describe('Orsino', () => {
     expect(crawler.winner).toMatch(/Player|Enemy/);
   });
 
+  it('party generator', async () => {
+    await AbilityHandler.instance.loadAbilities();
+    await TraitHandler.instance.loadTraits();
+
+    let party = await CharacterRecord.chooseParty(
+      async (options?: any) => (await Generator.gen("pc", { setting: "fantasy", ...options }) as Combatant),
+      3,
+      // Combat.samplingSelect
+      async (_prompt: string, options: string[]) => {
+        let pick = options[
+          Math.floor(Math.random() * options.length)
+          // 0
+        ];
+        // console.log(`Auto-selecting option for test: ${pick}`);
+        return pick;
+      }
+    );
+
+    console.log("Generated party:", party.map(p => p.name));
+  });
+
   it('mod generator', async () => {
+    await AbilityHandler.instance.loadAbilities();
+    await TraitHandler.instance.loadTraits();
+
     const mod = await Generator.gen("module", { setting: "fantasy" });
     expect(mod).toHaveProperty('name');
     expect(mod).toHaveProperty('terrain');
@@ -121,19 +149,36 @@ describe('Orsino', () => {
     expect(mod).toHaveProperty('dungeons');
     expect(mod.dungeons).toBeInstanceOf(Array);
 
+    let party = await CharacterRecord.chooseParty(
+      async (options?: any) => (await Generator.gen("pc", { setting: "fantasy", ...options }) as Combatant),
+      3,
+      // Combat.samplingSelect
+      async (_prompt: string, options: string[]) => {
+        let pick = options[
+          Math.floor(Math.random() * options.length)
+          // 0
+        ];
+        // console.log(`Auto-selecting option for test: ${pick}`);
+        return pick;
+      }
+    );
+
+    console.log("Generated party:", party.map(p => p.name));
+
     let explorer = new ModuleRunner({
       gen: async (type: GenerationTemplateType, options: Record<string, any>) => {
         return await Generator.gen(type, options);
       },
       moduleGen: () => mod,
-      pcs: [
-        { ...await Generator.gen("pc", { setting: "fantasy", class: "warrior" }), playerControlled: true },
-        { ...await Generator.gen("pc", { setting: "fantasy", class: "warrior" }), playerControlled: true },
-        { ...await Generator.gen("pc", { setting: "fantasy", class: "warrior" }), playerControlled: true }
-      ]
+      pcs: party,
+      // pcs: [
+      //   { ...await Generator.gen("pc", { setting: "fantasy", class: "warrior" }), playerControlled: true },
+      //   { ...await Generator.gen("pc", { setting: "fantasy", class: "warrior" }), playerControlled: true },
+      //   { ...await Generator.gen("pc", { setting: "fantasy", class: "warrior" }), playerControlled: true }
+      // ]
     });
 
-    await explorer.run();
+    await explorer.run(true);
 
     // console.log("Active module after run:", explorer.activeModule);
 
@@ -142,6 +187,14 @@ describe('Orsino', () => {
     expect(explorer.activeModule!.terrain).toBe(mod.terrain);
     expect(explorer.activeModule!.town).toEqual(mod.town);
     expect(explorer.activeModule!.dungeons).toEqual(mod.dungeons);
+
+    for (let pc in explorer.pcs) {
+      Presenter.printCharacterRecord(explorer.pcs[pc] as Combatant);
+    }
+
+    console.log("\n----\nCombat statistics:", Combat.statistics);
+    console.log("Rounds per combat:", (Combat.statistics.combats > 0) ? (Combat.statistics.totalRounds / Combat.statistics.combats).toFixed(2) : 0);
+
   });
 
 });

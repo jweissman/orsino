@@ -1,4 +1,4 @@
-import Combat, { ChoiceSelector } from "./Combat";
+import Combat from "./Combat";
 import { Team } from "./types/Team";
 import Presenter from "./tui/Presenter";
 import { Combatant } from "./types/Combatant";
@@ -10,7 +10,6 @@ import Files from "./util/Files";
 import { Fighting } from "./rules/Fighting";
 import { Roll } from "./types/Roll";
 import Events, { DungeonEvent } from "./Events";
-import AbilityHandler, { AbilityEffect } from "./Ability";
 import { Commands } from "./rules/Commands";
 import CharacterRecord from "./rules/CharacterRecord";
 
@@ -277,6 +276,9 @@ export default class Dungeoneer {
     }
 
     console.log(`Combat complete. Winner: '${combat.winner}'`);
+
+    Combat.statistics.victories += (combat.winner === this.playerTeam.name) ? 1 : 0;
+    Combat.statistics.defeats += (combat.winner !== this.playerTeam.name) ? 1 : 0;
 
     // Award XP/gold
     if (combat.winner === this.playerTeam.name) {

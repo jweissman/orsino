@@ -11,10 +11,11 @@
     },
     "statuses": [
       {
-        "name": "Geas of Unity",
-        "description": "Gain +2 to all rolls.",
+        "name": "Geas of Inquiry",
+        "description": "Gain +5 to investigation skill checks.",
         "effect": {
-          "allRolls": 2
+          "examineBonus": 5,
+          "searchBonus": 5
         }
       }
     ]
@@ -32,10 +33,9 @@
     "statuses": [
       {
         "name": "Cosmopolitan",
-        "description": "Gain +2 to all rolls and +10 to search when in a city environment.",
+        "description": "Gain +10 to search when in a city environment.",
         "whileEnvironment": "urban",
         "effect": {
-          "allRolls": 2,
           "searchBonus": 10
         }
       }
@@ -306,13 +306,13 @@
     "statuses": [
       {
         "name": "Enduring",
-        "description": "+1d4 HP per level.",
+        "description": "+2 HP per level.",
         "effect": {
           "onLevelUp": [
             {
               "type": "upgrade",
               "stat": "maxHp",
-              "amount": "1d4"
+              "amount": "2"
             }
           ]
         }
@@ -358,10 +358,10 @@
     "statuses": [
       {
         "name": "Wildwood Grace",
-        "description": "Gain +1 to all rolls when in a forest environment.",
+        "description": "Gain +1 to search when in a forest environment.",
         "whileEnvironment": "forest",
         "effect": {
-          "allRolls": 1
+          "searchBonus": 1
         }
       }
     ]
@@ -379,10 +379,10 @@
     "statuses": [
       {
         "name": "Stonecunning",
-        "description": "Gain +1 to all rolls when underground.",
+        "description": "Gain +1 to search when underground.",
         "whileEnvironment": "cave",
         "effect": {
-          "allRolls": 1
+          "searchBonus": 1
         }
       }
     ]
@@ -400,9 +400,9 @@
     "statuses": [
       {
         "name": "Fortunate Fairy",
-        "description": "Gain +2 to all rolls.",
+        "description": "Gain +1 to all rolls.",
         "effect": {
-          "allRolls": 2
+          "allRolls": 1
         }
       }
     ]
@@ -471,13 +471,13 @@
     "statuses": [
       {
         "name": "Battle Hardened",
-        "description": "Gain extra 1d6 HP whenever you level up.",
+        "description": "Gain an extra 1 HP whenever you level up.",
         "effect": {
           "onLevelUp": [
             {
               "type": "upgrade",
               "stat": "maxHp",
-              "amount": "1d6"
+              "amount": "1"
             }
           ]
         }
@@ -584,7 +584,7 @@
   },
   "adventurer": {
     "type": "party",
-    "description": "Adventuring Party",
+    "description": "Venturing Guild",
     "requirements": {
       "formation": [
         "warrior",
@@ -595,11 +595,11 @@
     "statuses": [
       {
         "name": "Lisan Al-Gaib",
-        "description": "Gain +1 to all rolls and +2 to Hit while in the desert.",
+        "description": "Gain +1 to search and +2 to Hit while in the desert.",
         "whileEnvironment": "desert",
         "effect": {
-          "allRolls": 1,
-          "toHit": 2
+          "toHit": 2,
+          "searchBonus": 1
         }
       }
     ]
@@ -617,10 +617,11 @@
     "statuses": [
       {
         "name": "Corruption",
-        "description": "Gain +1 to all rolls when in a city environment.",
+        "description": "Gain +10 to investigation checks when in a city environment.",
         "whileEnvironment": "urban",
         "effect": {
-          "allRolls": 1
+          "searchBonus": 10,
+          "examineBonus": 10
         }
       },
       {
@@ -708,9 +709,9 @@
     "statuses": [
       {
         "name": "Focused Casting",
-        "description": "Improve spell slots by 3.",
+        "description": "Improve spell slots by 2.",
         "effect": {
-          "bonusSpellSlots": 3
+          "bonusSpellSlots": 2
         }
       }
     ]

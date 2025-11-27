@@ -239,7 +239,7 @@
     "description": "Fire three magical bolts that automatically hit and deal 1d3 damage each.",
     "target": [
       "randomEnemies",
-      3
+      "2 + round(#level/2)"
     ],
     "effects": [
       {

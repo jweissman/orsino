@@ -81,7 +81,7 @@ export class ModuleRunner {
     return this.activeModule.dungeons.filter(d => !this.state.completedDungeons.includes(d.dungeonIndex!));
   }
 
-  async run() {
+  async run(dry = false) {
     if (this.pcs.length === 0) {
       throw new Error("No PCs provided!");
     }
@@ -95,7 +95,7 @@ export class ModuleRunner {
     // this.outputSink("\x1Bc");
     this.outputSink(`Welcome to ${Stylist.bold(this.mod.name)}!`);
 
-    await this.enter();
+    await this.enter(dry);
 
     this.outputSink("\nThank you for playing!");
   }
@@ -114,13 +114,13 @@ export class ModuleRunner {
     return module as CampaignModule;
   }
 
-  async enter(mod: CampaignModule = this.mod): Promise<void> {
+  async enter(dry = false, mod: CampaignModule = this.mod): Promise<void> {
     this.outputSink(`You arrive at the ${mod.town.adjective} ${Words.capitalize(mod.town.race)} ${mod.town.size} of ${Stylist.bold(mod.town.name)}.`);
     let days = 0;
     while (days++ < 120 && this.pcs.some(pc => pc.hp > 0)) {
       this.status(mod);
       this.outputSink(`\n--- Day ${days}/120 ---`);
-      const action = await this.menu();
+      const action = await this.menu(dry);
       this.outputSink(`You chose to ${action}.`);
 
       if (action === "embark") {
@@ -133,11 +133,14 @@ export class ModuleRunner {
             outputSink: this.outputSink,
             dungeonGen: () => dungeon,
             gen: this.gen.bind(this),
-            playerTeam: { name: "War Party", combatants: this.pcs, healingPotions: this.sharedPotions },
+            playerTeam: { name: "Player", combatants: this.pcs, healingPotions: this.sharedPotions },
           });
           await dungeoneer.run();  //dungeon, this.pcs);
 
           if (dungeoneer.winner === "Player") {
+            console.log(Stylist.bold("\n🎉 Congratulations! You have cleared the dungeon " +
+              Stylist.underline(dungeon.dungeon_name)
+            + "! 🎉\n"));
             this.markDungeonCompleted(dungeon.dungeonIndex || 0);
           }
 
@@ -147,16 +150,11 @@ export class ModuleRunner {
           this.state.sharedPotions = dungeoneer.playerTeam.healingPotions;
 
           // stabilize unconscious PC to 1 HP
-          // this.pcs.forEach(pc => {
-          //   if (pc.hp <= 0) {
-          //     pc.hp = 1;
-          //     this.outputSink(`⚠️ ${pc.name} was stabilized to 1 HP!`);
-          //   }
-          //   pc.activeEffects = [];
-          // });
-
-          // heal PCs for next adventure
           this.pcs.forEach(pc => {
+            if (pc.hp <= 0) {
+              pc.hp = 1;
+              this.outputSink(`⚠️ ${pc.name} was stabilized to 1 HP!`);
+            }
             const healAmount = Math.floor(pc.maxHp * 0.5);
             pc.hp = Math.max(1, Math.min(pc.maxHp, pc.hp + healAmount));
             this.outputSink(`💖 ${pc.name} recovers ${healAmount} HP after the adventure.`);
@@ -164,7 +162,7 @@ export class ModuleRunner {
             pc.activeEffects = [];
           });
         } else {
-          this.outputSink("No available dungeons to embark on!");
+          this.outputSink("No available dungeons to embark on! (" + this.availableDungeons.length + " still remain)");
         }
       } else if (action === "rest") {
         this.rest(this.pcs);
@@ -229,15 +227,22 @@ export class ModuleRunner {
     this.outputSink(`🧪 Potions: ${this.sharedPotions}`);
   }
 
-  private async menu(): Promise<string> {
+  private async menu(dry = false): Promise<string> {
     const available = this.availableDungeons;
     const options: Choice<any>[] = [
-      { short: "Rest", value: "rest",   name: "Visit the Inn (restore HP/slots)", disabled: this.pcs.every(pc => pc.hp === pc.maxHp) },
-      // { short: "Shop", value: "shop",   name: "Visit the Alchemist (buy potions, 50g each)", disabled: this.sharedGold < 50 },
-      // { short: "Chat", value: "rumors", name: "Visit the Tavern (hear rumors about the region)", disabled: available.length === 0 },
-      // { short: "Pray", value: "pray",   name: `Visit the Temple to ${Words.capitalize(this.mod.town.deity)}`, disabled: this.sharedGold < 10 },
-      // { short: "Show", value: "show",   name: `Show Party Status/Character Records`, disabled: false },
+      { short: "Rest", value: "rest", name: "Visit the Inn (restore HP/slots)", disabled: this.pcs.every(pc => pc.hp === pc.maxHp) },
     ];
+
+    if (!dry) {
+      options.push(
+        ...[
+          { short: "Shop", value: "shop", name: "Visit the Alchemist (buy potions, 50g each)", disabled: this.sharedGold < 50 },
+          { short: "Chat", value: "rumors", name: "Visit the Tavern (hear rumors about the region)", disabled: available.length === 0 },
+          { short: "Pray", value: "pray", name: `Visit the Temple to ${Words.capitalize(this.mod.town.deity)}`, disabled: this.sharedGold < 10 },
+          { short: "Show", value: "show", name: `Show Party Status/Character Records`, disabled: false },
+        ]
+      );
+    }
 
     if (available.length > 0) {
       options.push({ short: "Seek", value: "embark", name: "⚔️ Embark on a Quest", disabled: available.length === 0 });
@@ -289,14 +294,15 @@ export class ModuleRunner {
     const available = this.availableDungeons;
     if (available.length === 0) return null;
 
+    let reasonableCr = Math.round(2 * this.pcs.map(pc => pc.level).reduce((a, b) => a + b, 0) / this.pcs.length) + 5;
+
     const choice = await this.select(
       "Which dungeon?",
       available.map(d => ({
         short: d.dungeon_name,
         value: d.dungeonIndex,
         name: `${d.dungeon_name} (${d.direction}, CR ${d.intendedCr})`,
-        disabled: this.state.completedDungeons.includes(d.dungeonIndex!)
-          || d.intendedCr > Math.round(this.pcs.map(pc => pc.level).reduce((a, b) => a + b, 0) + 2), // Disable if CR is too high
+        disabled: this.state.completedDungeons.includes(d.dungeonIndex!) || d.intendedCr >= reasonableCr, // Disable if CR is too high
       }))
     );
 

@@ -2,29 +2,97 @@ import Stylist from "./Style";
 import { Combatant } from "../types/Combatant";
 import Words from "./Words";
 import { Fighting } from "../rules/Fighting";
+import AbilityHandler from "../Ability";
+import TraitHandler from "../Trait";
 
 export default class Presenter {
   static colors = ['magenta', 'red', 'yellow', 'yellow', 'yellow', 'green', 'green', 'green', 'green'];
 
   static printCharacterRecord = (combatant: Combatant) => {
-    let record = ({
-      ...combatant,
-      effects: [
-        ...(combatant.activeEffects || []),
-        ...(combatant.passiveEffects || [])
-      ].map(e => e.name).join(", ") || "None",
-      abilities: (combatant.abilities||[]).join(", "),
-      traits: (combatant.traits || []).join(", "),
-      gear: (combatant.gear || []).join(", "),
+    // let record = ({
+    //   ...combatant,
+    //   effects: [
+    //     ...(combatant.activeEffects || []),
+    //     ...(combatant.passiveEffects || [])
+    //   ].map(e => e.name).join(", ") || "None",
+    //   abilities: (combatant.abilities||[]).join(", "),
+    //   traits: (combatant.traits || []).join(", "),
+    //   gear: (combatant.gear || []).join(", "),
+    //   // saves: combatant.savedTimes ? Object.entries(combatant.savedTimes).map(([key, value]) => `${key}: ${value}`).join(", ") : "None",
+    // });
+
+    // // delete active/passives
+    // delete record.activeEffects;
+    // delete record.passiveEffects;
+    // delete record.abilityCooldowns;
+    // delete record.abilitiesUsed;
+    // delete record.savedTimes;
+
+    // console.table(record);
+
+    // console.table(record);
+
+    console.log(Stylist.bold("\n\nCharacter Record"));
+    console.log(Stylist.format(`${this.combatant(combatant)}`, 'underline'));
+
+    // "Human Female Warrior of Hometown (41 years old)"
+    console.log(
+      Stylist.italic(
+        `${Words.capitalize(combatant.gender || 'unknown')} ${Words.capitalize(combatant.background || 'adventurer')} from the ${combatant.hometown || 'unknown'} (${combatant.age || 'unknown age'} years old)`
+      )
+    )
+
+    
+
+
+    let statNames = ['str', 'dex', 'int', 'wis', 'cha', 'con'];
+    let statLine = statNames.map(stat => {
+      const value = (combatant as any)[stat];
+      const mod = Fighting.statMod(value);
+      const color = mod > 0 ? 'green' : (mod < 0 ? 'red' : 'white');
+      const sign = mod >= 0 ? '+' : '';
+      return `${Stylist.bold(stat.toUpperCase())} ${value} (${Stylist.colorize(sign + mod, color)})`;
     });
+    console.log(statLine.join(' | '));
 
-    // delete active/passives
-    delete record.activeEffects;
-    delete record.passiveEffects;
-    delete record.abilityCooldowns;
-    delete record.abilitiesUsed;
+    let basics = {
+      weapon: (combatant.weapon || 'None'),
+      armor: combatant.armor || 'None',
+      background: combatant.background || 'None',
+      xp: combatant.xp,
+      gp: combatant.gp,
+    }
+    console.log("\n" + Object.entries(basics).map(([key, value]) => {
+      return `${Stylist.bold(Words.capitalize(key))} ${Words.humanize(value)}`;
+    }).join('   '));
 
-    console.table(record);
+    if (combatant.gear && combatant.gear.length > 0) {
+      console.log(Stylist.bold("\nGear: ") + combatant.gear.join(", "));
+    }
+
+    // ability table
+    console.log(Stylist.bold("\nAbilities"));
+    let abilityHandler = AbilityHandler.instance;
+    for (let abilityName of combatant.abilities || []) {
+      let ability = abilityHandler.getAbility(abilityName);
+      console.log(`  ${Stylist.colorize(ability.name, 'magenta')} (${ability ? ability.description : 'No description available'})`);
+    }
+
+    // traits
+    if (combatant.traits && combatant.traits.length > 0) {
+      let traitHandler = TraitHandler.instance;
+      console.log(Stylist.bold("\nTraits"));
+      for (let traitName of combatant.traits || []) {
+        let trait = traitHandler.getTrait(traitName);
+        if (trait) {
+          console.log(`  ${Stylist.colorize(trait.description, 'blue')}`);
+          trait.statuses?.forEach(status => {
+            console.log(`  ${Stylist.colorize(status.name, 'cyan')} (${status.description})`);
+          });
+        }
+        console.log();
+      }
+    }
   }
 
   static minimalCombatant = (combatant: Combatant) => {

@@ -25,28 +25,22 @@ type TraitDictionary = {
 
 export default class TraitHandler {
   traits: TraitDictionary = {};
+  loadedTraits: boolean = false;
+  static instance = new TraitHandler();
 
   async loadTraits() {
+    if (this.loadedTraits) {
+      return;
+    }
     let data = await Files.readJSON<TraitDictionary>("./settings/fantasy/traits.json");
-    // console.log("Loaded", Object.keys(data).length, "traits!");
-    // add trait name to each trait object
     this.traits = data;
     Object.entries(this.traits).forEach(([key, trait]) => {
       trait.name = key;
     });
-    // this.traits = Object.values(data).reduce((acc, trait) => {
-    //   acc[trait.name] = trait;
-    //   return acc;
-    // }, {} as TraitDictionary);
-    // this.traits = Object.values(data).reduce((acc, trait) => {
-    //   acc[trait.name] = trait;
-    //   return acc;
-    // }, {} as TraitDictionary);
+    this.loadedTraits = true;
   }
 
-  getTrait(name: string): Trait | null {
-    return this.traits[name] || null;
-  }
+  getTrait(name: string): Trait | null { return this.traits[name] || null; }
 
   partyTraits(combatant: Combatant[]): Trait[] {
     let synergies: Trait[] = [];

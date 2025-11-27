@@ -110,7 +110,7 @@ export default class Events {
         }
         return `${subjectName} is no longer ${event.effectName}.`;
       case "initiate":
-        return `Turn order: ${event.order.map((o, i) => `\n ${i + 1}. ${Presenter.minimalCombatant(o.combatant)} (init: ${o.initiative})`).join(", ")}`;
+        return `Turn order: ${event.order.map((o, i) => `${i + 1}. ${o.combatant.forename}`).join(" | ")}`;
       case "roundStart":
         // let heading = `\n=== Round ${event.turn} ===`;
         // let combatants = event.combatants.map(c => `\n- ${Presenter.combatant(c)}`).join("");

@@ -6,6 +6,7 @@ export interface Combatant {
   name: string;
   class?: string;
   race?: string;
+  hometown?: string;
   forename: string;
   hp: number;
   maxHp: number;
@@ -23,6 +24,7 @@ export interface Combatant {
   xp: number;
   gp: number;
   weapon: string;
+  armor?: string;
 
   spellSlotsUsed?: number;
 

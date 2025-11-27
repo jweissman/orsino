@@ -6,7 +6,7 @@ import { Combatant } from "../types/Combatant";
 export class AbilityScoring {
   static bestAbilityTarget(ability: Ability, user: Combatant, allies: Combatant[], enemies: Combatant[]): Combatant | Combatant[] {
     let validTargets = AbilityHandler.validTargets(ability, user, allies, enemies);
-    if (validTargets.length === 0) {
+    if (validTargets.length === 0 && !ability.target.includes("randomEnemies")) {
       // return null;
       throw new Error(`No valid targets for ${ability.name}`);
     } else if (validTargets.length === 1) {
@@ -48,6 +48,7 @@ export class AbilityScoring {
     let score = 0;
     let analysis = this.analyzeAbility(ability);
     if (analysis.flee) {
+      score -= 15; // last resort action
       // is my hp low?
       const hpRatio = user.hp / user.maxHp;
       score += (1 - hpRatio) * 15; // higher score for lower hp

@@ -1,6 +1,6 @@
 export default class Words {
   static humanize(phrase: string) {
-    return phrase.replace(/([A-Z])/g, ' $1') // Add space before capital letters
+    return String(phrase).replace(/([A-Z])/g, ' $1') // Add space before capital letters
                   .replace(/[_-]+/g, ' ')    // Replace underscores and hyphens with spaces
                   .toLowerCase()             // Convert to lowercase
                   .replace(/\b\w/g, char => char.toUpperCase()) // Capitalize first letter of each word

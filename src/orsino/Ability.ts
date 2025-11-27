@@ -16,6 +16,7 @@ export type SaveKind = "poison" | "disease" | "death" | "magic" | "insanity" | "
 
 export interface StatusEffect {
   name: string;
+  description?: string;
   effect: { [key: string]: any };
   duration?: number;
   by?: Combatant;
@@ -71,16 +72,22 @@ export interface Ability {
 type AbilityDictionary = { [key: string]: Ability };
 
 export default class AbilityHandler {
+  static instance: AbilityHandler = new AbilityHandler();
   abilities: AbilityDictionary = {};
+  loadedAbilities: boolean = false;
 
   constructor() { }
 
   // load abilities from JSON file
   async loadAbilities() {
+    if (this.loadedAbilities) {
+      return;
+    }
+
     let data = await Files.readJSON<AbilityDictionary>("./settings/fantasy/abilities.json");
     this.abilities = data;
-
     await this.validateAbilities();
+    this.loadedAbilities = true;
   }
 
   async validateAbilities() {
@@ -367,6 +374,7 @@ export default class AbilityHandler {
       throw new Error(`Unknown effect type: ${effect.type}`);
     }
 
+    // TODO check if _any_ ally of the target has a reaction effect for this ability
     let targetFx = Fighting.gatherEffects(targetCombatant);
     // handle generic onEnemy[ActionName] effects
     if (success && targetFx[`onEnemy${Words.capitalize(name)}`]) {
@@ -376,11 +384,21 @@ export default class AbilityHandler {
         if (reactionEffect.target) {
           fxTarget = this.validTargets({ target: reactionEffect.target } as Ability, user, [], [targetCombatant])[0];
         }
-        let { events: reactionEvents } = await this.handleEffect(
-          (reactionEffect.status?.name || name) + " Reaction",
-          reactionEffect, user, fxTarget, handlers
-        );
-        events.push(...reactionEvents);
+        if (Array.isArray(fxTarget)) {
+          for (const fxT of fxTarget) {
+            let { events: reactionEvents } = await this.handleEffect(
+              (reactionEffect.status?.name || name) + " Reaction",
+              reactionEffect, fxT, user, handlers
+            );
+            events.push(...reactionEvents);
+          }
+        } else {
+          let { events: reactionEvents } = await this.handleEffect(
+            (reactionEffect.status?.name || name) + " Reaction",
+            reactionEffect, fxTarget, user, handlers
+          );
+          events.push(...reactionEvents);
+        }
       }
     }
 

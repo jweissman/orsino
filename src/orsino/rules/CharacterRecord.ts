@@ -1,3 +1,4 @@
+import Choice from "inquirer/lib/objects/choice";
 import AbilityHandler, { AbilityEffect } from "../Ability";
 import { ChoiceSelector } from "../Combat";
 import { DungeonEvent } from "../Events";
@@ -25,8 +26,12 @@ export default class CharacterRecord {
 
   static async chooseParty(
     pcGenerator: (options?: any) => Promise<Combatant>,
-    partySize: number = 3
+    partySize: number = 3,
+    selectionMethod: (prompt: string, options: string[]) => Promise<string> = User.selection
   ): Promise<Combatant[]> {
+    await AbilityHandler.instance.loadAbilities();
+    await TraitHandler.instance.loadTraits();
+
     let party: Combatant[] = [];
     // let hasExistingPcs = false;
     // if (await Files.countFiles(`${Dungeoneer.dataPath}/pcs`) > 0) {
@@ -35,27 +40,36 @@ export default class CharacterRecord {
     let pc: Combatant | null = null;
     while (party.length < partySize) {
       let whichPc = '(' + (party.length + 1) + '/' + partySize + ')';
-      let shouldWizard = await User.selection(
+      let shouldWizard = await selectionMethod(
         'Would you like to customize this PC? ' + whichPc,
         ['Yes', 'No']
       );
       if (shouldWizard === 'Yes') {
-        let raceSelect = await User.selection(
+        let raceSelect = await selectionMethod(
           'Select a race for this PC: ' + whichPc,
           ['human', 'elf', 'dwarf', 'halfling', 'orc', 'fae', 'gnome']
         );
 
-        let occupationSelect = await User.selection(
+        let occupationSelect = await selectionMethod(
           'Select an occupation for this PC: ' + whichPc,
           ['warrior', 'thief', 'mage', 'cleric', 'ranger', 'bard']
         );
 
         let spellbook: string[] = [];
         if (occupationSelect === 'mage') {
-          spellbook = await User.multiSelect(
-            "Select spells for this PC",
-            ['missile', 'armor', 'blur', 'charm', 'shocking_grasp', 'burning_hands', 'sleep', 'ray_of_frost', 'acid_arrow']
-          );
+          // spellbook = await User.multiSelect(
+          //   "Select spells for this PC",
+          //   ['missile', 'armor', 'blur', 'charm', 'shocking_grasp', 'burning_hands', 'sleep', 'ray_of_frost', 'acid_arrow']
+          // );
+          let availableSpells = ['missile', 'armor', 'blur', 'charm', 'shocking_grasp', 'burning_hands', 'sleep', 'ray_of_frost', 'acid_arrow'];
+          for (let i = 0; i < 3; i++) {
+            let spell = await selectionMethod(
+              `Select spell ${i + 1} for this PC: ` + whichPc,
+              availableSpells
+            );
+            spellbook.push(spell);
+            availableSpells = availableSpells.filter(s => s !== spell);
+          }
         }
 
         pc = await pcGenerator({ setting: 'fantasy', race: raceSelect, class: occupationSelect }) as Combatant;
@@ -67,7 +81,7 @@ export default class CharacterRecord {
         }
 
         Presenter.printCharacterRecord(pc);
-        let confirm = await User.selection(
+        let confirm = await selectionMethod(
           'Do you want to use this PC? ' + whichPc,
           ['Yes', 'No']
         );
@@ -86,7 +100,7 @@ export default class CharacterRecord {
 
         if (!party.some(p => p.name === pc?.name)) {
           Presenter.printCharacterRecord(pc);
-          let confirm = await User.selection(
+          let confirm = await selectionMethod(
             'Do you want to use this PC? ' + whichPc,
             ['Yes', 'No']
           );
@@ -97,7 +111,7 @@ export default class CharacterRecord {
       }
     };
     // assign formation bonuses + racial traits
-    let traitHandler = new TraitHandler();
+    let traitHandler = TraitHandler.instance;
     await traitHandler.loadTraits();
     let partyPassives: Trait[] = traitHandler.partyTraits(party);
     if (partyPassives.length > 0) {
@@ -156,12 +170,12 @@ export default class CharacterRecord {
       console.log(`${Presenter.combatant(pc)} leveled up to level ${pc.level}!`);
       console.log(`Hit points increased by ${hitPointIncrease} to ${pc.maxHp}.`);
       const stat = await select(`Choose a stat to increase:`, [
-        { disabled: pc.str >= 18, name: `Strength (${pc.str})`, value: 'str', short: 'Strength' },
-        { disabled: pc.dex >= 18, name: `Dexterity (${pc.dex})`, value: 'dex', short: 'Dexterity' },
-        { disabled: pc.int >= 18, name: `Intelligence (${pc.int})`, value: 'int', short: 'Intelligence' },
-        { disabled: pc.wis >= 18, name: `Wisdom (${pc.wis})`, value: 'wis', short: 'Wisdom' },
-        { disabled: pc.cha >= 18, name: `Charisma (${pc.cha})`, value: 'cha', short: 'Charisma' },
-        { disabled: pc.con >= 18, name: `Constitution (${pc.con})`, value: 'con', short: 'Constitution' },
+        { disabled: pc.level <= 20 && pc.str >= 18, name: `Strength (${pc.str})`, value: 'str', short: 'Strength' },
+        { disabled: pc.level <= 20 && pc.dex >= 18, name: `Dexterity (${pc.dex})`, value: 'dex', short: 'Dexterity' },
+        { disabled: pc.level <= 20 && pc.int >= 18, name: `Intelligence (${pc.int})`, value: 'int', short: 'Intelligence' },
+        { disabled: pc.level <= 20 && pc.wis >= 18, name: `Wisdom (${pc.wis})`, value: 'wis', short: 'Wisdom' },
+        { disabled: pc.level <= 20 && pc.cha >= 18, name: `Charisma (${pc.cha})`, value: 'cha', short: 'Charisma' },
+        { disabled: pc.level <= 20 && pc.con >= 18, name: `Constitution (${pc.con})`, value: 'con', short: 'Constitution' },
         // just in case they're 18 across!
         { disabled: false, name: `Max HP (${pc.maxHp})`, value: 'maxHp', short: 'HP' },
       ]);
@@ -184,22 +198,37 @@ export default class CharacterRecord {
 
       if (pc.class === "mage") {
         // gain spells
-        let abilityHandler = new AbilityHandler();
+        let abilityHandler = AbilityHandler.instance;
         await abilityHandler.loadAbilities();
-        let allSpells = abilityHandler.spells.filter(ab => ab.aspect === 'arcane');
-        let newSpells = allSpells.filter(spell => spell.level !== undefined && spell.level <= Math.ceil(pc.level / 2))
-          .filter(spell => !pc.abilities.includes(spell.name));
+        let allSpellKeys = Object.entries(abilityHandler.abilities)
+          .filter(([_key, ab]) => ab.aspect === 'arcane')
+          .map(([key, _ab]) => key);
 
-        if (newSpells.length > 0) {
-          let spellChoices = newSpells.map(spell => ({
-            name: Words.capitalize(spell.name) + ': ' + spell.description,
-            value: spell,
-            short: spell.name,
-            disabled: false
-          }));
-          let chosenSpell = await select(`Select a new spell for ${pc.name}:`, spellChoices);
+        let newSpellKeys = allSpellKeys.filter(spellKey => {
+          let spell = abilityHandler.getAbility(spellKey);
+          return spell.level !== undefined
+            && spell.level <= Math.ceil(pc.level / 2)
+            && !pc.abilities.includes(spellKey);
+        });
+
+        // let allSpells = abilityHandler.spells.filter(ab => ab.aspect === 'arcane');
+        // let newSpells = allSpells.filter(spell => spell.level !== undefined && spell.level <= Math.ceil(pc.level / 2))
+                                //  .filter(spell => !pc.abilities.includes(spell.name));
+
+        if (newSpellKeys.length > 0) {
+          let spellChoices = newSpellKeys.map(spellKey => {
+            let spell = abilityHandler.getAbility(spellKey);
+            return {
+              name: Words.capitalize(spell.name) + ': ' + spell.description,
+              value: spellKey,
+              short: spell.name,
+              disabled: false
+            };
+        });
+          let chosenSpellKey = await select(`Select a new spell for ${pc.name}:`, spellChoices);
+          let chosenSpell = abilityHandler.getAbility(chosenSpellKey);
           console.log(`${Presenter.combatant(pc)} learned the spell: ${JSON.stringify(chosenSpell)}`);
-          pc.abilities.unshift(chosenSpell.name);
+          pc.abilities.unshift(chosenSpellKey);
         } else {
           console.log(`${Presenter.combatant(pc)} has learned all available spells for their level.`);
         }
@@ -210,7 +239,7 @@ export default class CharacterRecord {
       } else if (pc.level % 5 === 0) {
         // feat selection
         console.log(`${Presenter.combatant(pc)} can select a new feat!`);
-        let traitHandler = new TraitHandler();
+        let traitHandler = TraitHandler.instance;
         await traitHandler.loadTraits();
         let availableFeats = traitHandler.featsForCombatant(pc);
         if (availableFeats.length === 0) {
