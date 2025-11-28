@@ -83,8 +83,15 @@
 [ ] "Heal 1 every successful hit" is too powerful ('vitalist' trait shared by all elves -- and note elves already get multiple very powerful passives?)
 [ ] Dungeons with multiple floors (levels in principle seem relatively straightforward but we'd need to adapt dungeoneer to handle them...)
 ---
-[ ] Set limit on saves vs death (3 per combat?)
-[ ] Smite scaling 2d6 * level is way too powerful at higher levels
+[ ] Smite scaling 2d6 * level is way too powerful at higher levels (adjusted a bit)
+[ ] Roundhouse too strong (nerfed a lot now but still)
+---
+[ ] Show detailed breakdown of dungeons/rooms/actual vs effect CR (maybe separate spec for module runner?)
+[ ] Wildnerness: Collect herbs, hear birdcalls...
+---
+[ ] Track playerAligned as _well_ as playerControlled (sort of captured by being on the team of the player but this isn't passed along with combatant in all cases...)
+[ ] Adjust status durations check so that they expire at end of _turn_ not _round_?
+[ ] Process traits for enemy npcs (undead should get benefits like immune charm/sleep/poison?)
 
 ## Fixed
 [x] Temple/shrine to local deity to get a blessing
@@ -119,6 +126,7 @@
 [x] Enemies should have spell slots/dwindling resources (poison capsule could be a consumable for them -- can't just throw capsules all day!) (should now have slots and abilitiesUsed tracker...)
 [x] Colorize stats consistently (ie when search/examine we should see the appropriate color for int/wis as in the statline rainbow) (done for search/examine!)
 [x] Should be able to go back to a dungeon you _haven't_ completed yet... (think this is true now)
+[x] Set limit on saves vs death (3 per combat?)
 
 ## Not really issues
 "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]

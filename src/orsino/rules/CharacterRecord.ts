@@ -1,6 +1,6 @@
 import Choice from "inquirer/lib/objects/choice";
 import AbilityHandler, { AbilityEffect } from "../Ability";
-import { ChoiceSelector } from "../Combat";
+import Combat, { ChoiceSelector } from "../Combat";
 import { DungeonEvent } from "../Events";
 import TraitHandler, { Trait } from "../Trait";
 import Presenter from "../tui/Presenter";
@@ -17,8 +17,10 @@ import { Fighting } from "./Fighting";
 export default class CharacterRecord {
 
   static xpForLevel(level: number): number {
-    return (level * level * level * 100) + (level * level * 500) + (level * 1000) - 3800;
+    // return (level * level * level * 100) + (level * level * 500) + (level * 1000) - 3800;
+    return (level * level * level * 50) + (level * level * 150) + (level * 300) - 600;
   }
+
   static crForParty(party: Combatant[]): number {
     const totalLevels = party.reduce((sum, c) => sum + c.level, 0);
     return Math.max(1, Math.round(totalLevels / 3));
@@ -31,6 +33,18 @@ export default class CharacterRecord {
   ): Promise<Combatant[]> {
     await AbilityHandler.instance.loadAbilities();
     await TraitHandler.instance.loadTraits();
+
+    let doChoose = await selectionMethod(
+      `Would you like to customize PCs using the wizard?`,
+      ['Yes', 'No']
+    );
+    if (doChoose === 'No') {
+      return this.chooseParty(pcGenerator, partySize, async (_prompt: string, options: string[]) => {
+        return options[
+          Math.floor(Math.random() * options.length)
+        ];
+      });
+    }
 
     let party: Combatant[] = [];
     // let hasExistingPcs = false;
@@ -77,7 +91,7 @@ export default class CharacterRecord {
         // spellbook.forEach((spell: string) => pc.abilities.unshift(spell));
         if (pc.class === "mage") {
           // pc.abilities = ['melee']; // don't know why this is necessary, but it is??
-          pc.abilities.unshift(...spellbook);
+          pc.abilities.push(...spellbook);
         }
 
         Presenter.printCharacterRecord(pc);
@@ -188,8 +202,9 @@ export default class CharacterRecord {
         for (const effect of fx.onLevelUp as AbilityEffect[]) {
           // execute the effect
           console.log(`Applying level-up effect to ${pc.name}...`);
+          let pseudocontext = { subject: pc, allies: team.combatants.filter(c => c !== pc), enemies: [] };
           let { events: levelUpEvents } = await AbilityHandler.handleEffect(
-            'onLevelUp', effect, pc, pc, Commands.handlers(roller, team) // this.roller, this.playerTeam)
+            'onLevelUp', effect, pc, pc, pseudocontext, Commands.handlers(roller, team) // this.roller, this.playerTeam)
           );
           // events.forEach(e => this.emit({ ...e, turn: 0 } as DungeonEvent));
           events.push(...levelUpEvents as DungeonEvent[]);

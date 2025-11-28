@@ -57,7 +57,7 @@
     "name": "Defend",
     "type": "skill",
     "aspect": "physical",
-    "description": "Gain 4 AC until the start of your next turn.",
+    "description": "Gain 2 AC until the start of your next turn.",
     "target": [
       "self"
     ],
@@ -67,7 +67,7 @@
         "status": {
           "name": "Defending",
           "effect": {
-            "ac": -4
+            "ac": -2
           },
           "duration": 2
         }
@@ -78,13 +78,15 @@
     "name": "Roundhouse Kick",
     "type": "skill",
     "aspect": "physical",
-    "description": "Make a powerful kick that strikes all enemies.",
+    "description": "Make a powerful kick that strikes all enemies for 1d4 + 2*level bludgeoning damage.",
     "target": [
       "enemies"
     ],
     "effects": [
       {
-        "type": "attack"
+        "type": "damage",
+        "amount": "=1d4+2*#level",
+        "kind": "bludgeoning"
       }
     ]
   },
@@ -165,7 +167,7 @@
     "name": "Charge",
     "type": "skill",
     "aspect": "physical",
-    "description": "Charge at an enemy, dealing 1d6 extra damage on a successful hit.",
+    "description": "Charge at an enemy, dealing 2d8+1 damage.",
     "target": [
       "enemy"
     ],
@@ -174,39 +176,31 @@
     },
     "effects": [
       {
-        "type": "attack"
-      },
-      {
         "type": "damage",
-        "amount": "=1d6",
+        "amount": "=2d8+1",
         "kind": "bludgeoning"
       }
     ]
   },
   "set_spear": {
-    "name": "Set Spear",
+    "name": "Sets Spear",
     "condition": { "hasInterceptWeapon": true },
     "type": "skill",
     "aspect": "physical",
     "description": "Brace your spear to intercept a charging enemy, dealing 3d8 damage and granting +4 to hit when they charge you next turn.",
-    "target": [
-      "self"
-    ],
+    "target": [ "self" ],
     "effects": [
       {
         "type": "buff",
         "status": {
           "name": "Braced",
-          "duration": 1,
+          "duration": 2,
           "effect": {
             "onEnemyCharge": [
               {
-                "type": "attack"
-              },
-              {
                 "type": "damage",
                 "kind": "piercing",
-                "amount": "=3d8+10"
+                "amount": "=3d8+1"
               }
             ]
           }
@@ -387,6 +381,7 @@
       }
     ]
   },
+
   "smite": {
     "name": "Smite",
     "type": "skill",
@@ -406,6 +401,24 @@
       }
     ]
   },
+  "turn_undead": {
+    "name": "Turn Undead",
+    "type": "skill",
+    "aspect": "divine",
+    "description": "Force undead enemies to flee.",
+    "target": [ "enemies" ],
+    "effects": [
+      {
+        "type": "flee",
+        "succeedDC": 25,
+        "succeedType": "wis",
+        "condition": {
+          "trait": "undead"
+        }
+      }
+    ]
+  },
+
   "inspire": {
     "name": "Inspire",
     "type": "skill",
@@ -520,7 +533,7 @@
     ]
   },
   "fear": {
-    "name": "Terrifying Scream",
+    "name": "Scream",
     "type": "skill",
     "aspect": "dark",
     "description": "Let out a horrific scream, frightening nearby enemies.",
@@ -860,7 +873,7 @@
     ]
   },
   "enrage": {
-    "name": "Enrage",
+    "name": "Rage",
     "type": "skill",
     "aspect": "feral",
     "description": "Enter a frenzied state, gaining +2 to damage rolls and +1 toHit but degrading AC for by 3.",

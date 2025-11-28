@@ -1,5 +1,6 @@
 import Presenter from "./tui/Presenter";
 import Stylist from "./tui/Style";
+import Words from "./tui/Words";
 import { Combatant } from "./types/Combatant";
 
 const never = <T>(_: never): T => {
@@ -18,6 +19,7 @@ export type CombatEndEvent = BaseEvent & { type: "combatEnd"; winner: string };
 export type RoundStartEvent = BaseEvent & { type: "roundStart", combatants: Combatant[] };
 export type TurnStartEvent = BaseEvent & { type: "turnStart", combatants: Combatant[] };
 
+// export type ActEvent = BaseEvent & { type: "act"; actionName: string };
 export type HitEvent = BaseEvent & { type: "hit"; damage: number; success: boolean; critical: boolean; by: string };
 export type MissEvent = BaseEvent & { type: "miss"; };
 export type HealEvent = BaseEvent & { type: "heal"; amount: number };
@@ -26,6 +28,8 @@ export type QuaffEvent = BaseEvent & { type: "quaff" };
 export type FallenEvent = BaseEvent & { type: "fall" };
 export type FleeEvent   = BaseEvent & { type: "flee" };
 export type SummonEvent = BaseEvent & { type: "summon"; summoned: Combatant[] };
+export type SaveEvent = BaseEvent & { type: "save"; success: boolean; dc: number; immune: boolean; reason: string };
+export type ReactionEvent = BaseEvent & { type: "reaction"; reactionName: string; success: boolean };
 
 export type StatusEffectEvent = BaseEvent & { type: "statusEffect"; effectName: string; effect: { [key: string]: any }; duration: number };
 export type StatusExpireEvent = BaseEvent & { type: "statusExpire"; effectName: string };
@@ -41,6 +45,8 @@ export type CombatEvent = HitEvent
   | StatusEffectEvent
   | StatusExpireEvent
   | SummonEvent
+  | SaveEvent
+  | ReactionEvent
   | CombatEndEvent
   | RoundStartEvent
   | TurnStartEvent;
@@ -76,6 +82,8 @@ export default class Events {
       case "upgrade": return "⬆️";
       case "hit": return event.critical ? "💥" : "⚔️";
       case "summon": return "😽";
+      case "save": return "🛡️";
+      case "reaction": return "↩️";
       default: return never(event);
     }
   }
@@ -110,29 +118,28 @@ export default class Events {
         }
         return `${subjectName} is no longer ${event.effectName}.`;
       case "initiate":
-        return `Turn order: ${event.order.map((o, i) => `${i + 1}. ${o.combatant.forename}`).join(" | ")}`;
+        return '';  //`Turn order: ${event.order.map((o, i) => `${i + 1}. ${o.combatant.forename}`).join(" | ")}`;
       case "roundStart":
         // let heading = `\n=== Round ${event.turn} ===`;
         // let combatants = event.combatants.map(c => `\n- ${Presenter.combatant(c)}`).join("");
         // return `${heading}${combatants}`;
         // return `\n=== Round ${event.turn} ===\n${Presenter.combatants(event.combatants)}`;
-        return `It is round ${event.turn}.`;
+        return `It is round ${event.turn}.` //.${combatants}`;
       case "turnStart":
         // let heading = `It's ${subject}'s turn!`;
         // let combatants = event.combatants.map(c => `\n- ${Presenter.combatant(c)}`).join("");
-        // return `${heading}${combatants}`;
+        let currentState = Presenter.combatants(event.combatants, false, (c) => c === event.subject);
+
         return event.subject?.playerControlled ?
-          `${subjectName}'s turn\n${Presenter.combatants(event.combatants, true)}` : `It's ${Presenter.combatant(event.subject!)}'s turn!`;
-      case "combatEnd": return `Combat ends! ${event.winner} victorious.`;
+          `--- ${subjectName}'s turn ---${currentState}\n` : `${Presenter.minimalCombatant(event.subject!)}'s turn.`;
+      case "combatEnd": return `Combat ends. ${event.winner} victorious.`;
 
       case "upgrade":
-        return `${subjectName} upgrades ${event.stat} by ${event.amount} (now ${event.newValue})!`;
+        return `${subjectName} upgrades ${event.stat} by ${event.amount} (now ${event.newValue}).`;
 
       case "hit":
         let message = `${targetName} takes ${event.damage} damage from ${event.by}.`;
-        if (event.critical) {
-          message += " Critical hit!";
-        }
+        if (event.critical) { message += " Critical hit!"; }
         if (event.target?.playerControlled) {
           message = Stylist.colorize(message, 'red');
         } else if (event.subject?.playerControlled) {
@@ -140,8 +147,18 @@ export default class Events {
         }
         return message;
 
+      case "reaction":
+        return `${subjectName} reacts ${Words.humanize(event.reactionName)} from ${event.target?.forename}.`;
       case "summon":
-        return `${subjectName} summons ${event.summoned.map(s => s.name).join(", ")}!`;
+        return `${subjectName} summons ${event.summoned.map(s => s.name).join(", ")}.`;
+      case "save":
+        if (event.immune) {
+          return `${subjectName} is immune and automatically succeeds on their Save (DC ${event.dc}).`;
+        } else if (event.success) {
+          return `${subjectName} succeeds on their Save (DC ${event.dc}).`;
+        } else {
+          return `${subjectName} fails their Save (DC ${event.dc}).`;
+        }
       default:
         return never(event);
     }

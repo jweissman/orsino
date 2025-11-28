@@ -136,6 +136,7 @@ export default class Dungeoneer {
   async setUp() {
     this.dungeon = await this.dungeonGen();
     // console.log("Dungeon details: " + JSON.stringify(this.dungeon, null, 2));
+    console.log("Set up dungeon with CR " + this.dungeon.intendedCr);
   }
 
   // Main run loop
@@ -237,27 +238,30 @@ export default class Dungeoneer {
   async enterRoom(room: Room | BossRoom): Promise<void> {
     this.persistCharacterRecords();
 
-    if (this.isBossRoom) {
-      this.note(`\n${"═".repeat(70)}`);
-      this.note(`  💀 BOSS ROOM 💀`);
-      this.note(`${"═".repeat(70)}`);
-    } else {
-      const num = this.currentRoomIndex + 1;
-      this.note(`\n${"─".repeat(70)}`);
-      this.note(`📍 ROOM ${num}/${this.rooms.length}`);
-      this.note(`${"─".repeat(70)}`);
-    }
+    // if (this.isBossRoom) {
+    //   this.note(`\n${"═".repeat(70)}`);
+    //   this.note(`  💀 BOSS ROOM 💀`);
+    //   this.note(`${"═".repeat(70)}`);
+    // } else {
+    //   const num = this.currentRoomIndex + 1;
+    //   this.note(`\n${"─".repeat(70)}`);
+    //   this.note(`ROOM ${num}/${this.rooms.length}`);
+    //   this.note(`${"─".repeat(70)}`);
+    // }
 
-    this.note(this.describeRoom(room, ["enter", "step into", "find yourself in"][Math.floor(Math.random() * 3)]));
+    let roomDescription = this.describeRoom(room, ["enter", "step into", "find yourself in"][Math.floor(Math.random() * 3)]);
+    this.note(
+      Stylist.italic(roomDescription)
+    );
 
-    if (this.currentEncounter && Combat.living(this.currentEncounter.creatures).length > 0) {
-      const monsters = this.currentEncounter.creatures.map(m => `\n - ${Presenter.combatant(m)}`).join(", ");
-      this.note(`👹 Encounter: ${monsters} [CR: ${this.currentEncounter.cr}]\n`);
-    }
+    // if (this.currentEncounter && Combat.living(this.currentEncounter.creatures).length > 0) {
+    //   const monsters = this.currentEncounter.creatures.map(m => `\n - ${Presenter.combatant(m)}`).join(", ");
+    //   this.note(`👹 Encounter: ${monsters} [CR: ${this.currentEncounter.cr}]\n`);
+    // }
 
     // display current party status
-    const partyStatus = this.playerTeam.combatants.map(c => Presenter.minimalCombatant(c)).join("\n");
-    this.note(`🧙‍ Party Status:\n${partyStatus}\n`);
+    // const partyStatus = this.playerTeam.combatants.map(c => Presenter.minimalCombatant(c)).join("\n");
+    // this.note(`🧙‍ Party Status:\n${partyStatus}\n`);
   }
 
   private async runCombat(): Promise<boolean> {

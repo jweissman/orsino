@@ -2,26 +2,6 @@
   "surname": {
     "discriminator": "class",
     "groups": {
-      "sage": [
-        "Heraclitus",
-        "Parmenides",
-        "Empedocles",
-        "Anaxagoras",
-        "Democritus",
-        "Solon",
-        "Bias",
-        "Chilon",
-        "Pittacus",
-        "Thales",
-        "Anacharsis",
-        "Zeno",
-        "Pythagoras",
-        "Xenophanes",
-        "Protagoras",
-        "Gorgias",
-        "Diogenes",
-        "Epicurus"
-      ],
       "warrior": [
         "Battleborn",
         "Bear",
@@ -77,7 +57,6 @@
         "Mordecain",
         "Merrick",
         "Page",
-        "Sage",
         "Seer",
         "Shadow",
         "Shriver",
@@ -310,7 +289,6 @@
         "Sam",
         "Striker",
         "Stalwart",
-        "Sage",
         "Solomon",
         "Septimus",
         "Terrence",
@@ -673,7 +651,6 @@
         "Reese",
         "Riley",
         "Rory",
-        "Sagewood",
         "Skyler",
         "Sloan",
         "Tate",
@@ -1330,7 +1307,7 @@
     "groups": {
       "warrior": [[ "prepare_charge", "charge", "set_spear", "second_wind", "roundhouse", "taunt" ]],
       "mage": [[]],
-      "cleric": [[ "smite", "cure", "bless" ] ],
+      "cleric": [[ "smite", "cure", "bless", "turn_undead" ] ],
       "ranger": [ [ "heal", "summon_animal", "set_spear" ] ],
       "thief": [ [ "poison_weapon", "hide", "backstab" ] ],
       "bard": [[ "cure", "inspire", "charm" ]]
@@ -1447,11 +1424,9 @@
         "General"
       ],
       "tomb": [
+        "Creep",
         "Gravedigger",
-        "Miner",
-        "Cutthroat",
-        "Thug",
-        "Loser"
+        "Cultist"
       ],
       "library": [
         "Scholar",
@@ -1469,6 +1444,7 @@
       "goblin": [
         "King",
         "Hierophant",
+        "Sage",
         "Warlord"
       ],
       "kobold": [
@@ -1540,7 +1516,7 @@
       "Chieftain": { "str": 4, "maxHp": 8, "level": 1, "abilities": [ "enrage", "prepare_charge", "charge" ] },
       "Brute": { "str": 4, "maxHp": 8, "level": 1, "abilities": [ "enrage", "prepare_charge", "charge" ] },
       "Berserker": { "str": 6, "maxHp": 8, "level": 2, "abilities": [ "enrage", "prepare_charge", "charge" ] },
-      "Scholar": { "int": 4, "maxHp": 6, "level": 1, "abilities": [ "missile", "sleep", "shocking_grasp" ] },
+      "Scholar": { "int": 4, "maxHp": 6, "abilities": [ "missile", "sleep", "shocking_grasp" ] },
       "Sage": { "int": 4, "maxHp": 9, "level": 1, "abilities": [ "heal", "curse", "fear" ] },
       "Guardian": { "con": 4, "maxHp": 10, "level": 2, "abilities": [ "second_wind", "taunt", "shield", "prepare_charge", "charge" ] },
       "Elder": { "int": 6, "con": 4, "maxHp": 16, "level": 3, "abilities": [ "heal", "curse", "fear", "life_drain" ] },
@@ -3315,74 +3291,39 @@
     "discriminator": "animal_type",
     "groups": {
       "wolf": [
-        "Fenrir",
-        "Skoll",
-        "Hati",
-        "Geri",
-        "Freki",
-        "Akela",
-        "Balto",
-        "Shadow",
-        "Ghost",
-        "Luna",
-        "Fang"
+        "Akela", "Alphonse", "Akira", "Artemis", "Blaze", "Blizzard", "Bolt", "Bran",
+        "Cairo", "Cerberus", "Balto", "Fang", "Fenrir", "Freki", "Geri", "Ghost", "Hati",
+        "Luna", "Shadow", "Skoll", "Storm", "Thor", "Wolfgang", "Zephyr", "Zorro"
       ],
       "bear": [
-        "Ursus",
-        "Bruno",
-        "Grizzly",
-        "Kodiak",
-        "Baloo",
-        "Yogi",
-        "Paddington",
-        "Winnie",
-        "Smokey",
-        "Teddy"
+        "Arsen", "Armand", "Baloo", "Bruno", "Cetus", "Clant", "Doran", "Eddy", "Gruzz", "Grizzly",
+        "Kodiak", "King", "Lurch", "Maximus", "Paddington", "Smokey", "Teddy", "Ursus", "Winnie",
+        "Yogi", "Zeke"
       ],
       "eagle": [
-        "Aquila",
-        "Gryphon",
-        "Horus",
-        "Soren",
+        "Aquila", "Abelard", "Anton", "Brazen", "Baron", "Brutus",
+        "Cyrus", "Dominic", "Gryphon", "Horus", "Silmarien", "Soren",
         "Talos"
       ],
       "lion": [
-        "Leo",
-        "Simba",
         "Aslan",
+        "Leo",
         "Mufasa",
-        "Nala"
+        "Nala",
+        "Simba"
       ],
       "tiger": [
-        "Shere Khan",
-        "Tigris",
-        "Rajah",
-        "Saber",
-        "Stripes"
+        "Abalone", "Bagheera", "Caspian", "Diego", "Rajah", "Saber",
+        "Shere Khan", "Stripes", "Tigris", "Tora", "Zara"
       ],
       "panther": [
-        "Shadow",
-        "Midnight",
-        "Onyx",
-        "Luna",
-        "Nyx"
+        "Azure", "Blackie", "Cinder", "Ebony", "Luna", "Midnight",
+        "Nyx", "Onyx", "Shadow"
       ],
       "rat": [
-        "Remy",
-        "Rizzo",
-        "Splinter",
-        "Templeton",
-        "Gus",
-        "Rattus",
-        "Squeakers",
-        "Whiskers",
-        "Nibbles",
-        "Scabbers",
-        "Ratticus",
-        "Squeaky",
-        "Ratty",
-        "Ratsy",
-        "Verm"
+        "Alvin", "Basil", "Chester", "Gus", "Nibbles", "Ratsy", "Ratticus", "Rattus",
+        "Ratty", "Remington", "Remy", "Rizzo", "Rocky", "Scabbers", "Scurry", "Splinter",
+        "Squeak", "Squeakers", "Squeaky", "Stuart", "Templeton", "Verm", "Whiskers"
       ],
       "cat": [
         "Whiskers",
@@ -3613,6 +3554,62 @@
       ]
     }
   },
+
+  "creatureTemplateOverlays": {
+    "discriminator": "type",
+    "groups": {
+      "undead": [
+        "skeletal",
+        "zombie",
+        "spectral",
+        "vampiric"
+      ]
+    }
+  },
+
+  "creatureTemplateModifiers": {
+    "discriminator": "type",
+    "groups": {
+      "skeletal": {
+        "str": -2,
+        "con": -3,
+        "ac": 1,
+        "traits": [
+          "undead"
+        ]
+      },
+      "zombie": {
+        "dex": -2,
+        "int": -4,
+        "wis": -2,
+        "traits": [
+          "undead",
+          "regeneration"
+        ]
+      },
+      "spectral": {
+        "ac": -5,
+        "traits": [
+          "undead",
+          "incorporeal"
+        ]
+      },
+      "vampiric": {
+        "str": 2,
+        "dex": 2,
+        "cha": 3,
+        "traits": [
+          "undead",
+          "regeneration"
+        ],
+        "abilities": [
+          "life_drain",
+          "charm"
+        ]
+      }
+    }
+  },
+
   "creatureAspectTypes": {
     "discriminator": "rarity",
     "groups": {
@@ -3644,9 +3641,14 @@
         "noble",
         "majestic"
       ],
+      "epic": [
+        "dauntless",
+        "primal",
+        "apex",
+        "sovereign"
+      ],
       "legendary": [
         "ancient",
-        "spectral",
         "giant",
         "warped"
       ]
@@ -3655,198 +3657,39 @@
   "creatureAspects": {
     "discriminator": "type",
     "groups": {
-      "agile": {
-        "dex": 2,
-        "ac": -1
-      },
-      "nimble": {
-        "dex": 3,
-        "abilities": [
-          "hide"
-        ]
-      },
-      "sturdy": {
-        "maxHp": 5,
-        "con": 2
-      },
-      "swift": {
-        "dex": 2
-      },
-      "cruel": {
-        "str": 2,
-        "cha": -2,
-        "abilities": [
-          "enrage"
-        ]
-      },
-      "savage": {
-        "str": 3,
-        "int": -1,
-        "abilities": [
-          "prepare_charge", "charge"
-        ]
-      },
-      "dread": {
-        "cha": 3,
-        "abilities": [
-          "fear"
-        ]
-      },
-      "beloved": {
-        "cha": 3,
-        "wis": 2,
-        "abilities": [
-          "inspire"
-        ]
-      },
-      "forgotten": {
-        "ac": -2,
-        "abilities": [
-          "hide"
-        ]
-      },
-      "sacred": {
-        "wis": 3,
-        "cha": 2,
-        "abilities": [
-          "bless",
-          "heal"
-        ]
-      },
-      "cursed": {
-        "wis": 3,
-        "int": 2,
-        "abilities": [
-          "curse",
-          "fear"
-        ]
-      },
-      "blessed": {
-        "maxHp": 4,
-        "cha": 2,
-        "abilities": [
-          "bless",
-          "inspire",
-          "heal",
-          "shield"
-        ]
-      },
-      "ferocious": {
-        "maxHp": 5,
-        "str": 2,
-        "dex": 1,
-        "ac": -1,
-        "abilities": [
-          "prepare_charge", "charge"
-        ]
-      },
-      "venomous": {
-        "maxHp": 3,
-        "abilities": [
-          "poison_bite"
-        ]
-      },
-      "noble": {
-        "str": 2,
-        "cha": 3,
-        "abilities": [
-          "inspire",
-          "charm"
-        ]
-      },
-      "mysterious": {
-        "int": 2,
-        "wis": 2,
-        "abilities": [
-          "blur",
-          "hide"
-        ]
-      },
-      "terrifying": {
-        "maxHp": 3,
-        "cha": 3,
-        "abilities": [
-          "fear"
-        ]
-      },
-      "majestic": {
-        "maxHp": 4,
-        "str": 3,
-        "con": 2,
-        "cha": 3,
-        "abilities": [
-          "inspire",
-          "bless"
-        ]
-      },
-      "cunning": {
-        "maxHp": 2,
-        "dex": 2,
-        "int": 1,
-        "ac": -1,
-        "abilities": [
-          "hide",
-          "wait"
-        ]
-      },
-      "curious": {
-        "maxHp": 3,
-        "int": 4,
-        "cha": 2
-      },
-      "alpha": {
-        "maxHp": 5,
-        "str": 2,
-        "dex": 1,
-        "con": 1,
-        "int": 1,
-        "ac": -1
-      },
-      "vicious": {
-        "maxHp": 4,
-        "str": 3,
-        "dex": 1,
-        "ac": -1,
-        "abilities": [
-          "maul"
-        ]
-      },
-      "ancient": {
-        "maxHp": 10,
-        "str": 2,
-        "con": 2,
-        "int": 3,
-        "wis": 3,
-        "ac": -2
-      },
-      "spectral": {
-        "ac": -5,
-        "abilities": [
-          "blur",
-          "life_drain"
-        ]
-      },
-      "warped": {
-        "level": 1,
-        "maxHp": 6,
-        "str": -2,
-        "int": 2,
-        "con": -2,
-        "dex": 2,
-        "abilities": [
-          "curse",
-          "charm",
-          "enrage",
-          "psionic_blast"
-        ]
-      },
-      "giant": {
-        "level": 2,
-        "maxHp": 8,
-        "str": 4,
-        "con": 2,
-        "ac": -2
-      }
+      "agile": { "dex": 2, "ac": -1 },
+      "nimble": { "dex": 3, "abilities": [ "hide" ] },
+      "sturdy": { "maxHp": 5, "con": 2 },
+      "swift": { "dex": 2 },
+      "vicious":    {  "maxHp": 4, "str": 3, "dex": 1, "ac": -1, "abilities": [ "maul" ] },
+      "ferocious":  { "maxHp": 5, "str": 2, "dex": 1, "ac": -1, "abilities": [ "prepare_charge", "charge" ] },
+      "cunning":    { "maxHp": 2, "dex": 2, "int": 1, "ac": -1, "abilities": [ "hide", "wait" ] },
+
+      "cruel":      { "level": 1, "maxHp": 2, "str": 2, "cha": -2, "abilities": [ "enrage" ] },
+      "savage":     { "level": 1, "maxHp": 2, "str": 3, "int": -1, "abilities": [ "prepare_charge", "charge" ] },
+      "dread":      { "level": 1, "maxHp": 2, "cha": 3, "abilities": [ "fear" ] },
+      "beloved":    { "level": 1, "maxHp": 2, "cha": 3, "wis": 2, "abilities": [ "inspire" ] },
+      "forgotten":  { "level": 1, "maxHp": 2, "ac": -2, "abilities": [ "hide" ] },
+      "mysterious": { "level": 1, "maxHp": 3, "int": 2, "wis": 2, "abilities": [ "blur", "hide" ] },
+      "terrifying": { "level": 1, "maxHp": 3, "cha": 3, "abilities": [ "fear" ] },
+      "curious":    { "level": 1, "maxHp": 3, "int": 4, "cha": 2 },
+
+      "noble":    { "level": 2, "maxHp": 4, "str": 2, "cha": 3, "abilities": [ "inspire", "charm" ] },
+      "alpha":    { "level": 2, "maxHp": 4, "str": 2, "dex": 1, "con": 1, "int": 1, "ac": -1 },
+      "venomous": { "level": 2, "maxHp": 4, "abilities": [ "poison_bite" ] },
+      "sacred":   { "level": 2, "maxHp": 5, "wis": 3, "cha": 2, "abilities": [ "bless", "heal" ] },
+      "cursed":   { "level": 2, "maxHp": 5, "wis": 3, "int": 2, "abilities": [ "curse", "fear" ] },
+      "blessed":  { "level": 2, "maxHp": 6, "cha": 2, "abilities": [ "bless", "inspire", "heal", "shield" ] },
+      "majestic": { "level": 2, "maxHp": 6, "str": 3, "con": 2, "cha": 3, "abilities": [ "inspire", "bless" ] },
+
+      "dauntless": { "level": 3, "maxHp": 8, "str": 3, "con": 2, "ac": -1, "abilities": [ ] },
+      "primal":   { "level": 3, "maxHp": 7, "str": 4, "dex": 1, "con": 2, "abilities": [ "maul", "enrage" ] },
+      "apex":     { "level": 3, "maxHp": 12, "str": 3, "dex": 2, "con": 2, "int": 1, "ac": -1, "abilities": [ "prepare_charge", "charge", "maul" ] },
+      "sovereign": { "level": 3, "maxHp": 9, "str": 4, "con": 3, "wis": 2, "cha": 2, "abilities": [ "inspire", "fear", "bless" ] },
+
+      "ancient": { "level": 4, "maxHp": 10, "str": 2, "con": 2, "int": 3, "wis": 3, "ac": -2, "abilities": [ "second_wind", "bless", "curse", "fear", "charm", "inspire"] },
+      "warped": { "level": 4, "maxHp": 14, "str": -2, "int": 2, "con": -2, "dex": 2, "abilities": [ "life_drain", "curse", "charm", "enrage", "psionic_blast" ] },
+      "giant": { "level": 4, "maxHp": 18, "str": 4, "con": 2, "ac": -2, "abilities": [ "earthquake" ] }
     }
   },
   "monsterKind": {
@@ -3855,7 +3698,6 @@
       "giant": [
         "Titan",
         "Behemoth",
-        "Tarasque",
         "Colossus"
       ],
       "undead": [
@@ -3908,23 +3750,23 @@
   "monsterStatBase": {
     "discriminator": "monster_type",
     "groups": {
-      "giant": 16,
-      "beast": 5,
-      "undead": 7,
-      "demon": 15,
+      "giant": 18,
+      "beast": 8,
+      "undead": 9,
+      "demon": 13,
       "elemental": 12,
       "aberration": 18,
-      "construct": 10,
+      "construct": 14,
       "celestial": 15,
-      "fey": 6
+      "fey": 10
     }
   },
   "monsterStat": {
     "discriminator": "monster_type",
     "groups": {
       "giant": {
-        "hp": 20,
-        "str": 5,
+        "hp": 45,
+        "str": 4,
         "dex": -2,
         "con": 3,
         "int": -2,

@@ -1,5 +1,6 @@
 import Deem from "../deem";
-import { GameEvent, UpgradeEvent } from "./Events";
+import { CombatContext } from "./Combat";
+import { GameEvent, ReactionEvent, UpgradeEvent } from "./Events";
 import Generator from "./Generator";
 import { CommandHandlers } from "./rules/Commands";
 import { Fighting } from "./rules/Fighting";
@@ -49,6 +50,10 @@ export interface AbilityEffect {
   succeedType?: SaveKind;
   chance?: number; // 0.0-1.0
   item?: string;
+
+  condition?: {
+    trait?: string; // traits the target must have
+  }
 
   // for summoning
   creature?: string;
@@ -176,6 +181,7 @@ export default class AbilityHandler {
     effect: AbilityEffect,
     user: Combatant,
     target: Combatant | Combatant[],
+    context: CombatContext,
     handlers: CommandHandlers
   ): Promise<{
     success: boolean, events: Omit<GameEvent, "turn">[]
@@ -185,7 +191,7 @@ export default class AbilityHandler {
     let events: Omit<GameEvent, "turn">[] = [];
     if (Array.isArray(target)) {
       for (const t of target) {
-        let result = await this.handleSingleEffect(name, effect, user, t, handlers);
+        let result = await this.handleSingleEffect(name, effect, user, t, context, handlers);
         success ||= result.success;
         events.push(...result.events);
       }
@@ -195,7 +201,7 @@ export default class AbilityHandler {
         return { success: false, events };
       }
 
-      let result = await this.handleSingleEffect(name, effect, user, target, handlers);
+      let result = await this.handleSingleEffect(name, effect, user, target, context, handlers);
       success = result.success;
       events.push(...result.events);
     }
@@ -205,6 +211,7 @@ export default class AbilityHandler {
   static async handleSingleEffect(
     name: string, effect: AbilityEffect,
     user: Combatant, targetCombatant: Combatant,
+    context: CombatContext,
     handlers: CommandHandlers
   ): Promise<{
     success: boolean, events: Omit<GameEvent, "turn">[]
@@ -215,7 +222,36 @@ export default class AbilityHandler {
     let success = false;
     let events: Omit<GameEvent, "turn">[] = [];
 
-    if (targetCombatant.hp <= 0) {
+    // does the target meet all conditions?
+    if (effect.condition) {
+      if (effect.condition.trait && !(targetCombatant.traits||[]).includes(effect.condition.trait)) {
+        console.warn(`${targetCombatant.name} does not have required trait ${effect.condition.trait} for effect ${effect.type} of ability ${name}, skipping effect.`);
+        return { success, events };
+      }
+    }
+
+    // check if _any_ ally of the target has a reaction effect for this ability
+    for (const targetAlly of context.enemies) {
+      if (targetAlly.hp <= 0) { continue; }
+      let reactionEffectName = `onEnemy${Words.capitalize(name.replace(/\s+/g, ""))}`;
+      let allyFx = Fighting.gatherEffects(targetAlly);
+      if (allyFx[reactionEffectName]) {
+        events.push({ type: "reaction", subject: targetAlly, target: user, reactionName: `to ${name}` } as Omit<ReactionEvent, "turn">);
+        let reactionEffects = allyFx[reactionEffectName] as Array<AbilityEffect>;
+        for (const reactionEffect of reactionEffects) {
+          let { success, events: reactionEvents } = await this.handleEffect(
+            (reactionEffect.status?.name || name) + " Reaction",
+            reactionEffect, targetAlly, user, context, handlers
+          );
+          events.push(...reactionEvents);
+          if (!success) {
+            break;
+          }
+        }
+      }
+    }
+
+    if (targetCombatant.hp <= 0 || user.hp <= 0) {
       return { success, events };
     }
 
@@ -226,12 +262,12 @@ export default class AbilityHandler {
 
       if (userFx.onAttack) {
         for (const attackFx of userFx.onAttack as Array<AbilityEffect>) {
-          let result = await this.handleEffect(name, attackFx, user, targetCombatant, handlers);
+          let result = await this.handleEffect(name, attackFx, user, targetCombatant, context, handlers);
           events.push(...result.events);
         }
       }
 
-      let result = await attack(user, targetCombatant, handlers.roll);
+      let result = await attack(user, targetCombatant, context, handlers.roll);
       success = result.success;
       events.push(...result.events);
       if (!success) {
@@ -248,8 +284,11 @@ export default class AbilityHandler {
             }
             // console.log("Effect target:", fxTarget, "(attackFx.target:", attackFx.target, ")");
             // it is possible that the target is specified in the effect, so we need to check for that
-            let effectResult = await this.handleEffect(name, attackFx, user, fxTarget, handlers);
+            let effectResult = await this.handleEffect(name, attackFx, user, fxTarget, context, handlers);
             events.push(...effectResult.events);
+            if (!effectResult.success) {
+              break;
+            }
           }
         }
       }
@@ -258,7 +297,7 @@ export default class AbilityHandler {
 
     if (effect.type === "damage") {
       let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
-      let hitEvents = await hit(user, targetCombatant, amount, false, name, true, effect.kind || "true", handlers.roll);
+      let hitEvents = await hit(user, targetCombatant, amount, false, name, true, effect.kind || "true", context, handlers.roll);
       events.push(...hitEvents);
       success = true;
     } else if (effect.type === "heal") {
@@ -269,7 +308,7 @@ export default class AbilityHandler {
     } else if (effect.type === "drain") {
       let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
       let healEvents = await heal(user, user, amount);
-      let hitEvents = await hit(user, targetCombatant, amount, false, name, true, effect.kind || "true", handlers.roll);
+      let hitEvents = await hit(user, targetCombatant, amount, false, name, true, effect.kind || "true", context, handlers.roll);
       events.push(...healEvents);
       events.push(...hitEvents);
       success = true;
@@ -284,7 +323,9 @@ export default class AbilityHandler {
     } else if (effect.type === "debuff") {
       // same as buff with a save
       if (effect.status) {
-        let saved = await save(targetCombatant, effect.saveType || "magic", effect.saveDC || 15, handlers.roll); //, roll, effect.status.name);
+        let { success, events: saveEvents } = await save(targetCombatant, effect.saveType || "magic", effect.saveDC || 15, handlers.roll); //, roll, effect.status.name);
+        events.push(...saveEvents);
+        let saved = success;
         if (saved) {
           console.log(`${targetCombatant.name} resists ${effect.status.name}!`);
           // TODO some save event type
@@ -298,7 +339,10 @@ export default class AbilityHandler {
       }
     } else if (effect.type === "flee") {
       // roll save vs fear
-      let saved = await save(targetCombatant, effect.succeedType || "will", effect.succeedDC || 15, handlers.roll);
+      let { success, events: saveEvents } = await save(targetCombatant, effect.succeedType || "will", effect.succeedDC || 15, handlers.roll);
+      events.push(...saveEvents);
+
+      let saved = success;
       if (saved) {
         console.log(`${targetCombatant.name} resists the urge to flee!`);
         return { success: false, events };
@@ -362,10 +406,10 @@ export default class AbilityHandler {
       for (let i = 0; i < amount; i++) {
         // let summon = await Deem.evaluate(effect.creature as string, { race: user.race });
         let summon = await Generator.gen((effect.creature || "animal") as GenerationTemplateType, { race: user.race });
-        console.log(`Summoned ${summon.name} (${summon.race} companion using ${user.race} race)!`);
+        // console.log(`Summoned ${summon.name} (${summon.race} companion using ${user.race} race)!`);
         summoned.push(summon as Combatant);
       }
-      console.log(`${user.name} summons ${summoned.map(s => s.name).join(", ")}!`);
+      // console.log(`${user.name} summons ${summoned.map(s => s.name).join(", ")}!`);
       let summonEvents = await summon(user, summoned);
       events.push(...summonEvents);
       success = true;
@@ -374,39 +418,43 @@ export default class AbilityHandler {
       throw new Error(`Unknown effect type: ${effect.type}`);
     }
 
-    // TODO check if _any_ ally of the target has a reaction effect for this ability
-    let targetFx = Fighting.gatherEffects(targetCombatant);
-    // handle generic onEnemy[ActionName] effects
-    if (success && targetFx[`onEnemy${Words.capitalize(name)}`]) {
-      let reactionEffects = targetFx[`onEnemy${Words.capitalize(name)}`] as Array<AbilityEffect>;
-      for (const reactionEffect of reactionEffects) {
-        let fxTarget: Combatant | Combatant[] = targetCombatant;
-        if (reactionEffect.target) {
-          fxTarget = this.validTargets({ target: reactionEffect.target } as Ability, user, [], [targetCombatant])[0];
-        }
-        if (Array.isArray(fxTarget)) {
-          for (const fxT of fxTarget) {
-            let { events: reactionEvents } = await this.handleEffect(
-              (reactionEffect.status?.name || name) + " Reaction",
-              reactionEffect, fxT, user, handlers
-            );
-            events.push(...reactionEvents);
-          }
-        } else {
-          let { events: reactionEvents } = await this.handleEffect(
-            (reactionEffect.status?.name || name) + " Reaction",
-            reactionEffect, fxTarget, user, handlers
-          );
-          events.push(...reactionEvents);
-        }
-      }
-    }
+
+    // let targetFx = Fighting.gatherEffects(targetCombatant);
+    // // handle generic onEnemy[ActionName] effects
+    // if (success && targetFx[`onEnemy${Words.capitalize(name)}`]) {
+    //   let reactionEffects = targetFx[`onEnemy${Words.capitalize(name)}`] as Array<AbilityEffect>;
+    //   for (const reactionEffect of reactionEffects) {
+    //     let fxTarget: Combatant | Combatant[] = targetCombatant;
+    //     if (reactionEffect.target) {
+    //       fxTarget = this.validTargets({ target: reactionEffect.target } as Ability, user, [], [targetCombatant])[0];
+    //     }
+    //     if (Array.isArray(fxTarget)) {
+    //       for (const fxT of fxTarget) {
+    //         let { events: reactionEvents } = await this.handleEffect(
+    //           (reactionEffect.status?.name || name) + " Reaction",
+    //           reactionEffect, fxT, user, handlers
+    //         );
+    //         events.push(...reactionEvents);
+    //       }
+    //     } else {
+    //       let { events: reactionEvents } = await this.handleEffect(
+    //         (reactionEffect.status?.name || name) + " Reaction",
+    //         reactionEffect, fxTarget, user, handlers
+    //       );
+    //       events.push(...reactionEvents);
+    //     }
+    //   }
+    // }
 
     return { success, events };
   }
 
   static async perform(
-    ability: Ability, user: Combatant, target: Combatant | Combatant[], handlers: CommandHandlers
+    ability: Ability,
+    user: Combatant,
+    target: Combatant | Combatant[],
+    context: CombatContext,
+    handlers: CommandHandlers
   ): Promise<{
     success: boolean;
     events: Omit<GameEvent, "turn">[];
@@ -415,7 +463,7 @@ export default class AbilityHandler {
     let result = false;
     let events = [];
     for (const effect of ability.effects) {
-      let { success, events: effectEvents } = await this.handleEffect(ability.name, effect, user, target, handlers);
+      let { success, events: effectEvents } = await this.handleEffect(ability.name, effect, user, target, context, handlers);
       result = result || success;
       events.push(...effectEvents);
       if (success === false) {
@@ -439,7 +487,7 @@ export default class AbilityHandler {
                 // TODO should use a simpler 'resolveTarget' kind of model here maybe?
                 fxTarget = this.validTargets({ target: [spellFx.target] } as unknown as Ability, user, [], Array.isArray(target) ? target : [target])[0];
               }
-              let { events: postCastEvents } = await this.handleEffect(ability.name, spellFx, user, fxTarget, handlers);
+              let { events: postCastEvents } = await this.handleEffect(ability.name, spellFx, user, fxTarget, context, handlers);
               events.push(...postCastEvents);
             }
           }

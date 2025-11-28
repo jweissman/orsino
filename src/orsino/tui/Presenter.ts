@@ -175,11 +175,11 @@ export default class Presenter {
     return Stylist.colorize(sign + mod, color);
   }
 
-
-  static combatants = (combatants: Combatant[], minimal: boolean = false) => {
+  static combatants = (combatants: Combatant[], minimal: boolean = false, indicate: (combatant: Combatant) => boolean) => {
     return combatants
       .filter(c => c.hp > 0)
-      .map(c => minimal ? this.minimalCombatant(c) : this.combatant(c)).join(minimal ? ", " : "\n");
+      .map(c => ((minimal ? "" : "\n") + (indicate(c) ? " 👉 " : "  ") + (minimal ? this.minimalCombatant(c) : this.combatant(c))))
+      .join(minimal ? ", " : "");
     // return combatants.map(c => this.combatant(c)).join('\n');
   }
 }

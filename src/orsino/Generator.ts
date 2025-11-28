@@ -2,6 +2,7 @@ import Deem from "../deem";
 import { loadSetting } from "./loader";
 import { Table } from "./Table";
 import { Template } from "./Template";
+import Stylist from "./tui/Style";
 import { GenerationTemplateType } from "./types/GenerationTemplateType";
 import deepCopy from "./util/deepCopy";
 
@@ -20,7 +21,7 @@ export default class Generator {
     // accumulate items gradually and put them in __items so that conditions can refer to them
     const items: Record<string, any>[] = [];
     let attempts = 0;
-    while (items.length < count && attempts++ < count * 10) {
+    while (items.length < count && attempts++ < count * 50) {
       const i = items.length;
       // console.log(`Generating ${type} ${i + 1}/${count}...`);
       const item = await this.gen(type, deepCopy({ ...options, _index: i }));
@@ -36,8 +37,10 @@ export default class Generator {
       }
     }
     if (items.length === 0) {
+      // console.warn(`No items generated for type ${type} meeting condition: ${condition}, generating one anyway`);
       // generate one anyway
       items.push(await this.gen(type, options));
+      process.stdout.write(`!`);
     }
 
     return items;
@@ -49,13 +52,13 @@ export default class Generator {
   ): Promise<Record<string, any>> {
     this.setting = this.setting || (options.setting ? loadSetting(options.setting) : this.defaultSetting);
     // console.log(`Gen ${Stylist.format(type, 'bold')} with options`);
-    let nonNestedOptions: Record<string, any> = {};
-    Object.entries(options).forEach(([key, value]) => {
-      if (typeof value !== 'object' || value === null) {
-        nonNestedOptions[key] = value;
-      }
-    });
-    // print options as nice table
+    // let nonNestedOptions: Record<string, any> = {};
+    // Object.entries(options).forEach(([key, value]) => {
+    //   if (typeof value !== 'object' || value === null) {
+    //     nonNestedOptions[key] = value;
+    //   }
+    // });
+    // // print options as nice table
     // console.table(nonNestedOptions);
 
     const templ = this.generationSource(type);

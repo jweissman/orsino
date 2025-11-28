@@ -66,18 +66,18 @@ export default class User {
   static async roll(subject: Combatant, description: string, sides: number): Promise<RollResult> {
     if (!subject.playerControlled) {
       const result = Commands.roll(subject, description, sides);
-      await Spinner.run(`${subject.name} is rolling ${description}`, 20 + Math.random() * 140, result.description);
+      // await Spinner.run(`${subject.name} is rolling ${description}`, 20 + Math.random() * 140, result.description);
       return result;
     }
 
     // await new Promise(resolve => setTimeout(resolve, 100));
-    await Spinner.waitForInputAndRun(
-      `>>> ${subject.name} to roll d${sides} ${description}... <<<`,
-      `${subject.name} rolling d${sides} ${description}`
-    );
-    // Then do the actual roll
+    // await Spinner.waitForInputAndRun(
+    //   `>>> ${subject.name} to roll d${sides} ${description}... <<<`,
+    //   `${subject.name} rolling d${sides} ${description}`
+    // );
+    // // Then do the actual roll
     let result = Commands.roll(subject, description, sides);
-    console.log("\r" + result.description);
+    // console.log("\r" + result.description);
     return result;
   }
 }

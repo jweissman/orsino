@@ -117,9 +117,9 @@ export class ModuleRunner {
   async enter(dry = false, mod: CampaignModule = this.mod): Promise<void> {
     this.outputSink(`You arrive at the ${mod.town.adjective} ${Words.capitalize(mod.town.race)} ${mod.town.size} of ${Stylist.bold(mod.town.name)}.`);
     let days = 0;
-    while (days++ < 120 && this.pcs.some(pc => pc.hp > 0)) {
+    while (days++ < 60 && this.pcs.some(pc => pc.hp > 0)) {
       this.status(mod);
-      this.outputSink(`\n--- Day ${days}/120 ---`);
+      this.outputSink(`\n--- Day ${days}/60 ---`);
       const action = await this.menu(dry);
       this.outputSink(`You chose to ${action}.`);
 
@@ -163,6 +163,9 @@ export class ModuleRunner {
           });
         } else {
           this.outputSink("No available dungeons to embark on! (" + this.availableDungeons.length + " still remain)");
+          for (const dungeon of this.availableDungeons) {
+            this.outputSink(` - ${dungeon.dungeon_name} (CR ${dungeon.intendedCr}): ${dungeon.rumor}`);
+          }
         }
       } else if (action === "rest") {
         this.rest(this.pcs);
@@ -192,7 +195,7 @@ export class ModuleRunner {
       } else if (action === "show") {
         this.outputSink("\n📜 Party Records:")
         for (const pc of this.pcs) {
-          this.outputSink(`\n${Stylist.bold(pc.name)} -- ${Presenter.combatant(pc)}`);
+          // this.outputSink(`\n${Stylist.bold(pc.name)} -- ${Presenter.combatant(pc)}`);
           Presenter.printCharacterRecord(pc);
         }
       }
@@ -219,12 +222,12 @@ export class ModuleRunner {
     // let status = "";
     this.outputSink(`\nThe ${mod.town.adjective} ${Words.capitalize(mod.town.race)} ${mod.town.size} of ${ModuleRunner.townIcons[mod.town.size]}  ${Stylist.bold(mod.town.name)}`);
     this.outputSink(`(Pop.: ${mod.town.population.toLocaleString()})`);
-    this.outputSink(`\n🧙‍ Your Party:`);
-    this.pcs.forEach(pc => {
-      this.outputSink(`  - ${Presenter.combatant(pc)} (${pc.gender} ${pc.background}, ${pc.age})`);
-    });
-    this.outputSink(`💰 Gold: ${this.sharedGold}g`);
-    this.outputSink(`🧪 Potions: ${this.sharedPotions}`);
+    // this.outputSink(`\n🧙‍ Your Party:`);
+    // this.pcs.forEach(pc => {
+    //   this.outputSink(`  - ${Presenter.combatant(pc)} (${pc.gender} ${pc.background}, ${pc.age})`);
+    // });
+    // this.outputSink(`💰 Gold: ${this.sharedGold}g`);
+    // this.outputSink(`🧪 Potions: ${this.sharedPotions}`);
   }
 
   private async menu(dry = false): Promise<string> {
@@ -249,6 +252,7 @@ export class ModuleRunner {
     } else {
       // options.push({ short: "Journey", value: "embark", name: "⚔️ Journey to the next region", disabled: false });
     }
+    // console.log("Options:", options);
 
     return await this.select("What would you like to do?", options);
   }
@@ -294,17 +298,21 @@ export class ModuleRunner {
     const available = this.availableDungeons;
     if (available.length === 0) return null;
 
-    let reasonableCr = Math.round(2 * this.pcs.map(pc => pc.level).reduce((a, b) => a + b, 0) / this.pcs.length) + 5;
+    let reasonableCr = Math.round(2 * this.pcs.map(pc => pc.level).reduce((a, b) => a + b, 0) / this.pcs.length) + 2;
+    // console.log(`(Reasonable CR for party level ${this.pcs.map(pc => pc.level).join(", ")} is approx. ${reasonableCr})`);
+    // console.log("Available dungeons:");
+    // available.forEach(d => {
+    //   console.log(` - ${d.dungeon_name} (CR ${d.intendedCr}): ${d.intendedCr > reasonableCr ? Stylist.colorize("⚠️ Too difficult!", 'red') : '✓ Reasonable'}`);
+    // });
 
-    const choice = await this.select(
-      "Which dungeon?",
-      available.map(d => ({
+    let options = available.map(d => ({
         short: d.dungeon_name,
-        value: d.dungeonIndex,
+        value: available.indexOf(d),
         name: `${d.dungeon_name} (${d.direction}, CR ${d.intendedCr})`,
-        disabled: this.state.completedDungeons.includes(d.dungeonIndex!) || d.intendedCr >= reasonableCr, // Disable if CR is too high
+        disabled: d.intendedCr > reasonableCr, // Disable if CR is too high
       }))
-    );
+    const choice = await this.select("Which dungeon?", options);
+    // console.log("Chosen dungeon index:", choice, available[choice].dungeon_name);
 
     return available[choice];
   }

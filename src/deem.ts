@@ -17,6 +17,14 @@ export default class Deem {
     floor: (num: number) => Math.floor(num),
     ceil: (num: number) => Math.ceil(num),
     capitalize: (str: string) => str && str.charAt(0).toUpperCase() + str.slice(1),
+    len: (obj: any) => {
+      if (Array.isArray(obj) || typeof obj === 'string') {
+        return obj.length;
+      } else if (obj && typeof obj === 'object') {
+        return Object.keys(obj).length;
+      }
+      return 0;
+    },
     sum: (arr: any[], prop?: string) => {
       if (prop) {
         return arr.reduce((acc, item) => acc + (item[prop] || 0), 0);

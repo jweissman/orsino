@@ -5,13 +5,19 @@ import { Team } from "./types/Team";
 import { Roll } from "./types/Roll";
 import { Fighting } from "./rules/Fighting";
 import Events, { CombatEvent, InitiateCombatEvent, StatusExpireEvent, RoundStartEvent, CombatEndEvent, FleeEvent } from "./Events";
-import AbilityHandler, { Ability } from "./Ability";
+import AbilityHandler, { Ability, StatusEffect } from "./Ability";
 import { Answers } from "inquirer";
 import { AbilityScoring } from "./tactics/AbilityScoring";
 import { Commands } from "./rules/Commands";
 import Deem from "../deem";
 
 export type ChoiceSelector<T extends Answers> = (description: string, options: Choice<T>[], combatant?: Combatant) => Promise<T>;
+
+export interface CombatContext {
+  subject: Combatant;
+  allies: Combatant[];
+  enemies: Combatant[];
+}
 
 export default class Combat {
   static statistics = {
@@ -84,9 +90,12 @@ export default class Combat {
   protected emit(event: Omit<CombatEvent, "turn">): void {
     let e: CombatEvent = { ...event, turn: this.turnNumber } as CombatEvent;
     this.journal.push(e);
-    this.note(
-      Events.iconForEvent(e) + " " + Events.present(e)
-    );
+    if (Events.present(e) !== "") {
+      this.note(
+        // Events.iconForEvent(e) + " " +
+        Events.present(e)
+      );
+    }
   }
 
   private async determineInitiative(): Promise<{ combatant: any; initiative: number }[]> {
@@ -117,7 +126,7 @@ export default class Combat {
     this.winner = null;
     this.teams = teams;
     // this.combatantsByInitiative = await this.determineInitiative();
-    this.emit({ type: "initiate", order: this.combatantsByInitiative } as Omit<InitiateCombatEvent, "turn">);
+    // this.emit({ type: "initiate", order: this.combatantsByInitiative } as Omit<InitiateCombatEvent, "turn">);
     this.allCombatants.forEach(c => {
       c.abilitiesUsed = [];
       c.abilityCooldowns = {};
@@ -220,7 +229,7 @@ export default class Combat {
     return validAbilities;
   }
 
-  async pcTurn(combatant: Combatant, enemies: Combatant[], allies: Combatant[]) {
+  async pcTurn(combatant: Combatant, enemies: Combatant[], allies: Combatant[]): Promise<{ haltRound: boolean }> {
     let validAbilities = this.validActions(combatant, allies, enemies);
     let allAbilities = combatant.abilities.map(a => this.abilityHandler.getAbility(a));
 
@@ -247,7 +256,38 @@ export default class Combat {
       });
     }
 
-    const action: Ability = await this.select(`Your turn, ${Presenter.combatant(combatant)} - what do you do?`, choices, combatant);
+    choices.push({
+      value: { name: "Wait", type: "skill", description: "Skip your turn to wait and see what happens.", aspect: "physical", target: ["self"], effects: [] },
+      name: "Wait (Skip your turn)",
+      short: "Wait",
+      disabled: false
+    })
+
+    choices.push({
+      value: { name: "Flee", type: "skill", description: "Attempt to flee from combat.", aspect: "physical", target: ["self"], effects: [{ type: "flee" }] },
+      name: "Flee (Attempt to escape combat)",
+      short: "Flee",
+      disabled: false
+    })
+
+    const action: Ability = await this.select(`Your turn, ${Presenter.minimalCombatant(combatant)} - what do you do?`, choices, combatant);
+
+    if (action.name === "Flee") {
+      let succeed = Math.random() < 0.5;
+      if (succeed) {
+        // this.emit({ type: "flee", subject: combatant } as Omit<FleeEvent, "turn">);
+        console.log("You successfully flee from combat!");
+        this.winner = "Enemy";
+        // this.combatantsByInitiative = [];
+        return { haltRound: true };
+      }
+      console.log("You attempt to flee but could not escape!");
+      return { haltRound: false };
+
+    } else if (action.name === "Wait") {
+      this.note(`${Presenter.combatant(combatant)} waits and watches.`);
+      return { haltRound: false };
+    }
 
     let validTargets = AbilityHandler.validTargets(action, combatant, allies, enemies);
     let targetOrTargets = validTargets[0];
@@ -283,8 +323,11 @@ export default class Combat {
     }
 
     let team = this.teams.find(t => t.combatants.includes(combatant));
-    let { events } = await AbilityHandler.perform(action, combatant, targetOrTargets, Commands.handlers(this.roller, team!));
+    let ctx: CombatContext = { subject: combatant, allies, enemies };
+    let { events } = await AbilityHandler.perform(action, combatant, targetOrTargets, ctx, Commands.handlers(this.roller, team!));
     events.forEach(e => this.emit({ ...e, turn: this.turnNumber } as CombatEvent));
+
+    return { haltRound: false };
   }
 
 
@@ -316,18 +359,22 @@ export default class Combat {
 
     if (!action) {
       this.note(`${Presenter.combatant(combatant)} has no valid actions and skips their turn.`);
-      return;
+      return { haltRound: false };
     }
 
     // invoke the action
-    let verb = action.type === "spell" ? 'casts' : 'uses';
-    this.note(Presenter.minimalCombatant(combatant) + ` ${verb} ` + action.name + "!");
+    let verb = action.type === "spell" ? 'casts' : null;
+    let actionName = action.name.toLowerCase() + (action.type === "spell" ? '' : 's');
+    let message = (combatant.forename + (verb ? ` ${verb} ` : " ") + actionName + ".");
+    this.note(message);
     let team = this.teams.find(t => t.combatants.includes(combatant));
-    let { events } = await AbilityHandler.perform(action, combatant, targetOrTargets, Commands.handlers(this.roller, team!));
+
+    let ctx: CombatContext = { subject: combatant, allies, enemies };
+    let { events } = await AbilityHandler.perform(action, combatant, targetOrTargets, ctx, Commands.handlers(this.roller, team!));
     events.forEach(e => this.emit({ ...e, turn: this.turnNumber } as CombatEvent));
   }
 
-  async turn(combatant: Combatant) {
+  async turn(combatant: Combatant): Promise<{ haltRound: boolean }> {
     this.emit({ type: "turnStart", subject: combatant, combatants: this.allCombatants } as Omit<CombatEvent, "turn">);
 
     // Tick down cooldowns
@@ -341,21 +388,24 @@ export default class Combat {
     if (combatant.activeEffects?.some(e => e.effect.noActions)) {
       let status = combatant.activeEffects.find(e => e.effect.noActions);
       this.note(`${Presenter.combatant(combatant)} is ${status!.name} and skips their turn!`);
-      return;
+      return { haltRound: false };
     }
 
     const targets = this.teams.find(team => team.combatants.includes(combatant)) === this.teams[0] ? (this.teams[1].combatants) : (this.teams[0].combatants);
 
     let validTargets = Combat.living(targets);
     if (validTargets.length === 0) {
-      return;
+      return { haltRound: false };
     }
 
     // don't attempt to act if we're already defeated
-    if (combatant.hp <= 0) { return; }
+    if (combatant.hp <= 0) { return { haltRound: false }; }
 
     let allies = this.teams.find(team => team.combatants.includes(combatant))?.combatants || [];
     allies = Combat.living(allies).filter(c => c !== combatant);
+
+    let allEnemies = this.teams.find(team => team.combatants.includes(combatant)) === this.teams[0] ? (this.teams[1].combatants) : (this.teams[0].combatants);
+    allEnemies = Combat.living(allEnemies);
 
     // do we have an effect changing our allegiance? in which case -- flip our allies/enemies
     let allegianceEffect = combatant.activeEffects?.find(e => e.effect.changeAllegiance);
@@ -367,7 +417,10 @@ export default class Combat {
     let attacksPerTurn = combatant.attacksPerTurn || 1;
     for (let i = 0; i < attacksPerTurn; i++) {
       if (combatant.playerControlled) {
-        await this.pcTurn(combatant, validTargets, allies);
+        let result = await this.pcTurn(combatant, validTargets, allies);
+        if (result.haltRound) {
+          return { haltRound: true };
+        }
       } else {
         await this.npcTurn(combatant, validTargets, allies);
       }
@@ -382,16 +435,19 @@ export default class Combat {
       //}
       // combatant.activeEffects = combatant.activeEffects.filter(it => it.duration > 0);
       // run onTurnEnd for all active effects
+      let ctx = { subject: combatant, allies, enemies: allEnemies };
       for (const status of combatant.activeEffects) {
         if (status.effect['onTurnEnd']) {
           for (const effect of status.effect['onTurnEnd']) {
             // apply fx to self
-            let { events } = await AbilityHandler.handleEffect(status.name, effect, effect.by || combatant, combatant, Commands.handlers(this.roller, this.teams.find(t => t.combatants.includes(combatant))!));
+            let { events } = await AbilityHandler.handleEffect(status.name, effect, effect.by || combatant, combatant, ctx, Commands.handlers(this.roller, this.teams.find(t => t.combatants.includes(combatant))!));
             events.forEach(e => this.emit({ ...e, turn: this.turnNumber } as CombatEvent));
           }
         }
       }
     }
+
+    return { haltRound: false };
   }
 
   async round() {
@@ -419,8 +475,17 @@ export default class Combat {
     });
 
     for (const { combatant } of this.combatantsByInitiative) {
-      if (combatant.hp <= 0) continue; // Skip defeated combatants
-      await this.turn(combatant);
+      let nonplayerCombatants = this.teams[1].combatants.filter(c => c.hp > 0);
+      
+      if (this.isOver() || nonplayerCombatants.length === 0) {
+        break;
+      }
+      if (combatant.hp <= 0) { continue; } // Skip defeated combatants
+      if ((combatant.activeEffects || []).some((e: StatusEffect) => e.effect?.flee)) { continue; } // Skip fleeing combatants
+      let result = await this.turn(combatant);
+      if (result.haltRound) {
+        break;
+      }
     }
 
     // tick down status
@@ -444,7 +509,7 @@ export default class Combat {
       }
     }
 
-    return { number: this.turnNumber, done: this.isOver() };
+    return; // { number: this.turnNumber, done: this.isOver() };
   }
 
   isOver() {

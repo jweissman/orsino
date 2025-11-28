@@ -85,7 +85,7 @@ export class Fighting {
     for (let it of effectList) {
       if (it.whileEnvironment) { //} && combatant.environment === it.effect.environment) {
         if (combatant.currentEnvironment === it.whileEnvironment) {
-          console.log(`Applying environment effect ${it.name} for ${combatant.name} in ${combatant.currentEnvironment}`);
+          // console.log(`Applying environment effect ${it.name} for ${combatant.name} in ${combatant.currentEnvironment}`);
         } else {
           continue;
         }
@@ -181,7 +181,8 @@ export class Fighting {
         throw new Error(`Attacker ${attacker.name} does not have an attackDie defined.`);
       }
 
-      let weaponVerb = this.weaponDamageKindVerbs[attacker.damageKind || "slashing"] || "strike";
+      let weaponVerb =
+        attacker.hasMissileWeapon ? "shoot" : (this.weaponDamageKindVerbs[attacker.damageKind || "slashing"] || "strike");
         // attacker.damageKind.replace(/ing$/, ''); // crude way to get verb from damage kind
       damage = await Deem.evaluate(attacker.attackDie, {
         roll, subject: attacker,

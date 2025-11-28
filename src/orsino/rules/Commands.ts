@@ -1,6 +1,6 @@
 import AbilityHandler, { AbilityEffect, DamageKind, SaveKind } from "../Ability";
 import { RollResult } from "../types/RollResult";
-import { GameEvent, FallenEvent, HealEvent, HitEvent, MissEvent, StatusEffectEvent, StatusExpireEvent, SummonEvent } from "../Events";
+import { GameEvent, FallenEvent, HealEvent, HitEvent, MissEvent, StatusEffectEvent, StatusExpireEvent, SummonEvent, SaveEvent } from "../Events";
 import Stylist from "../tui/Style";
 import Words from "../tui/Words";
 import { Combatant } from "../types/Combatant";
@@ -8,18 +8,22 @@ import { Roll } from "../types/Roll";
 import { Team } from "../types/Team";
 import { Fighting } from "./Fighting";
 import Presenter from "../tui/Presenter";
+import { CombatContext } from "../Combat";
 
 type TimelessEvent = Omit<GameEvent, "turn">;
 
 export type CommandHandlers = {
   roll: Roll;
-  attack: (combatant: Combatant, target: Combatant, roller: Roll) => Promise<{ success: boolean; target: Combatant, events: TimelessEvent[] }>;
-  hit: (attacker: Combatant, defender: Combatant, damage: number, critical: boolean, by: string, success: boolean, damageKind: DamageKind, roll: Roll) => Promise<TimelessEvent[]>;
+  attack: (combatant: Combatant, target: Combatant, combatContext: CombatContext, roller: Roll) => Promise<{ success: boolean; target: Combatant, events: TimelessEvent[] }>;
+  hit: (attacker: Combatant, defender: Combatant, damage: number, critical: boolean, by: string, success: boolean, damageKind: DamageKind, combatContext: CombatContext, roll: Roll) => Promise<TimelessEvent[]>;
   heal: (healer: Combatant, target: Combatant, amount: number) => Promise<TimelessEvent[]>;
   status: (user: Combatant, target: Combatant, name: string, effect: { [key: string]: any }, duration: number) => Promise<TimelessEvent[]>;
   removeStatus: (target: Combatant, name: string) => Promise<TimelessEvent[]>;
   removeItem: (user: Combatant, item: keyof Team) => Promise<TimelessEvent[]>;
-  save: (target: Combatant, saveType: SaveKind, dc: number, roll: Roll) => Promise<boolean>;
+  save: (target: Combatant, saveType: SaveKind, dc: number, roll: Roll) => Promise<{
+    success: boolean;
+    events: TimelessEvent[];
+  }>;
   summon: (user: Combatant, summoned: Combatant[]) => Promise<TimelessEvent[]>;
 }
 
@@ -43,7 +47,7 @@ export class Commands {
         return [];
       },
       summon: async (user: Combatant, summoned: Combatant[]) => {
-        console.log(`${user.name} summons ${summoned.map(s => s.name).join(", ")}!`);
+        // console.log(`${user.name} summons ${summoned.map(s => s.name).join(", ")}!`);
         // team.combatants.push(...summoned);
         for (let s of summoned) {
           if (team.combatants.length < 6) {
@@ -93,13 +97,13 @@ export class Commands {
     return [{ type: "heal", subject: healer, target, amount } as Omit<HealEvent, "turn">];
   }
 
-  static async handleSave(target: Combatant, saveType: SaveKind, dc: number = 15, roll: Roll): Promise<boolean> {
+  static async handleSave(target: Combatant, saveType: SaveKind, dc: number = 15, roll: Roll): Promise<{ success: boolean, events: TimelessEvent[] }> {
     let targetFx = Fighting.gatherEffects(target);
     let isImmune = targetFx[`immune${saveType.charAt(0).toUpperCase() + saveType.slice(1)}`] as boolean;
     if (isImmune) {
-      console.warn(`${Presenter.combatant(target)} has immunity to ${saveType}! Save automatically succeeds.`);
+      // console.warn(`${Presenter.combatant(target)} has immunity to ${saveType}! Save automatically succeeds.`);
       // immune event?
-      return true;
+      return { success: true, events: [{ type: "save", subject: target, success: true, dc, immune: true, reason: "immunity" } as Omit<SaveEvent, "turn">] };
     }
 
     let saveVersusType = `saveVersus${saveType.charAt(0).toUpperCase() + saveType.slice(1)}`;
@@ -108,26 +112,32 @@ export class Commands {
     target.savedTimes = target.savedTimes || {};
     let saveCount = target.savedTimes[saveType] || 0;
     if (saveCount >= 3) {
-      console.warn(`${Presenter.combatant(target)} has already succeeded on 3 saves vs ${saveType} and cannot save again!`);
-      return false;
+      // console.warn(`${Presenter.combatant(target)} has already succeeded on 3 saves vs ${saveType} and cannot save again!`);
+      // return false;
+      return { success: false, events: [{ type: "save", subject: target, success: false, dc, immune: false, reason: "max saves reached" } as Omit<SaveEvent, "turn">] };
     }
 
-    if (saveVersus <= 20) {
+    // we should roll anyway; they could have an allRolls bonus etc even if the DC is very high
+    // if (saveVersus <= 20) {
       const saveRoll = await roll(target, `for Save vs ${saveType} (must roll ${saveVersus} or higher)`, 20);
       if (saveRoll.amount >= saveVersus) {
         // TODO save events?
-        console.warn(`${Presenter.combatant(target)} succeeds on their Save vs ${saveType}!`);
+        // console.warn(`${Presenter.combatant(target)} succeeds on their Save vs ${saveType}!`);
         // this.note(`${Presenter.combatant(target)} succeeds on their Save vs ${saveType}!`);
         saved = true;
 
         target.savedTimes[saveType] = (target.savedTimes[saveType] || 0) + 1;
+        return { success: true, events: [{ type: "save", subject: target, success: true, dc, immune: false, reason: "successful roll" } as Omit<SaveEvent, "turn">] };
       } else {
-        console.warn(`${Presenter.combatant(target)} fails their Save vs ${saveType}!`);
+        // console.warn(`${Presenter.combatant(target)} fails their Save vs ${saveType}!`);
+        return { success: false, events: [{ type: "save", subject: target, success: false, dc, immune: false, reason: "failed roll" } as Omit<SaveEvent, "turn">] };
         // this.note(`${Presenter.combatant(target)} fails their Save vs ${saveType}!`);
       }
-    }
-
-    return saved;
+    // }
+    // return {
+    //   success: false, events: [{
+    //     type: "save", subject: target, success: false, dc, immune: false, reason: "no roll could succeed"
+    //   } as Omit<SaveEvent, "turn">] };
   }
 
   static async handleHit(
@@ -138,6 +148,7 @@ export class Commands {
     by: string,
     success: boolean,
     damageKind: DamageKind,
+    combatContext: CombatContext,
     roll: Roll
   ): Promise<TimelessEvent[]> {
     if (!success) {
@@ -209,7 +220,7 @@ export class Commands {
     defender.hp -= damage;
 
     if (defender.hp <= 0) {
-      let saved = await Commands.handleSave(defender, "death", 25, roll);
+      let { success: saved } = await Commands.handleSave(defender, "death", 25, roll);
       if (saved) {
         defender.hp = 1;
         // this.note(`${Presenter.combatant(defender)} drops to 1 HP instead of 0!`);
@@ -234,20 +245,20 @@ export class Commands {
       // need to find attacker team...
       let onKillFx = Fighting.gatherEffects(attacker).onKill as AbilityEffect[] || [];
       for (let fx of onKillFx) {
-        await AbilityHandler.handleEffect("onKill", fx, attacker, defender, Commands.handlers(roll, null as unknown as Team));
+        await AbilityHandler.handleEffect("onKill", fx, attacker, defender, combatContext, Commands.handlers(roll, null as unknown as Team));
       }
     }
     return events;
   }
 
-  static async handleAttack(combatant: Combatant, target: Combatant, roller: Roll): Promise<{
+  static async handleAttack(combatant: Combatant, target: Combatant, context: CombatContext, roller: Roll): Promise<{
     success: boolean;
     target: Combatant;
     events: TimelessEvent[];
   }> {
-    const { damage, critical, success } = await Fighting.attack(roller, combatant, target, combatant.hasMissileWeapon);
+    const { damage, critical, success } = await Fighting.attack(roller, combatant, target, combatant.hasMissileWeapon || false);
     let events = await Commands.handleHit(
-      combatant, target, damage, critical, `${combatant.forename}'s ${combatant.weapon}`, success, combatant.damageKind || "true", roller
+      combatant, target, damage, critical, `${combatant.forename}'s ${combatant.weapon}`, success, combatant.damageKind || "true", context, roller
     );
     return { success, target, events };
   }
@@ -268,9 +279,8 @@ export class Commands {
     // Apply status duration bonus
     if (userFx.statusDuration) {
       duration += (userFx.statusDuration as number);
-      console.log(`Status duration increased by ${userFx.statusDuration}!`);
+      // console.log(`Status duration of ${target.forename} increased by ${userFx.statusDuration}!`);
     }
-  
 
     target.activeEffects = target.activeEffects || [];
     target.activeEffects.push({ name, effect, duration });
