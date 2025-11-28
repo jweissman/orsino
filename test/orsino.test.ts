@@ -107,7 +107,7 @@ describe('Orsino', () => {
       crawler.currentMonsterTeam.combatants.forEach(monster => {
         monster.hp = 0; // Simulate defeating the monster
       });
-      crawler.nextRoom();
+      crawler.moveToNextRoom();
       
     }
     expect(crawler.winner).toBeDefined();

@@ -21,7 +21,7 @@ export default class Generator {
     // accumulate items gradually and put them in __items so that conditions can refer to them
     const items: Record<string, any>[] = [];
     let attempts = 0;
-    while (items.length < count && attempts++ < count * 50) {
+    while (items.length < count && attempts++ < count * 10) {
       const i = items.length;
       // console.log(`Generating ${type} ${i + 1}/${count}...`);
       const item = await this.gen(type, deepCopy({ ...options, _index: i }));
@@ -33,7 +33,10 @@ export default class Generator {
         items.pop();
         // console.warn(`Item ${i} did not meet condition: ${condition}`);
         process.stdout.write(`.`);
-        break;
+        // are we 1-2 away from the count?
+        if (count - items.length <= 2) {
+          break;
+        }
       }
     }
     if (items.length === 0) {

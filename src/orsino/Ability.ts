@@ -57,6 +57,7 @@ export interface AbilityEffect {
 
   // for summoning
   creature?: string;
+  options?: {};
 }
 
 export interface Ability {
@@ -405,7 +406,8 @@ export default class AbilityHandler {
       let summoned: Combatant[] = [];
       for (let i = 0; i < amount; i++) {
         // let summon = await Deem.evaluate(effect.creature as string, { race: user.race });
-        let summon = await Generator.gen((effect.creature || "animal") as GenerationTemplateType, { race: user.race });
+        let options = effect.options || {};
+        let summon = await Generator.gen((effect.creature || "animal") as GenerationTemplateType, { race: user.race, ...options });
         // console.log(`Summoned ${summon.name} (${summon.race} companion using ${user.race} race)!`);
         summoned.push(summon as Combatant);
       }

@@ -93,9 +93,17 @@ export class AbilityScoring {
           score += 5;
         }
       });
+    } else if (analysis.summon) {
+      // does our party have < 6 combatants?
+      if (allies.length < 6) {
+        score += 8;
+      } else {
+        score -= 5;
+      }
     }
 
     // note: ideally these shouldn't be valid actions in the first place!!
+    // they really should be disabled at other layers if not usable
     // if a skill and already used, give -10 penalty
     if (ability.type === "skill" && user.abilitiesUsed?.includes(ability.name)) {
       score -= 10;
@@ -113,7 +121,7 @@ export class AbilityScoring {
   }
 
   static analyzeAbility(ability: Ability): {
-    heal: boolean; damage: boolean; buff: boolean; debuff: boolean; defense: boolean; aoe: boolean; flee: boolean
+    heal: boolean; damage: boolean; buff: boolean; debuff: boolean; defense: boolean; aoe: boolean; flee: boolean; summon: boolean;
   } {
     let damage = ability.effects.some(e => e.type === "damage" || e.type === "attack");
     let heal = ability.effects.some(e => e.type === "heal");
@@ -122,7 +130,8 @@ export class AbilityScoring {
     let debuff = ability.effects.some(e => e.type === "debuff");
     let defense = ability.effects.some(e => e.type === "buff" && e.status?.effect.ac);
     let flee = ability.effects.some(e => e.type === "flee");
+    let summon = ability.effects.some(e => e.type === "summon");
 
-    return { heal, damage, buff, debuff, defense, aoe, flee };
+    return { heal, damage, buff, debuff, defense, aoe, flee, summon };
   }
 }

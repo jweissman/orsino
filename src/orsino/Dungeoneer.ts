@@ -173,7 +173,7 @@ export default class Dungeoneer {
         this.note(`\nYou decide to leave the dungeon.`);
         return;
       }
-      this.nextRoom();
+      this.moveToNextRoom();
     }
 
     // Display outcome
@@ -276,7 +276,28 @@ export default class Dungeoneer {
 
     await combat.setUp([this.playerTeam, this.currentMonsterTeam]);
     while (!combat.isOver()) {
-      await combat.round();
+      await combat.round(
+        async (combatant: Combatant) => {
+          console.warn(`Combatant '${combatant.name}' has fled the combat.`);
+          // find another room for them
+          let newRoom = this.nextRoom;
+          if (newRoom) {
+            this.note(`\n${combatant.name} escapes to the next room (${newRoom.room_type}).`);
+            combatant.activeEffects = [];
+            if ((newRoom as Room).encounter) {
+              console.log("New room creature count before escape:", (newRoom as Room).encounter?.creatures.length);
+              (newRoom as Room).encounter?.creatures.push(combatant);
+              console.log("New room creature count after escape:", (newRoom as Room).encounter?.creatures.length);
+            } else if ((newRoom as BossRoom).boss_encounter) {
+              console.log("New boss room creature count before escape:", (newRoom as BossRoom).boss_encounter?.creatures.length);
+              (newRoom as BossRoom).boss_encounter?.creatures.push(combatant);
+              console.log("New boss room creature count after escape:", (newRoom as BossRoom).boss_encounter?.creatures.length);
+            }
+          } else {
+            this.note(`\n${combatant.name} escapes the dungeon entirely!`);
+          }
+        }
+      );
     }
 
     console.log(`Combat complete. Winner: '${combat.winner}'`);
@@ -580,7 +601,17 @@ export default class Dungeoneer {
     return this.currentRoomIndex === this.rooms.length;
   }
 
-  nextRoom(): Room | BossRoom | null {
+  get nextRoom(): Room | BossRoom | null {
+    const nextIndex = this.currentRoomIndex + 1;
+    if (nextIndex < this.rooms.length) {
+      return this.rooms[nextIndex];
+    } else if (nextIndex === this.rooms.length) {
+      return this.dungeon!.bossRoom;
+    }
+    return null;
+  }
+
+  moveToNextRoom(): Room | BossRoom | null {
     this.currentRoomIndex++;
     return this.currentRoom;
   }

@@ -403,7 +403,7 @@
   },
   "turn_undead": {
     "name": "Turn Undead",
-    "type": "skill",
+    "type": "spell",
     "aspect": "divine",
     "description": "Force undead enemies to flee.",
     "target": [ "enemies" ],
@@ -970,6 +970,22 @@
       {
         "type": "summon",
         "creature": "animal"
+      }
+    ]
+  },
+  "summon_undead": {
+    "name": "Summon Undead",
+    "type": "spell",
+    "aspect": "arcane",
+    "description": "Summon a random undead creature to fight for you.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "summon",
+        "creature": "npc",
+        "options": { "npc_template_type": "undead" }
       }
     ]
   }

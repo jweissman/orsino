@@ -337,7 +337,7 @@ export default class Combat {
       ability,
       score: AbilityScoring.scoreAbility(ability, combatant, allies, enemies)
     }));
-    // console.log(`NPC ${combatant.forename} rates abilities:`, scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`).join(", "));
+    console.log(`NPC ${combatant.forename} rates abilities:`, scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`).join(", "));
     scoredAbilities.sort((a, b) => b.score - a.score);
     const action = scoredAbilities[
       Math.floor(Math.random() * Math.min(2, scoredAbilities.length))
@@ -450,7 +450,9 @@ export default class Combat {
     return { haltRound: false };
   }
 
-  async round() {
+  async round(
+    creatureFlees: (combatant: Combatant) => Promise<void> = async (_c: Combatant) => { }
+  ) {
     Combat.statistics.totalRounds += 1;
 
     if (this.isOver()) {
@@ -463,7 +465,10 @@ export default class Combat {
     } as Omit<RoundStartEvent, "turn">);
 
     // check for escape conditions (if 'flee' status is active, remove the combatant from combat)
-    Combat.living(this.allCombatants).forEach(combatant => {
+    // Combat.living(this.allCombatants)
+    // this.teams[1].combatants
+    //   .forEach(combatant => {
+    for (const combatant of this.teams[1].combatants) {
       if (combatant.activeEffects?.some(e => e.effect?.flee)) {
         // remove from combatants / teams
         this.teams.forEach(team => {
@@ -471,8 +476,10 @@ export default class Combat {
         });
         this.combatantsByInitiative = this.combatantsByInitiative.filter(c => c.combatant !== combatant);
         this.emit({ type: "flee", subject: combatant } as Omit<FleeEvent, "turn">);
+
+        await creatureFlees(combatant);
       }
-    });
+    }
 
     for (const { combatant } of this.combatantsByInitiative) {
       let nonplayerCombatants = this.teams[1].combatants.filter(c => c.hp > 0);

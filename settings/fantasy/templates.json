@@ -7,7 +7,7 @@
     "capital": "=#size == 'capital'",
     "population": "=eval(lookup(townPop, #size))",
     "_aspect": "=lookup(terrainFeatures, #terrain)",
-    "_suffix": "=oneOf(ford, haven, burg, port, dale, keep, watch, gate, rest, fall, ridge, wood, field, pass, hold, stead, view, point, hill, bay, cliff, cross)",
+    "_suffix": "=oneOf(ford, haven, burg, port, dale, keep, watch, gate, rest, fall, ridge, wood, field, pass, hold, stead, view, point, hill, bay, cliff, cross, run, land)",
     "name": "=capitalize(#_aspect + #_suffix)",
     "adjective": "=oneOf(peaceful, bustling, prosperous, decaying, ancient, vibrant, sleepy, lively, fair, grim, quaint, thriving, quiet, rustic, quaint, noble, humble, proud)"
   },
@@ -36,7 +36,6 @@
     "_weaponStat": "=lookup(masterWeapon, #weapon)",
     "damageKind": "=dig(#_weaponStat, 'type')",
     "attackDie": "=dig(#_weaponStat, 'damage')",
-
     "armor": "=lookup(armor, #class)",
     "ac": "=10 - lookup(masterArmor, #armor)",
     "gp": "=1d100",
@@ -47,7 +46,6 @@
     "traits": "=lookup(traits, #race)",
     "*backgroundModifier": "=lookup(backgroundModifier, #background)",
     "*racialModifier": "=lookup(racialModifier, #race)",
-
     "hp": "=#maxHp",
     "gear": "=gather(masterGear, 2d4 + 1)"
   },
@@ -60,7 +58,7 @@
     "forename": "=lookup(npcName, #race)",
     "npc_aspect_rarity": "=if(#challenging, oneOf(epic, legendary), oneOf(common, uncommon, rare))",
     "npc_aspect": "=lookup(creatureAspectTypes, #npc_aspect_rarity)",
-    "npc_template_type": "=if(#building_type == 'tomb', 'undead', nihil)",
+    "npc_template_type": "=if(#building_type == 'tomb' && #type != 'Necromancer', 'undead', nihil)",
     "npc_template": "=if(#npc_template_type != nihil, lookup(creatureTemplateOverlays, #npc_template_type), nihil)",
     "_class": "=if(#npc_template_type, capitalize(#npc_template) + ' ', '') + capitalize(#npc_aspect) + ' ' + capitalize(#race) + ' ' + #type",
     "name": "=#forename + \", \" + #_class",
@@ -173,14 +171,17 @@
   "encounter": {
     "targetCr": "=#_targetCr",
     "terrain": "=oneOf(forest, cave, swamp, mountain, snow, desert)",
-    "_npcCount": 5,
+    "_npcCount": "=2+1d3",
     "_budget": "=round(#targetCr)",
-    "npc_aspect_rarity": "=if(#targetCr <= 3, oneOf(common, uncommon), if(#targetCr <= 6, oneOf(uncommon, rare), oneOf(rare, epic)))",
+    "__npc_aspect_rarity": "=if(#targetCr <= 3, oneOf(common, uncommon), if(#targetCr <= 6, oneOf(uncommon, rare), oneOf(rare, epic)))",
+     "_targetLevelPerNpc": "=max(1, floor(#_budget / #_npcCount))",
+    "npc_aspect_rarity": "=if(#_targetLevelPerNpc <= 1, 'common', if(#_targetLevelPerNpc <= 3, oneOf(common, uncommon), if(#_targetLevelPerNpc <= 5, oneOf(uncommon, rare), oneOf(rare, epic))))",
+
     "npcs": "=genList(npc, #_npcCount, \"=round(sum(#__items, 'level')) <= #_budget\")",
     "_companionCount": 0,
     "_companions": "=genList(animal, #_companionCount)",
     "_monsterCount": 0,
-    "_monsters": "=genList(monster, #_monsterCount, \"=round(sum(#__items, 'level')/4) <= #_budget\")",
+    "_monsters": "=genList(monster, #_monsterCount, \"=round(sum(#__items, 'level')) <= #_budget\")",
     "creatures": "=concat(#npcs, #_companions, #_monsters)",
     "bonusGold": "=2d20 + 5 * count(#creatures)",
     "cr": "=round(sum(#creatures, 'level'))"
@@ -212,7 +213,7 @@
     "_companionCount": 0,
     "_monsterCount": 1,
     "treasure": "=lookup(treasure, oneOf(major, legendary))",
-    "type": "=lookup(bossMonsterType, #race)",
+    "type": "=lookup(bossNpcTypesForDungeon, #building_type)",
     "boss_encounter": "=gen(encounter)",
     "feature": "=lookup(roomDecoration, 1d100)"
   },
@@ -220,8 +221,8 @@
     "terrain": "=oneOf(forest, cave, swamp, mountain, snow, desert)",
     "_index": 0,
     "_targetCr": "=max(1, round(1+#_index*2.5))",
-    "__building_type": "=oneOf(temple, fortress, library, tomb, mine)",
-    "building_type": "tomb",
+    "building_type": "=oneOf(temple, fortress, library, tomb, mine)",
+    "__building_type": "tomb",
     "_roomBias": "=lookup(roomBias, #building_type)",
     "dungeon_type": "=lookup(dungeonTypes, #building_type)",
     "race": "=if(#_targetCr <= 5, oneOf(goblin, kobold), if(#_targetCr <= 10, oneOf(orc, human), if(#_targetCr <= 15, oneOf(ogre, troll), oneOf(dragon))))",
@@ -242,7 +243,7 @@
     "terrain": "=lookup(terrains, 1d6)",
     "town": "=gen(town)",
     "_townName": "=dig(#town, 'name')",
-    "dungeons": "=genList(dungeon, 2+2d6)",
+    "dungeons": "=genList(dungeon, 8)",
     "name": "=oneOf('Adventure', 'Saga', 'Reckoning', 'Quest', 'Expedition') + ' ' + oneOf('in the ' + capitalize(#terrain), 'at ' + capitalize(#_townName), 'for the ' + capitalize(#terrain))"
   }
 }
