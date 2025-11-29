@@ -92,6 +92,8 @@
 [ ] Track playerAligned as _well_ as playerControlled (sort of captured by being on the team of the player but this isn't passed along with combatant in all cases...)
 [ ] Adjust status durations check so that they expire at end of _turn_ not _round_?
 [ ] Process traits for enemy npcs (undead should get benefits like immune charm/sleep/poison?)
+---
+[ ] Spawn appropriate gear for PCs (spellbooks for mages, holy symbols for clerics...)
 
 ## Fixed
 [x] Temple/shrine to local deity to get a blessing

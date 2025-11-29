@@ -59,6 +59,20 @@ export default class Deem {
       return path.reduce((acc, key) => (acc && acc[key] !== undefined) ? acc[key] : null, obj);
     },
     uniq: (arr: any[]) => Array.from(new Set(arr)),
+    distribute: (total: number, parts: number) => {
+      const base = Math.floor(total / parts);
+      const remainder = total % parts;
+      const distribution = Array(parts).fill(base);
+      for (let i = 0; i < remainder; i++) {
+        distribution[i]++;
+      }
+      return distribution.filter(x => x > 0);
+    },
+    // mapGenList: (arr: any[], key: string, values: any[]) => {
+    //   return arr.map((item, index) => {
+    //     return { ...item, [key]: values[index % values.length] };
+    //   });
+    // }
   };
   static grammar = ohm.grammar(source);
   static semantics = Deem.grammar.createSemantics().addOperation('eval(context)', {

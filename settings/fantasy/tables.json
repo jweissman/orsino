@@ -1336,16 +1336,6 @@
       "dragon": [ "Miser", "Guardian", "Sage", "Warlord", "Elder", "Fury" ]
     }
   },
-  "npcTypesForDungeon": {
-    "discriminator": "dungeonType",
-    "groups": {
-      "temple": [ "Acolyte", "Cleric", "Cultist", "High Priest", "Sage", "Guardian", "Elder", "Death Priest" ],
-      "mine": [ "Miner", "Dweller", "Brute", "Thug", "Lurker" ],
-      "fortress": [ "Soldier", "Bandit", "Thief", "Mercenary", "Assassin", "Warrior", "Chieftain", "Warlord", "General" ],
-      "tomb": [ "Novice", "Devotee", "Mendicant", "Creep", "Acolyte", "Gravedigger", "Cultist", "Necromancer" ],
-      "library": [ "Scholar", "Sage", "Mage", "Archmage", "Hierophant", "Lord" ]
-    }
-  },
   "bossNpcType": {
     "discriminator": "race",
     "groups": {
@@ -1358,81 +1348,96 @@
       "dragon": [ "Hierophant", "King", "Lord", "Monarch" ]
     }
   },
+
+  "npcTypesForDungeon": {
+    "discriminator": "dungeonType",
+    "groups": {
+      "temple": [ "Acolyte", "Cleric", "Cultist", "Sage", "Elder" ],
+      "mine": [ "Miner", "Dweller", "Brute", "Thug", "Lurker" ],
+      "fortress": [ "Soldier", "Mercenary", "Warrior", "Chieftain" ],
+      "tomb": [ "Novice", "Devotee", "Mendicant", "Creep", "Acolyte", "Gravedigger", "Cultist" ],
+      "library": [ "Scholar", "Sage", "Mage", "Apprentice" ]
+    }
+  },
+  
   "bossNpcTypesForDungeon": {
     "discriminator": "dungeonType",
     "groups": {
       "temple": [ "High Priest", "Sage", "Guardian", "Elder", "Death Priest" ],
-      "mine": [ "Brute", "Thug", "Lurker" ],
+      "mine": [ "Warlord", "Thug", "Lurker" ],
       "fortress": [ "Assassin", "Warrior", "Chieftain", "Warlord", "General" ],
       "tomb": [ "Shaman King", "Necromancer", "Death Priest" ],
-      "library": [ "Sage", "Mage", "Archmage", "Hierophant", "Lord" ]
+      "library": [ "Mage", "Archmage", "Hierophant", "Lord" ]
     }
   },
   "npcTypeModifier": {
     "discriminator": "type",
     "groups": {
-      "Novice":       { "level": -1, "str": -2, "dex": -2, "int": 1, "wis": 1, "cha": -1, "maxHp": -2, "abilities": [] },
+      "Novice":       { "str": -2, "dex": -2, "int": 1, "wis": 1, "cha": -1, "maxHp": -2, "abilities": [] },
 
+      "Apprentice":    { "str": -1, "dex": -1, "int": 2, "wis": 1, "cha": -1, "maxHp": -1, "abilities": [ "missile" ] },
       "Devotee":      { "str": -1, "dex": -1, "int": 1, "wis": 2, "cha": 1, "maxHp": -1, "abilities": ["heal"] },
       "Mendicant":    { "str": -2, "dex": -2, "con": -2, "int": 1, "wis": 2, "cha": 2, "maxHp": -3, "abilities": [] },
       "Whelp":        { "str": -1, "dex": -1, "maxHp": -2, "abilities": [] },
       "Runt":         { "str": -2, "maxHp": -1, "abilities": ["hide"] },
-      "Creep":        { "level": 1, "str": -1, "dex": 1, "maxHp": -1, "abilities": ["hide"] },
-      "Peasant":      { "level": 1, "str": 1, "dex": 1, "con": 1, "cha": -1, "maxHp": 1, "abilities": [ "prepare_charge", "charge" ] },
-      "Loser":        { "level": 1, "str": -1, "dex": -1, "con": -1, "cha": 2, "maxHp": -1, "abilities": [ "prepare_charge", "charge" ] },
+      "Creep":        { "str": -1, "dex": 1, "maxHp": -1, "abilities": ["hide"] },
+      "Peasant":      { "str": 1, "dex": 1, "con": 1, "cha": -1, "maxHp": 1, "abilities": [ "prepare_charge", "charge" ] },
+      "Loser":        { "str": -1, "dex": -1, "con": -1, "cha": 2, "maxHp": -1, "abilities": [ "prepare_charge", "charge" ] },
+      "Magelet":      { "int": 2, "con": 1, "maxHp": 1, "abilities": [ "missile", "shocking_grasp" ] },
 
-      "Bandit":       { "level": 2, "str": 1, "dex": 2, "maxHp": 1, "abilities": [ "prepare_charge", "charge" ] },
-      "Criminal":     { "level": 2, "dex": 2, "cha": 1, "maxHp": 1, "abilities": [ "hide" ] },
-      "Acolyte":      { "level": 2, "wis": 2, "int": 1, "maxHp": 1, "abilities": [ "heal", "bless" ] },
-      "Shaman":       { "level": 2, "int": 2, "wis": 1, "maxHp": 1, "abilities": [ "heal" ] },
-      "Slinger":      { "level": 2, "dex": 3, "maxHp": 1, "abilities": [] },
-      "Miner":        { "level": 2, "con": 2, "str": 1, "maxHp": 2, "abilities": [ "prepare_charge", "charge" ] },
-      "Mercenary":    { "level": 2, "str": 2, "dex": 2, "maxHp": 1, "abilities": [ "prepare_charge", "charge" ] },
-      "Hermit":       { "level": 2, "wis": 2, "con": 1, "maxHp": 1, "abilities": [ "hide", "bless", "inspire" ] },
-      "Cultist":      { "level": 2, "int": 2, "maxHp": 2, "abilities": [ "curse", "fear" ] },
-      "Gravedigger":  { "level": 2, "str": 1, "con": 2, "maxHp": 2, "abilities": [ "hide" ] },
-      "Thug":         { "level": 2, "str": 2, "maxHp": 4, "abilities": [ "taunt", "prepare_charge", "charge" ] },
-      "Cutthroat":    { "level": 2, "str": 2, "dex": 2, "maxHp": 2, "abilities": [ "hide", "enrage", "prepare_charge", "charge" ] },
-      "Bridgeminder": { "level": 2, "str": 2, "maxHp": 5, "abilities": [ "taunt", "prepare_charge", "charge" ] },
-      "Dweller":      { "level": 2, "str": 3, "dex": 2, "maxHp": 5, "abilities": [ "hide", "prepare_charge", "charge" ] },
-      "Stalker":      { "level": 2, "str": 2, "dex": 4, "maxHp": 5, "abilities": [ "hide", "backstab" ] },
-      "Lurker":       { "level": 2, "str": 4, "dex": 2, "maxHp": 6, "abilities": [ "hide", "backstab", "prepare_charge", "charge" ] },
-      "Warden":       { "level": 2, "con": 2, "str": 1, "maxHp": 6, "abilities": [ "second_wind", "taunt" ] },
+      "Bandit":       { "str": 1, "dex": 2, "abilities": [ "prepare_charge", "charge" ] },
+      "Magician":     { "int": 3, "con": 2, "abilities": [ "missile", "shocking_grasp", "sleep" ] },
+      "Criminal":     { "dex": 2, "cha": 1, "abilities": [ "hide" ] },
+      "Acolyte":      { "wis": 2, "int": 1, "abilities": [ "heal", "bless" ] },
+      "Shaman":       { "int": 2, "wis": 1, "abilities": [ "heal" ] },
+      "Slinger":      { "dex": 3, "abilities": [] },
+      "Miner":        { "con": 2, "str": 1, "abilities": [ "prepare_charge", "charge" ] },
+      "Mercenary":    { "str": 2, "dex": 2, "abilities": [ "prepare_charge", "charge" ] },
+      "Hermit":       { "wis": 2, "con": 1, "abilities": [ "hide", "bless", "inspire" ] },
+      "Cultist":      { "int": 2, "abilities": [ "curse", "fear" ] },
+      "Gravedigger":  { "str": 1, "con": 2, "abilities": [ "hide" ] },
+      "Thug":         { "str": 2, "abilities": [ "taunt", "prepare_charge", "charge" ] },
+      "Cutthroat":    { "str": 2, "dex": 2, "abilities": [ "hide", "enrage", "prepare_charge", "charge" ] },
+      "Bridgeminder": { "str": 2, "abilities": [ "taunt", "prepare_charge", "charge" ] },
+      "Dweller":      { "str": 3, "dex": 2, "abilities": [ "hide", "prepare_charge", "charge" ] },
+      "Stalker":      { "str": 2, "dex": 4, "abilities": [ "hide", "backstab" ] },
+      "Lurker":       { "str": 4, "dex": 2, "abilities": [ "hide", "backstab", "prepare_charge", "charge" ] },
+      "Warden":       { "con": 2, "str": 1, "abilities": [ "second_wind", "taunt" ] },
 
-      "Warrior":      { "level": 3, "str": 3, "dex": 2, "con": 2, "maxHp": 8, "abilities": [ "second_wind", "prepare_charge", "charge" ] },
-      "Cleric":       { "level": 3, "wis": 3, "con": 2, "maxHp": 8, "abilities": [ "smite", "cure", "bless" ] },
-      "Thief":        { "level": 3, "dex": 2, "cha": 1, "maxHp": 1, "abilities": [ "hide", "backstab" ] },
-      "Mage":         { "level": 3, "int": 6, "con": 4, "dex": 2, "str": 2, "maxHp": 20, "abilities": [ "missile", "shocking_grasp", "sleep" ] },
-      "Ranger":       { "level": 3, "str": 4, "dex": 4, "con": 2, "maxHp": 12, "abilities": [ "heal", "set_spear", "prepare_charge", "charge" ] },
-      "Bard":         { "level": 3, "cha": 4, "dex": 2, "int": 2, "maxHp": 10, "abilities": [ "cure", "inspire", "charm" ] },
+      "Warrior":      { "str": 3, "dex": 2, "con": 2, "abilities": [ "second_wind", "prepare_charge", "charge" ] },
+      "Cleric":       { "wis": 3, "con": 2, "abilities": [ "smite", "cure", "bless" ] },
+      "Thief":        { "dex": 2, "cha": 1, "abilities": [ "hide", "backstab" ] },
+      "Mage":         { "int": 6, "con": 4, "dex": 2, "str": 2, "abilities": [ "missile", "shocking_grasp", "sleep" ] },
+      "Ranger":       { "str": 4, "dex": 4, "con": 2, "abilities": [ "heal", "set_spear", "prepare_charge", "charge" ] },
+      "Bard":         { "cha": 4, "dex": 2, "int": 2, "abilities": [ "cure", "inspire", "charm" ] },
 
-      "Miser":        { "level": 4, "con": 4, "str": 2, "maxHp": 8, "abilities": [ "enrage", "prepare_charge", "charge" ] },
-      "Soldier":      { "level": 4, "str": 1, "con": 1, "maxHp": 2, "abilities": [ "prepare_charge", "charge" ] },
-      "Brute":        { "level": 4, "str": 4, "maxHp": 8, "abilities": [ "enrage", "prepare_charge", "charge" ] },
-      "Berserker":    { "level": 4, "str": 6, "maxHp": 8, "abilities": [ "enrage", "prepare_charge", "charge" ] },
-      "Scholar":      { "level": 4, "int": 4, "maxHp": 6, "abilities": [ "missile", "sleep", "shocking_grasp" ] },
-      "Sage":         { "level": 4, "int": 4, "maxHp": 9, "abilities": [ "heal", "curse", "fear" ] },
-      "Guardian":     { "level": 4, "con": 4, "maxHp": 10, "abilities": [ "second_wind", "taunt", "shield", "prepare_charge", "charge" ] },
-      "Elder":        { "level": 4, "int": 6, "con": 4, "maxHp": 16, "abilities": [ "heal", "curse", "fear", "life_drain" ] },
-      "Fury":         { "level": 4, "str": 8, "con": 6, "maxHp": 20, "abilities": [ "enrage", "prepare_charge", "charge" ] },
-      "Princeling":   { "level": 4, "str": 6, "con": 4, "int": 4, "dex": 2, "maxHp": 24, "abilities": [ "inspire", "fear", "prepare_charge", "charge" ] },
+      "Miser":        { "con": 4, "str": 2, "abilities": [ "enrage", "prepare_charge", "charge" ] },
+      "Soldier":      { "str": 1, "con": 1, "abilities": [ "prepare_charge", "charge" ] },
+      "Brute":        { "str": 4, "abilities": [ "enrage", "prepare_charge", "charge" ] },
+      "Berserker":    { "str": 6, "abilities": [ "enrage", "prepare_charge", "charge" ] },
+      "Scholar":      { "int": 4, "abilities": [ "missile", "sleep", "shocking_grasp" ] },
+      "Sage":         { "int": 4, "abilities": [ "heal", "curse", "fear" ] },
+      "Guardian":     { "con": 4, "abilities": [ "second_wind", "taunt", "shield", "prepare_charge", "charge" ] },
+      "Elder":        { "int": 6, "con": 4, "abilities": [ "heal", "curse", "fear", "life_drain" ] },
+      "Fury":         { "str": 8, "con": 6, "abilities": [ "enrage", "prepare_charge", "charge" ] },
+      "Princeling":   { "str": 6, "con": 4, "int": 4, "dex": 2, "abilities": [ "inspire", "fear", "prepare_charge", "charge" ] },
 
-      "Chieftain":    { "level": 5, "str": 4, "maxHp": 8, "abilities": [ "enrage", "prepare_charge", "charge" ] },
-      "Assassin":     { "level": 5, "dex": 4, "str": 2, "maxHp": 3, "abilities": [ "hide", "backstab", "poison_weapon", "prepare_charge", "charge" ] },
-      "Shaman King":  { "level": 5, "str": 4, "con": 4, "int": 6, "dex": 2, "wis": 6, "maxHp": 28, "abilities": [ "heal", "curse", "fear" ] },
-      "Hierophant":   { "level": 5, "int": 6, "con": 4, "dex": 2, "str": 2, "maxHp": 30, "abilities": [ "prepare_charge", "charge", "sleep", "curse", "fear", "life_drain", "poison_cloud" ] },
-      "General":      { "level": 5, "str": 6, "con": 4, "int": 2, "dex": 2, "maxHp": 28, "abilities": [ "enrage", "prepare_charge", "charge", "inspire", "second_wind" ] },
-      "Death Priest": { "level": 5, "str": 6, "con": 4, "int": 4, "dex": 2, "wis": 6, "maxHp": 32, "abilities": [ "heal", "curse", "fear", "life_drain", "burning_hands" ] },
-      "Warlord":      { "level": 5, "str": 7, "con": 6, "int": 5, "wis": 4, "dex": 3, "maxHp": 40, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ] },
-      "Chosen One":   { "level": 5, "str": 5, "con": 5, "int": 5, "dex": 5, "wis": 5, "maxHp": 38, "abilities": [ "enrage", "heal", "inspire", "curse", "fear", "inspire", "charm", "prepare_charge", "charge" ] },
-      "Destroyer":    { "level": 5, "str": 8, "con": 6, "int": 2, "dex": 2, "maxHp": 40, "abilities": [ "fear", "maul", "curse", "enrage", "prepare_charge", "charge" ] },
+      "Chieftain":    { "str": 4, "con": 3, "abilities": [ "enrage", "prepare_charge", "charge" ] },
+      "Assassin":     { "dex": 4, "str": 2, "int": 1, "abilities": [ "hide", "backstab", "poison_weapon", "prepare_charge", "charge" ] },
+      "Shaman King":  { "str": 4, "con": 4, "int": 6, "dex": 2, "wis": 6, "abilities": [ "heal", "curse", "fear" ] },
+      "Hierophant":   { "int": 6, "con": 4, "dex": 2, "str": 2, "abilities": [ "prepare_charge", "charge", "sleep", "curse", "fear", "life_drain", "poison_cloud" ] },
+      "General":      { "str": 6, "con": 4, "int": 2, "dex": 2, "abilities": [ "enrage", "prepare_charge", "charge", "inspire", "second_wind" ] },
+      "Death Priest": { "str": 6, "con": 4, "int": 4, "dex": 2, "wis": 6, "abilities": [ "heal", "curse", "fear", "life_drain", "burning_hands" ] },
+      "Warlord":      { "str": 7, "con": 6, "int": 5, "wis": 4, "dex": 3, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ] },
+      "Chosen One":   { "str": 5, "con": 5, "int": 5, "dex": 5, "wis": 5, "abilities": [ "enrage", "heal", "inspire", "curse", "fear", "inspire", "charm", "prepare_charge", "charge" ] },
+      "Destroyer":    { "str": 8, "con": 6, "int": 2, "dex": 2, "abilities": [ "fear", "maul", "curse", "enrage", "prepare_charge", "charge" ] },
 
-      "High Priest":  { "level": 6, "str": -2, "con": 4, "int": 6, "dex": 2, "wis": 8, "cha": 8, "maxHp": 30, "abilities": [ "smite", "bless", "curse", "inspire", "heal" ] },
-      "Archmage":     { "level": 6, "int": 8, "con": 4, "dex": 2, "str": -2, "maxHp": 24, "abilities": [ "armor", "missile", "life_drain", "shocking_grasp", "sleep" ] },
-      "Necromancer":  { "level": 6, "int": 8, "con": 6, "dex": 2, "str": -2, "maxHp": 28, "abilities": [ "life_drain", "curse", "fear", "poison_cloud", "summon_undead" ] },
-      "King":         { "level": 6, "str": 10, "con": 6, "int": 4, "dex": 2, "maxHp": 42, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ] },
-      "Lord":         { "level": 6, "str": 10, "con": 8, "int": 6, "wis": 6, "dex": 4, "maxHp": 50, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ] },
-      "Monarch":      { "level": 6, "str": 10, "con": 8, "int": 6, "wis": 6, "dex": 4, "maxHp": 50, "abilities": [ "inspire", "enrage", "prepare_charge", "charge", "heal" ] }
+      "High Priest":  { "str": -2, "con": 4, "int": 6, "dex": 2, "wis": 8, "cha": 8, "abilities": [ "smite", "bless", "curse", "inspire", "heal" ] },
+      "Archmage":     { "int": 8, "con": 4, "dex": 2, "str": -2, "abilities": [ "armor", "missile", "life_drain", "shocking_grasp", "sleep" ] },
+      "Necromancer":  { "int": 8, "con": 6, "dex": 2, "str": -2, "abilities": [ "life_drain", "curse", "fear", "poison_cloud", "summon_undead" ] },
+      "King":         { "str": 10, "con": 6, "int": 4, "dex": 2, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ] },
+      "Lord":         { "str": 10, "con": 8, "int": 6, "wis": 6, "dex": 4, "maxHp": 10, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ] },
+      "Monarch":      { "str": 10, "con": 8, "int": 6, "wis": 6, "dex": 4, "maxHp": 20, "abilities": [ "inspire", "enrage", "prepare_charge", "charge", "heal" ] }
     }
   },
 
@@ -1504,13 +1509,13 @@
   "npcStat": {
     "discriminator": "race",
     "groups": {
-      "kobold": { "str": 6, "dex": 9, "con": 6, "int": 6, "wis": 6, "cha": 6, "hp": 4, "naturalArmor": 0, "level": 1 },
-      "goblin": { "str": 8, "dex": 12, "con": 8, "int": 8, "wis": 8, "cha": 8, "hp": 6, "naturalArmor": 0, "level": 1 },
-      "human":  { "str": 10, "dex": 10, "con": 10, "int": 10, "wis": 10, "cha": 10, "hp": 10, "naturalArmor": 1, "level": 2 },
-      "orc":    { "str": 16, "dex": 12, "con": 16, "int": 8, "wis": 8, "cha": 8, "hp": 12, "naturalArmor": 1, "level": 2 },
-      "ogre":   { "str": 19, "dex": 8, "con": 19, "int": 5, "wis": 5, "cha": 5, "hp": 20, "naturalArmor": 2, "level": 3 },
-      "troll":  { "str": 18, "dex": 7, "con": 18, "int": 6, "wis": 6, "cha": 6, "hp": 30, "naturalArmor": 3, "level": 5 },
-      "dragon": { "str": 23, "dex": 16, "con": 23, "int": 18, "wis": 18, "cha": 18, "hp": 50, "naturalArmor": 10, "level": 8 }
+      "kobold": { "str": 6, "dex": 9, "con": 6, "int": 6, "wis": 6, "cha": 6, "hp": 4, "naturalArmor": 0 },
+      "goblin": { "str": 8, "dex": 12, "con": 8, "int": 8, "wis": 8, "cha": 8, "hp": 6, "naturalArmor": 0 },
+      "human":  { "str": 10, "dex": 10, "con": 10, "int": 10, "wis": 10, "cha": 10, "hp": 10, "naturalArmor": 1 },
+      "orc":    { "str": 16, "dex": 12, "con": 16, "int": 8, "wis": 8, "cha": 8, "hp": 12, "naturalArmor": 1 },
+      "ogre":   { "str": 19, "dex": 8, "con": 19, "int": 5, "wis": 5, "cha": 5, "hp": 20, "naturalArmor": 2 },
+      "troll":  { "str": 18, "dex": 7, "con": 18, "int": 6, "wis": 6, "cha": 6, "hp": 30, "naturalArmor": 3 },
+      "dragon": { "str": 23, "dex": 16, "con": 23, "int": 18, "wis": 18, "cha": 18, "hp": 50, "naturalArmor": 10 }
     }
   },
  
@@ -1663,8 +1668,7 @@
       "desert": {
         "str": 1,
         "con": -2,
-        "maxHp": 3,
-        "level": 1
+        "maxHp": 3
       }
     }
   },
@@ -2649,35 +2653,35 @@
       "nimble":     { "dex": 3, "abilities": [ "hide" ] },
       "sturdy":     { "maxHp": 5, "con": 2 },
       "swift":      { "dex": 2 },
-      "vicious":    { "level": 1, "maxHp": 4, "str": 3, "dex": 1, "ac": -1, "abilities": [ "maul" ] },
-      "ferocious":  { "level": 1, "maxHp": 5, "str": 2, "dex": 1, "ac": -1, "abilities": [ "prepare_charge", "charge" ] },
-      "cunning":    { "level": 1, "maxHp": 2, "dex": 2, "int": 1, "ac": -1, "abilities": [ "hide", "wait" ] },
+      "vicious":    { "maxHp": 4, "str": 3, "dex": 1, "ac": -1, "abilities": [ "maul" ] },
+      "ferocious":  { "maxHp": 5, "str": 2, "dex": 1, "ac": -1, "abilities": [ "prepare_charge", "charge" ] },
+      "cunning":    { "maxHp": 2, "dex": 2, "int": 1, "ac": -1, "abilities": [ "hide", "wait" ] },
 
-      "curious":    { "level": 1, "maxHp": 3, "int": 4, "cha": 2 },
-      "forgotten":  { "level": 1, "maxHp": 2, "ac": -2, "abilities": [ "hide" ] },
-      "cruel":      { "level": 1, "maxHp": 2, "str": 2, "cha": -2, "abilities": [ "enrage" ] },
-      "beloved":    { "level": 1, "maxHp": 2, "cha": 3, "wis": 2, "abilities": [ "inspire" ] },
-      "dread":      { "level": 2, "maxHp": 2, "cha": 3, "abilities": [ "fear" ] },
-      "terrifying": { "level": 2, "maxHp": 3, "cha": 3, "abilities": [ "fear" ] },
-      "mysterious": { "level": 2, "maxHp": 3, "int": 2, "wis": 2, "abilities": [ "blur", "hide" ] },
-      "savage":     { "level": 3, "maxHp": 2, "str": 3, "int": -1, "abilities": [ "prepare_charge", "charge" ] },
+      "curious":    { "maxHp": 3, "int": 4, "cha": 2 },
+      "forgotten":  { "maxHp": 2, "ac": -2, "abilities": [ "hide" ] },
+      "cruel":      { "maxHp": 2, "str": 2, "cha": -2, "abilities": [ "enrage" ] },
+      "beloved":    { "maxHp": 2, "cha": 3, "wis": 2, "abilities": [ "inspire" ] },
+      "dread":      { "maxHp": 2, "cha": 3, "abilities": [ "fear" ] },
+      "terrifying": { "maxHp": 3, "cha": 3, "abilities": [ "fear" ] },
+      "mysterious": { "maxHp": 3, "int": 2, "wis": 2, "abilities": [ "blur", "hide" ] },
+      "savage":     { "maxHp": 2, "str": 3, "int": -1, "abilities": [ "prepare_charge", "charge" ] },
 
-      "alpha":    { "level": 2, "maxHp": 4, "str": 2, "dex": 1, "con": 1, "int": 1, "ac": -1 },
-      "venomous": { "level": 2, "maxHp": 4, "abilities": [ "poison_bite" ] },
-      "sacred":   { "level": 3, "maxHp": 5, "wis": 3, "cha": 2, "abilities": [ "bless", "heal" ] },
-      "cursed":   { "level": 3, "maxHp": 5, "wis": 3, "int": 2, "abilities": [ "curse", "fear" ] },
-      "blessed":  { "level": 4, "maxHp": 6, "cha": 2, "abilities": [ "bless", "inspire", "heal", "shield" ] },
-      "noble":    { "level": 4, "maxHp": 4, "str": 2, "cha": 3, "abilities": [ "inspire", "charm" ] },
-      "majestic": { "level": 4, "maxHp": 6, "str": 3, "con": 2, "cha": 3, "abilities": [ "inspire", "bless" ] },
+      "alpha":      { "maxHp": 4, "str": 2, "dex": 1, "con": 1, "int": 1, "ac": -1 },
+      "venomous":   { "maxHp": 4, "abilities": [ "poison_bite" ] },
+      "sacred":     { "maxHp": 5, "wis": 3, "cha": 2, "abilities": [ "bless", "heal" ] },
+      "cursed":     { "maxHp": 5, "wis": 3, "int": 2, "abilities": [ "curse", "fear" ] },
+      "blessed":    { "maxHp": 6, "cha": 2, "abilities": [ "bless", "inspire", "heal", "shield" ] },
+      "noble":      { "maxHp": 4, "str": 2, "cha": 3, "abilities": [ "inspire", "charm" ] },
+      "majestic":   { "maxHp": 6, "str": 3, "con": 2, "cha": 3, "abilities": [ "inspire", "bless" ] },
 
-      "dauntless": { "level": 3, "maxHp": 8, "str": 3, "con": 2, "ac": -1, "abilities": [ ] },
-      "primal":    { "level": 4, "maxHp": 7, "str": 4, "dex": 1, "con": 2, "abilities": [ "maul", "enrage" ] },
-      "apex":      { "level": 5, "maxHp": 12, "str": 3, "dex": 2, "con": 2, "int": 1, "ac": -1, "abilities": [ "prepare_charge", "charge", "maul" ] },
-      "sovereign": { "level": 6, "maxHp": 18, "str": 4, "con": 3, "wis": 2, "cha": 2, "abilities": [ "inspire", "fear", "bless" ] },
+      "dauntless":  { "maxHp": 8, "str": 3, "con": 2, "ac": -1, "abilities": [ ] },
+      "primal":     { "maxHp": 7, "str": 4, "dex": 1, "con": 2, "abilities": [ "maul", "enrage" ] },
+      "apex":       { "maxHp": 12, "str": 3, "dex": 2, "con": 2, "int": 1, "ac": -1, "abilities": [ "prepare_charge", "charge", "maul" ] },
+      "sovereign":  { "maxHp": 18, "str": 4, "con": 3, "wis": 2, "cha": 2, "abilities": [ "inspire", "fear", "bless" ] },
 
-      "ancient":   { "level": 5, "maxHp": 10, "str": 2, "con": 2, "int": 3, "wis": 3, "ac": -2, "abilities": [ "second_wind", "bless", "curse", "fear", "charm", "inspire"] },
-      "warped":    { "level": 6, "maxHp": 14, "str": -2, "int": 2, "con": -2, "dex": 2, "abilities": [ "life_drain", "curse", "charm", "enrage", "psionic_blast" ] },
-      "giant":     { "level": 7, "maxHp": 18, "str": 4, "con": 2, "ac": -2, "abilities": [ "earthquake" ] }
+      "ancient":    { "maxHp": 10, "str": 2, "con": 2, "int": 3, "wis": 3, "ac": -2, "abilities": [ "second_wind", "bless", "curse", "fear", "charm", "inspire"] },
+      "warped":     { "maxHp": 14, "str": -2, "int": 2, "con": -2, "dex": 2, "abilities": [ "life_drain", "curse", "charm", "enrage", "psionic_blast" ] },
+      "giant":      { "maxHp": 18, "str": 4, "con": 2, "ac": -2, "abilities": [ "earthquake" ] }
     }
   },
   "monsterKind": {
@@ -2738,15 +2742,15 @@
   "monsterStatBase": {
     "discriminator": "monster_type",
     "groups": {
-      "giant": 18,
-      "beast": 8,
-      "undead": 9,
-      "demon": 13,
-      "elemental": 12,
-      "aberration": 18,
-      "construct": 14,
-      "celestial": 15,
-      "fey": 10
+      "giant": 12,
+      "beast": 4,
+      "undead": 7,
+      "demon": 11,
+      "elemental": 10,
+      "aberration": 13,
+      "construct": 10,
+      "celestial": 11,
+      "fey": 9
     }
   },
   "monsterStat": {
@@ -2863,20 +2867,7 @@
       "beast": "1d6"
     }
   },
-  "monsterLevel": {
-    "discriminator": "monster_type",
-    "groups": {
-      "giant": 5,
-      "undead": 3,
-      "demon": 4,
-      "elemental": 2,
-      "aberration": 6,
-      "construct": 4,
-      "celestial": 5,
-      "fey": 3,
-      "beast": 4
-    }
-  },
+  
   "monsterAbilities": {
     "discriminator": "monster_type",
     "groups": {

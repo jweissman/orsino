@@ -149,7 +149,6 @@
           "name": "Preparing to Charge",
           "effect": {
             "toHit": 2,
-            "bonusDamage": 2,
             "compelNextMove": "charge",
             "onAttack": [
               {
@@ -167,7 +166,7 @@
     "name": "Charge",
     "type": "skill",
     "aspect": "physical",
-    "description": "Charge at an enemy, dealing 2d8+1 damage.",
+    "description": "Charge at an enemy, dealing 1d8+1 damage. Each level adds +1 to damage.",
     "target": [
       "enemy"
     ],
@@ -177,7 +176,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=2d8+1",
+        "amount": "=1d8+1+#level",
         "kind": "bludgeoning"
       }
     ]
@@ -651,7 +650,7 @@
     "name": "Backstab",
     "type": "skill",
     "aspect": "stealth",
-    "description": "Attack an enemy from behind, dealing 1d6 extra damage.",
+    "description": "Attack an enemy from behind, dealing 1d6 extra damage on a successful hit.",
     "target": [
       "enemy"
     ],
@@ -659,6 +658,20 @@
       "status": "Hidden"
     },
     "effects": [
+      {
+        "type": "removeStatus",
+        "statusName": "Hidden"
+      },
+      {
+        "type": "buff",
+        "status": {
+          "name": "Stealthy Strike",
+          "duration": 1,
+          "effect": {
+            "toHit": 2
+          }
+        }
+      },
       {
         "type": "attack"
       },

@@ -242,9 +242,9 @@
     "statuses": [
       {
         "name": "Berserker Rage",
-        "description": "+2 bonus damage on all attacks.",
+        "description": "+1 bonus damage on all attacks.",
         "effect": {
-          "bonusDamage": 2
+          "bonusDamage": 1
         }
       }
     ]

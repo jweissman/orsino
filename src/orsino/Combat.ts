@@ -187,7 +187,8 @@ export default class Combat {
       }
 
       if (!disabled && ability.effects.some(e => e.type === "summon")) {
-        disabled = Combat.living(this.allCombatants).length >= 6; // arbitrary cap on total combatants
+        let allies = this.teams.find(t => t.combatants.includes(combatant));
+        disabled = Combat.living(allies ? allies.combatants : []).length >= 6; // arbitrary cap on total combatants
       }
 
       // if there is a conditional status to the ability like backstab requiring Hidden, check for that
@@ -337,7 +338,7 @@ export default class Combat {
       ability,
       score: AbilityScoring.scoreAbility(ability, combatant, allies, enemies)
     }));
-    console.log(`NPC ${combatant.forename} rates abilities:`, scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`).join(", "));
+    // console.log(`NPC ${combatant.forename} rates abilities:`, scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`).join(", "));
     scoredAbilities.sort((a, b) => b.score - a.score);
     const action = scoredAbilities[
       Math.floor(Math.random() * Math.min(2, scoredAbilities.length))
@@ -363,12 +364,11 @@ export default class Combat {
     }
 
     // invoke the action
-    let verb = action.type === "spell" ? 'casts' : null;
-    let actionName = action.name.toLowerCase() + (action.type === "spell" ? '' : 's');
+    let verb = action.type === "spell" ? 'casts' : 'readies';
+    let actionName = action.name.toLowerCase();
     let message = (combatant.forename + (verb ? ` ${verb} ` : " ") + actionName + ".");
     this.note(message);
     let team = this.teams.find(t => t.combatants.includes(combatant));
-
     let ctx: CombatContext = { subject: combatant, allies, enemies };
     let { events } = await AbilityHandler.perform(action, combatant, targetOrTargets, ctx, Commands.handlers(this.roller, team!));
     events.forEach(e => this.emit({ ...e, turn: this.turnNumber } as CombatEvent));

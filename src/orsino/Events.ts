@@ -121,17 +121,20 @@ export default class Events {
         return '';  //`Turn order: ${event.order.map((o, i) => `${i + 1}. ${o.combatant.forename}`).join(" | ")}`;
       case "roundStart":
         // let heading = `\n=== Round ${event.turn} ===`;
-        // let combatants = event.combatants.map(c => `\n- ${Presenter.combatant(c)}`).join("");
+        let combatants = event.combatants.map(c => `\n- ${Presenter.combatant(c)}`).join("");
         // return `${heading}${combatants}`;
         // return `\n=== Round ${event.turn} ===\n${Presenter.combatants(event.combatants)}`;
-        return `It is round ${event.turn}.` //.${combatants}`;
+        return `It is round ${event.turn}.${combatants}`;
       case "turnStart":
         // let heading = `It's ${subject}'s turn!`;
         // let combatants = event.combatants.map(c => `\n- ${Presenter.combatant(c)}`).join("");
-        let currentState = Presenter.combatants(event.combatants, false, (c) => c === event.subject);
+        // let currentState = Presenter.combatants(event.combatants, false, (c) => c === event.subject);
 
-        return event.subject?.playerControlled ?
-          `--- ${subjectName}'s turn ---${currentState}\n` : `${Presenter.minimalCombatant(event.subject!)}'s turn.`;
+        // return event.subject?.playerControlled ?
+        //   `--- ${subjectName}'s turn ---${currentState}\n` : `${Presenter.minimalCombatant(event.subject!)}'s turn.`;
+
+        // return `It is now ${subjectName}'s turn.`;
+        return '';
       case "combatEnd": return `Combat ends. ${event.winner} victorious.`;
 
       case "upgrade":
@@ -148,7 +151,7 @@ export default class Events {
         return message;
 
       case "reaction":
-        return `${subjectName} reacts ${Words.humanize(event.reactionName)} from ${event.target?.forename}.`;
+        return `${subjectName} reacts ${(event.reactionName)} from ${event.target?.forename}.`;
       case "summon":
         return `${subjectName} summons ${event.summoned.map(s => s.name).join(", ")}.`;
       case "save":

@@ -23,6 +23,7 @@ export class Template {
         ...localContext,
         ...assembled
       };
+      Deem.stdlib.eval = async (expr: string) => await Deem.evaluate(expr, context);
       Deem.stdlib.lookup = (tableName: GenerationTemplateType, groupName: string) => generator.lookupInTable(tableName, groupName);
       Deem.stdlib.gather = (tableName: GenerationTemplateType, count: number) => generator.gatherKeysFromTable(tableName, count);
       Deem.stdlib.gen = async (type: GenerationTemplateType) => {
@@ -31,7 +32,17 @@ export class Template {
       Deem.stdlib.genList = async (type: GenerationTemplateType, count: number = 1, condition?: string) => {
         return await generator.genList(type, { ...context }, count, condition);
       }
-      Deem.stdlib.eval = async (expr: string) => await Deem.evaluate(expr, context);
+
+      Deem.stdlib.mapGenList = async (type: GenerationTemplateType, items: any[], property: string) => {
+        let results = [];
+        for (let item of items) {
+          let genOptions = { ...context, [property]: item };
+          let genResult = await generator.gen(type, genOptions);
+          results.push(genResult);
+        }
+        process.stdout.write(`.`);
+        return results;
+      }
 
       let resolved = localContext[key] !== undefined ? localContext[key] :
           (await Template.evaluatePropertyExpression(value, context));

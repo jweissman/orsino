@@ -109,7 +109,7 @@ export default class CharacterRecord {
           // pc.abilities = ['melee']; // don't know why this is necessary, but it is??
           const spells = Sample.count(3, 'missile', 'armor', 'blur', 'charm', 'shocking_grasp', 'burning_hands', 'sleep')
           console.log("Adding to " + pc.name + "'s spellbook: " + spells.join(", ") + " (already has " + pc.abilities.join(", ") + ")");
-          pc.abilities.unshift(...spells);
+          pc.abilities.push(...spells);
         }
 
         if (!party.some(p => p.name === pc?.name)) {
@@ -243,7 +243,7 @@ export default class CharacterRecord {
           let chosenSpellKey = await select(`Select a new spell for ${pc.name}:`, spellChoices);
           let chosenSpell = abilityHandler.getAbility(chosenSpellKey);
           console.log(`${Presenter.combatant(pc)} learned the spell: ${JSON.stringify(chosenSpell)}`);
-          pc.abilities.unshift(chosenSpellKey);
+          pc.abilities.push(chosenSpellKey);
         } else {
           console.log(`${Presenter.combatant(pc)} has learned all available spells for their level.`);
         }
