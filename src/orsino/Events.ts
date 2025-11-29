@@ -1,6 +1,6 @@
+import { DamageKind } from "./Ability";
 import Presenter from "./tui/Presenter";
 import Stylist from "./tui/Style";
-import Words from "./tui/Words";
 import { Combatant } from "./types/Combatant";
 
 const never = <T>(_: never): T => {
@@ -20,7 +20,7 @@ export type RoundStartEvent = BaseEvent & { type: "roundStart", combatants: Comb
 export type TurnStartEvent = BaseEvent & { type: "turnStart", combatants: Combatant[] };
 
 // export type ActEvent = BaseEvent & { type: "act"; actionName: string };
-export type HitEvent = BaseEvent & { type: "hit"; damage: number; success: boolean; critical: boolean; by: string };
+export type HitEvent = BaseEvent & { type: "hit"; damage: number; success: boolean; critical: boolean; by: string; damageKind: DamageKind };
 export type MissEvent = BaseEvent & { type: "miss"; };
 export type HealEvent = BaseEvent & { type: "heal"; amount: number };
 export type DefendEvent = BaseEvent & { type: "defend"; bonusAc: number };
@@ -28,7 +28,7 @@ export type QuaffEvent = BaseEvent & { type: "quaff" };
 export type FallenEvent = BaseEvent & { type: "fall" };
 export type FleeEvent   = BaseEvent & { type: "flee" };
 export type SummonEvent = BaseEvent & { type: "summon"; summoned: Combatant[] };
-export type SaveEvent = BaseEvent & { type: "save"; success: boolean; dc: number; immune: boolean; reason: string };
+export type SaveEvent = BaseEvent & { type: "save"; success: boolean; dc: number; immune: boolean; reason: string; versus: string; };
 export type ReactionEvent = BaseEvent & { type: "reaction"; reactionName: string; success: boolean };
 
 export type StatusEffectEvent = BaseEvent & { type: "statusEffect"; effectName: string; effect: { [key: string]: any }; duration: number };
@@ -108,10 +108,11 @@ export default class Events {
       case "fall": return `${subjectName} falls unconscious.`;
       case "flee": return `${subjectName} flees from combat.`;
       case "statusEffect":
+        let effectName = Stylist.colorize(event.effectName, 'magenta');
         if (event.effect.by && event.effect.by.forename !== subjectName) {
-          return `${subjectName} is ${event.effectName} by ${event.effect.by.forename}.`
+          return `${subjectName} is ${effectName} by ${event.effect.by.forename}.`
         }
-        return `${subjectName} is ${event.effectName}.`
+        return `${subjectName} is ${effectName}.`
       case "statusExpire":
         if (event.effectName === "Poisoned Blade") {
           return `${subjectName}'s blade is no longer coated in poison.`;
@@ -141,7 +142,7 @@ export default class Events {
         return `${subjectName} upgrades ${event.stat} by ${event.amount} (now ${event.newValue}).`;
 
       case "hit":
-        let message = `${targetName} takes ${event.damage} damage from ${event.by}.`;
+        let message = `${targetName} takes ${event.damage} ${event.damageKind} damage from ${event.by}.`;
         if (event.critical) { message += " Critical hit!"; }
         if (event.target?.playerControlled) {
           message = Stylist.colorize(message, 'red');
@@ -156,11 +157,11 @@ export default class Events {
         return `${subjectName} summons ${event.summoned.map(s => s.name).join(", ")}.`;
       case "save":
         if (event.immune) {
-          return `${subjectName} is immune and automatically succeeds on their Save (DC ${event.dc}).`;
+          return `${subjectName} is immune and automatically succeeds on their Save vs ${event.versus} (DC ${event.dc}).`;
         } else if (event.success) {
-          return `${subjectName} succeeds on their Save (DC ${event.dc}).`;
+          return `${subjectName} succeeds on their Save vs ${event.versus} (DC ${event.dc}).`;
         } else {
-          return `${subjectName} fails their Save (DC ${event.dc}).`;
+          return `${subjectName} fails their Save vs ${event.versus} (DC ${event.dc}).`;
         }
       default:
         return never(event);

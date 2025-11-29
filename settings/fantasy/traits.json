@@ -789,6 +789,36 @@
         }
       }
     ]
-  }
+  },
 
+  "undead": {
+    "name": "Undead",
+    "type": "template",
+    "description": "An unliving creature animated by dark magic.",
+    "statuses": [{
+      "name": "Undead Nature",
+      "description": "Immune to poison, charm, sleep, and disease.",
+      "effect": {
+        "immunePoison": true,
+        "immuneCharm": true,
+        "immuneSleep": true,
+        "immuneDisease": true
+      }
+    }]
+  },
+  "incorporeal": {
+    "name": "Incorporeal",
+    "type": "template",
+    "description": "A being of pure spirit, able to pass through solid objects.",
+    "statuses": [{
+      "name": "Ethereal Form",
+      "description": "Resistant to physical damage and difficult to hit.",
+      "effect": {
+        "resistBludgeoning": 0.5,
+        "resistPiercing": 0.5,
+        "resistSlashing": 0.5,
+        "evasion": 5
+      }
+    }]
+  }
 }

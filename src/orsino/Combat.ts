@@ -4,12 +4,14 @@ import Presenter from "./tui/Presenter";
 import { Team } from "./types/Team";
 import { Roll } from "./types/Roll";
 import { Fighting } from "./rules/Fighting";
-import Events, { CombatEvent, InitiateCombatEvent, StatusExpireEvent, RoundStartEvent, CombatEndEvent, FleeEvent } from "./Events";
+import Events, { CombatEvent, InitiateCombatEvent, StatusExpireEvent, RoundStartEvent, CombatEndEvent, FleeEvent, GameEvent } from "./Events";
 import AbilityHandler, { Ability, StatusEffect } from "./Ability";
 import { Answers } from "inquirer";
 import { AbilityScoring } from "./tactics/AbilityScoring";
 import { Commands } from "./rules/Commands";
 import Deem from "../deem";
+import TraitHandler from "./Trait";
+import Stylist from "./tui/Style";
 
 export type ChoiceSelector<T extends Answers> = (description: string, options: Choice<T>[], combatant?: Combatant) => Promise<T>;
 
@@ -31,7 +33,7 @@ export default class Combat {
   public winner: string | null = null;
   public teams: Team[] = [];
   public abilityHandler = AbilityHandler.instance;
-    //new AbilityHandler();
+  //new AbilityHandler();
   private combatantsByInitiative: { combatant: any; initiative: number }[] = [];
 
   protected roller: Roll;
@@ -47,47 +49,9 @@ export default class Combat {
     this.outputSink = options.outputSink || console.debug;
   }
 
-  static async samplingSelect(_prompt: string, options: Choice<any>[]): Promise<any> {
-    let enabledOptions = options.filter(
-      (option) => !option.disabled
-    )
-    return enabledOptions[Math.floor(Math.random() * enabledOptions.length)]?.value;
-  }
-
-  static defaultTeams(): Team[] {
-    return [
-      {
-        name: "Player", combatants: [{
-          forename: "Hero", name: "Hero",
-          hp: 14, maxHp: 14, level: 1, ac: 10,
-          dex: 11, str: 12, int: 10, wis: 10, cha: 10, con: 12,
-          // attackRolls: 1, damageDie: 8,
-          attackDie: "1d8",
-          playerControlled: true, xp: 0, gp: 0,
-          weapon: "Short Sword", damageKind: "slashing", abilities: ["melee"], traits: [],
-          hasMissileWeapon: false
-        }], healingPotions: 3
-      },
-      {
-        name: "Enemy", combatants: [
-          {
-            forename: "Zok", name: "Goblin A", hp: 4, maxHp: 4, level: 1, ac: 17, //attackRolls: 2, damageDie: 3,
-            attackDie: "1d3",
-            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: [], hasMissileWeapon: false, xp: 0, gp: 0
-          },
-          {
-            forename: "Mog", name: "Goblin B", hp: 4, maxHp: 4, level: 1, ac: 17, //attackRolls: 2, damageDie: 3,
-            attackDie: "1d3",
-            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: [], hasMissileWeapon: false, xp: 0, gp: 0
-          }
-        ], healingPotions: 0
-      }
-    ];
-  }
-
   protected note(message: string) { this.outputSink(message); }
 
-  protected emit(event: Omit<CombatEvent, "turn">): void {
+  protected emit(event: Omit<GameEvent, "turn">): void {
     let e: CombatEvent = { ...event, turn: this.turnNumber } as CombatEvent;
     this.journal.push(e);
     if (Events.present(e) !== "") {
@@ -98,13 +62,18 @@ export default class Combat {
     }
   }
 
+  protected emitAll(events: Omit<GameEvent, "turn">[]): void {
+    // could collect by statuses?
+    events.forEach(e => this.emit(e));
+  }
+
   private async determineInitiative(): Promise<{ combatant: any; initiative: number }[]> {
     let initiativeOrder = [];
     for (let c of this.allCombatants) {
       let effective = Fighting.effectiveStats(c);
       let initBonus = Fighting.turnBonus(c, ["initiative"]).initiative || 0;
       const initiative = Commands.roll(c, "for initiative", 20).amount + Fighting.statMod(effective.dex) + initBonus;
-         // (await this.roller(c, "for initiative", 20)).amount + Fighting.statMod(effective.dex) + initBonus;
+      // (await this.roller(c, "for initiative", 20)).amount + Fighting.statMod(effective.dex) + initBonus;
       initiativeOrder.push({ combatant: c, initiative });
     }
     return initiativeOrder.sort((a, b) => b.initiative - a.initiative);
@@ -127,11 +96,26 @@ export default class Combat {
     this.teams = teams;
     // this.combatantsByInitiative = await this.determineInitiative();
     // this.emit({ type: "initiate", order: this.combatantsByInitiative } as Omit<InitiateCombatEvent, "turn">);
-    this.allCombatants.forEach(c => {
+    // this.allCombatants.forEach(c => {
+    for (let c of this.allCombatants) {
       c.abilitiesUsed = [];
-      c.abilityCooldowns = {};
+      // c.abilityCooldowns = {};
       c.savedTimes = {};
-    });
+      c.activeEffects = [];
+      c.passiveEffects = [];
+      c.traits = c.traits || [];
+
+      let traitHandler = TraitHandler.instance;
+      await traitHandler.loadTraits();
+      c.traits.forEach(traitName => {
+        const trait = traitHandler.getTrait(traitName);
+        if (trait) {
+          c.passiveEffects ||= [];
+          c.passiveEffects.push(...trait.statuses);
+          // console.log(`Applying trait ${trait.name} to ${Presenter.combatant(c)}: ${trait.statuses.map(s => s.name).join(", ")}`);
+        }
+      });
+    }
     await this.abilityHandler.loadAbilities();
 
     Combat.statistics.combats += 1;
@@ -311,8 +295,8 @@ export default class Combat {
     }
 
     if (action.type === "skill" && !action.name.match(/melee|ranged|wait/i)) {
-      combatant.abilitiesUsed = combatant.abilitiesUsed || [];
-      combatant.abilitiesUsed.push(action.name);
+      // combatant.abilitiesUsed = combatant.abilitiesUsed || [];
+      // combatant.abilitiesUsed.push(action.name);
 
       // set cooldown
       let cooldown = action.cooldown || 3;
@@ -326,7 +310,8 @@ export default class Combat {
     let team = this.teams.find(t => t.combatants.includes(combatant));
     let ctx: CombatContext = { subject: combatant, allies, enemies };
     let { events } = await AbilityHandler.perform(action, combatant, targetOrTargets, ctx, Commands.handlers(this.roller, team!));
-    events.forEach(e => this.emit({ ...e, turn: this.turnNumber } as CombatEvent));
+    // events.forEach(e => this.emit({ ...e, turn: this.turnNumber } as CombatEvent));
+    this.emitAll(events);
 
     return { haltRound: false };
   }
@@ -334,6 +319,11 @@ export default class Combat {
 
   async npcTurn(combatant: Combatant, enemies: Combatant[], allies: Combatant[]) {
     let validAbilities = this.validActions(combatant, allies, enemies);
+    if (validAbilities.length === 0) {
+      this.note(`${Presenter.combatant(combatant)} has no valid actions and skips their turn.`);
+      return { haltRound: false };
+    }
+
     let scoredAbilities = validAbilities.map(ability => ({
       ability,
       score: AbilityScoring.scoreAbility(ability, combatant, allies, enemies)
@@ -348,9 +338,15 @@ export default class Combat {
     // )
     let targetOrTargets: Combatant | Combatant[] = AbilityScoring.bestAbilityTarget(action, combatant, allies, enemies);
 
-    combatant.abilitiesUsed = combatant.abilitiesUsed || [];
+    // combatant.abilitiesUsed = combatant.abilitiesUsed || [];
+    // if (action && action.type === "skill" && !action.name.match(/melee|ranged|wait/i)) {
+    //   combatant.abilitiesUsed.push(action.name);
+    // }
+    combatant.abilityCooldowns = combatant.abilityCooldowns || {};
+    // set cooldown
     if (action && action.type === "skill" && !action.name.match(/melee|ranged|wait/i)) {
-      combatant.abilitiesUsed.push(action.name);
+      let cooldown = action.cooldown || 3;
+      combatant.abilityCooldowns[action.name] = cooldown;
     }
 
     // use spell slots
@@ -365,13 +361,14 @@ export default class Combat {
 
     // invoke the action
     let verb = action.type === "spell" ? 'casts' : 'readies';
-    let actionName = action.name.toLowerCase();
-    let message = (combatant.forename + (verb ? ` ${verb} ` : " ") + actionName + ".");
+    let actionName = Stylist.italic(action.name.toLowerCase());
+    let message = (combatant.forename + (verb ? ` ${verb} ` : " ") + actionName + "."); // for " + (Array.isArray(targetOrTargets) ? + targetOrTargets.map(t => Presenter.minimalCombatant(t)).join(", ") : Presenter.minimalCombatant(targetOrTargets)) + ".");
     this.note(message);
     let team = this.teams.find(t => t.combatants.includes(combatant));
     let ctx: CombatContext = { subject: combatant, allies, enemies };
     let { events } = await AbilityHandler.perform(action, combatant, targetOrTargets, ctx, Commands.handlers(this.roller, team!));
-    events.forEach(e => this.emit({ ...e, turn: this.turnNumber } as CombatEvent));
+    // events.forEach(e => this.emit({ ...e, turn: this.turnNumber } as CombatEvent));
+    this.emitAll(events);
   }
 
   async turn(combatant: Combatant): Promise<{ haltRound: boolean }> {
@@ -441,7 +438,8 @@ export default class Combat {
           for (const effect of status.effect['onTurnEnd']) {
             // apply fx to self
             let { events } = await AbilityHandler.handleEffect(status.name, effect, effect.by || combatant, combatant, ctx, Commands.handlers(this.roller, this.teams.find(t => t.combatants.includes(combatant))!));
-            events.forEach(e => this.emit({ ...e, turn: this.turnNumber } as CombatEvent));
+            // events.forEach(e => this.emit({ ...e, turn: this.turnNumber } as CombatEvent));
+            this.emitAll(events);
           }
         }
       }
@@ -461,7 +459,8 @@ export default class Combat {
     this.combatantsByInitiative = await this.determineInitiative();
     this.turnNumber++;
     this.emit({
-      type: "roundStart", combatants: Combat.living(this.combatantsByInitiative.map(c => c.combatant))
+      type: "roundStart",
+      combatants: Combat.living(this.combatantsByInitiative.map(c => ({ ...c.combatant, friendly: this.teams[0].combatants.includes(c.combatant) }))),
     } as Omit<RoundStartEvent, "turn">);
 
     // check for escape conditions (if 'flee' status is active, remove the combatant from combat)
@@ -483,7 +482,7 @@ export default class Combat {
 
     for (const { combatant } of this.combatantsByInitiative) {
       let nonplayerCombatants = this.teams[1].combatants.filter(c => c.hp > 0);
-      
+
       if (this.isOver() || nonplayerCombatants.length === 0) {
         break;
       }
@@ -521,6 +520,44 @@ export default class Combat {
 
   isOver() {
     return this.winner !== null;
+  }
+
+  static async samplingSelect(_prompt: string, options: Choice<any>[]): Promise<any> {
+    let enabledOptions = options.filter(
+      (option) => !option.disabled
+    )
+    return enabledOptions[Math.floor(Math.random() * enabledOptions.length)]?.value;
+  }
+
+  static defaultTeams(): Team[] {
+    return [
+      {
+        name: "Player", combatants: [{
+          forename: "Hero", name: "Hero",
+          hp: 14, maxHp: 14, level: 1, ac: 10,
+          dex: 11, str: 12, int: 10, wis: 10, cha: 10, con: 12,
+          // attackRolls: 1, damageDie: 8,
+          attackDie: "1d8",
+          playerControlled: true, xp: 0, gp: 0,
+          weapon: "Short Sword", damageKind: "slashing", abilities: ["melee"], traits: [],
+          hasMissileWeapon: false
+        }], healingPotions: 3
+      },
+      {
+        name: "Enemy", combatants: [
+          {
+            forename: "Zok", name: "Goblin A", hp: 4, maxHp: 4, level: 1, ac: 17, //attackRolls: 2, damageDie: 3,
+            attackDie: "1d3",
+            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: [], hasMissileWeapon: false, xp: 0, gp: 0
+          },
+          {
+            forename: "Mog", name: "Goblin B", hp: 4, maxHp: 4, level: 1, ac: 17, //attackRolls: 2, damageDie: 3,
+            attackDie: "1d3",
+            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: [], hasMissileWeapon: false, xp: 0, gp: 0
+          }
+        ], healingPotions: 0
+      }
+    ];
   }
 }
 

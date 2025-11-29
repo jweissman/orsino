@@ -31,12 +31,16 @@ program
   .option('--race <race>', 'Specify the racial group to use')
   .option('--class <class>', 'Specify the class to use')
   .option('--cr <cr>', 'Specify the challenge rating to target')
+  .option('--tabular', 'Print output in tabular format where applicable')
   .action(async (type, options) => {
     // const orsino = new Orsino(options.setting);
     // if (options.graph && parseInt(options.count) < 2) {
     //   console.error('Graph generation requires at least 2 items. Use --count to specify the number of items.');
     //   process.exit(1);
     // }
+    let tabular = options.tabular || false;
+    delete options.tabular;
+
     let cr = options.cr ? parseInt(options.cr) : null;
     delete options.cr;
 
@@ -54,8 +58,32 @@ program
       }
     );
     // console.log(response);
-    process.stdout.write(JSON.stringify(response, null, 2));
-    Files.write(`data/${type}s/${response['name']}.json`, JSON.stringify(response, null, 2));
+    if (tabular) {
+      let cleanResponse: { [key: string]: any } = {
+        ...response,
+        abilities: response.abilities ? response.abilities.join(", ") : undefined,
+        traits: response.traits ? response.traits.join(", ") : undefined,
+        creatures: response.creatures ? response.creatures.map((c: any) => c.name).join("; ") : undefined,
+        rooms: response.rooms ? response.rooms.map((r: any) => r.room_type).join("; ") : undefined,
+        bossRoom: response.bossRoom ? response.bossRoom.room_type : undefined,
+
+        town: response.town ? response.town.name : undefined,
+        dungeons: response.dungeons ? response.dungeons.map((d: any) => `CR ${d.intendedCr}/${d.race}`).join("; ") : undefined,
+      }
+
+      // if any keys undefined, remove them
+      Object.keys(cleanResponse).forEach(key => {
+        if (cleanResponse[key] === undefined) {
+          delete cleanResponse[key];
+        }
+      });
+
+      console.log();
+      console.table(cleanResponse);
+    } else {
+      process.stdout.write(JSON.stringify(response, null, 2));
+    }
+    // Files.write(`data/${type}s/${response['name']}.json`, JSON.stringify(response, null, 2));
   });
 
 program.parse(process.argv);

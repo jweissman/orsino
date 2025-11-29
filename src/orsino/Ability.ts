@@ -13,7 +13,7 @@ import Files from "./util/Files";
 
 type Target = "self" | "ally" | "enemy" | "allies" | "enemies" | "all" | "randomEnemies";
 export type DamageKind = "bleed" | "poison" | "psychic" | "lightning" | "earth" | "fire" | "ice" | "bludgeoning" | "piercing" | "slashing" | "force" | "radiant" | "necrotic" | "acid" | "true";
-export type SaveKind = "poison" | "disease" | "death" | "magic" | "insanity" | "charm" | "fear" | "stun" | "will" | "breath" | "paralyze";
+export type SaveKind = "poison" | "disease" | "death" | "magic" | "insanity" | "charm" | "fear" | "stun" | "will" | "breath" | "paralyze" | "sleep";
 
 export interface StatusEffect {
   name: string;
@@ -218,7 +218,6 @@ export default class AbilityHandler {
     success: boolean, events: Omit<GameEvent, "turn">[]
   }> {
     let { roll, attack, hit, heal, status, removeItem, removeStatus, save, summon } = handlers;
-    // console.log(`Handling effect ${effect.type} from ${name} on ${targetCombatant.name}...`);
 
     let success = false;
     let events: Omit<GameEvent, "turn">[] = [];
@@ -275,15 +274,12 @@ export default class AbilityHandler {
         return { success: false, events: result.events };
       } else {
         if (userFx.onAttackHit) {
-          // console.log("Triggering onAttackHit effects for", name, "...");
           for (const attackFx of userFx.onAttackHit as Array<AbilityEffect>) {
-            // console.log("Processing onAttackHit effect", attackFx);
             // let fxTarget = attackFx.target === "self" ? user : targetCombatant;
             let fxTarget: Combatant | Combatant[] = targetCombatant;
             if (attackFx.target) {
               fxTarget = this.validTargets({ target: attackFx.target } as Ability, user, [], [targetCombatant])[0];
             }
-            // console.log("Effect target:", fxTarget, "(attackFx.target:", attackFx.target, ")");
             // it is possible that the target is specified in the effect, so we need to check for that
             let effectResult = await this.handleEffect(name, attackFx, user, fxTarget, context, handlers);
             events.push(...effectResult.events);
@@ -324,13 +320,9 @@ export default class AbilityHandler {
     } else if (effect.type === "debuff") {
       // same as buff with a save
       if (effect.status) {
-        let { success, events: saveEvents } = await save(targetCombatant, effect.saveType || "magic", effect.saveDC || 15, handlers.roll); //, roll, effect.status.name);
+        let { success: saved, events: saveEvents } = await save(targetCombatant, effect.saveType || "magic", effect.saveDC || 15, handlers.roll); //, roll, effect.status.name);
         events.push(...saveEvents);
-        let saved = success;
-        if (saved) {
-          console.log(`${targetCombatant.name} resists ${effect.status.name}!`);
-          // TODO some save event type
-        } else {
+        if (!saved) {
           let statusEvents = await status(user, targetCombatant, effect.status.name, { ...effect.status.effect, by: user }, effect.status.duration || 3);
           events.push(...statusEvents);
           success = true;

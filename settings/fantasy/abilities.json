@@ -299,7 +299,7 @@
     ],
     "effects": [
       {
-        "type": "buff",
+        "type": "debuff",
         "status": {
           "name": "Charmed",
           "duration": 3,
@@ -353,7 +353,7 @@
             "noActions": true
           }
         },
-        "saveType": "will",
+        "saveType": "sleep",
         "saveDC": 12
       }
     ]
@@ -458,6 +458,8 @@
             "onAttackHit": [
               {
                 "type": "debuff",
+                "saveType": "poison",
+                "saveDC": 12,
                 "status": {
                   "name": "being poisoned",
                   "duration": 3,
@@ -565,6 +567,8 @@
     "effects": [
       {
         "type": "debuff",
+        "saveType": "will",
+        "saveDC": 10,
         "status": {
           "name": "Cursed",
           "duration": 4,
@@ -576,9 +580,7 @@
             "cha": -1,
             "con": -1
           }
-        },
-        "saveType": "will",
-        "saveDC": 10
+        }
       }
     ]
   },
@@ -660,17 +662,8 @@
     "effects": [
       {
         "type": "removeStatus",
+        "target": "self",
         "statusName": "Hidden"
-      },
-      {
-        "type": "buff",
-        "status": {
-          "name": "Stealthy Strike",
-          "duration": 1,
-          "effect": {
-            "toHit": 2
-          }
-        }
       },
       {
         "type": "attack"
@@ -974,6 +967,7 @@
   "summon_animal": {
     "name": "Summon Animal",
     "type": "skill",
+    "cooldown": 8,
     "aspect": "nature",
     "description": "Summon a random animal to fight for you.",
     "target": [

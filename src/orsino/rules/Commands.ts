@@ -99,45 +99,31 @@ export class Commands {
 
   static async handleSave(target: Combatant, saveType: SaveKind, dc: number = 15, roll: Roll): Promise<{ success: boolean, events: TimelessEvent[] }> {
     let targetFx = Fighting.gatherEffects(target);
-    let isImmune = targetFx[`immune${saveType.charAt(0).toUpperCase() + saveType.slice(1)}`] as boolean;
+    let saveKind = saveType.charAt(0).toUpperCase() + saveType.slice(1);
+    let isImmune = targetFx[`immune${saveKind}`] as boolean;
     if (isImmune) {
-      // console.warn(`${Presenter.combatant(target)} has immunity to ${saveType}! Save automatically succeeds.`);
-      // immune event?
-      return { success: true, events: [{ type: "save", subject: target, success: true, dc, immune: true, reason: "immunity" } as Omit<SaveEvent, "turn">] };
+      return { success: true, events: [{ type: "save", subject: target, success: true, dc, immune: true, reason: "immunity", versus: saveKind } as Omit<SaveEvent, "turn">] };
     }
 
-    let saveVersusType = `saveVersus${saveType.charAt(0).toUpperCase() + saveType.slice(1)}`;
+    let saveVersusType = `saveVersus${saveKind}`;
     const saveVersus = dc - (targetFx[saveVersusType] as number || 0) - target.level;
     let saved = false;
     target.savedTimes = target.savedTimes || {};
     let saveCount = target.savedTimes[saveType] || 0;
     if (saveCount >= 3) {
-      // console.warn(`${Presenter.combatant(target)} has already succeeded on 3 saves vs ${saveType} and cannot save again!`);
-      // return false;
-      return { success: false, events: [{ type: "save", subject: target, success: false, dc, immune: false, reason: "max saves reached" } as Omit<SaveEvent, "turn">] };
+      return { success: false, events: [{ type: "save", subject: target, success: false, dc, immune: false, reason: "max saves reached", versus: saveKind } as Omit<SaveEvent, "turn">] };
     }
 
     // we should roll anyway; they could have an allRolls bonus etc even if the DC is very high
-    // if (saveVersus <= 20) {
-      const saveRoll = await roll(target, `for Save vs ${saveType} (must roll ${saveVersus} or higher)`, 20);
-      if (saveRoll.amount >= saveVersus) {
-        // TODO save events?
-        // console.warn(`${Presenter.combatant(target)} succeeds on their Save vs ${saveType}!`);
-        // this.note(`${Presenter.combatant(target)} succeeds on their Save vs ${saveType}!`);
-        saved = true;
+    const saveRoll = await roll(target, `for Save vs ${saveKind} (must roll ${saveVersus} or higher)`, 20);
+    if (saveRoll.amount >= saveVersus) {
+      saved = true;
 
-        target.savedTimes[saveType] = (target.savedTimes[saveType] || 0) + 1;
-        return { success: true, events: [{ type: "save", subject: target, success: true, dc, immune: false, reason: "successful roll" } as Omit<SaveEvent, "turn">] };
-      } else {
-        // console.warn(`${Presenter.combatant(target)} fails their Save vs ${saveType}!`);
-        return { success: false, events: [{ type: "save", subject: target, success: false, dc, immune: false, reason: "failed roll" } as Omit<SaveEvent, "turn">] };
-        // this.note(`${Presenter.combatant(target)} fails their Save vs ${saveType}!`);
-      }
-    // }
-    // return {
-    //   success: false, events: [{
-    //     type: "save", subject: target, success: false, dc, immune: false, reason: "no roll could succeed"
-    //   } as Omit<SaveEvent, "turn">] };
+      target.savedTimes[saveType] = (target.savedTimes[saveType] || 0) + 1;
+      return { success: true, events: [{ type: "save", versus: saveKind, subject: target, success: true, dc, immune: false, reason: "successful roll" } as Omit<SaveEvent, "turn">] };
+    } else {
+      return { success: false, events: [{ type: "save", versus: saveKind, subject: target, success: false, dc, immune: false, reason: "failed roll" } as Omit<SaveEvent, "turn">] };
+    }
   }
 
   static async handleHit(
@@ -167,10 +153,10 @@ export class Commands {
 
     if (defenderEffects.evasion) {
       let evasionBonus = defenderEffects.evasion as number || 0;
-      let whatNumberEvades = 15 - evasionBonus;
+      let whatNumberEvades = 20 - evasionBonus;
       const evasionRoll = await roll(defender, `for evasion (must roll ${whatNumberEvades} or higher)`, 20);
-      if (evasionRoll.amount + evasionBonus >= 15) {
-        // this.note(`${Presenter.combatant(defender)} evades the attack!`);
+      if (evasionRoll.amount + evasionBonus >= 20) {
+        console.warn(`${Presenter.combatant(defender)} evades the attack!`);
         // this.emit({ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">);
         return [{ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">];
       }
@@ -180,14 +166,14 @@ export class Commands {
       let bonusDamage = attackerEffects.bonusDamage as number || 0;
       damage += bonusDamage;
       // this.note(`${Presenter.combatant(attacker)} has a bonus damage effect, adding ${bonusDamage} damage!`);
-      console.warn(`${Presenter.combatant(attacker)} has a bonus damage effect, adding ${bonusDamage} damage!`);
+      console.warn(`${Presenter.minimalCombatant(attacker)} has a bonus damage effect, adding ${bonusDamage} damage!`);
     }
 
     if (attackerEffects[`${by}Multiplier`]) {
       let multiplier = attackerEffects[`${by}Multiplier`] as number || 1;
       damage = Math.floor(damage * multiplier);
       // this.note(`${Presenter.combatant(attacker)} has a ${by} damage multiplier effect, multiplying damage by ${multiplier}!`);
-      console.warn(`${Presenter.combatant(attacker)} has a ${by} damage multiplier effect, multiplying damage by ${multiplier}!`);
+      console.warn(`${Presenter.minimalCombatant(attacker)} has a ${by} damage multiplier effect, multiplying damage by ${multiplier}!`);
     }
 
     // Apply resistances FIRST
@@ -206,14 +192,14 @@ export class Commands {
           damage = originalDamage + Math.floor(originalDamage * (1 - resistance));
         }
         // this.note(`${Presenter.combatant(defender)} has ${resistance > 0 ? "resistance" : resistance < 0 ? "vulnerability" : "no resistance"} to ${damageKind}, modifying damage from ${originalDamage} to ${damage}.`);
-        console.warn(`${Presenter.combatant(defender)} has ${resistance > 0 ? "resistance" : resistance < 0 ? "vulnerability" : "no resistance"} to ${damageKind}, modifying damage from ${originalDamage} to ${damage}.`);
+        console.warn(`${Presenter.minimalCombatant(defender)} has ${resistance > 0 ? "resistance" : resistance < 0 ? "vulnerability" : "no resistance"} to ${damageKind}, modifying damage from ${originalDamage} to ${damage}.`);
       }
     }
 
     if (defenderEffects.damageReduction) {
       let reduction = defenderEffects.damageReduction as number || 0;
       damage = Math.max(0, damage - reduction);
-      // this.note(`${Presenter.combatant(defender)} has a damage reduction effect, reducing damage by ${reduction}!`);
+      console.warn(`${Presenter.combatant(defender)} has a damage reduction effect, reducing damage by ${reduction}!`);
     }
 
     // apply damage
@@ -235,7 +221,8 @@ export class Commands {
       damage,
       success: true,
       critical,
-      by
+      by,
+      damageKind
     } as Omit<HitEvent, "turn">];
     // this.emit({ type: "hit", subject: attacker, target: defender, damage, success: true, critical, by } as Omit<HitEvent, "turn">);
     if (defender.hp <= 0) {

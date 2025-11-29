@@ -125,8 +125,9 @@ export default class Presenter {
       classInfo += ` [${activeEffectNames.join(', ')}]`;
     }
 
+    let friendly = ((combatant as any).friendly || false) || combatant.playerControlled;
     let lhs = `${Stylist.format(
-      Stylist.colorize(combatant.name, combatant.playerControlled ? 'cyan' : 'yellow'),
+      Stylist.colorize(combatant.name, friendly ? 'cyan' : 'yellow'),
       'bold'
     )}${classInfo}`;
     let rhs = `(${this.statLine(combatant)}, HP: ${Stylist.colorize(hpBar, color)} ${combatant.hp}/${combatant.maxHp}, AC: ${effective.ac}, Level: ${combatant.level})`;

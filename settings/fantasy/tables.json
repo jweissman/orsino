@@ -1373,17 +1373,17 @@
   "npcTypeModifier": {
     "discriminator": "type",
     "groups": {
-      "Novice":       { "str": -2, "dex": -2, "int": 1, "wis": 1, "cha": -1, "maxHp": -2, "abilities": [] },
+      "Novice":       { "str": -2, "dex": -2, "int": 1, "wis": 1, "cha": -1, "abilities": [] },
 
-      "Apprentice":    { "str": -1, "dex": -1, "int": 2, "wis": 1, "cha": -1, "maxHp": -1, "abilities": [ "missile" ] },
-      "Devotee":      { "str": -1, "dex": -1, "int": 1, "wis": 2, "cha": 1, "maxHp": -1, "abilities": ["heal"] },
-      "Mendicant":    { "str": -2, "dex": -2, "con": -2, "int": 1, "wis": 2, "cha": 2, "maxHp": -3, "abilities": [] },
-      "Whelp":        { "str": -1, "dex": -1, "maxHp": -2, "abilities": [] },
-      "Runt":         { "str": -2, "maxHp": -1, "abilities": ["hide"] },
-      "Creep":        { "str": -1, "dex": 1, "maxHp": -1, "abilities": ["hide"] },
-      "Peasant":      { "str": 1, "dex": 1, "con": 1, "cha": -1, "maxHp": 1, "abilities": [ "prepare_charge", "charge" ] },
-      "Loser":        { "str": -1, "dex": -1, "con": -1, "cha": 2, "maxHp": -1, "abilities": [ "prepare_charge", "charge" ] },
-      "Magelet":      { "int": 2, "con": 1, "maxHp": 1, "abilities": [ "missile", "shocking_grasp" ] },
+      "Apprentice":    { "str": -1, "dex": -1, "int": 2, "wis": 1, "cha": -1, "abilities": [ "missile" ] },
+      "Devotee":      { "str": -1, "dex": -1, "int": 1, "wis": 2, "cha": 1, "abilities": ["heal"] },
+      "Mendicant":    { "str": -2, "dex": -2, "con": -2, "int": 1, "wis": 2, "cha": 2, "abilities": [] },
+      "Whelp":        { "str": -1, "dex": -1, "abilities": [] },
+      "Runt":         { "str": -2, "abilities": ["hide"] },
+      "Creep":        { "str": -1, "dex": 1, "abilities": ["hide"] },
+      "Peasant":      { "str": 1, "dex": 1, "con": 1, "cha": -1, "abilities": [ "prepare_charge", "charge" ] },
+      "Loser":        { "str": -1, "dex": -1, "con": -1, "cha": 2, "abilities": [ "prepare_charge", "charge" ] },
+      "Magelet":      { "int": 2, "con": 1, "abilities": [ "missile", "shocking_grasp" ] },
 
       "Bandit":       { "str": 1, "dex": 2, "abilities": [ "prepare_charge", "charge" ] },
       "Magician":     { "int": 3, "con": 2, "abilities": [ "missile", "shocking_grasp", "sleep" ] },
@@ -1435,9 +1435,9 @@
       "High Priest":  { "str": -2, "con": 4, "int": 6, "dex": 2, "wis": 8, "cha": 8, "abilities": [ "smite", "bless", "curse", "inspire", "heal" ] },
       "Archmage":     { "int": 8, "con": 4, "dex": 2, "str": -2, "abilities": [ "armor", "missile", "life_drain", "shocking_grasp", "sleep" ] },
       "Necromancer":  { "int": 8, "con": 6, "dex": 2, "str": -2, "abilities": [ "life_drain", "curse", "fear", "poison_cloud", "summon_undead" ] },
-      "King":         { "str": 10, "con": 6, "int": 4, "dex": 2, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ] },
-      "Lord":         { "str": 10, "con": 8, "int": 6, "wis": 6, "dex": 4, "maxHp": 10, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ] },
-      "Monarch":      { "str": 10, "con": 8, "int": 6, "wis": 6, "dex": 4, "maxHp": 20, "abilities": [ "inspire", "enrage", "prepare_charge", "charge", "heal" ] }
+      "King":         { "str": 6, "con": 6, "int": 4, "dex": 2, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ] },
+      "Lord":         { "str": 8, "con": 8, "int": 6, "wis": 6, "dex": 4, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ] },
+      "Monarch":      { "str": 10, "con": 10, "int": 6, "wis": 6, "dex": 4, "abilities": [ "inspire", "enrage", "prepare_charge", "charge", "heal" ] }
     }
   },
 
@@ -1509,13 +1509,13 @@
   "npcStat": {
     "discriminator": "race",
     "groups": {
-      "kobold": { "str": 6, "dex": 9, "con": 6, "int": 6, "wis": 6, "cha": 6, "hp": 4, "naturalArmor": 0 },
-      "goblin": { "str": 8, "dex": 12, "con": 8, "int": 8, "wis": 8, "cha": 8, "hp": 6, "naturalArmor": 0 },
-      "human":  { "str": 10, "dex": 10, "con": 10, "int": 10, "wis": 10, "cha": 10, "hp": 10, "naturalArmor": 1 },
-      "orc":    { "str": 16, "dex": 12, "con": 16, "int": 8, "wis": 8, "cha": 8, "hp": 12, "naturalArmor": 1 },
-      "ogre":   { "str": 19, "dex": 8, "con": 19, "int": 5, "wis": 5, "cha": 5, "hp": 20, "naturalArmor": 2 },
-      "troll":  { "str": 18, "dex": 7, "con": 18, "int": 6, "wis": 6, "cha": 6, "hp": 30, "naturalArmor": 3 },
-      "dragon": { "str": 23, "dex": 16, "con": 23, "int": 18, "wis": 18, "cha": 18, "hp": 50, "naturalArmor": 10 }
+      "kobold": { "str": 6,  "dex": 9,  "con": 6,  "int": 6,  "wis": 6,  "cha": 6,  "naturalArmor": -1, "hitDie": 4 },
+      "goblin": { "str": 8,  "dex": 12, "con": 8,  "int": 8,  "wis": 8,  "cha": 8,  "naturalArmor": 0 , "hitDie": 6 },
+      "human":  { "str": 10, "dex": 10, "con": 10, "int": 10, "wis": 10, "cha": 10, "naturalArmor": 0 , "hitDie": 8 },
+      "orc":    { "str": 16, "dex": 12, "con": 16, "int": 8,  "wis": 8,  "cha": 8,  "naturalArmor": 0 , "hitDie": 8 },
+      "ogre":   { "str": 19, "dex": 8,  "con": 19, "int": 5,  "wis": 5,  "cha": 5,  "naturalArmor": 1 , "hitDie": 10 },
+      "troll":  { "str": 18, "dex": 7,  "con": 18, "int": 6,  "wis": 6,  "cha": 6,  "naturalArmor": 2 , "hitDie": 12 },
+      "dragon": { "str": 23, "dex": 16, "con": 23, "int": 18, "wis": 18, "cha": 18, "naturalArmor": 10, "hitDie": 20 }
     }
   },
  
@@ -1637,39 +1637,12 @@
   "terrainModifier": {
     "discriminator": "terrain",
     "groups": {
-      "forest": {
-        "str": -1,
-        "dex": 1,
-        "con": 1
-      },
-      "swamp": {
-        "con": -1,
-        "dex": -1,
-        "int": 1
-      },
-      "mountain": {
-        "str": 2,
-        "con": 1,
-        "dex": -1,
-        "maxHp": 1
-      },
-      "cave": {
-        "str": 1,
-        "con": 1,
-        "dex": 1,
-        "maxHp": 1
-      },
-      "snow": {
-        "con": 1,
-        "dex": -1,
-        "str": -1,
-        "maxHp": 2
-      },
-      "desert": {
-        "str": 1,
-        "con": -2,
-        "maxHp": 3
-      }
+      "forest": { "str": -1, "dex": 1, "con": 1 },
+      "swamp": { "con": -1, "dex": -1, "int": 1 },
+      "mountain": { "str": 2, "con": 1, "dex": -1 },
+      "cave": { "str": 1, "con": 1, "dex": 1 },
+      "snow": { "con": 1, "dex": -1, "str": -1 },
+      "desert": { "str": 1, "con": -2 }
     }
   },
   "dungeonAspect": {
@@ -2565,7 +2538,6 @@
       "skeletal": {
         "str": -2,
         "con": -3,
-        "ac": 1,
         "traits": [
           "undead"
         ]
@@ -2575,21 +2547,21 @@
         "int": -4,
         "wis": -2,
         "traits": [
-          "undead",
-          "regeneration"
+          "undead"
         ]
       },
       "spectral": {
-        "ac": -5,
         "traits": [
           "undead",
           "incorporeal"
         ]
       },
       "vampiric": {
-        "str": 2,
-        "dex": 2,
-        "cha": 3,
+        "str": 1,
+        "dex": 1,
+        "cha": 2,
+        "wis": 1,
+        "con": -1,
         "traits": [
           "undead",
           "regeneration"
@@ -2649,39 +2621,39 @@
   "creatureAspects": {
     "discriminator": "type",
     "groups": {
-      "agile":      { "dex": 2, "ac": -1 },
+      "agile":      { "dex": 2 },
       "nimble":     { "dex": 3, "abilities": [ "hide" ] },
-      "sturdy":     { "maxHp": 5, "con": 2 },
-      "swift":      { "dex": 2 },
-      "vicious":    { "maxHp": 4, "str": 3, "dex": 1, "ac": -1, "abilities": [ "maul" ] },
-      "ferocious":  { "maxHp": 5, "str": 2, "dex": 1, "ac": -1, "abilities": [ "prepare_charge", "charge" ] },
-      "cunning":    { "maxHp": 2, "dex": 2, "int": 1, "ac": -1, "abilities": [ "hide", "wait" ] },
+      "sturdy":     { "con": 2 },
+      "swift":      { "dex": 4 },
+      "vicious":    { "str": 4, "dex": 1, "abilities": [ "maul" ] },
+      "ferocious":  { "str": 3, "dex": 1, "abilities": [ "prepare_charge", "charge" ] },
+      "cunning":    { "wis": 3, "dex": 2, "int": 1, "abilities": [ "hide", "wait" ] },
 
-      "curious":    { "maxHp": 3, "int": 4, "cha": 2 },
-      "forgotten":  { "maxHp": 2, "ac": -2, "abilities": [ "hide" ] },
-      "cruel":      { "maxHp": 2, "str": 2, "cha": -2, "abilities": [ "enrage" ] },
-      "beloved":    { "maxHp": 2, "cha": 3, "wis": 2, "abilities": [ "inspire" ] },
-      "dread":      { "maxHp": 2, "cha": 3, "abilities": [ "fear" ] },
-      "terrifying": { "maxHp": 3, "cha": 3, "abilities": [ "fear" ] },
-      "mysterious": { "maxHp": 3, "int": 2, "wis": 2, "abilities": [ "blur", "hide" ] },
-      "savage":     { "maxHp": 2, "str": 3, "int": -1, "abilities": [ "prepare_charge", "charge" ] },
+      "curious":    { "int": 4, "wis": 3, "cha": 2 },
+      "forgotten":  { "int": 1, "wis": 1, "con": -1, "abilities": [ "hide" ] },
+      "cruel":      { "str": 2, "int": -1, "cha": -2, "abilities": [ "enrage" ] },
+      "beloved":    { "cha": 3, "wis": 2, "abilities": [ "inspire" ] },
+      "dread":      { "cha": 3, "abilities": [ "fear" ] },
+      "terrifying": { "cha": 3, "abilities": [ "fear" ] },
+      "mysterious": { "int": 2, "wis": 2, "abilities": [ "blur", "hide" ] },
+      "savage":     { "str": 3, "int": -1, "abilities": [ "prepare_charge", "charge" ] },
 
-      "alpha":      { "maxHp": 4, "str": 2, "dex": 1, "con": 1, "int": 1, "ac": -1 },
-      "venomous":   { "maxHp": 4, "abilities": [ "poison_bite" ] },
-      "sacred":     { "maxHp": 5, "wis": 3, "cha": 2, "abilities": [ "bless", "heal" ] },
-      "cursed":     { "maxHp": 5, "wis": 3, "int": 2, "abilities": [ "curse", "fear" ] },
-      "blessed":    { "maxHp": 6, "cha": 2, "abilities": [ "bless", "inspire", "heal", "shield" ] },
-      "noble":      { "maxHp": 4, "str": 2, "cha": 3, "abilities": [ "inspire", "charm" ] },
-      "majestic":   { "maxHp": 6, "str": 3, "con": 2, "cha": 3, "abilities": [ "inspire", "bless" ] },
+      "alpha":      { "str": 2, "dex": 1, "con": 1, "int": 1 },
+      "venomous":   { "abilities": [ "poison_bite" ] },
+      "sacred":     { "wis": 3, "cha": 2, "abilities": [ "bless", "heal" ] },
+      "cursed":     { "wis": 3, "int": 2, "abilities": [ "curse", "fear" ] },
+      "blessed":    { "cha": 2, "abilities": [ "bless", "inspire", "heal", "shield" ] },
+      "noble":      { "str": 2, "cha": 3, "abilities": [ "inspire", "charm" ] },
+      "majestic":   { "str": 3, "con": 2, "cha": 3, "abilities": [ "inspire", "bless" ] },
 
-      "dauntless":  { "maxHp": 8, "str": 3, "con": 2, "ac": -1, "abilities": [ ] },
-      "primal":     { "maxHp": 7, "str": 4, "dex": 1, "con": 2, "abilities": [ "maul", "enrage" ] },
-      "apex":       { "maxHp": 12, "str": 3, "dex": 2, "con": 2, "int": 1, "ac": -1, "abilities": [ "prepare_charge", "charge", "maul" ] },
-      "sovereign":  { "maxHp": 18, "str": 4, "con": 3, "wis": 2, "cha": 2, "abilities": [ "inspire", "fear", "bless" ] },
+      "dauntless":  { "str": 3, "con": 2, "abilities": [ ] },
+      "primal":     { "str": 4, "dex": 1, "con": 2, "abilities": [ "maul", "enrage" ] },
+      "apex":       {  "str": 3, "dex": 2, "con": 2, "int": 1,  "abilities": [ "prepare_charge", "charge", "maul" ] },
+      "sovereign":  {  "str": 4, "con": 3, "wis": 2, "cha": 2, "abilities": [ "inspire", "fear", "bless" ] },
 
-      "ancient":    { "maxHp": 10, "str": 2, "con": 2, "int": 3, "wis": 3, "ac": -2, "abilities": [ "second_wind", "bless", "curse", "fear", "charm", "inspire"] },
-      "warped":     { "maxHp": 14, "str": -2, "int": 2, "con": -2, "dex": 2, "abilities": [ "life_drain", "curse", "charm", "enrage", "psionic_blast" ] },
-      "giant":      { "maxHp": 18, "str": 4, "con": 2, "ac": -2, "abilities": [ "earthquake" ] }
+      "ancient":    {  "str": 2, "con": 2, "int": 3, "wis": 3, "abilities": [ "second_wind", "bless", "curse", "fear", "charm", "inspire"] },
+      "warped":     {  "str": -2, "int": 2, "con": -2, "dex": 2, "wis": -2, "cha": 2, "abilities": [ "life_drain", "curse", "charm", "enrage", "psionic_blast" ] },
+      "giant":      {  "str": 6, "dex": -2, "wis": 2, "con": 2, "abilities": [ "earthquake" ] }
     }
   },
   "monsterKind": {

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'bun:test';
 import Orsino from '../src/orsino';
 import Combat from '../src/orsino/Combat';
-import Dungeoneer, { BossRoom, Room } from '../src/orsino/Dungeoneer';
+import Dungeoneer, { BossRoom, Dungeon, Room } from '../src/orsino/Dungeoneer';
 import { ModuleRunner } from '../src/orsino/ModuleRunner';
 import AbilityHandler from '../src/orsino/Ability';
 import { GenerationTemplateType } from '../src/orsino/types/GenerationTemplateType';
@@ -135,10 +135,22 @@ describe('Orsino', () => {
     console.log("Generated party:", party.map(p => p.name));
   });
 
-  it('mod generator', async () => {
+  it.skip('mod gen', async () => {
+
     await AbilityHandler.instance.loadAbilities();
     await TraitHandler.instance.loadTraits();
+    const mod = await Generator.gen("module", { setting: "fantasy" });
 
+    // display each dungeon, cr + race
+    mod.dungeons.forEach((dungeon: Dungeon) => {
+      console.log(`${dungeon.dungeon_name} (CR target: ${dungeon.intendedCr})`);
+      console.log(` - Room count: ${dungeon.rooms.length} [CRs: ${dungeon.rooms.map((r: any) => r.targetCr).join(", ")}]`);
+    });
+  })
+
+  it('mod runner', async () => {
+    await AbilityHandler.instance.loadAbilities();
+    await TraitHandler.instance.loadTraits();
     const mod = await Generator.gen("module", { setting: "fantasy" });
     expect(mod).toHaveProperty('name');
     expect(mod).toHaveProperty('terrain');
