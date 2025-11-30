@@ -151,29 +151,30 @@ export class Commands {
     let defenderEffects = Fighting.gatherEffects(defender);
     let attackerEffects = Fighting.gatherEffects(attacker);
 
-    if (defenderEffects.evasion) {
-      let evasionBonus = defenderEffects.evasion as number || 0;
-      let whatNumberEvades = 20 - evasionBonus;
-      const evasionRoll = await roll(defender, `for evasion (must roll ${whatNumberEvades} or higher)`, 20);
-      if (evasionRoll.amount + evasionBonus >= 20) {
-        console.warn(`${Presenter.combatant(defender)} evades the attack!`);
-        // this.emit({ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">);
-        return [{ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">];
-      }
-    }
+    // note: moved to Fighting.attack
+    // if (defenderEffects.evasion) {
+    //   let evasionBonus = defenderEffects.evasion as number || 0;
+    //   let whatNumberEvades = 20 - evasionBonus;
+    //   const evasionRoll = await roll(defender, `for evasion (must roll ${whatNumberEvades} or higher)`, 20);
+    //   if (evasionRoll.amount >= whatNumberEvades) {
+    //     console.warn(`${Presenter.minimalCombatant(defender)} evades the attack!`);
+    //     // this.emit({ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">);
+    //     return [{ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">];
+    //   }
+    // }
 
     if (attackerEffects.bonusDamage) {
       let bonusDamage = attackerEffects.bonusDamage as number || 0;
       damage += bonusDamage;
       // this.note(`${Presenter.combatant(attacker)} has a bonus damage effect, adding ${bonusDamage} damage!`);
-      console.warn(`${Presenter.minimalCombatant(attacker)} has a bonus damage effect, adding ${bonusDamage} damage!`);
+      // console.warn(`${Presenter.minimalCombatant(attacker)} has a bonus damage effect, adding ${bonusDamage} damage!`);
     }
 
     if (attackerEffects[`${by}Multiplier`]) {
       let multiplier = attackerEffects[`${by}Multiplier`] as number || 1;
       damage = Math.floor(damage * multiplier);
       // this.note(`${Presenter.combatant(attacker)} has a ${by} damage multiplier effect, multiplying damage by ${multiplier}!`);
-      console.warn(`${Presenter.minimalCombatant(attacker)} has a ${by} damage multiplier effect, multiplying damage by ${multiplier}!`);
+      // console.warn(`${Presenter.minimalCombatant(attacker)} has a ${by} damage multiplier effect, multiplying damage by ${multiplier}!`);
     }
 
     // Apply resistances FIRST
@@ -192,14 +193,14 @@ export class Commands {
           damage = originalDamage + Math.floor(originalDamage * (1 - resistance));
         }
         // this.note(`${Presenter.combatant(defender)} has ${resistance > 0 ? "resistance" : resistance < 0 ? "vulnerability" : "no resistance"} to ${damageKind}, modifying damage from ${originalDamage} to ${damage}.`);
-        console.warn(`${Presenter.minimalCombatant(defender)} has ${resistance > 0 ? "resistance" : resistance < 0 ? "vulnerability" : "no resistance"} to ${damageKind}, modifying damage from ${originalDamage} to ${damage}.`);
+        // console.warn(`${Presenter.minimalCombatant(defender)} has ${resistance > 0 ? "resistance" : resistance < 0 ? "vulnerability" : "no resistance"} to ${damageKind}, modifying damage from ${originalDamage} to ${damage}.`);
       }
     }
 
     if (defenderEffects.damageReduction) {
       let reduction = defenderEffects.damageReduction as number || 0;
       damage = Math.max(0, damage - reduction);
-      console.warn(`${Presenter.combatant(defender)} has a damage reduction effect, reducing damage by ${reduction}!`);
+      // console.warn(`${Presenter.combatant(defender)} has a damage reduction effect, reducing damage by ${reduction}!`);
     }
 
     // apply damage
@@ -210,7 +211,7 @@ export class Commands {
       if (saved) {
         defender.hp = 1;
         // this.note(`${Presenter.combatant(defender)} drops to 1 HP instead of 0!`);
-        console.warn(`${Presenter.combatant(defender)} drops to 1 HP instead of 0!`);
+        // console.warn(`${Presenter.minimalCombatant(defender)} drops to 1 HP instead of 0!`);
       }
     }
 
@@ -243,10 +244,11 @@ export class Commands {
     target: Combatant;
     events: TimelessEvent[];
   }> {
-    const { damage, critical, success } = await Fighting.attack(roller, combatant, target, combatant.hasMissileWeapon || false);
+    let { damage, critical, success } = await Fighting.attack(roller, combatant, target, combatant.hasMissileWeapon || false);
     let events = await Commands.handleHit(
-      combatant, target, damage, critical, `${combatant.forename}'s ${combatant.weapon}`, success, combatant.damageKind || "true", context, roller
+      combatant, target, damage, critical, `${combatant.forename}'s ${Words.humanize(combatant.weapon)}`, success, combatant.damageKind || "true", context, roller
     );
+    success = success && events.some(e => e.type === "hit");
     return { success, target, events };
   }
 

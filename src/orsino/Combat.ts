@@ -51,20 +51,28 @@ export default class Combat {
 
   protected note(message: string) { this.outputSink(message); }
 
-  protected emit(event: Omit<GameEvent, "turn">): void {
+  protected emit(event: Omit<GameEvent, "turn">, prefix = ""): void {
     let e: CombatEvent = { ...event, turn: this.turnNumber } as CombatEvent;
     this.journal.push(e);
     if (Events.present(e) !== "") {
       this.note(
         // Events.iconForEvent(e) + " " +
+        prefix +
         Events.present(e)
       );
     }
   }
 
-  protected emitAll(events: Omit<GameEvent, "turn">[]): void {
+  protected emitAll(events: Omit<GameEvent, "turn">[], message?: string): void {
     // could collect by statuses?
-    events.forEach(e => this.emit(e));
+    if (message) {
+      this.note(Stylist.bold(message));
+      // let arrow = "\u2192 "; // →
+      let arrow = " └ ";
+      events.forEach(e => this.emit(e, arrow));
+    } else {
+      events.forEach(e => this.emit(e));
+    }
   }
 
   private async determineInitiative(): Promise<{ combatant: any; initiative: number }[]> {
@@ -131,7 +139,7 @@ export default class Combat {
       return Combat.maxSpellSlotsForLevel(combatant.level || 1) + Math.max(0, Fighting.statMod(combatant.wis));
     }
 
-    return 0;
+    return Combat.maxSpellSlotsForLevel(combatant.level || 1) 
   }
 
   validActions(combatant: Combatant, allies: Combatant[], enemies: Combatant[]): Ability[] {
@@ -280,7 +288,7 @@ export default class Combat {
       targetOrTargets = await this.select(`Select target(s) for ${action.name}:`, validTargets.map(t => ({
         name: Array.isArray(t) ? t.map(c => c.forename).join("; ") : Presenter.combatant(t),
         value: t,
-        short: Array.isArray(t) ? t.map(c => c.forename).join(", ") : Presenter.combatant(t),
+        short: Array.isArray(t) ? t.map(c => c.forename).join(", ") : Presenter.minimalCombatant(t),
         disabled: false
       })), combatant);
     } else if (action.target.includes("randomEnemies") && action.target.length === 2) {
@@ -311,7 +319,7 @@ export default class Combat {
     let ctx: CombatContext = { subject: combatant, allies, enemies };
     let { events } = await AbilityHandler.perform(action, combatant, targetOrTargets, ctx, Commands.handlers(this.roller, team!));
     // events.forEach(e => this.emit({ ...e, turn: this.turnNumber } as CombatEvent));
-    this.emitAll(events);
+    this.emitAll(events, Combat.describeAbility(action, combatant));
 
     return { haltRound: false };
   }
@@ -360,15 +368,21 @@ export default class Combat {
     }
 
     // invoke the action
-    let verb = action.type === "spell" ? 'casts' : 'readies';
-    let actionName = Stylist.italic(action.name.toLowerCase());
-    let message = (combatant.forename + (verb ? ` ${verb} ` : " ") + actionName + "."); // for " + (Array.isArray(targetOrTargets) ? + targetOrTargets.map(t => Presenter.minimalCombatant(t)).join(", ") : Presenter.minimalCombatant(targetOrTargets)) + ".");
-    this.note(message);
+    // this.note(message);
     let team = this.teams.find(t => t.combatants.includes(combatant));
     let ctx: CombatContext = { subject: combatant, allies, enemies };
     let { events } = await AbilityHandler.perform(action, combatant, targetOrTargets, ctx, Commands.handlers(this.roller, team!));
     // events.forEach(e => this.emit({ ...e, turn: this.turnNumber } as CombatEvent));
-    this.emitAll(events);
+    this.emitAll(events, Combat.describeAbility(action, combatant));
+    
+    return { haltRound: false };
+  }
+
+  static describeAbility(action: Ability, user: Combatant): string {
+    let verb = action.type === "spell" ? 'casts' : 'readies';
+    let actionName = Stylist.italic(action.name.toLowerCase());
+    let message = (user.forename + (verb ? ` ${verb} ` : " ") + actionName + "."); // for " + (Array.isArray(targetOrTargets) ? + targetOrTargets.map(t => Presenter.minimalCombatant(t)).join(", ") : Presenter.minimalCombatant(targetOrTargets)) + ".");
+    return message;
   }
 
   async turn(combatant: Combatant): Promise<{ haltRound: boolean }> {
@@ -407,13 +421,13 @@ export default class Combat {
     // do we have an effect changing our allegiance? in which case -- flip our allies/enemies
     let allegianceEffect = combatant.activeEffects?.find(e => e.effect.changeAllegiance);
     if (allegianceEffect) {
-      this.note(`${Presenter.combatant(combatant)} is under the effect of ${allegianceEffect.name} and has switched sides!`);
+      this.note(`${combatant.forename} is under the effect of ${allegianceEffect.name} and has switched sides!`);
       [allies, validTargets] = [validTargets, allies];
     }
 
     let attacksPerTurn = combatant.attacksPerTurn || 1;
     for (let i = 0; i < attacksPerTurn; i++) {
-      if (combatant.playerControlled) {
+      if (combatant.playerControlled && !allegianceEffect) {
         let result = await this.pcTurn(combatant, validTargets, allies);
         if (result.haltRound) {
           return { haltRound: true };
@@ -495,17 +509,22 @@ export default class Combat {
     }
 
     // tick down status
+    let expiryEvents: StatusExpireEvent[] = [];
     Combat.living(this.allCombatants).forEach(combatant => {
       if (combatant.activeEffects) {
         combatant.activeEffects.forEach(it => { if (it.duration) { it.duration-- } });
         for (const status of combatant.activeEffects) {
           if (status.duration === 0) {
-            this.emit({ type: "statusExpire", subject: combatant, effectName: status.name } as Omit<StatusExpireEvent, "turn">);
+            // this.emit({ type: "statusExpire", subject: combatant, effectName: status.name } as Omit<StatusExpireEvent, "turn">);
+            expiryEvents.push({ type: "statusExpire", subject: combatant, effectName: status.name, turn: this.turnNumber });
           }
         }
       }
       combatant.activeEffects = combatant.activeEffects?.filter(it => (it.duration || 0) > 0) || [];
     });
+    if (expiryEvents.length > 0) {
+      this.emitAll(expiryEvents, "Effects expire.");
+    }
 
     for (const team of this.teams) {
       if (team.combatants.every((c: any) => c.hp <= 0)) {

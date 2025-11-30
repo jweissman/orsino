@@ -78,14 +78,14 @@
     "name": "Roundhouse Kick",
     "type": "skill",
     "aspect": "physical",
-    "description": "Make a powerful kick that strikes all enemies for 1d4 + 2*level bludgeoning damage.",
+    "description": "Make a powerful kick that strikes all enemies for 1d4 + level/2 bludgeoning damage.",
     "target": [
       "enemies"
     ],
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d4+2*#level",
+        "amount": "=1d4+round(#level/2)",
         "kind": "bludgeoning"
       }
     ]
@@ -149,6 +149,7 @@
           "name": "Preparing to Charge",
           "effect": {
             "toHit": 2,
+            "bonusDamage": 2,
             "compelNextMove": "charge",
             "onAttack": [
               {
@@ -382,20 +383,17 @@
   },
 
   "smite": {
-    "name": "Smite",
-    "type": "skill",
+    "name": "Smite Evil",
+    "type": "spell",
     "aspect": "divine",
-    "description": "Smite an enemy, dealing 2d6 * level radiant damage after a successful hit.",
+    "description": "Smite an enemy, dealing 1d8 + level radiant damage.",
     "target": [
       "enemy"
     ],
     "effects": [
       {
-        "type": "attack"
-      },
-      {
         "type": "damage",
-        "amount": "=#level + 2d6",
+        "amount": "=#level + 1d8",
         "kind": "radiant"
       }
     ]

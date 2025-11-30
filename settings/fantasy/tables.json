@@ -69,36 +69,70 @@
         "Wick"
       ],
       "cleric": [
-        "Palmer",
-        "Proctor",
-        "Friar",
-        "Judge",
+        "Abbott",
+        "Ainsworth",
+        "Bailiff",
         "Bishop",
         "Cardinal",
-        "Abbott",
         "Chancellor",
+        "Deacon",
+        "Donegan",
+        "Edificer",
+        "Elsworth",
+        "Friar",
+        "Gaoler",
+        "Guardian",
+        "Healer",
+        "Hippias",
+        "Hurch",
+        "Jeremiah",
+        "Judge",
+        "Lamentation",
+        "Langton",
+        "Lector",
+        "Mason",
+        "Monk",
+        "Nathaniel",
+        "Novice",
+        "Palmer",
+        "Parson",
+        "Pastor",
         "Pious",
-        "Vicar"
+        "Preacher",
+        "Proctor",
+        "Questor",
+        "Vicar",
+        "Warden",
+        "Wright"
       ],
       "bard": [
-        "Canter",
-        "Singer",
-        "Harper",
-        "Piper",
-        "Minstrel",
-        "Joy",
-        "Drummer",
-        "Playfair",
-        "Lyre",
-        "Silvertongue",
-        "Storykeeper",
-        "Fable",
+        "Avalon",
         "Ballard",
-        "Wren",
+        "Caden",
+        "Canter",
+        "Drummer",
+        "Echo",
+        "Fiddler",
+        "Fable",
+        "Goldsound",
+        "Harper",
+        "Imbrian",
+        "Joy",
+        "Jubilation",
         "Lark",
-        "Rhymer",
+        "Lyre",
+        "Minstrel",
+        "Notarius",
+        "Piper",
         "Plainsong",
-        "Goldsound"
+        "Playfair",
+        "Quisling",
+        "Rhymer",
+        "Silvertongue",
+        "Singer",
+        "Storykeeper",
+        "Wren",
+        "Yardbird"
       ],
       "ranger": [
         "Fowler",
@@ -1352,10 +1386,10 @@
   "npcTypesForDungeon": {
     "discriminator": "dungeonType",
     "groups": {
-      "temple": [ "Acolyte", "Cleric", "Cultist", "Sage", "Elder" ],
+      "temple": [ "Acolyte", "Cleric", "Cultist", "Sage", "Elder", "Guardian", "Elder", "Death Priest"  ],
       "mine": [ "Miner", "Dweller", "Brute", "Thug", "Lurker" ],
       "fortress": [ "Soldier", "Mercenary", "Warrior", "Chieftain" ],
-      "tomb": [ "Novice", "Devotee", "Mendicant", "Creep", "Acolyte", "Gravedigger", "Cultist" ],
+      "tomb": [ "Novice", "Acolyte", "Gravedigger", "Cultist", "Bandit", "Tombrobber" ],
       "library": [ "Scholar", "Sage", "Mage", "Apprentice" ]
     }
   },
@@ -1363,19 +1397,22 @@
   "bossNpcTypesForDungeon": {
     "discriminator": "dungeonType",
     "groups": {
-      "temple": [ "High Priest", "Sage", "Guardian", "Elder", "Death Priest" ],
-      "mine": [ "Warlord", "Thug", "Lurker" ],
-      "fortress": [ "Assassin", "Warrior", "Chieftain", "Warlord", "General" ],
-      "tomb": [ "Shaman King", "Necromancer", "Death Priest" ],
-      "library": [ "Mage", "Archmage", "Hierophant", "Lord" ]
+      "temple": [ "High Priest" ],
+      "mine": [ "Warlord" ],
+      "fortress": [ "General" ],
+      "tomb": [ "Necromancer" ],
+      "library": [ "Archmage" ]
     }
   },
   "npcTypeModifier": {
     "discriminator": "type",
     "groups": {
       "Novice":       { "str": -2, "dex": -2, "int": 1, "wis": 1, "cha": -1, "abilities": [] },
+      "Herald":       { "str": -1, "dex": -1, "int": 1, "wis": -1, "cha": 2, "abilities": ["inspire"] },
+      "Benefactor":   { "str": -1, "dex": -1, "int": 2, "wis": -1, "cha": 2, "abilities": ["cure"] },
+      "Tombrobber":   { "str": -1, "dex": 1, "int": -1, "wis": -1, "cha": 2, "abilities": ["hide"] },
 
-      "Apprentice":    { "str": -1, "dex": -1, "int": 2, "wis": 1, "cha": -1, "abilities": [ "missile" ] },
+      "Apprentice":   { "str": -1, "dex": -1, "int": 2, "wis": 1, "cha": -1, "abilities": [ "missile" ] },
       "Devotee":      { "str": -1, "dex": -1, "int": 1, "wis": 2, "cha": 1, "abilities": ["heal"] },
       "Mendicant":    { "str": -2, "dex": -2, "con": -2, "int": 1, "wis": 2, "cha": 2, "abilities": [] },
       "Whelp":        { "str": -1, "dex": -1, "abilities": [] },
@@ -2388,12 +2425,26 @@
         "Nocturne"
       ],
       "fox": [
-        "Foxy",
-        "Reynard",
-        "Vixen",
-        "Sly",
+        "Alfon", "Axel",
+        "Brighttail", "Burrow",
+        "Carrot",
+        "Clever",
+        "Cunning",
+        "Dash",
+        "Deerfoot",
+        "Echo",
+        "Edgar",
         "Fennec",
-        "Rusty"
+        "Foxy",
+        "Greyfur",
+        "Reynard",
+        "Rusty",
+        "Salem",
+        "Sly",
+        "Titus",
+        "Ulam",
+        "Vixen",
+        "Zed"
       ],
       "hawk": [
         "Hawkeye",
@@ -2410,53 +2461,89 @@
         "Burrow"
       ],
       "ram": [
-        "Rambler",
         "Bighorn",
-        "Horns",
+        "Bunctious",
         "Goliath",
-        "Bunctious"
+        "Horns",
+        "Rambler",
+        "Rammer",
+        "Tornado",
+        "Wooly"
       ],
       "mole": [
-        "Moley",
-        "Diggs",
+        "Abram",
+        "Bore",
         "Burrower",
+        "Chester",
+        "Digby",
         "Digger",
-        "Tunnel"
+        "Diggs",
+        "Echofinder",
+        "Felt",
+        "Geyser",
+        "Moley",
+        "Tunnel",
+        "Underfoot"
       ],
       "raven": [
-        "Ravenclaw",
+        "Blackwing",
+        "Caw",
+        "Corvus",
         "Edgar",
-        "Poe",
+        "Feather",
         "Nevermore",
-        "Caw"
+        "Poe",
+        "Ravenclaw",
+        "Shadowgale",
+        "Storm",
+        "Warlock"
       ],
       "rabbit": [
         "Bun",
+        "Cottontail",
+        "Daisy",
+        "Easter",
         "Flopsy",
-        "Thumper",
         "Hopper",
-        "Cottontail"
+        "Thumper",
+        "Nibbles",
+        "Peter",
+        "Snowball"
       ],
       "ferret": [
+        "Ace",
+        "Bandito",
+        "Bandit",
         "Fuzzy",
+        "Nibbler",
+        "Rocky",
+        "Slink",
         "Slinky",
         "Whiskers",
-        "Nibbler",
-        "Slink"
+        "Zippy"
       ],
       "pony": [
+        "Bilbo",
+        "Samwise",
+        "Merry",
+        "Frodo",
+        "Gandalf",
         "Pippin",
         "Shadowfax",
-        "Gandalf",
-        "Frodo",
-        "Bilbo"
+        "Rohan",
+        "Epona"
       ],
       "goat": [
+        "Alpine",
         "Billy",
-        "Nanny",
-        "Goliath",
         "Bleat",
-        "Horns"
+        "Carkey",
+        "Dreamer",
+        "Goliath",
+        "Horns",
+        "Nanny",
+        "Tucker",
+        "Willy"
       ],
       "squirrel": [
         "Nutty",
@@ -2728,87 +2815,30 @@
   "monsterStat": {
     "discriminator": "monster_type",
     "groups": {
-      "giant": {
-        "hp": 45,
-        "str": 4,
-        "dex": -2,
-        "con": 3,
-        "int": -2,
-        "wis": 0,
-        "cha": -1
-      },
-      "beast": {
-        "hp": 10,
-        "str": 2,
-        "dex": 1,
-        "con": 1,
-        "int": -2,
-        "wis": 0,
-        "cha": -1
-      },
-      "undead": {
-        "hp": 15,
-        "str": 0,
-        "dex": 0,
-        "con": -2,
-        "int": 2,
-        "wis": 1,
-        "cha": -3
-      },
-      "demon": {
-        "hp": 18,
-        "str": 4,
-        "dex": 2,
-        "con": 2,
-        "int": 1,
-        "wis": 0,
-        "cha": -2
-      },
-      "elemental": {
-        "hp": 12,
-        "str": 0,
-        "dex": 3,
-        "con": 0,
-        "int": 0,
-        "wis": 1,
-        "cha": 0
-      },
-      "aberration": {
-        "hp": 26,
-        "str": 2,
-        "dex": 1,
-        "con": 2,
-        "int": 3,
-        "wis": 1,
-        "cha": -2
-      },
-      "construct": {
-        "hp": 14,
-        "str": 3,
-        "dex": -1,
-        "con": 4,
-        "int": 0,
-        "wis": 0,
-        "cha": -1
-      },
-      "celestial": {
-        "hp": 18,
-        "str": 2,
-        "dex": 1,
-        "con": 2,
-        "int": 1,
-        "wis": 3,
-        "cha": 2
-      },
-      "fey": {
-        "hp": 10,
-        "str": -1,
-        "dex": 2,
-        "con": 0,
-        "int": 1,
-        "wis": 2,
-        "cha": 3
-      }
+      "giant": { "hp": 45, "str": 4, "dex": -2, "con": 3, "int": -2, "wis": 0, "cha": -1 },
+      "beast": { "hp": 10, "str": 2, "dex": 1, "con": 1, "int": -2, "wis": 0, "cha": -1 },
+      "undead": { "hp": 15, "str": 0, "dex": 0, "con": -2, "int": 2, "wis": 1, "cha": -3 },
+      "demon": { "hp": 18, "str": 4, "dex": 2, "con": 2, "int": 1, "wis": 0, "cha": -2 },
+      "elemental": { "hp": 12, "str": 0, "dex": 3, "con": 0, "int": 0, "wis": 1, "cha": 0 },
+      "aberration": { "hp": 26, "str": 2, "dex": 1, "con": 2, "int": 3, "wis": 1, "cha": -2 },
+      "construct": { "hp": 14, "str": 3, "dex": -1, "con": 4, "int": 0, "wis": 0, "cha": -1 },
+      "celestial": { "hp": 18, "str": 2, "dex": 1, "con": 2, "int": 1, "wis": 3, "cha": 2 },
+      "fey": { "hp": 10, "str": -1, "dex": 2, "con": 0, "int": 1, "wis": 2, "cha": 3 }
+    }
+  },
+
+  "monsterTraits": {
+    "discriminator": "monster_type",
+    "groups": {
+      "giant": [[ "large" ]],
+      "undead": [[ "undead" ]],
+      "demon": [[ "fiendish" ]],
+      "elemental": [[ ]],
+      "aberration": [[ "outsider" ]],
+      "construct": [[ "construct" ]],
+      "celestial": [[ "celestial" ]],
+      "fey": [[]],
+      "beast": [[]]
     }
   },
   "monsterXp": {
@@ -2836,7 +2866,7 @@
       "construct": "2d10",
       "celestial": "3d10",
       "fey": "1d10",
-      "beast": "1d6"
+      "beast": "0"
     }
   },
   

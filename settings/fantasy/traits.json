@@ -802,7 +802,8 @@
         "immunePoison": true,
         "immuneCharm": true,
         "immuneSleep": true,
-        "immuneDisease": true
+        "immuneDisease": true,
+        "resistRadiant": -1
       }
     }]
   },
@@ -818,6 +819,79 @@
         "resistPiercing": 0.5,
         "resistSlashing": 0.5,
         "evasion": 5
+      }
+    }]
+  },
+  "fiendish": {
+    "name": "Fiendish",
+    "type": "template",
+    "description": "A creature from the lower planes, imbued with dark powers.",
+    "statuses": [{
+      "name": "Fiendish Resilience",
+      "description": "Resistant to fire and poison damage. Immune to charm effects.",
+      "effect": {
+        "resistFire": 0.5,
+        "resistPoison": 0.5,
+        "immuneCharm": true
+      }
+    }]
+  },
+  "celestial": {
+    "name": "Celestial",
+    "type": "template",
+    "description": "A being of light and goodness, often serving a higher power.",
+    "statuses": [{
+      "name": "Celestial Radiance",
+      "description": "Resistant to radiant and necrotic damage. Gain +1d4 healing on all healing spells.",
+      "effect": {
+        "resistRadiant": 0.5,
+        "resistNecrotic": 0.5,
+        "bonusHealing": "1d4"
+      }
+    }]
+  },
+  "construct": {
+    "name": "Construct",
+    "type": "template",
+    "description": "A magically animated object or machine.",
+    "statuses": [{
+      "name": "Constructed Resilience",
+      "description": "Immune to poison, sleep and disease. Weak to physical damage.",
+      "effect": {
+        "immunePoison": true,
+        "immuneDisease": true,
+        "immuneSleep": true,
+        "resistBludgeoning": 0.5,
+        "resistPiercing": 0.5,
+        "resistSlashing": 0.5
+      }
+    }]
+  },
+  "outsider": {
+    "name": "Outsider",
+    "type": "template",
+    "description": "A being from another plane of existence.",
+    "statuses": [{
+      "name": "Planar Adaptation",
+      "description": "Resistant to elements and gain +2 to save vs magic.",
+      "effect": {
+        "resistFire": 0.5,
+        "resistCold": 0.5,
+        "resistLightning": 0.5,
+        "saveVersusMagic": 2
+      }
+    }]
+  },
+  "huge": {
+    "name": "Huge",
+    "type": "template",
+    "description": "A creature of enormous size and strength.",
+    "statuses": [{
+      "name": "Titanic Strength",
+      "description": "Gain +2 to hit and +2 bonus damage with melee attacks.",
+      "effect": {
+        "toHit": 2,
+        "bonusDamage": 2
       }
     }]
   }

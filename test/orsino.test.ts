@@ -10,9 +10,12 @@ import CharacterRecord from '../src/orsino/rules/CharacterRecord';
 import { Combatant } from '../src/orsino/types/Combatant';
 import Presenter from '../src/orsino/tui/Presenter';
 import TraitHandler from '../src/orsino/Trait';
+import { loadSetting } from '../src/orsino/loader';
 
 describe('Orsino', () => {
-  const orsino = new Orsino('fantasy');
+  // before(async () => {
+    Generator.setting = loadSetting('fantasy'); // : Generator.defaultSetting;
+  // });
   it('generate male name', async () => {
     const response = await Generator.gen("name", { group: 'male' });
     // expect(response).toMatch(/John|Michael|David|James|Robert/);
@@ -25,17 +28,18 @@ describe('Orsino', () => {
     expect(response).toMatch(/[A-Z][a-z]+/);
   });
 
-  // it('generate pc', async () => {
-  //   const response = await orsino.gen("pc", { gender: 'male' });
-  //   expect(response.name).toMatch(/[A-Z][a-z]+/);
-  //   expect(typeof response.age).toBe("number");
-  //   expect(response.age).toBeGreaterThanOrEqual(16);
-  // });
+  it('generate pc', async () => {
+    const response = await Generator.gen("pc", { gender: 'male' });
+    expect(response.name).toMatch(/[A-Z][a-z]+/);
+    expect(typeof response.age).toBe("number");
+    expect(response.age).toBeGreaterThanOrEqual(16);
+  });
 
   it("generate room", async () => {
-    const response = await Generator.gen("room", { targetCr: 12 });
-    expect(response.narrative).toMatch(/[A-Z][a-z]+/);
-    expect(response.room_size).toMatch(/tiny|small|medium|large|enormous/);
+    const room = await Generator.gen("room", { setting: "fantasy", targetCr: 12 });
+    // console.table(room);
+    expect(room.narrative).toMatch(/[A-Z][a-z\s]+/);
+    expect(room.room_size).toMatch(/tiny|small|medium|large|enormous/);
   });
 
   it('pc gen', async () => {
@@ -112,6 +116,25 @@ describe('Orsino', () => {
     }
     expect(crawler.winner).toBeDefined();
     expect(crawler.winner).toMatch(/Player|Enemy/);
+  });
+
+  it('name presentation', async () => {
+    const pc = await Generator.gen("pc", { setting: "fantasy" });
+    const npc = await Generator.gen("npc", { setting: "fantasy", _targetCr: pc.level });
+    const animal = await Generator.gen("animal", { setting: "fantasy" });
+    const monster = await Generator.gen("monster", { setting: "fantasy" });
+
+    console.log("\n--- Character Presentations (minimal) ---\n");
+    console.log("PC:      ", Presenter.minimalCombatant(pc as Combatant));
+    console.log("NPC:     ", Presenter.minimalCombatant(npc as Combatant));
+    console.log("Animal:  ", Presenter.minimalCombatant(animal as Combatant));
+    console.log("Monster: ", Presenter.minimalCombatant(monster as Combatant));
+
+    console.log("\n--- Character Presentations (full) ---\n");
+    console.log("PC:      ", Presenter.combatant(pc as Combatant));
+    console.log("NPC:     ", Presenter.combatant(npc as Combatant));
+    console.log("Animal:  ", Presenter.combatant(animal as Combatant));
+    console.log("Monster: ", Presenter.combatant(monster as Combatant));
   });
 
   it.skip('party generator', async () => {

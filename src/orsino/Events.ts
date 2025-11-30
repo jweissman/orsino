@@ -142,7 +142,7 @@ export default class Events {
         return `${subjectName} upgrades ${event.stat} by ${event.amount} (now ${event.newValue}).`;
 
       case "hit":
-        let message = `${targetName} takes ${event.damage} ${event.damageKind} damage from ${event.by}.`;
+        let message = `${targetName} takes ${Stylist.bold(event.damage.toString())} ${event.damageKind} damage from ${event.by}.`;
         if (event.critical) { message += " Critical hit!"; }
         if (event.target?.playerControlled) {
           message = Stylist.colorize(message, 'red');
@@ -154,14 +154,14 @@ export default class Events {
       case "reaction":
         return `${subjectName} reacts ${(event.reactionName)} from ${event.target?.forename}.`;
       case "summon":
-        return `${subjectName} summons ${event.summoned.map(s => s.name).join(", ")}.`;
+        return `${subjectName} summons ${event.summoned.map(s => s.forename + " the " + s.class).join(", ")}.`;
       case "save":
         if (event.immune) {
-          return `${subjectName} is immune and automatically succeeds on their Save vs ${event.versus} (DC ${event.dc}).`;
+          return `${subjectName} is immune.`; // and automatically succeeds on their Save vs ${event.versus} (DC ${event.dc}).`;
         } else if (event.success) {
-          return `${subjectName} succeeds on their Save vs ${event.versus} (DC ${event.dc}).`;
+          return '';  //`${subjectName} succeeds on their Save vs ${event.versus} (DC ${event.dc}).`;
         } else {
-          return `${subjectName} fails their Save vs ${event.versus} (DC ${event.dc}).`;
+          return '';  //`${subjectName} fails their Save vs ${event.versus} (DC ${event.dc}).`;
         }
       default:
         return never(event);

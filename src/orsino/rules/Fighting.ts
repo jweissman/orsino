@@ -23,26 +23,26 @@ export class Fighting {
 
   static turnBonus(combatant: Combatant, keys: (string)[] = []): { [key: string]: number } {
     let bonuses: { [key: string]: number } = {};
-    let fx = [ 
+    let fx = [
       ...(combatant.passiveEffects || []),
       ...(combatant.activeEffects || [])
     ]
     // if (combatant.activeEffects) {
-      fx.forEach(it => {
-        // console.log("Considering turn bonus effect:", it);
-        if (it.effect) {
-          Object.entries(it.effect).forEach(([key, value]) => {
-            if (key === 'by') {
-              return;
+    fx.forEach(it => {
+      // console.log("Considering turn bonus effect:", it);
+      if (it.effect) {
+        Object.entries(it.effect).forEach(([key, value]) => {
+          if (key === 'by') {
+            return;
+          }
+          if (typeof value === "number") {
+            if (keys.length === 0 || keys.includes(key)) {
+              bonuses[key] = (bonuses[key] || 0) + value;
             }
-            if (typeof value === "number") {
-              if (keys.length === 0 || keys.includes(key)) {
-                bonuses[key] = (bonuses[key] || 0) + value;
-              }
-            }
-          });
-        }
-      });
+          }
+        });
+      }
+    });
     // }
     // delete bonuses.by;
     return bonuses;
@@ -143,7 +143,7 @@ export class Fighting {
 
     let toHitTurnBonus = this.turnBonus(attacker, ["toHit"]).toHit || 0;
     const toHitBonus = (isMissile ? dexMod : strMod)  // DEX affects accuracy for missiles
-                    + toHitTurnBonus;                 // Any temporary bonuses to hits
+      + toHitTurnBonus;                 // Any temporary bonuses to hits
     const damageBonus = isMissile ? Math.max(0, dexMod) : Math.max(0, strMod);
 
     const thac0 = this.thac0(attacker.level);
@@ -183,22 +183,42 @@ export class Fighting {
 
       let weaponVerb =
         attacker.hasMissileWeapon ? "shoot" : (this.weaponDamageKindVerbs[attacker.damageKind || "slashing"] || "strike");
-        // attacker.damageKind.replace(/ing$/, ''); // crude way to get verb from damage kind
+      // attacker.damageKind.replace(/ing$/, ''); // crude way to get verb from damage kind
       damage = await Deem.evaluate(attacker.attackDie, {
         roll, subject: attacker,
         description: `to ${weaponVerb} ${defender.forename} with ${Words.humanize(attacker.weapon)}`
       });
 
-      if (damageBonus > 0) {
-        console.log(`Damage increased by ${isMissile ? "DEX" : "STR"} modifier of ${damageBonus}.`);
-      }
+      // if (damageBonus > 0) {
+      //   console.log(`Damage increased by ${isMissile ? "DEX" : "STR"} modifier of ${damageBonus}.`);
+      // }
 
       if (critical) {
         criticalDamage = Math.max(1, Math.round(damage * 0.2 * Math.max(1, Math.floor(attacker.level / 5))));
-        console.log(`Critical attack adds ${criticalDamage} extra damage.`);
+        // console.log(`Critical attack adds ${criticalDamage} extra damage.`);
       }
 
       damage = damage + criticalDamage + damageBonus;
+      let defenderEffects = Fighting.gatherEffects(defender);
+      // let attackerEffects = Fighting.gatherEffects(attacker);
+
+      if (defenderEffects.evasion) {
+        let evasionBonus = defenderEffects.evasion as number || 0;
+        let whatNumberEvades = 20 - evasionBonus;
+        const evasionRoll = await roll(defender, `for evasion (must roll ${whatNumberEvades} or higher)`, 20);
+        if (evasionRoll.amount >= whatNumberEvades) {
+          // console.warn(`${Presenter.minimalCombatant(defender)} evades the attack!`);
+          // this.emit({ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">);
+          // return [{ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">];
+          description += ` ${defender.name} evades the attack!`;
+          return {
+            success: false,
+            damage: 0,
+            description,
+            critical: false
+          };
+        }
+      }
     }
 
     return {

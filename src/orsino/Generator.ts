@@ -116,7 +116,7 @@ export default class Generator {
     animal: new Template('animal', {
       name: '=oneOf("Wolf", "Bear", "Giant Spider", "Giant Snake", "Giant Giant")',
       cr: '=oneOf(0.25, 0.5, 1, 2, 3)',
-      hp: '=lookup(name, cr) * 10 + rand(1, 10)',
+      hp: 25,
       ac: '=10 + floor(cr * 2)',
       str: '=floor(cr * 2) + rand(1, 6)',
       dex: '=floor(cr * 2) + rand(1, 6)',
@@ -135,7 +135,7 @@ export default class Generator {
     monster: new Template('monster', {
       name: '=oneOf("Goblin", "Orc", "Troll", "Bandit", "Skeleton")',
       cr: '=oneOf(0.25, 0.5, 1, 2, 3)',
-      hp: '=lookup(name, cr) * 10 + rand(1, 10)',
+      hp: 50, //'=lookup(name, cr) * 10 + rand(1, 10)',
       ac: '=10 + floor(cr * 2)',
       str: '=floor(cr * 2) + rand(1, 6)',
       dex: '=floor(cr * 2) + rand(1, 6)',

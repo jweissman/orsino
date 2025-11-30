@@ -61,6 +61,7 @@ program
     if (tabular) {
       let cleanResponse: { [key: string]: any } = {
         ...response,
+        gear: response.gear ? response.gear.join(", ") : undefined,
         abilities: response.abilities ? response.abilities.join(", ") : undefined,
         traits: response.traits ? response.traits.join(", ") : undefined,
         creatures: response.creatures ? response.creatures.map((c: any) => c.name).join("; ") : undefined,

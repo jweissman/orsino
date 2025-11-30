@@ -75,7 +75,7 @@ export default class Presenter {
     let abilityHandler = AbilityHandler.instance;
     for (let abilityName of combatant.abilities || []) {
       let ability = abilityHandler.getAbility(abilityName);
-      console.log(`  ${Stylist.colorize(ability.name, 'magenta')} (${ability ? ability.description : 'No description available'})`);
+      console.log(`  ${Stylist.colorize(ability.name, 'magenta').padEnd(28)} ${ability ? ability.description : 'No description available'}`);
     }
 
     // traits
@@ -113,25 +113,27 @@ export default class Presenter {
     const hpBar = Stylist.prettyValue(combatant.hp, combatant.maxHp);
     const color = this.colors[Math.floor(hpRatio * (this.colors.length - 1))] || this.colors[0];
 
-    let combatClass = combatant.class || combatant.type;
-    let classInfo = combatClass ? `, ${Words.capitalize(combatant.race || '')} ${Words.capitalize(combatClass)} ` : '';
-    const effective = Fighting.effectiveStats(combatant);
+    let combatClass = combatant.class;
+    let combatKind = (combatant as any).kind || combatant.race || '';
+    let classInfo = combatClass ? `Lvl. ${combatant.level.toString().padEnd(2)} ${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '';
+    // const effective = Fighting.effectiveStats(combatant);
     // const stats = { STR: effective.str, DEX: effective.dex, INT: effective.int, WIS: effective.wis, CHA: effective.cha, CON: effective.con };
     // const statInfo = Object.entries(stats).map(([key, value]) => `${key}: ${value}`).join(', ');
     //Presenter.statLine(combatant);
 
     const activeEffectNames = combatant.activeEffects?.map(e => e.name) || [];
     if (activeEffectNames.length > 0) {
-      classInfo += ` [${activeEffectNames.join(', ')}]`;
+      classInfo = classInfo.padEnd(32) + ' | ' + Words.humanizeList(activeEffectNames);
     }
 
     let friendly = ((combatant as any).friendly || false) || combatant.playerControlled;
-    let lhs = `${Stylist.format(
+    let lhs = `${Stylist.colorize(hpBar, color)} ${Stylist.format(
       Stylist.colorize(combatant.name, friendly ? 'cyan' : 'yellow'),
       'bold'
-    )}${classInfo}`;
-    let rhs = `(${this.statLine(combatant)}, HP: ${Stylist.colorize(hpBar, color)} ${combatant.hp}/${combatant.maxHp}, AC: ${effective.ac}, Level: ${combatant.level})`;
-    return `${lhs} ${rhs}`;
+    ).padEnd(40)}${classInfo}`;
+    // let rhs = `(${this.statLine(combatant)})`;
+    // return `${lhs} ${rhs}`;
+    return lhs;
   }
 
   static statLine = (combatant: Combatant) => {

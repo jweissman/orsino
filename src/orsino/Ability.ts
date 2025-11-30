@@ -399,7 +399,11 @@ export default class AbilityHandler {
       for (let i = 0; i < amount; i++) {
         // let summon = await Deem.evaluate(effect.creature as string, { race: user.race });
         let options = effect.options || {};
-        let summon = await Generator.gen((effect.creature || "animal") as GenerationTemplateType, { race: user.race, ...options });
+        let summon = await Generator.gen((effect.creature || "animal") as GenerationTemplateType, {
+          race: user.race,
+          _targetCr: Math.max(1, Math.floor((user.level || 1) / 2)),
+          ...options
+        });
         // console.log(`Summoned ${summon.name} (${summon.race} companion using ${user.race} race)!`);
         summoned.push(summon as Combatant);
       }

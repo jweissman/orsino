@@ -181,7 +181,7 @@ export default class CharacterRecord {
       hitPointIncrease = Math.max(1, hitPointIncrease);
       pc.maxHp += hitPointIncrease;
       pc.hp = pc.maxHp;
-      console.log(`${Presenter.combatant(pc)} leveled up to level ${pc.level}!`);
+      console.log(`${Presenter.minimalCombatant(pc)} leveled up to level ${pc.level}!`);
       console.log(`Hit points increased by ${hitPointIncrease} to ${pc.maxHp}.`);
       const stat = await select(`Choose a stat to increase:`, [
         { disabled: pc.level <= 20 && pc.str >= 18, name: `Strength (${pc.str})`, value: 'str', short: 'Strength' },
@@ -242,10 +242,10 @@ export default class CharacterRecord {
         });
           let chosenSpellKey = await select(`Select a new spell for ${pc.name}:`, spellChoices);
           let chosenSpell = abilityHandler.getAbility(chosenSpellKey);
-          console.log(`${Presenter.combatant(pc)} learned the spell: ${JSON.stringify(chosenSpell)}`);
+          console.log(`${Presenter.minimalCombatant(pc)} learned the spell: ${JSON.stringify(chosenSpell)}`);
           pc.abilities.push(chosenSpellKey);
         } else {
-          console.log(`${Presenter.combatant(pc)} has learned all available spells for their level.`);
+          console.log(`${Presenter.minimalCombatant(pc)} has learned all available spells for their level.`);
         }
       }
 
@@ -253,12 +253,12 @@ export default class CharacterRecord {
         // epic feats...
       } else if (pc.level % 5 === 0) {
         // feat selection
-        console.log(`${Presenter.combatant(pc)} can select a new feat!`);
+        console.log(`${Presenter.minimalCombatant(pc)} can select a new feat!`);
         let traitHandler = TraitHandler.instance;
         await traitHandler.loadTraits();
         let availableFeats = traitHandler.featsForCombatant(pc);
         if (availableFeats.length === 0) {
-          console.log(`But there are no available feats for ${Presenter.combatant(pc)} at this time.`);
+          console.log(`But there are no available feats for ${Presenter.minimalCombatant(pc)} at this time.`);
           continue;
         }
 
@@ -268,12 +268,12 @@ export default class CharacterRecord {
           short: trait.name,
           disabled: false
         })));
-        console.log(`${Presenter.combatant(pc)} selected the feat: ${JSON.stringify(chosenFeat)}`);
+        console.log(`${Presenter.minimalCombatant(pc)} selected the feat: ${JSON.stringify(chosenFeat)}`);
         pc.traits.push(chosenFeat.name);
         // apply any passive effects from the feat
         pc.passiveEffects ||= [];
         pc.passiveEffects.push(...chosenFeat.statuses);
-        console.log(`${Presenter.combatant(pc)} gained the feat: ${Words.capitalize(chosenFeat.name)}.`);
+        console.log(`${Presenter.minimalCombatant(pc)} gained the feat: ${Words.capitalize(chosenFeat.name)}.`);
       }
     }
 

@@ -254,10 +254,10 @@ export default class Dungeoneer {
       Stylist.italic(roomDescription)
     );
 
-    // if (this.currentEncounter && Combat.living(this.currentEncounter.creatures).length > 0) {
-    //   const monsters = this.currentEncounter.creatures.map(m => `\n - ${Presenter.combatant(m)}`).join(", ");
-    //   this.note(`👹 Encounter: ${monsters} [CR: ${this.currentEncounter.cr}]\n`);
-    // }
+    if (this.currentEncounter && Combat.living(this.currentEncounter.creatures).length > 0) {
+      const monsters = this.currentEncounter.creatures.map(m => `\n - ${Presenter.combatant(m)}`).join("");
+      this.note(`👹 Encounter: ${monsters}`);
+    }
 
     // display current party status
     // const partyStatus = this.playerTeam.combatants.map(c => Presenter.minimalCombatant(c)).join("\n");

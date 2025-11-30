@@ -298,7 +298,7 @@ export class ModuleRunner {
     const available = this.availableDungeons;
     if (available.length === 0) return null;
 
-    let reasonableCr = Math.round(2 * this.pcs.map(pc => pc.level).reduce((a, b) => a + b, 0) / this.pcs.length) + 2;
+    let reasonableCr = Math.round(1.5 * this.pcs.map(pc => pc.level).reduce((a, b) => a + b, 0) / this.pcs.length) + 2;
     // console.log(`(Reasonable CR for party level ${this.pcs.map(pc => pc.level).join(", ")} is approx. ${reasonableCr})`);
     // console.log("Available dungeons:");
     // available.forEach(d => {

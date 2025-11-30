@@ -96,7 +96,7 @@ export class AbilityScoring {
     } else if (analysis.summon) {
       // does our party have < 6 combatants?
       if (allies.length < 6) {
-        score += 8;
+        score += 5 * (6 - allies.length);
       } else {
         score -= 5;
       }
