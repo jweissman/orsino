@@ -20,7 +20,7 @@
     "effects": [
       {
         "type": "flee",
-        "succeedDC": 15,
+        "succeedDC": 10,
         "succeedType": "will"
       }
     ]
@@ -91,10 +91,10 @@
     ]
   },
   "shield": {
-    "name": "Shield",
-    "type": "skill",
-    "aspect": "physical",
-    "description": "Grant yourself or an ally 2 AC for 3 rounds.",
+    "name": "Shield of Faith",
+    "type": "spell",
+    "aspect": "divine",
+    "description": "Grant yourself or an ally 2 AC for 10 rounds.",
     "target": [
       "self",
       "ally"
@@ -107,7 +107,7 @@
           "effect": {
             "ac": -2
           },
-          "duration": 3
+          "duration": 10
         }
       }
     ]
@@ -381,7 +381,6 @@
       }
     ]
   },
-
   "smite": {
     "name": "Smite Evil",
     "type": "spell",
@@ -398,6 +397,41 @@
       }
     ]
   },
+  "command": {
+    "name": "Command",
+    "type": "spell",
+    "aspect": "divine",
+    "description": "Force enemy to flee.",
+    "target": [ "enemy" ],
+    "effects": [
+      {
+        "type": "flee",
+        "succeedDC": 20,
+        "succeedType": "will"
+      }
+    ]
+  },
+  "hold_person": {
+    "name": "Hold Person",
+    "type": "spell",
+    "aspect": "divine",
+    "description": "Paralyze an enemy for 4 rounds.",
+    "target": [ "enemy" ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Paralyzed",
+          "duration": 4,
+          "effect": {
+            "noActions": true
+          }
+        },
+        "saveType": "paralyze",
+        "saveDC": 20
+      }
+    ]
+  },
   "turn_undead": {
     "name": "Turn Undead",
     "type": "spell",
@@ -408,7 +442,7 @@
       {
         "type": "flee",
         "succeedDC": 25,
-        "succeedType": "wis",
+        "succeedType": "will",
         "condition": {
           "trait": "undead"
         }

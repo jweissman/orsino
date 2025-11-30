@@ -1341,7 +1341,7 @@
     "groups": {
       "warrior": [[ "prepare_charge", "charge", "set_spear", "second_wind", "roundhouse", "taunt" ]],
       "mage": [[]],
-      "cleric": [[ "smite", "cure", "bless", "turn_undead" ] ],
+      "cleric": [[ "smite", "shield", "cure", "bless", "turn_undead", "command", "hold_person" ] ],
       "ranger": [ [ "heal", "summon_animal", "set_spear" ] ],
       "thief": [ [ "poison_weapon", "hide", "backstab" ] ],
       "bard": [[ "cure", "inspire", "charm" ]]

@@ -7,7 +7,6 @@ import { Combatant } from "../types/Combatant";
 import { Roll } from "../types/Roll";
 import { Team } from "../types/Team";
 import { Fighting } from "./Fighting";
-import Presenter from "../tui/Presenter";
 import { CombatContext } from "../Combat";
 
 type TimelessEvent = Omit<GameEvent, "turn">;
@@ -106,8 +105,24 @@ export class Commands {
     }
 
     let saveVersusType = `saveVersus${saveKind}`;
-    const saveVersus = dc - (targetFx[saveVersusType] as number || 0) - target.level;
-    let saved = false;
+    const saveBonus: number = {
+      "death": Fighting.statMod(target.con),
+      "poison": Fighting.statMod(target.con),
+      "magic": Fighting.statMod(target.wis),
+      "will": Fighting.statMod(target.wis),
+      "paralyze": Fighting.statMod(target.str),
+      "fear": Fighting.statMod(target.wis),
+      "charm": Fighting.statMod(target.wis),
+      "disease": Fighting.statMod(target.con),
+      "breath": Fighting.statMod(target.con),
+      "sleep": Fighting.statMod(target.wis),
+      "stun": Fighting.statMod(target.con),
+      "insanity": Fighting.statMod(target.int),
+    }[saveType] || 0;
+
+    const saveVersus = dc - (targetFx[saveVersusType] as number || 0) - target.level - saveBonus;
+    // const saveVersus = dc - (targetFx[saveVersusType] as number || 0) - target.level;
+    // let saved = false;
     target.savedTimes = target.savedTimes || {};
     let saveCount = target.savedTimes[saveType] || 0;
     if (saveCount >= 3) {
@@ -117,7 +132,7 @@ export class Commands {
     // we should roll anyway; they could have an allRolls bonus etc even if the DC is very high
     const saveRoll = await roll(target, `for Save vs ${saveKind} (must roll ${saveVersus} or higher)`, 20);
     if (saveRoll.amount >= saveVersus) {
-      saved = true;
+      // saved = true;
 
       target.savedTimes[saveType] = (target.savedTimes[saveType] || 0) + 1;
       return { success: true, events: [{ type: "save", versus: saveKind, subject: target, success: true, dc, immune: false, reason: "successful roll" } as Omit<SaveEvent, "turn">] };

@@ -320,7 +320,7 @@ export default class AbilityHandler {
     } else if (effect.type === "debuff") {
       // same as buff with a save
       if (effect.status) {
-        let { success: saved, events: saveEvents } = await save(targetCombatant, effect.saveType || "magic", effect.saveDC || 15, handlers.roll); //, roll, effect.status.name);
+        let { success: saved, events: saveEvents } = await save(targetCombatant, effect.saveType || "magic", effect.saveDC || 15, handlers.roll);
         events.push(...saveEvents);
         if (!saved) {
           let statusEvents = await status(user, targetCombatant, effect.status.name, { ...effect.status.effect, by: user }, effect.status.duration || 3);
@@ -391,26 +391,25 @@ export default class AbilityHandler {
     } else if (effect.type === "summon") {
       // let userFx = Fighting.gatherEffects(user);
       let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
+      let allies = 1 + context.allies.length;
+      amount = Math.min(amount, 6 - allies);
+      // could add summon ability bonus here
       // if (userFx.summonAnimalBonus) {
       //   amount += (userFx.summonAnimalBonus || 0) as number;
       // }
-      // could add summon ability bonus here
       let summoned: Combatant[] = [];
       for (let i = 0; i < amount; i++) {
-        // let summon = await Deem.evaluate(effect.creature as string, { race: user.race });
         let options = effect.options || {};
         let summon = await Generator.gen((effect.creature || "animal") as GenerationTemplateType, {
           race: user.race,
           _targetCr: Math.max(1, Math.floor((user.level || 1) / 2)),
           ...options
         });
-        // console.log(`Summoned ${summon.name} (${summon.race} companion using ${user.race} race)!`);
         summoned.push(summon as Combatant);
       }
-      // console.log(`${user.name} summons ${summoned.map(s => s.name).join(", ")}!`);
       let summonEvents = await summon(user, summoned);
       events.push(...summonEvents);
-      success = true;
+      success = amount > 0;
     }
     else {
       throw new Error(`Unknown effect type: ${effect.type}`);

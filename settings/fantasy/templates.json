@@ -155,7 +155,7 @@
     "primaryAttack": "=if(#hasMissileWeapon, 'ranged', 'melee')",
     "_abilities": ["defend", "wait", "flee"],
     "abilities": "=uniq(concat(#primaryAttack, #_abilities))",
-    "traits": [],
+    "traits": ["humanoid"],
     "*terrainModifier": "=lookup(terrainModifier, #terrain)",
     "*typeModifier": "=lookup(npcTypeModifier, #type)",
     "*aspectModifier": "=lookup(creatureAspects, #npc_aspect)",

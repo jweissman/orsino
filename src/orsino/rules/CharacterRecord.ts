@@ -67,6 +67,7 @@ export default class CharacterRecord {
         let occupationSelect = await selectionMethod(
           'Select an occupation for this PC: ' + whichPc,
           ['warrior', 'thief', 'mage', 'cleric', 'ranger', 'bard']
+          // ['ranger']
         );
 
         let spellbook: string[] = [];
