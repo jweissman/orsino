@@ -4,7 +4,7 @@ import Presenter from "./tui/Presenter";
 import { Team } from "./types/Team";
 import { Roll } from "./types/Roll";
 import { Fighting } from "./rules/Fighting";
-import Events, { CombatEvent, InitiateCombatEvent, StatusExpireEvent, RoundStartEvent, CombatEndEvent, FleeEvent, GameEvent } from "./Events";
+import Events, { CombatEvent, StatusExpireEvent, RoundStartEvent, CombatEndEvent, FleeEvent, GameEvent } from "./Events";
 import AbilityHandler, { Ability, StatusEffect } from "./Ability";
 import { Answers } from "inquirer";
 import { AbilityScoring } from "./tactics/AbilityScoring";
@@ -35,6 +35,7 @@ export default class Combat {
   public abilityHandler = AbilityHandler.instance;
   //new AbilityHandler();
   private combatantsByInitiative: { combatant: any; initiative: number }[] = [];
+  private environmentName: string = "Unknown Location";
 
   protected roller: Roll;
   protected select: ChoiceSelector<any>;
@@ -97,17 +98,16 @@ export default class Combat {
   }
 
   async setUp(
-    teams = Combat.defaultTeams()
+    teams = Combat.defaultTeams(),
+    environment = 'Dungeon | Room -1'
   ) {
     this.turnNumber = 0;
     this.winner = null;
     this.teams = teams;
-    // this.combatantsByInitiative = await this.determineInitiative();
-    // this.emit({ type: "initiate", order: this.combatantsByInitiative } as Omit<InitiateCombatEvent, "turn">);
-    // this.allCombatants.forEach(c => {
+    this.environmentName = environment;
     for (let c of this.allCombatants) {
       c.abilitiesUsed = [];
-      // c.abilityCooldowns = {};
+      c.abilityCooldowns = {};
       c.savedTimes = {};
       c.activeEffects = [];
       c.passiveEffects = [];
@@ -120,7 +120,6 @@ export default class Combat {
         if (trait) {
           c.passiveEffects ||= [];
           c.passiveEffects.push(...trait.statuses);
-          // console.log(`Applying trait ${trait.name} to ${Presenter.combatant(c)}: ${trait.statuses.map(s => s.name).join(", ")}`);
         }
       });
     }
@@ -184,9 +183,19 @@ export default class Combat {
       }
 
       // if there is a conditional status to the ability like backstab requiring Hidden, check for that
-      if (ability.condition?.status) {
-        if (!combatant.activeEffects?.map(e => e.name).includes(ability.condition.status)) {
-          disabled = true;
+      let condition = ability.condition;
+      if (condition) {
+        if (condition.status) {
+          if (!combatant.activeEffects?.map(e => e.name).includes(condition.status)) {
+            disabled = true;
+          }
+        } else if (condition.dead) {
+          if (ability.target.includes("ally") || ability.target.includes("allies")) {
+            let targetAllies = allies.filter(a => a.hp <= 0);
+            if (targetAllies.length === 0) {
+              disabled = true;
+            }
+          }
         }
       }
 
@@ -336,36 +345,48 @@ export default class Combat {
       ability,
       score: AbilityScoring.scoreAbility(ability, combatant, allies, enemies)
     }));
-    // console.log(`NPC ${combatant.forename} rates abilities:`, scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`).join(", "));
+
+    // console.log(`${combatant.forename} rates abilities:`, scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`).join(", "));
+
     scoredAbilities.sort((a, b) => b.score - a.score);
     const action = scoredAbilities[
       Math.floor(Math.random() * Math.min(2, scoredAbilities.length))
     ]?.ability;
+
+    if (!action) {
+      this.note(`${Presenter.minimalCombatant(combatant)} has no valid actions and skips their turn.`);
+      return { haltRound: false };
+    }
     // console.log(
     //   `Considering best targets for ${action?.name}...`, { allies: allies.map(a => a.name), enemies: enemies.map(e => e.name) }
     // )
     let targetOrTargets: Combatant | Combatant[] = AbilityScoring.bestAbilityTarget(action, combatant, allies, enemies);
 
+    if (targetOrTargets === null || targetOrTargets === undefined) {
+      this.note(`${Presenter.minimalCombatant(combatant)} has no valid targets for ${action?.name} and skips their turn.`);
+      return { haltRound: false };
+    // } else {
+    //   console.log(
+    //     `${combatant.forename} chooses to use ${action?.name} on ${Array.isArray(targetOrTargets) ? targetOrTargets.map(t => t.forename).join(", ") : (targetOrTargets as Combatant).forename}.`
+    //   );
+    }
     // combatant.abilitiesUsed = combatant.abilitiesUsed || [];
     // if (action && action.type === "skill" && !action.name.match(/melee|ranged|wait/i)) {
     //   combatant.abilitiesUsed.push(action.name);
     // }
     combatant.abilityCooldowns = combatant.abilityCooldowns || {};
     // set cooldown
-    if (action && action.type === "skill" && !action.name.match(/melee|ranged|wait/i)) {
+    if (action.type === "skill" && !action.name.match(/melee|ranged|wait/i)) {
       let cooldown = action.cooldown || 3;
       combatant.abilityCooldowns[action.name] = cooldown;
     }
 
     // use spell slots
-    if (action && action.type === "spell") {
+    if (action.type === "spell") {
       combatant.spellSlotsUsed = (combatant.spellSlotsUsed || 0) + 1;
     }
 
-    if (!action) {
-      this.note(`${Presenter.combatant(combatant)} has no valid actions and skips their turn.`);
-      return { haltRound: false };
-    }
+    
 
     // invoke the action
     // this.note(message);
@@ -386,6 +407,9 @@ export default class Combat {
   }
 
   async turn(combatant: Combatant): Promise<{ haltRound: boolean }> {
+    // don't attempt to act if we're already defeated
+    if (combatant.hp <= 0) { return { haltRound: false }; }
+
     this.emit({ type: "turnStart", subject: combatant, combatants: this.allCombatants } as Omit<CombatEvent, "turn">);
 
     // Tick down cooldowns
@@ -409,11 +433,8 @@ export default class Combat {
       return { haltRound: false };
     }
 
-    // don't attempt to act if we're already defeated
-    if (combatant.hp <= 0) { return { haltRound: false }; }
-
     let allies = this.teams.find(team => team.combatants.includes(combatant))?.combatants || [];
-    allies = Combat.living(allies).filter(c => c !== combatant);
+    allies = allies.filter(c => c !== combatant);
 
     let allEnemies = this.teams.find(team => team.combatants.includes(combatant)) === this.teams[0] ? (this.teams[1].combatants) : (this.teams[0].combatants);
     allEnemies = Combat.living(allEnemies);
@@ -438,13 +459,6 @@ export default class Combat {
     }
 
     if (combatant.activeEffects) {
-      //combatant.activeEffects.forEach(it => it.duration--);
-      //for (const status of combatant.activeEffects) {
-      //  if (status.duration === 0) {
-      //    this.emit({ type: "statusExpire", subject: combatant, effectName: status.name } as Omit<StatusExpireEvent, "turn">);
-      //  }
-      //}
-      // combatant.activeEffects = combatant.activeEffects.filter(it => it.duration > 0);
       // run onTurnEnd for all active effects
       let ctx = { subject: combatant, allies, enemies: allEnemies };
       for (const status of combatant.activeEffects) {
@@ -475,6 +489,8 @@ export default class Combat {
     this.emit({
       type: "roundStart",
       combatants: Combat.living(this.combatantsByInitiative.map(c => ({ ...c.combatant, friendly: this.teams[0].combatants.includes(c.combatant) }))),
+      parties: this.teams,
+      environment: this.environmentName
     } as Omit<RoundStartEvent, "turn">);
 
     // check for escape conditions (if 'flee' status is active, remove the combatant from combat)

@@ -1,5 +1,5 @@
+// src/orsino/Template.ts
 import Deem from "../deem";
-import Generator from "./Generator";
 import { GenerationTemplateType } from "./types/GenerationTemplateType";
 import deepCopy from "./util/deepCopy";
 

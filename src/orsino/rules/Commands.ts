@@ -81,6 +81,7 @@ export class Commands {
       rollDescription += ` ${subject.name} adds ${effectStack.allRolls} to all rolls, so the total is now ${result}.`;
     }
 
+    console.log(rollDescription);
     return { amount: result, description: rollDescription };
   }
 

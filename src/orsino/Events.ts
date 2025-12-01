@@ -1,11 +1,9 @@
 import { DamageKind } from "./Ability";
+import { never } from "./util/never";
 import Presenter from "./tui/Presenter";
 import Stylist from "./tui/Style";
 import { Combatant } from "./types/Combatant";
-
-const never = <T>(_: never): T => {
-  throw new Error("Unexpected value: " + _);
-};
+import { Team } from "./types/Team";
 
 type BaseEvent = {
   turn: number;
@@ -16,7 +14,7 @@ type BaseEvent = {
 export type InitiateCombatEvent = BaseEvent & { type: "initiate", order: { combatant: Combatant; initiative: number }[] };
 export type CombatEndEvent = BaseEvent & { type: "combatEnd"; winner: string };
 
-export type RoundStartEvent = BaseEvent & { type: "roundStart", combatants: Combatant[] };
+export type RoundStartEvent = BaseEvent & { type: "roundStart", combatants: Combatant[], parties: Team[]; environment?: string };
 export type TurnStartEvent = BaseEvent & { type: "turnStart", combatants: Combatant[] };
 
 // export type ActEvent = BaseEvent & { type: "act"; actionName: string };
@@ -30,6 +28,7 @@ export type FleeEvent   = BaseEvent & { type: "flee" };
 export type SummonEvent = BaseEvent & { type: "summon"; summoned: Combatant[] };
 export type SaveEvent = BaseEvent & { type: "save"; success: boolean; dc: number; immune: boolean; reason: string; versus: string; };
 export type ReactionEvent = BaseEvent & { type: "reaction"; reactionName: string; success: boolean };
+export type ResurrectEvent = BaseEvent & { type: "resurrect"; amount: number; };
 
 export type StatusEffectEvent = BaseEvent & { type: "statusEffect"; effectName: string; effect: { [key: string]: any }; duration: number };
 export type StatusExpireEvent = BaseEvent & { type: "statusExpire"; effectName: string };
@@ -47,6 +46,7 @@ export type CombatEvent = HitEvent
   | SummonEvent
   | SaveEvent
   | ReactionEvent
+  | ResurrectEvent
   | CombatEndEvent
   | RoundStartEvent
   | TurnStartEvent;
@@ -54,10 +54,15 @@ export type CombatEvent = HitEvent
 type BaseDungeonEvent = Omit<BaseEvent, "turn">;
 export type EnterDungeon = BaseDungeonEvent & { type: "enterDungeon"; dungeonName: string; dungeonIcon: string; dungeonType: string, depth: number };
 export type RoomCleared  = BaseDungeonEvent & { type: "roomCleared"; };
+export type GoldEvent  = BaseDungeonEvent & { type: "gold"; amount: number };
+export type ExperienceEvent  = BaseDungeonEvent & { type: "xp"; amount: number };
+
 export type UpgradeEvent = BaseEvent & { type: "upgrade"; stat: keyof Combatant; amount: number, newValue: number };
 
 export type DungeonEvent = EnterDungeon
   | RoomCleared
+  | GoldEvent
+  | ExperienceEvent
   | UpgradeEvent;
 
 export type GameEvent = CombatEvent | DungeonEvent;
@@ -84,6 +89,9 @@ export default class Events {
       case "summon": return "😽";
       case "save": return "🛡️";
       case "reaction": return "↩️";
+      case "resurrect": return "🌟";
+      case "gold": return "💰";
+      case "xp": return "⭐";
       default: return never(event);
     }
   }
@@ -122,10 +130,15 @@ export default class Events {
         return '';  //`Turn order: ${event.order.map((o, i) => `${i + 1}. ${o.combatant.forename}`).join(" | ")}`;
       case "roundStart":
         // let heading = `\n=== Round ${event.turn} ===`;
-        let combatants = event.combatants.map(c => `\n- ${Presenter.combatant(c)}`).join("");
+        // let combatants = event.combatants.map(c => `\n- ${Presenter.combatant(c)}`).join("");
         // return `${heading}${combatants}`;
         // return `\n=== Round ${event.turn} ===\n${Presenter.combatants(event.combatants)}`;
-        return `It is round ${event.turn}.${combatants}`;
+        // return `It is round ${event.turn}.${combatants}`;
+        let roundLabel = ("Round " + event.turn.toString()).padEnd(20) + Stylist.colorize(event.environment?.padStart(60) || "Unknown Location", 'cyan');
+        let parties = Presenter.parties(event.parties || []);
+        let hr = "=".repeat(80);
+
+        return `${hr}\n${roundLabel}\n${hr}\n${parties}`;
       case "turnStart":
         // let heading = `It's ${subject}'s turn!`;
         // let combatants = event.combatants.map(c => `\n- ${Presenter.combatant(c)}`).join("");
@@ -142,7 +155,7 @@ export default class Events {
         return `${subjectName} upgrades ${event.stat} by ${event.amount} (now ${event.newValue}).`;
 
       case "hit":
-        let message = `${targetName} takes ${Stylist.bold(event.damage.toString())} ${event.damageKind} damage from ${event.by}.`;
+        let message = `${targetName} takes ${event.damage.toString()} ${event.damageKind} damage from ${event.by}.`;
         if (event.critical) { message += " Critical hit!"; }
         if (event.target?.playerControlled) {
           message = Stylist.colorize(message, 'red');
@@ -163,6 +176,15 @@ export default class Events {
         } else {
           return '';  //`${subjectName} fails their Save vs ${event.versus} (DC ${event.dc}).`;
         }
+
+      case "resurrect":
+        return `${subjectName} is resurrected with ${event.amount} HP.`;
+
+      case "gold":
+        return `${subjectName} acquires ${event.amount} gold pieces.`;
+
+      case "xp":
+        return `${subjectName} gains ${event.amount} experience points.`;
       default:
         return never(event);
     }

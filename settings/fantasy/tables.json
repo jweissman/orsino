@@ -3,70 +3,47 @@
     "discriminator": "class",
     "groups": {
       "warrior": [
-        "Battleborn",
-        "Bear",
-        "Bull",
-        "Carpenter",
-        "Clay",
-        "Dale",
-        "Draco",
-        "Daniel",
-        "Edward",
-        "Edge",
-        "Fletch",
-        "Fitz",
-        "Graves",
-        "Gearworth",
-        "Hedge",
-        "Hodges",
-        "Hedwick",
-        "Iron",
-        "Ian",
-        "Iren",
-        "Johnson",
-        "Jenk",
-        "King",
-        "Knight",
-        "Mason",
-        "Oak",
-        "Prince",
-        "Reeve",
-        "Sixsmith",
-        "Steel",
-        "Stone",
-        "Strong",
-        "Ward",
-        "Worcester",
-        "Winter"
+        "Battleborn", "Bear", "Bull", "Bellerophon",
+        "Carpenter", "Clay", "Crispin",
+        "Dale", "Draco", "Daniel", "Durant", "Duncan",
+        "Edward", "Edge", "Earl",
+        "Fletch", "Fitz", "Ferrier",
+        "Graves", "Gearworth",
+        "Hedge", "Hodges", "Hedwick",
+        "Iron", "Ian", "Iren", "Ironwood",
+        "Jackman", "Johnson", "Jenk",
+        "King", "Knight",
+        "Mason", "Moore", "Mills",
+        "Oak", "Ox", "Oxenfree",
+        "Prince", "Purcell",
+        "Quartermain", "Quincy",
+        "Reeve", "Ridge",
+        "Sixsmith", "Steel", "Stone", "Strong",
+        "Thorne", "Turner", "Telemachus",
+        "Ward", "Worcester", "Winter"
       ],
       "mage": [
         "Alder",
-        "Blackwood",
-        "Bright",
-        "Caldwell",
-        "Den",
-        "Devrel",
-        "Grimwood",
-        "Graywork",
-        "Highcold",
-        "Latimer",
-        "Leach",
-        "Marsh",
-        "Marshman",
-        "Maze",
-        "Mordecain",
-        "Merrick",
+        "Blackwood", "Bright",
+        "Caldwell", "Cross",
+        "Den", "Devrel",
+        "Eldrin", "Erevan",
+        "Farnsworth",
+        "Grimwood", "Graywork",
+        "Highcold", "Hobart", "Helmsley",
+        "Ivory", "Isham",
+        "Jade",
+        "Keen",
+        "Latimer", "Leach",
+        "Marsh", "Marshman", "Maze", "Mordecain", "Merrick",
         "Page",
-        "Seer",
-        "Shadow",
-        "Shriver",
-        "Speaker",
-        "Spellman",
+        "Quinton", "Quern",
+        "Seer", "Shadow", "Shriver", "Speaker", "Spellman",
         "Tinker",
-        "Waerloch",
-        "Weaver",
-        "Webber",
-        "Wick"
+        "Umber", "Undermoor", "Uvadun",
+        "Waerloch", "Weaver", "Webber", "Wick",
+        "Yew", "Yarrow",
+        "Zale"
       ],
       "cleric": [
         "Abbott",
@@ -1341,7 +1318,7 @@
     "groups": {
       "warrior": [[ "prepare_charge", "charge", "set_spear", "second_wind", "roundhouse", "taunt" ]],
       "mage": [[]],
-      "cleric": [[ "smite", "shield", "cure", "bless", "turn_undead", "command", "hold_person" ] ],
+      "cleric": [[ "smite", "shield", "cure", "bless", "turn_undead", "command", "hold_person", "resurrect" ] ],
       "ranger": [ [ "heal", "summon_animal", "set_spear" ] ],
       "thief": [ [ "poison_weapon", "hide", "backstab" ] ],
       "bard": [[ "cure", "inspire", "charm" ]]
@@ -1471,7 +1448,7 @@
 
       "High Priest":  { "str": -2, "con": 4, "int": 6, "dex": 2, "wis": 8, "cha": 8, "abilities": [ "smite", "bless", "curse", "inspire", "heal" ] },
       "Archmage":     { "int": 8, "con": 4, "dex": 2, "str": -2, "abilities": [ "armor", "missile", "life_drain", "shocking_grasp", "sleep" ] },
-      "Necromancer":  { "int": 8, "con": 6, "dex": 2, "str": -2, "abilities": [ "life_drain", "curse", "fear", "poison_cloud", "summon_undead" ] },
+      "Necromancer":  { "int": 8, "con": 6, "dex": 2, "str": -2, "abilities": [ "life_drain", "curse", "fear", "poison_cloud", "summon_undead", "raise_dead" ] },
       "King":         { "str": 6, "con": 6, "int": 4, "dex": 2, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ] },
       "Lord":         { "str": 8, "con": 8, "int": 6, "wis": 6, "dex": 4, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ] },
       "Monarch":      { "str": 10, "con": 10, "int": 6, "wis": 6, "dex": 4, "abilities": [ "inspire", "enrage", "prepare_charge", "charge", "heal" ] }
@@ -1546,12 +1523,12 @@
   "npcStat": {
     "discriminator": "race",
     "groups": {
-      "kobold": { "str": 6,  "dex": 9,  "con": 6,  "int": 6,  "wis": 6,  "cha": 6,  "naturalArmor": -1, "hitDie": 4 },
-      "goblin": { "str": 8,  "dex": 12, "con": 8,  "int": 8,  "wis": 8,  "cha": 8,  "naturalArmor": 0 , "hitDie": 6 },
-      "human":  { "str": 10, "dex": 10, "con": 10, "int": 10, "wis": 10, "cha": 10, "naturalArmor": 0 , "hitDie": 8 },
-      "orc":    { "str": 16, "dex": 12, "con": 16, "int": 8,  "wis": 8,  "cha": 8,  "naturalArmor": 0 , "hitDie": 8 },
-      "ogre":   { "str": 19, "dex": 8,  "con": 19, "int": 5,  "wis": 5,  "cha": 5,  "naturalArmor": 1 , "hitDie": 10 },
-      "troll":  { "str": 18, "dex": 7,  "con": 18, "int": 6,  "wis": 6,  "cha": 6,  "naturalArmor": 2 , "hitDie": 12 },
+      "kobold": { "str": 6,  "dex": 9,  "con": 6,  "int": 6,  "wis": 6,  "cha": 6,  "naturalArmor": -4, "hitDie": 2 },
+      "goblin": { "str": 8,  "dex": 12, "con": 8,  "int": 8,  "wis": 8,  "cha": 8,  "naturalArmor": -3, "hitDie": 3 },
+      "human":  { "str": 10, "dex": 10, "con": 10, "int": 10, "wis": 10, "cha": 10, "naturalArmor": -2, "hitDie": 4 },
+      "orc":    { "str": 16, "dex": 12, "con": 16, "int": 8,  "wis": 8,  "cha": 8,  "naturalArmor": -1 , "hitDie": 6 },
+      "ogre":   { "str": 19, "dex": 8,  "con": 19, "int": 5,  "wis": 5,  "cha": 5,  "naturalArmor": 0 , "hitDie": 8 },
+      "troll":  { "str": 18, "dex": 7,  "con": 18, "int": 6,  "wis": 6,  "cha": 6,  "naturalArmor": 1 , "hitDie": 10 },
       "dragon": { "str": 23, "dex": 16, "con": 23, "int": 18, "wis": 18, "cha": 18, "naturalArmor": 10, "hitDie": 20 }
     }
   },
@@ -1733,7 +1710,7 @@
       "temple": [ "fane", "shrine", "sanctum", "reliquary", "sanctuary", "monastery", "cathedral" ],
       "fortress": [ "tower", "keep", "stronghold", "citadel", "bastion", "redoubt" ],
       "library": [ "archive", "vault", "scriptorium", "repository", "bookhouse" ],
-      "tomb": [ "crypt", "catacomb", "mausoleum", "necropolis", "sepulcher", "charnel" ],
+      "tomb": [ "ossuary", "cenotaph", "crypt", "catacomb", "mausoleum", "necropolis", "sepulcher", "charnel" ],
       "mine": [ "cave", "cavern", "lair", "delve", "tunnel", "hollow" ]
     }
   },
@@ -1866,6 +1843,87 @@
       "watchtower": [
         "watchtower, the air crisp and cold. The walls are lined with windows offering a panoramic view of the surrounding landscape, and you can hear the faint sound of birds."
       ]
+    }
+  },
+  "roomFeature": {
+    "discriminator": "kind",
+    "groups": {
+      "death_shrine": {
+        "name": "dark favor",
+        "description": "A dark altar dedicated to a forgotten death god. Candles flicker with cold flames. A sense of eerie calm fills the area.",
+        "offer": 10,
+        "effects": [{
+          "type": "buff",
+          "status": { 
+            "name": "Death's Favor", 
+            "duration": 5, 
+            "effect": { "toHit": 1, "bonusDamage": "1d4" } 
+          }
+        }]
+      },
+    
+      "memorial_shrine": {
+        "name": "healing memory",
+        "description": "A shrine to the honored dead. Fresh flowers somehow still bloom here. You feel a soothing warmth in the air.",
+        "offer": 5,
+        "effects": [{
+          "type": "heal",
+          "amount": "2d6"
+        }]
+      },
+
+      "sealed_sarcophagus": {
+        "name": "ancient treasure",
+        "description": "An ornate sarcophagus sealed with wax and ancient binding runes. There is a faint aura of necrotic energy surrounding it.",
+        "offer": 1,
+        "effects": [
+          { "type": "damage", "kind": "necrotic", "amount": "1d6" },
+          { "type": "gold", "amount": "10+3d10" }
+        ]
+      },
+
+      "pure_fountain": {
+        "name": "font blessing",
+        "description": "A pristine fountain bubbles in the center of the room. The water looks crystal clear.",
+        "offer": "=1d4",
+        "effects": [
+          {
+            "type": "heal",
+            "amount": "=2d4+2"
+          },
+          {
+            "type": "buff",
+            "status": {
+              "name": "Blessing of Vaire",
+              "duration": 5,
+              "effect": {
+                "dex": "=1d6"
+              }
+            }
+          }
+        ]
+      },
+      "polluted_fountain": {
+        "name": "font blessing",
+        "description": "A fountain graces the center of the room. The water looks murky.",
+        "offer": "=1d4",
+        "effects": [
+          {
+            "type": "damage",
+            "amount": "=2d4"
+          },
+          {
+            "type": "debuff",
+            "status": {
+              "name": "Curse of Thirst",
+              "duration": 5,
+              "effect": {
+                "con": "=-1*1d6"
+              }
+            }
+          }
+        ]
+      }
     }
   },
   "roomDecoration": {
@@ -2427,16 +2485,21 @@
       "fox": [
         "Alfon", "Axel",
         "Brighttail", "Burrow",
-        "Carrot",
-        "Clever",
-        "Cunning",
-        "Dash",
-        "Deerfoot",
-        "Echo",
-        "Edgar",
-        "Fennec",
-        "Foxy",
-        "Greyfur",
+        "Carrot", "Clever", "Cooky", "Conner",
+        "Diego", "Dash", "Deerfoot",
+        "Echo", "Edgar",
+        "Fennec", "Foxy", "Funny",
+        "Ginger", "Greyfur",
+        "Hicks",
+        "Jasper",
+        "Kitsune",
+        "Loki", "Luster",
+        "Mango", "Marigold", "Marble",
+        "Nico", "Nocita",
+        "Ollie", "Oliver",
+        "Pip", "Parchment",
+        "Quickfoot",
+        "Reed",
         "Reynard",
         "Rusty",
         "Salem",

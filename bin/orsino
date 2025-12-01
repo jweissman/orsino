@@ -3,7 +3,6 @@
 import Orsino from '../src/orsino';
 import { GenerationTemplateType } from "../src/orsino/types/GenerationTemplateType";
 import { program } from 'commander';
-import Files from '../src/orsino/util/Files';
 import Generator from '../src/orsino/Generator';
 
 program

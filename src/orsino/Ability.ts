@@ -1,6 +1,6 @@
 import Deem from "../deem";
 import { CombatContext } from "./Combat";
-import { GameEvent, ReactionEvent, UpgradeEvent } from "./Events";
+import { GameEvent, ReactionEvent, ResurrectEvent, UpgradeEvent } from "./Events";
 import Generator from "./Generator";
 import { CommandHandlers } from "./rules/Commands";
 import { Fighting } from "./rules/Fighting";
@@ -10,8 +10,9 @@ import { GenerationTemplateType } from "./types/GenerationTemplateType";
 import { Roll } from "./types/Roll";
 import { Team } from "./types/Team";
 import Files from "./util/Files";
+import { never } from "./util/never";
 
-type Target = "self" | "ally" | "enemy" | "allies" | "enemies" | "all" | "randomEnemies";
+type Target = "self" | "ally" | "enemy" | "allies" | "enemies" | "all" | "randomEnemies" | "deadAlly";
 export type DamageKind = "bleed" | "poison" | "psychic" | "lightning" | "earth" | "fire" | "ice" | "bludgeoning" | "piercing" | "slashing" | "force" | "radiant" | "necrotic" | "acid" | "true";
 export type SaveKind = "poison" | "disease" | "death" | "magic" | "insanity" | "charm" | "fear" | "stun" | "will" | "breath" | "paralyze" | "sleep";
 
@@ -36,7 +37,7 @@ export interface StatusEffect {
 
 export interface AbilityEffect {
   kind?: DamageKind;
-  type: "attack" | "damage" | "heal" | "buff" | "debuff" | "flee" | "removeItem" | "drain" | "summon" | "removeStatus" | "upgrade" | "gold" | "xp";
+  type: "attack" | "damage" | "heal" | "buff" | "debuff" | "flee" | "removeItem" | "drain" | "summon" | "removeStatus" | "upgrade" | "gold" | "xp" | "resurrect";
   stat?: "str" | "dex" | "con" | "int" | "wis" | "cha";
 
   amount?: string; // e.g. "=1d6", "=2d8", "3"
@@ -58,6 +59,8 @@ export interface AbilityEffect {
   // for summoning
   creature?: string;
   options?: {};
+  // for resurrection effects
+  hpPercent?: number;
 }
 
 export interface Ability {
@@ -71,8 +74,12 @@ export interface Ability {
   condition?: {
     hasInterceptWeapon?: boolean;
     status?: string;
+    dead?: boolean;
   };
   cooldown?: number;
+
+  // for room feature interaction costs
+  offer?: string;
 }
 
 type AbilityDictionary = { [key: string]: Ability };
@@ -151,6 +158,7 @@ export default class AbilityHandler {
       switch (t) {
         case "self": targets.push(user); break;
         case "ally": targets.push(...(allies)); break;
+        case "deadAlly": targets.push(...(allies.filter(a => a.hp <= 0))); break;
         case "enemy": targets.push(...(enemies)); break;
         case "allies": targets.push((allies)); break;
         case "enemies": targets.push((enemies)); break;
@@ -251,12 +259,13 @@ export default class AbilityHandler {
       }
     }
 
-    if (targetCombatant.hp <= 0 || user.hp <= 0) {
+    if ((targetCombatant.hp <= 0 && effect.type !== "resurrect") || user.hp <= 0) {
       return { success, events };
     }
 
     let userFx = Fighting.gatherEffects(user);
 
+    // switch (effect.type) {
     if (effect.type === "attack") {
       // let success = false;
 
@@ -289,10 +298,8 @@ export default class AbilityHandler {
           }
         }
       }
-      return { success, events };
-    }
-
-    if (effect.type === "damage") {
+      // return { success, events };
+    } else if (effect.type === "damage") {
       let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
       let hitEvents = await hit(user, targetCombatant, amount, false, name, true, effect.kind || "true", context, handlers.roll);
       events.push(...hitEvents);
@@ -411,37 +418,24 @@ export default class AbilityHandler {
       events.push(...summonEvents);
       success = amount > 0;
     }
-    else {
-      throw new Error(`Unknown effect type: ${effect.type}`);
+    else if (effect.type === "resurrect") {
+      let rezzed = false;
+      if (targetCombatant.hp > 0) {
+        console.warn(`${targetCombatant.name} is not dead and cannot be resurrected.`);
+      } else {
+        // let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
+        let amount = effect.hpPercent ? Math.floor((effect.hpPercent / 100) * (targetCombatant.maxHp || 10)) : 1;
+        targetCombatant.hp = amount;
+        console.log(`${targetCombatant.name} is resurrected with ${amount} HP!`);
+        events.push({ type: "resurrect", subject: targetCombatant, amount } as Omit<ResurrectEvent, "turn">);
+        rezzed = true;
+      }
+      success = rezzed;
     }
-
-
-    // let targetFx = Fighting.gatherEffects(targetCombatant);
-    // // handle generic onEnemy[ActionName] effects
-    // if (success && targetFx[`onEnemy${Words.capitalize(name)}`]) {
-    //   let reactionEffects = targetFx[`onEnemy${Words.capitalize(name)}`] as Array<AbilityEffect>;
-    //   for (const reactionEffect of reactionEffects) {
-    //     let fxTarget: Combatant | Combatant[] = targetCombatant;
-    //     if (reactionEffect.target) {
-    //       fxTarget = this.validTargets({ target: reactionEffect.target } as Ability, user, [], [targetCombatant])[0];
-    //     }
-    //     if (Array.isArray(fxTarget)) {
-    //       for (const fxT of fxTarget) {
-    //         let { events: reactionEvents } = await this.handleEffect(
-    //           (reactionEffect.status?.name || name) + " Reaction",
-    //           reactionEffect, fxT, user, handlers
-    //         );
-    //         events.push(...reactionEvents);
-    //       }
-    //     } else {
-    //       let { events: reactionEvents } = await this.handleEffect(
-    //         (reactionEffect.status?.name || name) + " Reaction",
-    //         reactionEffect, fxTarget, user, handlers
-    //       );
-    //       events.push(...reactionEvents);
-    //     }
-    //   }
-    // }
+    else {
+      // throw new Error(`Unknown effect type: ${effect.type}`);
+      return never(effect.type);
+    }
 
     return { success, events };
   }
@@ -456,7 +450,7 @@ export default class AbilityHandler {
     success: boolean;
     events: Omit<GameEvent, "turn">[];
   }> {
-    // console.log(`${user.name} is performing ${ability.name} on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target.name}...`);
+    console.log(`${user.name} is performing ${ability.name} on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target?.name}...`);
     let result = false;
     let events = [];
     for (const effect of ability.effects) {

@@ -1,4 +1,9 @@
 export default class Stylist {
+  static cleanLength(text: string) {
+    // removes ANSI codes and returns the length of the clean string
+    const ansiRegex = /\x1b\[[0-9;]*m/g;
+    return text.replace(ansiRegex, '').length;
+  }
   static format = (text: string, style: 'bold' | 'italic' | 'underline') => {
     const styles: Record<string, string> = {
       bold: '\x1b[1m',

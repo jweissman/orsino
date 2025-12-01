@@ -51,6 +51,7 @@ export interface Combatant {
   currentEnvironment?: string;
 
   gear?: string[];
+  loot?: string[];
 
   // todo count saves and prevent more than 3 saves from death
   savedTimes?: { [key in SaveKind]?: number };

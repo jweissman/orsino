@@ -1,4 +1,4 @@
-import Combat from "./Combat";
+import Combat, { CombatContext } from "./Combat";
 import { Team } from "./types/Team";
 import Presenter from "./tui/Presenter";
 import { Combatant } from "./types/Combatant";
@@ -12,6 +12,7 @@ import { Roll } from "./types/Roll";
 import Events, { DungeonEvent } from "./Events";
 import { Commands } from "./rules/Commands";
 import CharacterRecord from "./rules/CharacterRecord";
+import AbilityHandler, { Ability } from "./Ability";
 
 type SkillType = "search" | "examine"; // | "disarm" | "pickLock" | "climb" | "swim" | "jump" | "listen" | "spot";
 
@@ -21,24 +22,23 @@ interface Encounter {
   cr?: number;
 }
 
-export interface Room {
+interface RoomBase {
   room_type: string;
   narrative: string;
   room_size: string;
   targetCr?: number;
   treasure: string | null;
-  encounter: Encounter | null;
-  feature: string | null;
+  decor: string | null;
+  gear: string[] | null;
+  features: string[] | null;
 }
 
-export interface BossRoom {
-  narrative: string;
-  room_size: string;
-  room_type: string;
-  targetCr?: number;
+export interface Room extends RoomBase {
+  encounter: Encounter | null;
+}
+
+export interface BossRoom extends RoomBase {
   boss_encounter: Encounter | null;
-  treasure: string | null;
-  feature: string | null;
 }
 
 export interface Dungeon {
@@ -227,11 +227,15 @@ export default class Dungeoneer {
 
   describeRoom(room: Room | BossRoom, verb: string = "are standing in"): string {
     let description = `You ${verb} ${Words.a_an(room.room_size)} ${room.narrative}`;
-    if (room.feature === "nothing") {
-      description += ` This room would seem to contain little of interest to your party.`;
+    if (room.decor === "nothing") {
+      description += ` There ${room.room_type} contains simple furnishings`;
     } else {
-      description += ` This room contains ${Stylist.bold(room.feature!)}.`;
+      description += ` The ${room.room_type} contains ${Stylist.bold(room.decor!)}`;
     }
+    if (room.features && room.features.length > 0) {
+      description += ` as well as ${Words.humanizeList(room.features.map(f => Words.a_an(Words.humanize(Stylist.bold(f)))))}`;
+    }
+    description += '.';
     return description;
   }
 
@@ -274,7 +278,7 @@ export default class Dungeoneer {
       note: this.outputSink
     });
 
-    await combat.setUp([this.playerTeam, this.currentMonsterTeam]);
+    await combat.setUp([this.playerTeam, this.currentMonsterTeam], this.dungeon!.dungeon_name + ` - Room ${this.currentRoomIndex + 1}/${this.dungeon!.rooms.length + 1}`);
     while (!combat.isOver()) {
       await combat.round(
         async (combatant: Combatant) => {
@@ -367,7 +371,7 @@ export default class Dungeoneer {
   }> {
     this.note(this.describeRoom(room));
 
-    let searched = false, examinedFeature = false;
+    let searched = false, examinedDecor = false, inspectedFeatures: string[] = [];
     let done = false;
     while (!done) {
       const options = [
@@ -375,8 +379,15 @@ export default class Dungeoneer {
         // { name: "Rest (stabilize unconscious party members, 30% encounter)", value: "rest", short: 'Rest', disabled: false },
         { name: "Search the room", value: "search", short: 'Search', disabled: searched },
       ];
-      if (room.feature && room.feature !== "nothing") {
-        options.push({ name: `Examine ${Words.remove_article(room.feature!)}`, value: "examine", short: 'Examine', disabled: examinedFeature });
+      if (room.decor && room.decor !== "nothing") {
+        options.push({ name: `Examine ${Words.remove_article(room.decor!)}`, value: "examine", short: 'Examine', disabled: examinedDecor });
+      }
+      if (room.features && room.features.length > 0) {
+        room.features.forEach(feature => {
+          if (!inspectedFeatures.includes(feature)) {
+            options.push({ name: `Inspect ${Words.humanize(feature)}`, value: `feature:${feature}`, short: 'Inspect', disabled: false });
+          }
+        });
       }
       // options.push({ name: "Leave the dungeon", value: "leave", short: 'Leave', disabled: false });
 
@@ -391,16 +402,22 @@ export default class Dungeoneer {
         }
         return { leaving: true }
       } else if (choice === "examine") {
-        let check = await this.skillCheck("examine", `to examine ${room.feature}`, "int", 10);
+        let check = await this.skillCheck("examine", `to examine ${room.decor}`, "int", 10);
         if (check.success) {
           let gp = await Deem.evaluate("1+1d20");
-          this.note(`${check.actor.forename} found a hidden compartment in ${room.feature} containing ${gp} gold coins!`);
+          this.note(`${check.actor.forename} found a hidden compartment in ${room.decor} containing ${gp} gold coins!`);
           await this.reward(0, gp);
         } else {
-          this.note(`${check.actor.forename} inspected ${room.feature} thoroughly, but could find nothing out of the ordinary.`);
+          this.note(`${check.actor.forename} examined ${room.decor} thoroughly, but could find nothing out of the ordinary.`);
         }
-        examinedFeature = true;
-      } else if (choice === "leave") {
+        examinedDecor = true;
+      } else if (typeof choice === "string" && choice.startsWith("feature:")) {
+        const featureName = choice.split(":")[1];
+        await this.interactWithFeature(featureName);
+        inspectedFeatures.push(featureName);
+      }
+
+      else if (choice === "leave") {
         const confirm = await this.select("Are you sure you want to leave the dungeon?", [
           { name: "Yes", value: "yes", short: 'Y', disabled: false },
           { name: "No", value: "no", short: 'N', disabled: false },
@@ -416,6 +433,45 @@ export default class Dungeoneer {
     return { leaving: false };
   }
 
+  private async interactWithFeature(featureName: string): Promise<void> {
+    let check = await this.skillCheck("examine", `to inspect ${Words.a_an(Words.humanize(featureName))}`, "int", 10);
+    if (check.success) {
+      let interaction = await Deem.evaluate(`=lookup(roomFeature, ${featureName})`) as Ability;
+      this.note(interaction.description);
+      if (interaction.offer) {
+        let gpCost = await Deem.evaluate(interaction.offer.toString());
+        let totalGp = this.playerTeam.combatants.reduce((sum, c) => sum + (c.gp || 0), 0);
+
+        let proceed = await this.select(`The ${Words.humanize(featureName)} offers ${Words.a_an(interaction.name)} for ${gpCost} gold. Purchase?`, [
+          { name: "Yes", value: "yes", short: 'Y', disabled: gpCost > totalGp },
+          { name: "No", value: "no", short: 'N', disabled: false },
+        ]);
+        if (proceed === "yes") {
+          if (totalGp >= gpCost) {
+            // deduct gp evenly from party members
+            let gpPerMember = Math.ceil(gpCost / this.playerTeam.combatants.length);
+            for (const c of this.playerTeam.combatants) {
+              let deduction = Math.min(c.gp || 0, gpPerMember);
+              c.gp = (c.gp || 0) - deduction;
+              gpCost -= deduction;
+              if (gpCost <= 0) break;
+            }
+            this.note(`Purchased ${interaction.name} from ${Words.humanize(featureName)}.`);
+            let nullCombatContext: CombatContext = { subject: check.actor, allies: [], enemies: [] };
+            for (let effect of interaction.effects) {
+              let { events } = await AbilityHandler.handleEffect(interaction.name, effect, check.actor, check.actor, nullCombatContext, Commands.handlers(this.roller, this.playerTeam));
+              events.forEach(e => this.emit({ ...e, turn: -1 } as DungeonEvent));
+            }
+          }
+        } else {
+          this.note(`Decided not to purchase anything from ${Words.humanize(featureName)}.`);
+        }
+      }
+    } else {
+      this.note(`${check.actor.forename} inspected ${Words.humanize(featureName)}, but could find nothing of interest.`);
+    }
+  }
+
   private async search(room: Room | BossRoom): Promise<void> {
     let { actor, success } = await this.skillCheck("search", `to search the ${room.room_type.replaceAll("_", " ")}`, "wis", 10);
     if (success) {
@@ -426,24 +482,36 @@ export default class Dungeoneer {
         if (room.treasure == "a healing potion") {
           this.playerTeam.healingPotions = (this.playerTeam.healingPotions || 0) + 1;
           this.note(`You add the healing potion to your bag. (Total owned: ${this.playerTeam.healingPotions})`);
+        } else {
+          // add to combatant.loot
+          actor.loot = actor.loot || [];
+          actor.loot.push(room.treasure);
         }
         await this.reward(xpReward, 0);
-      } else {
-        const stashGold = await Deem.evaluate("2+1d20");
-        let share = Math.round(stashGold / this.playerTeam.combatants.length)
-        this.note(`Found ${stashGold} gold!`);
-        await this.reward(0, share);
-
-        let lootBonus = 0;
-        let fx = Fighting.gatherEffects(actor);
-        lootBonus += fx.lootBonus as number || 0;
-        const potions = lootBonus + await Deem.evaluate("1d2");
-        if (potions > 0) {
-          this.note(`You found ${potions} healing potion${potions > 1 ? 's' : ''}!`);
-          this.playerTeam.healingPotions = (this.playerTeam.healingPotions || 0) + potions;
-          this.note(`You add the healing potion${potions > 1 ? 's' : ''} to your bag. (Total owned: ${this.playerTeam.healingPotions})`);
+      }
+      if (room.gear) {
+        for (const item of room.gear) {
+          this.note(`${actor.forename} finds ${Words.a_an(item)}!`);
+          actor.gear = actor.gear || [];
+          actor.gear.push(item);
         }
       }
+      // {
+      //   const stashGold = await Deem.evaluate("2+1d20");
+      //   let share = Math.round(stashGold / this.playerTeam.combatants.length)
+      //   this.note(`Found ${stashGold} gold!`);
+      //   await this.reward(0, share);
+
+      //   let lootBonus = 0;
+      //   let fx = Fighting.gatherEffects(actor);
+      //   lootBonus += fx.lootBonus as number || 0;
+      //   const potions = lootBonus + await Deem.evaluate("1d2");
+      //   if (potions > 0) {
+      //     this.note(`You found ${potions} healing potion${potions > 1 ? 's' : ''}!`);
+      //     this.playerTeam.healingPotions = (this.playerTeam.healingPotions || 0) + potions;
+      //     this.note(`You add the healing potion${potions > 1 ? 's' : ''} to your bag. (Total owned: ${this.playerTeam.healingPotions})`);
+      //   }
+      // }
     } else {
       this.note(`\n${actor.forename} fails to find anything.`);
     }
@@ -522,7 +590,8 @@ export default class Dungeoneer {
           ]
         },
         treasure: "A legendary sword and a chest of gold.",
-        feature: "a magical portal"
+        decor: "a magical portal",
+        gear: ["a legendary sword"]
       },
       rooms: [
         {
@@ -530,12 +599,13 @@ export default class Dungeoneer {
           room_type: 'cave',
           room_size: 'small',
           treasure: "A rusty sword and a bag of gold coins.",
-          feature: "a hidden alcove",
+          decor: "a hidden alcove",
+          gear: ["a rusty sword", "a bag of gold coins"],
           encounter: {
             cr: 1,
             creatures: [
               {
-                forename: "Goblin", name: "Goblin", hp: 7, maxHp: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, 
+                forename: "Goblin", name: "Goblin", hp: 7, maxHp: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8,
                 attackDie: "1d20", hitDie: 6, hasMissileWeapon: false,
                 playerControlled: false, xp: 50, gp: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: []
               }
@@ -547,7 +617,8 @@ export default class Dungeoneer {
           room_type: 'hall',
           room_size: 'large',
           treasure: "A magical amulet and a potion of healing.",
-          feature: "a crumbling statue",
+          decor: "a crumbling statue",
+          gear: ["a magical amulet", "a potion of healing"],
           encounter: {
             cr: 2,
             creatures: [

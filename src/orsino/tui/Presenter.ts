@@ -4,9 +4,20 @@ import Words from "./Words";
 import { Fighting } from "../rules/Fighting";
 import AbilityHandler from "../Ability";
 import TraitHandler from "../Trait";
+import Combat from "../Combat";
 
 export default class Presenter {
   static colors = ['magenta', 'red', 'yellow', 'yellow', 'yellow', 'green', 'green', 'green', 'green'];
+
+  static aggregateList = (items: string[]) => {
+    let counts: { [item: string]: number } = {};
+    items.forEach(item => {
+      counts[item] = (counts[item] || 0) + 1;
+    });
+    return Object.entries(counts).map(([item, count]) => {
+      return count > 1 ? `${item} x${count}` : item;
+    }).join(", ");
+  }
 
   static printCharacterRecord = (combatant: Combatant) => {
     // let record = ({
@@ -42,9 +53,6 @@ export default class Presenter {
       )
     )
 
-    
-
-
     let statNames = ['str', 'dex', 'int', 'wis', 'cha', 'con'];
     let statLine = statNames.map(stat => {
       const value = (combatant as any)[stat];
@@ -66,9 +74,6 @@ export default class Presenter {
       return `${Stylist.bold(Words.capitalize(key))} ${Words.humanize(value)}`;
     }).join('   '));
 
-    if (combatant.gear && combatant.gear.length > 0) {
-      console.log(Stylist.bold("\nGear: ") + combatant.gear.join(", "));
-    }
 
     // ability table
     console.log(Stylist.bold("\nAbilities"));
@@ -93,6 +98,16 @@ export default class Presenter {
         console.log();
       }
     }
+
+    if (combatant.gear && combatant.gear.length > 0) {
+      console.log(Stylist.bold("\nGear: ") + this.aggregateList(combatant.gear.sort((a, b) => a.localeCompare(b))));
+    }
+
+    if (combatant.loot && combatant.loot.length > 0) {
+      console.log(Stylist.bold("\nLoot: ") + this.aggregateList(combatant.loot.sort((a, b) => a.localeCompare(b))));
+    }
+
+    console.log("\n" + "=".repeat(40) + "\n");
   }
 
   static minimalCombatant = (combatant: Combatant) => {
@@ -100,10 +115,13 @@ export default class Presenter {
     const hpBar = Stylist.prettyValue(combatant.hp, combatant.maxHp);
     const color = this.colors[Math.floor(hpRatio * (this.colors.length - 1))] || this.colors[0];
     let name = Stylist.format(combatant.forename, 'bold');
+    let combatClass = combatant.class;
+    let combatKind = (combatant as any).kind || combatant.race || '';
     return [
       Stylist.colorize(name, combatant.playerControlled ? 'cyan' : 'yellow'),
-      Stylist.colorize(hpBar, color),
-      `(${combatant.hp}/${combatant.maxHp})`
+      combatant.hp <= 0 ? Stylist.colorize('X', 'red') : Stylist.colorize(hpBar, color),
+      combatClass ? `${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '',
+      // `(${combatant.hp}/${combatant.maxHp})`
     ].join(' ');
     //  `; // (${this.statLine(combatant)})`;
   }
@@ -184,5 +202,45 @@ export default class Presenter {
       .map(c => ((minimal ? "" : "\n") + (indicate(c) ? " 👉 " : "  ") + (minimal ? this.minimalCombatant(c) : this.combatant(c))))
       .join(minimal ? ", " : "");
     // return combatants.map(c => this.combatant(c)).join('\n');
+  }
+
+  static padLiteralEnd = (text: string, length: number, padChar: string = ' ') => {
+    let cleanLength = Stylist.cleanLength(text);
+    if (cleanLength >= length) { return text; }
+    let padLength = length - cleanLength;
+    return text + padChar.repeat(padLength);
+  }
+
+  static padLiteralStart = (text: string, length: number, padChar: string = ' ') => {
+    let cleanLength = Stylist.cleanLength(text);
+    if (cleanLength >= length) { return text; }
+    let padLength = length - cleanLength;
+    return padChar.repeat(padLength) + text;
+  }
+
+  static parties = (parties: { name: string; combatants: Combatant[] }[]) => {
+    let partyDisplay = "";
+    let lines = Math.max(...parties.map(p => p.combatants.length))
+    for (let i = 0; i < lines; i++) {
+      let lhs = parties[0] ? parties[0].combatants[i] : null;
+      let rhs = parties[1] ? parties[1].combatants[i] : null;
+      let line = "";
+      if (lhs) {
+        line += this.padLiteralEnd(this.minimalCombatant(lhs), 40);
+      } else {
+        line += ' '.repeat(40);
+      }
+      // line += '';
+      if (rhs) {
+        line += this.padLiteralStart(this.minimalCombatant(rhs), 40);
+      } else {
+        line += ' '.repeat(40);
+      }
+      partyDisplay += line + '\n';
+    }
+    let headers = //parties.map(p => Stylist.format(p.name, 'underline').padEnd(40)).join('   ') + '\n';
+      Stylist.format(parties[0].name.padEnd(40), 'italic') +
+      Stylist.format(parties[1]?.name.padStart(40) || '', 'italic') + '\n';
+    return headers + partyDisplay;
   }
 }

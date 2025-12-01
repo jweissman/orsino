@@ -420,6 +420,9 @@
     "effects": [
       {
         "type": "debuff",
+        "condition": {
+          "trait": "humanoid"
+        },
         "status": {
           "name": "Paralyzed",
           "duration": 4,
@@ -1025,6 +1028,33 @@
         "type": "summon",
         "creature": "npc",
         "options": { "npc_template_type": "undead" }
+      }
+    ]
+  },
+  "raise_dead": {
+    "name": "Raise Dead",
+    "type": "spell",
+    "aspect": "divine",
+    "description": "Raise a fallen ally as an undead servant to fight for you.",
+    "target": [ "deadAlly" ],
+    "effects": [
+      {
+        "type": "resurrect",
+        "hpPercent": 50,
+        "applyTraits": ["undead"]
+      }
+    ]
+  },
+  "resurrect": {
+    "name": "Resurrection",
+    "type": "spell",
+    "aspect": "divine",
+    "description": "Restore a fallen ally to life.",
+    "target": ["deadAlly"],
+    "effects": [
+      {
+        "type": "resurrect",
+        "hpPercent": 50
       }
     ]
   }

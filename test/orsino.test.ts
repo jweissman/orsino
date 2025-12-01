@@ -11,6 +11,8 @@ import { Combatant } from '../src/orsino/types/Combatant';
 import Presenter from '../src/orsino/tui/Presenter';
 import TraitHandler from '../src/orsino/Trait';
 import { loadSetting } from '../src/orsino/loader';
+import Events from '../src/orsino/Events';
+import { Team } from '../src/orsino/types/Team';
 
 describe('Orsino', () => {
   // before(async () => {
@@ -135,6 +137,23 @@ describe('Orsino', () => {
     console.log("NPC:     ", Presenter.combatant(npc as Combatant));
     console.log("Animal:  ", Presenter.combatant(animal as Combatant));
     console.log("Monster: ", Presenter.combatant(monster as Combatant));
+
+    console.log("\n--- Party Presentation ---\n")
+    let teams: Team[] = [
+      { name: "Heroes", combatants: [pc as Combatant, npc as Combatant], healingPotions: 0 },
+      { name: "Foes", combatants: [animal as Combatant, monster as Combatant], healingPotions: 0 }
+    ];
+    console.log(Presenter.parties(teams));
+
+    console.log("\n--- Round Presentation ---\n")
+    let roundEvent = {
+      type: "roundStart",
+      turn: 1,
+      combatants: [pc, npc, animal, monster] as Combatant[],
+      parties: teams,
+      environment: "Dark Cave"
+    };
+    console.log(Events.present(roundEvent as any));
   });
 
   it.skip('party generator', async () => {

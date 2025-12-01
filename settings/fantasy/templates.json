@@ -7,7 +7,7 @@
     "capital": "=#size == 'capital'",
     "population": "=eval(lookup(townPop, #size))",
     "_aspect": "=lookup(terrainFeatures, #terrain)",
-    "_suffix": "=oneOf(ford, haven, burg, port, dale, keep, watch, gate, rest, fall, ridge, wood, field, pass, hold, stead, view, point, hill, bay, cliff, cross, run, land)",
+    "_suffix": "=oneOf(ford, haven, burg, port, dale, keep, watch, gate, rest, fall, ridge, wood, field, pass, hold, stead, view, point, hill, bay, cliff, cross, run, land, bridge, shore, town, ville, ton, mouth, burg, bury, bold, wick, ton, ham, worth, edge, bay, vale)",
     "name": "=capitalize(#_aspect + #_suffix)",
     "adjective": "=oneOf(peaceful, bustling, prosperous, decaying, ancient, vibrant, sleepy, lively, fair, grim, quaint, thriving, quiet, rustic, quaint, noble, humble, proud)"
   },
@@ -72,7 +72,7 @@
     "int": "=dig(#_statLine, 'int')+#_statBase+round(#level/8)",
     "wis": "=dig(#_statLine, 'wis')+#_statBase+round(#level/8)",
     "cha": "=dig(#_statLine, 'cha')+#_statBase+round(#level/8)",
-    "maxHp": "=dig(#_statLine, 'hp')+ statMod(#con)+ round(#level/4)",
+    "maxHp": "=max(1,dig(#_statLine, 'hp')+ statMod(#con)+ round(#level/4))",
     "weapon": "=lookup(animalWeapon, #animal_type)",
     "hasMissileWeapon": false,
     "_weaponStat": "=lookup(masterWeapon, #weapon)",
@@ -162,7 +162,7 @@
     "*template": "=if(#npc_template != nihil, lookup(creatureTemplateModifiers, #npc_template), nihil)",
     "hitDie": "=dig(#_statLine, 'hitDie')",
     "_maxHp": "=max(1,#hitDie + statMod(#con))",
-    "maxHp": "=if(#challenging, max(50, #_maxHp + #level * #hitDie/2), round(#_maxHp + #level * #hitDie/2))",
+    "maxHp": "=if(#challenging, max(50, #_maxHp + #level), round(#_maxHp + #level))",
     "_naturalArmor": "=dig(#_statLine, 'naturalArmor')",
     "armor": "=lookup(npcArmor, #race)",
     "_armorBonus": "=lookup(masterArmor, #armor)",
@@ -175,7 +175,7 @@
     "hp": "=#maxHp"
   },
   "encounter": {
-    "race": "=if(#_targetCr <= 5, oneOf(goblin, kobold), if(#_targetCr <= 10, oneOf(orc, human), if(#_targetCr <= 15, oneOf(ogre, troll), oneOf(dragon))))",
+    "race": "=if(#_targetCr <= 5, oneOf(goblin, kobold), if(#_targetCr <= 10, oneOf(orc, human), if(#_targetCr <= 18, oneOf(ogre, troll), oneOf(dragon))))",
     "targetCr": "=#_targetCr",
     "_levelBudget": "=#targetCr*2",
     "terrain": "=oneOf(forest, cave, swamp, mountain, snow, desert)",
@@ -210,7 +210,9 @@
     "challenging": false,
     "encounter": "=if(rand() < #_encounterChance, gen(encounter), nihil)",
     "treasure": "=if(rand() < #_treasureChance, lookup(treasure, oneOf(negligible, minor)), nihil)",
-    "feature": "=lookup(roomDecoration, 1d100)"
+    "decor": "=lookup(roomDecoration, 1d100)",
+    "gear": "=gather(masterGear, 1)",
+    "features": "=gather(roomFeature, if(rand() < 0.3, 1, 0))"
   },
   "boss_room": {
     "_targetCr": 1,
@@ -228,12 +230,14 @@
     "treasure": "=lookup(treasure, oneOf(major, legendary))",
     "type": "=lookup(bossNpcTypesForDungeon, #building_type)",
     "boss_encounter": "=gen(encounter)",
-    "feature": "=lookup(roomDecoration, 1d100)"
+    "decor": "=lookup(roomDecoration, 1d100)",
+    "gear": "=gather(masterGear, 1d3 + 2)",
+    "features": "=gather(roomFeature, if(rand() < 0.3, 2, 1))"
   },
   "dungeon": {
     "terrain": "=oneOf(forest, cave, swamp, mountain, snow, desert)",
     "_index": 0,
-    "_targetCr": "=max(1, round(#_index*1.3))",
+    "_targetCr": "=max(1, round(#_index/2)+1)",
     "__building_type": "=oneOf(temple, fortress, library, tomb, mine)",
     "building_type": "tomb",
     "_roomBias": "=lookup(roomBias, #building_type)",
@@ -242,7 +246,7 @@
     "theme": "=oneOf(pain, power, darkness, nature, fire, ice, shadow, light, chaos, order, water, air, earth, lightning, death, life, time, mystery)",
     "dungeon_aspect": "=lookup(dungeonAspect, #building_type)",
     "dungeon_name": "=capitalize(#dungeon_aspect) + \" \" + capitalize(#race) + \" \" + capitalize(#dungeon_type) + \" of \" + capitalize(#theme)",
-    "depth": "=2+2d4",
+    "depth": "=4+4d6",
     "dungeonIndex": "=#_index",
     "intendedCr": "=#_targetCr",
     "rooms": "=genList(room, #depth)",
@@ -256,7 +260,7 @@
     "terrain": "=lookup(terrains, 1d6)",
     "town": "=gen(town)",
     "_townName": "=dig(#town, 'name')",
-    "dungeons": "=genList(dungeon, 24)",
+    "dungeons": "=genList(dungeon, 18)",
     "name": "=oneOf('Adventure', 'Saga', 'Reckoning', 'Quest', 'Expedition') + ' ' + oneOf('in the ' + capitalize(#terrain), 'at ' + capitalize(#_townName), 'for the ' + capitalize(#terrain))"
   }
 }

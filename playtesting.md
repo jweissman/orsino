@@ -94,6 +94,7 @@
 [ ] Process traits for enemy npcs (undead should get benefits like immune charm/sleep/poison?)
 ---
 [ ] Spawn appropriate gear for PCs (spellbooks for mages, holy symbols for clerics...)
+[ ] Enemy saves should at least be presented clearly (okay for this to be '...but nothing happened' but ideal to say 'x made their save!' or similar)
 
 ## Fixed
 [x] Temple/shrine to local deity to get a blessing

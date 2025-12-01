@@ -189,13 +189,13 @@ export class Fighting {
         description: `to ${weaponVerb} ${defender.forename} with ${Words.humanize(attacker.weapon)}`
       });
 
-      // if (damageBonus > 0) {
-      //   console.log(`Damage increased by ${isMissile ? "DEX" : "STR"} modifier of ${damageBonus}.`);
-      // }
+      if (damageBonus > 0) {
+        console.log(`Damage increased by ${isMissile ? "DEX" : "STR"} modifier of ${damageBonus}.`);
+      }
 
       if (critical) {
         criticalDamage = Math.max(1, Math.round(damage * 0.2 * Math.max(1, Math.floor(attacker.level / 5))));
-        // console.log(`Critical attack adds ${criticalDamage} extra damage.`);
+        console.log(`Critical attack adds ${criticalDamage} extra damage.`);
       }
 
       damage = damage + criticalDamage + damageBonus;
@@ -207,7 +207,7 @@ export class Fighting {
         let whatNumberEvades = 20 - evasionBonus;
         const evasionRoll = await roll(defender, `for evasion (must roll ${whatNumberEvades} or higher)`, 20);
         if (evasionRoll.amount >= whatNumberEvades) {
-          // console.warn(`${Presenter.minimalCombatant(defender)} evades the attack!`);
+          console.warn(`${Presenter.minimalCombatant(defender)} evades the attack!`);
           // this.emit({ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">);
           // return [{ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">];
           description += ` ${defender.name} evades the attack!`;

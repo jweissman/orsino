@@ -3,6 +3,10 @@ import Combat from "../Combat";
 import Presenter from "../tui/Presenter";
 import { Combatant } from "../types/Combatant";
 
+type AbilityAnalysis = {
+  heal: boolean; damage: boolean; buff: boolean; debuff: boolean; defense: boolean; aoe: boolean; flee: boolean; summon: boolean; rez: boolean
+};
+
 export class AbilityScoring {
   static bestAbilityTarget(ability: Ability, user: Combatant, allies: Combatant[], enemies: Combatant[]): Combatant | Combatant[] {
     let validTargets = AbilityHandler.validTargets(ability, user, allies, enemies);
@@ -31,6 +35,13 @@ export class AbilityScoring {
         targetOrTargets.push(possibleTargets[Math.floor(Math.random() * possibleTargets.length)]);
       }
       return targetOrTargets;
+    } else if (ability.target.includes("deadAlly") && ability.target.length === 1) {
+      // pick a random downed ally
+      let downedAllies = allies.filter(a => a.hp <= 0);
+      if (downedAllies.length === 0) {
+        throw new Error(`No valid downed allies to target for ${ability.name}`);
+      }
+      return downedAllies[Math.floor(Math.random() * downedAllies.length)];
     } else {
       // pick the weakest/most wounded of the targets
       if (!Array.isArray(validTargets[0])) {
@@ -96,10 +107,17 @@ export class AbilityScoring {
     } else if (analysis.summon) {
       // does our party have < 6 combatants?
       if (allies.length < 6) {
-        score += 5 * (6 - allies.length);
+        score += 4 * (6 - allies.length);
       } else {
         score -= 5;
       }
+    } else if (analysis.rez) {
+      // any allies downed?
+      allies.forEach(ally => {
+        if (ally.hp <= 0) {
+          score += 15;
+        }
+      });
     }
 
     // note: ideally these shouldn't be valid actions in the first place!!
@@ -120,9 +138,7 @@ export class AbilityScoring {
     return Math.round(score);
   }
 
-  static analyzeAbility(ability: Ability): {
-    heal: boolean; damage: boolean; buff: boolean; debuff: boolean; defense: boolean; aoe: boolean; flee: boolean; summon: boolean;
-  } {
+  static analyzeAbility(ability: Ability): AbilityAnalysis {
     let damage = ability.effects.some(e => e.type === "damage" || e.type === "attack");
     let heal = ability.effects.some(e => e.type === "heal");
     let aoe = ability.target.includes("enemies");
@@ -131,7 +147,8 @@ export class AbilityScoring {
     let defense = ability.effects.some(e => e.type === "buff" && e.status?.effect.ac);
     let flee = ability.effects.some(e => e.type === "flee");
     let summon = ability.effects.some(e => e.type === "summon");
+    let rez = ability.effects.some(e => e.type === "resurrect");
 
-    return { heal, damage, buff, debuff, defense, aoe, flee, summon };
+    return { heal, damage, buff, debuff, defense, aoe, flee, summon, rez };
   }
 }
