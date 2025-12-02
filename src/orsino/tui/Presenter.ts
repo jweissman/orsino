@@ -71,7 +71,7 @@ export default class Presenter {
       "Attack Die": Stylist.colorize(combatant.attackDie, 'red'),
       "Armor Class": Stylist.colorize(`${combatant.ac}`, 'yellow'),
       "Spell Slots": ["mage", "bard", "cleric"].includes(combatant.class || '') ?
-          bolt.repeat(Combat.maxSpellSlotsForCombatant(combatant)) : "N/A"
+          bolt.repeat(Combat.maxSpellSlotsForCombatant(combatant)) : "--"
     }
     console.log("\n" + Object.entries(core).map(([key, value]) => {
       return `${Stylist.bold(Words.capitalize(key))} ${Words.humanize(value)}`.padEnd(25);

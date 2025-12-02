@@ -1318,7 +1318,7 @@
     "groups": {
       "warrior": [[ "prepare_charge", "charge", "set_spear", "second_wind", "roundhouse", "taunt" ]],
       "mage": [[]],
-      "cleric": [[ "smite", "shield", "cure", "bless", "turn_undead", "command", "hold_person", "resurrect" ] ],
+      "cleric": [[ "protection_from_evil", "smite", "shield", "cure", "bless", "turn_undead", "command", "hold_person", "resurrect" ] ],
       "ranger": [ [ "heal", "summon_animal", "set_spear" ] ],
       "thief": [ [ "poison_weapon", "hide", "backstab" ] ],
       "bard": [[ "cure", "inspire", "charm" ]]
@@ -1384,11 +1384,16 @@
   "npcTypeModifier": {
     "discriminator": "type",
     "groups": {
-      "Novice":       { "str": -2, "dex": -2, "int": 1, "wis": 1, "cha": -1, "abilities": [] },
+      "Novice":       { "str": -1, "con": 0, "dex": -2, "int": 1, "wis": 1, "cha": -1, "abilities": ["rapid_strike", "paralyzing_touch"] },
+      "Acolyte":      { "str": 0,  "con": 1, "wis": 2, "int": 1, "abilities": [ "heal", "rally", "bless", "paralyzing_touch" ] },
+      "Gravedigger":  { "str": 0,  "con": 2, "dex": 2, "abilities": [ "rapid_strike", "hide", "dig_in" ] },
+      "Cultist":      { "str": 1,  "con": 2, "int": 2, "abilities": [ "heal", "curse", "fear", "paralyzing_touch", "raise_dead" ], "traits": ["piety"] },
+      "Bandit":       { "str": 2,  "con": 3, "dex": 2, "abilities": [ "prepare_charge", "charge", "hide", "backstab", "rapid_strike" ], "traits": ["stealthy"] },
+      "Tombrobber":   { "str": 2,  "con": 3, "dex": 1, "int": -1, "wis": -1, "cha": 2, "abilities": ["rapid_strike", "hide"] },
+      "Necromancer":  { "str": 3,  "con": 4, "dex": 2, "int": 8, "abilities": [ "life_drain", "curse", "fear", "poison_cloud", "summon_undead", "raise_dead" ] },
+
       "Herald":       { "str": -1, "dex": -1, "int": 1, "wis": -1, "cha": 2, "abilities": ["inspire"] },
       "Benefactor":   { "str": -1, "dex": -1, "int": 2, "wis": -1, "cha": 2, "abilities": ["cure"] },
-      "Tombrobber":   { "str": -1, "dex": 1, "int": -1, "wis": -1, "cha": 2, "abilities": ["hide"] },
-
       "Apprentice":   { "str": -1, "dex": -1, "int": 2, "wis": 1, "cha": -1, "abilities": [ "missile" ] },
       "Devotee":      { "str": -1, "dex": -1, "int": 1, "wis": 2, "cha": 1, "abilities": ["heal"] },
       "Mendicant":    { "str": -2, "dex": -2, "con": -2, "int": 1, "wis": 2, "cha": 2, "abilities": [] },
@@ -1399,17 +1404,13 @@
       "Loser":        { "str": -1, "dex": -1, "con": -1, "cha": 2, "abilities": [ "prepare_charge", "charge" ] },
       "Magelet":      { "int": 2, "con": 1, "abilities": [ "missile", "shocking_grasp" ] },
 
-      "Bandit":       { "str": 1, "dex": 2, "abilities": [ "prepare_charge", "charge" ] },
       "Magician":     { "int": 3, "con": 2, "abilities": [ "missile", "shocking_grasp", "sleep" ] },
       "Criminal":     { "dex": 2, "cha": 1, "abilities": [ "hide" ] },
-      "Acolyte":      { "wis": 2, "int": 1, "abilities": [ "heal", "bless" ] },
       "Shaman":       { "int": 2, "wis": 1, "abilities": [ "heal" ] },
       "Slinger":      { "dex": 3, "abilities": [] },
       "Miner":        { "con": 2, "str": 1, "abilities": [ "prepare_charge", "charge" ] },
       "Mercenary":    { "str": 2, "dex": 2, "abilities": [ "prepare_charge", "charge" ] },
       "Hermit":       { "wis": 2, "con": 1, "abilities": [ "hide", "bless", "inspire" ] },
-      "Cultist":      { "int": 2, "abilities": [ "curse", "fear" ] },
-      "Gravedigger":  { "str": 1, "con": 2, "abilities": [ "hide" ] },
       "Thug":         { "str": 2, "abilities": [ "taunt", "prepare_charge", "charge" ] },
       "Cutthroat":    { "str": 2, "dex": 2, "abilities": [ "hide", "enrage", "prepare_charge", "charge" ] },
       "Bridgeminder": { "str": 2, "abilities": [ "taunt", "prepare_charge", "charge" ] },
@@ -1448,7 +1449,6 @@
 
       "High Priest":  { "str": -2, "con": 4, "int": 6, "dex": 2, "wis": 8, "cha": 8, "abilities": [ "smite", "bless", "curse", "inspire", "heal" ] },
       "Archmage":     { "int": 8, "con": 4, "dex": 2, "str": -2, "abilities": [ "armor", "missile", "life_drain", "shocking_grasp", "sleep" ] },
-      "Necromancer":  { "int": 8, "con": 6, "dex": 2, "str": -2, "abilities": [ "life_drain", "curse", "fear", "poison_cloud", "summon_undead", "raise_dead" ] },
       "King":         { "str": 6, "con": 6, "int": 4, "dex": 2, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ] },
       "Lord":         { "str": 8, "con": 8, "int": 6, "wis": 6, "dex": 4, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ] },
       "Monarch":      { "str": 10, "con": 10, "int": 6, "wis": 6, "dex": 4, "abilities": [ "inspire", "enrage", "prepare_charge", "charge", "heal" ] }

@@ -72,7 +72,7 @@
     "int": "=dig(#_statLine, 'int')+#_statBase+round(#level/8)",
     "wis": "=dig(#_statLine, 'wis')+#_statBase+round(#level/8)",
     "cha": "=dig(#_statLine, 'cha')+#_statBase+round(#level/8)",
-    "maxHp": "=max(1,dig(#_statLine, 'hp')+ statMod(#con)+ round(#level/4))",
+    "maxHp": "=max(1,2+dig(#_statLine, 'hp')+ statMod(#con)+ round(#level/4))",
     "weapon": "=lookup(animalWeapon, #animal_type)",
     "hasMissileWeapon": false,
     "_weaponStat": "=lookup(masterWeapon, #weapon)",
@@ -161,7 +161,7 @@
     "*aspectModifier": "=lookup(creatureAspects, #npc_aspect)",
     "*template": "=if(#npc_template != nihil, lookup(creatureTemplateModifiers, #npc_template), nihil)",
     "hitDie": "=dig(#_statLine, 'hitDie')",
-    "_maxHp": "=max(1,#hitDie * (1+#level)/3 + statMod(#con))",
+    "_maxHp": "=max(1,4 + #hitDie * (#level) + statMod(#con))",
     "maxHp": "=if(#challenging, max(50, #_maxHp + #level), round(#_maxHp + #level))",
     "_naturalArmor": "=dig(#_statLine, 'naturalArmor')",
     "armor": "=lookup(npcArmor, #race)",
@@ -251,7 +251,7 @@
     "theme": "=oneOf(pain, power, darkness, nature, fire, ice, shadow, light, chaos, order, water, air, earth, lightning, death, life, time, mystery)",
     "dungeon_aspect": "=lookup(dungeonAspect, #building_type)",
     "dungeon_name": "=capitalize(#dungeon_aspect) + \" \" + capitalize(#race) + \" \" + capitalize(#dungeon_type) + \" of \" + capitalize(#theme)",
-    "depth": "=3+2d6",
+    "depth": "=4+4d6",
     "dungeonIndex": "=#_index",
     "intendedCr": "=#_targetCr",
     "rooms": "=genList(room, #depth)",
@@ -265,7 +265,7 @@
     "terrain": "=lookup(terrains, 1d6)",
     "town": "=gen(town)",
     "_townName": "=dig(#town, 'name')",
-    "dungeons": "=genList(dungeon, 12)",
+    "dungeons": "=genList(dungeon, 18)",
     "name": "=oneOf('Adventure', 'Saga', 'Reckoning', 'Quest', 'Expedition') + ' ' + oneOf('in the ' + capitalize(#terrain), 'at ' + capitalize(#_townName), 'for the ' + capitalize(#terrain))"
   }
 }

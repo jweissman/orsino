@@ -74,18 +74,33 @@
       }
     ]
   },
+  "rapid_strike": {
+    "name": "Rapid Strike",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Make two quick attacks against an enemy.",
+    "target": [ "enemy" ],
+    "effects": [
+      {
+        "type": "attack"
+      },
+      {
+        "type": "attack"
+      }
+    ]
+  },
   "roundhouse": {
     "name": "Roundhouse Kick",
     "type": "skill",
     "aspect": "physical",
-    "description": "Make a powerful kick that strikes all enemies for 1d4 + level/2 bludgeoning damage.",
+    "description": "Make a powerful kick that strikes all enemies for 1d2 + level/3 bludgeoning damage.",
     "target": [
       "enemies"
     ],
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d4+round(#level/2)",
+        "amount": "=1d2+round(#level/3)",
         "kind": "bludgeoning"
       }
     ]
@@ -1055,6 +1070,87 @@
       {
         "type": "resurrect",
         "hpPercent": 50
+      }
+    ]
+  },
+  "paralyzing_touch": {
+    "name": "Paralyzing Touch",
+    "type": "skill",
+    "aspect": "dark",
+    "description": "Touch an enemy to paralyze them for 2 rounds.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Paralyzed",
+          "duration": 2,
+          "effect": {
+            "noActions": true
+          }
+        },
+        "saveType": "paralyze",
+        "saveDC": 14
+      }
+    ]
+  },
+  "rally": {
+    "name": "Rally",
+    "type": "skill",
+    "aspect": "social",
+    "description": "Rally your allies, healing them for 1d6 hit points.",
+    "target": [
+      "allies"
+    ],
+    "effects": [
+      {
+        "type": "heal",
+        "amount": "=1d6"
+      }
+    ]
+  },
+  "dig_in": {
+    "name": "Dig In",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Brace yourself, gaining +2 AC and +2 to saving throws for 4 rounds.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Digging In",
+          "duration": 4,
+          "effect": {
+            "ac": -2,
+            "allSaves": 2
+          }
+        }
+      }
+    ]
+  },
+  "protection_from_evil": {
+    "name": "Protection from Evil",
+    "type": "spell",
+    "level": 1,
+    "aspect": "divine",
+    "description": "Grant immunity to charm and fear for 6 rounds.",
+    "target": ["ally"],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Protected",
+          "duration": 6,
+          "effect": {
+            "immuneCharm": true,
+            "immuneFear": true
+          }
+        }
       }
     ]
   }

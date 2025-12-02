@@ -4,7 +4,16 @@ import Presenter from "../tui/Presenter";
 import { Combatant } from "../types/Combatant";
 
 type AbilityAnalysis = {
-  heal: boolean; damage: boolean; buff: boolean; debuff: boolean; defense: boolean; aoe: boolean; flee: boolean; summon: boolean; rez: boolean
+  attack: boolean;
+  heal: boolean;
+  damage: boolean;
+  buff: boolean;
+  debuff: boolean;
+  defense: boolean;
+  aoe: boolean;
+  flee: boolean;
+  summon: boolean;
+  rez: boolean;
 };
 
 export class AbilityScoring {
@@ -58,45 +67,62 @@ export class AbilityScoring {
   static scoreAbility(ability: Ability, user: Combatant, allies: Combatant[], enemies: Combatant[]): number {
     let score = 0;
     let analysis = this.analyzeAbility(ability);
+    if (analysis.attack) {
+      // score += 2;
+      // for each attack effect add +3
+      ability.effects.forEach(e => {
+        if (e.type === "attack") {
+          score += 10;
+        }
+      });
+    }
     if (analysis.flee) {
       score -= 15; // last resort action
       // is my hp low?
       const hpRatio = user.hp / user.maxHp;
       score += (1 - hpRatio) * 15; // higher score for lower hp
-    } else if (analysis.heal) {
+    }
+    if (analysis.heal) {
       // any allies <= 50% hp?
       allies.forEach(ally => {
-        if (ally.hp / ally.maxHp <= 0.5) {
+        if (ally.hp / ally.maxHp <= 0.25) {
           score += 10;
+        } else if (ally.hp / ally.maxHp <= 0.5) {
+          score += 5;
         }
       });
-    } else if (analysis.aoe) {
+    }
+    if (analysis.aoe) {
       score += enemies.filter(e => e.hp > 0).length * 3;
-    } else if (analysis.debuff) {
+    }
+    if (analysis.debuff) {
       // are there enemies with higher hp than us?
       enemies.forEach(enemy => {
         if (enemy.hp > 0 && enemy.hp > user.hp) {
           score += 4;
         }
       });
-    } else if (analysis.defense) {
+    }
+    if (analysis.defense) {
       // are we low on hp?
       if (user.hp / user.maxHp <= 0.5) {
         score += 5;
       }
-    } else if (analysis.buff) {
+    }
+    if (analysis.buff) {
       // if we already _have_ this buff and it targets ["self"] -- don't use it
       if (ability.target.includes("self") && ability.target.length === 1 &&
         user.activeEffects?.some(e => e.name === ability.effects[0].status?.name)) {
         return -10;
       }
 
-      score += 3;
+      score += 5;
       // are we near full hp?
       if (user.hp / user.maxHp >= 0.8) {
-        score += 5;
+        score += 10;
       }
-    } else if (analysis.damage) {
+    }
+    if (analysis.damage) {
       score += 6;
       // are enemies low on hp?
       enemies.forEach(enemy => {
@@ -104,14 +130,16 @@ export class AbilityScoring {
           score += 5;
         }
       });
-    } else if (analysis.summon) {
+    }
+    if (analysis.summon) {
       // does our party have < 6 combatants?
       if (allies.length < 6) {
         score += 4 * (6 - allies.length);
       } else {
         score -= 5;
       }
-    } else if (analysis.rez) {
+    }
+    if (analysis.rez) {
       // any allies downed?
       allies.forEach(ally => {
         if (ally.hp <= 0) {
@@ -139,6 +167,7 @@ export class AbilityScoring {
   }
 
   static analyzeAbility(ability: Ability): AbilityAnalysis {
+    let attack = ability.effects.some(e => e.type === "attack");
     let damage = ability.effects.some(e => e.type === "damage" || e.type === "attack");
     let heal = ability.effects.some(e => e.type === "heal");
     let aoe = ability.target.includes("enemies");
@@ -149,6 +178,6 @@ export class AbilityScoring {
     let summon = ability.effects.some(e => e.type === "summon");
     let rez = ability.effects.some(e => e.type === "resurrect");
 
-    return { heal, damage, buff, debuff, defense, aoe, flee, summon, rez };
+    return { attack, heal, damage, buff, debuff, defense, aoe, flee, summon, rez };
   }
 }
