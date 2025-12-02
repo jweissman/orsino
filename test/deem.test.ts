@@ -75,4 +75,17 @@ describe('Deem', () => {
   it('should handle single-quote string literals', async () => {
     expect(await Deem.evaluate("'Hello,' + ' ' + 'world!'")).toBe('Hello, world!');
   });
+
+  it('should handle mixed string literals', async () => {
+    expect(await Deem.evaluate('"Hello," + \' \' + "world!"')).toBe('Hello, world!');
+  });
+
+  it('should handle nested expressions', async () => {
+    expect(await Deem.evaluate('if(1 + 1 == 2, "yes", "no")')).toBe('yes');
+  });
+
+  it('should handle conditional literals', async () => {
+    expect(await Deem.evaluate('true ? "yes" : "no"')).toBe('yes');
+    expect(await Deem.evaluate('false ? "yes" : "no"')).toBe('no');
+  });
 });

@@ -10,7 +10,7 @@ export function loadSetting(name: string): Record<GenerationTemplateType, Templa
   // Load tables
   const tablesData = JSON.parse(fs.readFileSync(`${basePath}/tables.json`, 'utf-8'));
   const tables = Object.entries(tablesData).map(([name, data]: any) => {
-    const table = new Table(data.discriminator);
+    const table = new Table(name, data.discriminator);
     Object.entries(data.groups).forEach(([group, items]) => {
       table.group(group, items as any);
     });

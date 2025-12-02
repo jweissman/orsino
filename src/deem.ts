@@ -46,13 +46,6 @@ export default class Deem {
       return rolls.reduce((a, b) => a + b, 0);
     },
     statMod: (stat: number) => {
-      // if (stat >= 15) {
-      //   return 1 + Math.round((stat - 15) / 2);
-      // } else if (stat <= 5) {
-      //   return (-1) + Math.round((stat - 5) / 2);
-      // } else {
-      //   return 0;
-      // }
       return Fighting.statMod(stat);
     },
     dig: (obj: any, ...path: string[]) => {
@@ -68,11 +61,6 @@ export default class Deem {
       }
       return distribution.filter(x => x > 0);
     },
-    // mapGenList: (arr: any[], key: string, values: any[]) => {
-    //   return arr.map((item, index) => {
-    //     return { ...item, [key]: values[index % values.length] };
-    //   });
-    // }
   };
   static grammar = ohm.grammar(source);
   static semantics = Deem.grammar.createSemantics().addOperation('eval(context)', {
@@ -80,6 +68,7 @@ export default class Deem {
     async LogExp_and(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) && (await right.eval(ctx)); },
     async LogExp_or(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) || (await right.eval(ctx)); },
     async LogExp_not(_not, exp) { let ctx = this.args.context;  return !(await exp.eval(ctx)); },
+    async TernaryExp(cond, _q, trueExp, _c, falseExp) { let ctx = this.args.context;  return (await cond.eval(ctx)) ? (await trueExp.eval(ctx)) : (await falseExp.eval(ctx)); },
     async CompExp_lt(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) < (await right.eval(ctx)); },
     async CompExp_gt(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) > (await right.eval(ctx)); },
     async CompExp_eq(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) == (await right.eval(ctx)); },
@@ -187,6 +176,7 @@ export default class Deem {
     LogExp_and(left, _, right) { return `${left.pretty} && ${right.pretty}`; },
     LogExp_or(left, _, right) { return `${left.pretty} || ${right.pretty}`; },
     LogExp_not(_not, exp) { return `!${exp.pretty}`; },
+    TernaryExp(cond, _q, trueExp, _c, falseExp) { return `${cond.pretty} ? ${trueExp.pretty} : ${falseExp.pretty}`; },
     CompExp_lt(left, _, right) { return `${left.pretty} < ${right.pretty}`; },
     CompExp_gt(left, _, right) { return `${left.pretty} > ${right.pretty}`; },
     CompExp_lte(left, _, right) { return `${left.pretty} <= ${right.pretty}`; },

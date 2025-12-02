@@ -63,6 +63,20 @@ export default class Presenter {
     });
     console.log(statLine.join(' | '));
 
+    // console.log("\nHit Points: " + Stylist.colorize(`${combatant.hp}/${combatant.maxHp} `, 'green'));
+    // console.log("Armor Class: " + Stylist.colorize(`${combatant.ac} `, 'yellow'));
+    let bolt = Stylist.colorize('⚡', 'yellow');
+    let core = {
+      // "Hit Points": Stylist.colorize(`${combatant.hp}/${combatant.maxHp}`, 'green'),
+      "Attack Die": Stylist.colorize(combatant.attackDie, 'red'),
+      "Armor Class": Stylist.colorize(`${combatant.ac}`, 'yellow'),
+      "Spell Slots": ["mage", "bard", "cleric"].includes(combatant.class || '') ?
+          bolt.repeat(Combat.maxSpellSlotsForCombatant(combatant)) : "N/A"
+    }
+    console.log("\n" + Object.entries(core).map(([key, value]) => {
+      return `${Stylist.bold(Words.capitalize(key))} ${Words.humanize(value)}`.padEnd(25);
+    }).join('   '));
+
     let basics = {
       weapon: (combatant.weapon || 'None'),
       armor: combatant.armor || 'None',
@@ -71,7 +85,7 @@ export default class Presenter {
       gp: combatant.gp,
     }
     console.log("\n" + Object.entries(basics).map(([key, value]) => {
-      return `${Stylist.bold(Words.capitalize(key))} ${Words.humanize(value)}`;
+      return `${Stylist.bold(Words.capitalize(key))} ${Words.humanize(value)}`.padEnd(20);
     }).join('   '));
 
 

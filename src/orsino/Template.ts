@@ -1,5 +1,6 @@
 // src/orsino/Template.ts
 import Deem from "../deem";
+import { Table } from "./Table";
 import { GenerationTemplateType } from "./types/GenerationTemplateType";
 import deepCopy from "./util/deepCopy";
 
@@ -25,6 +26,15 @@ export class Template {
       };
       Deem.stdlib.eval = async (expr: string) => await Deem.evaluate(expr, context);
       Deem.stdlib.lookup = (tableName: GenerationTemplateType, groupName: string) => generator.lookupInTable(tableName, groupName);
+      Deem.stdlib.hasEntry = (tableName: GenerationTemplateType, groupName: string) => {
+        // console.log(`Checking hasEntry for table '${tableName}' and group '${groupName}'`);
+        const table = generator.generationSource(tableName);
+        if (!table || !(table instanceof Table)) {
+          throw new Error(`Table not found: ${tableName}`);
+          return false;
+        }
+        return table.hasGroup(groupName);
+      };
       Deem.stdlib.gather = (tableName: GenerationTemplateType, count: number) => generator.gatherKeysFromTable(tableName, count);
       Deem.stdlib.gen = async (type: GenerationTemplateType) => {
         return await generator.gen(type, { ...context })
@@ -55,21 +65,43 @@ export class Template {
       if (key.startsWith("*")) {
         // we have evaluated the value (confirm we have gotten an object) 
         // then 'overlay' (add) each property onto the context
-        Object.entries(assembled[key] || {}).forEach(([k, v]) => {
+        // Object.entries(assembled[key] || {}).forEach(([k, v]) => {
+        for (let [k, v] of Object.entries(assembled[key] || {})) {
+
           // if it's an array, we want to concatenate it
           if (Array.isArray(v)) {
+            if (v.some((el: any) => typeof el === 'string' && el.startsWith("="))) {
+              // throw new Error(`Cannot overlay unevaluated expression in array for property ${k}: ${v}`);
+              // v = v.map(async (el: any) => {
+              for (let i = 0; i < v.length; i++) {
+                let el = v[i];
+                if (typeof el === 'string' && el.startsWith("=")) {
+                  el = await Template.evaluatePropertyExpression(el, context);
+                }
+                v[i] = el;
+              }
+              // console.log("Evaluated overlaid array for property", k, ":", v);
+            }
+
             assembled[k] = (assembled[k] || []).concat(v);
-          } else {
+          } else if (v instanceof Number || typeof v === 'number') {
+            assembled[k] = (assembled[k] || 0) + v;
+          } else if (typeof v === 'string') {
+
+
             // console.log(`Adding ${k}=${v} to context (was ${localContext[k]})`);
-            assembled[k] = v + (assembled[k] || 0);
+            assembled[k] = v + (assembled[k] || '');
             // localContext[k] = assembled[k];
+          } else {
+            // assume obj?
+            assembled[k] = v + (assembled[k] || {});
           }
           localContext[k] = assembled[k];
-        });
+        }
       }
     }
 
-    // omit internal properties starting with '_'
+    // omit internal/overlay properties starting with '_' or '*'
     Object.keys(assembled).forEach(key => {
       if (key.startsWith('_') || key.startsWith('*')) {
         delete assembled[key];
@@ -98,6 +130,7 @@ export class Template {
         return await Deem.evaluate(expr.slice(1), context);
       } catch (e) {
         console.error(`Error evaluating expression ${expr}`, e);
+
         // return null;
         throw e;
       }

@@ -11,14 +11,25 @@ export class Fighting {
   }
 
   static statMod(stat: number): number {
+    // if (stat >= 15) {
+    //   return 1 + Math.round((stat - 15) / 2);
+    // } else if (stat <= 5) {
+    //   return (-1) + Math.round((stat - 5) / 2);
+    // } else {
+    //   return 0;
+    // }
+
+    // dirt simple
     // return Math.floor((stat - 10) / 2);
-    if (stat >= 15) {
-      return 1 + Math.round((stat - 15) / 2);
-    } else if (stat <= 5) {
-      return (-1) + Math.round((stat - 5) / 2);
-    } else {
-      return 0;
-    }
+
+    // with more standard b/x style modifiers
+    if (stat <= 3) return -3;
+    if (stat <= 5) return -2;
+    if (stat <= 8) return -1;
+    if (stat <= 12) return 0;
+    if (stat <= 15) return 1;
+    if (stat <= 17) return 2;
+    return 3;
   }
 
   static turnBonus(combatant: Combatant, keys: (string)[] = []): { [key: string]: number } {

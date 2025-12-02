@@ -1,12 +1,9 @@
 # Notes from Playtesting
 
-[ ] Loot should be accumulated ("X takes it" = added to a list on their pc record)
-[ ] Maybe you can leave an offering (5gp) at a (dungeon) shrine for a blessing?
 ---
 [ ] Load all PCs on party select so we can show their race/class (no longer even letting you load PCs from file but we're still persisting them every room...)
 ---
 [ ] A room generated with multiple monsters with the same name (humans may need more names as a race but also maybe we could _specifically_ try to prevent this?) [genList would need a dedupe pass to really be _certain_ of this]
-[ ] CR scaling still not working great for deeper rooms? (seems to be vaguely more reasonable now but also we've kind of nerfed CR checks by _only_ checking NPCs when there are also true monsters and animal companions now -- we can constrain-gen them independently but seems subtle too somehow)
 [ ] 20 should be stat max until level 10 (maybe 18 until level 5...)
 [ ] High-level enemies should have much higher dex (tried to adjust although maybe _too_ high now?)
 ---
@@ -15,7 +12,6 @@
 [ ] Healing potion could cure poison status too?
 [ ] Poisoned blade still has weird expiration message actually? ("X is no longer poisoned blade"; a bit awkward to fix since a standard message would be ideal here)
 [ ] Might be good/wise/prudent to gather status effects into constants so we're not subject to (as many) typo bugs! (more generally it would be nice to have a statuses.json for defining common effects like poisoning uniformly...)
-[ ] Target CR for the dungeon was 4 but first three rooms all had CR 3??
 [ ] Unify search/examine (should both have chance to find potions and both grant XP on success)
 [ ] Duplicate forenames still problematic -- maybe 'forename' can just _be_ magical within deem (genList could identify and toss dupes to prevent issues like this -- may cause other problems and seems weird... adding some gross genUniqListByKey seems 'too heavy' too; or we could have a 'gather' function that grabs all values of the __items but the expression then just gets too gnarly; note technically it's not even the 'name' key but 'forename' which ... we could just have a much deeper list to draw from to prevent this happening so often but that doesn't really solve this fundamentally!)
 [ ] A cage could have a chance to have a prisoner (who could become ally); incidentally would be nice for it to be more likely within a 'cell' room
@@ -35,11 +31,9 @@
 [ ] AC still seems really low for monsters (maybe should go back to displaying it and thac0/to-hit bonuses just to sanity-check the math even if it's very noisy)
 [ ] We don't seem to redisplay room details if you've levelled up?
 [ ] Maybe taking damage makes enemies more likely to defend?
-[ ] CR levels still seem _very_ high for bosses (but maybe more about how the CR scales in progression over the dungeon; that said we also add "+1" to the target + depth so maybe could remove that?)
 [ ] Need money sinks + some other consumable besides potion (again maybe adventuring kits power first aid)
 [ ] Examining maps/atlases could have a chance to give dungeon clues?
 [ ] Maybe you need a clue to travel to a dungeon??
-[ ] We could also spell out DC checks and bonuses for now (just to sanity check) as well as bonus damage/healing in general
 [ ] Should at least be a _chance_ for AI to pick on someone other than weakest enemy
 ---
 [ ] Better adventure module names (not just quest/saga/adventure of the $terrain...)
@@ -83,7 +77,6 @@
 [ ] "Heal 1 every successful hit" is too powerful ('vitalist' trait shared by all elves -- and note elves already get multiple very powerful passives?)
 [ ] Dungeons with multiple floors (levels in principle seem relatively straightforward but we'd need to adapt dungeoneer to handle them...)
 ---
-[ ] Smite scaling 2d6 * level is way too powerful at higher levels (adjusted a bit)
 [ ] Roundhouse too strong (nerfed a lot now but still)
 ---
 [ ] Show detailed breakdown of dungeons/rooms/actual vs effect CR (maybe separate spec for module runner?)
@@ -91,10 +84,14 @@
 ---
 [ ] Track playerAligned as _well_ as playerControlled (sort of captured by being on the team of the player but this isn't passed along with combatant in all cases...)
 [ ] Adjust status durations check so that they expire at end of _turn_ not _round_?
-[ ] Process traits for enemy npcs (undead should get benefits like immune charm/sleep/poison?)
 ---
-[ ] Spawn appropriate gear for PCs (spellbooks for mages, holy symbols for clerics...)
+[ ] Spawn appropriate gear for PCs (spellbooks for mages, holy symbols for clerics, lockpicking tool for thieves)
 [ ] Enemy saves should at least be presented clearly (okay for this to be '...but nothing happened' but ideal to say 'x made their save!' or similar)
+[ ] Would be nice to let _all_ PCs attempt to interact/examine/search
+[ ] Maybe charm is dispelled if the charmer dies??
+[ ] Creatures could escape _before_ the round starts (so they don't display in party listing)
+[ ] Humanize room names on describe room
+[ ] Aggregate lists of features since it's possible to get _two_ polluted fountains
 
 ## Fixed
 [x] Temple/shrine to local deity to get a blessing
@@ -130,6 +127,14 @@
 [x] Colorize stats consistently (ie when search/examine we should see the appropriate color for int/wis as in the statline rainbow) (done for search/examine!)
 [x] Should be able to go back to a dungeon you _haven't_ completed yet... (think this is true now)
 [x] Set limit on saves vs death (3 per combat?)
+[x] Process traits for enemy npcs (undead should get benefits like immune charm/sleep/poison?)
+[x] Maybe you can leave an offering (5gp) at a (dungeon) shrine for a blessing?
+[x] Loot should be accumulated ("X takes it" = added to a list on their pc record)
+[x] CR scaling still not working great for deeper rooms? (seems to be vaguely more reasonable now but also we've kind of nerfed CR checks by _only_ checking NPCs when there are also true monsters and animal companions now -- we can constrain-gen them independently but seems subtle too somehow) -- should be fixed with top-down/exact CR gen
+[x] Target CR for the dungeon was 4 but first three rooms all had CR 3?? -- should be fixed with exact CR budgeting
+[x] CR levels still seem _very_ high for bosses (but maybe more about how the CR scales in progression over the dungeon; that said we also add "+1" to the target + depth so maybe could remove that?) -- should be fixed with exact CR budgeting
+[x] We could also spell out DC checks and bonuses for now (just to sanity check) as well as bonus damage/healing in general - think this is mostly true
+[x] Smite scaling 2d6 * level is way too powerful at higher levels (adjusted a bit) -- should be marginally better (but radiant damage against vulnerable enemies still _very_ strong!)
 
 ## Not really issues
 "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]

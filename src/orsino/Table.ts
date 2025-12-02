@@ -1,7 +1,7 @@
 export class Table {
   private groups: Record<string, any[]> = {};
 
-  constructor(public discriminator: string) { }
+  constructor(public name: string, public discriminator: string) { }
 
   group(name: string, items: any[]): this {
     this.groups[name] = items;
@@ -33,7 +33,9 @@ export class Table {
 
     const group = this.groups[groupName];
     if (group === undefined) {
-      throw new Error(`Group not found: ${groupName}`);
+      throw new Error(`Group not found in table ${this.name} (group: ${groupName})`);
+      // console.warn(`Group '${groupName}' not found in table '${this.name}'`);
+      return {};
     }
     // return group[Math.floor(Math.random() * group.length)];
     options = group;
@@ -44,5 +46,11 @@ export class Table {
     }
 
     return options[Math.floor(Math.random() * options.length)];
+  }
+
+  hasGroup(groupName: string): any {
+    let exists = this.groups.hasOwnProperty(groupName);
+    // console.log(`Checking existence of group '${groupName}' in table '${this.name}': ${exists}`);
+    return exists;
   }
 }

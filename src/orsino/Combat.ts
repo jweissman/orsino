@@ -99,7 +99,8 @@ export default class Combat {
 
   async setUp(
     teams = Combat.defaultTeams(),
-    environment = 'Dungeon | Room -1'
+    environment = 'Dungeon | Room -1',
+    auras: StatusEffect[] = []
   ) {
     this.turnNumber = 0;
     this.winner = null;
@@ -122,6 +123,10 @@ export default class Combat {
           c.passiveEffects.push(...trait.statuses);
         }
       });
+
+      // apply auras
+      c.activeEffects ||= [];
+      c.activeEffects.push(...auras);
     }
     await this.abilityHandler.loadAbilities();
 

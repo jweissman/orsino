@@ -793,28 +793,28 @@
   "treasure": {
     "discriminator": "tier",
     "groups": {
-      "negligible": [
+      "negligible": [[
         "a rusty coin",
         "a broken dagger",
         "a tattered map",
         "a wooden figurine"
-      ],
-      "minor": [
+      ]],
+      "minor": [[
         "a silver coin",
         "a healing potion",
         "a small gemstone"
-      ],
-      "major": [
+      ]],
+      "major": [[
         "a magic sword",
         "an enchanted ring",
         "a bag of gold coins",
         "a crystal orb"
-      ],
-      "legendary": [
+      ]],
+      "legendary": [[
         "an ancient relic",
         "a powerful spell scroll",
         "a crown of the lost king"
-      ]
+      ]]
     }
   },
   "masterArmor": {
@@ -1652,7 +1652,7 @@
     "discriminator": "terrain",
     "groups": {
       "forest": { "str": -1, "dex": 1, "con": 1 },
-      "swamp": { "con": -1, "dex": -1, "int": 1 },
+      "swamp": { "con": -1, "dex": 1, "int": 1 },
       "mountain": { "str": 2, "con": 1, "dex": -1 },
       "cave": { "str": 1, "con": 1, "dex": 1 },
       "snow": { "con": 1, "dex": -1, "str": -1 },
@@ -1750,17 +1750,21 @@
           "alcove"
         ]
       ],
-      "tomb": [
-        [
-          "chamber",
-          "chamber",
+      "tomb": [[
           "corridor",
-          "cell",
-          "cell",
-          "hall",
-          "reliquary"
-        ]
-      ],
+        "corridor",
+        "chamber",
+        "chamber",
+        "hall",
+        "hall",
+        "hall",
+        "vault",
+        "vault",
+        "altar",
+        "altar",
+        "reliquary",
+        "phylactery"
+      ]],
       "mine": [
         [
           "corridor",
@@ -1772,9 +1776,50 @@
       ]
     }
   },
+  "specialRooms": {
+    "discriminator": "room_type",
+    "groups": {
+      "phylactery": { "monster_type": "Lich", "_monsterLevelDistribution": ["=#_targetCr"], "_npcCount": 0, "_companionCount": 0,
+      "_treasureItems": ["soul gem", "ring of protection +3", "staff of power"]
+    }}
+  },
+  "specialRoomAuras": {
+    "discriminator": "aura_type",
+    "groups": {
+      "phylactery": ["miasma"]
+    }
+  },
+  "roomAuras": {
+    "discriminator": "aura_type",
+    "groups": {
+      "calm": {
+        "name": "Plenitude of Serenity",
+        "description": "Your mind is strangely at peace in this area",
+        "effect": {
+          "name": "Tranquility",
+          "effect": { "toHit": 1, "initiative": 1 }
+        }
+      },
+      "energizing": {
+        "name": "Vigor",
+        "description": "A revitalizing energy fills the room",
+        "effect": { "bonusDamage": 1, "toHit": 1 }
+      },
+      "miasma": {
+        "name": "Reek of Decay",
+        "description": "An oppressive aura saps the vitality of all living beings in the room",
+        "effect": {
+          "bonusDamage": -1, "toHit": -1, "initiative": -1
+        }
+      }
+    }
+  },
   "roomNarrative": {
     "discriminator": "type",
     "groups": {
+      "phylactery": [
+        "dark phylactery chamber, the air thick with malevolent energy. The walls are adorned with ancient runes, and a sinister energy emanates from the center."
+      ],
       "alcove": [
         "hidden alcove, tucked away behind a crumbling wall.",
         "secret alcove, filled with ancient artifacts and treasures.",
@@ -2864,29 +2909,29 @@
   "monsterStatBase": {
     "discriminator": "monster_type",
     "groups": {
-      "giant": 12,
-      "beast": 4,
-      "undead": 7,
+      "beast": 6,
+      "undead": 9,
+      "fey": 10 ,
       "demon": 11,
-      "elemental": 10,
-      "aberration": 13,
-      "construct": 10,
-      "celestial": 11,
-      "fey": 9
+      "elemental": 12,
+      "construct": 13,
+      "celestial": 14,
+      "aberration": 16,
+      "giant": 18
     }
   },
   "monsterStat": {
     "discriminator": "monster_type",
     "groups": {
-      "giant": { "hp": 45, "str": 4, "dex": -2, "con": 3, "int": -2, "wis": 0, "cha": -1 },
-      "beast": { "hp": 10, "str": 2, "dex": 1, "con": 1, "int": -2, "wis": 0, "cha": -1 },
-      "undead": { "hp": 15, "str": 0, "dex": 0, "con": -2, "int": 2, "wis": 1, "cha": -3 },
-      "demon": { "hp": 18, "str": 4, "dex": 2, "con": 2, "int": 1, "wis": 0, "cha": -2 },
-      "elemental": { "hp": 12, "str": 0, "dex": 3, "con": 0, "int": 0, "wis": 1, "cha": 0 },
-      "aberration": { "hp": 26, "str": 2, "dex": 1, "con": 2, "int": 3, "wis": 1, "cha": -2 },
-      "construct": { "hp": 14, "str": 3, "dex": -1, "con": 4, "int": 0, "wis": 0, "cha": -1 },
-      "celestial": { "hp": 18, "str": 2, "dex": 1, "con": 2, "int": 1, "wis": 3, "cha": 2 },
-      "fey": { "hp": 10, "str": -1, "dex": 2, "con": 0, "int": 1, "wis": 2, "cha": 3 }
+      "giant":      { "hp": 45, "str": 4,  "dex": -2, "con": 3,  "int": -2, "wis": 0, "cha": -1 },
+      "beast":      { "hp": 10, "str": 2,  "dex": 1,  "con": 1,  "int": -2, "wis": 0, "cha": -1 },
+      "undead":     { "hp": 15, "str": 0,  "dex": 0,  "con": -2, "int": 2,  "wis": 1, "cha": -3 },
+      "demon":      { "hp": 18, "str": 4,  "dex": 2,  "con": 2,  "int": 1,  "wis": 0, "cha": -2 },
+      "elemental":  { "hp": 12, "str": 0,  "dex": 3,  "con": 0,  "int": 0,  "wis": 1, "cha": 0 },
+      "aberration": { "hp": 26, "str": 2,  "dex": 1,  "con": 2,  "int": 3,  "wis": 1, "cha": -2 },
+      "construct":  { "hp": 14, "str": 3,  "dex": -1, "con": 4,  "int": 0,  "wis": 0, "cha": -1 },
+      "celestial":  { "hp": 18, "str": 2,  "dex": 1,  "con": 2,  "int": 1,  "wis": 3, "cha": 2 },
+      "fey":        { "hp": 10, "str": -1, "dex": 2,  "con": 0,  "int": 1,  "wis": 2, "cha": 3 }
     }
   },
 

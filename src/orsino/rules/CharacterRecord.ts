@@ -1,6 +1,5 @@
-import Choice from "inquirer/lib/objects/choice";
 import AbilityHandler, { AbilityEffect } from "../Ability";
-import Combat, { ChoiceSelector } from "../Combat";
+import { ChoiceSelector } from "../Combat";
 import { DungeonEvent } from "../Events";
 import TraitHandler, { Trait } from "../Trait";
 import Presenter from "../tui/Presenter";

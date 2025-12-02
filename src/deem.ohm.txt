@@ -5,7 +5,11 @@ Deem {
     = LogExp "&&" CompExp  -- and
     | LogExp "||" CompExp  -- or
     | "!" LogExp           -- not
+    | TernaryExp           -- ternary
     | CompExp
+
+  TernaryExp
+    = CompExp "?" Exp ":" Exp
 
   CompExp
     = CompExp "<" AddExp   -- lt

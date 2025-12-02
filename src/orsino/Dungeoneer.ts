@@ -12,7 +12,7 @@ import { Roll } from "./types/Roll";
 import Events, { DungeonEvent } from "./Events";
 import { Commands } from "./rules/Commands";
 import CharacterRecord from "./rules/CharacterRecord";
-import AbilityHandler, { Ability } from "./Ability";
+import AbilityHandler, { Ability, StatusEffect } from "./Ability";
 
 type SkillType = "search" | "examine"; // | "disarm" | "pickLock" | "climb" | "swim" | "jump" | "listen" | "spot";
 
@@ -27,10 +27,11 @@ interface RoomBase {
   narrative: string;
   room_size: string;
   targetCr?: number;
-  treasure: string | null;
+  treasure: string[] | null;
   decor: string | null;
   gear: string[] | null;
   features: string[] | null;
+  aura: StatusEffect | null;
 }
 
 export interface Room extends RoomBase {
@@ -200,7 +201,7 @@ export default class Dungeoneer {
     let skillBonus = actorFx[skillBonusName] as number || 0;
     let skillMod = Fighting.statMod(actor[skill] as number);
 
-    this.note(`${actor.name} attempts ${action} with modifier ${skillMod} ` + (skillBonus > 0 ? ` and +${skillBonus} bonus.` : '.'));
+    this.note(`${actor.name} attempts ${action} with modifier ${skillMod}` + (skillBonus > 0 ? ` and +${skillBonus} bonus.` : '.'));
     const roll = await this.roller(actor, action, 20);
     const total = roll.amount + skillMod + skillBonus;
     return { actor, success: total >= dc };
@@ -228,14 +229,17 @@ export default class Dungeoneer {
   describeRoom(room: Room | BossRoom, verb: string = "are standing in"): string {
     let description = `You ${verb} ${Words.a_an(room.room_size)} ${room.narrative}`;
     if (room.decor === "nothing") {
-      description += ` There ${room.room_type} contains simple furnishings`;
+      description += ` The ${room.room_type} contains simple furnishings`;
     } else {
-      description += ` The ${room.room_type} contains ${Stylist.bold(room.decor!)}`;
+      description += ` The ${room.room_type} contains ${room.decor!}`;
     }
     if (room.features && room.features.length > 0) {
-      description += ` as well as ${Words.humanizeList(room.features.map(f => Words.a_an(Words.humanize(Stylist.bold(f)))))}`;
+      description += ` as well as ${Words.humanizeList(room.features.map(f => Words.a_an(Words.humanize(f))))}`;
     }
     description += '.';
+    if (room.aura) {
+      description += ` ${room.aura.description}.`;
+    }
     return description;
   }
 
@@ -278,7 +282,12 @@ export default class Dungeoneer {
       note: this.outputSink
     });
 
-    await combat.setUp([this.playerTeam, this.currentMonsterTeam], this.dungeon!.dungeon_name + ` - Room ${this.currentRoomIndex + 1}/${this.dungeon!.rooms.length + 1}`);
+    let roomAura = this.currentRoom?.aura;
+    await combat.setUp(
+      [this.playerTeam, this.currentMonsterTeam],
+      this.dungeon!.dungeon_name + ` - Room ${this.currentRoomIndex + 1}/${this.dungeon!.rooms.length + 1}`,
+      roomAura ? [roomAura] : []
+    );
     while (!combat.isOver()) {
       await combat.round(
         async (combatant: Combatant) => {
@@ -464,7 +473,7 @@ export default class Dungeoneer {
             }
           }
         } else {
-          this.note(`Decided not to purchase anything from ${Words.humanize(featureName)}.`);
+          this.note(`Decided not to offer anything to the ${Words.humanize(featureName)}.`);
         }
       }
     } else {
@@ -477,16 +486,19 @@ export default class Dungeoneer {
     if (success) {
       this.note(`${actor.forename} finds a hidden stash!`);
       if (room.treasure) {
-        const xpReward = 10 + Math.floor(Math.random() * 20);
-        this.note(`💎 You find ${room.treasure} (+${xpReward} XP)`);
-        if (room.treasure == "a healing potion") {
-          this.playerTeam.healingPotions = (this.playerTeam.healingPotions || 0) + 1;
-          this.note(`You add the healing potion to your bag. (Total owned: ${this.playerTeam.healingPotions})`);
-        } else {
-          // add to combatant.loot
-          actor.loot = actor.loot || [];
-          actor.loot.push(room.treasure);
+        for (const item of room.treasure) {
+          this.note(`You find ${item}`);
+          if (item == "a healing potion") {
+            this.playerTeam.healingPotions = (this.playerTeam.healingPotions || 0) + 1;
+            this.note(`You add the healing potion to your bag. (Total owned: ${this.playerTeam.healingPotions})`);
+          } else {
+            // add to combatant.loot
+            actor.loot = actor.loot || [];
+            actor.loot.push(item);
+          }
         }
+        let xpReward = 10 + Math.floor(Math.random() * 20) + 5 * room.treasure.length;
+        this.note(`+${xpReward} XP for finding the stash!`);
         await this.reward(xpReward, 0);
       }
       if (room.gear) {
