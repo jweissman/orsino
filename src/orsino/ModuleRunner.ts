@@ -117,9 +117,10 @@ export class ModuleRunner {
   async enter(dry = false, mod: CampaignModule = this.mod): Promise<void> {
     this.outputSink(`You arrive at the ${mod.town.adjective} ${Words.capitalize(mod.town.race)} ${mod.town.size} of ${Stylist.bold(mod.town.name)}.`);
     let days = 0;
-    while (days++ < 60 && this.pcs.some(pc => pc.hp > 0)) {
+    let maxDays = 30;
+    while (days++ < maxDays && this.pcs.some(pc => pc.hp > 0)) {
       this.status(mod);
-      this.outputSink(`\n--- Day ${days}/60 ---`);
+      this.outputSink(`\n--- Day ${days}/${maxDays} ---`);
       const action = await this.menu(dry);
       this.outputSink(`You chose to ${action}.`);
 

@@ -29,13 +29,15 @@ export interface StatusEffect {
   onTurnEnd?: AbilityEffect[];
   // onCastSpell?: AbilityEffect[];
   // onHit?: AbilityEffect[];
-  // onKill?: AbilityEffect[];
+  onKill?: AbilityEffect[];
+  onAttacked?: AbilityEffect[];
   // onTakeDamage?: AbilityEffect[];
   // onGiveHealing?: AbilityEffect[];
   // onBuff?: AbilityEffect[];
 }
 
 export interface AbilityEffect {
+  description?: string;
   kind?: DamageKind;
   type: "attack" | "damage" | "heal" | "buff" | "debuff" | "flee" | "removeItem" | "drain" | "summon" | "removeStatus" | "upgrade" | "gold" | "xp" | "resurrect";
   stat?: "str" | "dex" | "con" | "int" | "wis" | "cha";
@@ -134,6 +136,7 @@ export default class AbilityHandler {
     });
   }
 
+
   getAbility(name: string): Ability {
     let ability = this.abilities[name];
     if (!ability) {
@@ -149,7 +152,12 @@ export default class AbilityHandler {
 
   get spells(): Ability[] {
     return Object.values(this.abilities).filter(ab => ab.type === 'spell');
-    // same as above, but we need to map the _key_ into the structure so we can add it correctly
+  }
+
+  allSpellNames(aspect: string, maxLevel = Infinity): string[] {
+    return Object.entries(this.abilities)
+          .filter(([_key, ab]) => ab.aspect === aspect && ab.type === 'spell' && (ab.level ?? 0) <= maxLevel)
+          .map(([key, _ab]) => key);
   }
 
   static validTargets(ability: Ability, user: Combatant, allies: Combatant[], enemies: Combatant[]): (Combatant | Combatant[])[] {
@@ -385,14 +393,14 @@ export default class AbilityHandler {
     else if (effect.type === "gold") {
       let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
       user.gp = (user.gp || 0) + amount;
-      console.log(`${user.name} gains ${amount} gold!`);
+      // console.log(`${user.name} gains ${amount} gold!`);
       events.push({ type: "gold", subject: user, amount } as any);
       success = true;
     }
     else if (effect.type === "xp") {
       let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
       user.xp = (user.xp || 0) + amount;
-      console.log(`${user.name} gains ${amount} XP!`);
+      // console.log(`${user.name} gains ${amount} XP!`);
       events.push({ type: "xp", subject: user, amount } as any);
       success = true;
     } else if (effect.type === "summon") {
@@ -406,7 +414,14 @@ export default class AbilityHandler {
       // }
       let summoned: Combatant[] = [];
       for (let i = 0; i < amount; i++) {
-        let options = effect.options || {};
+        let options: Record<string, any> = effect.options || {};
+        // deem-eval option values
+        for (const key of Object.keys(options)) {
+          let val = options[key];
+          if (typeof val === "string" && val.startsWith("=")) {
+            options[key] = await Deem.evaluate(val.slice(1), { subject: user });
+          }
+        }
         let summon = await Generator.gen((effect.creature || "animal") as GenerationTemplateType, {
           race: user.race,
           _targetCr: Math.max(1, Math.floor((user.level || 1) / 2)),
@@ -450,7 +465,7 @@ export default class AbilityHandler {
     success: boolean;
     events: Omit<GameEvent, "turn">[];
   }> {
-    console.log(`${user.name} is performing ${ability.name} on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target?.name}...`);
+    // console.log(`${user.name} is performing ${ability.name} on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target?.name}...`);
     let result = false;
     let events = [];
     for (const effect of ability.effects) {

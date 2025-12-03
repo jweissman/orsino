@@ -30,7 +30,9 @@ export default class CharacterRecord {
     partySize: number = 3,
     selectionMethod: (prompt: string, options: string[]) => Promise<string> = User.selection
   ): Promise<Combatant[]> {
-    await AbilityHandler.instance.loadAbilities();
+        let abilityHandler = AbilityHandler.instance;
+        await abilityHandler.loadAbilities();
+    // await AbilityHandler.instance.loadAbilities();
     await TraitHandler.instance.loadTraits();
 
     let doChoose = await selectionMethod(
@@ -75,11 +77,13 @@ export default class CharacterRecord {
           //   "Select spells for this PC",
           //   ['missile', 'armor', 'blur', 'charm', 'shocking_grasp', 'burning_hands', 'sleep', 'ray_of_frost', 'acid_arrow']
           // );
-          let availableSpells = ['missile', 'armor', 'blur', 'charm', 'shocking_grasp', 'burning_hands', 'sleep', 'ray_of_frost', 'acid_arrow'];
+          let availableSpells = abilityHandler.allSpellNames('arcane', 1);
+             // ['missile', 'armor', 'blur', 'charm', 'shocking_grasp', 'burning_hands', 'sleep', 'ray_of_frost', 'acid_arrow'];
           for (let i = 0; i < 3; i++) {
             let spell = await selectionMethod(
               `Select spell ${i + 1} for this PC: ` + whichPc,
-              availableSpells
+              availableSpells.sort()
+
             );
             spellbook.push(spell);
             availableSpells = availableSpells.filter(s => s !== spell);
@@ -107,7 +111,8 @@ export default class CharacterRecord {
         // pc.traits = [];
         if (pc.class === 'mage') {
           // pc.abilities = ['melee']; // don't know why this is necessary, but it is??
-          const spells = Sample.count(3, 'missile', 'armor', 'blur', 'charm', 'shocking_grasp', 'burning_hands', 'sleep')
+          const spells = Sample.count(3, ...abilityHandler.allSpellNames('arcane', 1))
+            //'missile', 'armor', 'blur', 'charm', 'shocking_grasp', 'burning_hands', 'sleep')
           console.log("Adding to " + pc.name + "'s spellbook: " + spells.join(", ") + " (already has " + pc.abilities.join(", ") + ")");
           pc.abilities.push(...spells);
         }
@@ -215,15 +220,16 @@ export default class CharacterRecord {
         // gain spells
         let abilityHandler = AbilityHandler.instance;
         await abilityHandler.loadAbilities();
-        let allSpellKeys = Object.entries(abilityHandler.abilities)
-          .filter(([_key, ab]) => ab.aspect === 'arcane')
-          .map(([key, _ab]) => key);
+        let allSpellKeys = abilityHandler.allSpellNames('arcane', Math.ceil(pc.level / 2));
+          // Object.entries(abilityHandler.abilities)
+          // .filter(([_key, ab]) => ab.aspect === 'arcane')
+          // .map(([key, _ab]) => key);
 
         let newSpellKeys = allSpellKeys.filter(spellKey => {
-          let spell = abilityHandler.getAbility(spellKey);
-          return spell.level !== undefined
-            && spell.level <= Math.ceil(pc.level / 2)
-            && !pc.abilities.includes(spellKey);
+          // let spell = abilityHandler.getAbility(spellKey);
+          return !pc.abilities.includes(spellKey);
+          //spell.level !== undefined
+            // && spell.level <= Math.ceil(pc.level / 2)
         });
 
         // let allSpells = abilityHandler.spells.filter(ab => ab.aspect === 'arcane');

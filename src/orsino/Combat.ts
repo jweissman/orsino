@@ -160,6 +160,11 @@ export default class Combat {
     }
 
     let spellSlotsRemaining = (Combat.maxSpellSlotsForCombatant(combatant) || 0) - (combatant.spellSlotsUsed || 0);
+    // if we have a noSpellcasting effect, set spellSlotsRemaining to 0
+    if (activeFx.noSpellcasting) {
+      spellSlotsRemaining = 0;
+    }
+
     let uniqAbilities = Array.from(new Set(combatant.abilities));
     let abilities = uniqAbilities.map(a => this.abilityHandler.getAbility(a)); //.filter(a => a);
     abilities.forEach((ability: Ability) => {
@@ -415,6 +420,8 @@ export default class Combat {
     // don't attempt to act if we're already defeated
     if (combatant.hp <= 0) { return { haltRound: false }; }
 
+    console.log("\n" + Presenter.combatant(combatant));
+
     this.emit({ type: "turnStart", subject: combatant, combatants: this.allCombatants } as Omit<CombatEvent, "turn">);
 
     // Tick down cooldowns
@@ -427,7 +434,7 @@ export default class Combat {
     // if we have an 'inactive' status (eg from sleep spell) skip our turn
     if (combatant.activeEffects?.some(e => e.effect.noActions)) {
       let status = combatant.activeEffects.find(e => e.effect.noActions);
-      this.note(`${Presenter.combatant(combatant)} is ${status!.name} and skips their turn!`);
+      this.note(`${Presenter.minimalCombatant(combatant)} is ${status!.name} and skips their turn!`);
       return { haltRound: false };
     }
 
@@ -491,13 +498,6 @@ export default class Combat {
     }
     this.combatantsByInitiative = await this.determineInitiative();
     this.turnNumber++;
-    this.emit({
-      type: "roundStart",
-      combatants: Combat.living(this.combatantsByInitiative.map(c => ({ ...c.combatant, friendly: this.teams[0].combatants.includes(c.combatant) }))),
-      parties: this.teams,
-      environment: this.environmentName
-    } as Omit<RoundStartEvent, "turn">);
-
     // check for escape conditions (if 'flee' status is active, remove the combatant from combat)
     // Combat.living(this.allCombatants)
     // this.teams[1].combatants
@@ -515,10 +515,20 @@ export default class Combat {
       }
     }
 
+    this.emit({
+      type: "roundStart",
+      combatants: Combat.living(this.combatantsByInitiative.map(c => ({ ...c.combatant, friendly: this.teams[0].combatants.includes(c.combatant) }))),
+      parties: this.teams,
+      environment: this.environmentName
+    } as Omit<RoundStartEvent, "turn">);
+
     for (const { combatant } of this.combatantsByInitiative) {
       let nonplayerCombatants = this.teams[1].combatants.filter(c => c.hp > 0);
 
-      if (this.isOver() || nonplayerCombatants.length === 0) {
+      if (nonplayerCombatants.length === 0) {
+        // console.warn("All nonplayer combatants dead, skipping remaining turns: ", this.combatantsByInitiative.map(c => c.combatant.forename + `(${c.combatant.hp} HP)`));
+        this.winner = this.teams[0].name;
+
         break;
       }
       if (combatant.hp <= 0) { continue; } // Skip defeated combatants

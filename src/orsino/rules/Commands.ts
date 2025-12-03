@@ -81,7 +81,7 @@ export class Commands {
       rollDescription += ` ${subject.name} adds ${effectStack.allRolls} to all rolls, so the total is now ${result}.`;
     }
 
-    console.log(rollDescription);
+    // console.log(rollDescription);
     return { amount: result, description: rollDescription };
   }
 
@@ -247,11 +247,22 @@ export class Commands {
       events.push({ type: "fall", subject: defender } as Omit<FallenEvent, "turn">);
       // trigger on kill fx
       // need to find attacker team...
-      let onKillFx = Fighting.gatherEffects(attacker).onKill as AbilityEffect[] || [];
+      let onKillFx = attackerEffects.onKill as AbilityEffect[] || [];
+         //Fighting.gatherEffects(attacker).onKill as AbilityEffect[] || [];
       for (let fx of onKillFx) {
-        await AbilityHandler.handleEffect("onKill", fx, attacker, defender, combatContext, Commands.handlers(roll, null as unknown as Team));
+        let { events: onKillEvents } = await AbilityHandler.handleEffect(fx.description || "an effect", fx, attacker, attacker, combatContext, Commands.handlers(roll, null as unknown as Team));
+        events.push(...onKillEvents);
+      }
+    } else {
+      // does defender have onAttacked effects?
+      let onAttackedFx = defenderEffects.onAttacked as AbilityEffect[] || [];
+      // console.log(`Defender ${defender.forename} has ${onAttackedFx.length} onAttacked effects to process.`);
+      for (let fx of onAttackedFx) {
+        let { events: onAttackedEvents } = await AbilityHandler.handleEffect(fx.description || "an effect", fx, defender, defender, combatContext, Commands.handlers(roll, null as unknown as Team));
+        events.push(...onAttackedEvents);
       }
     }
+
     return events;
   }
 

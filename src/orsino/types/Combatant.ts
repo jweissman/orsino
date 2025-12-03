@@ -1,6 +1,7 @@
 import { DamageKind, SaveKind, StatusEffect } from "../Ability";
 
 export interface Combatant {
+  alignment?: string;
   traits: string[];
   abilities: string[];
   name: string;

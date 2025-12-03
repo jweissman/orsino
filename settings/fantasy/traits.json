@@ -626,16 +626,18 @@
       },
       {
         "name": "Bountiful Spoils",
-        "description": "Receive 2d6 bonus gold and 2d4 XP per kill.",
+        "description": "Receive 2d6 bonus gold and 3d8 XP per kill.",
         "effect": {
           "onKill": [
             {
               "type": "gold",
-              "amount": "=2d6"
+              "amount": "=2d6",
+              "description": "bounty from oligarchy"
             },
             {
               "type": "xp",
-              "amount": "=2d4"
+              "amount": "=3d8",
+              "description": "experience boost from oligarchy"
             }
           ]
         }
@@ -792,9 +794,8 @@
   },
 
   "undead": {
-    "name": "Undead",
     "type": "template",
-    "description": "An unliving creature animated by dark magic.",
+    "description": "Brought Back",
     "statuses": [{
       "name": "Undead Nature",
       "description": "Immune to poison, charm, sleep, and disease.",

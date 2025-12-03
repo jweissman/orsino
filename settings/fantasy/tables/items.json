@@ -1,0 +1,457 @@
+{
+  "masterArmor": {
+    "discriminator": "kind",
+    "groups": {
+      "cloth": 0,
+      "hide": 1,
+      "leather": 2,
+      "ring": 3,
+      "studded": 3,
+      "scale": 4,
+      "chainmail": 5,
+      "banded": 6,
+      "splint": 6,
+      "plate": 7
+    }
+  },
+  "masterWeapon": {
+    "discriminator": "kind",
+    "groups": {
+      "fist": {
+        "damage": "1d2",
+        "type": "bludgeoning"
+      },
+      "kick": {
+        "damage": "1d2",
+        "type": "bludgeoning"
+      },
+      "battleaxe": {
+        "damage": "1d8",
+        "type": "slashing"
+      },
+      "handaxe": {
+        "damage": "1d6",
+        "type": "slashing"
+      },
+      "bow": {
+        "damage": "1d6",
+        "type": "piercing",
+        "missile": true
+      },
+      "club": {
+        "damage": "1d4",
+        "type": "bludgeoning"
+      },
+      "dagger": {
+        "damage": "1d4",
+        "type": "piercing"
+      },
+      "dart": {
+        "damage": "1d3",
+        "type": "piercing",
+        "missile": true
+      },
+      "heavy_flail": {
+        "damage": "1d6+1",
+        "type": "bludgeoning"
+      },
+      "light_flail": {
+        "damage": "1d4+1",
+        "type": "bludgeoning"
+      },
+      "halberd": {
+        "damage": "1d10",
+        "type": "slashing"
+      },
+      "heavy_warhammer": {
+        "damage": "1d6+1",
+        "type": "bludgeoning"
+      },
+      "light_warhammer": {
+        "damage": "1d4+1",
+        "type": "bludgeoning"
+      },
+      "javelin": {
+        "damage": "1d6",
+        "type": "piercing",
+        "intercept": true
+      },
+      "lance": {
+        "damage": "2d4+1",
+        "type": "piercing",
+        "intercept": true
+      },
+      "heavy_mace": {
+        "damage": "1d6+1",
+        "type": "bludgeoning"
+      },
+      "light_mace": {
+        "damage": "1d4+1",
+        "type": "bludgeoning"
+      },
+      "morningstar": {
+        "damage": "2d4",
+        "type": "piercing"
+      },
+      "heavy_pick": {
+        "damage": "1d6+1",
+        "type": "piercing"
+      },
+      "light_pick": {
+        "damage": "1d4+1",
+        "type": "piercing"
+      },
+      "pole_arm": {
+        "damage": "1d6+1",
+        "type": "piercing",
+        "intercept": true
+      },
+      "spear": {
+        "damage": "1d6",
+        "type": "piercing",
+        "intercept": true
+      },
+      "staff": {
+        "damage": "1d6",
+        "type": "bludgeoning"
+      },
+      "claymore": {
+        "damage": "2d4",
+        "type": "slashing"
+      },
+      "broadsword": {
+        "damage": "2d4",
+        "type": "slashing"
+      },
+      "longsword": {
+        "damage": "1d8",
+        "type": "slashing"
+      },
+      "scimitar": {
+        "damage": "1d8",
+        "type": "slashing"
+      },
+      "shortsword": {
+        "damage": "1d6",
+        "type": "slashing"
+      },
+      "greatsword": {
+        "damage": "1d10",
+        "type": "slashing"
+      },
+      "trident": {
+        "damage": "1d6+1",
+        "type": "piercing",
+        "intercept": true
+      },
+      "sling": {
+        "damage": "1d4",
+        "type": "bludgeoning",
+        "missile": true
+      },
+      "crossbow": {
+        "damage": "1d6+1",
+        "type": "piercing",
+        "missile": true
+      },
+      "antlers": {
+        "damage": "1d6",
+        "type": "piercing"
+      },
+      "bite": {
+        "damage": "1d6",
+        "type": "piercing"
+      },
+      "claws": {
+        "damage": "1d4",
+        "type": "slashing"
+      },
+      "sting": {
+        "damage": "1d3",
+        "type": "piercing"
+      },
+      "horns": {
+        "damage": "1d4",
+        "type": "bludgeoning"
+      },
+      "slam": {
+        "damage": "1d6",
+        "type": "piercing"
+      },
+      "talons": {
+        "damage": "1d8",
+        "type": "piercing"
+      },
+      "tusks": {
+        "damage": "1d8",
+        "type": "piercing"
+      },
+      "quills": {
+        "damage": "1d3",
+        "type": "piercing"
+      },
+      "headbutt": {
+        "damage": "1d4",
+        "type": "bludgeoning"
+      },
+      "beak": {
+        "damage": "1d4",
+        "type": "piercing"
+      },
+      "flutter": {
+        "damage": "1d2",
+        "type": "bludgeoning"
+      },
+      "tentacles": {
+        "damage": "8d2+1",
+        "type": "bludgeoning"
+      }
+    }
+  },
+  "masterGear": {
+    "discriminator": "kind",
+    "groups": {
+      "ale": {
+        "type": "consumable",
+        "effect": [
+          {
+            "type": "heal",
+            "amount": "3d4"
+          }
+        ]
+      },
+      "backpack": {
+        "type": "container",
+        "capacity": 30
+      },
+      "barrel": {
+        "type": "container",
+        "capacity": 50
+      },
+      "bedroll": {
+        "type": "camping"
+      },
+      "bell": {
+        "type": "tool"
+      },
+      "blanket": {
+        "type": "camping"
+      },
+      "boots": {
+        "type": "clothing"
+      },
+      "wine": {
+        "type": "consumable",
+        "effect": [
+          {
+            "type": "heal",
+            "amount": "2d4"
+          }
+        ]
+      },
+      "box": {
+        "type": "container",
+        "capacity": 20
+      },
+      "bracers": {
+        "type": "clothing"
+      },
+      "caltrops": {
+        "type": "tool"
+      },
+      "candle": {
+        "type": "light source",
+        "duration": 6
+      },
+      "canvas": {
+        "type": "tool"
+      },
+      "chain": {
+        "type": "tool"
+      },
+      "chalk": {
+        "type": "tool"
+      },
+      "cloak": {
+        "type": "clothing"
+      },
+      "crowbar": {
+        "type": "tool"
+      },
+      "dice": {
+        "type": "tool"
+      },
+      "doublet": {
+        "type": "clothing"
+      },
+      "firewood": {
+        "type": "camping"
+      },
+      "flask": {
+        "type": "container",
+        "capacity": 5
+      },
+      "fish_hook": {
+        "type": "tool"
+      },
+      "fishing_net": {
+        "type": "tool"
+      },
+      "flint_and_steel": {
+        "type": "tool"
+      },
+      "gloves": {
+        "type": "clothing"
+      },
+      "gown": {
+        "type": "clothing"
+      },
+      "hammer": {
+        "type": "tool"
+      },
+      "holy_symbol": {
+        "type": "tool"
+      },
+      "hose": {
+        "type": "tool"
+      },
+      "iron_spikes": {
+        "type": "tool"
+      },
+      "ladder": {
+        "type": "tool"
+      },
+      "lamp": {
+        "type": "light source",
+        "duration": 12
+      },
+      "lantern": {
+        "type": "light source",
+        "duration": 24
+      },
+      "lock": {
+        "type": "tool"
+      },
+      "manacles": {
+        "type": "tool"
+      },
+      "mirror": {
+        "type": "tool"
+      },
+      "musical_instrument": {
+        "type": "tool"
+      },
+      "needle_and_thread": {
+        "type": "tool"
+      },
+      "cloak_pin": {
+        "type": "tool"
+      },
+      "piton": {
+        "type": "tool"
+      },
+      "pole": {
+        "type": "tool"
+      },
+      "pot": {
+        "type": "container",
+        "capacity": 10
+      },
+      "pouch": {
+        "type": "container",
+        "capacity": 5
+      },
+      "quill": {
+        "type": "tool"
+      },
+      "quiver": {
+        "type": "container",
+        "capacity": 20
+      },
+      "rations": {
+        "type": "consumable",
+        "effect": [
+          {
+            "type": "heal",
+            "amount": "1d4"
+          }
+        ]
+      },
+      "robe": {
+        "type": "clothing"
+      },
+      "rope": {
+        "type": "tool"
+      },
+      "sack": {
+        "type": "container",
+        "capacity": 15
+      },
+      "satchel": {
+        "type": "container",
+        "capacity": 10
+      },
+      "scrollcase": {
+        "type": "container",
+        "capacity": 5
+      },
+      "shoes": {
+        "type": "clothing"
+      },
+      "shovel": {
+        "type": "tool"
+      },
+      "signal_whistle": {
+        "type": "tool"
+      },
+      "skillet": {
+        "type": "tool"
+      },
+      "soap": {
+        "type": "tool"
+      },
+      "spellbook": {
+        "type": "tool"
+      },
+      "tent": {
+        "type": "camping"
+      },
+      "thieves_tools": {
+        "type": "tool"
+      },
+      "torch": {
+        "type": "light source",
+        "duration": 4
+      },
+      "tunic": {
+        "type": "clothing"
+      },
+      "twine": {
+        "type": "tool"
+      },
+      "vellum": {
+        "type": "tool"
+      },
+      "holy_water": {
+        "type": "consumable",
+        "effect": [
+          {
+            "type": "damage",
+            "amount": "2d6",
+            "target": "undead"
+          }
+        ]
+      },
+      "waterskin": {
+        "type": "container",
+        "capacity": 10
+      },
+      "whetstone": {
+        "type": "tool"
+      },
+      "wind_chime": {
+        "type": "tool"
+      }
+    }
+  }
+}

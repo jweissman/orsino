@@ -78,12 +78,23 @@
     "name": "Rapid Strike",
     "type": "skill",
     "aspect": "physical",
-    "description": "Make two quick attacks against an enemy.",
+    "description": "Make up to three quick attacks against an enemy.",
     "target": [ "enemy" ],
     "effects": [
-      {
-        "type": "attack"
-      },
+      { "type": "attack" },
+      { "type": "attack" },
+      { "type": "attack" }
+    ]
+  },
+  "whirlwind": {
+    "name": "Whirlwind Attack",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Swing your weapon in a wide arc, attacking all enemies within reach.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
       {
         "type": "attack"
       }
@@ -93,14 +104,14 @@
     "name": "Roundhouse Kick",
     "type": "skill",
     "aspect": "physical",
-    "description": "Make a powerful kick that strikes all enemies for 1d2 + level/3 bludgeoning damage.",
+    "description": "Make a powerful kick that strikes all enemies for 1d3 + level/3 bludgeoning damage.",
     "target": [
       "enemies"
     ],
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d2+round(#level/3)",
+        "amount": "=1d3+round(#level/3)",
         "kind": "bludgeoning"
       }
     ]
@@ -299,7 +310,7 @@
             "noActions": true
           }
         },
-        "saveType": "con",
+        "saveType": "will",
         "saveDC": 10
       }
     ]
@@ -316,6 +327,9 @@
     "effects": [
       {
         "type": "debuff",
+        "condition": {
+          "trait": "humanoid"
+        },
         "status": {
           "name": "Charmed",
           "duration": 3,
@@ -1014,15 +1028,14 @@
       }
     ]
   },
+
   "summon_animal": {
-    "name": "Summon Animal",
+    "name": "Call Animal Companion",
     "type": "skill",
     "cooldown": 8,
     "aspect": "nature",
-    "description": "Summon a random animal to fight for you.",
-    "target": [
-      "self"
-    ],
+    "description": "A friendly animal comes to your aid in battle.",
+    "target": [ "self" ],
     "effects": [
       {
         "type": "summon",
@@ -1030,10 +1043,43 @@
       }
     ]
   },
+  "summon_elemental": {
+    "name": "Summon Elemental",
+    "type": "spell",
+    "aspect": "arcane",
+    "level": 3,
+    "description": "Summon a random elemental to fight for you.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "summon",
+        "creature": "monster",
+        "options": { "monster_type": "elemental" }
+      }
+    ]
+  },
+  "summon_monster": {
+    "name": "Summon Monster",
+    "type": "spell",
+    "aspect": "arcane",
+    "level": 2,
+    "description": "Summon a random monster (beast or fey type) to fight for you.",
+    "target": [ "self" ],
+    "effects": [
+      {
+        "type": "summon",
+        "creature": "monster",
+        "options": { "monster_type": "=oneof(beast, fey)" }
+      }
+    ]
+  },
   "summon_undead": {
     "name": "Summon Undead",
     "type": "spell",
     "aspect": "arcane",
+    "level": 2,
     "description": "Summon a random undead creature to fight for you.",
     "target": [
       "self"
@@ -1046,8 +1092,8 @@
       }
     ]
   },
-  "raise_dead": {
-    "name": "Raise Dead",
+  "animate_dead": {
+    "name": "Animate Dead",
     "type": "spell",
     "aspect": "divine",
     "description": "Raise a fallen ally as an undead servant to fight for you.",
@@ -1055,8 +1101,21 @@
     "effects": [
       {
         "type": "resurrect",
-        "hpPercent": 50,
+        "hpPercent": 40,
         "applyTraits": ["undead"]
+      }
+    ]
+  },
+  "raise_dead": {
+    "name": "Raise Dead",
+    "type": "spell",
+    "aspect": "divine",
+    "description": "Restore a fallen ally to life with 50% health.",
+    "target": ["deadAlly"],
+    "effects": [
+      {
+        "type": "resurrect",
+        "hpPercent": 50
       }
     ]
   },
@@ -1064,12 +1123,12 @@
     "name": "Resurrection",
     "type": "spell",
     "aspect": "divine",
-    "description": "Restore a fallen ally to life.",
+    "description": "Restore a fallen ally to life with full health.",
     "target": ["deadAlly"],
     "effects": [
       {
         "type": "resurrect",
-        "hpPercent": 50
+        "hpPercent": 100
       }
     ]
   },
@@ -1149,6 +1208,113 @@
           "effect": {
             "immuneCharm": true,
             "immuneFear": true
+          }
+        }
+      }
+    ]
+  },
+  "dispel_magic": {
+    "name": "Dispel Magic",
+    "type": "spell",
+    "aspect": "arcane",
+    "level": 1,
+    "description": "Remove charm, cursed, paralyzed and magical stun effects from a target.",
+    "target": [
+      "self",
+      "ally",
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "removeStatus",
+        "statusName": "Paralyzed"
+      },
+      {
+        "type": "removeStatus",
+        "statusName": "Cursed"
+      },
+      {
+        "type": "removeStatus",
+        "statusName": "Charmed"
+      },
+      {
+        "type": "removeStatus",
+        "statusName": "Stunned"
+      }
+    ]
+  },
+
+  "dirty_trick": {
+    "name": "Dirty Trick",
+    "type": "skill",
+    "aspect": "stealth",
+    "description": "Perform a dirty trick to blind or entangle an enemy, giving them -2 to hit for 2 rounds.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Blinded",
+          "duration": 2,
+          "effect": {
+            "toHit": -2
+          }
+        },
+        "saveType": "magic",
+        "saveDC": 14
+      }
+    ]
+  },
+
+  "hunters_mark": {
+    "name": "Hunter's Mark",
+    "type": "skill",
+    "aspect": "nature",
+    "description": "Mark an enemy, giving them -2 AC and +1d4 damage from all attacks for 5 rounds.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Hunting Prey",
+          "duration": 5,
+          "effect": {
+            "ac": 2,
+            "onAttacked": [
+              {
+                "type": "damage",
+                "description": "being a marked target",
+                "target": "self",
+                "amount": "=1d4",
+                "kind": "true"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "silence": {
+    "name": "Silence",
+    "type": "spell",
+    "level": 1,
+    "aspect": "arcane",
+    "description": "Create an area of silence, preventing spellcasting for 3 rounds.",
+    "target": [
+      "area"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Silenced",
+          "duration": 3,
+          "effect": {
+            "noSpellcasting": true
           }
         }
       }

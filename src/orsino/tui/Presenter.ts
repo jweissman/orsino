@@ -49,9 +49,17 @@ export default class Presenter {
     // "Human Female Warrior of Hometown (41 years old)"
     console.log(
       Stylist.italic(
-        `${Words.capitalize(combatant.gender || 'unknown')} ${Words.capitalize(combatant.background || 'adventurer')} from the ${combatant.hometown || 'unknown'} (${combatant.age || 'unknown age'} years old)`
+        `${Words.capitalize(combatant.gender || 'unknown')} ${Words.capitalize(combatant.background || 'adventurer')} ${Words.humanize(combatant.alignment || 'neutral')} from the ${combatant.hometown || 'unknown'} (${combatant.age || 'unknown'} years old)`
       )
     )
+    // let demographics = {
+    //   age: combatant.age || 'Unknown',
+    //   // alignment: Words.humanize(combatant.alignment || 'neutral'),
+    // }
+
+    // console.log(Object.entries(demographics).map(([key, value]) => {
+    //   return this.padLiteralEnd(`${Stylist.bold(Words.capitalize(key))} ${Words.humanize(value)}`, 25);
+    // }).join('   '));
 
     let statNames = ['str', 'dex', 'int', 'wis', 'cha', 'con'];
     let statLine = statNames.map(stat => {
@@ -65,6 +73,18 @@ export default class Presenter {
 
     // console.log("\nHit Points: " + Stylist.colorize(`${combatant.hp}/${combatant.maxHp} `, 'green'));
     // console.log("Armor Class: " + Stylist.colorize(`${combatant.ac} `, 'yellow'));
+
+    let basics = {
+      weapon: (combatant.weapon || 'None'),
+      armor: combatant.armor || 'None',
+      // background: combatant.background || 'None',
+      xp: combatant.xp,
+      gp: combatant.gp,
+    }
+    console.log("\n" + Object.entries(basics).map(([key, value]) => {
+      return this.padLiteralEnd(`${Stylist.bold(Words.capitalize(key))} ${Words.humanize(value)}`, 25);
+    }).join('   '));
+
     let bolt = Stylist.colorize('⚡', 'yellow');
     let core = {
       // "Hit Points": Stylist.colorize(`${combatant.hp}/${combatant.maxHp}`, 'green'),
@@ -73,21 +93,9 @@ export default class Presenter {
       "Spell Slots": ["mage", "bard", "cleric"].includes(combatant.class || '') ?
           bolt.repeat(Combat.maxSpellSlotsForCombatant(combatant)) : "--"
     }
-    console.log("\n" + Object.entries(core).map(([key, value]) => {
-      return `${Stylist.bold(Words.capitalize(key))} ${Words.humanize(value)}`.padEnd(25);
+    console.log(Object.entries(core).map(([key, value]) => {
+      return this.padLiteralEnd(`${Stylist.bold(Words.capitalize(key))} ${Words.humanize(value)}`, 25);
     }).join('   '));
-
-    let basics = {
-      weapon: (combatant.weapon || 'None'),
-      armor: combatant.armor || 'None',
-      background: combatant.background || 'None',
-      xp: combatant.xp,
-      gp: combatant.gp,
-    }
-    console.log("\n" + Object.entries(basics).map(([key, value]) => {
-      return `${Stylist.bold(Words.capitalize(key))} ${Words.humanize(value)}`.padEnd(20);
-    }).join('   '));
-
 
     // ability table
     console.log(Stylist.bold("\nAbilities"));

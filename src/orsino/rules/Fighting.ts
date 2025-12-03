@@ -200,13 +200,13 @@ export class Fighting {
         description: `to ${weaponVerb} ${defender.forename} with ${Words.humanize(attacker.weapon)}`
       });
 
-      if (damageBonus > 0) {
-        console.log(`Damage increased by ${isMissile ? "DEX" : "STR"} modifier of ${damageBonus}.`);
-      }
+      // if (damageBonus > 0) {
+      //   console.log(`Damage increased by ${isMissile ? "DEX" : "STR"} modifier of ${damageBonus}.`);
+      // }
 
       if (critical) {
         criticalDamage = Math.max(1, Math.round(damage * 0.2 * Math.max(1, Math.floor(attacker.level / 5))));
-        console.log(`Critical attack adds ${criticalDamage} extra damage.`);
+        // console.log(`Critical attack adds ${criticalDamage} extra damage.`);
       }
 
       damage = damage + criticalDamage + damageBonus;

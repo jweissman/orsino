@@ -196,6 +196,13 @@ export default class Dungeoneer {
       disabled: c.hp <= 0
     })));
 
+    // think this was only possible if no pcs were alive (should be prevented now?)
+    // if (!actor) {
+    //   console.trace("No actor selected for skill check:", action);
+    //   // return { actor: null as any, success: false };
+    //   throw new Error("No actor selected for skill check");
+    // }
+
     let actorFx = Fighting.gatherEffects(actor);
     let skillBonusName = `${type}Bonus`;
     let skillBonus = actorFx[skillBonusName] as number || 0;
@@ -324,7 +331,7 @@ export default class Dungeoneer {
       const enemies = combat.teams.find(t => t.name === "Enemies")?.combatants || [];
 
       let xp = 0;
-      let gold = 0;
+      let gold = await Deem.evaluate(String(this.currentEncounter?.bonusGold || 0)) || 0;
 
       if (enemies.length > 0) {
         this.note(`\n🎉 You defeated ${Words.humanizeList(enemies.map(e => e.name))}!`);
@@ -382,7 +389,10 @@ export default class Dungeoneer {
 
     let searched = false, examinedDecor = false, inspectedFeatures: string[] = [];
     let done = false;
-    while (!done) {
+
+    while (
+      !done && Combat.living(this.playerTeam.combatants).length > 0
+    ) {
       const options = [
         { name: "Move to next room", value: "move", short: 'Continue', disabled: false }, //room === this.dungeon!.bossRoom },
         // { name: "Rest (stabilize unconscious party members, 30% encounter)", value: "rest", short: 'Rest', disabled: false },
@@ -439,7 +449,7 @@ export default class Dungeoneer {
         done = true;
       }
     }
-    return { leaving: false };
+    return { leaving: Combat.living(this.playerTeam.combatants).length === 0  };
   }
 
   private async interactWithFeature(featureName: string): Promise<void> {

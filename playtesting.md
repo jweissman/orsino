@@ -4,7 +4,6 @@
 [ ] Load all PCs on party select so we can show their race/class (no longer even letting you load PCs from file but we're still persisting them every room...)
 ---
 [ ] A room generated with multiple monsters with the same name (humans may need more names as a race but also maybe we could _specifically_ try to prevent this?) [genList would need a dedupe pass to really be _certain_ of this]
-[ ] 20 should be stat max until level 10 (maybe 18 until level 5...)
 [ ] High-level enemies should have much higher dex (tried to adjust although maybe _too_ high now?)
 ---
 [ ] Rest could reset status effects? (would be nice to do this _before_ persisting PCs?)
@@ -135,6 +134,7 @@
 [x] CR levels still seem _very_ high for bosses (but maybe more about how the CR scales in progression over the dungeon; that said we also add "+1" to the target + depth so maybe could remove that?) -- should be fixed with exact CR budgeting
 [x] We could also spell out DC checks and bonuses for now (just to sanity check) as well as bonus damage/healing in general - think this is mostly true
 [x] Smite scaling 2d6 * level is way too powerful at higher levels (adjusted a bit) -- should be marginally better (but radiant damage against vulnerable enemies still _very_ strong!)
+[x] 20 should be stat max until level 10 (maybe 18 until level 5...) -- currently set to max out at 18 until level 20
 
 ## Not really issues
 "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]

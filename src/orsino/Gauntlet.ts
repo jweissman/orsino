@@ -48,9 +48,9 @@ export class Gauntlet {
       outputSink: this.outputSink
     });
     while (playing) {
-      let encounter: Record<string, any> | null = null;
+      // let encounter: Record<string, any> | null = null;
       if (options.encounterGen) {
-        let cr = Gauntlet.crForParty(teams[0].combatants);
+        let cr = CharacterRecord.crForParty(teams[0].combatants);
         //Math.max(1, Math.round(teams[0].combatants.reduce((sum, c) => sum + c.level, 0)));
         let encounter = await options.encounterGen(cr);
         console.log('Encounter generated with actual CR', encounter.cr, " (target was " + cr + ") and gold bonus", encounter.bonusGold);
