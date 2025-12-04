@@ -907,5 +907,36 @@
         "resistSlashing": 0.1
       }
     }]
+  },
+  "favored": {
+    "name": "Favored",
+    "type": "trait",
+    "description": "Favored",
+    "statuses": [{
+      "name": "Favored",
+      "description": "This creature is favored by fate, granting it enhanced luck and resilience.",
+      "effect": {
+        "allRolls": 2,
+        "evasion": 3,
+        "resistMagic": 0.1,
+        "saveVersusDeath": 2
+      }
+    }]
+  },
+  "radiant": {
+    "name": "Radiant",
+    "type": "trait",
+    "description": "Radiant",
+    "statuses": [{
+      "name": "Radiant",
+      "description": "This creature is blessed with divine favor, enhancing its combat prowess and resilience.",
+      "effect": {
+        "allRolls": 1,
+        "toHit": 2,
+        "bonusDamage": 2,
+        "resistNecrotic": 0.1,
+        "saveVersusFear": 2
+      }
+    }]
   }
 }

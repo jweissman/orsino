@@ -275,8 +275,8 @@
       "untested":  { "maxHp": 1,  "ac": 1 },
       "veteran":   { "maxHp": 3,  "ac": 0 },
       "champion":  { "maxHp": 5, "ac": -1 },
-      "elite":     { "maxHp": 8, "ac": -2 },
-      "legend":    { "maxHp": 13, "ac": -3, "traits": ["formidable"] }
+      "elite":     { "maxHp": 8, "ac": -2, "traits": ["formidable"] },
+      "legend":    { "maxHp": 13, "ac": -3, "traits": ["formidable", "favored"] }
     }
   },
   "npcType": {
@@ -329,12 +329,12 @@
     "discriminator": "type",
     "groups": {
       "Novice":       { "str": -1, "con": 0, "dex": -2, "int": 1, "wis": 1, "cha": -1, "abilities": ["rapid_strike", "paralyzing_touch"] },
-      "Acolyte":      { "str": 0,  "con": 1, "wis": 2, "int": 1, "abilities": [ "heal", "rally", "bless", "paralyzing_touch" ] },
+      "Acolyte":      { "str": 0,  "con": 1, "wis": 2, "int": 1, "abilities": [ "heal", "rally", "bless", "paralyzing_touch" ], "traits": ["piety"] },
+      "Cultist":      { "str": 1,  "con": 2, "int": 2, "abilities": [ "heal", "curse", "fear", "paralyzing_touch", "silence", "animate_dead" ], "traits": ["piety", "radiant"] },
       "Gravedigger":  { "str": 0,  "con": 2, "dex": 2, "abilities": [ "rapid_strike", "hide", "dig_in" ] },
-      "Cultist":      { "str": 1,  "con": 2, "int": 2, "abilities": [ "heal", "curse", "fear", "paralyzing_touch", "silence", "animate_dead" ], "traits": ["piety"] },
       "Bandit":       { "str": 2,  "con": 3, "dex": 2, "abilities": [ "prepare_charge", "charge", "hide", "backstab", "rapid_strike" ], "traits": ["stealthy"] },
       "Tombrobber":   { "str": 2,  "con": 3, "dex": 1, "int": -1, "wis": -1, "cha": 2, "abilities": ["rapid_strike", "hide"] },
-      "Necromancer":  { "str": 3,  "con": 4, "dex": 2, "int": 8, "abilities": [ "life_drain", "curse", "fear", "poison_cloud", "summon_undead", "raise_dead", "animate_dead" ] },
+      "Necromancer":  { "str": 3,  "con": 4, "dex": 2, "int": 8, "abilities": [ "life_drain", "curse", "fear", "poison_cloud", "summon_undead", "raise_dead", "animate_dead" ], "traits": ["favored", "formidable", "fiendish"] },
 
       "Herald":       { "str": -1, "dex": -1, "int": 1, "wis": -1, "cha": 2, "abilities": ["inspire"] },
       "Benefactor":   { "str": -1, "dex": -1, "int": 2, "wis": -1, "cha": 2, "abilities": ["cure"] },
@@ -588,6 +588,14 @@
         ]
       ],
       "tomb": [[
+        "crypt",
+        "crypt",
+        "chamber",
+        "chamber",
+        "alcove",
+        "hall",
+        "corridor",
+        "reliquary",
         "phylactery"
       ]],
       "mine": [

@@ -120,7 +120,12 @@ export default class Combat {
         const trait = traitHandler.getTrait(traitName);
         if (trait) {
           c.passiveEffects ||= [];
-          c.passiveEffects.push(...trait.statuses);
+          // c.passiveEffects.push(...trait.statuses);
+          for (const status of trait.statuses) {
+            if (!c.passiveEffects?.map(e => e.name).includes(status.name)) {
+              c.passiveEffects.push(status);
+            }
+          }
         }
       });
 
@@ -550,13 +555,13 @@ export default class Combat {
       if (combatant.activeEffects) {
         combatant.activeEffects.forEach(it => { if (it.duration) { it.duration = (it.duration || 0) - 1; } });
         for (const status of combatant.activeEffects) {
-          if ((status.duration || 0) <= 0) {
+          if ((status.duration || Infinity) <= 0) {
             // this.emit({ type: "statusExpire", subject: combatant, effectName: status.name } as Omit<StatusExpireEvent, "turn">);
             expiryEvents.push({ type: "statusExpire", subject: combatant, effectName: status.name, turn: this.turnNumber });
           }
         }
       }
-      combatant.activeEffects = combatant.activeEffects?.filter(it => (it.duration || 0) > 0) || [];
+      combatant.activeEffects = combatant.activeEffects?.filter(it => (it.duration || Infinity) > 0) || [];
     });
     if (expiryEvents.length > 0) {
       this.emitAll(expiryEvents, "Effects expire.");

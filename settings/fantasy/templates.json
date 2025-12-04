@@ -148,7 +148,7 @@
     "rank": "=#challenging ? oneOf(champion, elite, legend) : oneOf(untested, veteran)",
     "npc_aspect_rarity": "=if(#challenging, oneOf(epic, legendary), oneOf(common, uncommon, rare))",
     "npc_aspect": "=lookup(creatureAspectTypes, #npc_aspect_rarity)",
-    "npc_template_type": "=if(#building_type == 'tomb' && #npc_type != 'Necromancer', 'undead', nihil)",
+    "npc_template_type": "=if(#building_type == 'tomb' && #npc_type != 'Necromancer' && 1d10 < 3, 'undead', nihil)",
     "npc_template": "=if(#npc_template_type != nihil, lookup(creatureTemplateOverlays, #npc_template_type), nihil)",
     "kind": "=if(#npc_template_type, capitalize(#npc_template) + ' ', '') + capitalize(#race)",
     "class": "=capitalize(#rank) + ' ' + #npc_type",

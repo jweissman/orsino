@@ -92,10 +92,19 @@ export class Commands {
     const effective = Fighting.effectiveStats(healer);
     const wisBonus = Math.max(0, Fighting.statMod(effective.wis));
     if (wisBonus > 0) {
-      target.hp = Math.min(target.maxHp, target.hp + wisBonus);
       amount += wisBonus;
       console.log(`Healing increased by ${wisBonus} for WIS ${healer.wis}`);
     }
+    let healerFx = Fighting.gatherEffects(healer);
+    if (healerFx.bonusHealing) {
+      amount += await Deem.evaluate(healerFx.bonusHealing.toString()) as number || 0;
+      console.log(`Healing increased by ${healerFx.bonusHealing} due to effects on ${healer.name}`);
+    }
+
+    amount = Math.max(1, amount);
+    amount = Math.min(amount, target.maxHp - target.hp);
+    target.hp = Math.min(target.maxHp, target.hp + amount);
+
     return [{ type: "heal", subject: healer, target, amount } as Omit<HealEvent, "turn">];
   }
 
