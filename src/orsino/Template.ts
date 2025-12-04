@@ -50,7 +50,7 @@ export class Template {
           let genResult = await generator.gen(type, genOptions);
           results.push(genResult);
         }
-        process.stdout.write(`.`);
+        // process.stdout.write(`.`);
         return results;
       }
 
@@ -92,6 +92,8 @@ export class Template {
             // console.log(`Adding ${k}=${v} to context (was ${localContext[k]})`);
             assembled[k] = v + (assembled[k] || '');
             // localContext[k] = assembled[k];
+          } else if (typeof v === 'boolean') {
+            assembled[k] = v || assembled[k];
           } else {
             // assume obj?
             assembled[k] = v + (assembled[k] || {});

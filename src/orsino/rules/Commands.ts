@@ -8,6 +8,8 @@ import { Roll } from "../types/Roll";
 import { Team } from "../types/Team";
 import { Fighting } from "./Fighting";
 import { CombatContext } from "../Combat";
+import Presenter from "../tui/Presenter";
+import Deem from "../../deem";
 
 type TimelessEvent = Omit<GameEvent, "turn">;
 
@@ -167,30 +169,14 @@ export class Commands {
     let defenderEffects = Fighting.gatherEffects(defender);
     let attackerEffects = Fighting.gatherEffects(attacker);
 
-    // note: moved to Fighting.attack
-    // if (defenderEffects.evasion) {
-    //   let evasionBonus = defenderEffects.evasion as number || 0;
-    //   let whatNumberEvades = 20 - evasionBonus;
-    //   const evasionRoll = await roll(defender, `for evasion (must roll ${whatNumberEvades} or higher)`, 20);
-    //   if (evasionRoll.amount >= whatNumberEvades) {
-    //     console.warn(`${Presenter.minimalCombatant(defender)} evades the attack!`);
-    //     // this.emit({ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">);
-    //     return [{ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">];
-    //   }
-    // }
-
     if (attackerEffects.bonusDamage) {
-      let bonusDamage = attackerEffects.bonusDamage as number || 0;
+      let bonusDamage = await Deem.evaluate(attackerEffects.bonusDamage.toString()) as number || 0;
       damage += bonusDamage;
-      // this.note(`${Presenter.combatant(attacker)} has a bonus damage effect, adding ${bonusDamage} damage!`);
-      // console.warn(`${Presenter.minimalCombatant(attacker)} has a bonus damage effect, adding ${bonusDamage} damage!`);
     }
 
     if (attackerEffects[`${by}Multiplier`]) {
       let multiplier = attackerEffects[`${by}Multiplier`] as number || 1;
       damage = Math.floor(damage * multiplier);
-      // this.note(`${Presenter.combatant(attacker)} has a ${by} damage multiplier effect, multiplying damage by ${multiplier}!`);
-      // console.warn(`${Presenter.minimalCombatant(attacker)} has a ${by} damage multiplier effect, multiplying damage by ${multiplier}!`);
     }
 
     // Apply resistances FIRST
@@ -220,6 +206,12 @@ export class Commands {
     }
 
     // apply damage
+    if (damage < 0) { damage = 0; }
+    // if damage is NaN throw error
+    if (isNaN(damage)) {
+      throw new Error(`Damage calculated as NaN for ${Presenter.minimalCombatant(attacker)} attacking ${Presenter.minimalCombatant(defender)}.`);
+    }
+
     defender.hp -= damage;
 
     if (defender.hp <= 0) {

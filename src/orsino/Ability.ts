@@ -465,10 +465,11 @@ export default class AbilityHandler {
     success: boolean;
     events: Omit<GameEvent, "turn">[];
   }> {
-    // console.log(`${user.name} is performing ${ability.name} on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target?.name}...`);
+    console.log(`${user.name} is performing ${ability.name} on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target?.name}...`);
     let result = false;
     let events = [];
     for (const effect of ability.effects) {
+      console.log("performing effect of type", effect.type, "...");
       let { success, events: effectEvents } = await this.handleEffect(ability.name, effect, user, target, context, handlers);
       result = result || success;
       events.push(...effectEvents);
@@ -502,7 +503,7 @@ export default class AbilityHandler {
     }
 
 
-    // console.log(`Performed ${ability.name} on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target.name} with result: ${result}`);
+    console.log(`Performed ${ability.name} on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target.name} with result: ${result}`);
     // // console.log(`Events:`, events);
     // if (events.length > 0) {
     //   console.log(`${ability.name} generated events:`, events.map(e => ({ ...e, subject: e.subject?.name || e.subject, target: e.target?.name || e.target })));

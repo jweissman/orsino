@@ -173,7 +173,7 @@ export default class Events {
           return `${subjectName} is immune.`; // and automatically succeeds on their Save vs ${event.versus} (DC ${event.dc}).`;
         } else if (event.success) {
           // return '';  //`${subjectName} succeeds on their Save vs ${event.versus} (DC ${event.dc}).`;
-          return `${subjectName} resists the effect.`;
+          return `${subjectName} resists the ${event.versus} effect.`;
         } else {
           return '';  //`${subjectName} fails their Save vs ${event.versus} (DC ${event.dc}).`;
         }

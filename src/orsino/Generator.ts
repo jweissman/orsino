@@ -31,7 +31,7 @@ export default class Generator {
       if (!conditionResult) {
         items.pop();
         // console.warn(`Item ${i} did not meet condition: ${condition}`);
-        process.stdout.write(`.`);
+        // process.stdout.write(`.`);
         // are we 1-2 away from the count?
         if (count - items.length <= 2) {
           break;
@@ -42,7 +42,7 @@ export default class Generator {
       // console.warn(`No items generated for type ${type} meeting condition: ${condition}, generating one anyway`);
       // generate one anyway
       items.push(await this.gen(type, options));
-      process.stdout.write(`!`);
+      // process.stdout.write(`!`);
     }
 
     return items;

@@ -1,6 +1,11 @@
 import { DamageKind, SaveKind, StatusEffect } from "../Ability";
 
 export interface Combatant {
+  personality?: string;
+  hair?: string;
+  eye_color?: string;
+  body_type?: string;
+  
   alignment?: string;
   traits: string[];
   abilities: string[];
@@ -43,7 +48,7 @@ export interface Combatant {
 
   // demographic info
   age?: any;
-  gender?: any;
+  gender?: 'male' | 'female' | 'androgynous';
   background?: any;
 
   attackDie: string;

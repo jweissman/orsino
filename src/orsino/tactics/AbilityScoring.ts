@@ -60,6 +60,7 @@ export class AbilityScoring {
 
         return Combat.weakest(validTargets as Combatant[]);
       }
+      console.log("!!! Defaulting to first valid target in array of arrays:", validTargets);
       return validTargets[0];
     }
   }
@@ -99,7 +100,7 @@ export class AbilityScoring {
       // are there enemies with higher hp than us?
       enemies.forEach(enemy => {
         if (enemy.hp > 0 && enemy.hp > user.hp) {
-          score += 4;
+          score += 3;
         }
       });
     }
@@ -116,14 +117,21 @@ export class AbilityScoring {
         return -10;
       }
 
-      score += 5;
+      score += 3;
       // are we near full hp?
+      // if (user.hp / user.maxHp >= 0.8) {
+      //   score += 10;
+      // }
+        // NEW: Only buff when HP is high AND no enemies are critical
       if (user.hp / user.maxHp >= 0.8) {
-        score += 10;
+        let anyCriticalEnemies = enemies.some(e => e.hp > 0 && e.hp / e.maxHp <= 0.3);
+        if (!anyCriticalEnemies) {
+          score += 10;
+        }
       }
     }
     if (analysis.damage) {
-      score += 6;
+      score += 3;
       // are enemies low on hp?
       enemies.forEach(enemy => {
         if (enemy.hp > 0 && enemy.hp / enemy.maxHp <= 0.5) {
@@ -152,14 +160,14 @@ export class AbilityScoring {
     // they really should be disabled at other layers if not usable
     // if a skill and already used, give -10 penalty
     if (ability.type === "skill" && user.abilitiesUsed?.includes(ability.name)) {
-      score -= 10;
+      score -= 100;
     }
 
     // if a spell and no spell slots remaining, give -10 penalty
     if (ability.type === "spell") {
       let spellSlotsRemaining = (Combat.maxSpellSlotsForCombatant(user) || 0) - (user.spellSlotsUsed || 0);
       if (spellSlotsRemaining <= 0) {
-        score -= 10;
+        score -= 100;
       }
     }
 

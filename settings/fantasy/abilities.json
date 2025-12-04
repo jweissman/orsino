@@ -57,6 +57,7 @@
     "name": "Defend",
     "type": "skill",
     "aspect": "physical",
+    "cooldown": 4,
     "description": "Gain 2 AC until the start of your next turn.",
     "target": [
       "self"
@@ -390,7 +391,7 @@
   },
   "bless": {
     "name": "Bless",
-    "type": "skill",
+    "type": "spell",
     "aspect": "divine",
     "description": "Grant divine favor, adding +1 to all rolls for 6 rounds.",
     "target": [
@@ -486,6 +487,7 @@
     "name": "Inspire",
     "type": "skill",
     "aspect": "social",
+    "cooldown": 8,
     "description": "Inspire your allies, granting them a +2 bonus to attack rolls for the next 3 rounds.",
     "target": [
       "allies"
@@ -601,6 +603,7 @@
     "name": "Scream",
     "type": "skill",
     "aspect": "dark",
+    "cooldown": 6,
     "description": "Let out a horrific scream, frightening nearby enemies.",
     "target": [
       "enemies"
@@ -804,7 +807,7 @@
   },
   "psionic_blast": {
     "name": "Psionic Blast",
-    "type": "skill",
+    "type": "spell",
     "aspect": "psychic",
     "description": "Invade minds of all enemies, dealing 1d6 psychic damage and stunning them.",
     "target": [
@@ -820,7 +823,7 @@
         "type": "debuff",
         "status": {
           "name": "Stunned",
-          "duration": 1,
+          "duration": 2,
           "effect": {
             "noActions": true
           }
@@ -1047,7 +1050,7 @@
     "name": "Summon Elemental",
     "type": "spell",
     "aspect": "arcane",
-    "level": 3,
+    "level": 4,
     "description": "Summon a random elemental to fight for you.",
     "target": [
       "self"
@@ -1056,7 +1059,7 @@
       {
         "type": "summon",
         "creature": "monster",
-        "options": { "monster_type": "elemental" }
+        "options": { "class": "elemental" }
       }
     ]
   },
@@ -1064,14 +1067,14 @@
     "name": "Summon Monster",
     "type": "spell",
     "aspect": "arcane",
-    "level": 2,
+    "level": 3,
     "description": "Summon a random monster (beast or fey type) to fight for you.",
     "target": [ "self" ],
     "effects": [
       {
         "type": "summon",
         "creature": "monster",
-        "options": { "monster_type": "=oneof(beast, fey)" }
+        "options": { "class": "=oneOf(beast, fey)" }
       }
     ]
   },

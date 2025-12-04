@@ -20,38 +20,22 @@ export default class Presenter {
   }
 
   static printCharacterRecord = (combatant: Combatant) => {
-    // let record = ({
-    //   ...combatant,
-    //   effects: [
-    //     ...(combatant.activeEffects || []),
-    //     ...(combatant.passiveEffects || [])
-    //   ].map(e => e.name).join(", ") || "None",
-    //   abilities: (combatant.abilities||[]).join(", "),
-    //   traits: (combatant.traits || []).join(", "),
-    //   gear: (combatant.gear || []).join(", "),
-    //   // saves: combatant.savedTimes ? Object.entries(combatant.savedTimes).map(([key, value]) => `${key}: ${value}`).join(", ") : "None",
-    // });
-
-    // // delete active/passives
-    // delete record.activeEffects;
-    // delete record.passiveEffects;
-    // delete record.abilityCooldowns;
-    // delete record.abilitiesUsed;
-    // delete record.savedTimes;
-
-    // console.table(record);
-
-    // console.table(record);
-
     console.log(Stylist.bold("\n\nCharacter Record"));
     console.log(Stylist.format(`${this.combatant(combatant)}`, 'underline'));
 
     // "Human Female Warrior of Hometown (41 years old)"
+    let descriptor = {
+      male: "He is", female: "She is", androgynous: "They are"
+    }[(combatant.gender || 'androgynous').toLowerCase()] || "They are";
+
     console.log(
       Stylist.italic(
-        `${Words.capitalize(combatant.gender || 'unknown')} ${Words.capitalize(combatant.background || 'adventurer')} ${Words.humanize(combatant.alignment || 'neutral')} from the ${combatant.hometown || 'unknown'} (${combatant.age || 'unknown'} years old)`
+        `${Words.capitalize(combatant.background || 'adventurer')} ${Words.humanize(combatant.alignment || 'neutral')} from the ${combatant.hometown || 'unknown'}, ${combatant.age || 'unknown'} years old. ${descriptor} of ${combatant.body_type || 'average'} build with ${combatant.hair || 'unknown color'} hair, ${combatant.eye_color || 'dark'} eyes and ${Words.a_an(combatant.personality || 'unreadable')} disposition.`
       )
     )
+
+    // console.log(
+
     // let demographics = {
     //   age: combatant.age || 'Unknown',
     //   // alignment: Words.humanize(combatant.alignment || 'neutral'),
@@ -82,7 +66,7 @@ export default class Presenter {
       gp: combatant.gp,
     }
     console.log("\n" + Object.entries(basics).map(([key, value]) => {
-      return this.padLiteralEnd(`${Stylist.bold(Words.capitalize(key))} ${Words.humanize(value)}`, 25);
+      return this.padLiteralEnd(`${Stylist.bold(Words.capitalize(key))} ${Words.humanize(value.toString())}`, 25);
     }).join('   '));
 
     let bolt = Stylist.colorize('⚡', 'yellow');
@@ -91,7 +75,7 @@ export default class Presenter {
       "Attack Die": Stylist.colorize(combatant.attackDie, 'red'),
       "Armor Class": Stylist.colorize(`${combatant.ac}`, 'yellow'),
       "Spell Slots": ["mage", "bard", "cleric"].includes(combatant.class || '') ?
-          bolt.repeat(Combat.maxSpellSlotsForCombatant(combatant)) : "--"
+          bolt.repeat(Combat.maxSpellSlotsForCombatant(combatant)) : "none"
     }
     console.log(Object.entries(core).map(([key, value]) => {
       return this.padLiteralEnd(`${Stylist.bold(Words.capitalize(key))} ${Words.humanize(value)}`, 25);

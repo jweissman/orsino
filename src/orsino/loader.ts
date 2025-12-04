@@ -19,10 +19,10 @@ class Loader {
 
 export function loadSetting(name: string): Record<GenerationTemplateType, Template | Table> {
   const basePath = `./settings/${name}`;
-  console.log(`Loading setting: ${name} from ${basePath}`);
+  // console.log(`Loading setting: ${name} from ${basePath}`);
 
   let settingFiles = fs.readdirSync(basePath);
-  console.log(`Found setting files: ${settingFiles.join(', ')}`);
+  // console.log(`Found setting files: ${settingFiles.join(', ')}`);
   
   // Load tables
   let tableFiles = fs.readdirSync(basePath)
@@ -34,7 +34,7 @@ export function loadSetting(name: string): Record<GenerationTemplateType, Templa
       .filter(file => file.endsWith('.json'));
     tableFiles.push(...tableDirFiles.map(f => `tables/${f}`));
   }
-  console.log(`Found table files: ${tableFiles.join(', ')}`);
+  // console.log(`Found table files: ${tableFiles.join(', ')}`);
   
   const tables: [string, Table][] = [];
   for (const file of tableFiles) {

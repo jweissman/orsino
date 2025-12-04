@@ -191,7 +191,7 @@ describe('Orsino', () => {
     });
   })
 
-  it('mod runner', async () => {
+  it.only('mod runner', async () => {
     await AbilityHandler.instance.loadAbilities();
     await TraitHandler.instance.loadTraits();
     const mod = await Generator.gen("module", { setting: "fantasy" });
@@ -205,7 +205,7 @@ describe('Orsino', () => {
     expect(mod.dungeons).toBeInstanceOf(Array);
 
     let party = await CharacterRecord.chooseParty(
-      async (options?: any) => (await Generator.gen("pc", { setting: "fantasy", ...options }) as Combatant),
+      async (options?: any) => (await Generator.gen("pc", { setting: "fantasy",  ...options, class: "warrior" }) as Combatant),
       3,
       // Combat.samplingSelect
       async (_prompt: string, options: string[]) => {
@@ -221,9 +221,10 @@ describe('Orsino', () => {
     console.log("Generated party:", party.map(p => p.name));
 
     let explorer = new ModuleRunner({
-      gen: async (type: GenerationTemplateType, options: Record<string, any>) => {
-        return await Generator.gen(type, options);
-      },
+      gen: Generator.gen,
+      //   async (type: GenerationTemplateType, options: Record<string, any>) => {
+      //   return await Generator.gen(type, options);
+      // },
       moduleGen: () => mod,
       pcs: party,
       // pcs: [
@@ -249,7 +250,7 @@ describe('Orsino', () => {
 
     console.log("\n----\nCombat statistics:", Combat.statistics);
     console.log("Rounds per combat:", (Combat.statistics.combats > 0) ? (Combat.statistics.totalRounds / Combat.statistics.combats).toFixed(2) : 0);
-
+    console.log("Victory rate:", Combat.statistics.combats > 0 ? ((Combat.statistics.victories / Combat.statistics.combats) * 100).toFixed(2) + "%" : "N/A");
   });
 
 });

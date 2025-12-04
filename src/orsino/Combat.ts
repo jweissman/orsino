@@ -143,7 +143,7 @@ export default class Combat {
       return Combat.maxSpellSlotsForLevel(combatant.level || 1) + Math.max(0, Fighting.statMod(combatant.wis));
     }
 
-    return Combat.maxSpellSlotsForLevel(combatant.level || 1) 
+    return Combat.maxSpellSlotsForLevel(combatant.level || 1)
   }
 
   validActions(combatant: Combatant, allies: Combatant[], enemies: Combatant[]): Ability[] {
@@ -170,7 +170,6 @@ export default class Combat {
     abilities.forEach((ability: Ability) => {
       let validTargets = AbilityHandler.validTargets(ability, combatant, allies, enemies);
       let disabled = validTargets.length === 0;
-      // let abilityTarget = ability.target.map(async t => t.startsWith("=") ? await Deem.evaluate(t) : t);
       if (ability.target.includes("randomEnemies") && Combat.living(enemies).length > 0) {
         // note we need a special case here since randomEnemies doesn't have valid targets until we select them
         disabled = false;
@@ -275,12 +274,12 @@ export default class Combat {
       disabled: false
     })
 
-    choices.push({
-      value: { name: "Flee", type: "skill", description: "Attempt to flee from combat.", aspect: "physical", target: ["self"], effects: [{ type: "flee" }] },
-      name: "Flee (Attempt to escape combat)",
-      short: "Flee",
-      disabled: false
-    })
+    // choices.push({
+    //   value: { name: "Flee", type: "skill", description: "Attempt to flee from combat.", aspect: "physical", target: ["self"], effects: [{ type: "flee" }] },
+    //   name: "Flee (Attempt to escape combat)",
+    //   short: "Flee",
+    //   disabled: false
+    // })
 
     const action: Ability = await this.select(`Your turn, ${Presenter.minimalCombatant(combatant)} - what do you do?`, choices, combatant);
 
@@ -367,26 +366,23 @@ export default class Combat {
       this.note(`${Presenter.minimalCombatant(combatant)} has no valid actions and skips their turn.`);
       return { haltRound: false };
     }
-    // console.log(
-    //   `Considering best targets for ${action?.name}...`, { allies: allies.map(a => a.name), enemies: enemies.map(e => e.name) }
-    // )
+    console.log(
+      `Considering best targets for ${action?.name}...`, { allies: allies.map(a => a.name), enemies: enemies.map(e => e.name) }
+    )
     let targetOrTargets: Combatant | Combatant[] = AbilityScoring.bestAbilityTarget(action, combatant, allies, enemies);
 
     if (targetOrTargets === null || targetOrTargets === undefined) {
       this.note(`${Presenter.minimalCombatant(combatant)} has no valid targets for ${action?.name} and skips their turn.`);
       return { haltRound: false };
-    // } else {
-    //   console.log(
-    //     `${combatant.forename} chooses to use ${action?.name} on ${Array.isArray(targetOrTargets) ? targetOrTargets.map(t => t.forename).join(", ") : (targetOrTargets as Combatant).forename}.`
-    //   );
+      // } else {
     }
-    // combatant.abilitiesUsed = combatant.abilitiesUsed || [];
-    // if (action && action.type === "skill" && !action.name.match(/melee|ranged|wait/i)) {
-    //   combatant.abilitiesUsed.push(action.name);
-    // }
+    console.log(
+      `${combatant.forename} chooses to use ${action?.name} on ${Array.isArray(targetOrTargets) ? targetOrTargets.map(t => t.forename).join(", ") : (targetOrTargets as Combatant).forename}.`
+    );
+
     combatant.abilityCooldowns = combatant.abilityCooldowns || {};
-    // set cooldown
     if (action.type === "skill" && !action.name.match(/melee|ranged|wait/i)) {
+      // set cooldown
       let cooldown = action.cooldown || 3;
       combatant.abilityCooldowns[action.name] = cooldown;
     }
@@ -396,16 +392,12 @@ export default class Combat {
       combatant.spellSlotsUsed = (combatant.spellSlotsUsed || 0) + 1;
     }
 
-    
-
     // invoke the action
-    // this.note(message);
     let team = this.teams.find(t => t.combatants.includes(combatant));
     let ctx: CombatContext = { subject: combatant, allies, enemies };
     let { events } = await AbilityHandler.perform(action, combatant, targetOrTargets, ctx, Commands.handlers(this.roller, team!));
-    // events.forEach(e => this.emit({ ...e, turn: this.turnNumber } as CombatEvent));
     this.emitAll(events, Combat.describeAbility(action, combatant));
-    
+
     return { haltRound: false };
   }
 
@@ -418,7 +410,10 @@ export default class Combat {
 
   async turn(combatant: Combatant): Promise<{ haltRound: boolean }> {
     // don't attempt to act if we're already defeated
-    if (combatant.hp <= 0) { return { haltRound: false }; }
+    if (combatant.hp <= 0) {
+      console.warn(`${Presenter.minimalCombatant(combatant)} is defeated and cannot act.`);
+      return { haltRound: false };
+    }
 
     console.log("\n" + Presenter.combatant(combatant));
 
@@ -434,16 +429,19 @@ export default class Combat {
     // if we have an 'inactive' status (eg from sleep spell) skip our turn
     if (combatant.activeEffects?.some(e => e.effect.noActions)) {
       let status = combatant.activeEffects.find(e => e.effect.noActions);
-      this.note(`${Presenter.minimalCombatant(combatant)} is ${status!.name} and skips their turn!`);
+      this.note(`${Presenter.minimalCombatant(combatant)} is ${status!.name} (${status!.effect.duration || "unknown duration"})and skips their turn!`);
       return { haltRound: false };
     }
 
     const targets = this.teams.find(team => team.combatants.includes(combatant)) === this.teams[0] ? (this.teams[1].combatants) : (this.teams[0].combatants);
 
     let validTargets = Combat.living(targets);
-    if (validTargets.length === 0) {
-      return { haltRound: false };
-    }
+    // if (validTargets.length === 0) {
+    //   console.warn("No valid targets for ", Presenter.minimalCombatant(combatant), " -- skipping turn.");
+    //   console.log(" - All possible targets:", targets.map(t => Presenter.minimalCombatant(t)).join(", "));
+    //   console.log(" - Living targets:", validTargets.map(t => Presenter.minimalCombatant(t)).join(", "));
+    //   return { haltRound: false };
+    // }
 
     let allies = this.teams.find(team => team.combatants.includes(combatant))?.combatants || [];
     allies = allies.filter(c => c !== combatant);
@@ -466,6 +464,13 @@ export default class Combat {
           return { haltRound: true };
         }
       } else {
+        console.log(`DEBUG ${combatant.forename} turn:`);
+        console.log(`  - This combatant's team: ${this.teams.find(t => t.combatants.includes(combatant)) === this.teams[0] ? 'team0' : 'team1'}`);
+        console.log(`  - Team 0 combatants: ${this.teams[0].combatants.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
+        console.log(`  - Team 1 combatants: ${this.teams[1].combatants.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
+        console.log(`  - Living enemies (validTargets): ${validTargets.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
+        console.log(`  - Living allies: ${allies.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
+
         await this.npcTurn(combatant, validTargets, allies);
       }
     }
@@ -524,11 +529,11 @@ export default class Combat {
 
     for (const { combatant } of this.combatantsByInitiative) {
       let nonplayerCombatants = this.teams[1].combatants.filter(c => c.hp > 0);
-
       if (nonplayerCombatants.length === 0) {
         // console.warn("All nonplayer combatants dead, skipping remaining turns: ", this.combatantsByInitiative.map(c => c.combatant.forename + `(${c.combatant.hp} HP)`));
         this.winner = this.teams[0].name;
 
+        console.log(Stylist.bold("All enemies defeated! You are victorious!"));
         break;
       }
       if (combatant.hp <= 0) { continue; } // Skip defeated combatants
@@ -543,9 +548,9 @@ export default class Combat {
     let expiryEvents: StatusExpireEvent[] = [];
     Combat.living(this.allCombatants).forEach(combatant => {
       if (combatant.activeEffects) {
-        combatant.activeEffects.forEach(it => { if (it.duration) { it.duration-- } });
+        combatant.activeEffects.forEach(it => { if (it.duration) { it.duration = (it.duration || 0) - 1; } });
         for (const status of combatant.activeEffects) {
-          if (status.duration === 0) {
+          if ((status.duration || 0) <= 0) {
             // this.emit({ type: "statusExpire", subject: combatant, effectName: status.name } as Omit<StatusExpireEvent, "turn">);
             expiryEvents.push({ type: "statusExpire", subject: combatant, effectName: status.name, turn: this.turnNumber });
           }
