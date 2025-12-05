@@ -1,12 +1,15 @@
 import { DamageKind, SaveKind, StatusEffect } from "../Ability";
 
 export interface Combatant {
+  referenceName?: string;
+  npc_type?: string;
+  archetype?: string;
   personality?: string;
   hair?: string;
   eye_color?: string;
   body_type?: string;
   
-  alignment?: string;
+  alignment: 'good' | 'neutral' | 'evil';
   traits: string[];
   abilities: string[];
   name: string;

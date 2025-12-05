@@ -12,20 +12,26 @@ type BaseEvent = {
 };
 
 export type InitiateCombatEvent = BaseEvent & { type: "initiate", order: { combatant: Combatant; initiative: number }[] };
+export type CombatantEngagedEvent = BaseEvent & { type: "engage" };
+
 export type CombatEndEvent = BaseEvent & { type: "combatEnd"; winner: string };
 
 export type RoundStartEvent = BaseEvent & { type: "roundStart", combatants: Combatant[], parties: Team[]; environment?: string };
 export type TurnStartEvent = BaseEvent & { type: "turnStart", combatants: Combatant[] };
 
 // export type ActEvent = BaseEvent & { type: "act"; actionName: string };
+// export type AttackedEvent = BaseEvent & { type: "attacked"; attackName: string; hit: boolean; damage?: number; critical?: boolean; damageKind?: DamageKind; by: string; };
 export type HitEvent = BaseEvent & { type: "hit"; damage: number; success: boolean; critical: boolean; by: string; damageKind: DamageKind };
+export type CritEvent = BaseEvent & { type: "crit"; damage: number; by: string; damageKind: DamageKind };
 export type MissEvent = BaseEvent & { type: "miss"; };
+export type KillEvent = BaseEvent & { type: "kill"; };
+export type FallenEvent = BaseEvent & { type: "fall" };
+export type FleeEvent   = BaseEvent & { type: "flee" };
+
 export type HealEvent = BaseEvent & { type: "heal"; amount: number };
 export type DefendEvent = BaseEvent & { type: "defend"; bonusAc: number };
 export type QuaffEvent = BaseEvent & { type: "quaff" };
-export type FallenEvent = BaseEvent & { type: "fall" };
-export type FleeEvent   = BaseEvent & { type: "flee" };
-export type SummonEvent = BaseEvent & { type: "summon"; summoned: Combatant[] };
+export type SummonEvent = BaseEvent & { type: "summon" };
 export type SaveEvent = BaseEvent & { type: "save"; success: boolean; dc: number; immune: boolean; reason: string; versus: string; };
 export type ReactionEvent = BaseEvent & { type: "reaction"; reactionName: string; success: boolean };
 export type ResurrectEvent = BaseEvent & { type: "resurrect"; amount: number; };
@@ -34,6 +40,9 @@ export type StatusEffectEvent = BaseEvent & { type: "statusEffect"; effectName: 
 export type StatusExpireEvent = BaseEvent & { type: "statusExpire"; effectName: string };
 
 export type CombatEvent = HitEvent
+  | CombatantEngagedEvent
+  | KillEvent
+  | CritEvent
   | MissEvent
   | HealEvent
   | DefendEvent
@@ -92,6 +101,9 @@ export default class Events {
       case "resurrect": return "🌟";
       case "gold": return "💰";
       case "xp": return "⭐";
+      case "engage": return "⚔️";
+      case "kill": return "☠️";
+      case "crit": return "💥";
       default: return never(event);
     }
   }
@@ -100,6 +112,8 @@ export default class Events {
     let subjectName = event.subject ? event.subject.forename : null;
     let targetName = event.target ? event.target.forename : null;
     switch (event.type) {
+      case "engage":
+        return '';  //`${subjectName} enters the fray!`;
       case "enterDungeon":
         return `${"=====".repeat(8)}\n${event.dungeonIcon} ${event.dungeonName.toUpperCase()}\n\n  * ${event.depth}-room ${event.dungeonType}\n${"=====".repeat(8)}`;
       case "roomCleared": return `The room is pacified.`;
@@ -167,7 +181,7 @@ export default class Events {
       case "reaction":
         return `${subjectName} reacts ${(event.reactionName)} from ${event.target?.forename}.`;
       case "summon":
-        return `${subjectName} summons ${event.summoned.map(s => s.forename + " the " + s.class).join(", ")}.`;
+        return `${subjectName} summons ${event.target?.referenceName || event.target?.forename}.`;
       case "save":
         if (event.immune) {
           return `${subjectName} is immune.`; // and automatically succeeds on their Save vs ${event.versus} (DC ${event.dc}).`;
@@ -186,6 +200,10 @@ export default class Events {
 
       case "xp":
         return `${subjectName} gains ${event.amount} experience points.`;
+      case "kill":
+        return `${subjectName} has slain ${targetName}!`;
+      case "crit":
+        return "";
       default:
         return never(event);
     }

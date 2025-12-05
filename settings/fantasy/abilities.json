@@ -586,7 +586,7 @@
   },
   "heal": {
     "name": "Heal Ally",
-    "type": "skill",
+    "type": "spell",
     "aspect": "divine",
     "description": "Restore health to a wounded ally.",
     "target": [
@@ -835,7 +835,7 @@
         "type": "debuff",
         "status": {
           "name": "Chaos",
-          "duration": 1,
+          "duration": 2,
           "effect": {
             "changeAllegiance": true
           }
@@ -882,7 +882,7 @@
         "type": "debuff",
         "status": {
           "name": "Paralyzed",
-          "duration": 1,
+          "duration": 2,
           "effect": {
             "noActions": true
           }
@@ -896,7 +896,7 @@
     "name": "Earthquake",
     "type": "spell",
     "level": 2,
-    "aspect": "earth",
+    "aspect": "arcane",
     "description": "Cause the ground to shake, dealing 1d6 damage to all enemies and knocking them prone.",
     "target": [
       "enemies"
@@ -1082,6 +1082,7 @@
     "name": "Summon Undead",
     "type": "spell",
     "aspect": "arcane",
+    "alignment": "evil",
     "level": 2,
     "description": "Summon a random undead creature to fight for you.",
     "target": [
@@ -1099,6 +1100,7 @@
     "name": "Animate Dead",
     "type": "spell",
     "aspect": "divine",
+    "alignment": "evil",
     "description": "Raise a fallen ally as an undead servant to fight for you.",
     "target": [ "deadAlly" ],
     "effects": [

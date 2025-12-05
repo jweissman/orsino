@@ -4,7 +4,7 @@ import Presenter from "./tui/Presenter";
 import { Team } from "./types/Team";
 import { Roll } from "./types/Roll";
 import { Fighting } from "./rules/Fighting";
-import Events, { CombatEvent, StatusExpireEvent, RoundStartEvent, CombatEndEvent, FleeEvent, GameEvent } from "./Events";
+import Events, { CombatEvent, StatusExpireEvent, RoundStartEvent, CombatEndEvent, FleeEvent, GameEvent, CombatantEngagedEvent } from "./Events";
 import AbilityHandler, { Ability, StatusEffect } from "./Ability";
 import { Answers } from "inquirer";
 import { AbilityScoring } from "./tactics/AbilityScoring";
@@ -12,6 +12,7 @@ import { Commands } from "./rules/Commands";
 import Deem from "../deem";
 import TraitHandler from "./Trait";
 import Stylist from "./tui/Style";
+import Bark from "./Bark";
 
 export type ChoiceSelector<T extends Answers> = (description: string, options: Choice<T>[], combatant?: Combatant) => Promise<T>;
 
@@ -51,28 +52,31 @@ export default class Combat {
   }
 
   protected note(message: string) { this.outputSink(message); }
-
-  protected emit(event: Omit<GameEvent, "turn">, prefix = ""): void {
+  protected async emit(event: Omit<GameEvent, "turn">, prefix = ""): Promise<void> {
     let e: CombatEvent = { ...event, turn: this.turnNumber } as CombatEvent;
     this.journal.push(e);
+    let bark = await Bark.lookup(event);
+    if (bark) {
+      bark = bark.charAt(0).toUpperCase() + bark.slice(1);
+      this.note(prefix + Stylist.italic(bark));
+    }
+
     if (Events.present(e) !== "") {
-      this.note(
-        // Events.iconForEvent(e) + " " +
-        prefix +
-        Events.present(e)
-      );
+      this.note(prefix + Events.present(e));
     }
   }
 
-  protected emitAll(events: Omit<GameEvent, "turn">[], message?: string): void {
-    // could collect by statuses?
+  protected async emitAll(events: Omit<GameEvent, "turn">[], message?: string): Promise<void> {
     if (message) {
       this.note(Stylist.bold(message));
-      // let arrow = "\u2192 "; // →
       let arrow = " └ ";
-      events.forEach(e => this.emit(e, arrow));
+      for (let i = 0; i < events.length; i++) {
+        await this.emit(events[i], arrow);
+      }
     } else {
-      events.forEach(e => this.emit(e));
+      for (let i = 0; i < events.length; i++) {
+        await this.emit(events[i]);
+      }
     }
   }
 
@@ -132,6 +136,8 @@ export default class Combat {
       // apply auras
       c.activeEffects ||= [];
       c.activeEffects.push(...auras);
+
+      await this.emit({ type: "engage", subject: c } as Omit<CombatantEngagedEvent, "turn">);
     }
     await this.abilityHandler.loadAbilities();
 
@@ -291,7 +297,6 @@ export default class Combat {
     if (action.name === "Flee") {
       let succeed = Math.random() < 0.5;
       if (succeed) {
-        // this.emit({ type: "flee", subject: combatant } as Omit<FleeEvent, "turn">);
         console.log("You successfully flee from combat!");
         this.winner = "Enemy";
         // this.combatantsByInitiative = [];
@@ -341,8 +346,7 @@ export default class Combat {
     let team = this.teams.find(t => t.combatants.includes(combatant));
     let ctx: CombatContext = { subject: combatant, allies, enemies };
     let { events } = await AbilityHandler.perform(action, combatant, targetOrTargets, ctx, Commands.handlers(this.roller, team!));
-    // events.forEach(e => this.emit({ ...e, turn: this.turnNumber } as CombatEvent));
-    this.emitAll(events, Combat.describeAbility(action, combatant));
+    await this.emitAll(events, Combat.describeAbility(action, combatant));
 
     return { haltRound: false };
   }
@@ -371,9 +375,9 @@ export default class Combat {
       this.note(`${Presenter.minimalCombatant(combatant)} has no valid actions and skips their turn.`);
       return { haltRound: false };
     }
-    console.log(
-      `Considering best targets for ${action?.name}...`, { allies: allies.map(a => a.name), enemies: enemies.map(e => e.name) }
-    )
+    // console.log(
+    //   `Considering best targets for ${action?.name}...`, { allies: allies.map(a => a.name), enemies: enemies.map(e => e.name) }
+    // )
     let targetOrTargets: Combatant | Combatant[] = AbilityScoring.bestAbilityTarget(action, combatant, allies, enemies);
 
     if (targetOrTargets === null || targetOrTargets === undefined) {
@@ -381,9 +385,9 @@ export default class Combat {
       return { haltRound: false };
       // } else {
     }
-    console.log(
-      `${combatant.forename} chooses to use ${action?.name} on ${Array.isArray(targetOrTargets) ? targetOrTargets.map(t => t.forename).join(", ") : (targetOrTargets as Combatant).forename}.`
-    );
+    // console.log(
+    //   `${combatant.forename} chooses to use ${action?.name} on ${Array.isArray(targetOrTargets) ? targetOrTargets.map(t => t.forename).join(", ") : (targetOrTargets as Combatant).forename}.`
+    // );
 
     combatant.abilityCooldowns = combatant.abilityCooldowns || {};
     if (action.type === "skill" && !action.name.match(/melee|ranged|wait/i)) {
@@ -401,7 +405,7 @@ export default class Combat {
     let team = this.teams.find(t => t.combatants.includes(combatant));
     let ctx: CombatContext = { subject: combatant, allies, enemies };
     let { events } = await AbilityHandler.perform(action, combatant, targetOrTargets, ctx, Commands.handlers(this.roller, team!));
-    this.emitAll(events, Combat.describeAbility(action, combatant));
+    await this.emitAll(events, Combat.describeAbility(action, combatant));
 
     return { haltRound: false };
   }
@@ -422,7 +426,7 @@ export default class Combat {
 
     console.log("\n" + Presenter.combatant(combatant));
 
-    this.emit({ type: "turnStart", subject: combatant, combatants: this.allCombatants } as Omit<CombatEvent, "turn">);
+    await this.emit({ type: "turnStart", subject: combatant, combatants: this.allCombatants } as Omit<CombatEvent, "turn">);
 
     // Tick down cooldowns
     if (combatant.abilityCooldowns) {
@@ -469,12 +473,12 @@ export default class Combat {
           return { haltRound: true };
         }
       } else {
-        console.log(`DEBUG ${combatant.forename} turn:`);
-        console.log(`  - This combatant's team: ${this.teams.find(t => t.combatants.includes(combatant)) === this.teams[0] ? 'team0' : 'team1'}`);
-        console.log(`  - Team 0 combatants: ${this.teams[0].combatants.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
-        console.log(`  - Team 1 combatants: ${this.teams[1].combatants.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
-        console.log(`  - Living enemies (validTargets): ${validTargets.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
-        console.log(`  - Living allies: ${allies.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
+        // console.log(`DEBUG ${combatant.forename} turn:`);
+        // console.log(`  - This combatant's team: ${this.teams.find(t => t.combatants.includes(combatant)) === this.teams[0] ? 'team0' : 'team1'}`);
+        // console.log(`  - Team 0 combatants: ${this.teams[0].combatants.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
+        // console.log(`  - Team 1 combatants: ${this.teams[1].combatants.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
+        // console.log(`  - Living enemies (validTargets): ${validTargets.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
+        // console.log(`  - Living allies: ${allies.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
 
         await this.npcTurn(combatant, validTargets, allies);
       }
@@ -488,8 +492,7 @@ export default class Combat {
           for (const effect of status.effect['onTurnEnd']) {
             // apply fx to self
             let { events } = await AbilityHandler.handleEffect(status.name, effect, effect.by || combatant, combatant, ctx, Commands.handlers(this.roller, this.teams.find(t => t.combatants.includes(combatant))!));
-            // events.forEach(e => this.emit({ ...e, turn: this.turnNumber } as CombatEvent));
-            this.emitAll(events);
+            await this.emitAll(events);
           }
         }
       }
@@ -519,13 +522,13 @@ export default class Combat {
           team.combatants = team.combatants.filter(c => c !== combatant);
         });
         this.combatantsByInitiative = this.combatantsByInitiative.filter(c => c.combatant !== combatant);
-        this.emit({ type: "flee", subject: combatant } as Omit<FleeEvent, "turn">);
+        await this.emit({ type: "flee", subject: combatant } as Omit<FleeEvent, "turn">);
 
         await creatureFlees(combatant);
       }
     }
 
-    this.emit({
+    await this.emit({
       type: "roundStart",
       combatants: Combat.living(this.combatantsByInitiative.map(c => ({ ...c.combatant, friendly: this.teams[0].combatants.includes(c.combatant) }))),
       parties: this.teams,
@@ -547,30 +550,39 @@ export default class Combat {
       if (result.haltRound) {
         break;
       }
-    }
+      // }
 
-    // tick down status
-    let expiryEvents: StatusExpireEvent[] = [];
-    Combat.living(this.allCombatants).forEach(combatant => {
+      // tick down status
+      let expiryEvents: StatusExpireEvent[] = [];
+      // Combat.living(this.allCombatants).forEach(combatant => {
       if (combatant.activeEffects) {
-        combatant.activeEffects.forEach(it => { if (it.duration) { it.duration = (it.duration || 0) - 1; } });
+        combatant.activeEffects.forEach((it: StatusEffect) => {
+          if (it.duration !== undefined && it.duration !== Infinity) {
+            it.duration = Math.max(0, it.duration - 1);
+          }
+        });
+
         for (const status of combatant.activeEffects) {
-          if ((status.duration || Infinity) <= 0) {
-            // this.emit({ type: "statusExpire", subject: combatant, effectName: status.name } as Omit<StatusExpireEvent, "turn">);
+          if (status.duration === 0) {
             expiryEvents.push({ type: "statusExpire", subject: combatant, effectName: status.name, turn: this.turnNumber });
           }
         }
       }
-      combatant.activeEffects = combatant.activeEffects?.filter(it => (it.duration || Infinity) > 0) || [];
-    });
-    if (expiryEvents.length > 0) {
-      this.emitAll(expiryEvents, "Effects expire.");
+
+      combatant.activeEffects = combatant.activeEffects?.filter((it: StatusEffect) =>
+        it.duration === undefined || it.duration === Infinity || it.duration > 0
+      );
+
+      if (expiryEvents.length > 0) {
+        await this.emitAll(expiryEvents, "Effects expire.");
+      }
     }
+
 
     for (const team of this.teams) {
       if (team.combatants.every((c: any) => c.hp <= 0)) {
         this.winner = team === this.teams[0] ? this.teams[1].name : this.teams[0].name;
-        this.emit({ type: "combatEnd", winner: this.winner } as Omit<CombatEndEvent, "turn">);
+        await this.emit({ type: "combatEnd", winner: this.winner } as Omit<CombatEndEvent, "turn">);
         break;
       }
     }
@@ -593,7 +605,7 @@ export default class Combat {
     return [
       {
         name: "Player", combatants: [{
-          forename: "Hero", name: "Hero",
+          forename: "Hero", name: "Hero", alignment: "neutral",
           hp: 14, maxHp: 14, level: 1, ac: 10,
           dex: 11, str: 12, int: 10, wis: 10, cha: 10, con: 12,
           // attackRolls: 1, damageDie: 8,
@@ -606,12 +618,12 @@ export default class Combat {
       {
         name: "Enemy", combatants: [
           {
-            forename: "Zok", name: "Goblin A", hp: 4, maxHp: 4, level: 1, ac: 17, //attackRolls: 2, damageDie: 3,
+            forename: "Zok", name: "Goblin A", alignment: "neutral", hp: 4, maxHp: 4, level: 1, ac: 17, //attackRolls: 2, damageDie: 3,
             attackDie: "1d3",
             str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: [], hasMissileWeapon: false, xp: 0, gp: 0
           },
           {
-            forename: "Mog", name: "Goblin B", hp: 4, maxHp: 4, level: 1, ac: 17, //attackRolls: 2, damageDie: 3,
+            forename: "Mog", name: "Goblin B", alignment: "neutral", hp: 4, maxHp: 4, level: 1, ac: 17, //attackRolls: 2, damageDie: 3,
             attackDie: "1d3",
             str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: [], hasMissileWeapon: false, xp: 0, gp: 0
           }

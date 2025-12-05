@@ -32,7 +32,6 @@ export default class CharacterRecord {
   ): Promise<Combatant[]> {
         let abilityHandler = AbilityHandler.instance;
         await abilityHandler.loadAbilities();
-    // await AbilityHandler.instance.loadAbilities();
     await TraitHandler.instance.loadTraits();
 
     let doChoose = await selectionMethod(
@@ -48,10 +47,7 @@ export default class CharacterRecord {
     }
 
     let party: Combatant[] = [];
-    // let hasExistingPcs = false;
-    // if (await Files.countFiles(`${Dungeoneer.dataPath}/pcs`) > 0) {
-    //   hasExistingPcs = true;
-    // }
+
     let pc: Combatant | null = null;
     while (party.length < partySize) {
       let whichPc = '(' + (party.length + 1) + '/' + partySize + ')';
@@ -73,12 +69,7 @@ export default class CharacterRecord {
 
         let spellbook: string[] = [];
         if (occupationSelect === 'mage') {
-          // spellbook = await User.multiSelect(
-          //   "Select spells for this PC",
-          //   ['missile', 'armor', 'blur', 'charm', 'shocking_grasp', 'burning_hands', 'sleep', 'ray_of_frost', 'acid_arrow']
-          // );
           let availableSpells = abilityHandler.allSpellNames('arcane', 1);
-             // ['missile', 'armor', 'blur', 'charm', 'shocking_grasp', 'burning_hands', 'sleep', 'ray_of_frost', 'acid_arrow'];
           for (let i = 0; i < 3; i++) {
             let spell = await selectionMethod(
               `Select spell ${i + 1} for this PC: ` + whichPc,
@@ -91,10 +82,7 @@ export default class CharacterRecord {
         }
 
         pc = await pcGenerator({ setting: 'fantasy', race: raceSelect, class: occupationSelect }) as Combatant;
-        // pc.traits = [];
-        // spellbook.forEach((spell: string) => pc.abilities.unshift(spell));
         if (pc.class === "mage") {
-          // pc.abilities = ['melee']; // don't know why this is necessary, but it is??
           pc.abilities.push(...spellbook);
         }
 
@@ -108,11 +96,8 @@ export default class CharacterRecord {
         }
       } else {
         pc = await pcGenerator({ setting: 'fantasy' }) as Combatant;
-        // pc.traits = [];
         if (pc.class === 'mage') {
-          // pc.abilities = ['melee']; // don't know why this is necessary, but it is??
           const spells = Sample.count(3, ...abilityHandler.allSpellNames('arcane', 1))
-            //'missile', 'armor', 'blur', 'charm', 'shocking_grasp', 'burning_hands', 'sleep')
           console.log("Adding to " + pc.name + "'s spellbook: " + spells.join(", ") + " (already has " + pc.abilities.join(", ") + ")");
           pc.abilities.push(...spells);
         }
@@ -140,9 +125,7 @@ export default class CharacterRecord {
         )
       )))}.`);
       party.forEach(c => {
-        // let otherPassives = traitHandler.personalTraits(c);
         partyPassives.forEach(trait => {
-          // console.log("- Applying trait " + trait.name + " to " + c.name + "(already has " + c.traits.join(", ") + ")");
           c.traits.push(trait.name);
         });
       });
@@ -158,16 +141,6 @@ export default class CharacterRecord {
         }
       });
     });
-
-    // party.forEach(c => Presenter.printCharacterRecord(c));
-    // let confirm = await Interactive.selection(
-    //   'Do you want to use this party?',
-    //   ['Yes', 'No']
-    // );
-    // if (confirm !== 'Yes') {
-    //   return this.chooseParty(partySize);
-    // }
-
     return party;
   }
 
@@ -221,20 +194,10 @@ export default class CharacterRecord {
         let abilityHandler = AbilityHandler.instance;
         await abilityHandler.loadAbilities();
         let allSpellKeys = abilityHandler.allSpellNames('arcane', Math.ceil(pc.level / 2));
-          // Object.entries(abilityHandler.abilities)
-          // .filter(([_key, ab]) => ab.aspect === 'arcane')
-          // .map(([key, _ab]) => key);
 
         let newSpellKeys = allSpellKeys.filter(spellKey => {
-          // let spell = abilityHandler.getAbility(spellKey);
           return !pc.abilities.includes(spellKey);
-          //spell.level !== undefined
-            // && spell.level <= Math.ceil(pc.level / 2)
         });
-
-        // let allSpells = abilityHandler.spells.filter(ab => ab.aspect === 'arcane');
-        // let newSpells = allSpells.filter(spell => spell.level !== undefined && spell.level <= Math.ceil(pc.level / 2))
-                                //  .filter(spell => !pc.abilities.includes(spell.name));
 
         if (newSpellKeys.length > 0) {
           let spellChoices = newSpellKeys.map(spellKey => {

@@ -447,7 +447,7 @@
               "type": "buff",
               "status": {
                 "name": "Blood Frenzy",
-                "duration": 1,
+                "duration": 2,
                 "effect": {
                   "bonusDamage": "1d4"
                 }
@@ -689,7 +689,7 @@
               "type": "buff",
               "status": {
                 "name": "Hollering",
-                "duration": 1,
+                "duration": 2,
                 "effect": {
                   "bonusDamage": "1d3"
                 }

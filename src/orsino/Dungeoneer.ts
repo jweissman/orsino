@@ -236,9 +236,9 @@ export default class Dungeoneer {
   describeRoom(room: Room | BossRoom, verb: string = "are standing in"): string {
     let description = `You ${verb} ${Words.a_an(room.room_size)} ${room.narrative}`;
     if (room.decor === "nothing") {
-      description += ` The ${room.room_type} contains simple furnishings`;
+      description += ` The ${Words.humanize(room.room_type)} contains simple furnishings`;
     } else {
-      description += ` The ${room.room_type} contains ${room.decor!}`;
+      description += ` The ${Words.humanize(room.room_type)} contains ${room.decor!}`;
     }
     if (room.features && room.features.length > 0) {
       description += ` as well as ${Words.humanizeList(room.features.map(f => Words.a_an(Words.humanize(f))))}`;

@@ -191,7 +191,7 @@ describe('Orsino', () => {
     });
   })
 
-  it.only('mod runner', async () => {
+  it('mod runner', async () => {
     await AbilityHandler.instance.loadAbilities();
     await TraitHandler.instance.loadTraits();
     const mod = await Generator.gen("module", { setting: "fantasy" });

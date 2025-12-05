@@ -84,10 +84,16 @@ export class AbilityScoring {
       score += (1 - hpRatio) * 15; // higher score for lower hp
     }
     if (analysis.heal) {
+      // if all allies at full hp, don't heal
+      let allAtFullHp = allies.every(ally => ally.hp >= ally.maxHp || ally.hp <= 0);
+      if (allAtFullHp) {
+        return -10;
+      }
+
       // any allies <= 50% hp?
       allies.forEach(ally => {
         if (ally.hp / ally.maxHp <= 0.25) {
-          score += 10;
+          score += 15;
         } else if (ally.hp / ally.maxHp <= 0.5) {
           score += 5;
         }
@@ -142,9 +148,9 @@ export class AbilityScoring {
     if (analysis.summon) {
       // does our party have < 6 combatants?
       if (allies.length < 6) {
-        score += 4 * (6 - allies.length);
+        score += 20 * (6 - allies.length);
       } else {
-        score -= 5;
+        score -= 100;
       }
     }
     if (analysis.rez) {

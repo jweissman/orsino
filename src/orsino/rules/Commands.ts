@@ -50,12 +50,15 @@ export class Commands {
       summon: async (user: Combatant, summoned: Combatant[]) => {
         // console.log(`${user.name} summons ${summoned.map(s => s.name).join(", ")}!`);
         // team.combatants.push(...summoned);
+        let summoningEvents: TimelessEvent[] = [];
         for (let s of summoned) {
           if (team.combatants.length < 6) {
             team.combatants.push(s);
+            summoningEvents.push({ type: "summon", subject: user, target: s } as Omit<SummonEvent, "turn">);
           }
         }
-        return [{ type: "summon", subject: user, summoned } as Omit<SummonEvent, "turn">];
+        return summoningEvents;
+        // return [{ type: "summon", subject: user, summoned } as Omit<SummonEvent, "turn">];
       }
     }
   }
@@ -242,10 +245,16 @@ export class Commands {
       by,
       damageKind
     } as Omit<HitEvent, "turn">];
+
+    if (critical) {
+      events.push({ type: "crit", subject: attacker, target: defender, damage, by, damageKind } as Omit<GameEvent, "turn">);
+    }
+
     // this.emit({ type: "hit", subject: attacker, target: defender, damage, success: true, critical, by } as Omit<HitEvent, "turn">);
     if (defender.hp <= 0) {
       // this.emit({ type: "fall", subject: defender } as Omit<FallenEvent, "turn">);
       events.push({ type: "fall", subject: defender } as Omit<FallenEvent, "turn">);
+      events.push({ type: "kill", subject: attacker, target: defender } as Omit<GameEvent, "turn">);
       // trigger on kill fx
       // need to find attacker team...
       let onKillFx = attackerEffects.onKill as AbilityEffect[] || [];
@@ -281,7 +290,7 @@ export class Commands {
   }
 
   static async handleStatusEffect(
-    user: Combatant, target: Combatant, name: string, effect: { [key: string]: any }, duration: number
+    user: Combatant, target: Combatant, name: string, effect: { [key: string]: any }, duration: number 
   ): Promise<TimelessEvent[]> {
     // console.log(`${Presenter.combatant(user)} applies status effect ${name} to ${Presenter.combatant(target)} for ${duration} turns!`);
     // if they already have the effect, remove it and reapply it with the new duration

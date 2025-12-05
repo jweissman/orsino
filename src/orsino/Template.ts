@@ -10,6 +10,28 @@ export class Template {
     public props: Record<string, any> = {}
   ) { }
 
+  static async bootstrapDeem(generator: any, context: Record<string, any> = {}) {
+    Deem.stdlib = Deem.stdlib || {};
+    Deem.stdlib.eval = async (expr: string) => await Deem.evaluate(expr, {});
+    Deem.stdlib.lookup = (tableName: GenerationTemplateType, groupName: string) => generator.lookupInTable(tableName, groupName);
+    Deem.stdlib.hasEntry = (tableName: GenerationTemplateType, groupName: string) => {
+      // console.log(`Checking hasEntry for table '${tableName}' and group '${groupName}'`);
+      const table = generator.generationSource(tableName);
+      if (!table || !(table instanceof Table)) {
+        throw new Error(`Table not found: ${tableName}`);
+        return false;
+      }
+      return table.hasGroup(groupName);
+    };
+    Deem.stdlib.gather = (tableName: GenerationTemplateType, count: number) => generator.gatherKeysFromTable(tableName, count);
+    Deem.stdlib.gen = async (type: GenerationTemplateType) => {
+      return await generator.gen(type, { ...context })
+    };
+    Deem.stdlib.genList = async (type: GenerationTemplateType, count: number = 1, condition?: string) => {
+      return await generator.genList(type, { ...context }, count, condition);
+    }
+  }
+
   async assembleProperties(
     options: Record<string, any> = {},
     generator: any

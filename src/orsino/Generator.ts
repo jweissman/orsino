@@ -148,17 +148,17 @@ export default class Generator {
           wis: '=floor(cr * 2) + rand(1, 6)',
           cha: '=floor(cr * 2) + rand(1, 6)',
         }),
-        treasure: new Table('treasure')
+        treasure: new Table('treasure', 'type')
           .group('negligible', ['a rusty sword', 'a small pouch of coins', 'a healing potion', 'an old map', 'a silver ring'])
           .group('normal', ['a finely crafted dagger', 'a bag of gold coins', 'a potion of strength', 'a mysterious amulet', 'a rare gemstone'])
           .group('minor', ['a powerful potion', 'a bag of gems', 'a magical scroll', 'a rare artifact', 'a golden amulet'])
           .group('major', ['a magical staff', 'a chest of gold', 'an ultra-rare gem', 'an enchanted armor', 'a powerful artifact'])
           .group('legendary', ['a legendary sword', 'a chest of ancient treasures', 'the crown of a lost king', 'a mythical artifact', 'a powerful arcane relic']),
-        name: new Table('gender')
+        name: new Table('gender', 'sex')
           .group('male', ['John', 'Michael', 'David', 'James', 'Robert'])
           .group('female', ['Jane', 'Emily', 'Sarah', 'Jessica', 'Lisa'])
           .group('neutral', ['Alex', 'Taylor', 'Jordan', 'Morgan', 'Casey']),
-        surname: new Table('occupation')
+        surname: new Table('occupation', 'category')
           .group('Artist', ['Fletcher', 'Shoesmith', 'Baker', 'Tailor', 'Mason', 'Smith', 'Carpenter'])
           .group('Engineer', ['Leach', 'Wright', 'Turner'])
           .group('Merchant', ['Porter', 'Hawker', 'Cheeseman', 'Nutter'])

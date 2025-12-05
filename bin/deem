@@ -17,6 +17,13 @@ console.log('Deem console');
 
 // with readline (history, editing)
 import readline from 'readline';
+import { Template } from '../src/orsino/Template';
+import Generator from '../src/orsino/Generator';
+import { loadSetting } from "../src/orsino/loader";
+
+let settingName = "fantasy";
+Generator.setting = settingName ? loadSetting(settingName) : Generator.defaultSetting;
+await Template.bootstrapDeem(Generator, {});
 
 const rl = readline.createInterface({
   input: process.stdin,

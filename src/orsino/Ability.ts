@@ -68,6 +68,7 @@ export interface AbilityEffect {
 export interface Ability {
   name: string;
   type: "spell" | "skill" | "potion";
+  alignment?: 'good' | 'neutral' | 'evil';
   description: string;
   level?: number;
   aspect: "arcane" | "physical" | "divine" | "social" | "stealth" | "nature";
@@ -154,9 +155,9 @@ export default class AbilityHandler {
     return Object.values(this.abilities).filter(ab => ab.type === 'spell');
   }
 
-  allSpellNames(aspect: string, maxLevel = Infinity): string[] {
+  allSpellNames(aspect: string, maxLevel = Infinity, excludeEvilSpells = true): string[] {
     return Object.entries(this.abilities)
-          .filter(([_key, ab]) => ab.aspect === aspect && ab.type === 'spell' && (ab.level ?? 0) <= maxLevel)
+          .filter(([_key, ab]) => ab.aspect === aspect && ab.type === 'spell' && (ab.level ?? 0) <= maxLevel && (!excludeEvilSpells || ab.alignment !== 'evil'))
           .map(([key, _ab]) => key);
   }
 
@@ -441,7 +442,10 @@ export default class AbilityHandler {
         // let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
         let amount = effect.hpPercent ? Math.floor((effect.hpPercent / 100) * (targetCombatant.maxHp || 10)) : 1;
         targetCombatant.hp = amount;
-        console.log(`${targetCombatant.name} is resurrected with ${amount} HP!`);
+        // todo handle applied traits + reify (and maybe update type???)
+        // if (effect.applyTraits) {
+        //   targetCombatant.traits = Array.from(new Set([...(targetCombatant.traits || []), ...effect.applyTraits]));
+        // }
         events.push({ type: "resurrect", subject: targetCombatant, amount } as Omit<ResurrectEvent, "turn">);
         rezzed = true;
       }
@@ -465,11 +469,11 @@ export default class AbilityHandler {
     success: boolean;
     events: Omit<GameEvent, "turn">[];
   }> {
-    console.log(`${user.name} is performing ${ability.name} on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target?.name}...`);
+    // console.log(`${user.name} is performing ${ability.name} on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target?.name}...`);
     let result = false;
     let events = [];
     for (const effect of ability.effects) {
-      console.log("performing effect of type", effect.type, "...");
+      // console.log("performing effect of type", effect.type, "...");
       let { success, events: effectEvents } = await this.handleEffect(ability.name, effect, user, target, context, handlers);
       result = result || success;
       events.push(...effectEvents);
@@ -503,7 +507,7 @@ export default class AbilityHandler {
     }
 
 
-    console.log(`Performed ${ability.name} on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target.name} with result: ${result}`);
+    // console.log(`Performed ${ability.name} on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target.name} with result: ${result}`);
     // // console.log(`Events:`, events);
     // if (events.length > 0) {
     //   console.log(`${ability.name} generated events:`, events.map(e => ({ ...e, subject: e.subject?.name || e.subject, target: e.target?.name || e.target })));

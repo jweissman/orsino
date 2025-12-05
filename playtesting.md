@@ -22,7 +22,7 @@
 ---
 [ ] Remind players to rest if they're not at full health going into boss battle
 ---
-[ ] Healing for 0 HP should be presented as a failure (not "heals for 0 damage" but "tried to heal but fails")
+[ ] Healing for 0 HP should be presented as a failure (not "heals for 0 damage" but "tried to heal but fails") -- thought we had repaired this but still seeing 0-amount heals
 [ ] Temple blessing should _recharge_ duration if already present (ie just having the blessing should not necessarily disable prayer)
 [ ] Should be able to see what active effects you have even in town
 [ ] Would be interesting to distinguish between positive/negative effects (maybe rest should cure only bad things?)
@@ -41,7 +41,6 @@
 [ ] Should only be able to visit temple _once_ per long rest/visit in town
 [ ] Found "letter" and "wanted poster" items could have clues about the dungeon boss (if not other bosses etc)
 ---
-[ ] range vs melee action is good flavor but -- should take account of current weapon! bows shouldn't melee etc (have 'fixed' by adjusting starting equipment but should be a deeper solution)
 [ ] Successful resistance should give a message ("successfully resisted...")
 [ ] Should you roll your own poison damage? Feels strange -- maybe should just be automatic?
 [ ] Poison damage should indicate who _inflicted_ it (this is sort of tracked but not surfaced...)
@@ -81,16 +80,16 @@
 [ ] Show detailed breakdown of dungeons/rooms/actual vs effect CR (maybe separate spec for module runner?)
 [ ] Wildnerness: Collect herbs, hear birdcalls...
 ---
-[ ] Track playerAligned as _well_ as playerControlled (sort of captured by being on the team of the player but this isn't passed along with combatant in all cases...)
-[ ] Adjust status durations check so that they expire at end of _turn_ not _round_?
+[ ] Track playerAligned as _well_ as playerControlled (sort of captured by being on the team of the player but this isn't passed along with combatant in all cases... -- we can always check for allegiance effects but a little subtle i guess?)
 ---
-[ ] Spawn appropriate gear for PCs (spellbooks for mages, holy symbols for clerics, lockpicking tool for thieves)
-[ ] Enemy saves should at least be presented clearly (okay for this to be '...but nothing happened' but ideal to say 'x made their save!' or similar)
+[ ] Spawn appropriate gear for PCs (spellbooks for mages, holy symbols for clerics, lockpicking tool for thieves -- think this is roughly done but could be improved)
 [ ] Would be nice to let _all_ PCs attempt to interact/examine/search
 [ ] Maybe charm is dispelled if the charmer dies??
-[ ] Creatures could escape _before_ the round starts (so they don't display in party listing)
-[ ] Humanize room names on describe room
-[ ] Aggregate lists of features since it's possible to get _two_ polluted fountains
+---
+[ ] Disable summon abilities if you already have 6 allied creatures (alive or dead...)
+[ ] Would be nice to have more narrow utilty-cleric abilities (neutralize poison, remove paralysis, ultimately a high-level 'heal' which fixes status effects AND brings health back...)
+[ ] Was seeing 0-damage attacks on elite units (maybe something to do with DR but a 0-damage attack is a miss, although we could gloss as 'graze' or something?)
+[ ] Should permit player to _leave_ the dungeon (currently they _can_ but have to flee? Also maybe we've disabled flee for them to focus autoplay)
 
 ## Fixed
 [x] Temple/shrine to local deity to get a blessing
@@ -135,6 +134,12 @@
 [x] We could also spell out DC checks and bonuses for now (just to sanity check) as well as bonus damage/healing in general - think this is mostly true
 [x] Smite scaling 2d6 * level is way too powerful at higher levels (adjusted a bit) -- should be marginally better (but radiant damage against vulnerable enemies still _very_ strong!)
 [x] 20 should be stat max until level 10 (maybe 18 until level 5...) -- currently set to max out at 18 until level 20
+[x] range vs melee action is good flavor but -- should take account of current weapon! bows shouldn't melee etc (have 'fixed' by adjusting starting equipment but should be a deeper solution) -- think this is done by str/dex split and deriving range/melee ability _from_ the primary weapon
+[x] Adjust status durations check so that they expire at end of _turn_ not _round_? (think this should be done!)
+[x] Aggregate lists of features since it's possible to get _two_ polluted fountains (should be unique now but could try to confirm in play)
+[x] Humanize room names on describe room (this ought to be done?)
+[x] Creatures could escape _before_ the round starts (so they don't display in party listing)
+[x] Enemy saves should at least be presented clearly (okay for this to be '...but nothing happened' but ideal to say 'x made their save!' or similar -- should display 'resisted effect' now...)
 
 ## Not really issues
 "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]

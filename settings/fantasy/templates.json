@@ -14,7 +14,9 @@
   "pc": {
     "hair": "=oneOf(black, brown, blonde, red, gray, white, no, sandy, auburn, chestnut, silver, golden)",
     "eye_color": "=oneOf(brown, blue, green, gray, hazel, amber, violet, olive, gold)",
-    "alignment": "=oneOf(benefactor, crusader, zealot, rebel, skeptic, free_spirit)",
+    "alignment": "=oneOf(good, neutral)",
+    "order": "=oneOf(lawful, neutral, chaotic)",
+    "archetype": "=lookup(alignmentArchetypes, #order + ' ' + #alignment)",
     "background": "=oneOf(noble, soldier, outlander, scholar, criminal, artisan, acolyte, hermit)",
     "personality": "=#background == 'noble' ? oneOf(proud, haughty, dignified, commanding) : oneOf(grim, bold, cunning, loyal, compassionate, ruthless, cheerful, brooding, curious, jovial, acerbic, stoic, wary)",
     "_hometown": "=gen(town)",
@@ -27,6 +29,7 @@
     "_surname": "=lookup(surname, #class)",
     "forename": "=lookup(name, #gender)",
     "name": "=#forename + \" \" + #_surname",
+    "referenceName": "='the ' + #race + ' ' + #class + oneOf(' named ', ' known as ') + #forename",
     "str": "=rollWithDrop(4, 6)",
     "dex": "=rollWithDrop(4, 6)",
     "int": "=rollWithDrop(4, 6)",
@@ -140,6 +143,9 @@
 
   "npc": {
     "challenging": false,
+    "alignment": "evil",
+    "order": "=oneOf(lawful, neutral, chaotic)",
+    "archetype": "=lookup(alignmentArchetypes, #order + ' ' + #alignment)",
     "terrain": "=oneOf(forest, cave, swamp, mountain, snow, desert)",
     "race": "=oneOf(goblin, kobold, orc, human, ogre, troll, elf, dwarf, halfling, gnome, fae, dragon)",
     "building_type": "=oneOf(mine, fortress, temple, tomb, library)",
@@ -239,7 +245,8 @@
     "depth": 0,
     "race": "goblin",
     "challenging": true,
-    "building_type": "=oneOf(temple, fortress, library, tomb, mine)",
+    "__building_type": "=oneOf(temple, fortress, library, tomb, mine)",
+    "building_type": "tomb",
     "room_type": "=oneOf(throne_room, lair, altar)",
     "narrative": "=lookup(roomNarrative, #room_type)",
     "room_size": "=oneOf(medium, large, enormous, huge, colossal)",
@@ -248,7 +255,7 @@
     "_companionCount": 1,
     "_monsterCount": 2,
     "treasure": "=lookup(treasure, oneOf(major, legendary))",
-    "type": "=lookup(bossNpcTypesForDungeon, #building_type)",
+    "npc_type": "=lookup(bossNpcTypesForDungeon, #building_type)",
     "boss_encounter": "=gen(encounter)",
     "decor": "=lookup(roomDecoration, 1d100)",
     "gear": "=gather(masterGear, 1d3 + 2)",
@@ -258,7 +265,7 @@
     "terrain": "=oneOf(forest, cave, swamp, mountain, snow, desert)",
     "_index": 0,
     "_moduleLevel": 1,
-    "_targetCr": "=#_moduleLevel + max(1, round(#_index)+1)",
+    "_targetCr": "=#_moduleLevel + round(#_index) + 1",
     "__building_type": "=oneOf(temple, fortress, library, tomb, mine)",
     "building_type": "tomb",
     "_roomBias": "=lookup(roomBias, #building_type)",
@@ -282,7 +289,7 @@
     "town": "=gen(town)",
     "_townName": "=dig(#town, 'name')",
     "dungeons": "=genList(dungeon, 7)",
-    "_moduleLevel": "=1d3 + 1",
+    "_moduleLevel": 0,
     "name": "=oneOf('Adventure', 'Saga', 'Reckoning', 'Quest', 'Expedition') + ' ' + oneOf('in the ' + capitalize(#terrain), 'at ' + capitalize(#_townName), 'for the ' + capitalize(#terrain))"
   }
 }
