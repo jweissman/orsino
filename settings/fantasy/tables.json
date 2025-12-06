@@ -171,33 +171,7 @@
     }
   },
   
-  "treasure": {
-    "discriminator": "tier",
-    "groups": {
-      "negligible": [[
-        "a rusty coin",
-        "a broken dagger",
-        "a tattered map",
-        "a wooden figurine"
-      ]],
-      "minor": [[
-        "a silver coin",
-        "a healing potion",
-        "a small gemstone"
-      ]],
-      "major": [[
-        "a magic sword",
-        "an enchanted ring",
-        "a bag of gold coins",
-        "a crystal orb"
-      ]],
-      "legendary": [[
-        "an ancient relic",
-        "a powerful spell scroll",
-        "a crown of the lost king"
-      ]]
-    }
-  },
+  
   "weapon": {
     "discriminator": "class",
     "groups": {
@@ -788,7 +762,8 @@
         "corridor",
         "reliquary",
         "phylactery",
-        "ritual_chamber"
+        "ritual_chamber",
+        "dark_altar"
       ]],
       "mine": [
         [
@@ -807,7 +782,7 @@
       "phylactery": {
         "monster_type": "Lich",
         "_monsterLevelDistribution": ["=#_targetCr"],
-        "_npcCount": 3,
+        "_npcCount": 2,
         "npc_type": "Cultist",
         "challenging": true,
         "_companionCount": 0,
@@ -817,7 +792,7 @@
       "ritual_chamber": {
         "monster_type": "Cult Master",
         "_monsterLevelDistribution": ["=#_targetCr"],
-        "_npcCount": 2,
+        "_npcCount": 4,
         "npc_type": "Acolyte",
         "challenging": true,
         "_companionCount": 0,
@@ -827,7 +802,7 @@
       "dark_altar": {
         "monster_type": "Death Priest",
         "_monsterLevelDistribution": ["=#_targetCr"],
-        "_npcCount": 2,
+        "_npcCount": 3,
         "npc_type": "Adept",
         "challenging": true,
         "_companionCount": 0,
@@ -1873,4 +1848,5 @@
       "beast": 2
     }
   }
+
 }

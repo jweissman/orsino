@@ -141,8 +141,8 @@ describe('Orsino', () => {
 
     console.log("\n--- Party Presentation ---\n")
     let teams: Team[] = [
-      { name: "Heroes", combatants: [pc as Combatant, npc as Combatant], healingPotions: 0 },
-      { name: "Foes", combatants: [animal as Combatant, monster as Combatant], healingPotions: 0 }
+      { name: "Heroes", combatants: [pc as Combatant, npc as Combatant], inventory: {} },
+      { name: "Foes", combatants: [animal as Combatant, monster as Combatant], inventory: {} }
     ];
     console.log(Presenter.parties(teams));
 
@@ -205,7 +205,7 @@ describe('Orsino', () => {
     expect(mod.dungeons).toBeInstanceOf(Array);
 
     let party = await CharacterRecord.chooseParty(
-      async (options?: any) => (await Generator.gen("pc", { setting: "fantasy",  ...options, class: "warrior" }) as Combatant),
+      async (options?: any) => (await Generator.gen("pc", { setting: "fantasy",  ...options }) as Combatant),
       3,
       // Combat.samplingSelect
       async (_prompt: string, options: string[]) => {

@@ -79,10 +79,10 @@ export class Gauntlet {
         this.outputSink("You win the combat! You gain " + xpBonus + " XP and " + goldDrop + " GP.");
         const playerCombatants = combat.teams[0].combatants.filter(c => c.playerControlled);
         // random chance to discover 10 hp potion
-        if (Math.random() < 0.5) {
-          this.outputSink('You found a health potion!');
-          combat.teams[0].healingPotions += 1;
-        }
+        // if (Math.random() < 0.5) {
+        //   this.outputSink('You found a health potion!');
+        //   combat.teams[0].healingPotions += 1;
+        // }
         for (const c of playerCombatants) {
           c.xp ||= 0;
           c.xp += Math.round(xpBonus / playerCombatants.length);

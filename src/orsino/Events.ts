@@ -4,6 +4,7 @@ import Presenter from "./tui/Presenter";
 import Stylist from "./tui/Style";
 import { Combatant } from "./types/Combatant";
 import { Team } from "./types/Team";
+import Words from "./tui/Words";
 
 type BaseEvent = {
   turn: number;
@@ -36,6 +37,9 @@ export type SaveEvent = BaseEvent & { type: "save"; success: boolean; dc: number
 export type ReactionEvent = BaseEvent & { type: "reaction"; reactionName: string; success: boolean };
 export type ResurrectEvent = BaseEvent & { type: "resurrect"; amount: number; };
 
+export type ResistantEvent = BaseEvent & { type: "resist"; damageKind: DamageKind; originalDamage: number; finalDamage: number; sources: string[] };
+export type VulnerableEvent = BaseEvent & { type: "vulnerable"; damageKind: DamageKind; originalDamage: number; finalDamage: number; sources: string[] };
+
 export type StatusEffectEvent = BaseEvent & { type: "statusEffect"; effectName: string; effect: { [key: string]: any }; duration: number };
 export type StatusExpireEvent = BaseEvent & { type: "statusExpire"; effectName: string };
 
@@ -56,12 +60,14 @@ export type CombatEvent = HitEvent
   | SaveEvent
   | ReactionEvent
   | ResurrectEvent
+  | ResistantEvent
+  | VulnerableEvent
   | CombatEndEvent
   | RoundStartEvent
   | TurnStartEvent;
 
 type BaseDungeonEvent = Omit<BaseEvent, "turn">;
-export type EnterDungeon = BaseDungeonEvent & { type: "enterDungeon"; dungeonName: string; dungeonIcon: string; dungeonType: string, depth: number };
+export type EnterDungeon = BaseDungeonEvent & { type: "enterDungeon"; dungeonName: string; dungeonIcon: string; dungeonType: string, depth: number, goal: string };
 export type RoomCleared  = BaseDungeonEvent & { type: "roomCleared"; };
 export type GoldEvent  = BaseDungeonEvent & { type: "gold"; amount: number };
 export type ExperienceEvent  = BaseDungeonEvent & { type: "xp"; amount: number };
@@ -104,6 +110,8 @@ export default class Events {
       case "engage": return "⚔️";
       case "kill": return "☠️";
       case "crit": return "💥";
+      case "resist": return "🛡️";
+      case "vulnerable": return "⚠️";
       default: return never(event);
     }
   }
@@ -115,7 +123,14 @@ export default class Events {
       case "engage":
         return '';  //`${subjectName} enters the fray!`;
       case "enterDungeon":
-        return `${"=====".repeat(8)}\n${event.dungeonIcon} ${event.dungeonName.toUpperCase()}\n\n  * ${event.depth}-room ${event.dungeonType}\n${"=====".repeat(8)}`;
+        // return `${"=====".repeat(8)}\n${event.dungeonIcon} ${event.dungeonName.toUpperCase()}\n\n  * ${event.depth}-room ${event.dungeonType}\n${"=====".repeat(8)}`;
+        return `
+        ${"=".repeat(80)}
+        ${event.dungeonIcon}  ${Stylist.colorize(event.dungeonName.toUpperCase(), 'yellow')} (${event.depth} rooms)
+
+          Your Goal: ${event.goal || "Unknown"}!
+        ${"=".repeat(80)}
+        `;
       case "roomCleared": return `The room is pacified.`;
 
       case "heal":
@@ -204,6 +219,12 @@ export default class Events {
         return `${subjectName} has slain ${targetName}!`;
       case "crit":
         return "";
+
+      case "resist":
+        return `${subjectName} resists ${event.finalDamage} ${event.damageKind} damage (originally ${event.originalDamage}) due to ${event.sources.join(", ")}.`;
+
+      case "vulnerable":
+        return `${subjectName} is vulnerable and takes ${event.finalDamage} ${event.damageKind} damage (originally ${event.originalDamage}) due to ${event.sources.join(", ")}.`;
       default:
         return never(event);
     }

@@ -9,6 +9,7 @@ import Generator from "./orsino/Generator";
 import AbilityHandler from "./orsino/Ability";
 import TraitHandler from "./orsino/Trait";
 import Combat from "./orsino/Combat";
+import { Team } from "./orsino/types/Team";
 
 export type Prompt = (message: string) => Promise<string>;
 
@@ -55,11 +56,9 @@ export default class Orsino {
         outputSink: console.log,
         dungeonGen: () => Generator.gen("dungeon", { setting: 'fantasy', ...options, _targetCr: targetCr }),
         gen: Generator.gen, //.bind(this),
-        playerTeam: {
-          name: "Heroes",
-          combatants: pcs.map(pc => ({ ...pc, playerControlled: true })),
-          healingPotions: 2,
-        }
+        playerTeam: ({
+          name: "Heroes", combatants: pcs.map(pc => ({ ...pc, playerControlled: true }))
+        } as Team)
       });
 
       await dungeoneer.run();

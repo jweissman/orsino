@@ -67,7 +67,7 @@ export interface AbilityEffect {
 
 export interface Ability {
   name: string;
-  type: "spell" | "skill" | "potion";
+  type: "spell" | "skill" | "consumable";
   alignment?: 'good' | 'neutral' | 'evil';
   description: string;
   level?: number;
@@ -83,6 +83,10 @@ export interface Ability {
 
   // for room feature interaction costs
   offer?: string;
+
+  // for consumables/inventory items
+  key?: any;
+  charges?: number;
 }
 
 type AbilityDictionary = { [key: string]: Ability };
@@ -441,7 +445,7 @@ export default class AbilityHandler {
       } else {
         // let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
         let amount = effect.hpPercent ? Math.floor((effect.hpPercent / 100) * (targetCombatant.maxHp || 10)) : 1;
-        targetCombatant.hp = amount;
+        targetCombatant.hp = Math.min(1, amount);
         // todo handle applied traits + reify (and maybe update type???)
         // if (effect.applyTraits) {
         //   targetCombatant.traits = Array.from(new Set([...(targetCombatant.traits || []), ...effect.applyTraits]));

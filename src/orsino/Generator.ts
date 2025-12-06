@@ -52,7 +52,7 @@ export default class Generator {
     type: GenerationTemplateType,
     options: Record<string, any> = {}
   ): Promise<Record<string, any>> {
-    this.setting = this.setting || (options.setting ? loadSetting(options.setting) : this.defaultSetting);
+    Generator.setting = Generator.setting || (options.setting ? loadSetting(options.setting) : Generator.defaultSetting);
     // console.log(`Gen ${Stylist.format(type, 'bold')} with options`);
     // let nonNestedOptions: Record<string, any> = {};
     // Object.entries(options).forEach(([key, value]) => {
@@ -63,7 +63,7 @@ export default class Generator {
     // // print options as nice table
     // console.table(nonNestedOptions);
 
-    const templ = this.generationSource(type);
+    const templ = Generator.generationSource(type);
     if (!templ) {
       throw new Error('No template found for type: ' + type);
     }
@@ -75,7 +75,7 @@ export default class Generator {
     }
 
     if (templ instanceof Template) {
-      let assembled = await templ.assembleProperties(options, this);
+      let assembled = await templ.assembleProperties(options); //, this);
       return assembled;
     } else if (templ instanceof Table) {
       let group = options.group || 'default';
@@ -89,7 +89,7 @@ export default class Generator {
   }
 
   public static lookupInTable(tableName: GenerationTemplateType, groupName: string): any {
-    const table = this.generationSource(tableName);
+    const table = Generator.generationSource(tableName);
     if (!table || !(table instanceof Table)) {
       throw new Error(`Table not found: ${tableName}`);
     }
@@ -97,12 +97,22 @@ export default class Generator {
     return ret;
   }
 
-  public static gatherKeysFromTable(tableName: GenerationTemplateType, count: number): any[] {
-    const table = this.generationSource(tableName);
+  public static async gatherKeysFromTable(tableName: GenerationTemplateType, count: number, condition?: string): Promise<any[]> {
+    const table = Generator.generationSource(tableName);
     if (!table || !(table instanceof Table)) {
       throw new Error(`Table not found: ${tableName}`);
     }
     const ret = table.gatherKeys(count);
+
+    if (condition) {
+      for (let key of ret.slice()) {
+        const conditionResult = await Deem.evaluate(condition, { __it: this.lookupInTable(tableName, key) });
+        if (conditionResult) {
+          ret.splice(ret.indexOf(key), 1);
+        }
+      }
+    }
+
     return ret;
   }
 

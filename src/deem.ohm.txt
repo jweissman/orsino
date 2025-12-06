@@ -53,8 +53,8 @@ Deem {
     = Exp ("," Exp)*
 
   strlit
-    = "\"" (double_quoted_char)* "\""
-    | "'" (single_quoted_char)* "'"
+    = "\"" (double_quoted_char)* "\"" -- double_quote
+    | "'" (single_quoted_char)* "'"   -- single_quote
 
   bool
     = "true" | "false"

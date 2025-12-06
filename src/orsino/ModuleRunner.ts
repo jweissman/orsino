@@ -9,6 +9,7 @@ import Stylist from "./tui/Style";
 import Words from "./tui/Words";
 import Presenter from "./tui/Presenter";
 import { Commands } from "./rules/Commands";
+import Deem from "../deem";
 
 type TownSize = 'hamlet' | 'village' | 'town' | 'city' | 'metropolis' | 'capital';
 type Race = 'human' | 'elf' | 'dwarf' | 'halfling' | 'gnome' | 'orc' | 'fae';
@@ -32,7 +33,8 @@ export interface CampaignModule {
 interface GameState {
   party: Combatant[];
   sharedGold: number;
-  sharedPotions: number;
+  // sharedPotions: number;
+  inventory: { [itemName: string]: number };
   completedDungeons: number[];
 }
 
@@ -45,8 +47,9 @@ export class ModuleRunner {
   private moduleGen: () => Promise<CampaignModule>;
   private state: GameState = {
     party: [],
-    sharedGold: 100,
-    sharedPotions: 3,
+    sharedGold: 200,
+    inventory: {},
+    // sharedPotions: 3,
     completedDungeons: []
   };
 
@@ -67,7 +70,7 @@ export class ModuleRunner {
 
   get pcs() { return this.state.party; }
   get sharedGold() { return this.state.sharedGold; }
-  get sharedPotions() { return this.state.sharedPotions; }
+  // get sharedPotions() { return this.state.sharedPotions; }
   get mod() { return this.activeModule!; }
 
   markDungeonCompleted(dungeonIndex: number) {
@@ -86,10 +89,13 @@ export class ModuleRunner {
       throw new Error("No PCs provided!");
     }
 
+    // give initial gold to party
+    this.state.sharedGold += this.pcs.reduce((sum, pc) => sum + (pc.gp || 0), 0);
+    this.pcs.forEach(pc => pc.gp = 0);
+
     this.outputSink("Generating module, please wait...");
     this.activeModule = await this.moduleGen();
-    this.outputSink(`Module "${this.activeModule.name}" generated: ${
-      this.activeModule.terrain} terrain, ${this.activeModule.town.name} town, ${this.activeModule.dungeons.length} dungeons
+    this.outputSink(`Module "${this.activeModule.name}" generated: ${this.activeModule.terrain} terrain, ${this.activeModule.town.name} town, ${this.activeModule.dungeons.length} dungeons
     }`);
     // clear screen
     // this.outputSink("\x1Bc");
@@ -133,22 +139,24 @@ export class ModuleRunner {
             select: this.select,
             outputSink: this.outputSink,
             dungeonGen: () => dungeon,
-            gen: this.gen.bind(this),
-            playerTeam: { name: "Player", combatants: this.pcs, healingPotions: this.sharedPotions },
+            gen: this.gen, //.bind(this),
+            playerTeam: {
+              name: "Player",
+              combatants: this.pcs,
+              inventory: this.state.inventory,
+            },
           });
           await dungeoneer.run();  //dungeon, this.pcs);
 
           if (dungeoneer.winner === "Player") {
             console.log(Stylist.bold("\n🎉 Congratulations! You have cleared the dungeon " +
               Stylist.underline(dungeon.dungeon_name)
-            + "! 🎉\n"));
+              + "! 🎉\n"));
             this.markDungeonCompleted(dungeon.dungeonIndex || 0);
           }
 
           this.state.sharedGold += dungeoneer.playerTeam.combatants
             .reduce((sum, pc) => sum + (pc.gp || 0), 0);
-
-          this.state.sharedPotions = dungeoneer.playerTeam.healingPotions;
 
           // stabilize unconscious PC to 1 HP
           this.pcs.forEach(pc => {
@@ -170,8 +178,10 @@ export class ModuleRunner {
         }
       } else if (action === "rest") {
         this.rest(this.pcs);
-      } else if (action === "shop") {
-        await this.shop();
+      } else if (action === "itemShop") {
+        await this.shop('consumables');
+      } else if (action === "armory") {
+        await this.shop('weapons');
       } else if (action === "rumors") {
         this.showRumors();
       } else if (action === "pray") {
@@ -186,11 +196,10 @@ export class ModuleRunner {
             pc.activeEffects.push({
               name: `Blessing of ${mod.town.deity}`, duration, effect: blessing
             });
-            this.outputSink(`${pc.name} gains ${
-              Words.humanizeList(
-                Object.entries(blessing).map(([k, v]) => `${v > 0 ? "+" : ""}${v} ${k}`)
-              )
-            } for ${duration} turns!`)
+            this.outputSink(`${pc.name} gains ${Words.humanizeList(
+              Object.entries(blessing).map(([k, v]) => `${v > 0 ? "+" : ""}${v} ${k}`)
+            )
+              } for ${duration} turns!`)
           }
         });
       } else if (action === "show") {
@@ -198,6 +207,15 @@ export class ModuleRunner {
         for (const pc of this.pcs) {
           // this.outputSink(`\n${Stylist.bold(pc.name)} -- ${Presenter.combatant(pc)}`);
           Presenter.printCharacterRecord(pc);
+        }
+
+        if (Object.keys(this.state.inventory).length > 0) {
+          this.outputSink("\n🎒 Inventory:");
+          for (const [itemName, qty] of Object.entries(this.state.inventory)) {
+            this.outputSink(` - ${Words.humanize(itemName)} x${qty}`);
+          }
+        } else {
+          this.outputSink("\n🎒 Inventory is empty.");
         }
       }
     }
@@ -227,7 +245,7 @@ export class ModuleRunner {
     // this.pcs.forEach(pc => {
     //   this.outputSink(`  - ${Presenter.combatant(pc)} (${pc.gender} ${pc.background}, ${pc.age})`);
     // });
-    // this.outputSink(`💰 Gold: ${this.sharedGold}g`);
+    this.outputSink(`💰 Gold: ${this.sharedGold}g`);
     // this.outputSink(`🧪 Potions: ${this.sharedPotions}`);
   }
 
@@ -240,10 +258,11 @@ export class ModuleRunner {
     if (!dry) {
       options.push(
         ...[
-          { short: "Shop", value: "shop", name: "Visit the Alchemist (buy potions, 50g each)", disabled: this.sharedGold < 50 },
+          { short: "Arms", value: "armory", name: "Visit the Armorer (buy weapons)", disabled: false },
+          { short: "Items", value: "itemShop", name: "Visit the Alchemist (buy consumables)", disabled: false },
           { short: "Chat", value: "rumors", name: "Visit the Tavern (hear rumors about the region)", disabled: available.length === 0 },
           { short: "Pray", value: "pray", name: `Visit the Temple to ${Words.capitalize(this.mod.town.deity)}`, disabled: this.sharedGold < 10 },
-          { short: "Show", value: "show", name: `Show Party Status/Character Records`, disabled: false },
+          { short: "Show", value: "show", name: `Show Party Inventory/Character Records`, disabled: false },
         ]
       );
     }
@@ -267,18 +286,103 @@ export class ModuleRunner {
     this.outputSink("💤 Your party rests and recovers fully.");
   }
 
-  private async shop() {
-    const input = await this.prompt("How many potions? (50g each)");
-    this.outputSink(`You want to buy ${input} potions.`);
-    const qty = isNaN(Number(input)) ? 0 : Number(input);
-    const cost = qty * 50;
-    this.outputSink(`You purchase ${qty} potions for ${cost}g.`);
-    if (this.sharedGold >= cost) {
-      this.state.sharedGold -= cost;
-      this.state.sharedPotions += qty;
-      this.outputSink(`✅ Purchased ${qty} potions for ${cost}g`);
-    } else {
-      this.outputSink("❌ Not enough gold!");
+  private async shop(category: 'consumables' | 'weapons') {
+    if (category === 'consumables') {
+      console.log("\nWelcome to the Alchemist's Shop! Here are the available items:");
+
+      const consumableItemNames = await Deem.evaluate(`gather(consumables)`);
+      while (true) {
+        // console.log("Shop items:", shopItemNames);
+        const options: Choice<any>[] = [];
+        // shopItems.map((itemName: string, index: number) => {
+        for (let index = 0; index < consumableItemNames.length; index++) {
+          let itemName = consumableItemNames[index];
+          let item = await Deem.evaluate(`lookup(consumables, "${itemName}")`);
+          item.key = itemName;
+          options.push({
+            short: item.name + ` (${item.value}g)`,
+            value: item,
+            name: `${item.name} - ${item.description} (${item.value}g)`,
+            disabled: this.sharedGold < item.value,
+          })
+        }
+        options.push({ disabled: false, short: "Done", value: -1, name: "Finish shopping" });
+
+        console.log("You have " + Stylist.bold(this.sharedGold + "g") + " available.");
+        const choice = await this.select("Available items to purchase:", options);
+        if (choice === -1) {
+          this.outputSink("You finish your shopping.");
+          break;
+        }
+        const item = choice;
+        //shopItemNames[choice];
+        if (this.sharedGold >= item.value) {
+          this.state.sharedGold -= item.value;
+          this.state.inventory[item.key] = (this.state.inventory[item.key] || 0) + 1;
+          this.outputSink(`✅ Purchased 1x ${item.name} for ${item.value}g`);
+        } else {
+          this.outputSink("❌ Not enough gold!");
+        }
+        // this.share
+      }
+    } else if (category === 'weapons') {
+      console.log("\nWelcome to the Armorer's Shop! Here are the available weapons:");
+
+      const weaponItemNames = await Deem.evaluate(`gather(masterWeapon, -1, 'dig(#__it, "natural")')`);
+      console.log("Weapon items:", weaponItemNames);
+      while (true) {
+        const options: Choice<any>[] = [];
+        // shopItems.map((itemName: string, index: number) => {
+        for (let index = 0; index < weaponItemNames.length; index++) {
+          let itemName = weaponItemNames[index];
+          let item = await Deem.evaluate(`lookup(masterWeapon, "${itemName}")`);
+          item.key = itemName;
+          options.push({
+            short: Words.humanize(itemName) + ` (${item.value}g)`,
+            value: item,
+            name: `${Words.humanize(itemName)} - ${item.damage} (${item.value}g)`,
+            disabled: this.sharedGold < item.value,
+          })
+        }
+        options.push({ disabled: false, short: "Done", value: -1, name: "Finish shopping" });
+
+        console.log("You have " + Stylist.bold(this.sharedGold + "g") + " available.");
+        const choice = await this.select("Available weapons to purchase:", options);
+        if (choice === -1) {
+          this.outputSink("You finish your shopping.");
+          break;
+        }
+        const item = choice;
+        console.log("Chosen weapon:", item);
+        
+        // pick wielder
+        const pcOptions: Choice<any>[] = this.pcs.map(pc => ({
+          short: pc.name,
+          value: pc,
+          name: `${pc.name} (${pc.weapon || 'unarmed'})`,
+          disabled: false,
+        }));
+        const wielder = await this.select(`Who will wield the ${item.key}?`, pcOptions) as Combatant;
+
+        if (this.sharedGold >= item.value) {
+          this.state.sharedGold -= item.value;
+          // wielder.equipment = wielder.equipment || {};
+          wielder.weapon = item.key;
+          wielder.attackDie = item.damage;
+          wielder.damageKind = item.type;
+          wielder.hasMissileWeapon = item.missile;
+          wielder.hasInterceptWeapon = item.intercept;
+
+          let primaryAttack = item.missile ? 'ranged' : 'melee';
+          // remove ranged/melee ability from ability list
+          wielder.abilities = (wielder.abilities || []).filter((abil: any) => abil.match(/melee|ranged/i) === null);
+          // add new ability
+          wielder.abilities.push(primaryAttack);
+          
+          this.outputSink(`✅ Purchased 1x ${Words.humanize(item.key)} for ${item.value}g, equipped to ${wielder.name}`);
+        }
+      }
+
     }
   }
 
@@ -307,11 +411,11 @@ export class ModuleRunner {
     // });
 
     let options = available.map(d => ({
-        short: d.dungeon_name,
-        value: available.indexOf(d),
-        name: `${d.dungeon_name} (${d.direction}, CR ${d.intendedCr})`,
-        disabled: d.intendedCr > reasonableCr, // Disable if CR is too high
-      }))
+      short: d.dungeon_name,
+      value: available.indexOf(d),
+      name: `${d.dungeon_name} (${d.direction}, CR ${d.intendedCr})`,
+      disabled: d.intendedCr > reasonableCr, // Disable if CR is too high
+    }))
     const choice = await this.select("Which dungeon?", options);
     // console.log("Chosen dungeon index:", choice, available[choice].dungeon_name);
 

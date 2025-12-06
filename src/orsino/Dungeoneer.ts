@@ -43,6 +43,7 @@ export interface BossRoom extends RoomBase {
 }
 
 export interface Dungeon {
+  macguffin?: string;
   terrain: "forest" | "cave" | "swamp" | "mountain" | "snow" | "desert";
   dungeon_type: string;
   race: string;
@@ -57,6 +58,8 @@ export interface Dungeon {
   rumor: string;
   direction: "north" | "south" | "east" | "west";
   intendedCr: number;
+
+  goal?: string;
 }
 
 export default class Dungeoneer {
@@ -66,6 +69,7 @@ export default class Dungeoneer {
       combatants: [{
         forename: "Hero",
         name: "Hero",
+        alignment: 'good',
         hp: 14, maxHp: 14, level: 1, ac: 10,
         dex: 11, str: 12, int: 10, wis: 10, cha: 10, con: 12,
         weapon: "Short Sword",
@@ -76,7 +80,8 @@ export default class Dungeoneer {
         damageKind: "slashing",
         hasMissileWeapon: false
       }],
-      healingPotions: 3
+      // healingPotions: 3
+      inventory: {}
     };
   }
 
@@ -116,7 +121,7 @@ export default class Dungeoneer {
       } else {
         return {
           creatures: [
-            { forename: "Goblin", name: "Goblin", hp: 7, maxHp: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, damageDie: 6, playerControlled: false, xp: 50, gp: 10, attackRolls: 1, weapon: "Dagger" }
+            { forename: "Goblin", name: "Goblin", hp: 7, maxHp: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, attackDie: '1d6', damageKind: 'slashing', abilities: [], playerControlled: false, xp: 50, gp: 10, attackRolls: 1, weapon: "Dagger", alignment: 'evil', traits: [] } as Combatant
           ]
         }
       }
@@ -145,7 +150,6 @@ export default class Dungeoneer {
     if (!this.dungeon) {
       await this.setUp();
     }
-
     // this.presentCharacterRecords();
 
     this.emit({
@@ -153,7 +157,8 @@ export default class Dungeoneer {
       dungeonName: this.dungeon!.dungeon_name,
       dungeonIcon: this.icon,
       dungeonType: this.dungeon!.dungeon_type,
-      depth: this.dungeon!.depth
+      depth: this.dungeon!.depth,
+      goal: this.dungeon!.goal || `Explore the ${this.dungeon!.dungeon_type} and defeat its denizens.`,
     });
 
     // assign dungeon environment to each combatants currentEnvironment
@@ -180,6 +185,17 @@ export default class Dungeoneer {
     // Display outcome
     if (this.winner === 'Player') {
       this.note("\n🎉 Victory! Dungeon cleared!\n");
+      if (this.dungeon!.macguffin) {
+        this.note(`You have secured ${Stylist.bold(this.dungeon!.macguffin)}!\n`);
+        let isConsumable = await Deem.evaluate(`hasEntry(consumables, '${this.dungeon!.macguffin}')`);
+        if (isConsumable) {
+          this.playerTeam.inventory[this.dungeon!.macguffin] = (this.playerTeam.inventory[this.dungeon!.macguffin] || 0) + 1;
+        } else {
+          // add to loot 
+          this.playerTeam.combatants[0].loot = this.playerTeam.combatants[0].loot || [];
+          this.playerTeam.combatants[0].loot.push(this.dungeon!.macguffin);
+        }
+      }
     } else {
       this.note("\n💀 Party defeated...\n");
     }
@@ -290,9 +306,10 @@ export default class Dungeoneer {
     });
 
     let roomAura = this.currentRoom?.aura;
+    let roomName = Words.humanize(this.currentRoom?.room_type || `Room ${this.currentRoomIndex + 1}/${this.dungeon!.rooms.length + 1}`);
     await combat.setUp(
       [this.playerTeam, this.currentMonsterTeam],
-      this.dungeon!.dungeon_name + ` - Room ${this.currentRoomIndex + 1}/${this.dungeon!.rooms.length + 1}`,
+      [this.dungeon!.dungeon_name, roomName].join(" - "),
       roomAura ? [roomAura] : []
     );
     while (!combat.isOver()) {
@@ -352,8 +369,11 @@ export default class Dungeoneer {
       }
 
       if (Math.random() < 0.5) {
-        console.log('The monsters dropped a healing potion!');
-        this.playerTeam.healingPotions += 1;
+        let consumable = await Deem.evaluate("pick(gather(consumables))") as any;
+        let consumableName = Words.humanize(consumable);
+        this.note(`You found ${Words.a_an(consumableName)} in the remains of your foes.`);
+        this.playerTeam.inventory[consumable] = (this.playerTeam.inventory[consumable] || 0) + 1;
+        // this.playerTeam.inventory['minor_healing_potion'] = (this.playerTeam.inventory['minor_healing_potion'] || 0) + 1;
       }
 
       if (xp > 0 || gold > 0) {
@@ -395,8 +415,9 @@ export default class Dungeoneer {
     ) {
       const options = [
         { name: "Move to next room", value: "move", short: 'Continue', disabled: false }, //room === this.dungeon!.bossRoom },
-        // { name: "Rest (stabilize unconscious party members, 30% encounter)", value: "rest", short: 'Rest', disabled: false },
+        { name: "Rest (stabilize unconscious party members, chance to use healing items, 30% encounter)", value: "rest", short: 'Rest', disabled: false },
         { name: "Search the room", value: "search", short: 'Search', disabled: searched },
+        { name: "Review party status", value: "status", short: 'Status', disabled: false },
       ];
       if (room.decor && room.decor !== "nothing") {
         options.push({ name: `Examine ${Words.remove_article(room.decor!)}`, value: "examine", short: 'Examine', disabled: examinedDecor });
@@ -411,7 +432,15 @@ export default class Dungeoneer {
       // options.push({ name: "Leave the dungeon", value: "leave", short: 'Leave', disabled: false });
 
       let choice = await this.select("What would you like to do?", options);
-      if (choice === "search") {
+      if (choice === "status") {
+        for (const c of this.playerTeam.combatants) {
+          Presenter.printCharacterRecord(c);
+        }
+        this.note(`Inventory:`);
+        for (const [itemName, qty] of Object.entries(this.playerTeam.inventory)) {
+          this.outputSink(` - ${Words.humanize(itemName)} x${qty}`);
+        }
+      } else if (choice === "search") {
         await this.search(room);
         searched = true;
       } else if (choice === "rest") {
@@ -419,7 +448,7 @@ export default class Dungeoneer {
         if (!survivedNap) {
           console.warn("The party was ambushed during their rest and defeated...");
         }
-        return { leaving: true }
+        return { leaving: !survivedNap };
       } else if (choice === "examine") {
         let check = await this.skillCheck("examine", `to examine ${room.decor}`, "int", 10);
         if (check.success) {
@@ -449,7 +478,7 @@ export default class Dungeoneer {
         done = true;
       }
     }
-    return { leaving: Combat.living(this.playerTeam.combatants).length === 0  };
+    return { leaving: Combat.living(this.playerTeam.combatants).length === 0 };
   }
 
   private async interactWithFeature(featureName: string): Promise<void> {
@@ -497,10 +526,12 @@ export default class Dungeoneer {
       this.note(`${actor.forename} finds a hidden stash!`);
       if (room.treasure) {
         for (const item of room.treasure) {
-          this.note(`You find ${item}`);
-          if (item == "a healing potion") {
-            this.playerTeam.healingPotions = (this.playerTeam.healingPotions || 0) + 1;
-            this.note(`You add the healing potion to your bag. (Total owned: ${this.playerTeam.healingPotions})`);
+          this.note(`You find ${Words.humanize(item)}`);
+          let isConusmable = await Deem.evaluate(`=hasEntry(consumables, "${item}")`) as boolean;
+          // let isGear = await Deem.evaluate(`=hasEntry(masterGear, "${item}")`) as boolean;
+          if (isConusmable) {
+            this.note(`You add ${Words.a_an(item)} to your inventory.`);
+            this.playerTeam.inventory[item] = (this.playerTeam.inventory[item] || 0) + 1;
           } else {
             // add to combatant.loot
             actor.loot = actor.loot || [];
@@ -518,22 +549,20 @@ export default class Dungeoneer {
           actor.gear.push(item);
         }
       }
-      // {
-      //   const stashGold = await Deem.evaluate("2+1d20");
-      //   let share = Math.round(stashGold / this.playerTeam.combatants.length)
-      //   this.note(`Found ${stashGold} gold!`);
-      //   await this.reward(0, share);
 
-      //   let lootBonus = 0;
-      //   let fx = Fighting.gatherEffects(actor);
-      //   lootBonus += fx.lootBonus as number || 0;
-      //   const potions = lootBonus + await Deem.evaluate("1d2");
-      //   if (potions > 0) {
-      //     this.note(`You found ${potions} healing potion${potions > 1 ? 's' : ''}!`);
-      //     this.playerTeam.healingPotions = (this.playerTeam.healingPotions || 0) + potions;
-      //     this.note(`You add the healing potion${potions > 1 ? 's' : ''} to your bag. (Total owned: ${this.playerTeam.healingPotions})`);
-      //   }
-      // }
+      let lootBonus = 0;
+      let fx = Fighting.gatherEffects(actor);
+      lootBonus += fx.lootBonus as number || 0;
+      if (lootBonus > 0) {
+        this.note(`${actor.forename} has a loot bonus of +${lootBonus}.`);
+        let lootItems = await Deem.evaluate(`sample(gather(consumables), ${lootBonus})`) as string[];
+        for (const item of lootItems) {
+          this.note(`You found ${Words.a_an(Words.humanize(item))}!`);
+          this.playerTeam.inventory[item] = (this.playerTeam.inventory[item] || 0) + 1;
+          this.note(`You add ${Words.a_an(item)} to your bag. (Total owned: ${this.playerTeam.inventory[item]})`);
+        }
+      }
+
     } else {
       this.note(`\n${actor.forename} fails to find anything.`);
     }
@@ -556,17 +585,36 @@ export default class Dungeoneer {
 
       // ask if they want to use consumables/healing spells?
       let someoneWounded = this.playerTeam.combatants.some(c => c.hp < c.maxHp);
-      if ((this.playerTeam.healingPotions > 0) && someoneWounded) {
-        let usePotions = await this.select("Use healing potions?", [
+
+      let healingItems = [];
+      // Object.entries(this.playerTeam.inventory).filter(([item, qty]) => {
+      for (const [item, qty] of Object.entries(this.playerTeam.inventory)) {
+        let it = await Deem.evaluate(`=lookup(consumables, "${item}")`);
+        if (qty > 0 && it.aspect === "healing") {
+          healingItems.push(item);
+        }
+      };
+      let hasHealingItems = healingItems.length > 0;
+      if (hasHealingItems && someoneWounded) {
+        let useItems = await this.select("Use healing items?", [
           { name: "Yes", value: "yes", short: 'Y', disabled: false },
           { name: "No", value: "no", short: 'N', disabled: false }
         ]);
-        if (usePotions === "yes") {
+        if (useItems === "yes") {
           for (const c of this.playerTeam.combatants) {
-            if (c.hp < c.maxHp && this.playerTeam.healingPotions > 0) {
-              c.hp = Math.min(c.maxHp, c.hp + await Deem.evaluate("2d4+2"));
-              this.playerTeam.healingPotions -= 1;
-              this.note(`Used a healing potion on ${c.name} (HP is now ${c.hp}/${c.maxHp}).`);
+            if (c.hp < c.maxHp) {
+              for (const itemName of healingItems) {
+                let qty = this.playerTeam.inventory[itemName] || 0;
+                if (qty > 0 && c.hp < c.maxHp) {
+                  let it = await Deem.evaluate(`=lookup(consumables, "${itemName}")`);
+                  let effects = it.effects;
+                  let nullCombatContext: CombatContext = { subject: c, allies: [], enemies: [] };
+                  for (let effect of effects) {
+                    let { events } = await AbilityHandler.handleEffect(it.name, effect, c, c, nullCombatContext, Commands.handlers(this.roller, this.playerTeam));
+                    events.forEach(e => this.emit({ ...e, turn: -1 } as DungeonEvent));
+                  }
+                }
+              }
             }
           }
         }
@@ -576,8 +624,7 @@ export default class Dungeoneer {
         // let encounter = this.encounterGen...
         let room = this.currentRoom as Room;
         room.encounter = await this.encounterGen(room.targetCr || 1);
-        this.note(`\n👹 Wandering monsters interrupt your rest: ${Words.humanizeList(room.encounter.creatures.map(m => m.name))} [CR ${room.encounter.cr
-          }]`);
+        this.note(`\n👹 Wandering monsters interrupt your rest: ${Words.humanizeList(room.encounter.creatures.map(m => m.name))} [CR ${room.encounter.cr}]`);
         return await this.runCombat();
       }
     }
@@ -686,7 +733,8 @@ export default class Dungeoneer {
     return {
       name: "Enemies",
       combatants: encounter?.creatures || [],
-      healingPotions: 0
+      inventory: {}
+      // healingPotions: 0
     };
   }
 

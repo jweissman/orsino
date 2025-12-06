@@ -172,11 +172,10 @@ export class Commands {
     }
 
     if (defender.hp <= 0) {
-      // this.note(`${Presenter.combatant(defender)} is already defeated. No damage applied.`);
       return [];
     }
 
-    // this.note(Stylist.bold(`${Presenter.combatant(defender)} defending against ${damage} ${damageKind} damage...`));
+    let events: TimelessEvent[] = [];
 
     let defenderEffects = Fighting.gatherEffects(defender);
     let attackerEffects = Fighting.gatherEffects(attacker);
@@ -191,20 +190,29 @@ export class Commands {
       damage = Math.floor(damage * multiplier);
     }
 
+    // what if they're immune to this damage kind? isn't that different from resistance?
+
     // Apply resistances FIRST
     if (damageKind) {
-      const defEffects = Fighting.gatherEffects(defender);
+      // const defEffects = Fighting.gatherEffects(defender);
+      const defEffects = Fighting.gatherEffectsWithNames(defender);
+      // console.log(`Applying resistances for damage kind ${damageKind} on defender ${defender.name}:`, defEffects);
       let resistanceName = `resist${damageKind.charAt(0).toUpperCase() + damageKind.slice(1)}`;
       // const resistance = defenderEffects.resistances?.[damageKind] ?? 1.0;
-      const resistance: number = (defEffects[resistanceName] as number) ?? 0.0;
+      const resistance: number = (defEffects[resistanceName]?.value as number) ?? 0.0;
 
       if (resistance !== 0) {
         const originalDamage = damage;
         if (resistance > 0) {
           damage = Math.floor(originalDamage * (1 - resistance));
-        } else if (resistance <= 0) {
+          // emit a resistant event
+          events.push({ type: "resist", subject: defender, target: defender, damageKind, originalDamage, finalDamage: damage, sources: defEffects[resistanceName].sources || [] } as Omit<GameEvent, "turn">);
+        } else if (resistance < 0) {
           // this is a vulnerability, so we increase damage by the percentage below zero?
-          damage = originalDamage + Math.floor(originalDamage * (1 - resistance));
+          // damage = originalDamage + Math.floor(originalDamage * (1 - resistance));
+          damage = Math.floor(originalDamage * (1 + Math.abs(resistance)))
+          // emit a vulnerable event
+          events.push({ type: "vulnerable", subject: defender, target: defender, damageKind, originalDamage, finalDamage: damage, sources: defEffects[resistanceName].sources || [] } as Omit<GameEvent, "turn">);
         }
         // this.note(`${Presenter.combatant(defender)} has ${resistance > 0 ? "resistance" : resistance < 0 ? "vulnerability" : "no resistance"} to ${damageKind}, modifying damage from ${originalDamage} to ${damage}.`);
         // console.warn(`${Presenter.minimalCombatant(defender)} has ${resistance > 0 ? "resistance" : resistance < 0 ? "vulnerability" : "no resistance"} to ${damageKind}, modifying damage from ${originalDamage} to ${damage}.`);
@@ -235,7 +243,8 @@ export class Commands {
       }
     }
 
-    let events: TimelessEvent[] = [{
+    // let events: TimelessEvent[] = [{
+    events.push({
       type: "hit",
       subject: attacker,
       target: defender,
@@ -244,7 +253,7 @@ export class Commands {
       critical,
       by,
       damageKind
-    } as Omit<HitEvent, "turn">];
+    } as Omit<HitEvent, "turn">);
 
     if (critical) {
       events.push({ type: "crit", subject: attacker, target: defender, damage, by, damageKind } as Omit<GameEvent, "turn">);

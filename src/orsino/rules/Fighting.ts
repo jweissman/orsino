@@ -119,10 +119,42 @@ export class Fighting {
         });
       }
     }
-    // delete resultingEffects.by;
-    // if (Object.keys(resultingEffects).length > 0) {
-    //   console.log("Gathered effect stack for", combatant.name, ":", resultingEffects);
-    // }
+    
+    return resultingEffects;
+  }
+
+  static gatherEffectsWithNames(combatant: Combatant): { [key: string]: { value: number | string | boolean | Array<any>, sources: string[] } } {
+    let resultingEffects: { [key: string]: { value: number | string | boolean | Array<any>, sources: string[] } } = {};
+    let effectList = [
+      ...(combatant.passiveEffects || []),
+      ...(combatant.activeEffects || [])
+    ];
+    for (let it of effectList) {
+      if (it.effect) {
+        Object.entries(it.effect).forEach(([key, value]) => {
+          if (key === 'by') {
+            return;
+          }
+
+          if (!(key in resultingEffects)) {
+            resultingEffects[key] = { value: 0, sources: [] };
+          }
+          
+          if (typeof value === "number" && typeof resultingEffects[key].value === "number") {
+            resultingEffects[key].value = (resultingEffects[key].value || 0) + value;
+            resultingEffects[key].sources.push(it.name || "unknown");
+          } else if (Array.isArray(value) && Array.isArray(resultingEffects[key].value)) {
+            resultingEffects[key].value = (resultingEffects[key].value || []).concat(value);
+            resultingEffects[key].sources.push(it.name || "unknown");
+          } else {
+            // console.warn(`Overriding effect ${key} with value ${value} (was ${resultingEffects[key]})`);
+            resultingEffects[key].value = value;
+            resultingEffects[key].sources = [it.name || "unknown"];
+          }
+        });
+      }
+    }
+    
     return resultingEffects;
   }
 

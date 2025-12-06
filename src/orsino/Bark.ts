@@ -2,14 +2,21 @@ import Deem from "../deem";
 import { GameEvent } from "./Events";
 
 export default class Bark {
+  static lastBark: string = "";
   static async lookup(event: Omit<GameEvent, "turn">): Promise<string> {
     let bark = await this.lookupPlayerBark(event)
             || await this.lookupNpcBark(event)
             || await this.lookupHumanoidBark(event);
+    if (bark === this.lastBark) {
+      // avoid repeating the same bark
+      bark = "";
+    }
+    if (bark !== "") {
+      this.lastBark = bark;
+    }
     return bark;
   }
 
-  static lastBark: string = "";
   static async lookupHumanoidBark(event: Omit<GameEvent, "turn">): Promise<string> {
     let bark = "";
     let onHookName = `on${event.type.charAt(0).toUpperCase()}${event.type.slice(1)}`;
@@ -32,6 +39,7 @@ export default class Bark {
         });
       }
     }
+
     return bark;
   }
 
@@ -45,7 +53,11 @@ export default class Bark {
       if (hasEntry) {
         let barks = await Deem.evaluate(`lookup(pcPersonalityBarks, '${event.subject.personality}')`);
         if (barks && barks[onHookName]) {
-          bark = barks[onHookName][Math.floor(Math.random() * barks[onHookName].length)];
+          let availableBarks = barks[onHookName];
+          if (availableBarks.length > 1 && this.lastBark) {
+            availableBarks = availableBarks.filter((b: string) => b !== this.lastBark);
+          }
+          bark = availableBarks[Math.floor(Math.random() * availableBarks.length)];
 
           // interpolate {keys} if present
           bark = bark.replace(/{(.*?)}/g, (_, key) => {
@@ -58,7 +70,13 @@ export default class Bark {
       if (hasEntry) {
         let barks = await Deem.evaluate(`lookup(pcPersonalityBarks, '${event.target.personality}')`);
         if (barks && barks[onHookTargetName]) {
-          bark = barks[onHookTargetName][Math.floor(Math.random() * barks[onHookTargetName].length)];
+          let availableBarks = barks[onHookTargetName];
+          if (availableBarks.length > 1 && this.lastBark) {
+            availableBarks = availableBarks.filter((b: string) => b !== this.lastBark);
+          }
+          bark = availableBarks[Math.floor(Math.random() * availableBarks.length)];
+
+          // bark = barks[onHookTargetName][Math.floor(Math.random() * barks[onHookTargetName].length)];
 
           // interpolate {keys} if present
           bark = bark.replace(/{(.*?)}/g, (_, key) => {
@@ -112,9 +130,9 @@ export default class Bark {
         }
       }
     }
-    if (npcBark) {
-      this.lastBark = npcBark;
-    }
+    // if (npcBark) {
+    //   this.lastBark = npcBark;
+    // }
     return npcBark;
   }
 

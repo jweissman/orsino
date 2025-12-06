@@ -94,11 +94,13 @@
 [ ] Hidden seems to be removed whenever the hiding creature _gets_ attacked (should be removed whenever the hiding creature itself _attacks_)
 [ ] Show current gold before purchasing potions (make sure we're handling gold transition between town hub/dungeon correctly)
 [ ] Lowest rank should be something besides 'untested' (maybe 'minion' is fine? Ideally it's just 'unranked' and no special display however!)
-[ ] Why is a wolf casting earthquake???
+[ ] Why is a wolf casting earthquake??? (presumably it was 'Giant' wolf but maybe just give a 'stomp' AoE ability?)
 [ ] Should say 'leave the dungeon' instead of 'move to next room' for last room
 [ ] There should be a shop to sell treasure (maybe also buy other kinds of consumables?)
 [ ] Why does paralyze have 'unknown' duration?? (from an enemy's paralyzing_touch)
 [ ] Magic missile that does 0 damage should be glossed as a miss I think?
+---
+[ ] Death priest has type 'undead' rather than dungeon race?
 
 
 ## Fixed

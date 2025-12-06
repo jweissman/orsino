@@ -88,4 +88,12 @@ describe('Deem', () => {
     expect(await Deem.evaluate('true ? "yes" : "no"')).toBe('yes');
     expect(await Deem.evaluate('false ? "yes" : "no"')).toBe('no');
   });
+
+  it("should interpolate simple expressions in strings", async () => {
+    expect(await Deem.evaluate('"The sum of 2 and 3 is #{2 + 3} and the product of 3 and 4 is #{3 * 4}"')).toBe('The sum of 2 and 3 is 5 and the product of 3 and 4 is 12');
+    expect(await Deem.evaluate('"The contextual value is #value"', { value: 42 })).toBe('The contextual value is 42');
+
+    // does NOT interpolate single-quoted strings
+    expect(await Deem.evaluate("'The sum of 2 and 3 is #{2 + 3} and the product of 3 and 4 is #{3 * 4}'")).toBe('The sum of 2 and 3 is #{2 + 3} and the product of 3 and 4 is #{3 * 4}');
+  });
 });

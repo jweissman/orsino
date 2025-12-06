@@ -67,4 +67,22 @@ export interface Combatant {
 
   hasMissileWeapon?: boolean;
   hasInterceptWeapon?: boolean;
+
+  equipment: {
+    ring1?: string;
+    ring2?: string;
+    amulet?: string;
+    cloak?: string;
+    boots?: string;
+    gloves?: string;
+    belt?: string;
+    helmet?: string;
+    wrist?: string;
+    ankle?: string;
+    orbital?: string;
+
+    // tracked separately for now
+    // weapon?: string;
+    // armor?: string;
+  }
 }

@@ -13,6 +13,15 @@ export default class Deem {
     if: (cond: any, trueVal: any, falseVal: any) => (cond ? trueVal : falseVal),
     oneOf: (...args: any[]) => args[Math.floor(Math.random() * args.length)],
     pick: (arr: any[]) => arr[Math.floor(Math.random() * arr.length)],
+    sample: (arr: any[], count: number) => {
+      const sampled: any[] = [];
+      const arrCopy = [...arr];
+      for (let i = 0; i < count && arrCopy.length > 0; i++) {
+        const index = Math.floor(Math.random() * arrCopy.length);
+        sampled.push(arrCopy.splice(index, 1)[0]);
+      }
+      return sampled;
+    },
     round: (num: number) => Math.round(num),
     floor: (num: number) => Math.floor(num),
     ceil: (num: number) => Math.ceil(num),
@@ -134,8 +143,36 @@ export default class Deem {
       }
       return this.sourceString;
     },
-    async strlit(_open, chars, _close) {
+    async strlit_single_quote(_open, chars, _close) {
       return chars.sourceString;
+    },
+    async strlit_double_quote(_open, chars, _close) {
+      // return chars.sourceString;
+      let raw = chars.sourceString;
+      let ctx = this.args.context;
+      // interpolate #{expressions}
+      let result = '';
+      let cursor = 0;
+      const regex = /#\{(.*?)\}/g;
+      let match;
+      while ((match = regex.exec(raw)) !== null) {
+        const before = raw.slice(cursor, match.index);
+        result += before;
+        const expr = match[1];
+        const exprValue = await Deem.evaluate(expr, ctx);
+        result += exprValue;
+        cursor = match.index + match[0].length;
+      }
+      result += raw.slice(cursor);
+      // interpolate #variables
+      result = result.replace(/#([a-zA-Z_][a-zA-Z0-9_]*)/g, (_, varName) => {
+        const value = ctx?.[varName] ?? Deem.magicVars[varName];
+        if (value === undefined) {
+          throw new Error(`Undefined variable in string interpolation: ${varName}`);
+        }
+        return value;
+      });
+      return result;
     },
     async dice_multi(count, _d, sides) {
       // if (isNaN(parseInt(count.sourceString)) || isNaN(parseInt(sides.sourceString))) {
@@ -207,8 +244,11 @@ export default class Deem {
 
       return name;
     },
-    strlit(_open, chars, _close) {
+    strlit_double_quote(_open, chars, _close) {
       return `"${chars.sourceString}"`;
+    },
+    strlit_single_quote(_open, chars, _close) {
+      return `'${chars.sourceString}'`;
     },
     dice_multi(count, _d, sides) { return `${count.sourceString}d${sides.sourceString}`; },
     dice_single(_d, sides) { return `d${sides.sourceString}`; }
@@ -218,6 +258,7 @@ export default class Deem {
     expression: string,
     context: Record<string, any> = {}
   ): Promise<any> {
+
     // if we have a leading =, then we can remove it
     if (expression.startsWith('=')) {
       expression = expression.slice(1);

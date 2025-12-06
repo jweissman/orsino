@@ -34,7 +34,6 @@ export default class Combat {
   public winner: string | null = null;
   public teams: Team[] = [];
   public abilityHandler = AbilityHandler.instance;
-  //new AbilityHandler();
   private combatantsByInitiative: { combatant: any; initiative: number }[] = [];
   private environmentName: string = "Unknown Location";
 
@@ -267,16 +266,31 @@ export default class Combat {
       })
     });
 
-    // if we have potions, add a quaff potion action
-    if (this.teams[0].healingPotions > 0) {
-      let combatantFx = Fighting.gatherEffects(combatant);
-      let consumableMultiplier = combatantFx.consumableMultiplier || 1;
-      choices.push({
-        value: { name: "Quaff", type: "potion", description: "Drink a healing potion to restore 2d4+2 HP.", aspect: "divine", target: ["self"], effects: [{ type: "heal", amount: `=round((2d4+2)*${consumableMultiplier})` }, { type: "removeItem", item: "healingPotions" }] },
-        name: "Quaff Potion (Heal 2d4+2 HP)",
-        short: "Quaff Potion",
-        disabled: false
-      });
+    // if we have inventory items that can be used in combat, add those as choices
+    let inventoryItems = this.teams[0].inventory || {};
+    for (let [itemKey, qty] of Object.entries(inventoryItems)) {
+      if (qty > 0) {
+        let itemAbility = await Deem.evaluate(`lookup(consumables, '${itemKey}')`);
+        let verb = "Use";
+        switch (itemAbility.type) {
+          case "potion":
+            verb = "Quaff";
+            break;
+          case "scroll":
+            verb = "Read";
+            break;
+          case "grenade":
+          case "flask":
+            verb = "Throw";
+            break;
+        }
+        choices.push({
+          value: { ...itemAbility, key: itemKey },
+          name: `${verb} ${itemAbility.name.padEnd(15)} (${itemAbility.description})`,
+          short: itemAbility.name,
+          disabled: (itemAbility.charges !== undefined && itemAbility.charges <= 0) || false
+        });
+      }
     }
 
     choices.push({
@@ -322,7 +336,15 @@ export default class Combat {
       })), combatant);
     } else if (action.target.includes("randomEnemies") && action.target.length === 2) {
       // pick random enemies
-      let count = await Deem.evaluate(action.target[1], { ...combatant }); // as any as number;
+      // if (action.target[1] is a number use that)
+      let count = 1;
+      if (typeof action.target[1] === "number") {
+        count = action.target[1];
+      } else if (typeof action.target[1] === "string") {
+        count = await Deem.evaluate(action.target[1], { ...combatant }); // as any as number;
+      } else {
+        throw new Error(`Invalid target count specification for randomEnemies: ${action.target[1]}`);
+      }
       console.log(`Selecting ${count} random enemy targets for ${action.name}...`);
       let possibleTargets = Combat.living(enemies);
       targetOrTargets = [];
@@ -342,6 +364,24 @@ export default class Combat {
 
     } else if (action.type === "spell") {
       combatant.spellSlotsUsed = (combatant.spellSlotsUsed || 0) + 1;
+    }
+
+    // let consumableTypes = ["potion", "scroll", "grenade", "flask"];
+    // console.log("Action type:", action.type);
+    if (action.type === "consumable") {
+      // would be nice to handle charges (find first one with charges available and reduce that)
+      if (action.charges !== undefined) {
+        // note we don't actually store a full item record so we need a secondary way to track charges
+      } else {
+        // reduce item count in inventory
+        let inventory = this.teams[0].inventory || {};
+        if (inventory[action.key] && inventory[action.key] > 0) {
+          inventory[action.key] -= 1;
+          this.teams[0].inventory = inventory;
+        }
+        this.note(`${Presenter.combatant(combatant)} uses ${action.name} (${inventory[action.key]} remaining).`);
+      }
+
     }
 
     let team = this.teams.find(t => t.combatants.includes(combatant));
@@ -614,7 +654,8 @@ export default class Combat {
           playerControlled: true, xp: 0, gp: 0,
           weapon: "Short Sword", damageKind: "slashing", abilities: ["melee"], traits: [],
           hasMissileWeapon: false
-        }], healingPotions: 3
+        }], //healingPotions: 3
+        inventory: {}
       },
       {
         name: "Enemy", combatants: [
@@ -628,7 +669,8 @@ export default class Combat {
             attackDie: "1d3",
             str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: [], hasMissileWeapon: false, xp: 0, gp: 0
           }
-        ], healingPotions: 0
+        ], 
+        inventory: {}
       }
     ];
   }

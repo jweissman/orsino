@@ -10,12 +10,15 @@ export class Table {
 
   gatherKeys(count: number): any[] {
     let allKeys = Object.keys(this.groups);
+    if (count <= 0) {
+      return allKeys;
+    }
+
     let keys: any[] = [];
     for (let i = 0; i < count; i++) {
       let key = allKeys[Math.floor(Math.random() * allKeys.length)];
       keys.push(key);
     }
-
     return keys;
   }
 

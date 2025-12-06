@@ -1,5 +1,6 @@
 // src/orsino/Template.ts
 import Deem from "../deem";
+import Generator from "./Generator";
 import { Table } from "./Table";
 import { GenerationTemplateType } from "./types/GenerationTemplateType";
 import deepCopy from "./util/deepCopy";
@@ -10,31 +11,44 @@ export class Template {
     public props: Record<string, any> = {}
   ) { }
 
-  static async bootstrapDeem(generator: any, context: Record<string, any> = {}) {
+  static async bootstrapDeem(context: Record<string, any> = {}) {
     Deem.stdlib = Deem.stdlib || {};
-    Deem.stdlib.eval = async (expr: string) => await Deem.evaluate(expr, {});
-    Deem.stdlib.lookup = (tableName: GenerationTemplateType, groupName: string) => generator.lookupInTable(tableName, groupName);
+    Deem.stdlib.eval = async (expr: string) => await Deem.evaluate(expr, context);
+    Deem.stdlib.lookup = (tableName: GenerationTemplateType, groupName: string) => Generator.lookupInTable(tableName, groupName);
     Deem.stdlib.hasEntry = (tableName: GenerationTemplateType, groupName: string) => {
       // console.log(`Checking hasEntry for table '${tableName}' and group '${groupName}'`);
-      const table = generator.generationSource(tableName);
+      const table = Generator.generationSource(tableName);
       if (!table || !(table instanceof Table)) {
         throw new Error(`Table not found: ${tableName}`);
         return false;
       }
       return table.hasGroup(groupName);
     };
-    Deem.stdlib.gather = (tableName: GenerationTemplateType, count: number) => generator.gatherKeysFromTable(tableName, count);
+    Deem.stdlib.gather = async (
+      tableName: GenerationTemplateType, count: number = -1, condition?: string
+    ) => await Generator.gatherKeysFromTable(tableName, count, condition);
     Deem.stdlib.gen = async (type: GenerationTemplateType) => {
-      return await generator.gen(type, { ...context })
+      return await Generator.gen(type, { ...context })
     };
     Deem.stdlib.genList = async (type: GenerationTemplateType, count: number = 1, condition?: string) => {
-      return await generator.genList(type, { ...context }, count, condition);
+      return await Generator.genList(type, { ...context }, count, condition);
     }
+
+      Deem.stdlib.mapGenList = async (type: GenerationTemplateType, items: any[], property: string) => {
+        let results = [];
+        for (let item of items) {
+          let genOptions = { ...context, [property]: item };
+          let genResult = await Generator.gen(type, genOptions);
+          results.push(genResult);
+        }
+        // process.stdout.write(`.`);
+        return results;
+      }
   }
 
   async assembleProperties(
     options: Record<string, any> = {},
-    generator: any
+    // _generator: any
   ): Promise<Record<string, any>> {
     const localContext = { ...options };
     let assembled: Record<string, any> = {};
@@ -46,35 +60,36 @@ export class Template {
         ...localContext,
         ...assembled
       };
-      Deem.stdlib.eval = async (expr: string) => await Deem.evaluate(expr, context);
-      Deem.stdlib.lookup = (tableName: GenerationTemplateType, groupName: string) => generator.lookupInTable(tableName, groupName);
-      Deem.stdlib.hasEntry = (tableName: GenerationTemplateType, groupName: string) => {
-        // console.log(`Checking hasEntry for table '${tableName}' and group '${groupName}'`);
-        const table = generator.generationSource(tableName);
-        if (!table || !(table instanceof Table)) {
-          throw new Error(`Table not found: ${tableName}`);
-          return false;
-        }
-        return table.hasGroup(groupName);
-      };
-      Deem.stdlib.gather = (tableName: GenerationTemplateType, count: number) => generator.gatherKeysFromTable(tableName, count);
-      Deem.stdlib.gen = async (type: GenerationTemplateType) => {
-        return await generator.gen(type, { ...context })
-      };
-      Deem.stdlib.genList = async (type: GenerationTemplateType, count: number = 1, condition?: string) => {
-        return await generator.genList(type, { ...context }, count, condition);
-      }
+      await Template.bootstrapDeem(context);
+      // Deem.stdlib.eval = async (expr: string) => await Deem.evaluate(expr, context);
+      // Deem.stdlib.lookup = (tableName: GenerationTemplateType, groupName: string) => generator.lookupInTable(tableName, groupName);
+      // Deem.stdlib.hasEntry = (tableName: GenerationTemplateType, groupName: string) => {
+      //   // console.log(`Checking hasEntry for table '${tableName}' and group '${groupName}'`);
+      //   const table = generator.generationSource(tableName);
+      //   if (!table || !(table instanceof Table)) {
+      //     throw new Error(`Table not found: ${tableName}`);
+      //     return false;
+      //   }
+      //   return table.hasGroup(groupName);
+      // };
+      // Deem.stdlib.gather = (tableName: GenerationTemplateType, count: number) => generator.gatherKeysFromTable(tableName, count);
+      // Deem.stdlib.gen = async (type: GenerationTemplateType) => {
+      //   return await generator.gen(type, { ...context })
+      // };
+      // Deem.stdlib.genList = async (type: GenerationTemplateType, count: number = 1, condition?: string) => {
+      //   return await generator.genList(type, { ...context }, count, condition);
+      // }
 
-      Deem.stdlib.mapGenList = async (type: GenerationTemplateType, items: any[], property: string) => {
-        let results = [];
-        for (let item of items) {
-          let genOptions = { ...context, [property]: item };
-          let genResult = await generator.gen(type, genOptions);
-          results.push(genResult);
-        }
-        // process.stdout.write(`.`);
-        return results;
-      }
+      // Deem.stdlib.mapGenList = async (type: GenerationTemplateType, items: any[], property: string) => {
+      //   let results = [];
+      //   for (let item of items) {
+      //     let genOptions = { ...context, [property]: item };
+      //     let genResult = await generator.gen(type, genOptions);
+      //     results.push(genResult);
+      //   }
+      //   // process.stdout.write(`.`);
+      //   return results;
+      // }
 
       let resolved = localContext[key] !== undefined ? localContext[key] :
           (await Template.evaluatePropertyExpression(value, context));

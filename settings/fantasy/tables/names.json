@@ -552,14 +552,12 @@
         "Kandra",
         "Lavender",
         "Laura",
-        "Luna",
         "Lirael",
         "Lysandra",
         "Liora",
         "Lirael",
         "Lysandra",
         "Lyra",
-        "Luna",
         "Lorelei",
         "Lily",
         "Lilith",
@@ -1438,7 +1436,6 @@
         "Storm",
         "Thor",
         "Wolfgang",
-        "Zephyr",
         "Zorro"
       ],
       "bear": [
@@ -1798,8 +1795,7 @@
         "Rocky",
         "Slink",
         "Slinky",
-        "Whiskers",
-        "Zippy"
+        "Whiskers"
       ],
       "pony": [
         "Bilbo",
@@ -1855,11 +1851,17 @@
         "Blackie"
       ],
       "butterfly": [
+        "Azure",
+        "Blossom",
+        "Carnadine",
+        "Dorothy",
+        "Eblis",
         "Flutter",
-        "Wings",
+        "Gaspard",
+        "Honey",
+        "Iris",
         "Monarch",
-        "Papillon",
-        "Dewdrop"
+        "Papillon"
       ],
       "dragonfly": [
         "Dart",
@@ -1869,19 +1871,24 @@
         "Dewdrop"
       ],
       "hummingbird": [
-        "Hum",
+        "Airwing",
         "Buzz",
-        "Wings",
+        "Chirp",
+        "Destry",
+        "Evangel",
         "Flit",
-        "Dewdrop"
+        "Hum",
+        "Iridesce",
+        "Jewel",
+        "Nectar",
+        "Zippy"
       ],
       "moth": [
         "Flutter",
         "Wings",
         "Nocturne",
         "Luna",
-        "Silk",
-        "Dewdrop"
+        "Silk"
       ]
     }
   }
