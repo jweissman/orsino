@@ -55,14 +55,15 @@ export default class Combat {
   protected async emit(event: Omit<GameEvent, "turn">, prefix = ""): Promise<void> {
     let e: CombatEvent = { ...event, turn: this.turnNumber } as CombatEvent;
     this.journal.push(e);
+    
+    if (Events.present(e) !== "") {
+      this.note(prefix + Events.present(e));
+    }
+
     let bark = await Bark.lookup(event);
     if (bark) {
       bark = bark.charAt(0).toUpperCase() + bark.slice(1);
       this.note(prefix + Stylist.italic(bark));
-    }
-
-    if (Events.present(e) !== "") {
-      this.note(prefix + Events.present(e));
     }
   }
 

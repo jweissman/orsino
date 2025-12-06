@@ -623,10 +623,12 @@
       }
     ]
   },
+
   "curse": {
     "name": "Curse",
-    "type": "skill",
-    "aspect": "dark",
+    "type": "spell",
+    "aspect": "divine",
+    "alignment": "evil",
     "description": "Curse an enemy, reducing all stats by 1.",
     "target": [
       "enemy"
@@ -651,6 +653,37 @@
       }
     ]
   },
+
+  "mass_curse": {
+    "name": "Mass Curse",
+    "type": "spell",
+    "aspect": "divine",
+    "alignment": "evil",
+    "description": "Curse all enemies, reducing all their stats by 1.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "saveType": "will",
+        "saveDC": 15,
+        "status": {
+          "name": "Cursed",
+          "duration": 4,
+          "effect": {
+            "str": -1,
+            "dex": -1,
+            "int": -1,
+            "wis": -1,
+            "cha": -1,
+            "con": -1
+          }
+        }
+      }
+    ]
+  },
+
   "maul": {
     "name": "Maul",
     "type": "skill",
@@ -693,9 +726,7 @@
     "type": "skill",
     "aspect": "stealth",
     "description": "Attempt to hide from enemies.",
-    "target": [
-      "self"
-    ],
+    "target": [ "self" ],
     "effects": [
       {
         "type": "buff",
@@ -1128,6 +1159,7 @@
     "name": "Resurrection",
     "type": "spell",
     "aspect": "divine",
+    "level": 5,
     "description": "Restore a fallen ally to life with full health.",
     "target": ["deadAlly"],
     "effects": [

@@ -75,21 +75,31 @@
 [ ] "Heal 1 every successful hit" is too powerful ('vitalist' trait shared by all elves -- and note elves already get multiple very powerful passives?)
 [ ] Dungeons with multiple floors (levels in principle seem relatively straightforward but we'd need to adapt dungeoneer to handle them...)
 ---
-[ ] Roundhouse too strong (nerfed a lot now but still)
 ---
 [ ] Show detailed breakdown of dungeons/rooms/actual vs effect CR (maybe separate spec for module runner?)
 [ ] Wildnerness: Collect herbs, hear birdcalls...
 ---
 [ ] Track playerAligned as _well_ as playerControlled (sort of captured by being on the team of the player but this isn't passed along with combatant in all cases... -- we can always check for allegiance effects but a little subtle i guess?)
 ---
-[ ] Spawn appropriate gear for PCs (spellbooks for mages, holy symbols for clerics, lockpicking tool for thieves -- think this is roughly done but could be improved)
 [ ] Would be nice to let _all_ PCs attempt to interact/examine/search
 [ ] Maybe charm is dispelled if the charmer dies??
 ---
 [ ] Disable summon abilities if you already have 6 allied creatures (alive or dead...)
 [ ] Would be nice to have more narrow utilty-cleric abilities (neutralize poison, remove paralysis, ultimately a high-level 'heal' which fixes status effects AND brings health back...)
 [ ] Was seeing 0-damage attacks on elite units (maybe something to do with DR but a 0-damage attack is a miss, although we could gloss as 'graze' or something?)
-[ ] Should permit player to _leave_ the dungeon (currently they _can_ but have to flee? Also maybe we've disabled flee for them to focus autoplay)
+[ ] Should permit player to _leave_ the dungeon (they _can_ but would have to flee and even that's disabled now, maybe to focus autoplay -- but anyway seems to be entirely disabled in fact rn)
+---
+[ ] Dirty trick should not give a save vs magic? (maybe vs will or even specifically vs blinding?)
+[ ] Should not rez with 0 HP
+[ ] Hidden seems to be removed whenever the hiding creature _gets_ attacked (should be removed whenever the hiding creature itself _attacks_)
+[ ] Show current gold before purchasing potions (make sure we're handling gold transition between town hub/dungeon correctly)
+[ ] Lowest rank should be something besides 'untested' (maybe 'minion' is fine? Ideally it's just 'unranked' and no special display however!)
+[ ] Why is a wolf casting earthquake???
+[ ] Should say 'leave the dungeon' instead of 'move to next room' for last room
+[ ] There should be a shop to sell treasure (maybe also buy other kinds of consumables?)
+[ ] Why does paralyze have 'unknown' duration?? (from an enemy's paralyzing_touch)
+[ ] Magic missile that does 0 damage should be glossed as a miss I think?
+
 
 ## Fixed
 [x] Temple/shrine to local deity to get a blessing
@@ -140,6 +150,8 @@
 [x] Humanize room names on describe room (this ought to be done?)
 [x] Creatures could escape _before_ the round starts (so they don't display in party listing)
 [x] Enemy saves should at least be presented clearly (okay for this to be '...but nothing happened' but ideal to say 'x made their save!' or similar -- should display 'resisted effect' now...)
+[x] Roundhouse too strong (nerfed a lot now but still) -- very nerfed now, but whirlwind is very strong too (not completely sure how to adjust since it's "just" an AoE attack with your primary weapon)
+[x] Spawn appropriate gear for PCs (spellbooks for mages, holy symbols for clerics, lockpicking tool for thieves -- think this is roughly done but could be improved)
 
 ## Not really issues
 "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]

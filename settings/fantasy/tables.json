@@ -157,6 +157,7 @@
       }
     }
   },
+
   "traits": {
     "discriminator": "race",
     "groups": {
@@ -201,30 +202,22 @@
     "discriminator": "class",
     "groups": {
       "warrior": [
-        "pole_arm",
-        "spear"
+        "pole_arm", "spear", "longsword", "battleaxe", "light_warhammer"
       ],
       "mage": [
-        "staff",
-        "dagger"
+        "staff", "dagger"
       ],
       "thief": [
-        "dagger",
-        "dart"
+        "dagger", "dart", "shortsword"
       ],
       "cleric": [
-        "light_mace",
-        "light_warhammer"
+        "light_mace", "light_warhammer", "spear", "staff"
       ],
       "bard": [
-        "dagger",
-        "staff",
-        "shortsword"
+        "dagger", "staff", "shortsword", "light_mace"
       ],
       "ranger": [
-        "longsword",
-        "spear",
-        "javelin"
+        "longsword", "spear", "javelin", "bow"
       ]
     }
   },
@@ -266,7 +259,7 @@
     "groups": {
       "warrior": [[ "prepare_charge", "charge", "set_spear", "second_wind", "whirlwind", "roundhouse", "taunt" ]],
       "mage": [[]],
-      "cleric": [[ "protection_from_evil", "smite", "shield", "cure", "bless", "turn_undead", "command", "hold_person", "resurrect", "dispel_magic" ] ],
+      "cleric": [[ "protection_from_evil", "smite", "shield", "cure", "bless", "turn_undead", "command", "hold_person", "raise_dead", "dispel_magic" ]],
       "ranger": [ [ "heal", "summon_animal", "set_spear", "hunters_mark" ] ],
       "thief": [ [ "poison_weapon", "hide", "backstab", "dirty_trick" ] ],
       "bard": [[ "cure", "inspire", "charm" ]]
@@ -321,7 +314,7 @@
   "npcTypesForDungeon": {
     "discriminator": "dungeonType",
     "groups": {
-      "temple": [ "Acolyte", "Cleric", "Cultist", "Sage", "Elder", "Guardian", "Elder", "Death Priest"  ],
+      "temple": [ "Acolyte", "Adept", "Cleric", "Cultist", "Sage", "Elder", "Guardian", "Elder", "Death Priest"  ],
       "mine": [ "Miner", "Dweller", "Brute", "Thug", "Lurker" ],
       "fortress": [ "Soldier", "Mercenary", "Warrior", "Chieftain" ],
       "tomb": [ "Novice", "Acolyte", "Gravedigger", "Cultist", "Bandit", "Tombrobber" ],
@@ -527,10 +520,13 @@
       "Novice":       { "str": -1, "con": 0, "dex": -2, "int": 1, "wis": 1, "cha": -1, "abilities": ["rapid_strike", "paralyzing_touch"] },
       "Acolyte":      { "str": 0,  "con": 1, "wis": 2, "int": 1, "abilities": [ "heal", "rally", "bless", "paralyzing_touch" ], "traits": ["piety"] },
       "Cultist":      { "str": 1,  "con": 2, "int": 2, "abilities": [ "heal", "curse", "fear", "paralyzing_touch", "silence", "animate_dead" ], "traits": ["piety", "radiant"] },
+      "Adept":       { "str": 1,  "con": 2, "wis": 3, "int": 2, "abilities": [ "heal", "rally", "bless", "shocking_grasp", "paralyzing_touch" ], "traits": ["piety"] },
       "Gravedigger":  { "str": 0,  "con": 2, "dex": 2, "abilities": [ "rapid_strike", "hide", "dig_in" ] },
       "Bandit":       { "str": 2,  "con": 3, "dex": 2, "abilities": [ "prepare_charge", "charge", "hide", "backstab", "rapid_strike" ], "traits": ["stealthy"] },
       "Tombrobber":   { "str": 2,  "con": 3, "dex": 1, "int": -1, "wis": -1, "cha": 2, "abilities": ["rapid_strike", "hide"] },
-      "Necromancer":  { "str": 3,  "con": 4, "dex": 2, "int": 8, "abilities": [ "life_drain", "curse", "fear", "poison_cloud", "summon_undead", "raise_dead", "animate_dead" ], "traits": ["favored", "formidable", "fiendish"] },
+      "Necromancer":  { "str": 3,  "con": 4, "dex": 2, "int": 8, "abilities": [ "life_drain", "curse", "fear", "poison_cloud", "summon_undead", "raise_dead", "animate_dead" ], "traits": ["fiendish"] },
+      "Cult Master": { "str": 4,  "con": 5, "dex": 2, "int": 6, "wis": 4, "cha": 4, "abilities": [ "life_drain", "curse", "fear", "poison_cloud", "mass_curse" ], "traits": ["fiendish"] },
+      "Death Priest": { "str": 6, "con": 4, "int": 4, "dex": 2, "wis": 6, "abilities": [ "heal", "curse", "fear", "life_drain", "burning_hands" ], "traits": ["fiendish", "piety"] },
 
       "Herald":       { "str": -1, "dex": -1, "int": 1, "wis": -1, "cha": 2, "abilities": ["inspire"] },
       "Benefactor":   { "str": -1, "dex": -1, "int": 2, "wis": -1, "cha": 2, "abilities": ["cure"] },
@@ -582,7 +578,6 @@
       "Shaman King":  { "str": 4, "con": 4, "int": 6, "dex": 2, "wis": 6, "abilities": [ "heal", "curse", "fear" ] },
       "Hierophant":   { "int": 6, "con": 4, "dex": 2, "str": 2, "abilities": [ "prepare_charge", "charge", "sleep", "curse", "fear", "life_drain", "poison_cloud" ] },
       "General":      { "str": 6, "con": 4, "int": 2, "dex": 2, "abilities": [ "enrage", "prepare_charge", "charge", "inspire", "second_wind" ] },
-      "Death Priest": { "str": 6, "con": 4, "int": 4, "dex": 2, "wis": 6, "abilities": [ "heal", "curse", "fear", "life_drain", "burning_hands" ] },
       "Warlord":      { "str": 7, "con": 6, "int": 5, "wis": 4, "dex": 3, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ] },
       "Chosen One":   { "str": 5, "con": 5, "int": 5, "dex": 5, "wis": 5, "abilities": [ "enrage", "heal", "inspire", "curse", "fear", "inspire", "charm", "prepare_charge", "charge" ] },
       "Destroyer":    { "str": 8, "con": 6, "int": 2, "dex": 2, "abilities": [ "fear", "maul", "curse", "enrage", "prepare_charge", "charge" ] },
@@ -792,7 +787,8 @@
         "hall",
         "corridor",
         "reliquary",
-        "phylactery"
+        "phylactery",
+        "ritual_chamber"
       ]],
       "mine": [
         [
@@ -817,12 +813,35 @@
         "_companionCount": 0,
         "_treasureItems": ["soul gem", "ring of protection", "staff of power", "cloak of invisibility"],
         "bonusGold": "500 + 20d100"
-    }}
+      },
+      "ritual_chamber": {
+        "monster_type": "Cult Master",
+        "_monsterLevelDistribution": ["=#_targetCr"],
+        "_npcCount": 2,
+        "npc_type": "Acolyte",
+        "challenging": true,
+        "_companionCount": 0,
+        "_treasureItems": ["amulet of health", "wand of magic missiles", "robe of the archmagi"],
+        "bonusGold": "300 + 15d100"
+      },
+      "dark_altar": {
+        "monster_type": "Death Priest",
+        "_monsterLevelDistribution": ["=#_targetCr"],
+        "_npcCount": 2,
+        "npc_type": "Adept",
+        "challenging": true,
+        "_companionCount": 0,
+        "_treasureItems": ["unholy symbol", "ring of regeneration", "staff of the necromancer"],
+        "bonusGold": "400 + 20d100"
+      }
+    }
   },
   "specialRoomAuras": {
     "discriminator": "aura_type",
     "groups": {
-      "phylactery": ["miasma"]
+      "phylactery": ["miasma"],
+      "ritual_chamber": ["cold"],
+      "dark_altar": ["evil"]
     }
   },
   "roomAuras": {
@@ -842,6 +861,16 @@
         "name": "Decay",
         "description": "An oppressive aura saps the vitality of all living beings in the room",
         "effect": { "bonusDamage": -1, "toHit": -1, "initiative": -1 }
+      },
+      "cold": {
+        "name": "Chill",
+        "description": "A biting cold permeates the area, chilling you to the bone",
+        "effect": { "toHit": -2 }
+      },
+      "evil": {
+        "name": "Malevolence",
+        "description": "A dark energy fills this room, unsettling all who enter",
+        "effect": { "bonusDamage": 2 }
       }
     }
   },
@@ -850,6 +879,12 @@
     "groups": {
       "phylactery": [
         "dark phylactery chamber, the air thick with malevolent energy. The walls are adorned with ancient runes, and a sinister energy emanates from the center."
+      ],
+      "ritual_chamber": [
+        "ritual chamber, the air smoky with the scent of incense and burning candles. Carvings of dark symbols adorn the walls, and a powerful energy pulses."
+      ],
+      "dark_altar": [
+        "twisted altar room, the air heavy with an oppressive energy. The walls are adorned with sinister engravings of cruel rituals. An irredeemable malevolence pulsates from within."
       ],
       "crypt": [
         "cold crypt, the air heavy with the scent of decay. The walls are lined with ancient sarcophagi, and you can hear the faint sound of dripping water."
@@ -1424,328 +1459,6 @@
       "dragonfly": -4,
       "hummingbird": -4,
       "moth": -4
-    }
-  },
-  "companionName": {
-    "discriminator": "animal_type",
-    "groups": {
-      "wolf": [
-        "Akela", "Alphonse", "Akira", "Artemis", "Blaze", "Blizzard", "Bolt", "Bran",
-        "Cairo", "Cerberus", "Balto", "Fang", "Fenrir", "Freki", "Geri", "Ghost", "Hati",
-        "Luna", "Shadow", "Skoll", "Storm", "Thor", "Wolfgang", "Zephyr", "Zorro"
-      ],
-      "bear": [
-        "Arsen", "Armand", "Baloo", "Bruno", "Cetus", "Clant", "Doran", "Eddy", "Gruzz", "Grizzly",
-        "Kodiak", "King", "Lurch", "Maximus", "Paddington", "Smokey", "Teddy", "Ursus", "Winnie",
-        "Yogi", "Zeke"
-      ],
-      "eagle": [
-        "Aquila", "Abelard", "Anton", "Brazen", "Baron", "Brutus",
-        "Cyrus", "Dominic", "Gryphon", "Horus", "Silmarien", "Soren",
-        "Talos"
-      ],
-      "lion": [
-        "Aslan",
-        "Leo",
-        "Mufasa",
-        "Nala",
-        "Simba"
-      ],
-      "tiger": [
-        "Abalone", "Bagheera", "Caspian", "Diego", "Rajah", "Saber",
-        "Shere Khan", "Stripes", "Tigris", "Tora", "Zara"
-      ],
-      "panther": [
-        "Azure", "Blackie", "Cinder", "Ebony", "Luna", "Midnight",
-        "Nyx", "Onyx", "Shadow"
-      ],
-      "rat": [
-        "Alvin", "Basil", "Chester", "Gus", "Nibbles", "Ratsy", "Ratticus", "Rattus",
-        "Ratty", "Remington", "Remy", "Rizzo", "Rocky", "Scabbers", "Scurry", "Splinter",
-        "Squeak", "Squeakers", "Squeaky", "Stuart", "Templeton", "Verm", "Whiskers"
-      ],
-      "cat": [
-        "Whiskers",
-        "Mittens",
-        "Salem",
-        "Garfield",
-        "Felix"
-      ],
-      "snake": [
-        "Nagini",
-        "Kaa",
-        "Seraphina",
-        "Viper",
-        "Slytherin"
-      ],
-      "spider": [
-        "Aragog",
-        "Shelob",
-        "Anansi",
-        "Arachne",
-        "Webster",
-        "Spinner",
-        "Silk",
-        "Venom",
-        "Charlotte",
-        "Spindly",
-        "Eightlegs",
-        "Creepy",
-        "Crawly",
-        "Eightlegs",
-        "Webber",
-        "Spidey",
-        "Eyes",
-        "Fonsy",
-        "Skitter",
-        "Spindle",
-        "Spinneret",
-        "Longlegs",
-        "Teensy",
-        "Orbweaver",
-        "Recluse",
-        "Widow",
-        "Gardener"
-      ],
-      "wyrm": [
-        "Drake",
-        "Wyvern",
-        "Serpent",
-        "Hydra",
-        "Naga"
-      ],
-      "pseudodragon": [
-        "Puff",
-        "Saphira",
-        "Smaug",
-        "Glaurung",
-        "Fafnir"
-      ],
-      "bat": [
-        "Vlad",
-        "Nosferatu",
-        "Drack",
-        "Sanguine",
-        "Von"
-      ],
-      "boar": [
-        "Tusker",
-        "Gore",
-        "Snout",
-        "Bristle",
-        "Porker"
-      ],
-      "falcon": [
-        "Sky",
-        "Hawk",
-        "Raven",
-        "Falco",
-        "Sparrow"
-      ],
-      "hound": [
-        "Rover",
-        "Fido",
-        "Spot",
-        "Buddy",
-        "Max",
-        "Rex",
-        "Lassie"
-      ],
-      "deer": [
-        "Bambi"
-      ],
-      "owl": [
-        "Hedwig",
-        "Archimedes",
-        "Athena",
-        "Owlbert",
-        "Nocturne"
-      ],
-      "fox": [
-        "Alfon", "Axel",
-        "Brighttail", "Burrow",
-        "Carrot", "Clever", "Cooky", "Conner",
-        "Diego", "Dash", "Deerfoot",
-        "Echo", "Edgar",
-        "Fennec", "Foxy", "Funny",
-        "Ginger", "Greyfur",
-        "Hicks",
-        "Jasper",
-        "Kitsune",
-        "Loki", "Luster",
-        "Mango", "Marigold", "Marble",
-        "Nico", "Nocita",
-        "Ollie", "Oliver",
-        "Pip", "Parchment",
-        "Quickfoot",
-        "Reed",
-        "Reynard",
-        "Rusty",
-        "Salem",
-        "Sly",
-        "Titus",
-        "Ulam",
-        "Vixen",
-        "Zed"
-      ],
-      "hawk": [
-        "Hawkeye",
-        "Falcon",
-        "Sky",
-        "Aquila",
-        "Talons"
-      ],
-      "badger": [
-        "Badges",
-        "Bramble",
-        "Bracken",
-        "Bumble",
-        "Burrow"
-      ],
-      "ram": [
-        "Bighorn",
-        "Bunctious",
-        "Goliath",
-        "Horns",
-        "Rambler",
-        "Rammer",
-        "Tornado",
-        "Wooly"
-      ],
-      "mole": [
-        "Abram",
-        "Bore",
-        "Burrower",
-        "Chester",
-        "Digby",
-        "Digger",
-        "Diggs",
-        "Echofinder",
-        "Felt",
-        "Geyser",
-        "Moley",
-        "Tunnel",
-        "Underfoot"
-      ],
-      "raven": [
-        "Blackwing",
-        "Caw",
-        "Corvus",
-        "Edgar",
-        "Feather",
-        "Nevermore",
-        "Poe",
-        "Ravenclaw",
-        "Shadowgale",
-        "Storm",
-        "Warlock"
-      ],
-      "rabbit": [
-        "Bun",
-        "Cottontail",
-        "Daisy",
-        "Easter",
-        "Flopsy",
-        "Hopper",
-        "Thumper",
-        "Nibbles",
-        "Peter",
-        "Snowball"
-      ],
-      "ferret": [
-        "Ace",
-        "Bandito",
-        "Bandit",
-        "Fuzzy",
-        "Nibbler",
-        "Rocky",
-        "Slink",
-        "Slinky",
-        "Whiskers",
-        "Zippy"
-      ],
-      "pony": [
-        "Bilbo",
-        "Samwise",
-        "Merry",
-        "Frodo",
-        "Gandalf",
-        "Pippin",
-        "Shadowfax",
-        "Rohan",
-        "Epona"
-      ],
-      "goat": [
-        "Alpine",
-        "Billy",
-        "Bleat",
-        "Carkey",
-        "Dreamer",
-        "Goliath",
-        "Horns",
-        "Nanny",
-        "Tucker",
-        "Willy"
-      ],
-      "squirrel": [
-        "Nutty",
-        "Acorn",
-        "Chipper",
-        "Whiskers",
-        "Scrat",
-        "Chippy",
-        "Dale"
-      ],
-      "hedgehog": [
-        "Spike",
-        "Prickles",
-        "Quill",
-        "Hedgy",
-        "Sonic"
-      ],
-      "stoat": [
-        "Stoatie",
-        "Weasel",
-        "Furball",
-        "Sneaky",
-        "Slink"
-      ],
-      "crow": [
-        "Caw",
-        "Raven",
-        "Corvus",
-        "Feather",
-        "Blackie"
-      ],
-      "butterfly": [
-        "Flutter",
-        "Wings",
-        "Monarch",
-        "Papillon",
-        "Dewdrop"
-      ],
-      "dragonfly": [
-        "Dart",
-        "Glide",
-        "Wings",
-        "Skimmer",
-        "Dewdrop"
-      ],
-      "hummingbird": [
-        "Hum",
-        "Buzz",
-        "Wings",
-        "Flit",
-        "Dewdrop"
-      ],
-      "moth": [
-        "Flutter",
-        "Wings",
-        "Nocturne",
-        "Luna",
-        "Silk",
-        "Dewdrop"
-      ]
     }
   },
 
