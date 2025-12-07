@@ -1,9 +1,5 @@
 # Notes from Playtesting
 
----
-[ ] Load all PCs on party select so we can show their race/class (no longer even letting you load PCs from file but we're still persisting them every room...)
----
----
 [ ] Rest could reset status effects? (would be nice to do this _before_ persisting PCs?)
 [ ] Healing potion could cure poison status too? [maybe better to have a dedicated consumable for it though]
 [ ] Poisoned blade still has weird expiration message actually? ("X is no longer poisoned blade"; a bit awkward to fix since a standard message would be ideal here)
@@ -35,7 +31,6 @@
 [ ] Should you roll your own poison damage? Feels strange -- maybe should just be automatic?
 [ ] Poison damage should indicate who _inflicted_ it (this is sort of tracked but not surfaced...)
 ---
-[ ] Unconscious allies maybe shouldn't get XP?
 [ ] Should reset abilities used on long rest? (why isn't this happening)
 [ ] It would be nice to able to explore more freely (move back to previous rooms?)
 [ ] Show party status before asking to rest
@@ -83,14 +78,15 @@
 [ ] Magic missile that does 0 damage should be glossed as a miss I think?
 ---
 [ ] Effects from shrine not getting applied to characters? (maybe getting erased at Combat#setUp if configured as activeEffect but also I don't think I was even seeing it immediately on the character rec at all?)
-[ ] Heal ally is selecting dead PCs as valid targets (should only be standing _and_ wounded PCs)
 [ ] Resting somehow advances us into the next room? (thought this was wandering monster but definitely a new room)
 [ ] Special effect type for 'cast' (ie to make scrolls simpler to implement/less duplicative)
 [ ] Somehow a lich took damage 5 separate times from being a marked target??? (on a normal melee attack)
 ---
-[ ] Wand charges
 [ ] Summon creature should display a _little_ more information about the summon than the forename (type/class at least)
 [ ] Armorer should only let you give weapons for humanoids to wield
+[ ] Weapon proficiencies should matter for equipping PCs (ie not letting mage have huge battleaxes)
+---
+[ ] Template overlay for dungeon types (could express '30% undead' outside of deem template...)
 
 ## Fixed
 [x] Temple/shrine to local deity to get a blessing
@@ -162,6 +158,10 @@
 [x] A spell that causes stun could be interesting (flesh-to-stone would be neat too?) -- i think shocking grasp has a chance to do this
 [x] Gold flow is a mess, 40k after _losing_ to the first dungeon??? (think this was about outsized rewards for special rooms)
 [x] "Heal 1 every successful hit" is too powerful ('vitalist' trait shared by all elves -- and note elves already get multiple very powerful passives?) -- no longer applied at start, have to level into it
+[x] Heal ally is selecting dead PCs as valid targets (should only be standing _and_ wounded PCs) -- maybe resolved with fixes to targeting
+[x] Wand charges -- think these are working roughly
+[x] Unconscious allies maybe shouldn't get XP? -- tried to do this but not sure it's actually what we want somehow
 
-## Not really issues
-"Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]
+## Not really issues atm
+- "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]
+- Load all PCs on party select so we can show their race/class (no longer even letting you load PCs from file but we're still persisting them every room...) (we don't even persist PC records anymore)

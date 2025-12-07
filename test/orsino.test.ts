@@ -141,8 +141,8 @@ describe('Orsino', () => {
 
     console.log("\n--- Party Presentation ---\n")
     let teams: Team[] = [
-      { name: "Heroes", combatants: [pc as Combatant, npc as Combatant], inventory: {} },
-      { name: "Foes", combatants: [animal as Combatant, monster as Combatant], inventory: {} }
+      { name: "Heroes", combatants: [pc as Combatant, npc as Combatant], inventory: [] },
+      { name: "Foes", combatants: [animal as Combatant, monster as Combatant], inventory: [] }
     ];
     console.log(Presenter.parties(teams));
 

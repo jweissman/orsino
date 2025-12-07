@@ -253,14 +253,14 @@
   "npcRank": {
     "discriminator": "rank",
     "groups": {
-      "untested":  { "maxHp": 0,   "ac": 3 },
-      "rookie":    { "maxHp": 1,   "ac": 2 },
-      "seargeant": { "maxHp": 2,   "ac": 1 },
-      "captain":   { "maxHp": 3,   "ac": 0 },
-      "veteran":   { "maxHp": 5,   "ac": 0 },
-      "champion":  { "maxHp": 8,   "ac": -1 },
-      "elite":     { "maxHp": 13,  "ac": -2, "traits": ["formidable"] },
-      "legendary": { "maxHp": 21,  "ac": -3, "traits": ["formidable", "favored"] }
+      "untested":  { "maxHp": 2,   "ac": 3 },
+      "rookie":    { "maxHp": 3,   "ac": 2 },
+      "seargeant": { "maxHp": 5,   "ac": 1 },
+      "captain":   { "maxHp": 8,   "ac": 0 },
+      "veteran":   { "maxHp": 13,  "ac": 0 },
+      "champion":  { "maxHp": 21,  "ac": -1 },
+      "elite":     { "maxHp": 34,  "ac": -2, "traits": ["formidable"] },
+      "legendary": { "maxHp": 55,  "ac": -3, "traits": ["formidable", "favored"] }
     }
   },
   "npcType": {
@@ -1548,28 +1548,28 @@
       "curious":    { "int": 4, "wis": 3, "cha": 2 },
       "forgotten":  { "int": 1, "wis": 1, "con": -1, "abilities": [ "hide" ] },
       "cruel":      { "str": 2, "int": -1, "cha": -2, "abilities": [ "enrage" ] },
-      "beloved":    { "cha": 3, "wis": 2, "abilities": [ "inspire" ] },
-      "dread":      { "cha": 3, "abilities": [ "fear" ] },
+      "beloved":    { "cha": 3, "wis": 2, "abilities": [ "inspire", "charm" ] },
+      "dread":      { "cha": 3, "abilities": [ "maul", "enrage" ] },
       "terrifying": { "cha": 3, "abilities": [ "fear" ] },
       "mysterious": { "int": 2, "wis": 2, "abilities": [ "blur", "hide" ] },
       "savage":     { "str": 3, "int": -1, "abilities": [ "prepare_charge", "charge" ] },
 
       "alpha":      { "str": 2, "dex": 1, "con": 1, "int": 1 },
       "venomous":   { "abilities": [ "poison_bite" ] },
-      "sacred":     { "wis": 3, "cha": 2, "abilities": [ "bless", "heal" ] },
-      "cursed":     { "wis": 3, "int": 2, "abilities": [ "curse", "fear" ] },
-      "blessed":    { "cha": 2, "abilities": [ "bless", "inspire", "heal", "shield" ] },
+      "sacred":     { "wis": 3, "cha": 2, "abilities": [ "inspire" ] },
+      "cursed":     { "wis": 3, "int": 2, "abilities": [ "fear" ] },
+      "blessed":    { "cha": 2, "abilities": [ "inspire" ] },
       "noble":      { "str": 2, "cha": 3, "abilities": [ "inspire", "charm" ] },
       "majestic":   { "str": 3, "con": 2, "cha": 3, "abilities": [ "inspire", "bless" ] },
 
       "dauntless":  { "str": 3, "con": 2, "abilities": [ ] },
       "primal":     { "str": 4, "dex": 1, "con": 2, "abilities": [ "maul", "enrage" ] },
       "apex":       {  "str": 3, "dex": 2, "con": 2, "int": 1,  "abilities": [ "prepare_charge", "charge", "maul" ] },
-      "sovereign":  {  "str": 4, "con": 3, "wis": 2, "cha": 2, "abilities": [ "inspire", "fear", "bless" ] },
+      "sovereign":  {  "str": 4, "con": 3, "wis": 2, "cha": 2, "abilities": [ "inspire", "fear" ] },
 
-      "ancient":    {  "str": 2, "con": 2, "int": 3, "wis": 3, "abilities": [ "second_wind", "bless", "curse", "fear", "charm", "inspire"] },
-      "warped":     {  "str": -2, "int": 2, "con": -2, "dex": 2, "wis": -2, "cha": 2, "abilities": [ "life_drain", "curse", "charm", "enrage", "psionic_blast" ] },
-      "giant":      {  "str": 6, "dex": -2, "wis": 2, "con": 2, "abilities": [ "earthquake" ] }
+      "ancient":    {  "str": 2, "con": 2, "int": 3, "wis": 3, "abilities": [ "second_wind", "inspire"] },
+      "warped":     {  "str": -2, "int": 2, "con": -2, "dex": 2, "wis": -2, "cha": 2, "abilities": [ "charm", "enrage", "maul", "fear", "poison_bite" ] },
+      "giant":      {  "str": 6, "dex": -2, "wis": 2, "con": 2, "abilities": [ "maul" ] }
     }
   },
   "monsterKind": {

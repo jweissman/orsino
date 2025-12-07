@@ -68,6 +68,8 @@ export interface Combatant {
   hasMissileWeapon?: boolean;
   hasInterceptWeapon?: boolean;
 
+  // itemChargesUsed?: { [itemName: string]: number };
+
   // equipment?: {
   //   ring1?: string;
   //   ring2?: string;

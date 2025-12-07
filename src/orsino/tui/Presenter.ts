@@ -112,9 +112,9 @@ export default class Presenter {
     let combatClass = combatant.class;
     let combatKind = (combatant as any).kind || combatant.race || '';
     return [
-      Stylist.colorize(name, combatant.playerControlled ? 'cyan' : 'yellow'),
+      this.padLiteralEnd(Stylist.colorize(name, combatant.playerControlled ? 'cyan' : 'yellow'), 8),
       combatant.hp <= 0 ? Stylist.colorize('X', 'red') : Stylist.colorize(hpBar, color),
-      combatClass ? `${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '',
+      this.padLiteralStart(combatClass ? `${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '', 24),
       // `(${combatant.hp}/${combatant.maxHp})`
     ].join(' ');
     //  `; // (${this.statLine(combatant)})`;
@@ -133,9 +133,11 @@ export default class Presenter {
     // const statInfo = Object.entries(stats).map(([key, value]) => `${key}: ${value}`).join(', ');
     //Presenter.statLine(combatant);
 
-    const activeEffectNames = combatant.activeEffects?.map(e => e.name) || [];
-    if (activeEffectNames.length > 0) {
-      classInfo = classInfo.padEnd(32) + ' | ' + Words.humanizeList(activeEffectNames);
+    const fxNameAndDurations = combatant.activeEffects?.map(e => ({ name: e.name, duration: e.duration || '--' })) || [];
+    if (fxNameAndDurations.length > 0) {
+      classInfo = classInfo.padEnd(32) + ' | ' + Words.humanizeList(fxNameAndDurations.map(fx => {
+        return fx.name;  //  turns`${fx.name} (${fx.duration})`;
+      }));
     }
 
     let friendly = ((combatant as any).friendly || false) || combatant.playerControlled;

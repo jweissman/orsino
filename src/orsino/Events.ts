@@ -147,7 +147,7 @@ export default class Events {
       case "statusEffect":
         let effectName = Stylist.colorize(event.effectName, 'magenta');
         if (event.effect.by && event.effect.by.forename !== subjectName) {
-          return `${subjectName} is ${effectName} by ${event.effect.by.forename}.`
+          return `${subjectName} is ${effectName} by ${event.effect.by.forename} for ${event.duration} turns.`;
         }
         return `${subjectName} is ${effectName}.`
       case "statusExpire":

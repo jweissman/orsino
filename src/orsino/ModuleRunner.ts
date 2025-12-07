@@ -10,6 +10,8 @@ import Words from "./tui/Words";
 import Presenter from "./tui/Presenter";
 import { Commands } from "./rules/Commands";
 import Deem from "../deem";
+import { ItemInstance } from "./types/ItemInstance";
+import { Inventory } from "./Inventory";
 
 type TownSize = 'hamlet' | 'village' | 'town' | 'city' | 'metropolis' | 'capital';
 type Race = 'human' | 'elf' | 'dwarf' | 'halfling' | 'gnome' | 'orc' | 'fae';
@@ -33,8 +35,7 @@ export interface CampaignModule {
 interface GameState {
   party: Combatant[];
   sharedGold: number;
-  // sharedPotions: number;
-  inventory: { [itemName: string]: number };
+  inventory: Array<ItemInstance>;
   completedDungeons: number[];
 }
 
@@ -48,8 +49,7 @@ export class ModuleRunner {
   private state: GameState = {
     party: [],
     sharedGold: 200,
-    inventory: {},
-    // sharedPotions: 3,
+    inventory: [],
     completedDungeons: []
   };
 
@@ -202,6 +202,13 @@ export class ModuleRunner {
               } for ${duration} turns!`)
           }
         });
+        // recharge wands/staves
+        for (const item of this.state.inventory) {
+          if (item.maxCharges !== undefined) {
+            item.charges = item.maxCharges;
+            this.outputSink(`Your ${Words.humanize(item.name)} is fully recharged.`);
+          }
+        }
       } else if (action === "show") {
         this.outputSink("\n📜 Party Records:")
         for (const pc of this.pcs) {
@@ -209,9 +216,10 @@ export class ModuleRunner {
           Presenter.printCharacterRecord(pc);
         }
 
-        if (Object.keys(this.state.inventory).length > 0) {
+        if (this.state.inventory.length > 0) {
           this.outputSink("\n🎒 Inventory:");
-          for (const [itemName, qty] of Object.entries(this.state.inventory)) {
+          let quantities = Inventory.quantities(this.state.inventory);
+          for (const [itemName, qty] of Object.entries(quantities)) {
             this.outputSink(` - ${Words.humanize(itemName)} x${qty}`);
           }
         } else {
@@ -318,7 +326,8 @@ export class ModuleRunner {
         //shopItemNames[choice];
         if (this.sharedGold >= item.value) {
           this.state.sharedGold -= item.value;
-          this.state.inventory[item.key] = (this.state.inventory[item.key] || 0) + 1;
+          // this.state.inventory[item.key] = (this.state.inventory[item.key] || 0) + 1;
+          this.state.inventory.push(await Inventory.item(item.key));
           this.outputSink(`✅ Purchased 1x ${item.name} for ${item.value}g`);
         } else {
           this.outputSink("❌ Not enough gold!");
@@ -329,7 +338,9 @@ export class ModuleRunner {
       console.log("\nWelcome to the Armorer's Shop! Here are the available weapons:");
 
       const weaponItemNames = await Deem.evaluate(`gather(masterWeapon, -1, 'dig(#__it, "natural")')`);
-      console.log("Weapon items:", weaponItemNames);
+      // console.log("Weapon items:", weaponItemNames);
+      weaponItemNames.sort();
+
       while (true) {
         const options: Choice<any>[] = [];
         // shopItems.map((itemName: string, index: number) => {

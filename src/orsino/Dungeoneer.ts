@@ -13,6 +13,7 @@ import Events, { DungeonEvent } from "./Events";
 import { Commands } from "./rules/Commands";
 import CharacterRecord from "./rules/CharacterRecord";
 import AbilityHandler, { Ability, StatusEffect } from "./Ability";
+import { Inventory } from "./Inventory";
 
 type SkillType = "search" | "examine"; // | "disarm" | "pickLock" | "climb" | "swim" | "jump" | "listen" | "spot";
 
@@ -80,8 +81,7 @@ export default class Dungeoneer {
         damageKind: "slashing",
         hasMissileWeapon: false
       }],
-      // healingPotions: 3
-      inventory: {}
+      inventory: []
     };
   }
 
@@ -189,7 +189,8 @@ export default class Dungeoneer {
         this.note(`You have secured ${Stylist.bold(this.dungeon!.macguffin)}!\n`);
         let isConsumable = await Deem.evaluate(`hasEntry(consumables, '${this.dungeon!.macguffin}')`);
         if (isConsumable) {
-          this.playerTeam.inventory[this.dungeon!.macguffin] = (this.playerTeam.inventory[this.dungeon!.macguffin] || 0) + 1;
+          // this.playerTeam.inventory[this.dungeon!.macguffin] = (this.playerTeam.inventory[this.dungeon!.macguffin] || 0) + 1;
+          this.playerTeam.inventory.push(await Inventory.item(this.dungeon!.macguffin));
         } else {
           // add to loot 
           this.playerTeam.combatants[0].loot = this.playerTeam.combatants[0].loot || [];
@@ -369,11 +370,17 @@ export default class Dungeoneer {
         this.note(`\nVictory! +${xp} XP, +${gold} GP\n`);
       }
 
-      if (Math.random() < 0.5) {
+      if (Math.random() < 0.9) {
         let consumable = await Deem.evaluate("pick(gather(consumables))") as any;
         let consumableName = Words.humanize(consumable);
         this.note(`You found ${Words.a_an(consumableName)} in the remains of your foes.`);
-        this.playerTeam.inventory[consumable] = (this.playerTeam.inventory[consumable] || 0) + 1;
+        this.playerTeam.inventory.push(await Inventory.item(consumable));
+        // if (consumable.charges) {
+        //   this.playerTeam.inventory.push({ name: consumable, maxCharges: consumable.charges, charges: Math.random() * consumable.charges });
+        // } else {
+        //   this.playerTeam.inventory.push({ name: consumable });
+        // }
+        //[consumable] = (this.playerTeam.inventory[consumable] || 0) + 1;
         // this.playerTeam.inventory['minor_healing_potion'] = (this.playerTeam.inventory['minor_healing_potion'] || 0) + 1;
       }
 
@@ -387,13 +394,16 @@ export default class Dungeoneer {
   }
 
   private async reward(xp: number, gold: number): Promise<void> {
-    for (const c of this.playerTeam.combatants) {
+    let standing = Combat.living(this.playerTeam.combatants)
+    let perCapitaXp = Math.floor(xp / standing.length);
+    let perCapitaGold = Math.floor(gold / standing.length);
+    for (const c of standing) {
       let fx = Fighting.gatherEffects(c);
       let xpMultiplier = fx.xpMultiplier as number || 1;
       let gpMultiplier = fx.goldMultiplier as number || 1;
 
-      c.xp = Math.round((c.xp || 0) + xp * xpMultiplier);
-      c.gp = Math.round((c.gp || 0) + gold * gpMultiplier);
+      c.xp = Math.round((c.xp || 0) + perCapitaXp * xpMultiplier);
+      c.gp = Math.round((c.gp || 0) + perCapitaGold * gpMultiplier);
 
       if (xp > 0) {
         let events = await CharacterRecord.levelUp(c, this.playerTeam, this.roller, this.select);
@@ -438,7 +448,7 @@ export default class Dungeoneer {
           Presenter.printCharacterRecord(c);
         }
         this.note(`Inventory:`);
-        for (const [itemName, qty] of Object.entries(this.playerTeam.inventory)) {
+        for (const [itemName, qty] of Object.entries(Inventory.quantities(this.playerTeam.inventory))) {
           this.outputSink(` - ${Words.humanize(itemName)} x${qty}`);
         }
       } else if (choice === "search") {
@@ -528,11 +538,12 @@ export default class Dungeoneer {
       if (room.treasure) {
         for (const item of room.treasure) {
           this.note(`You find ${Words.humanize(item)}`);
-          let isConusmable = await Deem.evaluate(`=hasEntry(consumables, "${item}")`) as boolean;
+          let isConsumable = await Deem.evaluate(`=hasEntry(consumables, "${item}")`) as boolean;
           // let isGear = await Deem.evaluate(`=hasEntry(masterGear, "${item}")`) as boolean;
-          if (isConusmable) {
+          if (isConsumable) {
             this.note(`You add ${Words.a_an(item)} to your inventory.`);
-            this.playerTeam.inventory[item] = (this.playerTeam.inventory[item] || 0) + 1;
+            // this.playerTeam.inventory.push({ name: item });
+            this.playerTeam.inventory.push(await Inventory.item(item));
           } else {
             // add to combatant.loot
             actor.loot = actor.loot || [];
@@ -558,9 +569,13 @@ export default class Dungeoneer {
         this.note(`${actor.forename} has a loot bonus of +${lootBonus}.`);
         let lootItems = await Deem.evaluate(`sample(gather(consumables), ${lootBonus})`) as string[];
         for (const item of lootItems) {
-          this.note(`You found ${Words.a_an(Words.humanize(item))}!`);
-          this.playerTeam.inventory[item] = (this.playerTeam.inventory[item] || 0) + 1;
-          this.note(`You add ${Words.a_an(item)} to your bag. (Total owned: ${this.playerTeam.inventory[item]})`);
+          // this.note(`You found ${Words.a_an(Words.humanize(item))}!`);
+          // this.playerTeam.inventory[item] = (this.playerTeam.inventory[item] || 0) + 1;
+          // this.playerTeam.inventory.push({ name: item });
+          this.playerTeam.inventory.push(await Inventory.item(item));
+          this.note(`You add ${Words.a_an(Words.humanize(item))} to your inventory (total owned: ${this.playerTeam.inventory.filter(i => i.name === item).length})`);
+
+          // this.note(`You add ${Words.a_an(item)} to your bag. (Total owned: ${this.playerTeam.inventory[item]})`);
         }
       }
 
@@ -588,7 +603,8 @@ export default class Dungeoneer {
       let someoneWounded = this.playerTeam.combatants.some(c => c.hp < c.maxHp);
 
       let healingItems = [];
-      for (const [item, qty] of Object.entries(this.playerTeam.inventory)) {
+      let inventoryQuantities = Combat.inventoryQuantities(this.playerTeam);
+      for (const [item, qty] of Object.entries(inventoryQuantities)) {
         let it = await Deem.evaluate(`=lookup(consumables, "${item}")`);
         if (qty > 0 && it.aspect === "healing") {
           healingItems.push(item);
@@ -604,7 +620,8 @@ export default class Dungeoneer {
           for (const c of this.playerTeam.combatants) {
             if (c.hp < c.maxHp) {
               for (const itemName of healingItems) {
-                let qty = this.playerTeam.inventory[itemName] || 0;
+                // let qty = this.playerTeam.inventory[itemName] || 0;
+                let qty = this.playerTeam.inventory.filter(i => i.name === itemName).length;
                 if (qty > 0 && c.hp < c.maxHp) {
                   let it = await Deem.evaluate(`=lookup(consumables, "${itemName}")`);
                   let effects = it.effects;
@@ -612,6 +629,11 @@ export default class Dungeoneer {
                   for (let effect of effects) {
                     let { events } = await AbilityHandler.handleEffect(it.name, effect, c, c, nullCombatContext, Commands.handlers(this.roller, this.playerTeam));
                     events.forEach(e => this.emit({ ...e, turn: -1 } as DungeonEvent));
+                  }
+                  // consume one
+                  let index = this.playerTeam.inventory.findIndex(i => i.name === itemName);
+                  if (index >= 0) {
+                    this.playerTeam.inventory.splice(index, 1);
                   }
                 }
               }
@@ -739,7 +761,7 @@ export default class Dungeoneer {
     return {
       name: "Enemies",
       combatants: encounter?.creatures || [],
-      inventory: {}
+      inventory: []
       // healingPotions: 0
     };
   }

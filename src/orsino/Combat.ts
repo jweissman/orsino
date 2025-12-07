@@ -13,6 +13,7 @@ import Deem from "../deem";
 import TraitHandler from "./Trait";
 import Stylist from "./tui/Style";
 import Bark from "./Bark";
+import { Inventory } from "./Inventory";
 
 export type ChoiceSelector<T extends Answers> = (description: string, options: Choice<T>[], combatant?: Combatant) => Promise<T>;
 
@@ -186,7 +187,7 @@ export default class Combat {
 
     if (!disabled && ability.effects.some(e => e.type === "summon")) {
       // let allies = this.teams.find(t => t.combatants.includes(combatant));
-      disabled = Combat.living(allies).length >= 6; // arbitrary cap on total combatants
+      disabled = allies.length >= 6; // arbitrary cap on total combatants
     }
 
     // if there is a conditional status to the ability like backstab requiring Hidden, check for that
@@ -251,19 +252,10 @@ export default class Combat {
         return [compelledAbility];
       }
     }
-
-    // let spellSlotsRemaining = (Combat.maxSpellSlotsForCombatant(combatant) || 0) - (combatant.spellSlotsUsed || 0);
-    // // if we have a noSpellcasting effect, set spellSlotsRemaining to 0
-    // if (activeFx.noSpellcasting) {
-    //   spellSlotsRemaining = 0;
-    // }
-
     let uniqAbilities = Array.from(new Set(combatant.abilities));
     let abilities = uniqAbilities.map(a => this.abilityHandler.getAbility(a)); //.filter(a => a);
     abilities.forEach((ability: Ability) => {
       let disabled = !this.validateAction(ability, combatant, allies, enemies);
-
-      // console.log(`Checking ability ${ability.name} for ${combatant.forename}: valid targets =`, validTargets.map(t => Array.isArray(t) ? t.map(c => c.forename).join(", ") : (t as Combatant).forename), `=> disabled = ${disabled}`);
       if (!disabled) {
         validAbilities.push(ability);
       }
@@ -272,13 +264,48 @@ export default class Combat {
     return validAbilities;
   }
 
+  static inventoryQuantities(team: Team): { [itemName: string]: number } {
+    // console.log("Calculating inventory quantities for team", team.name, "with inventory:", team.inventory);
+    // let inventoryCounts: { [itemName: string]: number } = {};
+    // for (let itemInstance of team.inventory) {
+    //   inventoryCounts[itemInstance.name] = (inventoryCounts[itemInstance.name] || 0) + 1;
+    // }
+    // return inventoryCounts;
+    return Inventory.quantities(team.inventory || []);
+  }
+
   async pcTurn(combatant: Combatant, enemies: Combatant[], allies: Combatant[]): Promise<{ haltRound: boolean }> {
-    let inventoryItems = this.teams[0].inventory || {};
+    let inventoryItems = this.teams[0].inventory || [];
+    let itemQuantities = Combat.inventoryQuantities(this.teams[0]);
     let itemAbilities = [];
-    for (let [itemKey, qty] of Object.entries(inventoryItems)) {
+    for (let [itemKey, qty] of Object.entries(itemQuantities)) {
       if (qty > 0) {
         let itemAbility = await Deem.evaluate(`lookup(consumables, '${itemKey}')`);
-        itemAbilities.push({ ...itemAbility, key: itemKey });
+        // let it = inventoryItems.find(ii => ii.name === itemKey);
+        // sum charges across all instances of this item?
+        let matchingItems = inventoryItems.filter(ii => ii.name === itemKey);
+        let totalCharges = 0;
+        let chargeBased = itemAbility.charges !== undefined;
+        if (!chargeBased) {
+          // not charge based, so just add as is
+          itemAbilities.push({ ...itemAbility, key: itemKey });
+          continue;
+        }
+
+        for (let mi of matchingItems) {
+          if (mi.charges !== undefined) {
+            totalCharges += mi.charges;
+          } else {
+            throw new Error(`Item instance ${mi.name} is missing charges property.`);
+          }
+        }
+        // if (totalCharges !== -1) {
+        // itemAbility.charges = totalCharges;
+        if (totalCharges <= 0) {
+          continue; // skip adding this ability since no charges left
+        }
+        // }
+        itemAbilities.push({ ...itemAbility, description: itemAbility.description + `(${totalCharges} charges left)`, key: itemKey });
       }
     }
 
@@ -374,14 +401,32 @@ export default class Combat {
       // would be nice to handle charges (find first one with charges available and reduce that)
       if (action.charges !== undefined) {
         // note we don't actually store a full item record so we need a secondary way to track charges
+        // find first item instance with charges available and reduce that
+        let inventory = this.teams[0].inventory || [];
+        let itemInstance = inventory.find(ii => ii.name === action.key && (ii.charges === undefined || ii.charges > 0));
+        if (itemInstance) {
+          if (itemInstance.charges !== undefined) {
+            itemInstance.charges -= 1;
+          }
+          this.note(`${Presenter.combatant(combatant)} uses ${action.name} (${itemInstance.charges} charges remaining).`);
+        }
       } else {
-        // reduce item count in inventory
-        let inventory = this.teams[0].inventory || {};
-        if (inventory[action.key] && inventory[action.key] > 0) {
-          inventory[action.key] -= 1;
+        // _remove_ item from inventory
+        let inventory = this.teams[0].inventory || [];
+        let itemIndex = inventory.findIndex(ii => ii.name === action.key);
+        if (itemIndex !== -1) {
+          inventory.splice(itemIndex, 1);
           this.teams[0].inventory = inventory;
         }
-        this.note(`${Presenter.combatant(combatant)} uses ${action.name} (${inventory[action.key]} remaining).`);
+        let remaining = inventory.filter(ii => ii.name === action.key).length;
+        this.note(`${Presenter.combatant(combatant)} uses ${action.name} (${remaining} remaining).`);
+        // reduce item count in inventory
+        // let inventory = this.teams[0].inventory || {};
+        // if (inventory[action.key] && inventory[action.key] > 0) {
+        //   inventory[action.key] -= 1;
+        //   this.teams[0].inventory = inventory;
+        // }
+        // this.note(`${Presenter.combatant(combatant)} uses ${action.name} (${inventory[action.key]} remaining).`);
       }
 
     }
@@ -481,7 +526,7 @@ export default class Combat {
     // if we have an 'inactive' status (eg from sleep spell) skip our turn
     if (combatant.activeEffects?.some(e => e.effect.noActions)) {
       let status = combatant.activeEffects.find(e => e.effect.noActions);
-      this.note(`${Presenter.minimalCombatant(combatant)} is ${status!.name} (${status!.effect.duration || "unknown duration"})and skips their turn!`);
+      this.note(`${Presenter.minimalCombatant(combatant)} is ${status!.name} (${status!.duration || "--"}) and skips their turn!`);
       return { haltRound: false };
     }
 
@@ -508,6 +553,13 @@ export default class Combat {
       [allies, validTargets] = [validTargets, allies];
     }
 
+    console.log(`DEBUG ${combatant.forename} turn:`);
+    console.log(`  - This combatant's team: ${this.teams.find(t => t.combatants.includes(combatant)) === this.teams[0] ? 'team0' : 'team1'}`);
+    console.log(`  - Team 0 combatants: ${this.teams[0].combatants.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
+    console.log(`  - Team 1 combatants: ${this.teams[1].combatants.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
+    console.log(`  - Living enemies (validTargets): ${validTargets.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
+    console.log(`  - Allies: ${allies.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
+
     let attacksPerTurn = combatant.attacksPerTurn || 1;
     for (let i = 0; i < attacksPerTurn; i++) {
       if (combatant.playerControlled && !allegianceEffect) {
@@ -516,13 +568,6 @@ export default class Combat {
           return { haltRound: true };
         }
       } else {
-        // console.log(`DEBUG ${combatant.forename} turn:`);
-        // console.log(`  - This combatant's team: ${this.teams.find(t => t.combatants.includes(combatant)) === this.teams[0] ? 'team0' : 'team1'}`);
-        // console.log(`  - Team 0 combatants: ${this.teams[0].combatants.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
-        // console.log(`  - Team 1 combatants: ${this.teams[1].combatants.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
-        // console.log(`  - Living enemies (validTargets): ${validTargets.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
-        // console.log(`  - Living allies: ${allies.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
-
         await this.npcTurn(combatant, validTargets, allies);
       }
     }
@@ -656,7 +701,7 @@ export default class Combat {
           weapon: "Short Sword", damageKind: "slashing", abilities: ["melee"], traits: [],
           hasMissileWeapon: false
         }],
-        inventory: {}
+        inventory: []
       },
       {
         name: "Enemy", combatants: [
@@ -671,7 +716,7 @@ export default class Combat {
             str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: [], hasMissileWeapon: false, xp: 0, gp: 0
           }
         ],
-        inventory: {}
+        inventory: []
       }
     ];
   }

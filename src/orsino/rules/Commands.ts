@@ -313,7 +313,7 @@ export class Commands {
     // Apply status duration bonus
     if (userFx.statusDuration) {
       duration += (userFx.statusDuration as number);
-      // console.log(`Status duration of ${target.forename} increased by ${userFx.statusDuration}!`);
+      console.log(`Status duration of ${target.forename} increased by ${userFx.statusDuration}!`);
     }
 
     target.activeEffects = target.activeEffects || [];

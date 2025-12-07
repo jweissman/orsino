@@ -329,6 +329,17 @@
   "consumables": {
     "discriminator": "kind",
     "groups": {
+      "antidote": {
+        "name": "Antidote",
+        "description": "A small vial of clear liquid that neutralizes poison when consumed.",
+        "type": "consumable",
+        "kind": "potion",
+        "rarity": "common",
+        "aspect": "poison",
+        "value": 30,
+        "target": ["self", "ally"],
+        "effects": [{ "type": "removeStatus", "status": "poison" }]
+      },
       "minor_healing_potion": {
         "name": "Minor Potion of Healing",
         "description": "A vial of glittering red liquid that restores health when consumed.",
@@ -345,6 +356,7 @@
         "description": "A vial of glowing red liquid that restores a significant amount of health when consumed.",
         "type": "potion",
         "rarity": "uncommon",
+        "kind": "potion",
         "aspect": "healing",
         "value": 150,
         "target": ["self", "ally"],
@@ -355,6 +367,7 @@
         "description": "A potent brew that temporarily enhances the drinker's physical strength.",
         "type": "consumable",
         "kind": "potion",
+        "aspect": "strength",
         "rarity": "uncommon",
         "value": 100,
         "target": ["self", "ally"],
@@ -415,6 +428,7 @@
         "description": "A flask of slippery oil that can be thrown onto a surface or creature to make it more vulnerable to fire.",
         "type": "consumable",
         "kind": "flask",
+        "aspect": "fire",
         "rarity": "common",
         "value": 20,
         "target": ["enemy"],
@@ -426,7 +440,7 @@
               "duration": 3,
               "effect": { "resistFire": -2 }
             },
-            "saveDC": 20
+            "saveDC": 25
           }
         ]
       },
