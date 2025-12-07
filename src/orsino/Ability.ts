@@ -1,5 +1,5 @@
 import Deem from "../deem";
-import { CombatContext } from "./Combat";
+import Combat, { CombatContext } from "./Combat";
 import { GameEvent, ReactionEvent, ResurrectEvent, UpgradeEvent } from "./Events";
 import Generator from "./Generator";
 import { CommandHandlers } from "./rules/Commands";
@@ -166,14 +166,35 @@ export default class AbilityHandler {
   }
 
   static validTargets(ability: Ability, user: Combatant, allies: Combatant[], enemies: Combatant[]): (Combatant | Combatant[])[] {
+    let healing = ability.effects.every(fx => fx.type === "heal") && ability.effects.length > 0;
     let targets: (Combatant | Combatant[])[] = [];
     for (const t of [...ability.target]) {
       switch (t) {
-        case "self": targets.push(user); break;
-        case "ally": targets.push(...(allies)); break;
+        case "self":
+          if (healing) {
+            if (user.hp < user.maxHp) {
+              targets.push(user);
+            }
+          } else {
+            targets.push(user);
+          }
+          break;
+        case "ally":
+          if (healing) {
+            targets.push(...Combat.wounded(allies));
+          } else {
+            targets.push(...Combat.living(allies));
+          }
+          break;
         case "deadAlly": targets.push(...(allies.filter(a => a.hp <= 0))); break;
         case "enemy": targets.push(...(enemies)); break;
-        case "allies": targets.push((allies)); break;
+        case "allies":
+          if (healing) {
+            targets.push(Combat.wounded(allies));
+          } else {
+            targets.push(Combat.living(allies));
+          }
+          break;
         case "enemies": targets.push((enemies)); break;
         case "all": targets.push(([user, ...allies, ...enemies])); break;
 

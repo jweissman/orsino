@@ -3,19 +3,15 @@
 ---
 [ ] Load all PCs on party select so we can show their race/class (no longer even letting you load PCs from file but we're still persisting them every room...)
 ---
-[ ] A room generated with multiple monsters with the same name (humans may need more names as a race but also maybe we could _specifically_ try to prevent this?) [genList would need a dedupe pass to really be _certain_ of this]
-[ ] High-level enemies should have much higher dex (tried to adjust although maybe _too_ high now?)
 ---
 [ ] Rest could reset status effects? (would be nice to do this _before_ persisting PCs?)
-[ ] A spell that causes stun could be interesting (flesh-to-stone would be neat too?)
-[ ] Healing potion could cure poison status too?
+[ ] Healing potion could cure poison status too? [maybe better to have a dedicated consumable for it though]
 [ ] Poisoned blade still has weird expiration message actually? ("X is no longer poisoned blade"; a bit awkward to fix since a standard message would be ideal here)
 [ ] Might be good/wise/prudent to gather status effects into constants so we're not subject to (as many) typo bugs! (more generally it would be nice to have a statuses.json for defining common effects like poisoning uniformly...)
 [ ] Unify search/examine (should both have chance to find potions and both grant XP on success)
-[ ] Duplicate forenames still problematic -- maybe 'forename' can just _be_ magical within deem (genList could identify and toss dupes to prevent issues like this -- may cause other problems and seems weird... adding some gross genUniqListByKey seems 'too heavy' too; or we could have a 'gather' function that grabs all values of the __items but the expression then just gets too gnarly; note technically it's not even the 'name' key but 'forename' which ... we could just have a much deeper list to draw from to prevent this happening so often but that doesn't really solve this fundamentally!)
+[ ] A room generated with multiple monsters with the same name (humans may need more names as a race but also maybe we could _specifically_ try to prevent this?) [genList would need a dedupe pass to really be _certain_ of this] -- Duplicate forenames still problematic -- maybe 'forename' can just _be_ magical within deem (genList could identify and toss dupes to prevent issues like this -- may cause other problems and seems weird... adding some gross genUniqListByKey seems 'too heavy' too; or we could have a 'gather' function that grabs all values of the __items but the expression then just gets too gnarly; note technically it's not even the 'name' key but 'forename' which ... we could just have a much deeper list to draw from to prevent this happening so often but that doesn't really solve this fundamentally!) -- genList/mapGenList could handle this by adding index #s but maybe not ideal somehow
 [ ] A cage could have a chance to have a prisoner (who could become ally); incidentally would be nice for it to be more likely within a 'cell' room
 ---
-[ ] Enemy AC seems _really_ low -- a character with high dex is always getting 0 or less to hit! (maybe fixed by giving them armor?)
 [ ] Larger rooms could give more search opps?
 [ ] Adventuring kit could be a consumable that is needed to give first aid?
 [ ] Found treasure should be redeemable for gold
@@ -24,28 +20,22 @@
 ---
 [ ] Healing for 0 HP should be presented as a failure (not "heals for 0 damage" but "tried to heal but fails") -- thought we had repaired this but still seeing 0-amount heals
 [ ] Temple blessing should _recharge_ duration if already present (ie just having the blessing should not necessarily disable prayer)
-[ ] Should be able to see what active effects you have even in town
 [ ] Would be interesting to distinguish between positive/negative effects (maybe rest should cure only bad things?)
-[ ] Healing should never present more HP than the character has lost (incidentally there should be a 'handleHeal' command so we're always processing it consistently)
-[ ] AC still seems really low for monsters (maybe should go back to displaying it and thac0/to-hit bonuses just to sanity-check the math even if it's very noisy)
 [ ] We don't seem to redisplay room details if you've levelled up?
 [ ] Maybe taking damage makes enemies more likely to defend?
-[ ] Need money sinks + some other consumable besides potion (again maybe adventuring kits power first aid)
 [ ] Examining maps/atlases could have a chance to give dungeon clues?
 [ ] Maybe you need a clue to travel to a dungeon??
 [ ] Should at least be a _chance_ for AI to pick on someone other than weakest enemy
 ---
 [ ] Better adventure module names (not just quest/saga/adventure of the $terrain...)
-[ ] Display full statline in town + current effects
 [ ] If you don't have enough to buy the quantity you like it should not say "You purchase X" (even if the next line is saying "not enough gold")
 [ ] Should only be able to visit temple _once_ per long rest/visit in town
 [ ] Found "letter" and "wanted poster" items could have clues about the dungeon boss (if not other bosses etc)
 ---
-[ ] Successful resistance should give a message ("successfully resisted...")
 [ ] Should you roll your own poison damage? Feels strange -- maybe should just be automatic?
 [ ] Poison damage should indicate who _inflicted_ it (this is sort of tracked but not surfaced...)
 ---
-[ ] Unconscious allies shouldn't get XP?
+[ ] Unconscious allies maybe shouldn't get XP?
 [ ] Should reset abilities used on long rest? (why isn't this happening)
 [ ] It would be nice to able to explore more freely (move back to previous rooms?)
 [ ] Show party status before asking to rest
@@ -66,17 +56,11 @@
 [ ] Unconscious characters should not roll init
 [ ] Some statuses still sound weird ("[defender] is Chaos by [inflicter]" - odd)
 ---
-[ ] Align npc occupations with dungeon type ...
-[ ] Show nicer character record with details/descriptions about traits
-[ ] Show sources of passive/trait-based effects (awkward since we erase when we coalesce fx!)
 [ ] Statuses like 'defending' really need to expire at end of next _turn_ not end of _round_
 [ ] Humanize weapon names in damage description ("takes 5 damage from Valen's light_mace" => "Light Mace", maybe add damage type here?)
 [ ] AI should not use buffs that only target allies if all allies are dead
-[ ] "Heal 1 every successful hit" is too powerful ('vitalist' trait shared by all elves -- and note elves already get multiple very powerful passives?)
 [ ] Dungeons with multiple floors (levels in principle seem relatively straightforward but we'd need to adapt dungeoneer to handle them...)
 ---
----
-[ ] Show detailed breakdown of dungeons/rooms/actual vs effect CR (maybe separate spec for module runner?)
 [ ] Wildnerness: Collect herbs, hear birdcalls...
 ---
 [ ] Track playerAligned as _well_ as playerControlled (sort of captured by being on the team of the player but this isn't passed along with combatant in all cases... -- we can always check for allegiance effects but a little subtle i guess?)
@@ -84,24 +68,29 @@
 [ ] Would be nice to let _all_ PCs attempt to interact/examine/search
 [ ] Maybe charm is dispelled if the charmer dies??
 ---
-[ ] Disable summon abilities if you already have 6 allied creatures (alive or dead...)
+[ ] Disable summon abilities if you already have 6 allied creatures (alive or dead...) / Shouldn't be able to call animal companion if 6 allies present! (standing or not)
 [ ] Would be nice to have more narrow utilty-cleric abilities (neutralize poison, remove paralysis, ultimately a high-level 'heal' which fixes status effects AND brings health back...)
 [ ] Was seeing 0-damage attacks on elite units (maybe something to do with DR but a 0-damage attack is a miss, although we could gloss as 'graze' or something?)
 [ ] Should permit player to _leave_ the dungeon (they _can_ but would have to flee and even that's disabled now, maybe to focus autoplay -- but anyway seems to be entirely disabled in fact rn)
 ---
 [ ] Dirty trick should not give a save vs magic? (maybe vs will or even specifically vs blinding?)
-[ ] Should not rez with 0 HP
 [ ] Hidden seems to be removed whenever the hiding creature _gets_ attacked (should be removed whenever the hiding creature itself _attacks_)
 [ ] Show current gold before purchasing potions (make sure we're handling gold transition between town hub/dungeon correctly)
-[ ] Lowest rank should be something besides 'untested' (maybe 'minion' is fine? Ideally it's just 'unranked' and no special display however!)
 [ ] Why is a wolf casting earthquake??? (presumably it was 'Giant' wolf but maybe just give a 'stomp' AoE ability?)
 [ ] Should say 'leave the dungeon' instead of 'move to next room' for last room
 [ ] There should be a shop to sell treasure (maybe also buy other kinds of consumables?)
 [ ] Why does paralyze have 'unknown' duration?? (from an enemy's paralyzing_touch)
 [ ] Magic missile that does 0 damage should be glossed as a miss I think?
 ---
-[ ] Death priest has type 'undead' rather than dungeon race?
-
+[ ] Effects from shrine not getting applied to characters? (maybe getting erased at Combat#setUp if configured as activeEffect but also I don't think I was even seeing it immediately on the character rec at all?)
+[ ] Heal ally is selecting dead PCs as valid targets (should only be standing _and_ wounded PCs)
+[ ] Resting somehow advances us into the next room? (thought this was wandering monster but definitely a new room)
+[ ] Special effect type for 'cast' (ie to make scrolls simpler to implement/less duplicative)
+[ ] Somehow a lich took damage 5 separate times from being a marked target??? (on a normal melee attack)
+---
+[ ] Wand charges
+[ ] Summon creature should display a _little_ more information about the summon than the forename (type/class at least)
+[ ] Armorer should only let you give weapons for humanoids to wield
 
 ## Fixed
 [x] Temple/shrine to local deity to get a blessing
@@ -154,6 +143,25 @@
 [x] Enemy saves should at least be presented clearly (okay for this to be '...but nothing happened' but ideal to say 'x made their save!' or similar -- should display 'resisted effect' now...)
 [x] Roundhouse too strong (nerfed a lot now but still) -- very nerfed now, but whirlwind is very strong too (not completely sure how to adjust since it's "just" an AoE attack with your primary weapon)
 [x] Spawn appropriate gear for PCs (spellbooks for mages, holy symbols for clerics, lockpicking tool for thieves -- think this is roughly done but could be improved)
+[x] Death priest has type 'undead' rather than dungeon race? (fixed -- also made sure we _definitely_ get special room npc types)
+[x] "Veteran Novice" sounds strange (maybe Novice -> Initiate?) [now hiding all non-veteran+ ranks]
+[x] Should not rez with 0 HP (should be fixed now i think)
+[x] Show detailed breakdown of dungeons/rooms/actual vs effect CR (maybe separate spec for module runner?)
+[x] Lowest rank should be something besides 'untested' (maybe 'minion' is fine? Ideally it's just 'unranked' and no special display however!) -- the pre-veteran ranks don't display but there's now untested/rookie/seargeant/captain
+[x] Enemy AC seems _really_ low -- a character with high dex is always getting 0 or less to hit! (maybe fixed by giving them armor?) -- think we've resolved this more or less
+[x] High-level enemies should have much higher dex (tried to adjust although maybe _too_ high now?) -- again maybe fixed now
+[x] Need money sinks + some other consumable besides potion (again maybe adventuring kits power first aid) -- added more consumables/weapon store/money sinks
+[x] Display full statline in town + current effects (added show current party details option)
+[x] AC still seems really low for monsters (maybe should go back to displaying it and thac0/to-hit bonuses just to sanity-check the math even if it's very noisy) -- think it's okay but we could bring the display back for testing
+[x] Align npc occupations with dungeon type ... (done!)
+[x] Show nicer character record with details/descriptions about traits
+[x] Show sources of passive/trait-based effects (awkward since we erase when we coalesce fx!) -- we do this at least in narrow cases of statuses changing resistance/vulnerability now!
+[x] Healing should never present more HP than the character has lost (incidentally there should be a 'handleHeal' command so we're always processing it consistently) -- think this is done
+[x] Should be able to see what active effects you have even in town
+[x] Successful resistance should give a message ("successfully resisted...") -- think this is true now
+[x] A spell that causes stun could be interesting (flesh-to-stone would be neat too?) -- i think shocking grasp has a chance to do this
+[x] Gold flow is a mess, 40k after _losing_ to the first dungeon??? (think this was about outsized rewards for special rooms)
+[x] "Heal 1 every successful hit" is too powerful ('vitalist' trait shared by all elves -- and note elves already get multiple very powerful passives?) -- no longer applied at start, have to level into it
 
 ## Not really issues
 "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]

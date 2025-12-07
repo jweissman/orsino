@@ -33,18 +33,6 @@ export default class Presenter {
         `${Words.capitalize(combatant.background || 'adventurer')} ${Words.humanize(combatant.archetype || 'neutral')} from the ${combatant.hometown || 'unknown'}, ${combatant.age || 'unknown'} years old. ${descriptor} of ${combatant.body_type || 'average'} build with ${combatant.hair || 'unknown color'} hair, ${combatant.eye_color || 'dark'} eyes and ${Words.a_an(combatant.personality || 'unreadable')} disposition.`
       )
     )
-
-    // console.log(
-
-    // let demographics = {
-    //   age: combatant.age || 'Unknown',
-    //   // alignment: Words.humanize(combatant.alignment || 'neutral'),
-    // }
-
-    // console.log(Object.entries(demographics).map(([key, value]) => {
-    //   return this.padLiteralEnd(`${Stylist.bold(Words.capitalize(key))} ${Words.humanize(value)}`, 25);
-    // }).join('   '));
-
     let statNames = ['str', 'dex', 'int', 'wis', 'cha', 'con'];
     let statLine = statNames.map(stat => {
       const value = (combatant as any)[stat];
@@ -55,7 +43,7 @@ export default class Presenter {
     });
     console.log(statLine.join(' | '));
 
-    // console.log("\nHit Points: " + Stylist.colorize(`${combatant.hp}/${combatant.maxHp} `, 'green'));
+    console.log("\nHit Points: " + Stylist.colorize(`${combatant.hp}/${combatant.maxHp} `, 'green'));
     // console.log("Armor Class: " + Stylist.colorize(`${combatant.ac} `, 'yellow'));
 
     let basics = {

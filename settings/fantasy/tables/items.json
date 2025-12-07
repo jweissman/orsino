@@ -385,9 +385,11 @@
             "status": {
               "name": "Paralyzed",
               "duration": 2,
-              "effect": {}
+              "effect": {
+                "noActions": true
+              }
             },
-            "saveDC": 15
+            "saveDC": 20
           }
         ]
       },
@@ -403,8 +405,8 @@
         "effects": [
           {
             "type": "damage",
-            "amount": "1d4",
-            "damageType": "force"
+            "amount": "=1d3",
+            "kind": "force"
           }
         ]
       },

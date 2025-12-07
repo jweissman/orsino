@@ -103,11 +103,13 @@ export class Fighting {
       }
 
       if (it.effect) {
-        Object.entries(it.effect).forEach(([key, value]) => {
+        // Object.entries(it.effect).forEach(([key, value]) => {
+        for (let [key, value] of Object.entries(it.effect)) {
           if (key === 'by') {
-            return;
+            continue;
           }
 
+          // value = await Deem.evaluate(value, { subject: combatant });
           if (typeof value === "number" && typeof resultingEffects[key] === "number") {
             resultingEffects[key] = (resultingEffects[key] || 0) + value;
           } else if (Array.isArray(value) && Array.isArray(resultingEffects[key])) {
@@ -116,7 +118,7 @@ export class Fighting {
             // console.warn(`Overriding effect ${key} with value ${value} (was ${resultingEffects[key]})`);
             resultingEffects[key] = value;
           }
-        });
+        }
       }
     }
     

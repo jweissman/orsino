@@ -1341,9 +1341,7 @@
     "level": 1,
     "aspect": "arcane",
     "description": "Create an area of silence, preventing spellcasting for 3 rounds.",
-    "target": [
-      "area"
-    ],
+    "target": [ "enemies" ],
     "effects": [
       {
         "type": "debuff",

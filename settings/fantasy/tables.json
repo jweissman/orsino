@@ -253,11 +253,14 @@
   "npcRank": {
     "discriminator": "rank",
     "groups": {
-      "untested":  { "maxHp": 1,  "ac": 1 },
-      "veteran":   { "maxHp": 3,  "ac": 0 },
-      "champion":  { "maxHp": 5, "ac": -1 },
-      "elite":     { "maxHp": 8, "ac": -2, "traits": ["formidable"] },
-      "legend":    { "maxHp": 13, "ac": -3, "traits": ["formidable", "favored"] }
+      "untested":  { "maxHp": 0,   "ac": 3 },
+      "rookie":    { "maxHp": 1,   "ac": 2 },
+      "seargeant": { "maxHp": 2,   "ac": 1 },
+      "captain":   { "maxHp": 3,   "ac": 0 },
+      "veteran":   { "maxHp": 5,   "ac": 0 },
+      "champion":  { "maxHp": 8,   "ac": -1 },
+      "elite":     { "maxHp": 13,  "ac": -2, "traits": ["formidable"] },
+      "legendary": { "maxHp": 21,  "ac": -3, "traits": ["formidable", "favored"] }
     }
   },
   "npcType": {
@@ -288,11 +291,11 @@
   "npcTypesForDungeon": {
     "discriminator": "dungeonType",
     "groups": {
-      "temple": [ "Acolyte", "Adept", "Cleric", "Cultist", "Sage", "Elder", "Guardian", "Elder", "Death Priest"  ],
-      "mine": [ "Miner", "Dweller", "Brute", "Thug", "Lurker" ],
-      "fortress": [ "Soldier", "Mercenary", "Warrior", "Chieftain" ],
-      "tomb": [ "Novice", "Acolyte", "Gravedigger", "Cultist", "Bandit", "Tombrobber" ],
-      "library": [ "Scholar", "Sage", "Mage", "Apprentice" ]
+      "temple": [[ "Acolyte", "Adept", "Cleric", "Cultist", "Sage", "Elder", "Guardian", "Elder", "Death Priest"  ]],
+      "mine": [[ "Miner", "Dweller", "Brute", "Thug", "Lurker" ]],
+      "fortress": [[ "Soldier", "Mercenary", "Warrior", "Chieftain" ]],
+      "tomb": [[ "Novice", "Acolyte", "Gravedigger", "Cultist", "Bandit", "Tombrobber" ]],
+      "library": [[ "Scholar", "Sage", "Mage", "Apprentice" ]]
     }
   },
   
@@ -585,17 +588,17 @@
   "npcWeapon": {
     "discriminator": "race",
     "groups": {
-      "human": [ "longsword", "handaxe", "light_mace", "spear", "pole_arm", "crossbow" ],
+      "human": [ "longsword", "handaxe", "light_mace", "spear", "pole_arm", "light_crossbow" ],
       "goblin": [ "dagger", "club", "javelin", "shortsword", "sling", "dart" ],
       "kobold": [ "spear", "club", "dagger", "halberd", "light_warhammer", "dart" ],
-      "orc": [ "battleaxe", "heavy_mace", "heavy_flail", "greatsword", "claymore", "crossbow" ],
-      "ogre": [ "club", "heavy_mace", "battleaxe", "trident", "crossbow" ],
-      "troll": [ "claws", "club", "scimitar", "morningstar", "crossbow" ],
+      "orc": [ "battleaxe", "heavy_mace", "heavy_flail", "greatsword", "claymore", "heavy_crossbow" ],
+      "ogre": [ "club", "heavy_mace", "battleaxe", "trident", "heavy_crossbow" ],
+      "troll": [ "claws", "club", "scimitar", "morningstar", "heavy_crossbow" ],
       "dragon": [ "bite", "claws" ],
-      "elf": [ "longsword", "dagger", "crossbow", "shortsword", "spear" ],
-      "dwarf": [ "battleaxe", "light_warhammer", "crossbow" ],
+      "elf": [ "longsword", "dagger", "heavy_crossbow", "shortsword", "spear" ],
+      "dwarf": [ "battleaxe", "light_warhammer", "heavy_crossbow" ],
       "halfling": [ "shortsword", "sling", "dagger" ],
-      "gnome": [ "dagger", "staff", "crossbow" ],
+      "gnome": [ "dagger", "staff", "heavy_crossbow" ],
       "fae": [ "staff", "dagger", "shortsword" ]
     }
   },
@@ -784,30 +787,26 @@
         "_monsterLevelDistribution": ["=#_targetCr"],
         "_npcCount": 2,
         "npc_type": "Cultist",
-        "challenging": true,
+        "challenging": false,
         "_companionCount": 0,
         "_treasureItems": ["soul gem", "ring of protection", "staff of power", "cloak of invisibility"],
-        "bonusGold": "500 + 20d100"
+        "bonusGold": "10 + 6d100"
       },
       "ritual_chamber": {
-        "monster_type": "Cult Master",
-        "_monsterLevelDistribution": ["=#_targetCr"],
         "_npcCount": 4,
-        "npc_type": "Acolyte",
-        "challenging": true,
+        "_npc_types": ["Cult Master", "Acolyte", "Acolyte", "Acolyte"],
+        "challenging": false,
         "_companionCount": 0,
-        "_treasureItems": ["amulet of health", "wand of magic missiles", "robe of the archmagi"],
-        "bonusGold": "300 + 15d100"
+        "_treasureItems": ["amulet of health", "wand_of_magic_missiles", "robe of the archmagi"],
+        "bonusGold": "10 + 5d20"
       },
       "dark_altar": {
-        "monster_type": "Death Priest",
-        "_monsterLevelDistribution": ["=#_targetCr"],
         "_npcCount": 3,
-        "npc_type": "Adept",
-        "challenging": true,
+        "_npc_types": ["Death Priest", "Adept", "Adept"],
+        "challenging": false,
         "_companionCount": 0,
         "_treasureItems": ["unholy symbol", "ring of regeneration", "staff of the necromancer"],
-        "bonusGold": "400 + 20d100"
+        "bonusGold": "10 + 4d10"
       }
     }
   },

@@ -54,7 +54,7 @@ export default class Combat {
   protected async emit(event: Omit<GameEvent, "turn">, prefix = ""): Promise<void> {
     let e: CombatEvent = { ...event, turn: this.turnNumber } as CombatEvent;
     this.journal.push(e);
-    
+
     if (Events.present(e) !== "") {
       this.note(prefix + Events.present(e));
     }
@@ -124,7 +124,6 @@ export default class Combat {
         const trait = traitHandler.getTrait(traitName);
         if (trait) {
           c.passiveEffects ||= [];
-          // c.passiveEffects.push(...trait.statuses);
           for (const status of trait.statuses) {
             if (!c.passiveEffects?.map(e => e.name).includes(status.name)) {
               c.passiveEffects.push(status);
@@ -157,6 +156,89 @@ export default class Combat {
     return Combat.maxSpellSlotsForLevel(combatant.level || 1)
   }
 
+  validateAction(ability: Ability, combatant: Combatant, allies: Combatant[], enemies: Combatant[]): boolean {
+    let activeFx = Fighting.gatherEffects(combatant);
+    if (activeFx.compelNextMove) {
+      let compelledAbility = this.abilityHandler.getAbility(activeFx.compelNextMove as string);
+      let validTargets = AbilityHandler.validTargets(compelledAbility, combatant, allies, enemies);
+      if (compelledAbility && validTargets.length > 0) {
+        return ability.name === compelledAbility.name;
+      }
+    }
+
+    let validTargets = AbilityHandler.validTargets(ability, combatant, allies, enemies);
+    let disabled = validTargets.length === 0;
+    if (ability.target.includes("randomEnemies") && Combat.living(enemies).length > 0) {
+      // note we need a special case here since randomEnemies doesn't have valid targets until we select them
+      disabled = false;
+    }
+
+    // if _only_ a healing effect and target is ally/self/allies and NO wounded allies, disable
+    if (!disabled && ability.effects.every(e => e.type === "heal") && ability.effects.length > 0) {
+      if (Combat.wounded([...allies, combatant]).length === 0) {
+        disabled = true;
+      } else if (ability.target.includes("self") && combatant.hp === combatant.maxHp) {
+        disabled = ability.target.length === 1; // if only self-targeting, disable; if also allies, allow
+      } else if ((ability.target.includes("allies") || ability.target.includes("ally")) && Combat.wounded(allies).length === 0) {
+        disabled = ability.target.length === 1; // if only allies-targeting, disable; if also self, allow
+      }
+    }
+
+    if (!disabled && ability.effects.some(e => e.type === "summon")) {
+      // let allies = this.teams.find(t => t.combatants.includes(combatant));
+      disabled = Combat.living(allies).length >= 6; // arbitrary cap on total combatants
+    }
+
+    // if there is a conditional status to the ability like backstab requiring Hidden, check for that
+    let condition = ability.condition;
+    if (condition) {
+      if (condition.status) {
+        if (!combatant.activeEffects?.map(e => e.name).includes(condition.status)) {
+          disabled = true;
+        }
+      } else if (condition.dead) {
+        if (ability.target.includes("ally") || ability.target.includes("allies")) {
+          let targetAllies = allies.filter(a => a.hp <= 0);
+          if (targetAllies.length === 0) {
+            disabled = true;
+          }
+        }
+      }
+    }
+
+    if (ability.condition?.hasInterceptWeapon) {
+      disabled = !combatant.hasInterceptWeapon;
+    }
+
+    if (!disabled) {
+      if (ability.type == "spell") {
+        // let activeFx = Fighting.gatherEffects(combatant);
+        let spellSlotsRemaining = (Combat.maxSpellSlotsForCombatant(combatant) || 0) - (combatant.spellSlotsUsed || 0);
+        // if we have a noSpellcasting effect, set spellSlotsRemaining to 0
+        if (activeFx.noSpellcasting) {
+          spellSlotsRemaining = 0;
+        }
+        disabled = spellSlotsRemaining === 0;
+      } else if (ability.type == "skill") {
+        // want to track consumption here...
+        // console.log("Already used ", ability.name, "?", combatant.abilitiesUsed?.includes(ability.name) || false)
+        if (!ability.name.match(/melee|ranged|wait/i)) {
+          // let alreadyUsed = (combatant.abilitiesUsed||[]).includes(ability.name);
+          // disabled = alreadyUsed;
+          // Check cooldown
+          let cooldownRemaining = combatant.abilityCooldowns?.[ability.name] || 0;
+          if (cooldownRemaining > 0) {
+            disabled = true;
+          }
+        }
+        // } else {
+        // throw new Error(`Unknown ability type: ${ability.type}`);
+      }
+    }
+    return !disabled;
+
+  }
+
   validActions(combatant: Combatant, allies: Combatant[], enemies: Combatant[]): Ability[] {
     const validAbilities: Ability[] = [];
 
@@ -170,79 +252,18 @@ export default class Combat {
       }
     }
 
-    let spellSlotsRemaining = (Combat.maxSpellSlotsForCombatant(combatant) || 0) - (combatant.spellSlotsUsed || 0);
-    // if we have a noSpellcasting effect, set spellSlotsRemaining to 0
-    if (activeFx.noSpellcasting) {
-      spellSlotsRemaining = 0;
-    }
+    // let spellSlotsRemaining = (Combat.maxSpellSlotsForCombatant(combatant) || 0) - (combatant.spellSlotsUsed || 0);
+    // // if we have a noSpellcasting effect, set spellSlotsRemaining to 0
+    // if (activeFx.noSpellcasting) {
+    //   spellSlotsRemaining = 0;
+    // }
 
     let uniqAbilities = Array.from(new Set(combatant.abilities));
     let abilities = uniqAbilities.map(a => this.abilityHandler.getAbility(a)); //.filter(a => a);
     abilities.forEach((ability: Ability) => {
-      let validTargets = AbilityHandler.validTargets(ability, combatant, allies, enemies);
-      let disabled = validTargets.length === 0;
-      if (ability.target.includes("randomEnemies") && Combat.living(enemies).length > 0) {
-        // note we need a special case here since randomEnemies doesn't have valid targets until we select them
-        disabled = false;
-      }
+      let disabled = !this.validateAction(ability, combatant, allies, enemies);
 
-      // if _only_ a healing effect and target is ally/self/allies and NO wounded allies, disable
-      if (!disabled && ability.effects.every(e => e.type === "heal") && ability.effects.length > 0) {
-        if (Combat.wounded([...allies, combatant]).length === 0) {
-          disabled = true;
-        } else if (ability.target.includes("self") && combatant.hp === combatant.maxHp) {
-          disabled = ability.target.length === 1; // if only self-targeting, disable; if also allies, allow
-        } else if ((ability.target.includes("allies") || ability.target.includes("ally")) && Combat.wounded(allies).length === 0) {
-          disabled = ability.target.length === 1; // if only allies-targeting, disable; if also self, allow
-        }
-      }
-
-      if (!disabled && ability.effects.some(e => e.type === "summon")) {
-        let allies = this.teams.find(t => t.combatants.includes(combatant));
-        disabled = Combat.living(allies ? allies.combatants : []).length >= 6; // arbitrary cap on total combatants
-      }
-
-      // if there is a conditional status to the ability like backstab requiring Hidden, check for that
-      let condition = ability.condition;
-      if (condition) {
-        if (condition.status) {
-          if (!combatant.activeEffects?.map(e => e.name).includes(condition.status)) {
-            disabled = true;
-          }
-        } else if (condition.dead) {
-          if (ability.target.includes("ally") || ability.target.includes("allies")) {
-            let targetAllies = allies.filter(a => a.hp <= 0);
-            if (targetAllies.length === 0) {
-              disabled = true;
-            }
-          }
-        }
-      }
-
-      if (ability.condition?.hasInterceptWeapon) {
-        disabled = !combatant.hasInterceptWeapon;
-      }
-
-      if (!disabled) {
-        if (ability.type == "spell") {
-          disabled = spellSlotsRemaining === 0;
-        } else if (ability.type == "skill") {
-          // want to track consumption here...
-          // console.log("Already used ", ability.name, "?", combatant.abilitiesUsed?.includes(ability.name) || false)
-          if (!ability.name.match(/melee|ranged|wait/i)) {
-            // let alreadyUsed = (combatant.abilitiesUsed||[]).includes(ability.name);
-            // disabled = alreadyUsed;
-            // Check cooldown
-            let cooldownRemaining = combatant.abilityCooldowns?.[ability.name] || 0;
-            if (cooldownRemaining > 0) {
-              disabled = true;
-            }
-          }
-        } else {
-          throw new Error(`Unknown ability type: ${ability.type}`);
-        }
-      }
-
+      // console.log(`Checking ability ${ability.name} for ${combatant.forename}: valid targets =`, validTargets.map(t => Array.isArray(t) ? t.map(c => c.forename).join(", ") : (t as Combatant).forename), `=> disabled = ${disabled}`);
       if (!disabled) {
         validAbilities.push(ability);
       }
@@ -252,8 +273,18 @@ export default class Combat {
   }
 
   async pcTurn(combatant: Combatant, enemies: Combatant[], allies: Combatant[]): Promise<{ haltRound: boolean }> {
-    let validAbilities = this.validActions(combatant, allies, enemies);
-    let allAbilities = combatant.abilities.map(a => this.abilityHandler.getAbility(a));
+    let inventoryItems = this.teams[0].inventory || {};
+    let itemAbilities = [];
+    for (let [itemKey, qty] of Object.entries(inventoryItems)) {
+      if (qty > 0) {
+        let itemAbility = await Deem.evaluate(`lookup(consumables, '${itemKey}')`);
+        itemAbilities.push({ ...itemAbility, key: itemKey });
+      }
+    }
+
+    // let validAbilities = this.validActions(combatant, allies, enemies);
+    let allAbilities = combatant.abilities.map(a => this.abilityHandler.getAbility(a))
+      .concat(itemAbilities);
 
     let pips = "";
     pips += "⚡".repeat((Combat.maxSpellSlotsForCombatant(combatant) || 0) - ((combatant.spellSlotsUsed || 0))) + "⚫".repeat(combatant.spellSlotsUsed || 0);
@@ -262,36 +293,9 @@ export default class Combat {
         value: ability,
         name: `${ability.name.padEnd(15)} (${ability.description}/${ability.type === "spell" ? pips : "skill"})`,
         short: ability.name,
-        disabled: !validAbilities.some(a => a.name === ability.name)
+        disabled: !this.validateAction(ability, combatant, allies, enemies)
       })
     });
-
-    // if we have inventory items that can be used in combat, add those as choices
-    let inventoryItems = this.teams[0].inventory || {};
-    for (let [itemKey, qty] of Object.entries(inventoryItems)) {
-      if (qty > 0) {
-        let itemAbility = await Deem.evaluate(`lookup(consumables, '${itemKey}')`);
-        let verb = "Use";
-        switch (itemAbility.type) {
-          case "potion":
-            verb = "Quaff";
-            break;
-          case "scroll":
-            verb = "Read";
-            break;
-          case "grenade":
-          case "flask":
-            verb = "Throw";
-            break;
-        }
-        choices.push({
-          value: { ...itemAbility, key: itemKey },
-          name: `${verb} ${itemAbility.name.padEnd(15)} (${itemAbility.description})`,
-          short: itemAbility.name,
-          disabled: (itemAbility.charges !== undefined && itemAbility.charges <= 0) || false
-        });
-      }
-    }
 
     choices.push({
       value: { name: "Wait", type: "skill", description: "Skip your turn to wait and see what happens.", aspect: "physical", target: ["self"], effects: [] },
@@ -366,8 +370,6 @@ export default class Combat {
       combatant.spellSlotsUsed = (combatant.spellSlotsUsed || 0) + 1;
     }
 
-    // let consumableTypes = ["potion", "scroll", "grenade", "flask"];
-    // console.log("Action type:", action.type);
     if (action.type === "consumable") {
       // would be nice to handle charges (find first one with charges available and reduce that)
       if (action.charges !== undefined) {
@@ -649,12 +651,11 @@ export default class Combat {
           forename: "Hero", name: "Hero", alignment: "neutral",
           hp: 14, maxHp: 14, level: 1, ac: 10,
           dex: 11, str: 12, int: 10, wis: 10, cha: 10, con: 12,
-          // attackRolls: 1, damageDie: 8,
           attackDie: "1d8",
           playerControlled: true, xp: 0, gp: 0,
           weapon: "Short Sword", damageKind: "slashing", abilities: ["melee"], traits: [],
           hasMissileWeapon: false
-        }], //healingPotions: 3
+        }],
         inventory: {}
       },
       {
@@ -669,7 +670,7 @@ export default class Combat {
             attackDie: "1d3",
             str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: [], hasMissileWeapon: false, xp: 0, gp: 0
           }
-        ], 
+        ],
         inventory: {}
       }
     ];

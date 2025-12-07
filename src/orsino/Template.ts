@@ -36,8 +36,12 @@ export class Template {
 
       Deem.stdlib.mapGenList = async (type: GenerationTemplateType, items: any[], property: string) => {
         let results = [];
-        for (let item of items) {
-          let genOptions = { ...context, [property]: item };
+        // for (let item of items) {
+        //   let index = items.indexOf(item);
+        for (let i = 0; i < items.length; i++) {
+          let item = items[i];
+          let index = i;
+          let genOptions = { ...context, [property]: item, _index: index };
           let genResult = await Generator.gen(type, genOptions);
           results.push(genResult);
         }

@@ -362,10 +362,11 @@ export default class Dungeoneer {
         //   enemies.reduce((sum, m) => sum + (Deem.evaluate(String(m.gp) || "1+1d2")), 0);
         for (const m of enemies) {
           const monsterGold = (await Deem.evaluate(String(m.gp))) || 0;
+          console.log(`Monster '${m.name}' yields ${monsterGold} gold (${m.gp})`);
           gold += monsterGold;
         }
 
-        this.note(`\n✓ Victory! +${xp} XP, +${gold} GP\n`);
+        this.note(`\nVictory! +${xp} XP, +${gold} GP\n`);
       }
 
       if (Math.random() < 0.5) {
@@ -447,8 +448,8 @@ export default class Dungeoneer {
         const survivedNap = await this.rest(room);
         if (!survivedNap) {
           console.warn("The party was ambushed during their rest and defeated...");
+          return { leaving: true };
         }
-        return { leaving: !survivedNap };
       } else if (choice === "examine") {
         let check = await this.skillCheck("examine", `to examine ${room.decor}`, "int", 10);
         if (check.success) {
@@ -543,8 +544,8 @@ export default class Dungeoneer {
         await this.reward(xpReward, 0);
       }
       if (room.gear) {
+        this.note(`${actor.forename} finds ${Words.humanizeList(room.gear.map(Words.humanize))}!`);
         for (const item of room.gear) {
-          this.note(`${actor.forename} finds ${Words.a_an(item)}!`);
           actor.gear = actor.gear || [];
           actor.gear.push(item);
         }
@@ -587,7 +588,6 @@ export default class Dungeoneer {
       let someoneWounded = this.playerTeam.combatants.some(c => c.hp < c.maxHp);
 
       let healingItems = [];
-      // Object.entries(this.playerTeam.inventory).filter(([item, qty]) => {
       for (const [item, qty] of Object.entries(this.playerTeam.inventory)) {
         let it = await Deem.evaluate(`=lookup(consumables, "${item}")`);
         if (qty > 0 && it.aspect === "healing") {
@@ -654,11 +654,13 @@ export default class Dungeoneer {
             {
               forename: "Shadow Dragon", name: "Shadow Dragon", hp: 50, maxHp: 50, level: 5, ac: 18, dex: 14, str: 20, con: 16, int: 12, wis: 10, cha: 14,
               attackDie: "1d20", hitDie: 12, hasMissileWeapon: false,
-              playerControlled: false, xp: 500, gp: 1000, weapon: "Bite", damageKind: "piercing", abilities: ["melee"], traits: []
+              playerControlled: false, xp: 500, gp: 1000, weapon: "Bite", damageKind: "piercing", abilities: ["melee"], traits: [], alignment: 'evil'
             }
           ]
         },
-        treasure: "A legendary sword and a chest of gold.",
+        treasure: ["a legendary sword"],
+        features: [],
+        aura: null,
         decor: "a magical portal",
         gear: ["a legendary sword"]
       },
@@ -667,14 +669,16 @@ export default class Dungeoneer {
           narrative: "A dimly lit cave with dripping water.",
           room_type: 'cave',
           room_size: 'small',
-          treasure: "A rusty sword and a bag of gold coins.",
+          treasure: [ "a bag of gold coins", "a rusty sword" ],
+          features: [],
+          aura: null,
           decor: "a hidden alcove",
           gear: ["a rusty sword", "a bag of gold coins"],
           encounter: {
             cr: 1,
             creatures: [
               {
-                forename: "Goblin", name: "Goblin", hp: 7, maxHp: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8,
+                forename: "Goblin", name: "Goblin", hp: 7, maxHp: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, alignment: "evil",
                 attackDie: "1d20", hitDie: 6, hasMissileWeapon: false,
                 playerControlled: false, xp: 50, gp: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: []
               }
@@ -685,14 +689,16 @@ export default class Dungeoneer {
           narrative: "A grand hall with ancient tapestries.",
           room_type: 'hall',
           room_size: 'large',
-          treasure: "A magical amulet and a potion of healing.",
+          treasure: [ "a magical amulet", "a potion of healing" ],
+          features: [],
+          aura: null,
           decor: "a crumbling statue",
           gear: ["a magical amulet", "a potion of healing"],
           encounter: {
             cr: 2,
             creatures: [
               {
-                forename: "Orc", name: "Orc", hp: 15, maxHp: 15, level: 2, ac: 13, dex: 12, str: 16, con: 14, int: 8, wis: 10, cha: 8,
+                forename: "Orc", name: "Orc", hp: 15, maxHp: 15, level: 2, ac: 13, dex: 12, str: 16, con: 14, int: 8, wis: 10, cha: 8, alignment: "evil",
                 attackDie: "1d20", hitDie: 8, hasMissileWeapon: false,
                 playerControlled: false, xp: 100, gp: 20, weapon: "Axe", damageKind: "slashing", abilities: ["melee"], traits: []
               },

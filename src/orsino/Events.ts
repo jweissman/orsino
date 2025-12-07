@@ -142,7 +142,7 @@ export default class Events {
       case "miss": return `${subjectName} attacks ${targetName} but misses.`;
       case "defend": return `${subjectName} takes a defensive stance, preparing to block incoming attacks.`;
       case "quaff": return `${subjectName} quaffs a healing potion.`;
-      case "fall": return `${subjectName} falls unconscious.`;
+      case "fall": return `${subjectName} falls.`;
       case "flee": return `${subjectName} flees from combat.`;
       case "statusEffect":
         let effectName = Stylist.colorize(event.effectName, 'magenta');
@@ -216,7 +216,7 @@ export default class Events {
       case "xp":
         return `${subjectName} gains ${event.amount} experience points.`;
       case "kill":
-        return `${subjectName} has slain ${targetName}!`;
+        return `${subjectName} has defeated ${targetName}!`;
       case "crit":
         return "";
 

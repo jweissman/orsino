@@ -12,7 +12,19 @@ export default class Deem {
     rand: () => Math.random(),
     if: (cond: any, trueVal: any, falseVal: any) => (cond ? trueVal : falseVal),
     oneOf: (...args: any[]) => args[Math.floor(Math.random() * args.length)],
-    pick: (arr: any[]) => arr[Math.floor(Math.random() * arr.length)],
+    pick: (arr: any[], index = -1) => {
+      if (!Array.isArray(arr)) {
+        throw new Error(`pick() expects an array, got: ${typeof arr}`);
+        // console.warn("pick() expects an array, got:", arr);
+        // return arr;
+      }
+      // console.log("PICKING FROM ARRAY:", arr);
+      if (index === -1) {
+        return arr[Math.floor(Math.random() * arr.length)]
+      } else {
+        return arr[index % arr.length];
+      }
+    },
     sample: (arr: any[], count: number) => {
       const sampled: any[] = [];
       const arrCopy = [...arr];

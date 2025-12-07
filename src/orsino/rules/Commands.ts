@@ -91,7 +91,6 @@ export class Commands {
   }
 
   static async handleHeal(healer: Combatant, target: Combatant, amount: number): Promise<TimelessEvent[]> {
-    target.hp = Math.min(target.maxHp, target.hp + amount);
     const effective = Fighting.effectiveStats(healer);
     const wisBonus = Math.max(0, Fighting.statMod(effective.wis));
     if (wisBonus > 0) {
