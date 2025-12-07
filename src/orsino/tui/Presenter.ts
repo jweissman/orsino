@@ -88,9 +88,16 @@ export default class Presenter {
           trait.statuses?.forEach(status => {
             console.log(`  ${Stylist.colorize(status.name, 'cyan')} (${status.description})`);
           });
+          console.log();
         }
-        console.log();
       }
+    }
+
+    if (combatant.equipment && Object.keys(combatant.equipment).length > 0) {
+      console.log(Stylist.bold("\nEquipped Items: "));
+      Object.entries(combatant.equipment).forEach(([slot, item]) => {
+        console.log(`  ${Stylist.colorize(Words.capitalize(slot), 'yellow')}: ${item}`);
+      });
     }
 
     if (combatant.gear && combatant.gear.length > 0) {
@@ -150,7 +157,7 @@ export default class Presenter {
     return lhs;
   }
 
-  static statLine = (combatant: Combatant) => {
+  static async statLine(combatant: Combatant) {
     // const str = Stylist.colorize(Stylist.prettyValue(combatant.str, 20), 'red');
     // const dex = Stylist.colorize(Stylist.prettyValue(combatant.dex, 20), 'yellow');
     // const int = Stylist.colorize(Stylist.prettyValue(combatant.int, 20), 'green');
@@ -160,7 +167,7 @@ export default class Presenter {
 
     // return [str, dex, int, wis, cha, con].join('');
 
-    const effective = Fighting.effectiveStats(combatant);
+    const effective = await Fighting.effectiveStats(combatant);
     return [
       this.stat('str', effective.str),
       this.stat('dex', effective.dex),

@@ -1,6 +1,12 @@
 import { DamageKind, SaveKind, StatusEffect } from "../Ability";
 
+export type EquipmentSlot = 'ring1' | 'ring2' | 'amulet' | 'cloak' | 'boots';
 export interface Combatant {
+  weaponProficiencies?: {
+    all?: boolean;
+    kind?: string[];
+    weight?: string[];
+  }
   referenceName?: string;
   npc_type?: string;
   archetype?: string;
@@ -68,22 +74,21 @@ export interface Combatant {
   hasMissileWeapon?: boolean;
   hasInterceptWeapon?: boolean;
 
-  // itemChargesUsed?: { [itemName: string]: number };
-
-  // equipment?: {
+  equipment?: { [slot in EquipmentSlot]?: string };
+  // {
   //   ring1?: string;
   //   ring2?: string;
   //   amulet?: string;
   //   cloak?: string;
   //   boots?: string;
-  //   gloves?: string;
-  //   belt?: string;
-  //   helmet?: string;
-  //   wrist?: string;
-  //   ankle?: string;
-  //   orbital?: string;
+  //   // gloves?: string;
+  //   // belt?: string;
+  //   // helmet?: string;
+  //   // wrist?: string;
+  //   // ankle?: string;
+  //   // orbital?: string;
 
-  //   // tracked separately for now
+  //   // note: these are tracked separately for now just on the combatant for simplicity
   //   // weapon?: string;
   //   // armor?: string;
   // }

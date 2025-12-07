@@ -220,7 +220,7 @@ export default class Dungeoneer {
     //   throw new Error("No actor selected for skill check");
     // }
 
-    let actorFx = Fighting.gatherEffects(actor);
+    let actorFx = await Fighting.gatherEffects(actor);
     let skillBonusName = `${type}Bonus`;
     let skillBonus = actorFx[skillBonusName] as number || 0;
     let skillMod = Fighting.statMod(actor[skill] as number);
@@ -398,7 +398,7 @@ export default class Dungeoneer {
     let perCapitaXp = Math.floor(xp / standing.length);
     let perCapitaGold = Math.floor(gold / standing.length);
     for (const c of standing) {
-      let fx = Fighting.gatherEffects(c);
+      let fx = await Fighting.gatherEffects(c);
       let xpMultiplier = fx.xpMultiplier as number || 1;
       let gpMultiplier = fx.goldMultiplier as number || 1;
 
@@ -449,7 +449,11 @@ export default class Dungeoneer {
         }
         this.note(`Inventory:`);
         for (const [itemName, qty] of Object.entries(Inventory.quantities(this.playerTeam.inventory))) {
-          this.outputSink(` - ${Words.humanize(itemName)} x${qty}`);
+          if (qty > 1) {
+            this.outputSink(` - ${Words.humanize(itemName)} x${qty}`);
+          } else {
+            this.outputSink(` - ${Words.humanize(itemName)}`);
+          }
         }
       } else if (choice === "search") {
         await this.search(room);
@@ -563,7 +567,7 @@ export default class Dungeoneer {
       }
 
       let lootBonus = 0;
-      let fx = Fighting.gatherEffects(actor);
+      let fx = await Fighting.gatherEffects(actor);
       lootBonus += fx.lootBonus as number || 0;
       if (lootBonus > 0) {
         this.note(`${actor.forename} has a loot bonus of +${lootBonus}.`);

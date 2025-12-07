@@ -1,6 +1,6 @@
 import Combat from "./Combat";
 import Dungeoneer, { Dungeon } from "./Dungeoneer";
-import { Combatant } from "./types/Combatant";
+import { Combatant, EquipmentSlot } from "./types/Combatant";
 import { Roll } from "./types/Roll";
 import { Select } from "./types/Select";
 import Choice from "inquirer/lib/objects/choice";
@@ -48,7 +48,7 @@ export class ModuleRunner {
   private moduleGen: () => Promise<CampaignModule>;
   private state: GameState = {
     party: [],
-    sharedGold: 200,
+    sharedGold: 2000,
     inventory: [],
     completedDungeons: []
   };
@@ -180,6 +180,8 @@ export class ModuleRunner {
         this.rest(this.pcs);
       } else if (action === "itemShop") {
         await this.shop('consumables');
+      } else if (action === "magicShop") {
+        await this.shop('equipment');
       } else if (action === "armory") {
         await this.shop('weapons');
       } else if (action === "rumors") {
@@ -267,6 +269,7 @@ export class ModuleRunner {
       options.push(
         ...[
           { short: "Arms", value: "armory", name: "Visit the Armorer (buy weapons)", disabled: false },
+          { short: "Equip", value: "magicShop", name: "Visit the Magic Shop (buy equipment)", disabled: false },
           { short: "Items", value: "itemShop", name: "Visit the Alchemist (buy consumables)", disabled: false },
           { short: "Chat", value: "rumors", name: "Visit the Tavern (hear rumors about the region)", disabled: available.length === 0 },
           { short: "Pray", value: "pray", name: `Visit the Temple to ${Words.capitalize(this.mod.town.deity)}`, disabled: this.sharedGold < 10 },
@@ -294,8 +297,59 @@ export class ModuleRunner {
     this.outputSink("💤 Your party rests and recovers fully.");
   }
 
-  private async shop(category: 'consumables' | 'weapons') {
-    if (category === 'consumables') {
+  private async shop(category: 'consumables' | 'weapons' | 'equipment') {
+    if (category === 'equipment') {
+      console.log("\nWelcome to the Magic Shop! Here are the available items:");
+      const magicItemNames = await Deem.evaluate(`gather(equipment)`);
+      while (true) {
+        // pick wielder
+        const pcOptions: Choice<any>[] = this.pcs.map(pc => ({
+          short: pc.name,
+          value: pc,
+          name: `${pc.name} (${pc.equipment ? Words.humanizeList(Object.keys(pc.equipment)) : 'no equipment'})`,
+          disabled: false,
+        }));
+        const wielder = await this.select(`Who needs new equipment?`, pcOptions) as Combatant;
+
+        const options: Choice<any>[] = [];
+        // shopItems.map((itemName: string, index: number) => {
+        for (let index = 0; index < magicItemNames.length; index++) {
+          let itemName = magicItemNames[index];
+          let item = await Deem.evaluate(`lookup(equipment, "${itemName}")`);
+          item.key = itemName;
+          options.push({
+            short: Words.humanize(itemName) + ` (${item.value}g)`,
+            value: item,
+            name: `${Words.humanize(itemName)} - ${item.description} (${item.value}g)`,
+            disabled: this.sharedGold < item.value,
+          })
+        }
+        options.push({ disabled: false, short: "Done", value: -1, name: "Finish shopping" });
+
+        console.log("You have " + Stylist.bold(this.sharedGold + "g") + " available.");
+        const choice = await this.select("Available equipment to purchase:", options);
+        if (choice === -1) {
+          this.outputSink("You finish your shopping.");
+          break;
+        }
+        const item = choice;
+        console.log("Chosen equipment:", item);
+
+        if (this.sharedGold >= item.value) {
+          let oldItemKey = wielder.equipment ? wielder.equipment[item.kind as EquipmentSlot] : null;
+          if (oldItemKey) {
+            let oldItem = await Deem.evaluate(`lookup(equipment, "${oldItemKey}")`);
+            this.state.sharedGold += oldItem.value || 0;
+            this.outputSink(`🔄 Replacing ${Words.humanize(oldItemKey)} equipped to ${wielder.name} (sold old item for ${oldItem.value}g).`)
+          };
+          this.state.sharedGold -= item.value;
+          wielder.equipment = wielder.equipment || {};
+          wielder.equipment[item.kind as EquipmentSlot] = item.key;
+          
+          this.outputSink(`Purchased ${Words.humanize(item.name)} for ${item.value}g, equipped to ${wielder.name}`);
+        }
+      }
+    } else if (category === 'consumables') {
       console.log("\nWelcome to the Alchemist's Shop! Here are the available items:");
 
       const consumableItemNames = await Deem.evaluate(`gather(consumables)`);
@@ -342,6 +396,16 @@ export class ModuleRunner {
       weaponItemNames.sort();
 
       while (true) {
+        
+        // pick wielder
+        const pcOptions: Choice<any>[] = this.pcs.map(pc => ({
+          short: pc.name,
+          value: pc,
+          name: `${pc.name} (${pc.weapon || 'unarmed'})`,
+          disabled: false,
+        }));
+        const wielder = await this.select(`Who needs a new weapon?`, pcOptions) as Combatant;
+
         const options: Choice<any>[] = [];
         // shopItems.map((itemName: string, index: number) => {
         for (let index = 0; index < weaponItemNames.length; index++) {
@@ -351,8 +415,8 @@ export class ModuleRunner {
           options.push({
             short: Words.humanize(itemName) + ` (${item.value}g)`,
             value: item,
-            name: `${Words.humanize(itemName)} - ${item.damage} (${item.value}g)`,
-            disabled: this.sharedGold < item.value,
+            name: `${Words.humanize(itemName)} - ${item.damage} ${item.weight} ${item.kind} (${item.value}g)`,
+            disabled: this.sharedGold < item.value || (wielder.weaponProficiencies ? !Inventory.isWeaponProficient(item, wielder.weaponProficiencies) : true),
           })
         }
         options.push({ disabled: false, short: "Done", value: -1, name: "Finish shopping" });
@@ -365,15 +429,6 @@ export class ModuleRunner {
         }
         const item = choice;
         console.log("Chosen weapon:", item);
-        
-        // pick wielder
-        const pcOptions: Choice<any>[] = this.pcs.map(pc => ({
-          short: pc.name,
-          value: pc,
-          name: `${pc.name} (${pc.weapon || 'unarmed'})`,
-          disabled: false,
-        }));
-        const wielder = await this.select(`Who will wield the ${item.key}?`, pcOptions) as Combatant;
 
         if (this.sharedGold >= item.value) {
           this.state.sharedGold -= item.value;

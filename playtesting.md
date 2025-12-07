@@ -87,6 +87,7 @@
 [ ] Weapon proficiencies should matter for equipping PCs (ie not letting mage have huge battleaxes)
 ---
 [ ] Template overlay for dungeon types (could express '30% undead' outside of deem template...)
+[ ] effectiveStats helper really needs to consider passives (and now equipment!)
 
 ## Fixed
 [x] Temple/shrine to local deity to get a blessing

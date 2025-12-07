@@ -34,20 +34,20 @@ export class Template {
       return await Generator.genList(type, { ...context }, count, condition);
     }
 
-      Deem.stdlib.mapGenList = async (type: GenerationTemplateType, items: any[], property: string) => {
-        let results = [];
-        // for (let item of items) {
-        //   let index = items.indexOf(item);
-        for (let i = 0; i < items.length; i++) {
-          let item = items[i];
-          let index = i;
-          let genOptions = { ...context, [property]: item, _index: index };
-          let genResult = await Generator.gen(type, genOptions);
-          results.push(genResult);
-        }
-        // process.stdout.write(`.`);
-        return results;
+    Deem.stdlib.mapGenList = async (type: GenerationTemplateType, items: any[], property: string) => {
+      let results = [];
+      // for (let item of items) {
+      //   let index = items.indexOf(item);
+      for (let i = 0; i < items.length; i++) {
+        let item = items[i];
+        let index = i;
+        let genOptions = { ...context, [property]: item, _index: index };
+        let genResult = await Generator.gen(type, genOptions);
+        results.push(genResult);
       }
+      // process.stdout.write(`.`);
+      return results;
+    }
   }
 
   async assembleProperties(
@@ -65,38 +65,8 @@ export class Template {
         ...assembled
       };
       await Template.bootstrapDeem(context);
-      // Deem.stdlib.eval = async (expr: string) => await Deem.evaluate(expr, context);
-      // Deem.stdlib.lookup = (tableName: GenerationTemplateType, groupName: string) => generator.lookupInTable(tableName, groupName);
-      // Deem.stdlib.hasEntry = (tableName: GenerationTemplateType, groupName: string) => {
-      //   // console.log(`Checking hasEntry for table '${tableName}' and group '${groupName}'`);
-      //   const table = generator.generationSource(tableName);
-      //   if (!table || !(table instanceof Table)) {
-      //     throw new Error(`Table not found: ${tableName}`);
-      //     return false;
-      //   }
-      //   return table.hasGroup(groupName);
-      // };
-      // Deem.stdlib.gather = (tableName: GenerationTemplateType, count: number) => generator.gatherKeysFromTable(tableName, count);
-      // Deem.stdlib.gen = async (type: GenerationTemplateType) => {
-      //   return await generator.gen(type, { ...context })
-      // };
-      // Deem.stdlib.genList = async (type: GenerationTemplateType, count: number = 1, condition?: string) => {
-      //   return await generator.genList(type, { ...context }, count, condition);
-      // }
-
-      // Deem.stdlib.mapGenList = async (type: GenerationTemplateType, items: any[], property: string) => {
-      //   let results = [];
-      //   for (let item of items) {
-      //     let genOptions = { ...context, [property]: item };
-      //     let genResult = await generator.gen(type, genOptions);
-      //     results.push(genResult);
-      //   }
-      //   // process.stdout.write(`.`);
-      //   return results;
-      // }
-
       let resolved = localContext[key] !== undefined ? localContext[key] :
-          (await Template.evaluatePropertyExpression(value, context));
+        (await Template.evaluatePropertyExpression(value, context));
 
       // it felt like we needed deep copy here to prevent any mutations from affecting the original template
       assembled[key] = deepCopy(resolved);
@@ -135,9 +105,12 @@ export class Template {
             // localContext[k] = assembled[k];
           } else if (typeof v === 'boolean') {
             assembled[k] = v || assembled[k];
-          } else {
+          } else if (typeof v === 'object' && v !== null) {
             // assume obj?
-            assembled[k] = v + (assembled[k] || {});
+            assembled[k] = { ...v, ...(assembled[k] || {}) };
+          } else {
+            // assembled[k] = v + (assembled[k] || null);
+            throw new Error(`Cannot overlay property ${k} with value of type ${typeof v}`);
           }
           localContext[k] = assembled[k];
         }

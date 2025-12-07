@@ -84,9 +84,9 @@ export default class Combat {
   private async determineInitiative(): Promise<{ combatant: any; initiative: number }[]> {
     let initiativeOrder = [];
     for (let c of this.allCombatants) {
-      let effective = Fighting.effectiveStats(c);
+      let effective = await Fighting.effectiveStats(c);
       let initBonus = Fighting.turnBonus(c, ["initiative"]).initiative || 0;
-      const initiative = Commands.roll(c, "for initiative", 20).amount + Fighting.statMod(effective.dex) + initBonus;
+      const initiative = (await Commands.roll(c, "for initiative", 20)).amount + Fighting.statMod(effective.dex) + initBonus;
       // (await this.roller(c, "for initiative", 20)).amount + Fighting.statMod(effective.dex) + initBonus;
       initiativeOrder.push({ combatant: c, initiative });
     }
@@ -157,8 +157,8 @@ export default class Combat {
     return Combat.maxSpellSlotsForLevel(combatant.level || 1)
   }
 
-  validateAction(ability: Ability, combatant: Combatant, allies: Combatant[], enemies: Combatant[]): boolean {
-    let activeFx = Fighting.gatherEffects(combatant);
+  async validateAction(ability: Ability, combatant: Combatant, allies: Combatant[], enemies: Combatant[]): Promise<boolean> {
+    let activeFx = await Fighting.gatherEffects(combatant);
     if (activeFx.compelNextMove) {
       let compelledAbility = this.abilityHandler.getAbility(activeFx.compelNextMove as string);
       let validTargets = AbilityHandler.validTargets(compelledAbility, combatant, allies, enemies);
@@ -187,7 +187,8 @@ export default class Combat {
 
     if (!disabled && ability.effects.some(e => e.type === "summon")) {
       // let allies = this.teams.find(t => t.combatants.includes(combatant));
-      disabled = allies.length >= 6; // arbitrary cap on total combatants
+      // console.log(`Checking summon ability ${ability.name} for combatant ${combatant.forename} with ${allies.length} allies...`);
+      disabled = allies.length >= 5; // arbitrary cap on total combatants
     }
 
     // if there is a conditional status to the ability like backstab requiring Hidden, check for that
@@ -213,7 +214,6 @@ export default class Combat {
 
     if (!disabled) {
       if (ability.type == "spell") {
-        // let activeFx = Fighting.gatherEffects(combatant);
         let spellSlotsRemaining = (Combat.maxSpellSlotsForCombatant(combatant) || 0) - (combatant.spellSlotsUsed || 0);
         // if we have a noSpellcasting effect, set spellSlotsRemaining to 0
         if (activeFx.noSpellcasting) {
@@ -236,15 +236,16 @@ export default class Combat {
         // throw new Error(`Unknown ability type: ${ability.type}`);
       }
     }
+    // console.log(`Validating action '${ability.name}' for ${combatant.forename}: disabled=${disabled}`);
     return !disabled;
 
   }
 
-  validActions(combatant: Combatant, allies: Combatant[], enemies: Combatant[]): Ability[] {
+  async validActions(combatant: Combatant, allies: Combatant[], enemies: Combatant[]): Promise<Ability[]> {
     const validAbilities: Ability[] = [];
 
     // do we have a 'compelNextMove' effect?
-    let activeFx = Fighting.gatherEffects(combatant);
+    let activeFx = await Fighting.gatherEffects(combatant);
     if (activeFx.compelNextMove) {
       let compelledAbility = this.abilityHandler.getAbility(activeFx.compelNextMove as string);
       let validTargets = AbilityHandler.validTargets(compelledAbility, combatant, allies, enemies);
@@ -254,23 +255,17 @@ export default class Combat {
     }
     let uniqAbilities = Array.from(new Set(combatant.abilities));
     let abilities = uniqAbilities.map(a => this.abilityHandler.getAbility(a)); //.filter(a => a);
-    abilities.forEach((ability: Ability) => {
-      let disabled = !this.validateAction(ability, combatant, allies, enemies);
+    for (const ability of abilities) {
+      let disabled = !(await this.validateAction(ability, combatant, allies, enemies));
       if (!disabled) {
         validAbilities.push(ability);
       }
-    });
+    }
 
     return validAbilities;
   }
 
   static inventoryQuantities(team: Team): { [itemName: string]: number } {
-    // console.log("Calculating inventory quantities for team", team.name, "with inventory:", team.inventory);
-    // let inventoryCounts: { [itemName: string]: number } = {};
-    // for (let itemInstance of team.inventory) {
-    //   inventoryCounts[itemInstance.name] = (inventoryCounts[itemInstance.name] || 0) + 1;
-    // }
-    // return inventoryCounts;
     return Inventory.quantities(team.inventory || []);
   }
 
@@ -281,8 +276,7 @@ export default class Combat {
     for (let [itemKey, qty] of Object.entries(itemQuantities)) {
       if (qty > 0) {
         let itemAbility = await Deem.evaluate(`lookup(consumables, '${itemKey}')`);
-        // let it = inventoryItems.find(ii => ii.name === itemKey);
-        // sum charges across all instances of this item?
+        // sum charges across all instances of this item
         let matchingItems = inventoryItems.filter(ii => ii.name === itemKey);
         let totalCharges = 0;
         let chargeBased = itemAbility.charges !== undefined;
@@ -299,30 +293,29 @@ export default class Combat {
             throw new Error(`Item instance ${mi.name} is missing charges property.`);
           }
         }
-        // if (totalCharges !== -1) {
-        // itemAbility.charges = totalCharges;
         if (totalCharges <= 0) {
-          continue; // skip adding this ability since no charges left
+          continue;
         }
-        // }
         itemAbilities.push({ ...itemAbility, description: itemAbility.description + `(${totalCharges} charges left)`, key: itemKey });
       }
     }
 
-    // let validAbilities = this.validActions(combatant, allies, enemies);
     let allAbilities = combatant.abilities.map(a => this.abilityHandler.getAbility(a))
       .concat(itemAbilities);
 
     let pips = "";
     pips += "⚡".repeat((Combat.maxSpellSlotsForCombatant(combatant) || 0) - ((combatant.spellSlotsUsed || 0))) + "⚫".repeat(combatant.spellSlotsUsed || 0);
-    let choices = allAbilities.map(ability => {
-      return ({
+    let choices = [];
+    // allAbilities.map(ability => {
+    //   return ({
+    for (const ability of allAbilities) {
+      choices.push({
         value: ability,
         name: `${ability.name.padEnd(15)} (${ability.description}/${ability.type === "spell" ? pips : "skill"})`,
         short: ability.name,
-        disabled: !this.validateAction(ability, combatant, allies, enemies)
+        disabled: !(await this.validateAction(ability, combatant, allies, enemies))
       })
-    });
+    }
 
     choices.push({
       value: { name: "Wait", type: "skill", description: "Skip your turn to wait and see what happens.", aspect: "physical", target: ["self"], effects: [] },
@@ -441,7 +434,7 @@ export default class Combat {
 
 
   async npcTurn(combatant: Combatant, enemies: Combatant[], allies: Combatant[]) {
-    let validAbilities = this.validActions(combatant, allies, enemies);
+    let validAbilities = await this.validActions(combatant, allies, enemies);
     if (validAbilities.length === 0) {
       this.note(`${Presenter.combatant(combatant)} has no valid actions and skips their turn.`);
       return { haltRound: false };
@@ -553,12 +546,12 @@ export default class Combat {
       [allies, validTargets] = [validTargets, allies];
     }
 
-    console.log(`DEBUG ${combatant.forename} turn:`);
-    console.log(`  - This combatant's team: ${this.teams.find(t => t.combatants.includes(combatant)) === this.teams[0] ? 'team0' : 'team1'}`);
-    console.log(`  - Team 0 combatants: ${this.teams[0].combatants.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
-    console.log(`  - Team 1 combatants: ${this.teams[1].combatants.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
-    console.log(`  - Living enemies (validTargets): ${validTargets.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
-    console.log(`  - Allies: ${allies.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
+    // console.log(`DEBUG ${combatant.forename} turn:`);
+    // console.log(`  - This combatant's team: ${this.teams.find(t => t.combatants.includes(combatant)) === this.teams[0] ? 'team0' : 'team1'}`);
+    // console.log(`  - Team 0 combatants: ${this.teams[0].combatants.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
+    // console.log(`  - Team 1 combatants: ${this.teams[1].combatants.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
+    // console.log(`  - Living enemies (validTargets): ${validTargets.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
+    // console.log(`  - Allies: ${allies.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
 
     let attacksPerTurn = combatant.attacksPerTurn || 1;
     for (let i = 0; i < attacksPerTurn; i++) {

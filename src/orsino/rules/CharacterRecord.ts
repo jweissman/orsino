@@ -175,7 +175,7 @@ export default class CharacterRecord {
       pc[stat] += 1;
       // this.note(`${c.name}'s ${stat.toUpperCase()} increased to ${c[stat as keyof Combatant]}!`);
 
-      let fx = Fighting.gatherEffects(pc);
+      let fx = await Fighting.gatherEffects(pc);
       if (fx.onLevelUp) {
         for (const effect of fx.onLevelUp as AbilityEffect[]) {
           // execute the effect

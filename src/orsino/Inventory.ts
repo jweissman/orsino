@@ -1,7 +1,30 @@
 import Deem from "../deem";
 import { ItemInstance } from "./types/ItemInstance";
 
+interface Weapon {
+  damage: string;
+  type: string;
+  intercept?: boolean;
+  missile?: boolean;
+  value: number;
+  kind: string;
+  weight: string;
+}
+
 export class Inventory {
+  static isWeaponProficient(item: Weapon, weaponProficiencies: { all?: boolean; kind?: string[]; weight?: string[]; }) {
+    if (weaponProficiencies.all) {
+      return true;
+    }
+    if (weaponProficiencies.kind && !weaponProficiencies.kind.includes(item.kind)) {
+      return false;
+    }
+    if (weaponProficiencies.weight && !weaponProficiencies.weight.includes(item.weight)) {
+      return false;
+    }
+    return true;
+  }
+
   static async item(name: string): Promise<ItemInstance> {
     let isConsumable = await Deem.evaluate(`hasEntry(consumables, '${name}')`);
     if (isConsumable) {

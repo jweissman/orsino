@@ -43,7 +43,7 @@ export interface AbilityEffect {
   stat?: "str" | "dex" | "con" | "int" | "wis" | "cha";
 
   amount?: string; // e.g. "=1d6", "=2d8", "3"
-  target?: Target[];
+  target?: string;  //Target[];
   duration?: number; // in turns
   statusName?: string;
   status?: StatusEffect;
@@ -276,7 +276,7 @@ export default class AbilityHandler {
     for (const targetAlly of context.enemies) {
       if (targetAlly.hp <= 0) { continue; }
       let reactionEffectName = `onEnemy${Words.capitalize(name.replace(/\s+/g, ""))}`;
-      let allyFx = Fighting.gatherEffects(targetAlly);
+      let allyFx = await Fighting.gatherEffects(targetAlly);
       if (allyFx[reactionEffectName]) {
         events.push({ type: "reaction", subject: targetAlly, target: user, reactionName: `to ${name}` } as Omit<ReactionEvent, "turn">);
         let reactionEffects = allyFx[reactionEffectName] as Array<AbilityEffect>;
@@ -297,7 +297,7 @@ export default class AbilityHandler {
       return { success, events };
     }
 
-    let userFx = Fighting.gatherEffects(user);
+    let userFx = await Fighting.gatherEffects(user);
 
     // switch (effect.type) {
     if (effect.type === "attack") {
@@ -321,7 +321,7 @@ export default class AbilityHandler {
             // let fxTarget = attackFx.target === "self" ? user : targetCombatant;
             let fxTarget: Combatant | Combatant[] = targetCombatant;
             if (attackFx.target) {
-              fxTarget = this.validTargets({ target: attackFx.target } as Ability, user, [], [targetCombatant])[0];
+              fxTarget = this.validTargets({ target: [attackFx.target] } as Ability, user, [], [targetCombatant])[0];
             }
             // it is possible that the target is specified in the effect, so we need to check for that
             let effectResult = await this.handleEffect(name, attackFx, user, fxTarget, context, handlers);
@@ -430,7 +430,6 @@ export default class AbilityHandler {
       events.push({ type: "xp", subject: user, amount } as any);
       success = true;
     } else if (effect.type === "summon") {
-      // let userFx = Fighting.gatherEffects(user);
       let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
       let allies = 1 + context.allies.length;
       amount = Math.min(amount, 6 - allies);
@@ -514,7 +513,7 @@ export default class AbilityHandler {
       if (isSpell) {
         if (isOffensive) {
           // trigger spell attack fx
-          let userFx = Fighting.gatherEffects(user);
+          let userFx = await Fighting.gatherEffects(user);
           if (userFx.onOffensiveCasting) {
             // console.log(`Triggering onOffensiveCasting effects for ${ability.name}...`);
             for (const spellFx of userFx.onOffensiveCasting as Array<AbilityEffect>) {

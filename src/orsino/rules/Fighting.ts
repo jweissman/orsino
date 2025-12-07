@@ -1,4 +1,5 @@
 import Deem from "../../deem";
+import { StatusEffect } from "../Ability";
 import Presenter from "../tui/Presenter";
 import Words from "../tui/Words";
 import { AttackResult } from "../types/AttackResult";
@@ -59,7 +60,7 @@ export class Fighting {
     return bonuses;
   }
 
-  static effectiveStats(combatant: Combatant): { [key: string]: number } {
+  static async effectiveStats(combatant: Combatant): Promise<{ [key: string]: number }> {
     let stats: { [key: string]: number } = {
       str: combatant.str,
       dex: combatant.dex,
@@ -69,8 +70,23 @@ export class Fighting {
       con: combatant.con,
       ac: combatant.ac,
     };
-    if (combatant.activeEffects) {
-      combatant.activeEffects.forEach(it => {
+    let equipmentKeys = Object.values(combatant.equipment || []).filter(it => it !== undefined);
+    let equipmentList: StatusEffect[] = [];
+    for (let eq of equipmentKeys) {
+      let eqEffects = await Deem.evaluate(`lookup(equipment, '${eq}')`);
+      if (eqEffects.effect) {
+        equipmentList.push(eqEffects);
+      }
+    }
+
+    let effectList = [
+      ...(combatant.passiveEffects || []),
+      ...(combatant.activeEffects || []),
+      ...equipmentList,
+    ];
+    // if (combatant.activeEffects) {
+    //   combatant.activeEffects.forEach(it => {
+    effectList.forEach(it => {
         if (it.effect) {
           Object.entries(it.effect).forEach(([key, value]) => {
             if (key in stats && typeof value === "number") {
@@ -79,16 +95,26 @@ export class Fighting {
           });
         }
       });
-    }
     return stats;
   }
 
   // gather all current passive + active effects and try to calculate any cumulative bonuses
-  static gatherEffects(combatant: Combatant): { [key: string]: number | string | boolean | Array<any> } {
+  static async gatherEffects(combatant: Combatant): Promise<{ [key: string]: number | string | boolean | Array<any> }> {
+    let equipmentKeys = Object.values(combatant.equipment || []).filter(it => it !== undefined);
+    let equipmentList: StatusEffect[] = [];
+    for (let eq of equipmentKeys) {
+      let eqEffects = await Deem.evaluate(`lookup(equipment, '${eq}')`);
+      if (eqEffects.effect) {
+        equipmentList.push(eqEffects);
+      }
+    }
+
     let effectList = [
       ...(combatant.passiveEffects || []),
-      ...(combatant.activeEffects || [])
+      ...(combatant.activeEffects || []),
+      ...equipmentList,
     ];
+
     let resultingEffects: { [key: string]: number | string | Array<any> } = {
       // could gather effective resistances/saves here too if the combatant has them specified in their record?
     };
@@ -125,12 +151,26 @@ export class Fighting {
     return resultingEffects;
   }
 
-  static gatherEffectsWithNames(combatant: Combatant): { [key: string]: { value: number | string | boolean | Array<any>, sources: string[] } } {
+  static async gatherEffectsWithNames(combatant: Combatant): Promise<{ [key: string]: { value: number | string | boolean | Array<any>, sources: string[] } }> {
     let resultingEffects: { [key: string]: { value: number | string | boolean | Array<any>, sources: string[] } } = {};
+    let equipmentKeys = Object.values(combatant.equipment || []).filter(it => it !== undefined);
+    let equipmentList: StatusEffect[] = [];
+    for (let eq of equipmentKeys) {
+      let eqEffects = await Deem.evaluate(`lookup(equipment, '${eq}')`);
+      if (eqEffects.effect) {
+        equipmentList.push(eqEffects);
+      }
+    }
+
     let effectList = [
       ...(combatant.passiveEffects || []),
-      ...(combatant.activeEffects || [])
+      ...(combatant.activeEffects || []),
+      ...equipmentList,
     ];
+    // let effectList = [
+    //   ...(combatant.passiveEffects || []),
+    //   ...(combatant.activeEffects || [])
+    // ];
     for (let it of effectList) {
       if (it.effect) {
         Object.entries(it.effect).forEach(([key, value]) => {
@@ -180,7 +220,7 @@ export class Fighting {
         critical: false
       };
     }
-    const effectiveAttacker = this.effectiveStats(attacker);
+    const effectiveAttacker = await this.effectiveStats(attacker);
     let description = `${attacker.name} attacks ${defender.name}... `;
 
     const strMod = this.statMod(effectiveAttacker.str || 10);
@@ -192,7 +232,7 @@ export class Fighting {
     const damageBonus = isMissile ? Math.max(0, dexMod) : Math.max(0, strMod);
 
     const thac0 = this.thac0(attacker.level);
-    const effectiveDefender = this.effectiveStats(defender);
+    const effectiveDefender = await this.effectiveStats(defender);
     const defenderAcBonus = this.statMod(effectiveDefender.dex || 10);
     const ac = effectiveDefender.ac - defenderAcBonus;
     const whatNumberHits = thac0 - ac - toHitBonus;
@@ -244,7 +284,7 @@ export class Fighting {
       }
 
       damage = damage + criticalDamage + damageBonus;
-      let defenderEffects = Fighting.gatherEffects(defender);
+      let defenderEffects = await Fighting.gatherEffects(defender);
       // let attackerEffects = Fighting.gatherEffects(attacker);
 
       if (defenderEffects.evasion) {
