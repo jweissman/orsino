@@ -1,4 +1,6 @@
 import Deem from "../deem";
+import Words from "./tui/Words";
+import { Combatant, EquipmentSlot } from "./types/Combatant";
 import { ItemInstance } from "./types/ItemInstance";
 
 interface Weapon {
@@ -50,5 +52,38 @@ export class Inventory {
       inventoryCounts[itemInstance.name] = (inventoryCounts[itemInstance.name] || 0) + 1;
     }
     return inventoryCounts;
+  }
+
+  static async equip(equipmentKey: string, wielder: Combatant): Promise<string | null> {
+    if (!wielder.equipment) {
+      wielder.equipment = {};
+    }
+
+    let equipment = await Deem.evaluate(`lookup(equipment, "${equipmentKey}")`);
+    let slot = equipment.kind as EquipmentSlot;
+    if (slot === 'ring' as EquipmentSlot) {
+      if (!wielder.equipment['ring1']) {
+        slot = 'ring1';
+      } else if (!wielder.equipment['ring2']) {
+        slot = 'ring2';
+      } else {
+        // both ring slots taken, replace ring1
+        slot = 'ring1';
+      }
+    }
+
+    let oldItemKey = wielder.equipment ? wielder.equipment[slot] : null;
+    let oldItem = null;
+    if (oldItemKey) {
+      oldItem = await Deem.evaluate(`lookup(equipment, "${oldItemKey}")`);
+      // console.log(`Discard equipped ${Words.humanize(oldItemKey)} from ${wielder.name} in favor of ${Words.humanize(equipmentKey)}.`);
+      // wielder.gp += oldItem.value || 0;
+      // this.state.sharedGold += oldItem.value || 0;
+      // this.outputSink(`🔄 Replacing ${Words.humanize(oldItemKey)} equipped to ${wielder.name} (sold old item for ${oldItem.value}g).`)
+    };
+    wielder.equipment = wielder.equipment || {};
+    wielder.equipment[slot] = equipmentKey;
+
+    return oldItemKey || null;
   }
 }

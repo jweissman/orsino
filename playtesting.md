@@ -5,7 +5,6 @@
 [ ] Poisoned blade still has weird expiration message actually? ("X is no longer poisoned blade"; a bit awkward to fix since a standard message would be ideal here)
 [ ] Might be good/wise/prudent to gather status effects into constants so we're not subject to (as many) typo bugs! (more generally it would be nice to have a statuses.json for defining common effects like poisoning uniformly...)
 [ ] Unify search/examine (should both have chance to find potions and both grant XP on success)
-[ ] A room generated with multiple monsters with the same name (humans may need more names as a race but also maybe we could _specifically_ try to prevent this?) [genList would need a dedupe pass to really be _certain_ of this] -- Duplicate forenames still problematic -- maybe 'forename' can just _be_ magical within deem (genList could identify and toss dupes to prevent issues like this -- may cause other problems and seems weird... adding some gross genUniqListByKey seems 'too heavy' too; or we could have a 'gather' function that grabs all values of the __items but the expression then just gets too gnarly; note technically it's not even the 'name' key but 'forename' which ... we could just have a much deeper list to draw from to prevent this happening so often but that doesn't really solve this fundamentally!) -- genList/mapGenList could handle this by adding index #s but maybe not ideal somehow
 [ ] A cage could have a chance to have a prisoner (who could become ally); incidentally would be nice for it to be more likely within a 'cell' room
 ---
 [ ] Larger rooms could give more search opps?
@@ -28,7 +27,6 @@
 [ ] Should only be able to visit temple _once_ per long rest/visit in town
 [ ] Found "letter" and "wanted poster" items could have clues about the dungeon boss (if not other bosses etc)
 ---
-[ ] Should you roll your own poison damage? Feels strange -- maybe should just be automatic?
 [ ] Poison damage should indicate who _inflicted_ it (this is sort of tracked but not surfaced...)
 ---
 [ ] Should reset abilities used on long rest? (why isn't this happening)
@@ -51,8 +49,6 @@
 [ ] Unconscious characters should not roll init
 [ ] Some statuses still sound weird ("[defender] is Chaos by [inflicter]" - odd)
 ---
-[ ] Statuses like 'defending' really need to expire at end of next _turn_ not end of _round_
-[ ] Humanize weapon names in damage description ("takes 5 damage from Valen's light_mace" => "Light Mace", maybe add damage type here?)
 [ ] AI should not use buffs that only target allies if all allies are dead
 [ ] Dungeons with multiple floors (levels in principle seem relatively straightforward but we'd need to adapt dungeoneer to handle them...)
 ---
@@ -60,7 +56,7 @@
 ---
 [ ] Track playerAligned as _well_ as playerControlled (sort of captured by being on the team of the player but this isn't passed along with combatant in all cases... -- we can always check for allegiance effects but a little subtle i guess?)
 ---
-[ ] Would be nice to let _all_ PCs attempt to interact/examine/search
+[ ] Would be nice to let _all_ PCs attempt to interact/examine/search (as opposed to one and done for the action)
 [ ] Maybe charm is dispelled if the charmer dies??
 ---
 [ ] Disable summon abilities if you already have 6 allied creatures (alive or dead...) / Shouldn't be able to call animal companion if 6 allies present! (standing or not)
@@ -74,20 +70,27 @@
 [ ] Why is a wolf casting earthquake??? (presumably it was 'Giant' wolf but maybe just give a 'stomp' AoE ability?)
 [ ] Should say 'leave the dungeon' instead of 'move to next room' for last room
 [ ] There should be a shop to sell treasure (maybe also buy other kinds of consumables?)
-[ ] Why does paralyze have 'unknown' duration?? (from an enemy's paralyzing_touch)
 [ ] Magic missile that does 0 damage should be glossed as a miss I think?
 ---
 [ ] Effects from shrine not getting applied to characters? (maybe getting erased at Combat#setUp if configured as activeEffect but also I don't think I was even seeing it immediately on the character rec at all?)
 [ ] Resting somehow advances us into the next room? (thought this was wandering monster but definitely a new room)
 [ ] Special effect type for 'cast' (ie to make scrolls simpler to implement/less duplicative)
-[ ] Somehow a lich took damage 5 separate times from being a marked target??? (on a normal melee attack)
 ---
 [ ] Summon creature should display a _little_ more information about the summon than the forename (type/class at least)
 [ ] Armorer should only let you give weapons for humanoids to wield
 [ ] Weapon proficiencies should matter for equipping PCs (ie not letting mage have huge battleaxes)
 ---
 [ ] Template overlay for dungeon types (could express '30% undead' outside of deem template...)
-[ ] effectiveStats helper really needs to consider passives (and now equipment!)
+[ ] Magic weapons/armor (ie unify equipment w/ armor/weapons)
+[ ] Offer to equip wearables if you find them in loot (give wearables/consumables in room treasure -- may need some tracking for 'unworn wearables'... -- don't think we give them out yet but a lot of the loot items are _suggestive_ of wearables or magic weapons/armor) 
+[ ] Reduce consumable treasure-drop rate (90% is way too high!!) and maybe try to govern the tier of loot found (should not find scrolls of apocalypse/powerful wands everywhere!)
+[ ] Animals should not have _blur_ spell
+[ ] Treasure that is just coins should just be gp (we could give platinum/copper/silver for variety but fine if not!!)
+[ ] Should your own summoned creatures be able to flee?? (presumably henchmen can flee if morale drops too low but we don't have henches proper yet)
+[ ] Maybe only mages can use wands/scrolls??
+---
+[ ] Would be nice to see literal HP for your party (ie not just approximate bar)
+[ ] Would be nice to write logs to a file for easier copy-paste
 
 ## Fixed
 [x] Temple/shrine to local deity to get a blessing
@@ -162,6 +165,13 @@
 [x] Heal ally is selecting dead PCs as valid targets (should only be standing _and_ wounded PCs) -- maybe resolved with fixes to targeting
 [x] Wand charges -- think these are working roughly
 [x] Unconscious allies maybe shouldn't get XP? -- tried to do this but not sure it's actually what we want somehow
+[x] effectiveStats helper really needs to consider passives (and now equipment!) -- should be happening now
+[x] Somehow a lich took damage 5 separate times from being a marked target??? (on a normal melee attack) -- fixed loop
+[x] Statuses like 'defending' really need to expire at end of next _turn_ not end of _round_
+[x] Humanize weapon names in damage description ("takes 5 damage from Valen's light_mace" => "Light Mace", maybe add damage type here?)
+[x] Why does paralyze have 'unknown' duration?? (from an enemy's paralyzing_touch) -- should be fixed!
+[x] A room generated with multiple monsters with the same name (humans may need more names as a race but also maybe we could _specifically_ try to prevent this?) [genList would need a dedupe pass to really be _certain_ of this] -- Duplicate forenames still problematic -- maybe 'forename' can just _be_ magical within deem (genList could identify and toss dupes to prevent issues like this -- may cause other problems and seems weird... adding some gross genUniqListByKey seems 'too heavy' too; or we could have a 'gather' function that grabs all values of the __items but the expression then just gets too gnarly; note technically it's not even the 'name' key but 'forename' which ... we could just have a much deeper list to draw from to prevent this happening so often but that doesn't really solve this fundamentally!) -- genList/mapGenList could handle this by adding index #s but maybe not ideal somehow [note: pc and npc forenames are globally unique now and we actually throw a hard error on repeat just to help us see what's shallow in terms of naming pool -- but can fallback to resetting options list ... should help a lot if not _completely_ solve this]
+[x] Should you roll your own poison damage? Feels strange -- maybe should just be automatic? -- most rolls are elided in output now anyway!
 
 ## Not really issues atm
 - "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]

@@ -340,6 +340,17 @@
   "consumables": {
     "discriminator": "kind",
     "groups": {
+      "first_aid_kit": {
+        "name": "First Aid Kit",
+        "description": "A small kit containing bandages and salves for treating minor wounds.",
+        "type": "consumable",
+        "kind": "kit",
+        "rarity": "common",
+        "aspect": "healing",
+        "value": 25,
+        "target": ["self", "ally"],
+        "effects": [{ "type": "heal", "amount": "1d4+1" }, { "type": "removeStatus", "statusName": "Bleeding" }]
+      },
       "antidote": {
         "name": "Antidote",
         "description": "A small vial of clear liquid that neutralizes poison when consumed.",
@@ -511,6 +522,22 @@
         "value": 300,
         "effect": { "ac": -2 }
       },
+      "ring_of_regeneration": {
+        "name": "Ring of Regeneration",
+        "description": "A mystical ring that slowly heals the wearer over time.",
+        "type": "equipment",
+        "kind": "ring",
+        "rarity": "legendary",
+        "value": 800,
+        "effect": {
+          "onTurnStart": [
+            {
+              "type": "heal",
+              "amount": "=1d6+1"
+            }
+          ]
+        }
+      },
       "amulet_of_health": {
         "name": "Amulet of Health",
         "description": "A mystical amulet that bolsters the wearer's vitality.",
@@ -555,26 +582,35 @@
       "basic": [[
         "a wooden bowl",
         "a cloth pouch",
-        "a copper coin",
         "a broken dagger",
         "a tattered map",
         "a wooden figurine",
-        "minor_healing_potion"
+        "minor_healing_potion",
+        "firewood",
+        "rope",
+        "candle",
+        "manacles"
       ]],
       "negligible": [[
-        "a silver coin",
         "a simple ring",
         "a small statue",
         "a bronze bracelet",
         "a faded painting",
-        "major_healing_potion"
+        "major_healing_potion",
+        "crowbar",
+        "dice",
+        "lantern",
+        "flask_of_oil"
       ]],
       "minor": [[
-        "a gold coin",
         "a small gemstone",
+        "holy_symbol",
+        "thieves_tools",
+        "antidote",
         "elixir_of_strength",
+        "wand_of_magic_missiles",
         "scroll_of_fireball",
-        "wand_of_magic_missiles"
+        "amulet_of_health"
       ]],
       "major": [[
         "a magic sword",
@@ -587,7 +623,6 @@
       "legendary": [[
         "scroll_of_apocalypse",
         "an ancient relic",
-        "a bag of gold coins",
         "a lost tome",
         "a sacred idol",
         "a crown of the lost king",

@@ -272,9 +272,9 @@ export class Commands {
       // does defender have onAttacked effects? (and attacker is not themselves...)
       if (attacker !== defender) {
         let onAttackedFx = defenderEffects.onAttacked as AbilityEffect[] || [];
-        console.log(`Defender ${defender.forename} has ${onAttackedFx.length} onAttacked effects to process.`);
+        // console.log(`Defender ${defender.forename} has ${onAttackedFx.length} onAttacked effects to process.`);
         for (let fx of onAttackedFx) {
-          console.log(`Processing onAttacked effect: ${fx.description}`);
+          // console.log(`Processing onAttacked effect: ${fx.description}`);
           let target = defender;
           if (fx.target === "attacker") {
             target = attacker;

@@ -15,6 +15,7 @@ export class Template {
     Deem.stdlib = Deem.stdlib || {};
     Deem.stdlib.eval = async (expr: string) => await Deem.evaluate(expr, context);
     Deem.stdlib.lookup = (tableName: GenerationTemplateType, groupName: string) => Generator.lookupInTable(tableName, groupName);
+    Deem.stdlib.lookupUnique = (tableName: GenerationTemplateType, groupName: string) => Generator.lookupInTable(tableName, groupName, true);
     Deem.stdlib.hasEntry = (tableName: GenerationTemplateType, groupName: string) => {
       // console.log(`Checking hasEntry for table '${tableName}' and group '${groupName}'`);
       const table = Generator.generationSource(tableName);

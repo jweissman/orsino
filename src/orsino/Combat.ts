@@ -115,7 +115,8 @@ export default class Combat {
       c.abilitiesUsed = [];
       c.abilityCooldowns = {};
       c.savedTimes = {};
-      c.activeEffects = [];
+      c.activeEffects = []; // c.activeEffects || [];
+
       c.passiveEffects = [];
       c.traits = c.traits || [];
 

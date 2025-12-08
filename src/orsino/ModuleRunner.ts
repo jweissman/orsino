@@ -42,13 +42,13 @@ interface GameState {
 export class ModuleRunner {
   private roller: Roll; // (subject: Combatant, description: string, sides: number, dice: number) => Promise<RollResult>;
   private select: Select<any>;
-  private prompt: (message: string) => string;
+  // private prompt: (message: string) => string;
 
   private outputSink: (message: string) => void;
   private moduleGen: () => Promise<CampaignModule>;
   private state: GameState = {
     party: [],
-    sharedGold: 2000,
+    sharedGold: 200,
     inventory: [],
     completedDungeons: []
   };
@@ -60,7 +60,7 @@ export class ModuleRunner {
   constructor(options: Record<string, any> = {}) {
     this.roller = options.roller || Commands.roll;
     this.select = options.select || Combat.samplingSelect;
-    this.prompt = options.prompt || ModuleRunner.randomInt;
+    // this.prompt = options.prompt || ModuleRunner.randomInt;
     this.outputSink = options.outputSink || console.log;
     this.moduleGen = options.moduleGen || this.defaultModuleGen;
     this.gen = options.gen || (() => { throw new Error("No gen function provided") });
@@ -336,15 +336,21 @@ export class ModuleRunner {
         console.log("Chosen equipment:", item);
 
         if (this.sharedGold >= item.value) {
-          let oldItemKey = wielder.equipment ? wielder.equipment[item.kind as EquipmentSlot] : null;
-          if (oldItemKey) {
-            let oldItem = await Deem.evaluate(`lookup(equipment, "${oldItemKey}")`);
+          let maybeOldItem = await Inventory.equip(item.key, wielder);
+          if (maybeOldItem) {
+            let oldItem = await Deem.evaluate(`lookup(equipment, "${maybeOldItem}")`);
             this.state.sharedGold += oldItem.value || 0;
-            this.outputSink(`🔄 Replacing ${Words.humanize(oldItemKey)} equipped to ${wielder.name} (sold old item for ${oldItem.value}g).`)
-          };
-          this.state.sharedGold -= item.value;
-          wielder.equipment = wielder.equipment || {};
-          wielder.equipment[item.kind as EquipmentSlot] = item.key;
+            this.outputSink(`🔄 Replacing ${Words.humanize(oldItem.key)} equipped to ${wielder.name} (sold old item ${oldItem.name} for ${oldItem.value}g).`)
+          }
+          // let oldItemKey = wielder.equipment ? wielder.equipment[item.kind as EquipmentSlot] : null;
+          // if (oldItemKey) {
+          //   let oldItem = await Deem.evaluate(`lookup(equipment, "${oldItemKey}")`);
+          //   this.state.sharedGold += oldItem.value || 0;
+          //   this.outputSink(`🔄 Replacing ${Words.humanize(oldItemKey)} equipped to ${wielder.name} (sold old item for ${oldItem.value}g).`)
+          // };
+          // this.state.sharedGold -= item.value;
+          // wielder.equipment = wielder.equipment || {};
+          // wielder.equipment[item.kind as EquipmentSlot] = item.key;
           
           this.outputSink(`Purchased ${Words.humanize(item.name)} for ${item.value}g, equipped to ${wielder.name}`);
         }
@@ -442,8 +448,8 @@ export class ModuleRunner {
           let primaryAttack = item.missile ? 'ranged' : 'melee';
           // remove ranged/melee ability from ability list
           wielder.abilities = (wielder.abilities || []).filter((abil: any) => abil.match(/melee|ranged/i) === null);
-          // add new ability
-          wielder.abilities.push(primaryAttack);
+          // add new ability (keep primary at front)
+          wielder.abilities.unshift(primaryAttack);
           
           this.outputSink(`✅ Purchased 1x ${Words.humanize(item.key)} for ${item.value}g, equipped to ${wielder.name}`);
         }

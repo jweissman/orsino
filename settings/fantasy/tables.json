@@ -259,14 +259,14 @@
   "npcRank": {
     "discriminator": "rank",
     "groups": {
-      "untested":  { "maxHp": 2,   "ac": 3 },
-      "rookie":    { "maxHp": 3,   "ac": 2 },
-      "seargeant": { "maxHp": 5,   "ac": 1 },
-      "captain":   { "maxHp": 8,   "ac": 0 },
-      "veteran":   { "maxHp": 13,  "ac": 0 },
-      "champion":  { "maxHp": 21,  "ac": -1 },
-      "elite":     { "maxHp": 34,  "ac": -2, "traits": ["formidable"] },
-      "legendary": { "maxHp": 55,  "ac": -3, "traits": ["formidable", "favored"] }
+      "untested":  { "maxHp": 3,   "ac": 3 },
+      "rookie":    { "maxHp": 5,   "ac": 2 },
+      "seargeant": { "maxHp": 8,   "ac": 1 },
+      "captain":   { "maxHp": 13,  "ac": 0 },
+      "veteran":   { "maxHp": 21,  "ac": 0 },
+      "champion":  { "maxHp": 34,  "ac": -1 },
+      "elite":     { "maxHp": 55,  "ac": -2, "traits": ["formidable"] },
+      "legendary": { "maxHp": 89,  "ac": -3, "traits": ["formidable", "favored"] }
     }
   },
   "npcType": {
@@ -795,7 +795,7 @@
         "npc_type": "Cultist",
         "challenging": false,
         "_companionCount": 0,
-        "_treasureItems": ["soul gem", "ring of protection", "staff of power", "cloak of invisibility"],
+        "_treasureItems": ["soul gem", "ring_of_protection", "staff of power", "cloak of invisibility"],
         "bonusGold": "10 + 6d100"
       },
       "ritual_chamber": {
@@ -803,7 +803,7 @@
         "_npc_types": ["Cult Master", "Acolyte", "Acolyte", "Acolyte"],
         "challenging": false,
         "_companionCount": 0,
-        "_treasureItems": ["amulet of health", "wand_of_magic_missiles", "robe of the archmagi"],
+        "_treasureItems": ["amulet_of_health", "wand_of_magic_missiles", "robe of the archmagi"],
         "bonusGold": "10 + 5d20"
       },
       "dark_altar": {
@@ -811,7 +811,7 @@
         "_npc_types": ["Death Priest", "Adept", "Adept"],
         "challenging": false,
         "_companionCount": 0,
-        "_treasureItems": ["unholy symbol", "ring of regeneration", "staff of the necromancer"],
+        "_treasureItems": ["unholy symbol", "ring_of_regeneration", "staff of the necromancer"],
         "bonusGold": "10 + 4d10"
       }
     }
@@ -950,7 +950,7 @@
           "type": "buff",
           "status": { 
             "name": "Death's Favor", 
-            "duration": 5, 
+            "duration": 15, 
             "effect": { "toHit": 1, "bonusDamage": "1d4" } 
           }
         }]
@@ -1557,7 +1557,7 @@
       "beloved":    { "cha": 3, "wis": 2, "abilities": [ "inspire", "charm" ] },
       "dread":      { "cha": 3, "abilities": [ "maul", "enrage" ] },
       "terrifying": { "cha": 3, "abilities": [ "fear" ] },
-      "mysterious": { "int": 2, "wis": 2, "abilities": [ "blur", "hide" ] },
+      "mysterious": { "int": 2, "wis": 2, "abilities": [ "hide" ] },
       "savage":     { "str": 3, "int": -1, "abilities": [ "prepare_charge", "charge" ] },
 
       "alpha":      { "str": 2, "dex": 1, "con": 1, "int": 1 },

@@ -2,7 +2,7 @@
   "town": {
     "terrain": "=lookup(terrains, 1d6)",
     "size": "=oneOf(hamlet, village, town, city, metropolis, capital)",
-    "race":"=oneOf(human, elf, dwarf, halfling, gnome, fae, orc)",
+    "race": "=oneOf(human, elf, dwarf, halfling, gnome, fae, orc)",
     "deity": "=oneOf(lookup(deity, #race))",
     "capital": "=#size == 'capital'",
     "population": "=eval(lookup(townPop, #size))",
@@ -27,7 +27,7 @@
     "class": "=oneOf(warrior, mage, thief, cleric, bard, ranger)",
     "age": "=16 + 2d20 + if(#race == \"elf\", 100, if(#race == \"dwarf\", 50, 0))",
     "_surname": "=lookup(surname, #class)",
-    "forename": "=lookup(name, #gender)",
+    "forename": "=lookupUnique(name, #gender)",
     "name": "=#forename + \" \" + #_surname",
     "referenceName": "='the ' + #race + ' ' + #class + oneOf(' named ', ' known as ') + #forename",
     "str": "=rollWithDrop(4, 6)",
@@ -58,7 +58,6 @@
     "*racialModifier": "=lookup(racialModifier, #race)",
     "hp": "=#maxHp"
   },
-
   "animal": {
     "alignment": "animal",
     "challenging": false,
@@ -94,7 +93,11 @@
     "attackDie": "=dig(#_weaponStat, 'damage')",
     "_naturalArmor": "=lookup(animalNaturalArmor, #animal_type)",
     "ac": "=10 - #_naturalArmor",
-    "abilities": ["melee", "defend", "flee"],
+    "abilities": [
+      "melee",
+      "defend",
+      "flee"
+    ],
     "xp": "=10*#level",
     "gp": 0,
     "*terrainModifier": "=lookup(terrainModifier, #terrain)",
@@ -140,7 +143,6 @@
     "*aspectModifier": "=lookup(creatureAspects, #monster_aspect)",
     "hp": "=#maxHp"
   },
-
   "npc": {
     "_targetCr": 1,
     "_index": 0,
@@ -153,7 +155,7 @@
     "building_type": "=oneOf(mine, fortress, temple, tomb, library)",
     "_npc_types": "=lookup(npcTypesForDungeon, #building_type)",
     "npc_type": "=pick(#_npc_types, #_index)",
-    "forename": "=lookup(npcName, #race)",
+    "forename": "=lookupUnique(npcName, #race)",
     "rank": "=#challenging ? oneOf(veteran, champion, elite, legendary) : oneOf(untested, rookie, seargeant, captain)",
     "npc_aspect_rarity": "=if(#challenging, oneOf(epic, legendary), oneOf(common, uncommon, rare))",
     "npc_aspect": "=lookup(creatureAspectTypes, #npc_aspect_rarity)",
@@ -175,9 +177,14 @@
     "_weaponStat": "=lookup(masterWeapon, #weapon)",
     "hasMissileWeapon": "=!!dig(#_weaponStat, 'missile')",
     "primaryAttack": "=if(#hasMissileWeapon, 'ranged', 'melee')",
-    "_abilities": ["defend", "flee"],
+    "_abilities": [
+      "defend",
+      "flee"
+    ],
     "abilities": "=uniq(concat(#primaryAttack, #_abilities))",
-    "traits": ["humanoid"],
+    "traits": [
+      "humanoid"
+    ],
     "*terrainModifier": "=lookup(terrainModifier, #terrain)",
     "*typeModifier": "=lookup(npcTypeModifier, #npc_type)",
     "*aspectModifier": "=lookup(creatureAspects, #npc_aspect)",
@@ -196,7 +203,6 @@
     "*rankModifier": "=lookup(npcRank, #rank)",
     "hp": "=#maxHp"
   },
-
   "encounter": {
     "race": "=if(#_targetCr <= 5, oneOf(goblin, kobold), if(#_targetCr <= 10, oneOf(orc, human), if(#_targetCr <= 18, oneOf(ogre, troll), oneOf(dragon))))",
     "targetCr": "=#_targetCr",
@@ -256,7 +262,7 @@
     "_npcCount": 1,
     "_companionCount": 1,
     "_monsterCount": 1,
-    "treasure": "=lookup(treasure, oneOf(major, legendary))",
+    "treasure": "=lookup(treasure, oneOf(minor, major))",
     "npc_type": "=lookup(bossNpcTypesForDungeon, #building_type)",
     "boss_encounter": "=gen(encounter)",
     "decor": "=lookup(roomDecoration, 1d100)",
@@ -277,25 +283,24 @@
     "dungeon_aspect": "=lookup(dungeonAspect, #building_type)",
     "_dungeon_name": "=capitalize(#dungeon_aspect) + \" \" + capitalize(#race) + \" \" + capitalize(#dungeon_type) + \" of \" + capitalize(#theme)",
     "dungeon_name": "=\"#{capitalize(#dungeon_aspect)} #{capitalize(#race)} #{capitalize(#dungeon_type)} of #{capitalize(#theme)}\"",
-    "depth": "=3+2d4",
+    "depth": "=4+3d4",
     "dungeonIndex": "=#_index",
     "intendedCr": "=#_targetCr",
     "rooms": "=genList(room, #depth)",
     "bossRoom": "=gen(boss_room)",
     "direction": "=oneOf(north, south, east, west)",
     "bossName": "=dig(#bossRoom, 'boss_encounter', 'bossName')",
-    "_macguffins": "=lookup(treasure, rand() < 0.8 ? oneOf(major, legendary) : legendary)",
+    "_macguffins": "=lookup(treasure, legendary)",
     "macguffin": "=pick(#_macguffins)",
     "bad_outcome": "=oneOf('the land falls into chaos', 'darkness spreads across the realm', 'the forces of evil grow stronger', 'nature itself is corrupted', 'the balance of power is shattered')",
     "goal": "=\"retrieve #macguffin from the #dungeon_type before #bad_outcome\"",
     "rumor": "=eval(lookup(dungeonRumor, #building_type))"
   },
-  
   "module": {
     "terrain": "=lookup(terrains, 1d6)",
     "town": "=gen(town)",
     "_townName": "=dig(#town, 'name')",
-    "dungeons": "=genList(dungeon, 8)",
+    "dungeons": "=genList(dungeon, 10)",
     "_moduleLevel": 0,
     "name": "=oneOf('Adventure', 'Saga', 'Reckoning', 'Quest', 'Expedition') + ' ' + oneOf('in the ' + capitalize(#terrain), 'at ' + capitalize(#_townName), 'for the ' + capitalize(#terrain))"
   }

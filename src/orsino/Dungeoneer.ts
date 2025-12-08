@@ -543,11 +543,36 @@ export default class Dungeoneer {
         for (const item of room.treasure) {
           this.note(`You find ${Words.humanize(item)}`);
           let isConsumable = await Deem.evaluate(`=hasEntry(consumables, "${item}")`) as boolean;
+          let isGear = await Deem.evaluate(`=hasEntry(masterGear, "${item}")`) as boolean;
+          let isEquipment = await Deem.evaluate(`=hasEntry(equipment, "${item}")`) as boolean;
           // let isGear = await Deem.evaluate(`=hasEntry(masterGear, "${item}")`) as boolean;
           if (isConsumable) {
             this.note(`You add ${Words.a_an(item)} to your inventory.`);
             // this.playerTeam.inventory.push({ name: item });
             this.playerTeam.inventory.push(await Inventory.item(item));
+          } else if (isGear) {
+            this.note(`${actor.forename} adds ${Words.a_an(item)} to their gear.`);
+            actor.gear = actor.gear || [];
+            actor.gear.push(item);
+          } else if (isEquipment) {
+            this.note(`${actor.forename} may equip ${Words.a_an(item)}.`);
+            let choice = await this.select(`Equip ${Words.humanize(item)} now?`, [
+              { name: "Yes", value: "yes", short: 'Y', disabled: false },
+              { name: "No", value: "no", short: 'N', disabled: false }
+            ]);
+            if (choice === "no") {
+              this.note(`${actor.forename} puts ${Words.a_an(item)} in their loot.`);
+              actor.loot = actor.loot || [];
+              actor.loot.push(item);
+              continue;
+            }
+            // add to combatant.equipment
+            let maybeOldItem = await Inventory.equip(item, actor);
+            if (maybeOldItem !== null) {
+              this.note(`${actor.forename} replaces ${Words.a_an(maybeOldItem)} with ${Words.a_an(item)}.`);
+              actor.loot = actor.loot || [];
+              actor.loot.push(maybeOldItem);
+            }
           } else {
             // add to combatant.loot
             actor.loot = actor.loot || [];

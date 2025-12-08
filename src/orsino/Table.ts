@@ -22,7 +22,8 @@ export class Table {
     return keys;
   }
 
-  pick(groupName: string): any {
+  pickedOptions: Set<any> = new Set();
+  pick(groupName: string, globallyUnique: boolean = false): any {
     let options = [];
     if (groupName === 'default') {
       const allItems = Object.values(this.groups).flat();
@@ -46,6 +47,20 @@ export class Table {
     // if not an array, return the single value
     if (!Array.isArray(options)) {
       return options;
+    }
+
+    if (globallyUnique) {
+      const availableOptions = options.filter(opt => !this.pickedOptions.has(opt));
+      if (availableOptions.length === 0) {
+        // throw new Error(`No more unique options available in table ${this.name} for group ${groupName}`);
+        // could reset options for this group here instead but good to be able to throw just to see what's missing
+        console.warn(`No more unique options available in table ${this.name} for group ${groupName}, resetting picked options.`);
+        this.pickedOptions.clear();
+        return this.pick(groupName, globallyUnique);
+      }
+      const choice = availableOptions[Math.floor(Math.random() * availableOptions.length)];
+      this.pickedOptions.add(choice);
+      return choice;
     }
 
     return options[Math.floor(Math.random() * options.length)];

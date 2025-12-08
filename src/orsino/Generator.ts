@@ -88,12 +88,12 @@ export default class Generator {
     }
   }
 
-  public static lookupInTable(tableName: GenerationTemplateType, groupName: string): any {
+  public static lookupInTable(tableName: GenerationTemplateType, groupName: string, globallyUnique: boolean = false): any {
     const table = Generator.generationSource(tableName);
     if (!table || !(table instanceof Table)) {
       throw new Error(`Table not found: ${tableName}`);
     }
-    const ret = table.pick(groupName);
+    const ret = table.pick(groupName, globallyUnique);
     return ret;
   }
 
