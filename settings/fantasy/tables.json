@@ -259,14 +259,14 @@
   "npcRank": {
     "discriminator": "rank",
     "groups": {
-      "untested":  { "maxHp": 3,   "ac": 3 },
-      "rookie":    { "maxHp": 5,   "ac": 2 },
-      "seargeant": { "maxHp": 8,   "ac": 1 },
-      "captain":   { "maxHp": 13,  "ac": 0 },
-      "veteran":   { "maxHp": 21,  "ac": 0 },
-      "champion":  { "maxHp": 34,  "ac": -1 },
-      "elite":     { "maxHp": 55,  "ac": -2, "traits": ["formidable"] },
-      "legendary": { "maxHp": 89,  "ac": -3, "traits": ["formidable", "favored"] }
+      "untested":  { "maxHp": 0,   "ac": 3 },
+      "rookie":    { "maxHp": 1,   "ac": 2 },
+      "seargeant": { "maxHp": 2,   "ac": 1 },
+      "captain":   { "maxHp": 3,  "ac": 0 },
+      "veteran":   { "maxHp": 5,  "ac": 0 },
+      "champion":  { "maxHp": 8,  "ac": -1 },
+      "elite":     { "maxHp": 13,  "ac": -2, "traits": ["formidable"] },
+      "legendary": { "maxHp": 21,  "ac": -3, "traits": ["formidable", "favored"] }
     }
   },
   "npcType": {

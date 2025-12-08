@@ -159,7 +159,7 @@ export default class Events {
         return '';  //`Turn order: ${event.order.map((o, i) => `${i + 1}. ${o.combatant.forename}`).join(" | ")}`;
       case "roundStart":
         // clear screen
-        process.stdout.write('\x1Bc');
+        // process.stdout.write('\x1Bc');
 
         // let heading = `\n=== Round ${event.turn} ===`;
         // let combatants = event.combatants.map(c => `\n- ${Presenter.combatant(c)}`).join("");

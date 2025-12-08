@@ -190,7 +190,7 @@
     "*aspectModifier": "=lookup(creatureAspects, #npc_aspect)",
     "*template": "=if(#npc_template != nihil, lookup(creatureTemplateModifiers, #npc_template), nihil)",
     "hitDie": "=dig(#_statLine, 'hitDie')",
-    "_maxHp": "=max(20, #hitDie + ((#level-1) * #hitDie/2) + statMod(#con))",
+    "_maxHp": "=max(2, #hitDie + ((#level-1) * #hitDie/2) + statMod(#con))",
     "maxHp": "=#challenging ? max(30, #_maxHp) : #_maxHp",
     "_naturalArmor": "=dig(#_statLine, 'naturalArmor')",
     "armor": "=lookup(npcArmor, #race)",
