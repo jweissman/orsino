@@ -4,7 +4,7 @@ import Presenter from "./tui/Presenter";
 import { Team } from "./types/Team";
 import { Roll } from "./types/Roll";
 import { Fighting } from "./rules/Fighting";
-import Events, { CombatEvent, StatusExpireEvent, RoundStartEvent, CombatEndEvent, FleeEvent, GameEvent, CombatantEngagedEvent } from "./Events";
+import Events, { CombatEvent, StatusExpireEvent, RoundStartEvent, CombatEndEvent, FleeEvent, GameEvent, CombatantEngagedEvent, WaitEvent, NoActionsForCombatant, AllegianceChangeEvent, ItemUsedEvent, ActionEvent } from "./Events";
 import AbilityHandler, { Ability, StatusEffect } from "./Ability";
 import { Answers } from "inquirer";
 import { AbilityScoring } from "./tactics/AbilityScoring";
@@ -51,25 +51,28 @@ export default class Combat {
     this.outputSink = options.outputSink || console.debug;
   }
 
-  protected note(message: string) { this.outputSink(message); }
+  protected _note(message: string) { this.outputSink(message); }
   protected async emit(event: Omit<GameEvent, "turn">, prefix = ""): Promise<void> {
     let e: CombatEvent = { ...event, turn: this.turnNumber } as CombatEvent;
     this.journal.push(e);
 
     if (Events.present(e) !== "") {
-      this.note(prefix + Events.present(e));
+      this._note(prefix + Events.present(e));
     }
 
     let bark = await Bark.lookup(event);
     if (bark) {
       bark = bark.charAt(0).toUpperCase() + bark.slice(1);
-      this.note(prefix + Stylist.italic(bark));
+      this._note(prefix + Stylist.italic(bark));
     }
+
+    await Events.appendToLogfile(e);
   }
 
-  protected async emitAll(events: Omit<GameEvent, "turn">[], message?: string): Promise<void> {
+  protected async emitAll(events: Omit<GameEvent, "turn">[], message: string, subject: Combatant): Promise<void> {
+    await this.emit({ type: "action", subject, actionName: message } as Omit<ActionEvent, "turn">);
     if (message) {
-      this.note(Stylist.bold(message));
+      // this._note(Stylist.bold(message));
       let arrow = " └ ";
       for (let i = 0; i < events.length; i++) {
         await this.emit(events[i], arrow);
@@ -187,8 +190,6 @@ export default class Combat {
     }
 
     if (!disabled && ability.effects.some(e => e.type === "summon")) {
-      // let allies = this.teams.find(t => t.combatants.includes(combatant));
-      // console.log(`Checking summon ability ${ability.name} for combatant ${combatant.forename} with ${allies.length} allies...`);
       disabled = allies.length >= 5; // arbitrary cap on total combatants
     }
 
@@ -222,22 +223,14 @@ export default class Combat {
         }
         disabled = spellSlotsRemaining === 0;
       } else if (ability.type == "skill") {
-        // want to track consumption here...
-        // console.log("Already used ", ability.name, "?", combatant.abilitiesUsed?.includes(ability.name) || false)
         if (!ability.name.match(/melee|ranged|wait/i)) {
-          // let alreadyUsed = (combatant.abilitiesUsed||[]).includes(ability.name);
-          // disabled = alreadyUsed;
-          // Check cooldown
           let cooldownRemaining = combatant.abilityCooldowns?.[ability.name] || 0;
           if (cooldownRemaining > 0) {
             disabled = true;
           }
         }
-        // } else {
-        // throw new Error(`Unknown ability type: ${ability.type}`);
       }
     }
-    // console.log(`Validating action '${ability.name}' for ${combatant.forename}: disabled=${disabled}`);
     return !disabled;
 
   }
@@ -275,8 +268,11 @@ export default class Combat {
     let itemQuantities = Combat.inventoryQuantities(this.teams[0]);
     let itemAbilities = [];
     for (let [itemKey, qty] of Object.entries(itemQuantities)) {
+      let itemAbility = await Deem.evaluate(`lookup(consumables, '${itemKey}')`) as Ability;
+      let proficient = Inventory.isItemProficient(itemAbility.kind || 'kit', itemAbility.aspect, combatant.itemProficiencies || {})
+      if (!proficient) { continue; }
+
       if (qty > 0) {
-        let itemAbility = await Deem.evaluate(`lookup(consumables, '${itemKey}')`);
         // sum charges across all instances of this item
         let matchingItems = inventoryItems.filter(ii => ii.name === itemKey);
         let totalCharges = 0;
@@ -297,7 +293,11 @@ export default class Combat {
         if (totalCharges <= 0) {
           continue;
         }
-        itemAbilities.push({ ...itemAbility, description: itemAbility.description + `(${totalCharges} charges left)`, key: itemKey });
+        itemAbilities.push({
+          ...itemAbility,
+          description: itemAbility.description + `(${totalCharges} charges left)`,
+          key: itemKey
+        });
       }
     }
 
@@ -310,12 +310,14 @@ export default class Combat {
     // allAbilities.map(ability => {
     //   return ({
     for (const ability of allAbilities) {
-      choices.push({
-        value: ability,
-        name: `${ability.name.padEnd(15)} (${ability.description}/${ability.type === "spell" ? pips : "skill"})`,
-        short: ability.name,
-        disabled: !(await this.validateAction(ability, combatant, allies, enemies))
-      })
+      if (await this.validateAction(ability, combatant, allies, enemies)) {
+        choices.push({
+          value: ability,
+          name: `${ability.name.padEnd(15)} (${ability.description}/${ability.type === "spell" ? pips : "skill"})`,
+          short: ability.name,
+          disabled: false //!(await this.validateAction(ability, combatant, allies, enemies))
+        })
+      }
     }
 
     choices.push({
@@ -337,16 +339,18 @@ export default class Combat {
     if (action.name === "Flee") {
       let succeed = Math.random() < 0.5;
       if (succeed) {
-        console.log("You successfully flee from combat!");
+        // console.log("You successfully flee from combat!");
         this.winner = "Enemy";
         // this.combatantsByInitiative = [];
+        this.emit({ type: "flee", subject: combatant } as Omit<FleeEvent, "turn">);
         return { haltRound: true };
       }
-      console.log("You attempt to flee but could not escape!");
+      // console.log("You attempt to flee but could not escape!");
       return { haltRound: false };
 
     } else if (action.name === "Wait") {
-      this.note(`${Presenter.combatant(combatant)} waits and watches.`);
+      // this.note(`${Presenter.combatant(combatant)} waits and watches.`);
+      this.emit({ type: "wait", subject: combatant } as Omit<WaitEvent, "turn">);
       return { haltRound: false };
     }
 
@@ -402,7 +406,9 @@ export default class Combat {
           if (itemInstance.charges !== undefined) {
             itemInstance.charges -= 1;
           }
-          this.note(`${Presenter.combatant(combatant)} uses ${action.name} (${itemInstance.charges} charges remaining).`);
+          // this.note(`${Presenter.combatant(combatant)} uses ${action.name} (${itemInstance.charges} charges remaining).`);
+          let chargesLeft = itemInstance.charges;
+          this.emit({ type: "itemUsed", subject: combatant, itemName: action.name, chargesLeft } as Omit<ItemUsedEvent, "turn">);
         }
       } else {
         // _remove_ item from inventory
@@ -413,14 +419,7 @@ export default class Combat {
           this.teams[0].inventory = inventory;
         }
         let remaining = inventory.filter(ii => ii.name === action.key).length;
-        this.note(`${Presenter.combatant(combatant)} uses ${action.name} (${remaining} remaining).`);
-        // reduce item count in inventory
-        // let inventory = this.teams[0].inventory || {};
-        // if (inventory[action.key] && inventory[action.key] > 0) {
-        //   inventory[action.key] -= 1;
-        //   this.teams[0].inventory = inventory;
-        // }
-        // this.note(`${Presenter.combatant(combatant)} uses ${action.name} (${inventory[action.key]} remaining).`);
+        this.emit({ type: "itemUsed", subject: combatant, itemName: action.name, countLeft: remaining } as Omit<ItemUsedEvent, "turn">);
       }
 
     }
@@ -428,7 +427,7 @@ export default class Combat {
     let team = this.teams.find(t => t.combatants.includes(combatant));
     let ctx: CombatContext = { subject: combatant, allies, enemies };
     let { events } = await AbilityHandler.perform(action, combatant, targetOrTargets, ctx, Commands.handlers(this.roller, team!));
-    await this.emitAll(events, Combat.describeAbility(action, combatant));
+    await this.emitAll(events, Combat.describeAbility(action), combatant);
 
     return { haltRound: false };
   }
@@ -437,7 +436,7 @@ export default class Combat {
   async npcTurn(combatant: Combatant, enemies: Combatant[], allies: Combatant[]) {
     let validAbilities = await this.validActions(combatant, allies, enemies);
     if (validAbilities.length === 0) {
-      this.note(`${Presenter.combatant(combatant)} has no valid actions and skips their turn.`);
+      this.emit({ type: "wait", subject: combatant } as Omit<WaitEvent, "turn">);
       return { haltRound: false };
     }
 
@@ -454,7 +453,8 @@ export default class Combat {
     ]?.ability;
 
     if (!action) {
-      this.note(`${Presenter.minimalCombatant(combatant)} has no valid actions and skips their turn.`);
+      // this.note(`${Presenter.minimalCombatant(combatant)} has no valid actions and skips their turn.`);
+      this.emit({ type: "wait", subject: combatant } as Omit<WaitEvent, "turn">);
       return { haltRound: false };
     }
     // console.log(
@@ -463,13 +463,10 @@ export default class Combat {
     let targetOrTargets: Combatant | Combatant[] = AbilityScoring.bestAbilityTarget(action, combatant, allies, enemies);
 
     if (targetOrTargets === null || targetOrTargets === undefined) {
-      this.note(`${Presenter.minimalCombatant(combatant)} has no valid targets for ${action?.name} and skips their turn.`);
+      this.emit({ type: "wait", subject: combatant } as Omit<WaitEvent, "turn">);
       return { haltRound: false };
-      // } else {
     }
-    // console.log(
-    //   `${combatant.forename} chooses to use ${action?.name} on ${Array.isArray(targetOrTargets) ? targetOrTargets.map(t => t.forename).join(", ") : (targetOrTargets as Combatant).forename}.`
-    // );
+
 
     combatant.abilityCooldowns = combatant.abilityCooldowns || {};
     if (action.type === "skill" && !action.name.match(/melee|ranged|wait/i)) {
@@ -487,26 +484,26 @@ export default class Combat {
     let team = this.teams.find(t => t.combatants.includes(combatant));
     let ctx: CombatContext = { subject: combatant, allies, enemies };
     let { events } = await AbilityHandler.perform(action, combatant, targetOrTargets, ctx, Commands.handlers(this.roller, team!));
-    await this.emitAll(events, Combat.describeAbility(action, combatant));
+    await this.emitAll(events, Combat.describeAbility(action), combatant);
 
     return { haltRound: false };
   }
 
-  static describeAbility(action: Ability, user: Combatant): string {
-    let verb = action.type === "spell" ? 'casts' : 'readies';
+  static describeAbility(action: Ability): string {
+    let verb = action.type === "spell" ? 'casts' : 'performs';
     let actionName = Stylist.italic(action.name.toLowerCase());
-    let message = (user.forename + (verb ? ` ${verb} ` : " ") + actionName + "."); // for " + (Array.isArray(targetOrTargets) ? + targetOrTargets.map(t => Presenter.minimalCombatant(t)).join(", ") : Presenter.minimalCombatant(targetOrTargets)) + ".");
+    let message = (verb ? `${verb} ` : "") + actionName;
     return message;
   }
 
   async turn(combatant: Combatant): Promise<{ haltRound: boolean }> {
     // don't attempt to act if we're already defeated
     if (combatant.hp <= 0) {
-      console.warn(`${Presenter.minimalCombatant(combatant)} is defeated and cannot act.`);
+      // console.warn(`${Presenter.minimalCombatant(combatant)} is defeated and cannot act.`);
       return { haltRound: false };
     }
 
-    console.log("\n" + Presenter.combatant(combatant));
+    // console.log("\n" + Presenter.combatant(combatant));
 
     await this.emit({ type: "turnStart", subject: combatant, combatants: this.allCombatants } as Omit<CombatEvent, "turn">);
 
@@ -519,20 +516,16 @@ export default class Combat {
 
     // if we have an 'inactive' status (eg from sleep spell) skip our turn
     if (combatant.activeEffects?.some(e => e.effect.noActions)) {
-      let status = combatant.activeEffects.find(e => e.effect.noActions);
-      this.note(`${Presenter.minimalCombatant(combatant)} is ${status!.name} (${status!.duration || "--"}) and skips their turn!`);
+      let status = combatant.activeEffects.find(e => e.effect.noActions)!;
+      // this.note(`${Presenter.minimalCombatant(combatant)} is ${status!.name} (${status!.duration || "--"}) and skips their turn!`);
+      this.emit({ type: "inactive", subject: combatant, statusName: status.name, duration: status.duration } as Omit<NoActionsForCombatant, "turn">);
+
       return { haltRound: false };
     }
 
     const targets = this.teams.find(team => team.combatants.includes(combatant)) === this.teams[0] ? (this.teams[1].combatants) : (this.teams[0].combatants);
 
     let validTargets = Combat.living(targets);
-    // if (validTargets.length === 0) {
-    //   console.warn("No valid targets for ", Presenter.minimalCombatant(combatant), " -- skipping turn.");
-    //   console.log(" - All possible targets:", targets.map(t => Presenter.minimalCombatant(t)).join(", "));
-    //   console.log(" - Living targets:", validTargets.map(t => Presenter.minimalCombatant(t)).join(", "));
-    //   return { haltRound: false };
-    // }
 
     let allies = this.teams.find(team => team.combatants.includes(combatant))?.combatants || [];
     allies = allies.filter(c => c !== combatant);
@@ -543,16 +536,9 @@ export default class Combat {
     // do we have an effect changing our allegiance? in which case -- flip our allies/enemies
     let allegianceEffect = combatant.activeEffects?.find(e => e.effect.changeAllegiance);
     if (allegianceEffect) {
-      this.note(`${combatant.forename} is under the effect of ${allegianceEffect.name} and has switched sides!`);
+      this.emit({ type: "allegianceChange", subject: combatant, statusName: allegianceEffect.name } as Omit<AllegianceChangeEvent, "turn">);
       [allies, validTargets] = [validTargets, allies];
     }
-
-    // console.log(`DEBUG ${combatant.forename} turn:`);
-    // console.log(`  - This combatant's team: ${this.teams.find(t => t.combatants.includes(combatant)) === this.teams[0] ? 'team0' : 'team1'}`);
-    // console.log(`  - Team 0 combatants: ${this.teams[0].combatants.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
-    // console.log(`  - Team 1 combatants: ${this.teams[1].combatants.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
-    // console.log(`  - Living enemies (validTargets): ${validTargets.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
-    // console.log(`  - Allies: ${allies.map(c => `${c.forename}(${c.hp}HP)`).join(', ')}`);
 
     let attacksPerTurn = combatant.attacksPerTurn || 1;
     for (let i = 0; i < attacksPerTurn; i++) {
@@ -574,7 +560,7 @@ export default class Combat {
           for (const effect of status.effect['onTurnEnd']) {
             // apply fx to self
             let { events } = await AbilityHandler.handleEffect(status.name, effect, effect.by || combatant, combatant, ctx, Commands.handlers(this.roller, this.teams.find(t => t.combatants.includes(combatant))!));
-            await this.emitAll(events);
+            await this.emitAll(events, `Turn end effects from ${Stylist.italic(status.name)}`, combatant);
           }
         }
       }
@@ -594,9 +580,6 @@ export default class Combat {
     this.combatantsByInitiative = await this.determineInitiative();
     this.turnNumber++;
     // check for escape conditions (if 'flee' status is active, remove the combatant from combat)
-    // Combat.living(this.allCombatants)
-    // this.teams[1].combatants
-    //   .forEach(combatant => {
     for (const combatant of this.teams[1].combatants) {
       if (combatant.activeEffects?.some(e => e.effect?.flee)) {
         // remove from combatants / teams
@@ -620,7 +603,6 @@ export default class Combat {
     for (const { combatant } of this.combatantsByInitiative) {
       let nonplayerCombatants = this.teams[1].combatants.filter(c => c.hp > 0);
       if (nonplayerCombatants.length === 0) {
-        // console.warn("All nonplayer combatants dead, skipping remaining turns: ", this.combatantsByInitiative.map(c => c.combatant.forename + `(${c.combatant.hp} HP)`));
         this.winner = this.teams[0].name;
 
         console.log(Stylist.bold("All enemies defeated! You are victorious!"));
@@ -632,11 +614,9 @@ export default class Combat {
       if (result.haltRound) {
         break;
       }
-      // }
 
       // tick down status
       let expiryEvents: StatusExpireEvent[] = [];
-      // Combat.living(this.allCombatants).forEach(combatant => {
       if (combatant.activeEffects) {
         combatant.activeEffects.forEach((it: StatusEffect) => {
           if (it.duration !== undefined && it.duration !== Infinity) {
@@ -656,7 +636,7 @@ export default class Combat {
       );
 
       if (expiryEvents.length > 0) {
-        await this.emitAll(expiryEvents, "Effects expire.");
+        await this.emitAll(expiryEvents, "effects expire", combatant);
       }
     }
 
@@ -669,7 +649,7 @@ export default class Combat {
       }
     }
 
-    return; // { number: this.turnNumber, done: this.isOver() };
+    return;
   }
 
   isOver() {
@@ -700,12 +680,12 @@ export default class Combat {
       {
         name: "Enemy", combatants: [
           {
-            forename: "Zok", name: "Goblin A", alignment: "neutral", hp: 4, maxHp: 4, level: 1, ac: 17, //attackRolls: 2, damageDie: 3,
+            forename: "Zok", name: "Goblin A", alignment: "neutral", hp: 4, maxHp: 4, level: 1, ac: 17,
             attackDie: "1d3",
             str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: [], hasMissileWeapon: false, xp: 0, gp: 0
           },
           {
-            forename: "Mog", name: "Goblin B", alignment: "neutral", hp: 4, maxHp: 4, level: 1, ac: 17, //attackRolls: 2, damageDie: 3,
+            forename: "Mog", name: "Goblin B", alignment: "neutral", hp: 4, maxHp: 4, level: 1, ac: 17,
             attackDie: "1d3",
             str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: [], hasMissileWeapon: false, xp: 0, gp: 0
           }

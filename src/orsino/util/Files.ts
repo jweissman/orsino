@@ -31,6 +31,27 @@ export default class Files {
     }
   }
 
+  static async append(path: string, data: string): Promise<void> {
+    // mkdir -p if needed
+    const dir = path.substring(0, path.lastIndexOf("/"));
+    try {
+      if (dir.length > 0) {
+        await fs.mkdir(dir, { recursive: true });
+      }
+    } catch (err) {
+      console.error(`Error creating directory ${dir}:`, err);
+      throw err;
+    }
+
+    try {
+      await fs.appendFile(path, data, "utf-8");
+      // console.log(`Data appended successfully to file: ${path}`);
+    } catch (err) {
+      console.error(`Error appending to file ${path}:`, err);
+      throw err;
+    }
+  }
+
   static async readJSON<T>(path: string): Promise<T> {
     try {
       const data = await this.read(path);

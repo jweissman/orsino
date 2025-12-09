@@ -27,6 +27,30 @@ export class Inventory {
     return true;
   }
 
+  static isItemProficient(kind: string, aspect: string, itemProficiencies: { all?: boolean; kind?: string[]; withoutAspect?: string }): boolean {
+    if (itemProficiencies.all) {
+      return true;
+    }
+    // let itemInfo = Deem.evaluate(`lookup(consumables, "${itemKey}")`) as any;
+    let itemInfo = { kind, aspects: [aspect] }; // mock item info for checking proficiencies
+    if (itemProficiencies.kind) {
+      if (itemInfo && itemInfo.kind && !itemProficiencies.kind.includes(itemInfo.kind)) {
+        return false;
+      }
+    }
+    if (itemProficiencies.withoutAspect) {
+      if (itemInfo && itemInfo.aspects) {
+        // for (let aspect of itemProficiencies.withoutAspect) {
+          if (itemInfo.aspects.includes(itemProficiencies.withoutAspect)) {
+            return false;
+          }
+        // }
+      }
+    }
+
+    return true;
+  }
+
   static async item(name: string): Promise<ItemInstance> {
     let isConsumable = await Deem.evaluate(`hasEntry(consumables, '${name}')`);
     if (isConsumable) {
@@ -54,7 +78,7 @@ export class Inventory {
     return inventoryCounts;
   }
 
-  static async equip(equipmentKey: string, wielder: Combatant): Promise<string | null> {
+  static async equip(equipmentKey: string, wielder: Combatant): Promise<{oldItemKey: string | null, slot: EquipmentSlot}> {
     if (!wielder.equipment) {
       wielder.equipment = {};
     }
@@ -84,6 +108,6 @@ export class Inventory {
     wielder.equipment = wielder.equipment || {};
     wielder.equipment[slot] = equipmentKey;
 
-    return oldItemKey || null;
+    return { oldItemKey: oldItemKey || null, slot };
   }
 }

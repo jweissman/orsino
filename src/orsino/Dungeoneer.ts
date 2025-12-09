@@ -128,12 +128,19 @@ export default class Dungeoneer {
     });
   }
 
-  note(message: string): void { this.outputSink(message); }
+  private note(message: string): void {
+    this.outputSink(message);
+  }
 
-  protected emit(event: DungeonEvent): void {
+  protected async emit(event: DungeonEvent) {
     this.journal.push(event);
     this.note(Events.present(event));
+
+    await Events.appendToLogfile(event);
   }
+
+  // protected async emitAll(events: DungeonEvent[], message: string = "") {
+  // }
 
   get icon() {
     return Dungeoneer.dungeonIcons[this.dungeon!.dungeon_type as keyof typeof Dungeoneer.dungeonIcons] || "🏰";
@@ -141,8 +148,6 @@ export default class Dungeoneer {
 
   async setUp() {
     this.dungeon = await this.dungeonGen();
-    // console.log("Dungeon details: " + JSON.stringify(this.dungeon, null, 2));
-    console.log("Set up dungeon with CR " + this.dungeon.intendedCr);
   }
 
   // Main run loop
@@ -152,7 +157,7 @@ export default class Dungeoneer {
     }
     // this.presentCharacterRecords();
 
-    this.emit({
+    await this.emit({
       type: "enterDungeon",
       dungeonName: this.dungeon!.dungeon_name,
       dungeonIcon: this.icon,
@@ -168,15 +173,18 @@ export default class Dungeoneer {
       const room = this.currentRoom;
       if (!room) break;
       await this.enterRoom(room);
+      let combat = undefined;
       if (this.currentEncounter && Combat.living(this.playerTeam.combatants).length > 0) {
-        const survived = await this.runCombat();
+        let survived = false;
+        ({ playerWon: survived, combat } = await this.runCombat());
         if (!survived) break;
       }
 
-      this.emit({ type: "roomCleared" });
+      await this.emit({ type: "roomCleared", room, combat });
       let result = await this.roomActions(room);
       if (result.leaving) {
-        this.note(`\nYou decide to leave the dungeon.`);
+        // this.note(`\nYou decide to leave the dungeon.`);
+        await this.emit({ type: "leaveDungeon" });
         return;
       }
       this.moveToNextRoom();
@@ -184,9 +192,10 @@ export default class Dungeoneer {
 
     // Display outcome
     if (this.winner === 'Player') {
-      this.note("\n🎉 Victory! Dungeon cleared!\n");
+      this.emit({ type: "dungeonCleared", macguffin: this.dungeon!.macguffin });
+      // this.note("\n🎉 Victory! Dungeon cleared!\n");
       if (this.dungeon!.macguffin) {
-        this.note(`You have secured ${Stylist.bold(this.dungeon!.macguffin)}!\n`);
+        // this.note(`You have secured ${Stylist.bold(this.dungeon!.macguffin)}!\n`);
         let isConsumable = await Deem.evaluate(`hasEntry(consumables, '${this.dungeon!.macguffin}')`);
         if (isConsumable) {
           // this.playerTeam.inventory[this.dungeon!.macguffin] = (this.playerTeam.inventory[this.dungeon!.macguffin] || 0) + 1;
@@ -198,7 +207,8 @@ export default class Dungeoneer {
         }
       }
     } else {
-      this.note("\n💀 Party defeated...\n");
+      // this.note("\n💀 Party defeated...\n");
+      await this.emit({ type: "dungeonFailed", reason: "Your party has been defeated." });
     }
   }
 
@@ -213,19 +223,12 @@ export default class Dungeoneer {
       disabled: c.hp <= 0
     })));
 
-    // think this was only possible if no pcs were alive (should be prevented now?)
-    // if (!actor) {
-    //   console.trace("No actor selected for skill check:", action);
-    //   // return { actor: null as any, success: false };
-    //   throw new Error("No actor selected for skill check");
-    // }
-
     let actorFx = await Fighting.gatherEffects(actor);
     let skillBonusName = `${type}Bonus`;
     let skillBonus = actorFx[skillBonusName] as number || 0;
     let skillMod = Fighting.statMod(actor[skill] as number);
 
-    this.note(`${actor.name} attempts ${action} with modifier ${skillMod}` + (skillBonus > 0 ? ` and +${skillBonus} bonus.` : '.'));
+    // this.note(`${actor.name} attempts ${action} with modifier ${skillMod}` + (skillBonus > 0 ? ` and +${skillBonus} bonus.` : '.'));
     const roll = await this.roller(actor, action, 20);
     const total = roll.amount + skillMod + skillBonus;
     return { actor, success: total >= dc };
@@ -270,35 +273,24 @@ export default class Dungeoneer {
   async enterRoom(room: Room | BossRoom): Promise<void> {
     this.persistCharacterRecords();
 
-    // if (this.isBossRoom) {
-    //   this.note(`\n${"═".repeat(70)}`);
-    //   this.note(`  💀 BOSS ROOM 💀`);
-    //   this.note(`${"═".repeat(70)}`);
-    // } else {
-    //   const num = this.currentRoomIndex + 1;
-    //   this.note(`\n${"─".repeat(70)}`);
-    //   this.note(`ROOM ${num}/${this.rooms.length}`);
-    //   this.note(`${"─".repeat(70)}`);
-    // }
 
     let roomDescription = this.describeRoom(room, ["enter", "step into", "find yourself in"][Math.floor(Math.random() * 3)]);
-    this.note(
-      Stylist.italic(roomDescription)
-    );
+    // this.note(Stylist.italic(roomDescription));
+    await this.emit({ type: "enterRoom", roomDescription });
 
-    if (this.currentEncounter && Combat.living(this.currentEncounter.creatures).length > 0) {
-      const monsters = this.currentEncounter.creatures.map(m => `\n - ${Presenter.combatant(m)}`).join("");
-      this.note(`👹 Encounter: ${monsters}`);
-    }
+    // if (this.currentEncounter && Combat.living(this.currentEncounter.creatures).length > 0) {
+    //   const monsters = this.currentEncounter.creatures.map(m => `\n - ${Presenter.combatant(m)}`).join("");
+    //   this.note(`👹 Encounter: ${monsters}`);
+    // }
 
     // display current party status
     // const partyStatus = this.playerTeam.combatants.map(c => Presenter.minimalCombatant(c)).join("\n");
     // this.note(`🧙‍ Party Status:\n${partyStatus}\n`);
   }
 
-  private async runCombat(): Promise<boolean> {
+  private async runCombat(): Promise<{ playerWon: boolean, combat: Combat }> {
     if (Combat.living(this.currentMonsterTeam.combatants).length === 0) {
-      return true;
+      return { playerWon: true, combat: null as any };
     }
     const combat = new Combat({
       roller: this.roller,
@@ -316,29 +308,29 @@ export default class Dungeoneer {
     while (!combat.isOver()) {
       await combat.round(
         async (combatant: Combatant) => {
-          console.warn(`Combatant '${combatant.name}' has fled the combat.`);
+          // console.warn(`Combatant '${combatant.name}' has fled the combat.`);
           // find another room for them
           let newRoom = this.nextRoom;
           if (newRoom) {
-            this.note(`\n${combatant.name} escapes to the next room (${newRoom.room_type}).`);
+            // this.note(`\n${combatant.name} escapes to the next room (${newRoom.room_type}).`);
             combatant.activeEffects = [];
             if ((newRoom as Room).encounter) {
-              console.log("New room creature count before escape:", (newRoom as Room).encounter?.creatures.length);
+              // console.log("New room creature count before escape:", (newRoom as Room).encounter?.creatures.length);
               (newRoom as Room).encounter?.creatures.push(combatant);
-              console.log("New room creature count after escape:", (newRoom as Room).encounter?.creatures.length);
+              // console.log("New room creature count after escape:", (newRoom as Room).encounter?.creatures.length);
             } else if ((newRoom as BossRoom).boss_encounter) {
-              console.log("New boss room creature count before escape:", (newRoom as BossRoom).boss_encounter?.creatures.length);
+              // console.log("New boss room creature count before escape:", (newRoom as BossRoom).boss_encounter?.creatures.length);
               (newRoom as BossRoom).boss_encounter?.creatures.push(combatant);
-              console.log("New boss room creature count after escape:", (newRoom as BossRoom).boss_encounter?.creatures.length);
+              // console.log("New boss room creature count after escape:", (newRoom as BossRoom).boss_encounter?.creatures.length);
             }
-          } else {
-            this.note(`\n${combatant.name} escapes the dungeon entirely!`);
+          // } else {
+            // this.note(`\n${combatant.name} escapes the dungeon entirely!`);
           }
         }
       );
     }
 
-    console.log(`Combat complete. Winner: '${combat.winner}'`);
+    // console.log(`Combat complete. Winner: '${combat.winner}'`);
 
     Combat.statistics.victories += (combat.winner === this.playerTeam.name) ? 1 : 0;
     Combat.statistics.defeats += (combat.winner !== this.playerTeam.name) ? 1 : 0;
@@ -352,7 +344,7 @@ export default class Dungeoneer {
       let gold = await Deem.evaluate(String(this.currentEncounter?.bonusGold || 0)) || 0;
 
       if (enemies.length > 0) {
-        this.note(`\n🎉 You defeated ${Words.humanizeList(enemies.map(e => e.name))}!`);
+        // this.note(`\n🎉 You defeated ${Words.humanizeList(enemies.map(e => e.name))}!`);
 
         let monsterCount = enemies.length;
         xp = enemies.reduce((sum, m) => sum + (m.xp || 0), 0)
@@ -363,17 +355,18 @@ export default class Dungeoneer {
         //   enemies.reduce((sum, m) => sum + (Deem.evaluate(String(m.gp) || "1+1d2")), 0);
         for (const m of enemies) {
           const monsterGold = (await Deem.evaluate(String(m.gp))) || 0;
-          console.log(`Monster '${m.name}' yields ${monsterGold} gold (${m.gp})`);
+          // console.log(`Monster '${m.name}' yields ${monsterGold} gold (${m.gp})`);
           gold += monsterGold;
         }
 
-        this.note(`\nVictory! +${xp} XP, +${gold} GP\n`);
+        // this.note(`\nVictory! +${xp} XP, +${gold} GP\n`);
       }
 
-      if (Math.random() < 0.9) {
+      if (Math.random() < 0.2) {
         let consumable = await Deem.evaluate("pick(gather(consumables))") as any;
         let consumableName = Words.humanize(consumable);
-        this.note(`You found ${Words.a_an(consumableName)} in the remains of your foes.`);
+        // this.note(`You found ${Words.a_an(consumableName)} in the remains of your foes.`);
+        await this.emit({ type: "itemFound", itemName: Words.humanize(consumableName), quantity: 1, where: "in the remains of your foes" });
         this.playerTeam.inventory.push(await Inventory.item(consumable));
         // if (consumable.charges) {
         //   this.playerTeam.inventory.push({ name: consumable, maxCharges: consumable.charges, charges: Math.random() * consumable.charges });
@@ -387,10 +380,10 @@ export default class Dungeoneer {
       if (xp > 0 || gold > 0) {
         await this.reward(xp, gold);
       }
-      return true;
+      return { playerWon: true, combat };
     }
 
-    return false;
+    return { playerWon: false, combat };
   }
 
   private async reward(xp: number, gold: number): Promise<void> {
@@ -407,7 +400,10 @@ export default class Dungeoneer {
 
       if (xp > 0) {
         let events = await CharacterRecord.levelUp(c, this.playerTeam, this.roller, this.select);
-        events.forEach(e => this.emit({ ...e, turn: -1 } as DungeonEvent));
+        // events.forEach(e => this.emit({ ...e, turn: -1 } as DungeonEvent));
+        for (const event of events) {
+          await this.emit({ ...event, turn: -1 } as DungeonEvent);
+        }
       }
     }
   }
@@ -416,7 +412,7 @@ export default class Dungeoneer {
   private async roomActions(room: Room | BossRoom): Promise<{
     leaving: boolean
   }> {
-    this.note(this.describeRoom(room));
+    // this.note(this.describeRoom(room));
 
     let searched = false, examinedDecor = false, inspectedFeatures: string[] = [];
     let done = false;
@@ -447,7 +443,7 @@ export default class Dungeoneer {
         for (const c of this.playerTeam.combatants) {
           Presenter.printCharacterRecord(c);
         }
-        this.note(`Inventory:`);
+        this.outputSink(`Inventory:`);
         for (const [itemName, qty] of Object.entries(Inventory.quantities(this.playerTeam.inventory))) {
           if (qty > 1) {
             this.outputSink(` - ${Words.humanize(itemName)} x${qty}`);
@@ -465,13 +461,22 @@ export default class Dungeoneer {
           return { leaving: true };
         }
       } else if (choice === "examine") {
-        let check = await this.skillCheck("examine", `to examine ${room.decor}`, "int", 10);
+        let check = await this.skillCheck("examine", `to examine ${room.decor}`, "int", 15);
+        let gp = 0;
+        let items: string[] = [];
         if (check.success) {
-          let gp = await Deem.evaluate("1+1d20");
-          this.note(`${check.actor.forename} found a hidden compartment in ${room.decor} containing ${gp} gold coins!`);
-          await this.reward(0, gp);
+          gp = await Deem.evaluate("1+1d20");
+          items = await Deem.evaluate("sample(gather(consumables), 1d2)") as string[];
+          // this.note(`${check.actor.forename} found a hidden compartment in ${room.decor} containing ${gp} gold coins!`);
         } else {
-          this.note(`${check.actor.forename} examined ${room.decor} thoroughly, but could find nothing out of the ordinary.`);
+          // this.note(`${check.actor.forename} examined ${room.decor} thoroughly, but could find nothing out of the ordinary.`);
+        }
+        await this.emit({ type: "investigate", subject: check.actor, clue: `the ${room.decor}`, discovery: check.success ? `${gp} gold coins hidden within` : `nothing of interest` });
+        await this.reward(0, gp);
+
+        for (const item of items) {
+          await this.emit({ type: "itemFound", itemName: Words.humanize(item), quantity: 1, where: `in the hidden compartment of the ${room.decor}` });
+          this.playerTeam.inventory.push(await Inventory.item(item));
         }
         examinedDecor = true;
       } else if (typeof choice === "string" && choice.startsWith("feature:")) {
@@ -498,6 +503,7 @@ export default class Dungeoneer {
 
   private async interactWithFeature(featureName: string): Promise<void> {
     let check = await this.skillCheck("examine", `to inspect ${Words.a_an(Words.humanize(featureName))}`, "int", 10);
+    await this.emit({ type: "investigate", subject: check.actor, clue: `the ${Words.humanize(featureName)}`, discovery: check.success ? `an interesting feature` : `nothing of interest` });
     if (check.success) {
       let interaction = await Deem.evaluate(`=lookup(roomFeature, ${featureName})`) as Ability;
       this.note(interaction.description);
@@ -536,26 +542,28 @@ export default class Dungeoneer {
   }
 
   private async search(room: Room | BossRoom): Promise<void> {
-    let { actor, success } = await this.skillCheck("search", `to search the ${room.room_type.replaceAll("_", " ")}`, "wis", 10);
+    let { actor, success } = await this.skillCheck("search", `to search the ${room.room_type.replaceAll("_", " ")}`, "wis", 15);
+    await this.emit({ type: "investigate", subject: actor, clue: `the ${room.room_type.replaceAll("_", " ")}`, discovery: success ? `a hidden stash` : `nothing of interest` });
     if (success) {
-      this.note(`${actor.forename} finds a hidden stash!`);
+      // this.note(`${actor.forename} finds a hidden stash!`);
       if (room.treasure) {
         for (const item of room.treasure) {
-          this.note(`You find ${Words.humanize(item)}`);
+          // this.note(`You find ${Words.humanize(item)}`);
+          await this.emit({ type: "itemFound", itemName: Words.humanize(item), quantity: 1, where: "in the hidden stash" });
           let isConsumable = await Deem.evaluate(`=hasEntry(consumables, "${item}")`) as boolean;
           let isGear = await Deem.evaluate(`=hasEntry(masterGear, "${item}")`) as boolean;
           let isEquipment = await Deem.evaluate(`=hasEntry(equipment, "${item}")`) as boolean;
           // let isGear = await Deem.evaluate(`=hasEntry(masterGear, "${item}")`) as boolean;
           if (isConsumable) {
-            this.note(`You add ${Words.a_an(item)} to your inventory.`);
+            // this.note(`You add ${Words.a_an(item)} to your inventory.`);
             // this.playerTeam.inventory.push({ name: item });
             this.playerTeam.inventory.push(await Inventory.item(item));
           } else if (isGear) {
-            this.note(`${actor.forename} adds ${Words.a_an(item)} to their gear.`);
+            // this.note(`${actor.forename} adds ${Words.a_an(item)} to their gear.`);
             actor.gear = actor.gear || [];
             actor.gear.push(item);
           } else if (isEquipment) {
-            this.note(`${actor.forename} may equip ${Words.a_an(item)}.`);
+            // this.note(`${actor.forename} may equip ${Words.a_an(item)}.`);
             let choice = await this.select(`Equip ${Words.humanize(item)} now?`, [
               { name: "Yes", value: "yes", short: 'Y', disabled: false },
               { name: "No", value: "no", short: 'N', disabled: false }
@@ -567,12 +575,13 @@ export default class Dungeoneer {
               continue;
             }
             // add to combatant.equipment
-            let maybeOldItem = await Inventory.equip(item, actor);
+            let { oldItemKey: maybeOldItem, slot } = await Inventory.equip(item, actor);
             if (maybeOldItem !== null) {
               this.note(`${actor.forename} replaces ${Words.a_an(maybeOldItem)} with ${Words.a_an(item)}.`);
               actor.loot = actor.loot || [];
               actor.loot.push(maybeOldItem);
             }
+            await this.emit({ type: "equipmentWorn", itemName: item, slot });
           } else {
             // add to combatant.loot
             actor.loot = actor.loot || [];
@@ -584,8 +593,9 @@ export default class Dungeoneer {
         await this.reward(xpReward, 0);
       }
       if (room.gear) {
-        this.note(`${actor.forename} finds ${Words.humanizeList(room.gear.map(Words.humanize))}!`);
+        // this.note(`${actor.forename} finds ${Words.humanizeList(room.gear.map(Words.humanize))}!`);
         for (const item of room.gear) {
+          await this.emit({ type: "itemFound", itemName: Words.humanize(item), quantity: 1, where: "in the hidden stash" });
           actor.gear = actor.gear || [];
           actor.gear.push(item);
         }
@@ -602,14 +612,15 @@ export default class Dungeoneer {
           // this.playerTeam.inventory[item] = (this.playerTeam.inventory[item] || 0) + 1;
           // this.playerTeam.inventory.push({ name: item });
           this.playerTeam.inventory.push(await Inventory.item(item));
-          this.note(`You add ${Words.a_an(Words.humanize(item))} to your inventory (total owned: ${this.playerTeam.inventory.filter(i => i.name === item).length})`);
+          // this.note(`You add ${Words.a_an(Words.humanize(item))} to your inventory (total owned: ${this.playerTeam.inventory.filter(i => i.name === item).length})`);
+          await this.emit({ type: "itemFound", itemName: Words.humanize(item), quantity: 1, where: "in the hidden stash" });
 
           // this.note(`You add ${Words.a_an(item)} to your bag. (Total owned: ${this.playerTeam.inventory[item]})`);
         }
       }
 
-    } else {
-      this.note(`\n${actor.forename} fails to find anything.`);
+    // } else {
+    //   this.note(`\n${actor.forename} fails to find anything.`);
     }
   }
 
@@ -621,12 +632,15 @@ export default class Dungeoneer {
     if (choice === "yes") {
       // Heal party, maybe trigger encounter
       this.note(`\n💤 Resting...`);
+      let stabilizedCombatants: Combatant[] = [];
       for (const c of this.playerTeam.combatants) {
         if (c.hp <= 0) {
           c.hp = 1;
+          stabilizedCombatants.push(c);
           this.note(`Stabilized ${c.name} at 1 HP.`);
         } // Stabilize unconscious characters
       }
+      await this.emit({ type: "rest", stabilizedCombatants: stabilizedCombatants.map(c => c.name) });
 
       // ask if they want to use consumables/healing spells?
       let someoneWounded = this.playerTeam.combatants.some(c => c.hp < c.maxHp);
@@ -657,7 +671,10 @@ export default class Dungeoneer {
                   let nullCombatContext: CombatContext = { subject: c, allies: [], enemies: [] };
                   for (let effect of effects) {
                     let { events } = await AbilityHandler.handleEffect(it.name, effect, c, c, nullCombatContext, Commands.handlers(this.roller, this.playerTeam));
-                    events.forEach(e => this.emit({ ...e, turn: -1 } as DungeonEvent));
+                    // events.forEach(e => this.emit({ ...e, turn: -1 } as DungeonEvent));
+                    for (const event of events) {
+                      await this.emit({ ...event, turn: -1 } as DungeonEvent);
+                    }
                   }
                   // consume one
                   let index = this.playerTeam.inventory.findIndex(i => i.name === itemName);
@@ -676,7 +693,7 @@ export default class Dungeoneer {
         let room = this.currentRoom as Room;
         room.encounter = await this.encounterGen(room.targetCr || 1);
         this.note(`\n👹 Wandering monsters interrupt your rest: ${Words.humanizeList(room.encounter.creatures.map(m => m.name))} [CR ${room.encounter.cr}]`);
-        return await this.runCombat();
+        return (await this.runCombat()).playerWon;
       }
     }
     return true;

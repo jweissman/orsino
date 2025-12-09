@@ -20,7 +20,7 @@ export type CommandHandlers = {
   heal: (healer: Combatant, target: Combatant, amount: number) => Promise<TimelessEvent[]>;
   status: (user: Combatant, target: Combatant, name: string, effect: { [key: string]: any }, duration: number) => Promise<TimelessEvent[]>;
   removeStatus: (target: Combatant, name: string) => Promise<TimelessEvent[]>;
-  removeItem: (user: Combatant, item: keyof Team) => Promise<TimelessEvent[]>;
+  // removeItem: (user: Combatant, item: keyof Team) => Promise<TimelessEvent[]>;
   save: (target: Combatant, saveType: SaveKind, dc: number, roll: Roll) => Promise<{
     success: boolean;
     events: TimelessEvent[];
@@ -38,15 +38,15 @@ export class Commands {
       heal: this.handleHeal,
       status: this.handleStatusEffect,
       removeStatus: this.handleRemoveStatusEffect,
-      removeItem: async (user: Combatant, item: keyof Team) => {
-        if (team) {
-          // @ts-ignore
-          team[item] = Math.max(0, (team[item] as number || 0) - 1);
-          console.warn(`${user.forename} consumed ${Words.a_an(item)}. ${team.name} now has ${team[item]} ${item}.`);
-          // TODO item consume event...
-        }
-        return [];
-      },
+      // removeItem: async (user: Combatant, item: keyof Team) => {
+      //   if (team) {
+      //     // @ts-ignore
+      //     team[item] = Math.max(0, (team[item] as number || 0) - 1);
+      //     console.warn(`${user.forename} consumed ${Words.a_an(item)}. ${team.name} now has ${team[item]} ${item}.`);
+      //     // TODO item consume event...
+      //   }
+      //   return [];
+      // },
       summon: async (user: Combatant, summoned: Combatant[]) => {
         // console.log(`${user.name} summons ${summoned.map(s => s.name).join(", ")}!`);
         // team.combatants.push(...summoned);
@@ -95,12 +95,12 @@ export class Commands {
     const wisBonus = Math.max(0, Fighting.statMod(effective.wis));
     if (wisBonus > 0) {
       amount += wisBonus;
-      console.log(`Healing increased by ${wisBonus} for WIS ${healer.wis}`);
+      // console.log(`Healing increased by ${wisBonus} for WIS ${healer.wis}`);
     }
     let healerFx = await Fighting.gatherEffects(healer);
     if (healerFx.bonusHealing) {
       amount += await Deem.evaluate(healerFx.bonusHealing.toString()) as number || 0;
-      console.log(`Healing increased by ${healerFx.bonusHealing} due to effects on ${healer.name}`);
+      // console.log(`Healing increased by ${healerFx.bonusHealing} due to effects on ${healer.name}`);
     }
 
     amount = Math.max(1, amount);
@@ -317,7 +317,7 @@ export class Commands {
     // Apply status duration bonus
     if (userFx.statusDuration) {
       duration += (userFx.statusDuration as number);
-      console.log(`Status duration of ${target.forename} increased by ${userFx.statusDuration}!`);
+      // console.log(`Status duration of ${target.forename} increased by ${userFx.statusDuration}!`);
     }
 
     target.activeEffects = target.activeEffects || [];

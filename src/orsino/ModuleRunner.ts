@@ -93,7 +93,7 @@ export class ModuleRunner {
     this.state.sharedGold += this.pcs.reduce((sum, pc) => sum + (pc.gp || 0), 0);
     this.pcs.forEach(pc => pc.gp = 0);
 
-    this.outputSink("Generating module, please wait...");
+    // this.outputSink("Generating module, please wait...");
     this.activeModule = await this.moduleGen();
     this.outputSink(`Module "${this.activeModule.name}" generated: ${this.activeModule.terrain} terrain, ${this.activeModule.town.name} town, ${this.activeModule.dungeons.length} dungeons
     }`);

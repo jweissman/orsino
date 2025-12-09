@@ -1,5 +1,14 @@
 # Notes from Playtesting
 
+## Bugs
+[ ] Effects from shrine not getting applied to characters? (maybe getting erased at Combat#setUp if configured as activeEffect but also I don't think I was even seeing it immediately on the character rec at all?)
+[ ] Hidden seems to be removed whenever the hiding creature _gets_ attacked (should be removed whenever the hiding creature itself _attacks_)
+[ ] Zero handling
+  [ ] Was seeing 0-damage attacks on elite units (maybe something to do with DR but a 0-damage attack is a miss, although we could gloss as 'graze' or something?)
+  [ ] Healing for 0 HP should be presented as a failure (not "heals for 0 damage" but "tried to heal but fails") -- thought we had repaired this but still seeing 0-amount heals
+  [ ] Magic missile that does 0 damage should be glossed as a miss I think?
+
+## Features
 [ ] Rest could reset status effects? (would be nice to do this _before_ persisting PCs?)
 [ ] Healing potion could cure poison status too? [maybe better to have a dedicated consumable for it though]
 [ ] Poisoned blade still has weird expiration message actually? ("X is no longer poisoned blade"; a bit awkward to fix since a standard message would be ideal here)
@@ -13,7 +22,6 @@
 ---
 [ ] Remind players to rest if they're not at full health going into boss battle
 ---
-[ ] Healing for 0 HP should be presented as a failure (not "heals for 0 damage" but "tried to heal but fails") -- thought we had repaired this but still seeing 0-amount heals
 [ ] Temple blessing should _recharge_ duration if already present (ie just having the blessing should not necessarily disable prayer)
 [ ] Would be interesting to distinguish between positive/negative effects (maybe rest should cure only bad things?)
 [ ] We don't seem to redisplay room details if you've levelled up?
@@ -42,11 +50,8 @@
 ---
 [ ] Player party _must_ be able to attempt to flee intentionally (could be a dex skill check?)
 [ ] They should also have a chance to flee 'involuntarily' if they fail a save vs fear? (don't necessarily want to model 'splitting the party' but ... they could find individually-flown characters in previous rooms of the dungeon?)
-[ ] Need save events (system-level SaveEvent propagated upward by save command handler to represent succeeding or failing a save roll)
-[ ] Defend doesn't last long enough? Any effect with a duration of 1 only lasts until the end of the _current_ round (we moved to the end of the round for the check instead of individual turn beginning for clarity but maybe clearer to have co-located in flow with the individual combatant turn)
 [ ] Why is save vs Bleed a will check? Seems weird?
 [ ] Are we adding stat bonuses to save checks? (Probably not but maybe we should in at least some cases?)
-[ ] Unconscious characters should not roll init
 [ ] Some statuses still sound weird ("[defender] is Chaos by [inflicter]" - odd)
 ---
 [ ] AI should not use buffs that only target allies if all allies are dead
@@ -61,18 +66,14 @@
 ---
 [ ] Disable summon abilities if you already have 6 allied creatures (alive or dead...) / Shouldn't be able to call animal companion if 6 allies present! (standing or not)
 [ ] Would be nice to have more narrow utilty-cleric abilities (neutralize poison, remove paralysis, ultimately a high-level 'heal' which fixes status effects AND brings health back...)
-[ ] Was seeing 0-damage attacks on elite units (maybe something to do with DR but a 0-damage attack is a miss, although we could gloss as 'graze' or something?)
 [ ] Should permit player to _leave_ the dungeon (they _can_ but would have to flee and even that's disabled now, maybe to focus autoplay -- but anyway seems to be entirely disabled in fact rn)
 ---
 [ ] Dirty trick should not give a save vs magic? (maybe vs will or even specifically vs blinding?)
-[ ] Hidden seems to be removed whenever the hiding creature _gets_ attacked (should be removed whenever the hiding creature itself _attacks_)
 [ ] Show current gold before purchasing potions (make sure we're handling gold transition between town hub/dungeon correctly)
 [ ] Why is a wolf casting earthquake??? (presumably it was 'Giant' wolf but maybe just give a 'stomp' AoE ability?)
 [ ] Should say 'leave the dungeon' instead of 'move to next room' for last room
 [ ] There should be a shop to sell treasure (maybe also buy other kinds of consumables?)
-[ ] Magic missile that does 0 damage should be glossed as a miss I think?
 ---
-[ ] Effects from shrine not getting applied to characters? (maybe getting erased at Combat#setUp if configured as activeEffect but also I don't think I was even seeing it immediately on the character rec at all?)
 [ ] Resting somehow advances us into the next room? (thought this was wandering monster but definitely a new room)
 [ ] Special effect type for 'cast' (ie to make scrolls simpler to implement/less duplicative)
 ---
@@ -90,7 +91,12 @@
 [ ] Maybe only mages can use wands/scrolls??
 ---
 [ ] Would be nice to see literal HP for your party (ie not just approximate bar)
-[ ] Would be nice to write logs to a file for easier copy-paste
+---
+[ ] Staff/quarterstaff may not be listed in armory for some reason?
+[ ] Acid should degrade armor/weapons...
+[ ] Traps/lockpicking
+[ ] Double-check that initial weapon loadouts match proficiencies
+[ ] Restrict consumable purchases if no one in the party is proficient at all with it
 
 ## Fixed
 [x] Temple/shrine to local deity to get a blessing
@@ -172,6 +178,12 @@
 [x] Why does paralyze have 'unknown' duration?? (from an enemy's paralyzing_touch) -- should be fixed!
 [x] A room generated with multiple monsters with the same name (humans may need more names as a race but also maybe we could _specifically_ try to prevent this?) [genList would need a dedupe pass to really be _certain_ of this] -- Duplicate forenames still problematic -- maybe 'forename' can just _be_ magical within deem (genList could identify and toss dupes to prevent issues like this -- may cause other problems and seems weird... adding some gross genUniqListByKey seems 'too heavy' too; or we could have a 'gather' function that grabs all values of the __items but the expression then just gets too gnarly; note technically it's not even the 'name' key but 'forename' which ... we could just have a much deeper list to draw from to prevent this happening so often but that doesn't really solve this fundamentally!) -- genList/mapGenList could handle this by adding index #s but maybe not ideal somehow [note: pc and npc forenames are globally unique now and we actually throw a hard error on repeat just to help us see what's shallow in terms of naming pool -- but can fallback to resetting options list ... should help a lot if not _completely_ solve this]
 [x] Should you roll your own poison damage? Feels strange -- maybe should just be automatic? -- most rolls are elided in output now anyway!
+[x] Unconscious characters should not roll init - I think fixed but also not initiative rolls aren't surfaced anymore
+[x] Defend doesn't last long enough? Any effect with a duration of 1 only lasts until the end of the _current_ round (we moved to the end of the round for the check instead of individual turn beginning for clarity but maybe clearer to have co-located in flow with the individual combatant turn) - statuses should now tick down on combatant turn 
+[x] Need save events (system-level SaveEvent propagated upward by save command handler to represent succeeding or failing a save roll) - this is implemented
+[x] Would be nice to write logs to a file for easier copy-paste
+[x] Ring of regen probably not working since we don't have turnStart event fx handling? -- moved to turnEnd but still need to test
+[x] Restrict wands to caster classes (and clerics can only use healing ones) - should be done!
 
 ## Not really issues atm
 - "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]

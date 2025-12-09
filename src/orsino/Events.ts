@@ -2,9 +2,14 @@ import { DamageKind } from "./Ability";
 import { never } from "./util/never";
 import Presenter from "./tui/Presenter";
 import Stylist from "./tui/Style";
-import { Combatant } from "./types/Combatant";
+import { Combatant, EquipmentSlot } from "./types/Combatant";
 import { Team } from "./types/Team";
+import Orsino from "../orsino";
+import Files from "./util/Files";
 import Words from "./tui/Words";
+import { BossRoom, Room } from "./Dungeoneer";
+import Combat from "./Combat";
+import { readableStreamToFormData } from "bun";
 
 type BaseEvent = {
   turn: number;
@@ -20,8 +25,6 @@ export type CombatEndEvent = BaseEvent & { type: "combatEnd"; winner: string };
 export type RoundStartEvent = BaseEvent & { type: "roundStart", combatants: Combatant[], parties: Team[]; environment?: string };
 export type TurnStartEvent = BaseEvent & { type: "turnStart", combatants: Combatant[] };
 
-// export type ActEvent = BaseEvent & { type: "act"; actionName: string };
-// export type AttackedEvent = BaseEvent & { type: "attacked"; attackName: string; hit: boolean; damage?: number; critical?: boolean; damageKind?: DamageKind; by: string; };
 export type HitEvent = BaseEvent & { type: "hit"; damage: number; success: boolean; critical: boolean; by: string; damageKind: DamageKind };
 export type CritEvent = BaseEvent & { type: "crit"; damage: number; by: string; damageKind: DamageKind };
 export type MissEvent = BaseEvent & { type: "miss"; };
@@ -37,16 +40,29 @@ export type SaveEvent = BaseEvent & { type: "save"; success: boolean; dc: number
 export type ReactionEvent = BaseEvent & { type: "reaction"; reactionName: string; success: boolean };
 export type ResurrectEvent = BaseEvent & { type: "resurrect"; amount: number; };
 
+export type WaitEvent = BaseEvent & { type: "wait" };
+export type NoActionsForCombatant = BaseEvent & { type: "inactive"; statusName: string; duration?: number; };
+export type AllegianceChangeEvent = BaseEvent & { type: "allegianceChange"; statusName: string };
+export type ItemUsedEvent = BaseEvent & { type: "itemUsed"; itemName: string; chargesLeft?: number; countLeft?: number; };
+
 export type ResistantEvent = BaseEvent & { type: "resist"; damageKind: DamageKind; originalDamage: number; finalDamage: number; sources: string[] };
 export type VulnerableEvent = BaseEvent & { type: "vulnerable"; damageKind: DamageKind; originalDamage: number; finalDamage: number; sources: string[] };
 
 export type StatusEffectEvent = BaseEvent & { type: "statusEffect"; effectName: string; effect: { [key: string]: any }; duration: number };
 export type StatusExpireEvent = BaseEvent & { type: "statusExpire"; effectName: string };
 
-export type CombatEvent = HitEvent
+export type ActionEvent = BaseEvent & { type: "action"; actionName: string };
+
+export type CombatEvent =
+  | ActionEvent
+  | HitEvent
   | CombatantEngagedEvent
   | KillEvent
   | CritEvent
+  | WaitEvent
+  | NoActionsForCombatant
+  | AllegianceChangeEvent
+  | ItemUsedEvent
   | MissEvent
   | HealEvent
   | DefendEvent
@@ -68,14 +84,31 @@ export type CombatEvent = HitEvent
 
 type BaseDungeonEvent = Omit<BaseEvent, "turn">;
 export type EnterDungeon = BaseDungeonEvent & { type: "enterDungeon"; dungeonName: string; dungeonIcon: string; dungeonType: string, depth: number, goal: string };
-export type RoomCleared  = BaseDungeonEvent & { type: "roomCleared"; };
+export type LeaveDungeon = BaseDungeonEvent & { type: "leaveDungeon"; };
+export type EnterRoom  = BaseDungeonEvent & { type: "enterRoom"; roomDescription: string; };
+export type RoomCleared  = BaseDungeonEvent & { type: "roomCleared"; room: Room | BossRoom; combat?: Combat };
+export type DungeonCleared  = BaseDungeonEvent & { type: "dungeonCleared"; macguffin?: string; };
+export type DungeonFailed  = BaseDungeonEvent & { type: "dungeonFailed"; reason: string; };
+export type ItemFoundEvent = BaseDungeonEvent & { type: "itemFound"; itemName: string; quantity: number; where: string; };
+export type EquipmentWornEvent = BaseDungeonEvent & { type: "equipmentWorn"; itemName: string; slot: EquipmentSlot; };
+export type RestEvent = BaseDungeonEvent & { type: "rest"; stabilizedCombatants: string[]; };
 export type GoldEvent  = BaseDungeonEvent & { type: "gold"; amount: number };
 export type ExperienceEvent  = BaseDungeonEvent & { type: "xp"; amount: number };
+export type InvestigateEvent  = BaseDungeonEvent & { type: "investigate"; clue: string; discovery: string; };
 
 export type UpgradeEvent = BaseEvent & { type: "upgrade"; stat: keyof Combatant; amount: number, newValue: number };
 
-export type DungeonEvent = EnterDungeon
+export type DungeonEvent =
+  | EnterDungeon
+  | EnterRoom
   | RoomCleared
+  | LeaveDungeon
+  | DungeonCleared
+  | DungeonFailed
+  | ItemFoundEvent
+  | RestEvent
+  | EquipmentWornEvent
+  | InvestigateEvent
   | GoldEvent
   | ExperienceEvent
   | UpgradeEvent;
@@ -83,39 +116,6 @@ export type DungeonEvent = EnterDungeon
 export type GameEvent = CombatEvent | DungeonEvent;
 
 export default class Events {
-  static iconForEvent(event: GameEvent): string {
-    switch (event.type) {
-      case "enterDungeon": return event.dungeonIcon;
-      case "roomCleared": return "🗝️";
-      case "miss": return "❌";
-      case "heal": return "💖";
-      case "defend": return "🛡️";
-      case "quaff": return "🧪";
-      case "fall": return "💤";
-      case "flee": return "🏃‍♂️";
-      case "statusEffect": return "✨";
-      case "statusExpire": return "⏳";
-      case "initiate": return "⚔️";
-      case "roundStart": return "🔄";
-      case "turnStart": return "➡️";
-      case "combatEnd": return "🏁";
-      case "upgrade": return "⬆️";
-      case "hit": return event.critical ? "💥" : "⚔️";
-      case "summon": return "😽";
-      case "save": return "🛡️";
-      case "reaction": return "↩️";
-      case "resurrect": return "🌟";
-      case "gold": return "💰";
-      case "xp": return "⭐";
-      case "engage": return "⚔️";
-      case "kill": return "☠️";
-      case "crit": return "💥";
-      case "resist": return "🛡️";
-      case "vulnerable": return "⚠️";
-      default: return never(event);
-    }
-  }
-
   static present(event: GameEvent): string {
     let subjectName = event.subject ? event.subject.forename : null;
     let targetName = event.target ? event.target.forename : null;
@@ -131,7 +131,38 @@ export default class Events {
           Your Goal: ${event.goal || "Unknown"}!
         ${"=".repeat(80)}
         `;
-      case "roomCleared": return `The room is pacified.`;
+      case "leaveDungeon":
+        return `You leave the dungeon.`;
+      case "enterRoom":
+        return Stylist.italic(event.roomDescription); 
+
+      case "roomCleared":
+        if (event.combat) {
+          return `The ${event.room.room_type} is pacified after combat. You have defeated ${Words.humanizeList(event.combat.teams[1].combatants.map(c => c.referenceName || c.name))}.`;
+        }
+        return `The ${event.room.room_type} is pacified.`;
+      case "investigate":
+        return `${subjectName} examines ${event.clue} and discovers ${event.discovery}`;
+      case "itemFound":
+        if (event.quantity > 1) {
+          return `Found ${event.quantity} x ${Words.a_an(event.itemName)} ${event.where}.`;
+        }
+        return `Found ${Words.a_an(event.itemName)} ${event.where}.`;
+      case "equipmentWorn":
+        return `${subjectName} is now wearing ${Words.a_an(event.itemName)} as their ${event.slot}.`;
+      case "rest":
+        if (event.stabilizedCombatants.length > 0) {
+          return `Your party rests (${Words.humanizeList(event.stabilizedCombatants)} stabilized).`;
+        }
+        return `Your party rests.`;
+      case "dungeonCleared":
+        if (event.macguffin) {
+          return `🎉 Victory! You have cleared the dungeon and secured ${Stylist.bold(event.macguffin)}!`;
+        }
+        return `Victory! You have cleared the dungeon!`;
+
+      case "dungeonFailed":
+        return `You have failed the dungeon: ${event.reason}.`;
 
       case "heal":
         if (subjectName === targetName) {
@@ -228,8 +259,38 @@ export default class Events {
 
       case "vulnerable":
         return `${subjectName} is vulnerable and takes ${event.finalDamage} ${event.damageKind} damage (originally ${event.originalDamage}) due to ${event.sources.join(", ")}.`;
+      case "wait":
+        return `${subjectName} waits and watches.`;
+      case "inactive":
+        return `${subjectName} is ${event.statusName} and skips their turn! (${event.duration !== undefined ? event.duration + " turns left" : "duration unknown"})`;
+      case "allegianceChange":
+        return `${subjectName} is under the effect of ${event.statusName} and has switched sides.`;
+      case "itemUsed":
+        if (event.chargesLeft !== undefined) {
+          return `${subjectName} uses ${Words.a_an(event.itemName)}. (${event.chargesLeft} charges left)`;
+        } else if (event.countLeft !== undefined) {
+          return `${subjectName} uses ${Words.a_an(event.itemName)}. (${event.countLeft} remaining)`;
+        } else {
+          return `${subjectName} uses ${Words.a_an(event.itemName)}.`;
+        }
+      case "action":
+        return Stylist.bold(`${subjectName} ${event.actionName}.`);
       default:
         return never(event);
     }
+  }
+
+  static async appendToLogfile(event: GameEvent) {
+    let logFilename = `log/game-${new Date().toISOString().split('T')[0]}.txt`;
+    if (Orsino.environment === 'test') {
+      logFilename = `log/game-${new Date().toISOString().split('T')[0]}.test.txt`;
+    }
+    let logMessage = Events.present(event);
+    // strip ANSI codes
+    logMessage = logMessage.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
+    if (!logMessage || logMessage.trim() === '') {
+      return;
+    }
+    await Files.append(logFilename, logMessage + '\n');
   }
 }

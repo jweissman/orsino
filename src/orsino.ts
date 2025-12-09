@@ -16,6 +16,7 @@ export type Prompt = (message: string) => Promise<string>;
 type PlaygroundType = "combat" | "dungeon" | "module";  // TODO "world";
 
 export default class Orsino {
+  static environment: 'production' | 'development' | 'test' = 'production';
   // setting: Record<GenerationTemplateType, Template | Table>;
 
   constructor(public settingName?: string) {

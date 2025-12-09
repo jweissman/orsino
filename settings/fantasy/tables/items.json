@@ -405,12 +405,31 @@
         ]
       },
 
+      "wand_of_cure_minor_wounds": {
+        "name": "Wand of Cure Minor Wounds",
+        "description": "A slender wand that can channel healing energy to mend minor wounds.",
+        "type": "consumable",
+        "charges": 15,
+        "kind": "wand",
+        "aspect": "healing",
+        "rarity": "common",
+        "value": 100,
+        "target": ["self", "ally"],
+        "effects": [
+          {
+            "type": "heal",
+            "amount": "1d4+1"
+          }
+        ]
+      },
+
       "wand_of_paralyzing_touch": {
         "name": "Wand of Paralyzing Touch",
         "description": "A slender wand that can deliver a paralyzing touch to a target.",
         "type": "consumable",
         "charges": 10,
         "kind": "wand",
+        "aspect": "arcane",
         "rarity": "uncommon",
         "value": 150,
         "target": ["enemy"],
@@ -434,6 +453,7 @@
         "type": "consumable",
         "charges": 20,
         "kind": "wand",
+        "aspect": "arcane",
         "rarity": "rare",
         "value": 250,
         "target": ["randomEnemies", 3],
@@ -530,7 +550,7 @@
         "rarity": "legendary",
         "value": 800,
         "effect": {
-          "onTurnStart": [
+          "onTurnEnd": [
             {
               "type": "heal",
               "amount": "=1d6+1"

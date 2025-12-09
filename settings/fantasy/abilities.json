@@ -92,6 +92,7 @@
     "type": "skill",
     "aspect": "physical",
     "description": "Swing your weapon in a wide arc, attacking all enemies within reach.",
+    "cooldown": 6,
     "target": [
       "enemies"
     ],

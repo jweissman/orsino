@@ -12,9 +12,11 @@ import TraitHandler from '../src/orsino/Trait';
 import { loadSetting } from '../src/orsino/loader';
 import Events from '../src/orsino/Events';
 import { Team } from '../src/orsino/types/Team';
+import Orsino from '../src/orsino';
 
 describe('Orsino', () => {
   // before(async () => {
+    Orsino.environment = 'test';
     Generator.setting = loadSetting('fantasy'); // : Generator.defaultSetting;
   // });
   it('generate male name', async () => {

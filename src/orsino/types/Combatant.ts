@@ -2,6 +2,11 @@ import { DamageKind, SaveKind, StatusEffect } from "../Ability";
 
 export type EquipmentSlot = 'ring1' | 'ring2' | 'amulet' | 'cloak' | 'boots';
 export interface Combatant {
+  itemProficiencies?: {
+    all?: boolean;
+    kind?: string[];
+    withoutAspect?: string;
+  };
   weaponProficiencies?: {
     all?: boolean;
     kind?: string[];

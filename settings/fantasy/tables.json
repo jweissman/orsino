@@ -22,7 +22,8 @@
         "dex": 1,
         "gp": 30,
         "gear": ["torch", "pole"],
-        "weaponProficiencies": { "all": true }
+        "weaponProficiencies": { "all": true },
+        "itemProficiencies": { "kind": ["kit", "potion"] }
       },
       "mage": {
         "int": 3,
@@ -30,7 +31,8 @@
         "con": -1,
         "gp": 10,
         "gear": ["spellbook"],
-        "weaponProficiencies": { "kind": ["blade", "staff", "dart", "sling"], "weight": ["light"] }
+        "weaponProficiencies": { "kind": ["blade", "staff", "dart", "sling"], "weight": ["light"] },
+        "itemProficiencies": { "all": true }
       },
       "thief": {
         "dex": 2,
@@ -38,7 +40,8 @@
         "str": -1,
         "gp": 20,
         "gear": ["thieves_tools"],
-        "weaponProficiencies": { "kind": ["blade", "bow", "crossbow", "dart", "sling"], "weight": ["light", "medium"] }
+        "weaponProficiencies": { "kind": ["blade", "bow", "crossbow", "dart", "sling"], "weight": ["light", "medium"] },
+        "itemProficiencies": { "kind": ["kit", "potion"] }
       },
       "cleric": {
         "wis": 2,
@@ -46,14 +49,16 @@
         "cha": 1,
         "gp": 15,
         "gear": ["holy_symbol"],
-        "weaponProficiencies": { "kind": ["flail", "mace", "warhammer", "staff", "club"], "weight": ["light", "medium", "heavy"] }
+        "weaponProficiencies": { "kind": ["flail", "mace", "warhammer", "staff", "club"], "weight": ["light", "medium", "heavy"] },
+        "itemProficiencies": { "kind": ["kit", "potion", "wand", "scroll"], "withoutAspect": "arcane" }
       },
       "bard": {
         "cha": 3,
         "dex": 1,
         "gp": 25,
         "gear": ["musical_instrument"],
-        "weaponProficiencies": { "kind": ["blade", "bow", "crossbow", "staff", "light_mace"], "weight": ["light"] }
+        "weaponProficiencies": { "kind": ["blade", "bow", "crossbow", "staff", "light_mace"], "weight": ["light"] },
+        "itemProficiencies": { "kind": ["kit", "potion", "scroll"] }
       },
       "ranger": {
         "dex": 2,
@@ -61,7 +66,8 @@
         "con": 1,
         "gp": 30,
         "gear": ["rations", "bedroll", "firewood", "flask"],
-        "weaponProficiencies": { "kind": ["blade", "bow", "crossbow", "polearm"], "weight": ["light", "medium"] }
+        "weaponProficiencies": { "kind": ["blade", "bow", "crossbow", "polearm"], "weight": ["light", "medium"] },
+        "itemProficiencies": { "kind": ["kit", "potion", "scroll"] }
       }
     }
   },
@@ -182,7 +188,7 @@
     "discriminator": "class",
     "groups": {
       "warrior": [
-        "pole_arm", "spear", "longsword", "battleaxe", "light_warhammer"
+        "longsword", "battleaxe"
       ],
       "mage": [
         "staff", "dagger"
@@ -191,10 +197,10 @@
         "dagger", "dart", "shortsword"
       ],
       "cleric": [
-        "light_mace", "light_warhammer", "spear", "staff"
+        "light_mace", "light_warhammer", "staff"
       ],
       "bard": [
-        "dagger", "staff", "shortsword", "light_mace"
+        "dagger", "shortsword", "light_mace"
       ],
       "ranger": [
         "longsword", "spear", "javelin", "shortbow"

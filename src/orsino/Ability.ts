@@ -71,6 +71,7 @@ export interface Ability {
   alignment?: 'good' | 'neutral' | 'evil';
   description: string;
   level?: number;
+  kind?: string;
   aspect: "arcane" | "physical" | "divine" | "social" | "stealth" | "nature";
   target: Target[];
   effects: AbilityEffect[];
