@@ -80,11 +80,19 @@
     "type": "skill",
     "aspect": "physical",
     "description": "Make up to three quick attacks against an enemy.",
-    "target": [ "enemy" ],
+    "target": [
+      "enemy"
+    ],
     "effects": [
-      { "type": "attack" },
-      { "type": "attack" },
-      { "type": "attack" }
+      {
+        "type": "attack"
+      },
+      {
+        "type": "attack"
+      },
+      {
+        "type": "attack"
+      }
     ]
   },
   "whirlwind": {
@@ -115,6 +123,21 @@
         "type": "damage",
         "amount": "=1d3+round(#level/3)",
         "kind": "bludgeoning"
+      }
+    ]
+  },
+  "cleave": {
+    "name": "Cleave",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Sweeping attack strikes an adjacent enemy if lethal damage is dealt.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "attack",
+        "spillover": true
       }
     ]
   },
@@ -212,11 +235,15 @@
   },
   "set_spear": {
     "name": "Sets Spear",
-    "condition": { "hasInterceptWeapon": true },
+    "condition": {
+      "hasInterceptWeapon": true
+    },
     "type": "skill",
     "aspect": "physical",
     "description": "Brace your spear to intercept a charging enemy, dealing 3d8 damage and granting +4 to hit when they charge you next turn.",
-    "target": [ "self" ],
+    "target": [
+      "self"
+    ],
     "effects": [
       {
         "type": "buff",
@@ -317,6 +344,27 @@
       }
     ]
   },
+  "chain_lightning": {
+    "name": "Chain Lightning",
+    "type": "spell",
+    "level": 1,
+    "aspect": "arcane",
+    "description": "Strike multiple enemies with lightning, dealing 1d6 damage to each.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d6+#level",
+        "kind": "lightning",
+        "cascade": {
+          "count": "=3+floor(#level/2)",
+          "damageRatio": 0.5
+        }
+      }
+    ]
+  },
   "charm": {
     "name": "Charm Person",
     "type": "spell",
@@ -344,6 +392,55 @@
       }
     ]
   },
+  "riposte": {
+    "name": "Riposte",
+    "description": "Next attack that misses you triggers a punishing counterattack. Grants +3 evasion and +1 AC for the next round.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Riposting",
+          "duration": 3,
+          "effect": {
+            "evade": 3,
+            "ac": 1,
+            "onMissReceived": [
+              {
+                "type": "attack",
+                "target": "attacker",
+                "description": "riposte"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "dodge": {
+    "name": "Dodge",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Focus on dodging attacks, granting you evasion and a +2 bonus to AC until your next turn.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Dodging",
+          "effect": {
+            "ac": 2,
+            "evasion": 5
+          },
+          "duration": 2
+        }
+      }
+    ]
+  },
   "blur": {
     "name": "Blur",
     "type": "spell",
@@ -360,7 +457,28 @@
           "name": "Blurred",
           "duration": 3,
           "effect": {
-            "evasion": 5
+            "evasion": 10
+          }
+        }
+      }
+    ]
+  },
+  "mirror_image": {
+    "name": "Mirror Image",
+    "description": "Illusory duplicates confound attackers",
+    "type": "spell",
+    "level": 2,
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Mirror Images",
+          "duration": 5,
+          "effect": {
+            "evade": 15
           }
         }
       }
@@ -387,6 +505,43 @@
         },
         "saveType": "sleep",
         "saveDC": 12
+      }
+    ]
+  },
+  "haste": {
+    "name": "Haste",
+    "type": "spell",
+    "description": "Increase an ally's speed, granting +4 Dexterity, +10 Initiative, 1 bonus attack per turn, and 2 AC for 5 rounds.",
+    "level": 3,
+    "aspect": "arcane",
+    "target": ["ally"],
+    "effects": [{
+      "type": "buff",
+      "status": {
+        "name": "Hasted",
+        "duration": 5,
+        "effect": {
+          "dex": 4,
+          "initiative": 10,
+          "extraAttacksPerTurn": 1,
+          "ac": 2
+        }
+      }
+    }]
+  },
+  "fireball": {
+    "name": "Fireball",
+    "type": "spell",
+    "level": 3,
+    "aspect": "arcane",
+    "description": "Hurl a fiery ball that explodes, dealing 6d6 fire damage to all enemies in the area.",
+    "target": [ "enemies" ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=6d6",
+        "kind": "fire",
+        "saveForHalf": true
       }
     ]
   },
@@ -433,7 +588,9 @@
     "type": "spell",
     "aspect": "divine",
     "description": "Force enemy to flee.",
-    "target": [ "enemy" ],
+    "target": [
+      "enemy"
+    ],
     "effects": [
       {
         "type": "flee",
@@ -447,7 +604,9 @@
     "type": "spell",
     "aspect": "divine",
     "description": "Paralyze an enemy for 4 rounds.",
-    "target": [ "enemy" ],
+    "target": [
+      "enemy"
+    ],
     "effects": [
       {
         "type": "debuff",
@@ -471,7 +630,9 @@
     "type": "spell",
     "aspect": "divine",
     "description": "Force undead enemies to flee.",
-    "target": [ "enemies" ],
+    "target": [
+      "enemies"
+    ],
     "effects": [
       {
         "type": "flee",
@@ -483,7 +644,6 @@
       }
     ]
   },
-
   "inspire": {
     "name": "Inspire",
     "type": "skill",
@@ -624,7 +784,6 @@
       }
     ]
   },
-
   "curse": {
     "name": "Curse",
     "type": "spell",
@@ -654,7 +813,6 @@
       }
     ]
   },
-
   "mass_curse": {
     "name": "Mass Curse",
     "type": "spell",
@@ -684,7 +842,6 @@
       }
     ]
   },
-
   "maul": {
     "name": "Maul",
     "type": "skill",
@@ -727,7 +884,9 @@
     "type": "skill",
     "aspect": "stealth",
     "description": "Attempt to hide from enemies.",
-    "target": [ "self" ],
+    "target": [
+      "self"
+    ],
     "effects": [
       {
         "type": "buff",
@@ -838,9 +997,10 @@
     ]
   },
   "psionic_blast": {
-    "name": "Psionic Blast",
+    "name": "Mind Melt",
+    "level": 2,
     "type": "spell",
-    "aspect": "psychic",
+    "aspect": "psionic",
     "description": "Invade minds of all enemies, dealing 1d6 psychic damage and stunning them.",
     "target": [
       "enemies"
@@ -881,7 +1041,8 @@
     "name": "Life Drain",
     "type": "spell",
     "level": 1,
-    "aspect": "necrotic",
+    "aspect": "divine",
+    "alignment": "evil",
     "description": "Drain life from an enemy, healing yourself for damage dealt.",
     "target": [
       "enemy"
@@ -890,7 +1051,8 @@
       {
         "type": "drain",
         "amount": "=1d6",
-        "damageType": "necrotic"
+        "kind": "necrotic",
+        "saveNegates": true
       }
     ]
   },
@@ -898,7 +1060,7 @@
     "name": "Lightning Strike",
     "type": "spell",
     "level": 1,
-    "aspect": "electric",
+    "aspect": "arcane",
     "description": "Strike random enemies with lightning, dealing 1d8 damage and paralyzing them for 1 round.",
     "target": [
       "randomEnemies",
@@ -908,7 +1070,8 @@
       {
         "type": "damage",
         "amount": "=1d8",
-        "kind": "electric"
+        "kind": "electric",
+        "saveForHalf": true
       },
       {
         "type": "debuff",
@@ -937,7 +1100,8 @@
       {
         "type": "damage",
         "amount": "=1d6",
-        "kind": "bludgeoning"
+        "kind": "bludgeoning",
+        "saveNegates": true
       },
       {
         "type": "debuff",
@@ -1063,14 +1227,15 @@
       }
     ]
   },
-
   "summon_animal": {
     "name": "Call Animal Companion",
     "type": "skill",
     "cooldown": 8,
     "aspect": "nature",
     "description": "A friendly animal comes to your aid in battle.",
-    "target": [ "self" ],
+    "target": [
+      "self"
+    ],
     "effects": [
       {
         "type": "summon",
@@ -1091,7 +1256,9 @@
       {
         "type": "summon",
         "creature": "monster",
-        "options": { "class": "elemental" }
+        "options": {
+          "class": "elemental"
+        }
       }
     ]
   },
@@ -1101,12 +1268,16 @@
     "aspect": "arcane",
     "level": 3,
     "description": "Summon a random monster (beast or fey type) to fight for you.",
-    "target": [ "self" ],
+    "target": [
+      "self"
+    ],
     "effects": [
       {
         "type": "summon",
         "creature": "monster",
-        "options": { "class": "=oneOf(beast, fey)" }
+        "options": {
+          "class": "=oneOf(beast, fey)"
+        }
       }
     ]
   },
@@ -1124,7 +1295,9 @@
       {
         "type": "summon",
         "creature": "npc",
-        "options": { "npc_template_type": "undead" }
+        "options": {
+          "npc_template_type": "undead"
+        }
       }
     ]
   },
@@ -1134,12 +1307,16 @@
     "aspect": "divine",
     "alignment": "evil",
     "description": "Raise a fallen ally as an undead servant to fight for you.",
-    "target": [ "deadAlly" ],
+    "target": [
+      "deadAlly"
+    ],
     "effects": [
       {
         "type": "resurrect",
         "hpPercent": 40,
-        "applyTraits": ["undead"]
+        "applyTraits": [
+          "undead"
+        ]
       }
     ]
   },
@@ -1148,7 +1325,9 @@
     "type": "spell",
     "aspect": "divine",
     "description": "Restore a fallen ally to life with 50% health.",
-    "target": ["deadAlly"],
+    "target": [
+      "deadAlly"
+    ],
     "effects": [
       {
         "type": "resurrect",
@@ -1162,7 +1341,9 @@
     "aspect": "divine",
     "level": 5,
     "description": "Restore a fallen ally to life with full health.",
-    "target": ["deadAlly"],
+    "target": [
+      "deadAlly"
+    ],
     "effects": [
       {
         "type": "resurrect",
@@ -1236,7 +1417,9 @@
     "level": 1,
     "aspect": "divine",
     "description": "Grant immunity to charm and fear for 6 rounds.",
-    "target": ["ally"],
+    "target": [
+      "ally"
+    ],
     "effects": [
       {
         "type": "buff",
@@ -1281,7 +1464,6 @@
       }
     ]
   },
-
   "dirty_trick": {
     "name": "Dirty Trick",
     "type": "skill",
@@ -1305,7 +1487,6 @@
       }
     ]
   },
-
   "hunters_mark": {
     "name": "Hunter's Mark",
     "type": "skill",
@@ -1342,7 +1523,9 @@
     "level": 1,
     "aspect": "arcane",
     "description": "Create an area of silence, preventing spellcasting for 3 rounds.",
-    "target": [ "enemies" ],
+    "target": [
+      "enemies"
+    ],
     "effects": [
       {
         "type": "debuff",
@@ -1353,6 +1536,48 @@
             "noSpellcasting": true
           }
         }
+      }
+    ]
+  },
+  "slow": {
+    "name": "Slow",
+    "type": "spell",
+    "level": 2,
+    "aspect": "arcane",
+    "description": "Reduce dexterity of all enemies by 5 for 4 rounds.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Slowed",
+          "duration": 4,
+          "effect": {
+            "dex": -5
+          }
+        },
+        "saveType": "dex",
+        "saveDC": 14
+      }
+    ]
+  },
+  "disintegrate": {
+    "name": "Disintegrate",
+    "type": "spell",
+    "level": 5,
+    "aspect": "arcane",
+    "description": "Disintegrate an enemy, dealing 10d6 force damage.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=10d6",
+        "kind": "force",
+        "saveForHalf": true
       }
     ]
   }

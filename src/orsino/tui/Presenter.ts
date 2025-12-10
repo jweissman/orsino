@@ -119,9 +119,10 @@ export default class Presenter {
     let combatClass = combatant.class;
     let combatKind = (combatant as any).kind || combatant.race || '';
     return [
-      this.padLiteralEnd(Stylist.colorize(name, combatant.playerControlled ? 'cyan' : 'yellow'), 8),
+      this.padLiteralEnd(Stylist.colorize(name, combatant.playerControlled ? 'cyan' : 'yellow'), 7),
       combatant.hp <= 0 ? Stylist.colorize('X', 'red') : Stylist.colorize(hpBar, color),
-      this.padLiteralStart(combatClass ? `${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '', 24),
+      combatant.hp > 0 ? `${combatant.hp}/${combatant.maxHp}` : 'DEAD',
+      this.padLiteralStart(combatClass ? `${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '', 14),
       // `(${combatant.hp}/${combatant.maxHp})`
     ].join(' ');
     //  `; // (${this.statLine(combatant)})`;

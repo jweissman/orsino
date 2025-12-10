@@ -1,6 +1,6 @@
 import { DamageKind, SaveKind, StatusEffect } from "../Ability";
 
-export type EquipmentSlot = 'ring1' | 'ring2' | 'amulet' | 'cloak' | 'boots';
+export type EquipmentSlot = 'ring1' | 'ring2' | 'amulet' | 'cloak' | 'boots' | 'helm' | 'gloves' | 'belt';
 export interface Combatant {
   itemProficiencies?: {
     all?: boolean;
@@ -97,4 +97,7 @@ export interface Combatant {
   //   // weapon?: string;
   //   // armor?: string;
   // }
+
+  // temporary flag to indicate if the combatant saved versus the last spell cast on them
+  _savedVersusSpell?: boolean;
 }

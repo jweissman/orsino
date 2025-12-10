@@ -39,7 +39,7 @@ export interface StatusEffect {
 export interface AbilityEffect {
   description?: string;
   kind?: DamageKind;
-  type: "attack" | "damage" | "heal" | "buff" | "debuff" | "flee" | "removeItem" | "drain" | "summon" | "removeStatus" | "upgrade" | "gold" | "xp" | "resurrect";
+  type: "attack" | "damage" | "heal" | "buff" | "debuff" | "flee" | "drain" | "summon" | "removeStatus" | "upgrade" | "gold" | "xp" | "resurrect";
   stat?: "str" | "dex" | "con" | "int" | "wis" | "cha";
 
   amount?: string; // e.g. "=1d6", "=2d8", "3"
@@ -63,6 +63,13 @@ export interface AbilityEffect {
   options?: {};
   // for resurrection effects
   hpPercent?: number;
+
+  cascade?: { count: number, damageRatio: number };
+
+  spillover?: boolean;
+
+  saveForHalf?: boolean;
+  saveNegates?: boolean;
 }
 
 export interface Ability {
@@ -260,7 +267,7 @@ export default class AbilityHandler {
   ): Promise<{
     success: boolean, events: Omit<GameEvent, "turn">[]
   }> {
-    let { roll, attack, hit, heal, status, removeItem, removeStatus, save, summon } = handlers;
+    let { roll, attack, hit, heal, status, removeStatus, save, summon } = handlers;
 
     let success = false;
     let events: Omit<GameEvent, "turn">[] = [];
@@ -311,7 +318,7 @@ export default class AbilityHandler {
         }
       }
 
-      let result = await attack(user, targetCombatant, context, handlers.roll);
+      let result = await attack(user, targetCombatant, context, effect.spillover || false, handlers.roll);
       success = result.success;
       events.push(...result.events);
       if (!success) {
@@ -336,7 +343,19 @@ export default class AbilityHandler {
       // return { success, events };
     } else if (effect.type === "damage") {
       let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
-      let hitEvents = await hit(user, targetCombatant, amount, false, name, true, effect.kind || "true", context, handlers.roll);
+      if (targetCombatant._savedVersusSpell) {
+        if (effect.saveForHalf) {
+          amount = Math.floor(amount / 2);
+        } else if (effect.saveNegates) {
+          amount = 0;
+        }
+      }
+      // console.log("Effect damage amount:", amount, "kind:", effect.kind, "cascade:", effect.cascade);
+      let hitEvents = await hit(
+        user, targetCombatant, amount, false, name, true, effect.kind || "true",
+        effect.cascade || null,
+        context, handlers.roll
+      );
       events.push(...hitEvents);
       success = true;
     } else if (effect.type === "heal") {
@@ -347,7 +366,9 @@ export default class AbilityHandler {
     } else if (effect.type === "drain") {
       let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
       let healEvents = await heal(user, user, amount);
-      let hitEvents = await hit(user, targetCombatant, amount, false, name, true, effect.kind || "true", context, handlers.roll);
+      let hitEvents = await hit(user, targetCombatant, amount, false, name, true, effect.kind || "true",
+        effect.cascade || null,
+        context, handlers.roll);
       events.push(...healEvents);
       events.push(...hitEvents);
       success = true;
@@ -391,13 +412,13 @@ export default class AbilityHandler {
         console.log(`${targetCombatant.name} wanted to flee but resisted!`);
       }
       // }
-    } else if (effect.type === "removeItem") {
-      if (!effect.item) {
-        throw new Error(`removeItem effect must specify an item`);
-      }
-      let itemEvents = await removeItem(targetCombatant, effect.item as keyof Team);
-      events.push(...itemEvents);
-      success = true;
+    // } else if (effect.type === "removeItem") {
+    //   if (!effect.item) {
+    //     throw new Error(`removeItem effect must specify an item`);
+    //   }
+    //   let itemEvents = await removeItem(targetCombatant, effect.item as keyof Team);
+    //   events.push(...itemEvents);
+    //   success = true;
     } else if (effect.type === "removeStatus") {
       if (!effect.statusName) {
         throw new Error(`removeStatus effect must specify a statusName`);
@@ -494,12 +515,41 @@ export default class AbilityHandler {
     success: boolean;
     events: Omit<GameEvent, "turn">[];
   }> {
-    // console.log(`${user.name} is performing ${ability.name} on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target?.name}...`);
     let result = false;
     let events = [];
+    let isSpell = ability.type === 'spell';
+    let isOffensive = ability.target.some(t => t.includes("enemy") || t.includes("enemies") || t.includes("randomEnemies"));
+    let targets: Combatant[] = [];
+    if (Array.isArray(target)) {
+      targets = target;
+    } else {
+      targets = [target];
+    }
+
+    let savedTargets: Combatant[] = [];
+    if (isSpell && isOffensive) {
+      let hasSaveFlags = ability.effects.some(e => e.saveForHalf || e.saveNegates);
+      if (hasSaveFlags) {
+        targets.forEach(t => { t._savedVersusSpell = false; });
+        // give a save vs magic chance to avoid
+        for (const t of targets) {
+          let { success: saved, events: saveEvents } = await handlers.save(t, "magic", 25, handlers.roll);
+          if (saved) {
+            savedTargets.push(t);
+            t._savedVersusSpell = true;
+          }
+          events.push(...saveEvents);
+        }
+      }
+      // remove saved targets from the list
+      // targets = targets.filter(t => !savedTargets.includes(t));
+    }
+
+
+    // console.log(`${user.name} is performing ${ability.name} on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target?.name}...`);
     for (const effect of ability.effects) {
       // console.log("performing effect of type", effect.type, "...");
-      let { success, events: effectEvents } = await this.handleEffect(ability.name, effect, user, target, context, handlers);
+      let { success, events: effectEvents } = await this.handleEffect(ability.name, effect, user, targets, context, handlers);
       result = result || success;
       events.push(...effectEvents);
       if (success === false) {
@@ -509,8 +559,6 @@ export default class AbilityHandler {
 
     if (result) {
       // console.log(`${user.name} successfully uses ${ability.name} on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target.name}!`);
-      let isSpell = ability.type === 'spell';
-      let isOffensive = ability.target.some(t => t.includes("enemy") || t.includes("enemies") || t.includes("randomEnemies"));
       if (isSpell) {
         if (isOffensive) {
           // trigger spell attack fx
@@ -530,13 +578,6 @@ export default class AbilityHandler {
         }
       }
     }
-
-
-    // console.log(`Performed ${ability.name} on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target.name} with result: ${result}`);
-    // // console.log(`Events:`, events);
-    // if (events.length > 0) {
-    //   console.log(`${ability.name} generated events:`, events.map(e => ({ ...e, subject: e.subject?.name || e.subject, target: e.target?.name || e.target })));
-    // }
 
     return { success: result, events };
   }

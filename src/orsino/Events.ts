@@ -173,7 +173,7 @@ export default class Events {
       case "miss": return `${subjectName} attacks ${targetName} but misses.`;
       case "defend": return `${subjectName} takes a defensive stance, preparing to block incoming attacks.`;
       case "quaff": return `${subjectName} quaffs a healing potion.`;
-      case "fall": return `${subjectName} falls.`;
+      case "fall": return '';  //`${subjectName} falls.`;
       case "flee": return `${subjectName} flees from combat.`;
       case "statusEffect":
         let effectName = Stylist.colorize(event.effectName, 'magenta');
@@ -238,7 +238,8 @@ export default class Events {
           // return '';  //`${subjectName} succeeds on their Save vs ${event.versus} (DC ${event.dc}).`;
           return `${subjectName} resists the ${event.versus} effect.`;
         } else {
-          return '';  //`${subjectName} fails their Save vs ${event.versus} (DC ${event.dc}).`;
+          // return `${subjectName} fails their Save vs ${event.versus} (DC ${event.dc}).`;
+          return '';
         }
 
       case "resurrect":

@@ -336,7 +336,7 @@ export class ModuleRunner {
         console.log("Chosen equipment:", item);
 
         if (this.sharedGold >= item.value) {
-          let maybeOldItem = await Inventory.equip(item.key, wielder);
+          let {oldItemKey: maybeOldItem} = await Inventory.equip(item.key, wielder);
           if (maybeOldItem) {
             let oldItem = await Deem.evaluate(`lookup(equipment, "${maybeOldItem}")`);
             this.state.sharedGold += oldItem.value || 0;

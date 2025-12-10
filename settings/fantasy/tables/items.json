@@ -497,7 +497,7 @@
         "effects": [
           {
             "type": "damage",
-            "amount": "3d6",
+            "amount": "6d6",
             "kind": "fire"
           }
         ]
@@ -571,7 +571,7 @@
         "name": "Crown of Insight",
         "description": "An ornate crown that enhances the wearer's wisdom.",
         "type": "equipment",
-        "kind": "crown",
+        "kind": "helm",
         "rarity": "legendary",
         "value": 1000,
         "effect": { "wis": 4 }
@@ -591,6 +591,98 @@
               "kind": "force"
             }
           ]
+        }
+      },
+      "ring_of_minor_protection": {
+        "name": "Ring of Minor Protection",
+        "effect": { "ac": -1 },
+        "value": 50,
+        "description": "A simple enchanted ring providing slight protection"
+      },
+      "amulet_of_vitality": {
+        "name": "Amulet of Vitality", 
+        "effect": { "con": 1 },
+        "value": 50,
+        "description": "A minor health charm"
+      },
+      "belt_of_giant_strength": {
+        "name": "Belt of Giant Strength",
+        "description": "A sturdy belt that enhances the wearer's physical strength.",
+        "type": "equipment",
+        "kind": "belt",
+        "rarity": "uncommon",
+        "value": 250,
+        "effect": { "str": 3 }
+      },
+      "boots_of_swiftness": {
+        "name": "Boots of Swiftness",
+        "description": "Lightweight boots that increase the wearer's agility.",
+        "type": "equipment",
+        "kind": "boots",
+        "rarity": "uncommon",
+        "value": 200,
+        "effect": { "dex": 2 }
+      },
+      "gloves_of_dexterity": {
+        "name": "Gloves of Dexterity",
+        "description": "Fine gloves that enhance the wearer's dexterity.",
+        "type": "equipment",
+        "kind": "gloves",
+        "rarity": "uncommon",
+        "value": 50,
+        "effect": { "dex": 1 }
+      },
+      "helm_of_intellect": {
+        "name": "Helm of Intellect",
+        "description": "A finely crafted helm that sharpens the wearer's mind.",
+        "type": "equipment",
+        "kind": "helm",
+        "rarity": "uncommon",
+        "value": 150,
+        "effect": { "int": 2 }
+      },
+      "mantle_of_charisma": {
+        "name": "Mantle of Charisma",
+        "description": "An elegant mantle that enhances the wearer's charisma.",
+        "type": "equipment",
+        "kind": "cloak",
+        "rarity": "uncommon",
+        "value": 200,
+        "effect": { "cha": 2 }
+      },
+      "ring_of_the_firmament": {
+        "name": "Ring of the Firmament",
+        "description": "A celestial ring that grants the wearer resistance to elemental damage.",
+        "type": "equipment",
+        "kind": "ring",
+        "rarity": "rare",
+        "value": 500,
+        "effect": { "resistFire": 3, "resistCold": 3, "resistLightning": 3 }
+      },
+      "helm_of_the_stars": {
+        "name": "Helm of the Stars",
+        "description": "A mystical helm that enhances all senses of the wearer.",
+        "type": "equipment",
+        "kind": "helm",
+        "rarity": "rare",
+        "value": 400,
+        "effect": { "str": 1, "dex": 1, "con": 1, "int": 1, "wis": 1, "cha": 1 }
+      },
+      "ring_of_spell_turning": {
+        "name": "Ring of Spell Turning",
+        "description": "Improve magic resistance, inflicting 1d6 true damage back to caster on save.",
+        "type": "equipment",
+        "kind": "ring",
+        "rarity": "legendary",
+        "value": 1200,
+        "effect": {
+          "resistMagic": 5,
+          "onResistMagic": [{
+            "type": "damage",
+            "amount": "=1d6",
+            "target": "attacker",
+            "kind": "true"
+          }]
         }
       }
     }

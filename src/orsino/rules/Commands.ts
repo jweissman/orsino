@@ -15,8 +15,11 @@ type TimelessEvent = Omit<GameEvent, "turn">;
 
 export type CommandHandlers = {
   roll: Roll;
-  attack: (combatant: Combatant, target: Combatant, combatContext: CombatContext, roller: Roll) => Promise<{ success: boolean; target: Combatant, events: TimelessEvent[] }>;
-  hit: (attacker: Combatant, defender: Combatant, damage: number, critical: boolean, by: string, success: boolean, damageKind: DamageKind, combatContext: CombatContext, roll: Roll) => Promise<TimelessEvent[]>;
+  attack: (combatant: Combatant, target: Combatant, combatContext: CombatContext, spillover: boolean, roller: Roll) => Promise<{ success: boolean; target: Combatant, events: TimelessEvent[] }>;
+  hit: (
+    attacker: Combatant, defender: Combatant, damage: number, critical: boolean, by: string, success: boolean, damageKind: DamageKind,
+      cascade: { count: number, damageRatio: number } | null,
+    combatContext: CombatContext, roll: Roll) => Promise<TimelessEvent[]>;
   heal: (healer: Combatant, target: Combatant, amount: number) => Promise<TimelessEvent[]>;
   status: (user: Combatant, target: Combatant, name: string, effect: { [key: string]: any }, duration: number) => Promise<TimelessEvent[]>;
   removeStatus: (target: Combatant, name: string) => Promise<TimelessEvent[]>;
@@ -145,14 +148,28 @@ export class Commands {
 
     // we should roll anyway; they could have an allRolls bonus etc even if the DC is very high
     const saveRoll = await roll(target, `for Save vs ${saveKind} (must roll ${saveVersus} or higher)`, 20);
-    if (saveRoll.amount >= saveVersus) {
+    const success = saveRoll.amount >= saveVersus;
+    if (success) {
       // saved = true;
 
       target.savedTimes[saveType] = (target.savedTimes[saveType] || 0) + 1;
-      return { success: true, events: [{ type: "save", versus: saveKind, subject: target, success: true, dc, immune: false, reason: "successful roll" } as Omit<SaveEvent, "turn">] };
+      // return { success: true, events: [{ type: "save", versus: saveKind, subject: target, success: true, dc, immune: false, reason: "successful roll" } as Omit<SaveEvent, "turn">] };
+
+      // check for onResistX effects
+      let onResistFx = targetFx[`onResist${saveKind}`] as AbilityEffect[] || [];
+      let resistEvents: TimelessEvent[] = [];
+      for (let fx of onResistFx) {
+
+        let { events: resistFxEvents } = await AbilityHandler.handleEffect(
+          fx.description || "an effect", fx, target, target, null as unknown as CombatContext, Commands.handlers(roll, null as unknown as Team)
+        );
+        resistEvents.push(...resistFxEvents);
+      }
     } else {
-      return { success: false, events: [{ type: "save", versus: saveKind, subject: target, success: false, dc, immune: false, reason: "failed roll" } as Omit<SaveEvent, "turn">] };
+      // return { success: false, events: [{ type: "save", versus: saveKind, subject: target, success: false, dc, immune: false, reason: "failed roll" } as Omit<SaveEvent, "turn">] };
     }
+
+    return { success, events: [{ type: "save", subject: target, success, dc, immune: false, reason: success ? "successful roll" : "failed roll", versus: saveKind } as Omit<SaveEvent, "turn">] };
   }
 
   static async handleHit(
@@ -163,21 +180,33 @@ export class Commands {
     by: string,
     success: boolean,
     damageKind: DamageKind,
+    cascade: { count: number, damageRatio: number } | null,
     combatContext: CombatContext,
     roll: Roll
   ): Promise<TimelessEvent[]> {
+    let events: TimelessEvent[] = [];
+
+    let defenderEffects = await Fighting.gatherEffects(defender);
+    let attackerEffects = await Fighting.gatherEffects(attacker);
+
     if (!success) {
-      return [{ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">];
+      // are there onMissReceived effects to process?
+      let onMissReceivedFx = defenderEffects.onMissReceived as AbilityEffect[] || [];
+      for (let fx of onMissReceivedFx) {
+        let target = defender;
+        if (fx.target === "attacker") {
+          target = attacker;
+        }
+        let { events: onMissReceivedEvents } = await AbilityHandler.handleEffect(fx.description || "an effect", fx, defender, target, combatContext, Commands.handlers(roll, null as unknown as Team));
+        events.push(...onMissReceivedEvents);
+      }
+      return [{ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">, ...events];
     }
 
     if (defender.hp <= 0) {
       return [];
     }
 
-    let events: TimelessEvent[] = [];
-
-    let defenderEffects = await Fighting.gatherEffects(defender);
-    let attackerEffects = await Fighting.gatherEffects(attacker);
 
     if (attackerEffects.bonusDamage) {
       let bonusDamage = await Deem.evaluate(attackerEffects.bonusDamage.toString()) as number || 0;
@@ -207,21 +236,17 @@ export class Commands {
           // emit a resistant event
           events.push({ type: "resist", subject: defender, target: defender, damageKind, originalDamage, finalDamage: damage, sources: defEffects[resistanceName].sources || [] } as Omit<GameEvent, "turn">);
         } else if (resistance < 0) {
-          // this is a vulnerability, so we increase damage by the percentage below zero?
-          // damage = originalDamage + Math.floor(originalDamage * (1 - resistance));
+          // this is a vulnerability, so we increase damage by the percentage below zero
           damage = Math.floor(originalDamage * (1 + Math.abs(resistance)))
           // emit a vulnerable event
           events.push({ type: "vulnerable", subject: defender, target: defender, damageKind, originalDamage, finalDamage: damage, sources: defEffects[resistanceName].sources || [] } as Omit<GameEvent, "turn">);
         }
-        // this.note(`${Presenter.combatant(defender)} has ${resistance > 0 ? "resistance" : resistance < 0 ? "vulnerability" : "no resistance"} to ${damageKind}, modifying damage from ${originalDamage} to ${damage}.`);
-        // console.warn(`${Presenter.minimalCombatant(defender)} has ${resistance > 0 ? "resistance" : resistance < 0 ? "vulnerability" : "no resistance"} to ${damageKind}, modifying damage from ${originalDamage} to ${damage}.`);
       }
     }
 
     if (defenderEffects.damageReduction) {
       let reduction = defenderEffects.damageReduction as number || 0;
       damage = Math.max(0, damage - reduction);
-      // console.warn(`${Presenter.combatant(defender)} has a damage reduction effect, reducing damage by ${reduction}!`);
     }
 
     // apply damage
@@ -231,10 +256,13 @@ export class Commands {
       throw new Error(`Damage calculated as NaN for ${Presenter.minimalCombatant(attacker)} attacking ${Presenter.minimalCombatant(defender)}.`);
     }
 
+    let originalHp = defender.hp;
     defender.hp -= damage;
 
     if (defender.hp <= 0) {
-      let { success: saved } = await Commands.handleSave(defender, "death", 25, roll);
+      let { events: saveEvents, success: saved } = await Commands.handleSave(defender, "death", 25, roll);
+
+      events.push(...saveEvents);
       if (saved) {
         defender.hp = 1;
         // this.note(`${Presenter.combatant(defender)} drops to 1 HP instead of 0!`);
@@ -242,12 +270,14 @@ export class Commands {
       }
     }
 
+    
+
     // let events: TimelessEvent[] = [{
     events.push({
       type: "hit",
       subject: attacker,
       target: defender,
-      damage,
+      damage: Math.min(damage, originalHp),
       success: true,
       critical,
       by,
@@ -256,6 +286,28 @@ export class Commands {
 
     if (critical) {
       events.push({ type: "crit", subject: attacker, target: defender, damage, by, damageKind } as Omit<GameEvent, "turn">);
+    }
+
+    // if cascade, jump to another target
+    if (cascade) {
+      let count = cascade.count;
+      if (typeof count === "string") {
+        count = await Deem.evaluate(count, { ...attacker }) as number;
+      }
+      if (count > 0 && damage > 0) {
+        let otherTargets = combatContext.enemies.filter(c => c !== defender && c.hp > 0);
+        if (otherTargets.length > 0) {
+          console.log(`Cascade damage of ${damage} triggered from ${Presenter.minimalCombatant(defender)} (${count} jumps remaining).`);
+          let newTarget = otherTargets[Math.floor(Math.random() * otherTargets.length)];
+          let cascadeDamage = Math.max(1, Math.floor(damage * cascade.damageRatio));
+          console.log(`${Presenter.minimalCombatant(defender)} cascades ${cascadeDamage} ${damageKind} damage to ${Presenter.minimalCombatant(newTarget)}!`);
+          let cascadeEvents = await Commands.handleHit(
+            attacker, newTarget, cascadeDamage, false, `cascade from ${defender.forename}`, true, damageKind,
+            { count: count - 1, damageRatio: cascade.damageRatio }, combatContext, roll
+          );
+          events.push(...cascadeEvents);
+        }
+      }
     }
 
     if (defender.hp <= 0) {
@@ -283,21 +335,54 @@ export class Commands {
           events.push(...onAttackedEvents);
         }
       }
+
     }
 
     return events;
   }
 
-  static async handleAttack(combatant: Combatant, target: Combatant, context: CombatContext, roller: Roll): Promise<{
+  static async handleAttack(combatant: Combatant, target: Combatant, context: CombatContext, spillover: boolean, roller: Roll): Promise<{
     success: boolean;
     target: Combatant;
     events: TimelessEvent[];
   }> {
     let { damage, critical, success } = await Fighting.attack(roller, combatant, target, combatant.hasMissileWeapon || false);
+    let targetOriginalHp = target.hp;
     let events = await Commands.handleHit(
-      combatant, target, damage, critical, `${combatant.forename}'s ${Words.humanize(combatant.weapon)}`, success, combatant.damageKind || "true", context, roller
+      combatant, target, damage, critical, `${combatant.forename}'s ${Words.humanize(combatant.weapon)}`, success, combatant.damageKind || "true",
+      null, // no cascade for normal attacks
+      context, roller
     );
     success = success && events.some(e => e.type === "hit");
+
+    let lethal = target.hp <= 0;
+
+    if (success && lethal && spillover) {
+      // if lethal and spillover damage, apply to another target
+      if (damage > targetOriginalHp) { //} + damage) {
+        let spillover = damage - (targetOriginalHp);
+        let otherTargets = context.enemies.filter(c => c !== target && c.hp > 0);
+        while (otherTargets.length > 0) {
+          let newTarget = otherTargets[Math.floor(Math.random() * otherTargets.length)];
+          console.log(`${Presenter.combatant(target)} spilled over ${spillover} damage to ${Presenter.combatant(newTarget)}!`);
+          let newTargetOriginalHp = newTarget.hp;
+          let spilloverEvents = await Commands.handleHit(
+            combatant, newTarget, spillover, false, `${combatant.forename}'s ${Words.humanize(combatant.weapon)} (spillover, ${spillover} damage remaining)`, true, combatant.damageKind || "true",
+            null, // no cascade for normal attacks
+            context, roller
+          );
+          events.push(...spilloverEvents);
+
+          if (newTarget.hp > 0 || spillover <= newTargetOriginalHp) {
+            break;
+          } else {
+            spillover = spillover - newTargetOriginalHp;
+            otherTargets = otherTargets.filter(c => c !== newTarget);
+          }
+        }
+      }
+    }
+
     return { success, target, events };
   }
 

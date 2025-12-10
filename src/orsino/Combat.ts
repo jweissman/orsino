@@ -210,7 +210,7 @@ export default class Combat {
       }
     }
 
-    if (ability.condition?.hasInterceptWeapon) {
+    if (condition?.hasInterceptWeapon) {
       disabled = !combatant.hasInterceptWeapon;
     }
 
@@ -310,14 +310,14 @@ export default class Combat {
     // allAbilities.map(ability => {
     //   return ({
     for (const ability of allAbilities) {
-      if (await this.validateAction(ability, combatant, allies, enemies)) {
+      // if (await this.validateAction(ability, combatant, allies, enemies)) {
         choices.push({
           value: ability,
           name: `${ability.name.padEnd(15)} (${ability.description}/${ability.type === "spell" ? pips : "skill"})`,
           short: ability.name,
-          disabled: false //!(await this.validateAction(ability, combatant, allies, enemies))
+          disabled: !(await this.validateAction(ability, combatant, allies, enemies))
         })
-      }
+      // }
     }
 
     choices.push({
@@ -541,6 +541,11 @@ export default class Combat {
     }
 
     let attacksPerTurn = combatant.attacksPerTurn || 1;
+    // gather effects to see if we have extra attacks
+    let activeFx = await Fighting.gatherEffects(combatant);
+    if (activeFx.extraAttacksPerTurn) {
+      attacksPerTurn += activeFx.extraAttacksPerTurn as number;
+    }
     for (let i = 0; i < attacksPerTurn; i++) {
       if (combatant.playerControlled && !allegianceEffect) {
         let result = await this.pcTurn(combatant, validTargets, allies);
