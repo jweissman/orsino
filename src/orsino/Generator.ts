@@ -107,7 +107,7 @@ export default class Generator {
     if (condition) {
       for (let key of ret.slice()) {
         const conditionResult = await Deem.evaluate(condition, { __it: this.lookupInTable(tableName, key) });
-        if (conditionResult) {
+        if (!conditionResult) {
           ret.splice(ret.indexOf(key), 1);
         }
       }

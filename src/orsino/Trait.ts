@@ -17,6 +17,7 @@ export interface Trait {
     formation?: ("mage" | "warrior" | "thief" | "ranger" | "cleric" | "bard")[];
   }
   statuses: StatusEffect[];
+  abilities?: string[];
 }
 
 type TraitDictionary = {

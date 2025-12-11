@@ -360,7 +360,7 @@
         "aspect": "poison",
         "value": 30,
         "target": ["self", "ally"],
-        "effects": [{ "type": "removeStatus", "status": "poison" }]
+        "effects": [{ "type": "removeStatus", "statusName": "Poison" }]
       },
       "minor_healing_potion": {
         "name": "Minor Potion of Healing",

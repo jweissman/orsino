@@ -67,6 +67,9 @@ export default class CharacterRecord {
           // ['ranger']
         );
 
+        
+
+        pc = await pcGenerator({ setting: 'fantasy', race: raceSelect, class: occupationSelect }) as Combatant;
         let spellbook: string[] = [];
         if (occupationSelect === 'mage') {
           let availableSpells = abilityHandler.allSpellNames('arcane', 1);
@@ -79,12 +82,41 @@ export default class CharacterRecord {
             spellbook.push(spell);
             availableSpells = availableSpells.filter(s => s !== spell);
           }
-        }
+        } else if (occupationSelect === 'cleric') {
+          // clerics select a 'domain' (life, death, war, knowledge, etc.) which influences their spell selection
+          let domainSelect = await selectionMethod(
+            'Select a divine domain for this PC: ' + whichPc,
+            [ 'life', 'law' ]
+          );
 
-        pc = await pcGenerator({ setting: 'fantasy', race: raceSelect, class: occupationSelect }) as Combatant;
-        if (pc.class === "mage") {
-          pc.abilities.push(...spellbook);
+          pc.domain = domainSelect;
+
+          let domainSpells = abilityHandler.allSpellNames('divine', 1).filter(spellName => {
+            let spell = abilityHandler.getAbility(spellName);
+            return spell.domain === domainSelect;
+          });
+
+          // give all domain spells for now
+          spellbook.push(...domainSpells);
+
+          // then select additional spells
+          let availableSpells = abilityHandler.allSpellNames('divine', 1).filter(spellName => {
+            let spell = abilityHandler.getAbility(spellName);
+            return spell.domain !== domainSelect;
+          });
+
+          for (let i = 0; i < 2; i++) {
+            let spell = await selectionMethod(
+              `Select additional spell ${i + 1} for this PC: ` + whichPc,
+              availableSpells.sort()
+            );
+            spellbook.push(spell);
+            availableSpells = availableSpells.filter(s => s !== spell);
+          }
         }
+        // if (pc.class === "mage" || pc.class === "cleric") {
+          pc.abilities.push(...spellbook);
+        // }
 
         Presenter.printCharacterRecord(pc);
         let confirm = await selectionMethod(
@@ -100,6 +132,18 @@ export default class CharacterRecord {
           const spells = Sample.count(3, ...abilityHandler.allSpellNames('arcane', 1))
           console.log("Adding to " + pc.name + "'s spellbook: " + spells.join(", ") + " (already has " + pc.abilities.join(", ") + ")");
           pc.abilities.push(...spells);
+        } else if (pc.class === 'cleric') {
+          const domainSpells = abilityHandler.allSpellNames('divine', 1).filter(spellName => {
+            let spell = abilityHandler.getAbility(spellName);
+            return spell.domain === 'life'; // default to life domain for random clerics
+          });
+          pc.abilities.push(...domainSpells);
+          const additionalSpells = Sample.count(2, ...abilityHandler.allSpellNames('divine', 1).filter(spellName => {
+            let spell = abilityHandler.getAbility(spellName);
+            return spell.domain !== 'life';
+          }));
+          console.log("Adding to " + pc.name + "'s spellbook: " + additionalSpells.join(", ") + " (already has " + pc.abilities.join(", ") + ")");
+          pc.abilities.push(...additionalSpells);
         }
 
         if (!party.some(p => p.name === pc?.name)) {
@@ -208,13 +252,43 @@ export default class CharacterRecord {
               short: spell.name,
               disabled: false
             };
-        });
+          });
           let chosenSpellKey = await select(`Select a new spell for ${pc.name}:`, spellChoices);
           let chosenSpell = abilityHandler.getAbility(chosenSpellKey);
-          console.log(`${Presenter.minimalCombatant(pc)} learned the spell: ${JSON.stringify(chosenSpell)}`);
+          console.log(`${(pc.forename)} learned the spell: ${chosenSpell.name}`);
           pc.abilities.push(chosenSpellKey);
         } else {
-          console.log(`${Presenter.minimalCombatant(pc)} has learned all available spells for their level.`);
+          console.log(`${(pc.forename)} has learned all available spells for their level.`);
+        }
+      } else if (pc.class === "cleric") {
+        // gain spells
+        let abilityHandler = AbilityHandler.instance;
+        await abilityHandler.loadAbilities();
+        let allSpellKeys = abilityHandler.allSpellNames('divine', Math.ceil(pc.level / 2));
+
+        let newSpellKeys = allSpellKeys.filter(spellKey => {
+          return !pc.abilities.includes(spellKey);
+        });
+
+        if (newSpellKeys.length > 0) {
+          let spellChoices = newSpellKeys.map(spellKey => {
+            let spell = abilityHandler.getAbility(spellKey);
+            return {
+              name: Words.capitalize(spell.name) + ': ' + spell.description,
+              value: spellKey,
+              short: spell.name,
+              disabled: (spell.domain !== pc.domain)
+            };
+          });
+          if (spellChoices.every(choice => choice.disabled)) {
+            console.log(`${pc.name} has learned all available spells for their domain at this time.`);
+          } else {
+            let chosenSpellKey = await select(`Select a new spell for ${pc.name}:`, spellChoices);
+            console.log(chosenSpellKey);
+            let chosenSpell = abilityHandler.getAbility(chosenSpellKey);
+            console.log(`${(pc.forename)} learned the spell: ${chosenSpell.name}`);
+            pc.abilities.push(chosenSpellKey);
+          }
         }
       }
 
@@ -241,7 +315,9 @@ export default class CharacterRecord {
         pc.traits.push(chosenFeat.name);
         // apply any passive effects from the feat
         pc.passiveEffects ||= [];
-        pc.passiveEffects.push(...chosenFeat.statuses);
+        if (chosenFeat.statuses) {
+          pc.passiveEffects.push(...chosenFeat.statuses);
+        }
         console.log(`${Presenter.minimalCombatant(pc)} gained the feat: ${Words.capitalize(chosenFeat.name)}.`);
       }
     }

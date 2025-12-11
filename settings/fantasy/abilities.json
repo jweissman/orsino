@@ -95,6 +95,59 @@
       }
     ]
   },
+  "reckless_attack": {
+    "name": "Reckless Attack",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Make a powerful double attack that deals +2 damage each, but you take -2 to hit and +2 AC for 2 rounds.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "attack",
+        "bonusDamage": 2
+      },
+      {
+        "type": "attack",
+        "bonusDamage": 2
+      },
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Reckless",
+          "duration": 2,
+          "effect": {
+            "toHit": -2,
+            "ac": 2
+          }
+        }
+      }
+    ]
+  },
+  "rage": {
+    "name": "Rage",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Enter a furious rage, gaining +2 to damage and +2 to hit for 5 rounds. You take -1 AC while raging.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Raging",
+          "effect": {
+            "bonusDamage": 2,
+            "toHit": 2,
+            "ac": 1
+          },
+          "duration": 5
+        }
+      }
+    ]
+  },
   "whirlwind": {
     "name": "Whirlwind Attack",
     "type": "skill",
@@ -114,14 +167,14 @@
     "name": "Roundhouse Kick",
     "type": "skill",
     "aspect": "physical",
-    "description": "Make a powerful kick that strikes all enemies for 1d3 + level/3 bludgeoning damage.",
+    "description": "Make a powerful kick that strikes all enemies for 1d4 + 1 + level/3 bludgeoning damage.",
     "target": [
       "enemies"
     ],
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d3+round(#level/3)",
+        "amount": "=1d4+1+round(#level/3)",
         "kind": "bludgeoning"
       }
     ]
@@ -141,10 +194,163 @@
       }
     ]
   },
+  "shield_bash": {
+    "name": "Shield Bash",
+    "description": "Bash an enemy with your shield, dealing 1d6 damage and stunning them for 1 turn.",
+    "cooldown": 4,
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d6",
+        "kind": "bludgeoning"
+      },
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Stunned",
+          "duration": 1,
+          "effect": {
+            "skipTurn": true
+          }
+        },
+        "saveNegates": true,
+        "saveDC": 15,
+        "saveType": "con"
+      }
+    ]
+  },
+  "daylight": {
+    "name": "Daylight",
+    "type": "spell",
+    "level": 3,
+    "aspect": "divine",
+    "domain": "light",
+    "description": "Create a sphere of bright light that deals 1d4 radiant damage to all enemies, reveals Hidden creatures and blinds enemies for 2 rounds.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d4",
+        "kind": "radiant",
+        "saveForHalf": true
+      },
+      {
+        "type": "removeStatus",
+        "statusName": "Hidden"
+      },
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Blinded",
+          "duration": 2,
+          "effect": {
+            "toHit": -4
+          }
+        },
+        "saveType": "will",
+        "saveDC": 18
+      }
+    ]
+  },
+  "sunburst": {
+    "name": "Sunburst",
+    "type": "spell",
+    "level": 5,
+    "aspect": "divine",
+    "domain": "light",
+    "description": "Create a burst of radiant light, dealing 4d6 radiant damage to all enemies in the area.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=4d6",
+        "kind": "radiant",
+        "saveForHalf": true
+      }
+    ]
+  },
+  "barkskin": {
+    "name": "Barkskin",
+    "type": "spell",
+    "level": 2,
+    "aspect": "divine",
+    "domain": "nature",
+    "description": "Gain 3 AC for 5 rounds.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Barkskinned",
+          "effect": {
+            "ac": -3
+          },
+          "duration": 5
+        }
+      }
+    ]
+  },
+  "stoneskin": {
+    "name": "Stoneskin",
+    "type": "spell",
+    "level": 3,
+    "aspect": "divine",
+    "domain": "nature",
+    "description": "Gain 5 AC for 4 rounds.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Stoneskinned",
+          "effect": {
+            "ac": -5
+          },
+          "duration": 4
+        }
+      }
+    ]
+  },
+  "anoint": {
+    "name": "Anoint",
+    "type": "spell",
+    "level": 1,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Grant all allies +2 to hit and saves for 5 rounds.",
+    "target": [
+      "allies"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Anointed",
+          "duration": 5,
+          "effect": {
+            "toHit": 2,
+            "saveVersusAll": 2
+          }
+        }
+      }
+    ]
+  },
   "shield": {
     "name": "Shield of Faith",
     "type": "spell",
     "aspect": "divine",
+    "domain": "law",
     "description": "Grant yourself or an ally 2 AC for 10 rounds.",
     "target": [
       "self",
@@ -218,7 +424,7 @@
     "name": "Charge",
     "type": "skill",
     "aspect": "physical",
-    "description": "Charge at an enemy, dealing 1d8+1 damage. Each level adds +1 to damage.",
+    "description": "Charge at an enemy, dealing 3d8+1 damage. Each level adds +1 to damage.",
     "target": [
       "enemy"
     ],
@@ -228,7 +434,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d8+1+#level",
+        "amount": "=3d8+1+#level",
         "kind": "bludgeoning"
       }
     ]
@@ -263,11 +469,44 @@
       }
     ]
   },
+  "overwatch": {
+    "name": "Overwatch",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Make an attack of opportunity against the first enemy that melee attacks you or an ally before your next turn.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Overwatching",
+          "duration": 2,
+          "effect": {
+            "bonusDamage": 2,
+            "onEnemyMelee": [
+              {
+                "type": "attack",
+                "target": "attacker",
+                "description": "overwatch attack"
+              },
+              {
+                "type": "removeStatus",
+                "statusName": "Overwatching"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
   "cure": {
     "name": "Cure Major Wounds",
     "type": "spell",
     "level": 2,
     "aspect": "divine",
+    "domain": "life",
     "description": "Heal yourself or an ally for 1d8 hit points.",
     "target": [
       "self",
@@ -285,7 +524,7 @@
     "type": "spell",
     "level": 1,
     "aspect": "arcane",
-    "description": "Fire three magical bolts that automatically hit and deal 1d3 damage each.",
+    "description": "Fire three magical bolts that automatically hit and deal 1d3 damage each (more bolts and damage at higher levels).",
     "target": [
       "randomEnemies",
       "2 + round(#level/2)"
@@ -293,7 +532,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d3",
+        "amount": "=1d3 + floor(#level/3)",
         "kind": "force"
       }
     ]
@@ -312,6 +551,22 @@
         "type": "damage",
         "amount": "=1d6",
         "kind": "fire"
+      },
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Burning",
+          "duration": 3,
+          "effect": {
+            "onTurnEnd": [
+              {
+                "type": "damage",
+                "amount": "=1d4",
+                "kind": "fire"
+              }
+            ]
+          }
+        }
       }
     ]
   },
@@ -347,7 +602,7 @@
   "chain_lightning": {
     "name": "Chain Lightning",
     "type": "spell",
-    "level": 1,
+    "level": 4,
     "aspect": "arcane",
     "description": "Strike multiple enemies with lightning, dealing 1d6 damage to each.",
     "target": [
@@ -398,6 +653,7 @@
     "target": [
       "self"
     ],
+    "cooldown": 5,
     "effects": [
       {
         "type": "buff",
@@ -514,20 +770,24 @@
     "description": "Increase an ally's speed, granting +4 Dexterity, +10 Initiative, 1 bonus attack per turn, and 2 AC for 5 rounds.",
     "level": 3,
     "aspect": "arcane",
-    "target": ["ally"],
-    "effects": [{
-      "type": "buff",
-      "status": {
-        "name": "Hasted",
-        "duration": 5,
-        "effect": {
-          "dex": 4,
-          "initiative": 10,
-          "extraAttacksPerTurn": 1,
-          "ac": 2
+    "target": [
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Hasted",
+          "duration": 5,
+          "effect": {
+            "dex": 4,
+            "initiative": 10,
+            "extraAttacksPerTurn": 1,
+            "ac": 2
+          }
         }
       }
-    }]
+    ]
   },
   "fireball": {
     "name": "Fireball",
@@ -542,6 +802,22 @@
         "amount": "=6d6",
         "kind": "fire",
         "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Burning",
+          "duration": 3,
+          "effect": {
+            "onTurnEnd": [
+              {
+                "type": "damage",
+                "amount": "=1d4",
+                "kind": "fire"
+              }
+            ]
+          }
+        }
       }
     ]
   },
@@ -549,6 +825,7 @@
     "name": "Bless",
     "type": "spell",
     "aspect": "divine",
+    "domain": "life",
     "description": "Grant divine favor, adding +1 to all rolls for 6 rounds.",
     "target": [
       "self",
@@ -571,6 +848,7 @@
     "name": "Smite Evil",
     "type": "spell",
     "aspect": "divine",
+    "domain": "war",
     "description": "Smite an enemy, dealing 1d8 + level radiant damage.",
     "target": [
       "enemy"
@@ -587,6 +865,7 @@
     "name": "Command",
     "type": "spell",
     "aspect": "divine",
+    "domain": "law",
     "description": "Force enemy to flee.",
     "target": [
       "enemy"
@@ -603,6 +882,7 @@
     "name": "Hold Person",
     "type": "spell",
     "aspect": "divine",
+    "domain": "law",
     "description": "Paralyze an enemy for 4 rounds.",
     "target": [
       "enemy"
@@ -629,6 +909,7 @@
     "name": "Turn Undead",
     "type": "spell",
     "aspect": "divine",
+    "domain": "light",
     "description": "Force undead enemies to flee.",
     "target": [
       "enemies"
@@ -641,6 +922,36 @@
         "condition": {
           "trait": "undead"
         }
+      }
+    ]
+  },
+  "vicious_mockery": {
+    "name": "Vicious Mockery",
+    "type": "spell",
+    "level": 0,
+    "aspect": "social",
+    "description": "Hurl a string of insults at an enemy, dealing 1d4 psychic damage and giving them -1 to hit for 2 rounds.",
+    "target": [
+      "enemy"
+    ],
+    "cooldown": 4,
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d4",
+        "kind": "psychic"
+      },
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Mocked",
+          "duration": 2,
+          "effect": {
+            "toHit": -1
+          }
+        },
+        "saveType": "will",
+        "saveDC": 10
       }
     ]
   },
@@ -688,7 +999,7 @@
                 "saveType": "poison",
                 "saveDC": 12,
                 "status": {
-                  "name": "being poisoned",
+                  "name": "Poison",
                   "duration": 3,
                   "effect": {
                     "onTurnEnd": [
@@ -749,6 +1060,7 @@
     "name": "Heal Ally",
     "type": "spell",
     "aspect": "divine",
+    "domain": "life",
     "description": "Restore health to a wounded ally.",
     "target": [
       "ally"
@@ -788,6 +1100,7 @@
     "name": "Curse",
     "type": "spell",
     "aspect": "divine",
+    "domain": "death",
     "alignment": "evil",
     "description": "Curse an enemy, reducing all stats by 1.",
     "target": [
@@ -817,6 +1130,7 @@
     "name": "Mass Curse",
     "type": "spell",
     "aspect": "divine",
+    "domain": "death",
     "alignment": "evil",
     "description": "Curse all enemies, reducing all their stats by 1.",
     "target": [
@@ -895,6 +1209,7 @@
           "duration": 5,
           "effect": {
             "ac": -4,
+            "evasion": 10,
             "onAttack": [
               {
                 "type": "removeStatus",
@@ -950,7 +1265,7 @@
       {
         "type": "debuff",
         "status": {
-          "name": "being poisoned",
+          "name": "Poison",
           "duration": 3,
           "effect": {
             "onTurnEnd": [
@@ -979,7 +1294,7 @@
       {
         "type": "debuff",
         "status": {
-          "name": "being poisoned",
+          "name": "Poison",
           "duration": 3,
           "effect": {
             "onTurnEnd": [
@@ -1042,6 +1357,7 @@
     "type": "spell",
     "level": 1,
     "aspect": "divine",
+    "domain": "death",
     "alignment": "evil",
     "description": "Drain life from an enemy, healing yourself for damage dealt.",
     "target": [
@@ -1059,7 +1375,7 @@
   "lightning_strike": {
     "name": "Lightning Strike",
     "type": "spell",
-    "level": 1,
+    "level": 2,
     "aspect": "arcane",
     "description": "Strike random enemies with lightning, dealing 1d8 damage and paralyzing them for 1 round.",
     "target": [
@@ -1305,6 +1621,7 @@
     "name": "Animate Dead",
     "type": "spell",
     "aspect": "divine",
+    "domain": "death",
     "alignment": "evil",
     "description": "Raise a fallen ally as an undead servant to fight for you.",
     "target": [
@@ -1324,6 +1641,7 @@
     "name": "Raise Dead",
     "type": "spell",
     "aspect": "divine",
+    "domain": "life",
     "description": "Restore a fallen ally to life with 50% health.",
     "target": [
       "deadAlly"
@@ -1339,6 +1657,7 @@
     "name": "Resurrection",
     "type": "spell",
     "aspect": "divine",
+    "domain": "life",
     "level": 5,
     "description": "Restore a fallen ally to life with full health.",
     "target": [
@@ -1416,6 +1735,7 @@
     "type": "spell",
     "level": 1,
     "aspect": "divine",
+    "domain": "law",
     "description": "Grant immunity to charm and fear for 6 rounds.",
     "target": [
       "ally"
@@ -1438,8 +1758,8 @@
     "name": "Dispel Magic",
     "type": "spell",
     "aspect": "arcane",
-    "level": 1,
-    "description": "Remove charm, cursed, paralyzed and magical stun effects from a target.",
+    "level": 2,
+    "description": "Remove charm, cursed, paralyzed and magical stun effects from a target; also removes positive arcane buffs.",
     "target": [
       "self",
       "ally",
@@ -1461,6 +1781,50 @@
       {
         "type": "removeStatus",
         "statusName": "Stunned"
+      },
+      {
+        "type": "removeStatus",
+        "statusName": "Protected"
+      },
+      {
+        "type": "removeStatus",
+        "statusName": "Hasted"
+      },
+      {
+        "type": "removeStatus",
+        "statusName": "Shielded"
+      },
+      {
+        "type": "removeStatus",
+        "statusName": "Mage-Armored"
+      }
+    ]
+  },
+  "smoke_screen": {
+    "name": "Smoke Screen",
+    "type": "skill",
+    "aspect": "stealth",
+    "description": "Create a smoke screen that grants all allies within it evasion and 4 AC for 3 rounds.",
+    "target": [
+      "allies"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Hidden",
+          "duration": 5,
+          "effect": {
+            "ac": -4,
+            "evasion": 10,
+            "onAttack": [
+              {
+                "type": "removeStatus",
+                "statusName": "Hidden"
+              }
+            ]
+          }
+        }
       }
     ]
   },
@@ -1468,7 +1832,7 @@
     "name": "Dirty Trick",
     "type": "skill",
     "aspect": "stealth",
-    "description": "Perform a dirty trick to blind or entangle an enemy, giving them -2 to hit for 2 rounds.",
+    "description": "Perform a dirty trick to blind or entangle an enemy, giving them -4 to hit for 2 rounds.",
     "target": [
       "enemy"
     ],
@@ -1479,7 +1843,7 @@
           "name": "Blinded",
           "duration": 2,
           "effect": {
-            "toHit": -2
+            "toHit": -4
           }
         },
         "saveType": "magic",
@@ -1517,10 +1881,36 @@
       }
     ]
   },
+  "ensnare": {
+    "name": "Ensnare",
+    "type": "skill",
+    "aspect": "nature",
+    "description": "Entangle an enemy with vines, reducing their speed and giving them -2 to hit for 3 rounds.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Entangled",
+          "duration": 3,
+          "effect": {
+            "dex": -5,
+            "toHit": -2,
+            "evasion": -5,
+            "initiative": -5
+          }
+        },
+        "saveType": "dex",
+        "saveDC": 12
+      }
+    ]
+  },
   "silence": {
     "name": "Silence",
     "type": "spell",
-    "level": 1,
+    "level": 3,
     "aspect": "arcane",
     "description": "Create an area of silence, preventing spellcasting for 3 rounds.",
     "target": [

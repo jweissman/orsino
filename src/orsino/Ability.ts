@@ -79,6 +79,7 @@ export interface Ability {
   description: string;
   level?: number;
   kind?: string;
+  domain?: "life" | "death" | "nature" | "knowledge" | "war" | "trickery" | "law" | "chaos";
   aspect: "arcane" | "physical" | "divine" | "social" | "stealth" | "nature";
   target: Target[];
   effects: AbilityEffect[];

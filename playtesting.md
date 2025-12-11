@@ -57,7 +57,7 @@
 [ ] AI should not use buffs that only target allies if all allies are dead
 [ ] Dungeons with multiple floors (levels in principle seem relatively straightforward but we'd need to adapt dungeoneer to handle them...)
 ---
-[ ] Wildnerness: Collect herbs, hear birdcalls...
+[ ] Wildnerness: Collect herbs, hear birdcalls (at least when not winter? but there are winter birds aren't there?)
 ---
 [ ] Track playerAligned as _well_ as playerControlled (sort of captured by being on the team of the player but this isn't passed along with combatant in all cases... -- we can always check for allegiance effects but a little subtle i guess?)
 ---
@@ -84,11 +84,9 @@
 [ ] Template overlay for dungeon types (could express '30% undead' outside of deem template...)
 [ ] Magic weapons/armor (ie unify equipment w/ armor/weapons)
 [ ] Offer to equip wearables if you find them in loot (give wearables/consumables in room treasure -- may need some tracking for 'unworn wearables'... -- don't think we give them out yet but a lot of the loot items are _suggestive_ of wearables or magic weapons/armor) 
-[ ] Reduce consumable treasure-drop rate (90% is way too high!!) and maybe try to govern the tier of loot found (should not find scrolls of apocalypse/powerful wands everywhere!)
 [ ] Animals should not have _blur_ spell
 [ ] Treasure that is just coins should just be gp (we could give platinum/copper/silver for variety but fine if not!!)
 [ ] Should your own summoned creatures be able to flee?? (presumably henchmen can flee if morale drops too low but we don't have henches proper yet)
-[ ] Maybe only mages can use wands/scrolls??
 ---
 [ ] Would be nice to see literal HP for your party (ie not just approximate bar)
 ---
@@ -97,6 +95,12 @@
 [ ] Traps/lockpicking
 [ ] Double-check that initial weapon loadouts match proficiencies
 [ ] Restrict consumable purchases if no one in the party is proficient at all with it
+---
+[ ] Should silence disable wands/scrolls??? [it seems to disable (at least certain) wands but _not_ (at least certain) scrolls right now?]
+[ ] Show cooldown (at least indicators) as part of ability text/description
+[ ] Could ask if you want to use healing spells on short rest
+[ ] Skeletons should be immune to piercing damage
+[ ] 
 
 ## Fixed
 [x] Temple/shrine to local deity to get a blessing
@@ -184,6 +188,8 @@
 [x] Would be nice to write logs to a file for easier copy-paste
 [x] Ring of regen probably not working since we don't have turnStart event fx handling? -- moved to turnEnd but still need to test
 [x] Restrict wands to caster classes (and clerics can only use healing ones) - should be done!
+[x] Maybe only mages can use wands/scrolls?? -- should be done
+[x] Reduce consumable treasure-drop rate (90% is way too high!!) and maybe try to govern the tier of loot found (should not find scrolls of apocalypse/powerful wands everywhere!)
 
 ## Not really issues atm
 - "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]

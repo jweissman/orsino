@@ -137,7 +137,8 @@ export class Commands {
       "insanity": Fighting.statMod(target.int),
     }[saveType] || 0;
 
-    const saveVersus = dc - (targetFx[saveVersusType] as number || 0) - target.level - saveBonus;
+    const saveValue = (targetFx[saveVersusType] as number || 0) + (targetFx.saveVersusAll as number || 0) + saveBonus;
+    const saveVersus = dc - saveValue - target.level;
     // const saveVersus = dc - (targetFx[saveVersusType] as number || 0) - target.level;
     // let saved = false;
     target.savedTimes = target.savedTimes || {};

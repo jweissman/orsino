@@ -793,6 +793,26 @@
     ]
   },
 
+  "barbarian": {
+    "type": "feat",
+    "description": "Barbarian",
+    "requirements": {
+      "level": 3,
+      "class": "warrior"
+    },
+    "abilities": [ "rage", "whirlwind", "reckless_attack" ]
+  },
+
+  "knight": {
+    "type": "feat",
+    "description": "Knight",
+    "requirements": {
+      "level": 3,
+      "class": "warrior"
+    },
+    "abilities": [ "taunt", "shield_bash", "overwatch" ]
+  },
+
   "undead": {
     "type": "template",
     "description": "Brought Back",

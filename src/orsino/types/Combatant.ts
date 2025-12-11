@@ -100,4 +100,7 @@ export interface Combatant {
 
   // temporary flag to indicate if the combatant saved versus the last spell cast on them
   _savedVersusSpell?: boolean;
+
+  // for clerics/paladins
+  domain?: string;
 }

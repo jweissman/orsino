@@ -1,17 +1,17 @@
 import Combat from "./Combat";
 import Dungeoneer, { Dungeon } from "./Dungeoneer";
-import { Combatant, EquipmentSlot } from "./types/Combatant";
+import { Combatant } from "./types/Combatant";
 import { Roll } from "./types/Roll";
 import { Select } from "./types/Select";
 import Choice from "inquirer/lib/objects/choice";
 import { GenerationTemplateType } from "./types/GenerationTemplateType";
 import Stylist from "./tui/Style";
 import Words from "./tui/Words";
-import Presenter from "./tui/Presenter";
 import { Commands } from "./rules/Commands";
 import Deem from "../deem";
 import { ItemInstance } from "./types/ItemInstance";
 import { Inventory } from "./Inventory";
+import Events, { ModuleEvent } from "./Events";
 
 type TownSize = 'hamlet' | 'village' | 'town' | 'city' | 'metropolis' | 'capital';
 type Race = 'human' | 'elf' | 'dwarf' | 'halfling' | 'gnome' | 'orc' | 'fae';
@@ -44,7 +44,7 @@ export class ModuleRunner {
   private select: Select<any>;
   // private prompt: (message: string) => string;
 
-  private outputSink: (message: string) => void;
+  private _outputSink: (message: string) => void;
   private moduleGen: () => Promise<CampaignModule>;
   private state: GameState = {
     party: [],
@@ -56,12 +56,13 @@ export class ModuleRunner {
   private gen: (type: GenerationTemplateType, options?: Record<string, any>) => any;
 
   activeModule: CampaignModule | null = null;
+  journal: ModuleEvent[] = [];
 
   constructor(options: Record<string, any> = {}) {
     this.roller = options.roller || Commands.roll;
     this.select = options.select || Combat.samplingSelect;
     // this.prompt = options.prompt || ModuleRunner.randomInt;
-    this.outputSink = options.outputSink || console.log;
+    this._outputSink = options.outputSink || console.log;
     this.moduleGen = options.moduleGen || this.defaultModuleGen;
     this.gen = options.gen || (() => { throw new Error("No gen function provided") });
 
@@ -72,6 +73,18 @@ export class ModuleRunner {
   get sharedGold() { return this.state.sharedGold; }
   // get sharedPotions() { return this.state.sharedPotions; }
   get mod() { return this.activeModule!; }
+
+  private note(message: string): void {
+    this._outputSink(message);
+  }
+
+  protected async emit(event: ModuleEvent) {
+    this.journal.push(event);
+    this.note(Events.present(event));
+
+    await Events.appendToLogfile(event);
+  }
+
 
   markDungeonCompleted(dungeonIndex: number) {
     if (!this.state.completedDungeons.includes(dungeonIndex)) {
@@ -95,15 +108,22 @@ export class ModuleRunner {
 
     // this.outputSink("Generating module, please wait...");
     this.activeModule = await this.moduleGen();
-    this.outputSink(`Module "${this.activeModule.name}" generated: ${this.activeModule.terrain} terrain, ${this.activeModule.town.name} town, ${this.activeModule.dungeons.length} dungeons
-    }`);
+    // this.outputSink(`Module "${this.activeModule.name}" generated: ${this.activeModule.terrain} terrain, ${this.activeModule.town.name} town, ${this.activeModule.dungeons.length} dungeons
+    // }`);
     // clear screen
     // this.outputSink("\x1Bc");
-    this.outputSink(`Welcome to ${Stylist.bold(this.mod.name)}!`);
+    // this.outputSink(`Welcome to ${Stylist.bold(this.mod.name)}!`);
+    await this.emit({
+      type: "campaignStart",
+      moduleName: this.mod.name,
+      pcs: this.pcs,
+      at: new Date().toISOString(),
+      day: 0
+    });
 
     await this.enter(dry);
 
-    this.outputSink("\nThank you for playing!");
+    // this.outputSink("\nThank you for playing!");
   }
 
   private async defaultModuleGen(): Promise<CampaignModule> {
@@ -120,24 +140,32 @@ export class ModuleRunner {
     return module as CampaignModule;
   }
 
+  days = 0;
   async enter(dry = false, mod: CampaignModule = this.mod): Promise<void> {
-    this.outputSink(`You arrive at the ${mod.town.adjective} ${Words.capitalize(mod.town.race)} ${mod.town.size} of ${Stylist.bold(mod.town.name)}.`);
-    let days = 0;
-    let maxDays = 120;
-    while (days++ < maxDays && this.pcs.some(pc => pc.hp > 0)) {
+    // this.outputSink(`You arrive at the ${mod.town.adjective} ${Words.capitalize(mod.town.race)} ${mod.town.size} of ${Stylist.bold(mod.town.name)}.`);
+    await this.emit({
+      type: "townVisited", townName: mod.town.name, day: 0,
+      race: mod.town.race, size: mod.town.size,
+      population: mod.town.population,
+      adjective: mod.town.adjective,
+      season: this.season,
+    });
+    let maxDays = 360;
+    while (this.days++ < maxDays && this.pcs.some(pc => pc.hp > 0)) {
       this.status(mod);
-      this.outputSink(`\n--- Day ${days}/${maxDays} ---`);
+      // this.outputSink(`\n--- Day ${days}/${maxDays} ---`);
       const action = await this.menu(dry);
-      this.outputSink(`You chose to ${action}.`);
+      // this.outputSink(`You chose to ${action}.`);
 
       if (action === "embark") {
         const dungeon = await this.selectDungeon();
         if (dungeon) {
-          this.outputSink(`You embark on a Quest to the ${Stylist.bold(dungeon.dungeon_name)}...`);
+          // this.outputSink(`You embark on a Quest to the ${Stylist.bold(dungeon.dungeon_name)}...`);
           let dungeoneer = new Dungeoneer({
+            dry,
             roller: this.roller,
             select: this.select,
-            outputSink: this.outputSink,
+            outputSink: this._outputSink,
             dungeonGen: () => dungeon,
             gen: this.gen, //.bind(this),
             playerTeam: {
@@ -149,9 +177,9 @@ export class ModuleRunner {
           await dungeoneer.run();  //dungeon, this.pcs);
 
           if (dungeoneer.winner === "Player") {
-            console.log(Stylist.bold("\n🎉 Congratulations! You have cleared the dungeon " +
-              Stylist.underline(dungeon.dungeon_name)
-              + "! 🎉\n"));
+            // console.log(Stylist.bold("\n🎉 Congratulations! You have cleared the dungeon " +
+            //   Stylist.underline(dungeon.dungeon_name)
+            //   + "! 🎉\n"));
             this.markDungeonCompleted(dungeon.dungeonIndex || 0);
           }
 
@@ -162,19 +190,20 @@ export class ModuleRunner {
           this.pcs.forEach(pc => {
             if (pc.hp <= 0) {
               pc.hp = 1;
-              this.outputSink(`⚠️ ${pc.name} was stabilized to 1 HP!`);
+              // this.outputSink(`⚠️ ${pc.name} was stabilized to 1 HP!`);
             }
             const healAmount = Math.floor(pc.maxHp * 0.5);
             pc.hp = Math.max(1, Math.min(pc.maxHp, pc.hp + healAmount));
-            this.outputSink(`💖 ${pc.name} recovers ${healAmount} HP after the adventure.`);
+            // this.outputSink(`💖 ${pc.name} recovers ${healAmount} HP after the adventure.`);
             pc.spellSlotsUsed = 0;
             pc.activeEffects = [];
           });
         } else {
-          this.outputSink("No available dungeons to embark on! (" + this.availableDungeons.length + " still remain)");
-          for (const dungeon of this.availableDungeons) {
-            this.outputSink(` - ${dungeon.dungeon_name} (CR ${dungeon.intendedCr}): ${dungeon.rumor}`);
-          }
+          console.warn("No available dungeons!");
+          // this.outputSink("No available dungeons to embark on! (" + this.availableDungeons.length + " still remain)");
+          // for (const dungeon of this.availableDungeons) {
+          //   this.outputSink(` - ${dungeon.dungeon_name} (CR ${dungeon.intendedCr}): ${dungeon.rumor}`);
+          // }
         }
       } else if (action === "rest") {
         this.rest(this.pcs);
@@ -185,48 +214,63 @@ export class ModuleRunner {
       } else if (action === "armory") {
         await this.shop('weapons');
       } else if (action === "rumors") {
-        this.showRumors();
+        await this.showRumors();
       } else if (action === "pray") {
         this.state.sharedGold -= 10;
-        this.outputSink(`You pray to ${Words.capitalize(mod.town.deity)}.`);
+        let blessingsGranted: string[] = [];
+        // this.outputSink(`You pray to ${Words.capitalize(mod.town.deity)}.`);
         this.pcs.forEach(pc => {
           pc.activeEffects = pc.activeEffects || [];
           if (!pc.activeEffects.some(e => e.name === `Blessing of ${mod.town.deity}`)) {
-            this.outputSink(`The priest blesses ${pc.name}.`);
+            // this.outputSink(`The priest blesses ${pc.name}.`);
             const blessing = { toHit: 1, initiative: 2 };
             const duration = 5;
             pc.activeEffects.push({
               name: `Blessing of ${mod.town.deity}`, duration, effect: blessing
             });
-            this.outputSink(`${pc.name} gains ${Words.humanizeList(
-              Object.entries(blessing).map(([k, v]) => `${v > 0 ? "+" : ""}${v} ${k}`)
-            )
-              } for ${duration} turns!`)
+            blessingsGranted.push(`Blessings of ${mod.town.deity} upon ${pc.name}`);
+            // this.outputSink(`${pc.name} gains ${Words.humanizeList(
+            //   Object.entries(blessing).map(([k, v]) => `${v > 0 ? "+" : ""}${v} ${k}`)
+            // )} for ${duration} turns!`)
           }
         });
         // recharge wands/staves
         for (const item of this.state.inventory) {
           if (item.maxCharges !== undefined) {
             item.charges = item.maxCharges;
-            this.outputSink(`Your ${Words.humanize(item.name)} is fully recharged.`);
+            // this.outputSink(`Your ${Words.humanize(item.name)} is fully recharged.`);
           }
         }
+        await this.emit({
+          type: "templeVisited", templeName: `${mod.town.name} Temple of ${Words.capitalize(mod.town.deity)}`, day: this.days,
+          blessingsGranted,
+          itemsRecharged: this.state.inventory
+            .filter(i => i.maxCharges !== undefined)
+            .map(i => i.name),
+        });
       } else if (action === "show") {
-        this.outputSink("\n📜 Party Records:")
-        for (const pc of this.pcs) {
-          // this.outputSink(`\n${Stylist.bold(pc.name)} -- ${Presenter.combatant(pc)}`);
-          Presenter.printCharacterRecord(pc);
-        }
+        // this.outputSink("\n📜 Party Records:")
+        // for (const pc of this.pcs) {
+        //   // this.outputSink(`\n${Stylist.bold(pc.name)} -- ${Presenter.combatant(pc)}`);
+        //   Presenter.printCharacterRecord(pc);
+        // }
 
-        if (this.state.inventory.length > 0) {
-          this.outputSink("\n🎒 Inventory:");
-          let quantities = Inventory.quantities(this.state.inventory);
-          for (const [itemName, qty] of Object.entries(quantities)) {
-            this.outputSink(` - ${Words.humanize(itemName)} x${qty}`);
-          }
-        } else {
-          this.outputSink("\n🎒 Inventory is empty.");
-        }
+        await this.emit({
+          type: "partyOverview",
+          pcs: this.pcs,
+          day: this.days,
+          itemQuantities: Inventory.quantities(this.state.inventory),
+        });
+
+        // if (this.state.inventory.length > 0) {
+        //   // this.outputSink("\n🎒 Inventory:");
+        //   let quantities = Inventory.quantities(this.state.inventory);
+        //   for (const [itemName, qty] of Object.entries(quantities)) {
+        //     this.outputSink(` - ${Words.humanize(itemName)} x${qty}`);
+        //   }
+        // } else {
+        //   this.outputSink("\n🎒 Inventory is empty.");
+        // }
       }
     }
 
@@ -235,7 +279,13 @@ export class ModuleRunner {
     // } else {
     //   this.outputSink("Congratulations! You've completed the module: " + mod.name);
     // }
-    this.outputSink(`\nGame over! You survived ${days} days in ${mod.name}.`);
+    // this.outputSink(`\nGame over! You survived ${days} days in ${mod.name}.`);
+    await this.emit({
+      type: "campaignStop",
+      reason: this.pcs.every(pc => pc.hp <= 0) ? "Party defeated" : "Module completed",
+      at: new Date().toISOString(),
+      day: this.days,
+    });
   }
 
   static townIcons = {
@@ -247,15 +297,30 @@ export class ModuleRunner {
     capital: "🏛️",
   }
 
+  get season(): "spring" | "summer" | "autumn" | "winter" {
+    const seasons = ["spring", "summer", "autumn", "winter"];
+    return seasons[Math.floor((this.days % 360) / 90)] as "spring" | "summer" | "autumn" | "winter";
+  }
+
   async status(mod: CampaignModule = this.mod) {
+    await this.emit({
+      type: "townVisited",
+      townName: mod.town.name,
+      race: mod.town.race,
+      size: mod.town.size,
+      population: mod.town.population,
+      adjective: mod.town.adjective,
+      day: this.days,
+      season: this.season,
+    })
     // let status = "";
-    this.outputSink(`\nThe ${mod.town.adjective} ${Words.capitalize(mod.town.race)} ${mod.town.size} of ${ModuleRunner.townIcons[mod.town.size]}  ${Stylist.bold(mod.town.name)}`);
-    this.outputSink(`(Pop.: ${mod.town.population.toLocaleString()})`);
+    // this.outputSink(`\nThe ${mod.town.adjective} ${Words.capitalize(mod.town.race)} ${mod.town.size} of ${ModuleRunner.townIcons[mod.town.size]}  ${Stylist.bold(mod.town.name)}`);
+    // this.outputSink(`(Pop.: ${mod.town.population.toLocaleString()})`);
     // this.outputSink(`\n🧙‍ Your Party:`);
     // this.pcs.forEach(pc => {
     //   this.outputSink(`  - ${Presenter.combatant(pc)} (${pc.gender} ${pc.background}, ${pc.age})`);
     // });
-    this.outputSink(`💰 Gold: ${this.sharedGold}g`);
+    // this.outputSink(`💰 Gold: ${this.sharedGold}g`);
     // this.outputSink(`🧪 Potions: ${this.sharedPotions}`);
   }
 
@@ -294,19 +359,21 @@ export class ModuleRunner {
       pc.spellSlotsUsed = 0;
       pc.activeEffects = []; // Clear status effects!
     });
-    this.outputSink("💤 Your party rests and recovers fully.");
+    // this.outputSink("💤 Your party rests and recovers fully.");
   }
 
   private async shop(category: 'consumables' | 'weapons' | 'equipment') {
     if (category === 'equipment') {
-      console.log("\nWelcome to the Magic Shop! Here are the available items:");
+      // console.log("\nWelcome to the Magic Shop! Here are the available items:");
+      await this.emit({ type: "shopEntered", shopName: "Magician", day: this.days });
+      
       const magicItemNames = await Deem.evaluate(`gather(equipment)`);
       while (true) {
         // pick wielder
         const pcOptions: Choice<any>[] = this.pcs.map(pc => ({
           short: pc.name,
           value: pc,
-          name: `${pc.name} (${pc.equipment ? Words.humanizeList(Object.keys(pc.equipment)) : 'no equipment'})`,
+          name: `${pc.name} (${pc.equipment ? Words.humanizeList(Object.values(pc.equipment)) : 'no equipment'})`,
           disabled: false,
         }));
         const wielder = await this.select(`Who needs new equipment?`, pcOptions) as Combatant;
@@ -326,21 +393,21 @@ export class ModuleRunner {
         }
         options.push({ disabled: false, short: "Done", value: -1, name: "Finish shopping" });
 
-        console.log("You have " + Stylist.bold(this.sharedGold + "g") + " available.");
+        // console.log("You have " + Stylist.bold(this.sharedGold + "g") + " available.");
         const choice = await this.select("Available equipment to purchase:", options);
         if (choice === -1) {
-          this.outputSink("You finish your shopping.");
+          // this.outputSink("You finish your shopping.");
           break;
         }
         const item = choice;
-        console.log("Chosen equipment:", item);
+        // console.log("Chosen equipment:", item);
 
         if (this.sharedGold >= item.value) {
           let {oldItemKey: maybeOldItem} = await Inventory.equip(item.key, wielder);
           if (maybeOldItem) {
             let oldItem = await Deem.evaluate(`lookup(equipment, "${maybeOldItem}")`);
             this.state.sharedGold += oldItem.value || 0;
-            this.outputSink(`🔄 Replacing ${Words.humanize(oldItem.key)} equipped to ${wielder.name} (sold old item ${oldItem.name} for ${oldItem.value}g).`)
+            // this.outputSink(`🔄 Replacing ${Words.humanize(oldItem.key)} equipped to ${wielder.name} (sold old item ${oldItem.name} for ${oldItem.value}g).`)
           }
           // let oldItemKey = wielder.equipment ? wielder.equipment[item.kind as EquipmentSlot] : null;
           // if (oldItemKey) {
@@ -352,11 +419,20 @@ export class ModuleRunner {
           // wielder.equipment = wielder.equipment || {};
           // wielder.equipment[item.kind as EquipmentSlot] = item.key;
           
-          this.outputSink(`Purchased ${Words.humanize(item.name)} for ${item.value}g, equipped to ${wielder.name}`);
+          // this.outputSink(`Purchased ${Words.humanize(item.name)} for ${item.value}g, equipped to ${wielder.name}`);
+          await this.emit({
+            type: "purchase",
+            itemName: item.key,
+            cost: item.value,
+            buyer: wielder,
+            day: this.days,
+          });
+          this.state.sharedGold -= item.value;
         }
       }
     } else if (category === 'consumables') {
-      console.log("\nWelcome to the Alchemist's Shop! Here are the available items:");
+      // console.log("\nWelcome to the Alchemist's Shop! Here are the available items:");
+      await this.emit({ type: "shopEntered", shopName: "Alchemist", day: this.days });
 
       const consumableItemNames = await Deem.evaluate(`gather(consumables)`);
       while (true) {
@@ -379,7 +455,7 @@ export class ModuleRunner {
         console.log("You have " + Stylist.bold(this.sharedGold + "g") + " available.");
         const choice = await this.select("Available items to purchase:", options);
         if (choice === -1) {
-          this.outputSink("You finish your shopping.");
+          // this.outputSink("You finish your shopping.");
           break;
         }
         const item = choice;
@@ -388,16 +464,24 @@ export class ModuleRunner {
           this.state.sharedGold -= item.value;
           // this.state.inventory[item.key] = (this.state.inventory[item.key] || 0) + 1;
           this.state.inventory.push(await Inventory.item(item.key));
-          this.outputSink(`✅ Purchased 1x ${item.name} for ${item.value}g`);
+          // this.outputSink(`✅ Purchased 1x ${item.name} for ${item.value}g`);
+          await this.emit({
+            type: "purchase",
+            itemName: item.key,
+            cost: item.value,
+            buyer: { name: "Party" } as Combatant,
+            day: this.days,
+          });
         } else {
-          this.outputSink("❌ Not enough gold!");
+          // this.outputSink("❌ Not enough gold!");
         }
         // this.share
       }
     } else if (category === 'weapons') {
-      console.log("\nWelcome to the Armorer's Shop! Here are the available weapons:");
+      // console.log("\nWelcome to the Armorer's Shop! Here are the available weapons:");
+      await this.emit({ type: "shopEntered", shopName: "Armorer", day: this.days });
 
-      const weaponItemNames = await Deem.evaluate(`gather(masterWeapon, -1, 'dig(#__it, "natural")')`);
+      const weaponItemNames = await Deem.evaluate(`gather(masterWeapon, -1, '!dig(#__it, "natural")')`);
       // console.log("Weapon items:", weaponItemNames);
       weaponItemNames.sort();
 
@@ -430,7 +514,7 @@ export class ModuleRunner {
         console.log("You have " + Stylist.bold(this.sharedGold + "g") + " available.");
         const choice = await this.select("Available weapons to purchase:", options);
         if (choice === -1) {
-          this.outputSink("You finish your shopping.");
+          // this.outputSink("You finish your shopping.");
           break;
         }
         const item = choice;
@@ -451,23 +535,37 @@ export class ModuleRunner {
           // add new ability (keep primary at front)
           wielder.abilities.unshift(primaryAttack);
           
-          this.outputSink(`✅ Purchased 1x ${Words.humanize(item.key)} for ${item.value}g, equipped to ${wielder.name}`);
+          // this.outputSink(`✅ Purchased 1x ${Words.humanize(item.key)} for ${item.value}g, equipped to ${wielder.name}`);
+          await this.emit({
+            type: "purchase",
+            itemName: item.key,
+            cost: item.value,
+            buyer: wielder,
+            day: this.days,
+          });
         }
       }
 
     }
   }
 
-  private showRumors() {
+  private async showRumors() {
     const available = this.availableDungeons;
     if (available.length === 0) {
-      this.outputSink("You've cleared all known threats in the region!");
+      // this.outputSink("You've cleared all known threats in the region!");
       return;
     }
 
-    this.outputSink("\n📰 The tavern buzzes with rumors:");
-    available.forEach(d => {
-      this.outputSink(`  • ${d.rumor}`);
+    // this.outputSink("\n📰 The tavern buzzes with rumors:");
+    // available.forEach(d => {
+    //   this.outputSink(`  • ${d.rumor}`);
+    // });
+
+    const rumor = available[Math.floor(Math.random() * available.length)].rumor;
+    await this.emit({
+      type: "rumorHeard",
+      rumor,
+      day: this.days,
     });
   }
 

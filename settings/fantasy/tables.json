@@ -243,12 +243,12 @@
   "abilities": {
     "discriminator": "class",
     "groups": {
-      "warrior": [[ "cleave", "prepare_charge", "charge", "set_spear", "second_wind", "whirlwind", "roundhouse", "taunt" ]],
+      "warrior": [[ "cleave", "prepare_charge", "charge", "set_spear", "second_wind", "roundhouse" ]],
       "mage": [[]],
-      "cleric": [[ "protection_from_evil", "smite", "shield", "cure", "bless", "turn_undead", "command", "hold_person", "raise_dead", "dispel_magic" ]],
-      "ranger": [ [ "heal", "summon_animal", "set_spear", "hunters_mark" ] ],
-      "thief": [ [ "dodge", "poison_weapon", "hide", "backstab", "dirty_trick" ] ],
-      "bard": [[ "cure", "inspire", "charm", "taunt", "riposte" ]]
+      "cleric": [[ ]],
+      "ranger": [ [ "heal", "summon_animal", "set_spear", "hunters_mark", "ensnare" ] ],
+      "thief": [ [ "dodge", "poison_weapon", "smoke_screen", "backstab", "dirty_trick" ] ],
+      "bard": [[ "cure", "inspire", "charm", "taunt", "riposte", "vicious_mockery" ]]
     }
   },
   "hitDie": {
@@ -837,7 +837,7 @@
       "calm": {
         "name": "Calm",
         "description": "Your mind is strangely at peace in this area",
-        "effect": { "toHit": 1, "initiative": 1 }
+        "effect": { "toHit": 2 }
       },
       "energizing": {
         "name": "Vigor",
@@ -846,8 +846,8 @@
       },
       "miasma": {
         "name": "Decay",
-        "description": "An oppressive aura saps the vitality of all living beings in the room",
-        "effect": { "bonusDamage": -1, "toHit": -1, "initiative": -1 }
+        "description": "An oppressive aura saps your strength and willpower",
+        "effect": {  "toHit": -1, "resistPoison": -1, "resistDisease": -1 }
       },
       "cold": {
         "name": "Chill",
@@ -957,6 +957,7 @@
           "type": "buff",
           "status": { 
             "name": "Death's Favor", 
+            "description": "You feel a dark power coursing through you, enhancing your combat abilities.",
             "duration": 15, 
             "effect": { "toHit": 1, "bonusDamage": "1d4" } 
           }

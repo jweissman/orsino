@@ -14,6 +14,7 @@ import { Commands } from "./rules/Commands";
 import CharacterRecord from "./rules/CharacterRecord";
 import AbilityHandler, { Ability, StatusEffect } from "./Ability";
 import { Inventory } from "./Inventory";
+import Orsino from "../orsino";
 
 type SkillType = "search" | "examine"; // | "disarm" | "pickLock" | "climb" | "swim" | "jump" | "listen" | "spot";
 
@@ -87,6 +88,7 @@ export default class Dungeoneer {
 
   static dungeonIcons = { temple: "🏛️", fortress: "🏯", library: "📚", tomb: "⚰️", mine: "⛏️", cave: "🕳️", crypt: "⚰️", tower: "🗼", }
 
+  private dry: boolean = false;
   private roller: Roll;
   private select: Select<any>;
   // protected select: ChoiceSelector<any>;
@@ -103,6 +105,7 @@ export default class Dungeoneer {
   constructor(
     options: Record<string, any> = {}
   ) {
+    this.dry = options.dry || Orsino.environment === 'test';
     this.roller = options.roller || Commands.roll;
     this.select = options.select || Combat.samplingSelect;
     this.outputSink = options.outputSink || console.log;
@@ -303,7 +306,8 @@ export default class Dungeoneer {
     await combat.setUp(
       [this.playerTeam, this.currentMonsterTeam],
       [this.dungeon!.dungeon_name, roomName].join(" - "),
-      roomAura ? [roomAura] : []
+      roomAura ? [roomAura] : [],
+      this.dry
     );
     while (!combat.isOver()) {
       await combat.round(
@@ -362,8 +366,10 @@ export default class Dungeoneer {
         // this.note(`\nVictory! +${xp} XP, +${gold} GP\n`);
       }
 
-      if (Math.random() < 0.2) {
-        let consumable = await Deem.evaluate("pick(gather(consumables))") as any;
+      let consumablesFound = Math.random();
+      if (consumablesFound < 0.2) {
+        let consumableRarity = (consumablesFound < 0.05) ? 'rare' : (consumablesFound < 0.1) ? 'uncommon' : 'common';
+        let consumable = await Deem.evaluate(`pick(gather(consumables, -1, 'dig(#__it, rarity) == ${consumableRarity}'))`) as any;
         let consumableName = Words.humanize(consumable);
         // this.note(`You found ${Words.a_an(consumableName)} in the remains of your foes.`);
         await this.emit({ type: "itemFound", itemName: Words.humanize(consumableName), quantity: 1, where: "in the remains of your foes" });
@@ -402,7 +408,7 @@ export default class Dungeoneer {
         let events = await CharacterRecord.levelUp(c, this.playerTeam, this.roller, this.select);
         // events.forEach(e => this.emit({ ...e, turn: -1 } as DungeonEvent));
         for (const event of events) {
-          await this.emit({ ...event, turn: -1 } as DungeonEvent);
+          await this.emit({ ...event } as DungeonEvent);
         }
       }
     }
@@ -466,7 +472,7 @@ export default class Dungeoneer {
         let items: string[] = [];
         if (check.success) {
           gp = await Deem.evaluate("1+1d20");
-          items = await Deem.evaluate("sample(gather(consumables), 1d2)") as string[];
+          items = await Deem.evaluate("sample(gather(consumables, -1, 'dig(#__it, rarity) == common'), 1d2)") as string[];
           // this.note(`${check.actor.forename} found a hidden compartment in ${room.decor} containing ${gp} gold coins!`);
         } else {
           // this.note(`${check.actor.forename} examined ${room.decor} thoroughly, but could find nothing out of the ordinary.`);
@@ -475,7 +481,7 @@ export default class Dungeoneer {
         await this.reward(0, gp);
 
         for (const item of items) {
-          await this.emit({ type: "itemFound", itemName: Words.humanize(item), quantity: 1, where: `in the hidden compartment of the ${room.decor}` });
+          await this.emit({ type: "itemFound", itemName: Words.humanize(item), quantity: 1, where: `in the hidden compartment of ${room.decor}` });
           this.playerTeam.inventory.push(await Inventory.item(item));
         }
         examinedDecor = true;
@@ -606,7 +612,7 @@ export default class Dungeoneer {
       lootBonus += fx.lootBonus as number || 0;
       if (lootBonus > 0) {
         this.note(`${actor.forename} has a loot bonus of +${lootBonus}.`);
-        let lootItems = await Deem.evaluate(`sample(gather(consumables), ${lootBonus})`) as string[];
+        let lootItems = await Deem.evaluate(`sample(gather(consumables, -1, 'dig(#__it, rarity) == common'), ${lootBonus})`) as string[];
         for (const item of lootItems) {
           // this.note(`You found ${Words.a_an(Words.humanize(item))}!`);
           // this.playerTeam.inventory[item] = (this.playerTeam.inventory[item] || 0) + 1;

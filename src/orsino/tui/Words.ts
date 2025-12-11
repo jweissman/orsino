@@ -1,4 +1,19 @@
 export default class Words {
+  static ordinal(nth: number): string {
+    const j = nth % 10,
+          k = nth % 100;
+    if (j === 1 && k !== 11) {
+      return nth + "st";
+    }
+    if (j === 2 && k !== 12) {
+      return nth + "nd";
+    }
+    if (j === 3 && k !== 13) {
+      return nth + "rd";
+    }
+    return nth + "th";
+  }
+
   static humanize(phrase: string) {
     return String(phrase).replace(/([A-Z])/g, ' $1') // Add space before capital letters
                   .replace(/[_-]+/g, ' ')    // Replace underscores and hyphens with spaces
@@ -24,5 +39,15 @@ export default class Words {
 
   static remove_article(phrase: string): string {
     return phrase.replace(/^(a|an|the)\s+/i, '');
+  }
+
+  static humanizeNumber(num: number): string {
+    if (num >= 1_000_000) {
+      return (num / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+    } else if (num >= 1_000) {
+      return (num / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
+    } else {
+      return num.toString();
+    }
   }
 }

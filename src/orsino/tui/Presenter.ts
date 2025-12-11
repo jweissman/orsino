@@ -20,18 +20,25 @@ export default class Presenter {
   }
 
   static printCharacterRecord = (combatant: Combatant) => {
-    console.log(Stylist.bold("\n\nCharacter Record"));
-    console.log(Stylist.format(`${this.combatant(combatant)}`, 'underline'));
+    console.log("\n" + "=".repeat(40) + "\n");
+    console.log(this.characterRecord(combatant));
+    console.log("\n" + "=".repeat(40) + "\n");
+  }
+
+  static characterRecord = (combatant: Combatant) => {
+    let record = "";
+    record += (Stylist.bold("\n\nCharacter Record\n"));
+    record += (Stylist.format(`${this.combatant(combatant)}\n`, 'underline'));
 
     // "Human Female Warrior of Hometown (41 years old)"
     let descriptor = {
       male: "He is", female: "She is", androgynous: "They are"
     }[(combatant.gender || 'androgynous').toLowerCase()] || "They are";
 
-    console.log(
+    record += (
       Stylist.italic(
         `${Words.capitalize(combatant.background || 'adventurer')} ${Words.humanize(combatant.archetype || 'neutral')} from the ${combatant.hometown || 'unknown'}, ${combatant.age || 'unknown'} years old. ${descriptor} of ${combatant.body_type || 'average'} build with ${combatant.hair || 'unknown color'} hair, ${combatant.eye_color || 'dark'} eyes and ${Words.a_an(combatant.personality || 'unreadable')} disposition.`
-      )
+      ) + "\n\n"
     )
     let statNames = ['str', 'dex', 'int', 'wis', 'cha', 'con'];
     let statLine = statNames.map(stat => {
@@ -41,10 +48,10 @@ export default class Presenter {
       const sign = mod >= 0 ? '+' : '';
       return `${Stylist.bold(stat.toUpperCase())} ${value} (${Stylist.colorize(sign + mod, color)})`;
     });
-    console.log(statLine.join(' | '));
+    record += statLine.join(' | ');
 
-    console.log("\nHit Points: " + Stylist.colorize(`${combatant.hp}/${combatant.maxHp} `, 'green'));
-    // console.log("Armor Class: " + Stylist.colorize(`${combatant.ac} `, 'yellow'));
+    record += "\nHit Points: " + Stylist.colorize(`${combatant.hp}/${combatant.maxHp} \n`, 'green');
+    // record += "Armor Class: " + Stylist.colorize(`${combatant.ac} `, 'yellow');
 
     let basics = {
       weapon: (combatant.weapon || 'None'),
@@ -53,9 +60,9 @@ export default class Presenter {
       xp: combatant.xp,
       gp: combatant.gp,
     }
-    console.log("\n" + Object.entries(basics).map(([key, value]) => {
+    record += ("\n" + Object.entries(basics).map(([key, value]) => {
       return this.padLiteralEnd(`${Stylist.bold(Words.capitalize(key))} ${Words.humanize(value.toString())}`, 25);
-    }).join('   '));
+    }).join('   ')) + "\n";
 
     let bolt = Stylist.colorize('⚡', 'yellow');
     let core = {
@@ -65,50 +72,70 @@ export default class Presenter {
       "Spell Slots": ["mage", "bard", "cleric"].includes(combatant.class || '') ?
           bolt.repeat(Combat.maxSpellSlotsForCombatant(combatant)) : "none"
     }
-    console.log(Object.entries(core).map(([key, value]) => {
+    record += (Object.entries(core).map(([key, value]) => {
       return this.padLiteralEnd(`${Stylist.bold(Words.capitalize(key))} ${Words.humanize(value)}`, 25);
-    }).join('   '));
+    }).join('   ')) + "\n";
 
     // ability table
-    console.log(Stylist.bold("\nAbilities"));
+    record += Stylist.bold("\nAbilities\n");
     let abilityHandler = AbilityHandler.instance;
     for (let abilityName of combatant.abilities || []) {
       let ability = abilityHandler.getAbility(abilityName);
-      console.log(`  ${Stylist.colorize(ability.name, 'magenta').padEnd(28)} ${ability ? ability.description : 'No description available'}`);
+      record += `  ${Stylist.colorize(ability.name, 'magenta').padEnd(28)} ${ability ? ability.description : 'No description available'}\n`;
     }
 
     // traits
+    let passiveEffectsFromAbilities: string[] = [];
     if (combatant.traits && combatant.traits.length > 0) {
       let traitHandler = TraitHandler.instance;
-      console.log(Stylist.bold("\nTraits"));
+      record += Stylist.bold("\nTraits\n");
       for (let traitName of combatant.traits || []) {
         let trait = traitHandler.getTrait(traitName);
         if (trait) {
-          console.log(`  ${Stylist.colorize(trait.description, 'blue')}`);
+          record += `  ${Stylist.colorize(trait.description, 'blue')}\n`;
           trait.statuses?.forEach(status => {
-            console.log(`  ${Stylist.colorize(status.name, 'cyan')} (${status.description})`);
+            passiveEffectsFromAbilities.push(status.name);
+            record += `  ${Stylist.colorize(status.name, 'cyan')} (${status.description})\n`;
           });
-          console.log();
+          record += "\n";
         }
       }
     }
 
+    // active and passive effects
+    if (combatant.activeEffects && combatant.activeEffects.length > 0) {
+      record += Stylist.bold("\nActive Effects\n");
+      combatant.activeEffects.forEach(effect => {
+        record += `  ${Stylist.colorize(effect.name, 'cyan')} (${effect.description})\n`;
+      });
+    }
+    const otherPassives = combatant.passiveEffects?.filter(effect => !passiveEffectsFromAbilities.includes(effect.name)) || [];
+    if (otherPassives.length > 0) {
+      record += Stylist.bold("\nPassive Effects\n");
+      otherPassives.forEach(effect => {
+        if (passiveEffectsFromAbilities.includes(effect.name)) {
+          return; // already listed above
+        }
+        record += `  ${Stylist.colorize(effect.name, 'cyan')} (${effect.description})\n`;
+      });
+    }
+
     if (combatant.equipment && Object.keys(combatant.equipment).length > 0) {
-      console.log(Stylist.bold("\nEquipped Items: "));
+      record += Stylist.bold("\nEquipped Items: \n");
       Object.entries(combatant.equipment).forEach(([slot, item]) => {
-        console.log(`  ${Stylist.colorize(Words.capitalize(slot), 'yellow')}: ${item}`);
+        record += `  ${Stylist.colorize(Words.capitalize(slot), 'yellow')}: ${Words.humanize(item)}\n`;
       });
     }
 
     if (combatant.gear && combatant.gear.length > 0) {
-      console.log(Stylist.bold("\nGear: ") + this.aggregateList(combatant.gear.sort((a, b) => a.localeCompare(b))));
+      record += Stylist.bold("\nGear: ") + this.aggregateList(combatant.gear.sort((a, b) => a.localeCompare(b)));
     }
 
     if (combatant.loot && combatant.loot.length > 0) {
-      console.log(Stylist.bold("\nLoot: ") + this.aggregateList(combatant.loot.sort((a, b) => a.localeCompare(b))));
+      record += Stylist.bold("\nLoot: ") + this.aggregateList(combatant.loot.sort((a, b) => a.localeCompare(b)));
     }
 
-    console.log("\n" + "=".repeat(40) + "\n");
+    return record;
   }
 
   static minimalCombatant = (combatant: Combatant) => {

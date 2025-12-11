@@ -9,7 +9,6 @@ import Files from "./util/Files";
 import Words from "./tui/Words";
 import { BossRoom, Room } from "./Dungeoneer";
 import Combat from "./Combat";
-import { readableStreamToFormData } from "bun";
 
 type BaseEvent = {
   turn: number;
@@ -96,7 +95,7 @@ export type GoldEvent  = BaseDungeonEvent & { type: "gold"; amount: number };
 export type ExperienceEvent  = BaseDungeonEvent & { type: "xp"; amount: number };
 export type InvestigateEvent  = BaseDungeonEvent & { type: "investigate"; clue: string; discovery: string; };
 
-export type UpgradeEvent = BaseEvent & { type: "upgrade"; stat: keyof Combatant; amount: number, newValue: number };
+export type UpgradeEvent = BaseDungeonEvent & { type: "upgrade"; stat: keyof Combatant; amount: number, newValue: number };
 
 export type DungeonEvent =
   | EnterDungeon
@@ -113,7 +112,32 @@ export type DungeonEvent =
   | ExperienceEvent
   | UpgradeEvent;
 
-export type GameEvent = CombatEvent | DungeonEvent;
+type Timestamp = string;
+
+type BaseModuleEvent = Omit<BaseEvent, "turn"> & { day: number; };
+
+export type CampaignStartEvent = BaseModuleEvent & { type: "campaignStart"; moduleName: string; pcs: Combatant[]; at: Timestamp };
+export type TownVisitedEvent = BaseModuleEvent & {
+  type: "townVisited"; townName: string; race: string; size: string; population: number;  adjective: string; season: "spring" | "summer" | "autumn" | "winter";
+};
+export type ShopEnteredEvent   = BaseModuleEvent & { type: "shopEntered"; shopName: string; };
+export type PurchaseEvent      = BaseModuleEvent & { type: "purchase"; itemName: string; cost: number; buyer: Combatant; };
+export type RumorHeardEvent    = BaseModuleEvent & { type: "rumorHeard"; rumor: string; };
+export type TempleVisitedEvent = BaseModuleEvent & { type: "templeVisited"; templeName: string; blessingsGranted: string[]; itemsRecharged: string[]; };
+export type CampaignStopEvent  = BaseModuleEvent & { type: "campaignStop"; reason: string; at: Timestamp; };
+export type PartyOverviewEvent = BaseModuleEvent & { type: "partyOverview"; pcs: Combatant[];  itemQuantities: { [itemName: string]: number }; };
+
+export type ModuleEvent =
+  | CampaignStartEvent
+  | TownVisitedEvent
+  | ShopEnteredEvent
+  | PurchaseEvent
+  | RumorHeardEvent
+  | TempleVisitedEvent
+  | PartyOverviewEvent
+  | CampaignStopEvent
+
+export type GameEvent = CombatEvent | DungeonEvent | ModuleEvent
 
 export default class Events {
   static present(event: GameEvent): string {
@@ -138,9 +162,9 @@ export default class Events {
 
       case "roomCleared":
         if (event.combat) {
-          return `The ${event.room.room_type} is pacified after combat. You have defeated ${Words.humanizeList(event.combat.teams[1].combatants.map(c => c.referenceName || c.name))}.`;
+          return `The ${Words.humanize(event.room.room_type)} is pacified after combat. You have defeated ${Words.humanizeList(event.combat.teams[1].combatants.map(c => c.referenceName || c.name))}.`;
         }
-        return `The ${event.room.room_type} is pacified.`;
+        return `The ${Words.humanize(event.room.room_type)} is pacified.`;
       case "investigate":
         return `${subjectName} examines ${event.clue} and discovers ${event.discovery}`;
       case "itemFound":
@@ -162,7 +186,7 @@ export default class Events {
         return `Victory! You have cleared the dungeon!`;
 
       case "dungeonFailed":
-        return `You have failed the dungeon: ${event.reason}.`;
+        return `You have failed to cleanse the ${event.reason} of evil.`;
 
       case "heal":
         if (subjectName === targetName) {
@@ -182,15 +206,14 @@ export default class Events {
         }
         return `${subjectName} is ${effectName}.`
       case "statusExpire":
-        if (event.effectName === "Poisoned Blade") {
-          return `${subjectName}'s blade is no longer coated in poison.`;
-        }
+        // if (event.effectName === "Poisoned Blade") {
+        //   return `${subjectName}'s blade is no longer coated in poison.`;
+        // }
         return `${subjectName} is no longer ${event.effectName}.`;
       case "initiate":
         return '';  //`Turn order: ${event.order.map((o, i) => `${i + 1}. ${o.combatant.forename}`).join(" | ")}`;
       case "roundStart":
         // clear screen
-        // process.stdout.write('\x1Bc');
 
         // let heading = `\n=== Round ${event.turn} ===`;
         // let combatants = event.combatants.map(c => `\n- ${Presenter.combatant(c)}`).join("");
@@ -212,7 +235,7 @@ export default class Events {
 
         // return `It is now ${subjectName}'s turn.`;
         return '';
-      case "combatEnd": return `Combat ends. ${event.winner} victorious.`;
+      case "combatEnd": return '';  //`Combat ends. ${event.winner} victorious.`;
 
       case "upgrade":
         return `${subjectName} upgrades ${event.stat} by ${event.amount} (now ${event.newValue}).`;
@@ -276,6 +299,40 @@ export default class Events {
         }
       case "action":
         return Stylist.bold(`${subjectName} ${event.actionName}.`);
+
+      case "campaignStart":
+        return Stylist.bold(`You embark on the campaign '${event.moduleName}'\nParty Members: ${
+          event.pcs.map(pc => Presenter.combatant(pc)).join("\n")
+        }`);
+      case "shopEntered":
+        return Stylist.bold(`Entered ${event.shopName}'s shop.`);
+      case "townVisited":
+        return (`It is the ${Words.ordinal(1+(event.day%90))} day of ${event.season} in the ${event.adjective} ${Words.capitalize(event.race)} ${event.size} of ${Stylist.bold(event.townName)} (Population: ${Words.humanizeNumber(event.population)})`);
+      case "purchase":
+        return `${event.buyer.forename} purchased ${Words.a_an(event.itemName)} for ${event.cost} gold.`;
+      case "rumorHeard":
+        return `The tavern buzzes with news: "${event.rumor}"`;
+      case "templeVisited":
+        if (event.blessingsGranted.length === 0 && event.itemsRecharged.length === 0) {
+          return `You pray at ${event.templeName}, but receive no blessings or item recharges.`;
+        }
+        let templeMessage = "You pray at " + event.templeName + ". ";
+        // return `You pray at ${event.templeName}. Blessings granted: ${event.blessingsGranted.join(", ")}. Items recharged: ${event.itemsRecharged.join(", ")}.`;
+        if (event.blessingsGranted.length > 0) {
+          templeMessage += `Blessings granted: ${event.blessingsGranted.join(", ")}. `;
+        }
+        if (event.itemsRecharged.length > 0) {
+          templeMessage += `Items recharged: ${event.itemsRecharged.join(", ")}.`;
+        }
+        return templeMessage;
+      case "partyOverview":
+        return Stylist.bold(`Party Overview:\n${
+          event.pcs.map(pc => Presenter.characterRecord(pc)).join("\n\n")
+        }\n\nInventory:\n${
+          Object.entries(event.itemQuantities).map(([itemName, qty]) => `- ${qty} x ${Words.humanize(itemName)}`).join("\n")
+        }`);
+      case "campaignStop":
+        return Stylist.bold(`Campaign ended: ${event.reason || `at ${event.at}`}`);
       default:
         return never(event);
     }
@@ -292,6 +349,7 @@ export default class Events {
     if (!logMessage || logMessage.trim() === '') {
       return;
     }
+
     await Files.append(logFilename, logMessage + '\n');
   }
 }

@@ -5,7 +5,7 @@ import { Team } from "./types/Team";
 import { Roll } from "./types/Roll";
 import { Fighting } from "./rules/Fighting";
 import Events, { CombatEvent, StatusExpireEvent, RoundStartEvent, CombatEndEvent, FleeEvent, GameEvent, CombatantEngagedEvent, WaitEvent, NoActionsForCombatant, AllegianceChangeEvent, ItemUsedEvent, ActionEvent } from "./Events";
-import AbilityHandler, { Ability, StatusEffect } from "./Ability";
+import AbilityHandler, { Ability, AbilityEffect, StatusEffect } from "./Ability";
 import { Answers } from "inquirer";
 import { AbilityScoring } from "./tactics/AbilityScoring";
 import { Commands } from "./rules/Commands";
@@ -14,6 +14,7 @@ import TraitHandler from "./Trait";
 import Stylist from "./tui/Style";
 import Bark from "./Bark";
 import { Inventory } from "./Inventory";
+import Orsino from "../orsino";
 
 export type ChoiceSelector<T extends Answers> = (description: string, options: Choice<T>[], combatant?: Combatant) => Promise<T>;
 
@@ -42,6 +43,7 @@ export default class Combat {
   protected select: ChoiceSelector<any>;
   protected journal: CombatEvent[] = [];
   protected outputSink: (message: string) => void;
+  public dry: boolean = false;
 
   constructor(
     options: Record<string, any> = {},
@@ -108,12 +110,14 @@ export default class Combat {
   async setUp(
     teams = Combat.defaultTeams(),
     environment = 'Dungeon | Room -1',
-    auras: StatusEffect[] = []
+    auras: StatusEffect[] = [],
+    dry: boolean = Orsino.environment === 'test',
   ) {
     this.turnNumber = 0;
     this.winner = null;
     this.teams = teams;
     this.environmentName = environment;
+    this.dry = dry;
     for (let c of this.allCombatants) {
       c.abilitiesUsed = [];
       c.abilityCooldowns = {};
@@ -129,9 +133,19 @@ export default class Combat {
         const trait = traitHandler.getTrait(traitName);
         if (trait) {
           c.passiveEffects ||= [];
-          for (const status of trait.statuses) {
-            if (!c.passiveEffects?.map(e => e.name).includes(status.name)) {
-              c.passiveEffects.push(status);
+          if (trait.statuses) {
+            for (const status of trait.statuses) {
+              if (!c.passiveEffects?.map(e => e.name).includes(status.name)) {
+                c.passiveEffects.push(status);
+              }
+            }
+          }
+
+          if (trait.abilities) {
+            for (const ability of trait.abilities || []) {
+              if (!c.abilities.includes(ability)) {
+                c.abilities.push(ability);
+              }
             }
           }
         }
@@ -557,19 +571,19 @@ export default class Combat {
       }
     }
 
-    if (combatant.activeEffects) {
+    // if (a
       // run onTurnEnd for all active effects
       let ctx = { subject: combatant, allies, enemies: allEnemies };
-      for (const status of combatant.activeEffects) {
-        if (status.effect['onTurnEnd']) {
-          for (const effect of status.effect['onTurnEnd']) {
+      // for (const status of activeFx) {
+        if (activeFx.onTurnEnd) {
+          for (const effect of activeFx.onTurnEnd as AbilityEffect[]) {
             // apply fx to self
-            let { events } = await AbilityHandler.handleEffect(status.name, effect, effect.by || combatant, combatant, ctx, Commands.handlers(this.roller, this.teams.find(t => t.combatants.includes(combatant))!));
-            await this.emitAll(events, `Turn end effects from ${Stylist.italic(status.name)}`, combatant);
+            let { events } = await AbilityHandler.handleEffect(effect.description || 'turn end effect', effect, combatant, combatant, ctx, Commands.handlers(this.roller, this.teams.find(t => t.combatants.includes(combatant))!));
+            await this.emitAll(events, `Turn end effects`, combatant);
           }
         }
-      }
-    }
+      // }
+    // }
 
     return { haltRound: false };
   }
@@ -597,6 +611,24 @@ export default class Combat {
         await creatureFlees(combatant);
       }
     }
+
+    // ask to press enter
+    if (!this.dry) {
+      console.log(`\nThe next round begins...`);
+      // wait for stdin input
+      // await new Promise<void>((resolve) => {
+      //   process.stdin.once('data', () => {
+      //     resolve();
+      //   });
+      // });
+      // ^^ this was causing crashes in some environments -- so we'll just wait 1 second instead
+      await new Promise<void>((resolve) => {
+        setTimeout(() => {
+          resolve();
+        }, 1000);
+      });
+    }
+    process.stdout.write('\x1Bc');
 
     await this.emit({
       type: "roundStart",
