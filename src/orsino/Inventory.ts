@@ -107,6 +107,8 @@ export class Inventory {
     wielder.equipment = wielder.equipment || {};
     wielder.equipment[slot] = equipmentKey;
 
+    console.log(`🛡️ Equipped ${equipmentKey} to ${wielder.name} in slot ${slot}.`);
+
     return { oldItemKey: oldItemKey || null, slot };
   }
 }

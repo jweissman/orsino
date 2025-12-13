@@ -1205,7 +1205,7 @@
     "name": "Maul",
     "type": "skill",
     "aspect": "physical",
-    "description": "Make a powerful attack that deals 1d6 extra damage and inflicts Bleed on a successful hit.",
+    "description": "Make a powerful attack that deals 1d6 + strength modifier extra damage and inflicts Bleed on a successful hit.",
     "target": [
       "enemy"
     ],
@@ -1215,7 +1215,7 @@
       },
       {
         "type": "damage",
-        "amount": "=1d6",
+        "amount": "=1d6 + statMod(#str)",
         "kind": "bludgeoning"
       },
       {
@@ -1697,6 +1697,29 @@
       }
     ]
   },
+  "summon_lich": {
+    "name": "Summon Lich",
+    "type": "spell",
+    "aspect": "divine",
+    "domain": "death",
+    "alignment": "evil",
+    "level": 5,
+    "description": "Summon a powerful lich to fight for you.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "summon",
+        "creature": "monster",
+        "options": {
+          "monster_type": "Lich",
+          "level": 10
+        }
+      }
+    ]
+  },
+
   "animate_dead": {
     "name": "Animate Dead",
     "type": "spell",
@@ -2129,6 +2152,138 @@
         },
         "saveType": "con",
         "saveDC": 18
+      }
+    ]
+  },
+  "detonation": {
+    "name": "Detonation",
+    "type": "spell",
+    "alignment": "evil",
+    "level": 3,
+    "aspect": "arcane",
+    "description": "Countdown to a fiery explosion, dealing 4d6 fire damage to all enemies in a 10-foot radius.",
+    "target": [ "self" ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Ticking",
+          "duration": 5,
+          "effect": {
+            "onExpire": [
+              {
+                "type": "damage",
+                "amount": "=4d6",
+                "kind": "fire",
+                "target": "enemies"
+              },
+              {
+                "type": "kill",
+                "target": "self"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "arrow_volley": {
+    "name": "Arrow Volley",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Shoot a volley of arrows at all enemies, dealing 3d4 piercing damage.",
+    "target": [ "enemies" ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=3d4",
+        "kind": "piercing",
+        "saveForHalf": true
+      }
+    ]
+  },
+  "pestilence": {
+    "name": "Pestilence",
+    "type": "spell",
+    "level": 4,
+    "aspect": "dark",
+    "description": "Unleash a deadly plague upon all enemies, dealing 2d6 necrotic damage and applying Disease.",
+    "target": [ "enemies" ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=2d6",
+        "kind": "necrotic",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Diseased",
+          "effect": {
+            "onTurnEnd": [
+              {
+                "type": "damage",
+                "amount": "=1d4",
+                "kind": "necrotic"
+              }
+            ]
+          }
+        },
+        "saveType": "fortitude",
+        "saveDC": 16
+      }
+    ]
+  },
+  
+  "lich_summoning_ritual": {
+    "name": "Lich Summoning Ritual",
+    "type": "spell",
+    "aspect": "divine",
+    "domain": "death",
+    "alignment": "evil",
+    "level": 5,
+    "description": "Begin the ritual to summon a powerful lich in 3 rounds.",
+    "target": [ "self" ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Chanting",
+          "duration": 3,
+          "effect": {
+            "onExpire": [
+              {
+                "type": "summon",
+                "creature": "monster",
+                "options": {
+                  "monster_type": "Lich",
+                  "level": 10
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+
+  "death": {
+    "name": "Death",
+    "type": "spell",
+    "level": 9,
+    "aspect": "divine",
+    "domain": "death",
+    "alignment": "evil",
+    "description": "Instantly kill an enemy with a failed save.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "kill",
+        "saveType": "fortitude",
+        "saveDC": 20
       }
     ]
   }

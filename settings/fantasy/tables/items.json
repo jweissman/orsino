@@ -87,7 +87,7 @@
       "headbutt":  { "damage": "1d4", "natural": true, "type": "bludgeoning" },
       "beak":      { "damage": "1d4", "natural": true, "type": "piercing" },
       "flutter":   { "damage": "1d2", "natural": true, "type": "bludgeoning" },
-      "tentacles": { "damage": "8d2+1", "natural": true, "type": "bludgeoning" }
+      "tentacles": { "damage": "1d4+1", "natural": true, "type": "bludgeoning" }
     }
   },
   "masterGear": {
@@ -502,6 +502,21 @@
           }
         ]
       },
+      "scroll_of_cure_disease": {
+        "name": "Scroll of Cure Disease",
+        "description": "A magical scroll that can cure a target of any disease afflicting them.",
+        "type": "consumable",
+        "kind": "scroll",
+        "rarity": "uncommon",
+        "value": 150,
+        "target": ["self", "ally"],
+        "effects": [
+          {
+            "type": "removeStatus",
+            "statusName": "Disease"
+          }
+        ]
+      },
       "scroll_of_apocalypse": {
         "name": "Scroll of Apocalypse",
         "description": "An ancient scroll that unleashes catastrophic energy upon all enemies in the area.",
@@ -595,12 +610,14 @@
       },
       "ring_of_minor_protection": {
         "name": "Ring of Minor Protection",
+        "kind": "ring",
         "effect": { "ac": -1 },
         "value": 50,
         "description": "A simple enchanted ring providing slight protection"
       },
       "amulet_of_vitality": {
         "name": "Amulet of Vitality", 
+        "kind": "amulet",
         "effect": { "con": 1 },
         "value": 50,
         "description": "A minor health charm"

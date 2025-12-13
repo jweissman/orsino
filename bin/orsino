@@ -36,7 +36,6 @@ program.command('mm')
   .action(async (options) => {
     const orsino = new Orsino(options.setting || 'fantasy');
     await orsino.monsterManual(options);
-    console.log('Monster manual generated!');
     process.exit(0);
   });
 

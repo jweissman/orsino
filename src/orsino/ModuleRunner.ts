@@ -226,7 +226,8 @@ export class ModuleRunner {
             const blessing = { toHit: 1, initiative: 2 };
             const duration = 5;
             pc.activeEffects.push({
-              name: `Blessing of ${mod.town.deity}`, duration, effect: blessing
+              name: `Blessing of ${mod.town.deity}`, duration, effect: blessing,
+              description: `+${blessing.toHit} to hit, +${blessing.initiative} initiative for ${duration} turns`
             });
             blessingsGranted.push(`Blessings of ${mod.town.deity} upon ${pc.name}`);
             // this.outputSink(`${pc.name} gains ${Words.humanizeList(

@@ -33,6 +33,7 @@ export type KillEvent = BaseEvent & { type: "kill"; };
 export type FallenEvent = BaseEvent & { type: "fall" };
 export type FleeEvent   = BaseEvent & { type: "flee" };
 
+export type ActedRandomly = BaseEvent & { type: "actedRandomly" };
 export type HealEvent = BaseEvent & { type: "heal"; amount: number };
 export type DefendEvent = BaseEvent & { type: "defend"; bonusAc: number };
 export type QuaffEvent = BaseEvent & { type: "quaff" };
@@ -56,6 +57,7 @@ export type ActionEvent = BaseEvent & { type: "action"; actionName: string };
 
 export type CombatEvent =
   | ActionEvent
+  | ActedRandomly
   | HitEvent
   | DamageBonus
   | DamageReduction
@@ -309,6 +311,9 @@ export default class Events {
         }
       case "action":
         return Stylist.bold(`\n${subjectName} ${event.actionName}.`);
+
+      case "actedRandomly":
+        return `${subjectName} is acting erratically.`;
 
       case "campaignStart":
         return Stylist.bold(`You embark on the campaign '${event.moduleName}'\nParty Members: ${

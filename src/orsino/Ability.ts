@@ -39,7 +39,7 @@ export interface StatusEffect {
 export interface AbilityEffect {
   description?: string;
   kind?: DamageKind;
-  type: "attack" | "damage" | "heal" | "buff" | "debuff" | "flee" | "drain" | "summon" | "removeStatus" | "upgrade" | "gold" | "xp" | "resurrect";
+  type: "attack" | "damage" | "heal" | "buff" | "debuff" | "flee" | "drain" | "summon" | "removeStatus" | "upgrade" | "gold" | "xp" | "resurrect" | "kill";
   stat?: "str" | "dex" | "con" | "int" | "wis" | "cha";
 
   amount?: string; // e.g. "=1d6", "=2d8", "3"
@@ -173,6 +173,46 @@ export default class AbilityHandler {
           .filter(([_key, ab]) => ab.aspect === aspect && ab.type === 'spell' && (ab.level ?? 0) <= maxLevel && (!excludeEvilSpells || ab.alignment !== 'evil'))
           .map(([key, _ab]) => key);
   }
+
+  static resolveTarget(targetName: string, user: Combatant, allies: Combatant[], enemies: Combatant[]): (Combatant | Combatant[]) {
+    let targets: (Combatant | Combatant[]) = [];
+      switch (targetName) {
+        case "self":
+          // if (healing) {
+          //   if (user.hp < user.maxHp) {
+          //     targets.push(user);
+          //   }
+          // } else {
+            targets.push(user);
+          // }
+          break;
+        case "ally":
+          // if (healing) {
+          //   targets.push(...Combat.wounded(allies));
+          // } else {
+            targets.push(...Combat.living(allies));
+          // }
+          break;
+        case "deadAlly": targets.push(...(allies.filter(a => a.hp <= 0))); break;
+        case "enemy": targets.push(...(enemies)); break;
+        case "allies":
+          // if (healing) {
+          //   targets.push(Combat.wounded(allies));
+          // } else {
+            targets.push(...Combat.living(allies));
+          // }
+          break;
+        case "enemies": targets.push(...(enemies)); break;
+        case "all": targets.push(...([user, ...allies, ...enemies])); break;
+
+        // we need to special case randomEnemies since we need to select them ourselves
+        case "randomEnemies": break;
+
+        // default:
+        // throw new Error(`Unknown target type: ${t}`);
+      }
+    return targets;
+    }
 
   static validTargets(ability: Ability, user: Combatant, allies: Combatant[], enemies: Combatant[]): (Combatant | Combatant[])[] {
     let healing = ability.effects.every(fx => fx.type === "heal") && ability.effects.length > 0;
@@ -498,8 +538,18 @@ export default class AbilityHandler {
       }
       success = rezzed;
     }
+    else if (effect.type === "kill") {
+      if (targetCombatant.hp <= 0) {
+        console.warn(`${targetCombatant.name} is already dead.`);
+      } else {
+        targetCombatant.hp = 0;
+        events.push({ type: "fall", subject: targetCombatant } as Omit<GameEvent, "turn">);
+        success = true;
+      }
+    }
     else {
       // throw new Error(`Unknown effect type: ${effect.type}`);
+      console.warn(`Unknown effect type: ${effect.type} in ability ${name}`);
       return never(effect.type);
     }
 

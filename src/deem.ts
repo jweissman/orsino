@@ -2,6 +2,7 @@ import * as ohm from 'ohm-js';
 import source from './deem.ohm.txt';
 import { count } from 'console';
 import { Fighting } from './orsino/rules/Fighting';
+import Words from './orsino/tui/Words';
 
 export default class Deem {
   static magicVars: Record<string, any> = {};
@@ -38,6 +39,7 @@ export default class Deem {
     floor: (num: number) => Math.floor(num),
     ceil: (num: number) => Math.ceil(num),
     capitalize: (str: string) => str && str.charAt(0).toUpperCase() + str.slice(1),
+    humanize: (str: string) => Words.humanize(str),
     len: (obj: any) => {
       if (Array.isArray(obj) || typeof obj === 'string') {
         return obj.length;
@@ -180,7 +182,7 @@ export default class Deem {
       result = result.replace(/#([a-zA-Z_][a-zA-Z0-9_]*)/g, (_, varName) => {
         const value = ctx?.[varName] ?? Deem.magicVars[varName];
         if (value === undefined) {
-          throw new Error(`Undefined variable in string interpolation: ${varName}`);
+          throw new Error(`Undefined variable in string interpolation: ${varName} (available: ${Object.keys(this.args.context || {}).join(', ')}); (magic: ${Object.keys(Deem.magicVars).join(', ')})`);
         }
         return value;
       });

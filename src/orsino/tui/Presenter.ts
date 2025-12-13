@@ -274,11 +274,12 @@ export default class Presenter {
 
       // traits / statuses
       let ignoreStatuses = ['humanoid']
-      let lhsStatuses = lhs?.activeEffects?.map(e => e.name) || [];
+      let lhsStatuses = lhs?.activeEffects?.map(e => e.duration ? `${e.name} (${e.duration})` : e.name)
+        || [];
       lhsStatuses = lhsStatuses
           .map(s => s.toLowerCase())
           .filter(s => !ignoreStatuses.includes(s.toLowerCase()));
-      let rhsStatuses = rhs?.activeEffects?.map(e => e.name)
+      let rhsStatuses = rhs?.activeEffects?.map(e => e.duration ? `${e.name} (${e.duration})` : e.name)
         .concat(rhs?.traits) || [];
       rhsStatuses = rhsStatuses
           .map(s => s.toLowerCase())

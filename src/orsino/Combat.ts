@@ -4,7 +4,7 @@ import Presenter from "./tui/Presenter";
 import { Team } from "./types/Team";
 import { Roll } from "./types/Roll";
 import { Fighting } from "./rules/Fighting";
-import Events, { CombatEvent, StatusExpireEvent, RoundStartEvent, CombatEndEvent, FleeEvent, GameEvent, CombatantEngagedEvent, WaitEvent, NoActionsForCombatant, AllegianceChangeEvent, ItemUsedEvent, ActionEvent } from "./Events";
+import Events, { CombatEvent, StatusExpireEvent, RoundStartEvent, CombatEndEvent, FleeEvent, GameEvent, CombatantEngagedEvent, WaitEvent, NoActionsForCombatant, AllegianceChangeEvent, ItemUsedEvent, ActionEvent, ActedRandomly } from "./Events";
 import AbilityHandler, { Ability, AbilityEffect, StatusEffect } from "./Ability";
 import { Answers } from "inquirer";
 import { AbilityScoring } from "./tactics/AbilityScoring";
@@ -334,8 +334,9 @@ export default class Combat {
       // }
     }
 
+    let waitAction: Ability = { name: "Wait", type: "skill", description: "Skip your turn to wait and see what happens.", aspect: "physical", target: ["self"], effects: [] };
     choices.push({
-      value: { name: "Wait", type: "skill", description: "Skip your turn to wait and see what happens.", aspect: "physical", target: ["self"], effects: [] },
+      value: waitAction,
       name: "Wait (Skip your turn)",
       short: "Wait",
       disabled: false
@@ -348,7 +349,17 @@ export default class Combat {
     //   disabled: false
     // })
 
-    const action: Ability = await this.select(`Your turn, ${Presenter.minimalCombatant(combatant)} - what do you do?`, choices, combatant);
+    let action: Ability = waitAction;
+    let fx = await Fighting.gatherEffects(combatant);
+    if (fx.randomActions) {
+      await this.emit({ type: "actedRandomly", subject: combatant } as Omit<ActedRandomly, "turn">);
+      // pick a non-disabled action at random
+      let enabledChoices = choices.filter(c => !c.disabled);
+      let randomChoice = enabledChoices[Math.floor(Math.random() * enabledChoices.length)];
+      action = randomChoice.value as Ability;
+    } else {
+      action = await this.select(`Your turn, ${Presenter.minimalCombatant(combatant)} - what do you do?`, choices, combatant);
+    }
 
     if (action.name === "Flee") {
       let succeed = Math.random() < 0.5;
@@ -460,11 +471,20 @@ export default class Combat {
     }));
 
     // console.log(`${combatant.forename} rates abilities:`, scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`).join(", "));
+    scoredAbilities = scoredAbilities.filter(sa => sa.score > 0);
 
     scoredAbilities.sort((a, b) => b.score - a.score);
-    const action = scoredAbilities[
+    let action = scoredAbilities[
       Math.floor(Math.random() * Math.min(2, scoredAbilities.length))
     ]?.ability;
+
+    // if randomActions enabled, pick randomly from valid actions
+    let fx = await Fighting.gatherEffects(combatant);
+    if (fx.randomActions) {
+      const randomIndex = Math.floor(Math.random() * validAbilities.length);
+      await this.emit({ type: "actedRandomly", subject: combatant } as Omit<ActedRandomly, "turn">);
+      action = validAbilities[randomIndex];
+    }
 
     if (!action) {
       // this.note(`${Presenter.minimalCombatant(combatant)} has no valid actions and skips their turn.`);
@@ -670,6 +690,26 @@ export default class Combat {
         for (const status of combatant.activeEffects) {
           if (status.duration === 0) {
             expiryEvents.push({ type: "statusExpire", subject: combatant, effectName: status.name, turn: this.turnNumber });
+
+            if (status.effect.onExpire) {
+              let ctx = {
+                subject: combatant,
+                allies: this.teams.find(team => team.combatants.includes(combatant))?.combatants.filter(c => c !== combatant) || [],
+                enemies: this.teams.find(team => team.combatants.includes(combatant)) === this.teams[0] ? (this.teams[1].combatants) : (this.teams[0].combatants)
+              };
+              for (const effect of status.effect.onExpire as AbilityEffect[]) {
+                let target = AbilityHandler.resolveTarget(effect.target || "self", combatant, ctx.allies, ctx.enemies);
+                let { events } = await AbilityHandler.handleEffect(
+                  effect.description || 'status expire effect',
+                  effect,
+                  combatant,
+                  target,
+                  ctx,
+                  Commands.handlers(this.roller, this.teams.find(t => t.combatants.includes(combatant))!)
+                );
+                await this.emitAll(events, `Status effect ${status.name} expires`, combatant);
+              }
+            }
           }
         }
       }

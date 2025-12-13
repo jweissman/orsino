@@ -36,6 +36,7 @@ export class Template {
     }
 
     Deem.stdlib.mapGenList = async (type: GenerationTemplateType, items: any[], property: string) => {
+      // console.log(`mapGenList for type '${type}' over items:`, items);
       let results = [];
       // for (let item of items) {
       //   let index = items.indexOf(item);

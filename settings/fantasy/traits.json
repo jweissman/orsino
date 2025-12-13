@@ -967,9 +967,45 @@
       "effect": {
         "allRolls": 1,
         "toHit": 2,
-        "bonusDamage": 2,
+        "bonusDamage": 1,
         "resistNecrotic": 0.1,
         "saveVersusFear": 2
+      }
+    }]
+  },
+
+  "regeneration": {
+    "name": "Regeneration",
+    "type": "trait",
+    "description": "Regeneration",
+    "statuses": [{
+      "name": "Regeneration",
+      "description": "This creature regenerates health over time, allowing it to recover from wounds quickly.",
+      "effect": {
+        "resistPoison": 0.1,
+        "saveVersusStun": 2,
+        "onTurnEnd": [
+          {
+            "type": "heal",
+            "target": "self",
+            "amount": "=1d4"
+          }
+        ]
+      }
+    }]
+  },
+  "disciplined": {
+    "name": "Disciplined",
+    "type": "trait",
+    "description": "Disciplined",
+    "statuses": [{
+      "name": "Disciplined",
+      "description": "This creature has a disciplined mind and body, granting it enhanced focus and resilience.",
+      "effect": {
+        "toHit": 1,
+        "bonusDamage": 1,
+        "saveVersusMagic": 2,
+        "evasion": 3
       }
     }]
   }

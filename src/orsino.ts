@@ -120,7 +120,7 @@ export default class Orsino {
     const monsterTypes = await Deem.evaluate("gather(monsterTypeModifier)");
     for (const monsterType of monsterTypes) {
       let monster = await Generator.gen("monster", { setting: 'fantasy', monster_type: monsterType, ...options });
-      console.log(`\n=== ${monster.name} ===\n`);
+      // console.log(`\n=== ${monster.name} ===\n`);
       console.log(Presenter.characterRecord(monster as Combatant));
     }
   }

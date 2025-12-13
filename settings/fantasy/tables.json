@@ -265,14 +265,15 @@
   "npcRank": {
     "discriminator": "rank",
     "groups": {
-      "untested":  { "maxHp": 0,   "ac": 3 },
-      "rookie":    { "maxHp": 1,   "ac": 2 },
-      "seargeant": { "maxHp": 2,   "ac": 1 },
-      "captain":   { "maxHp": 3,  "ac": 0 },
-      "veteran":   { "maxHp": 5,  "ac": 0 },
-      "champion":  { "maxHp": 8,  "ac": -1 },
-      "elite":     { "maxHp": 13,  "ac": -2, "traits": ["formidable"] },
-      "legendary": { "maxHp": 21,  "ac": -3, "traits": ["formidable", "favored"] }
+      "grunt":     { "maxHp": 0,   "ac": 3 },
+      "untested":  { "maxHp": 1,   "ac": 2 },
+      "rookie":    { "maxHp": 2,   "ac": 2 },
+      "seargeant": { "maxHp": 3,   "ac": 1 },
+      "captain":   { "maxHp": 5,   "ac": 1 },
+      "veteran":   { "maxHp": 8,  "ac": 0 },
+      "champion":  { "maxHp": 13,  "ac": 0 },
+      "elite":     { "maxHp": 21,  "ac": -1, "traits": ["formidable"] },
+      "legendary": { "maxHp": 34,  "ac": -2, "traits": ["formidable", "favored"] }
     }
   },
   "npcType": {
@@ -509,14 +510,15 @@
       "Novice":       { "str": -1, "con": 0, "dex": -2, "int": 1, "wis": 1, "cha": -1, "abilities": ["rapid_strike", "paralyzing_touch"] },
       "Acolyte":      { "str": 0,  "con": 1, "wis": 2, "int": 1, "abilities": [ "heal", "rally", "bless", "paralyzing_touch" ], "traits": ["piety"] },
       "Cultist":      { "str": 1,  "con": 2, "int": 2, "abilities": [ "heal", "curse", "fear", "paralyzing_touch", "silence", "animate_dead" ], "traits": ["piety", "radiant"] },
-      "Adept":       { "str": 1,  "con": 2, "wis": 3, "int": 2, "abilities": [ "heal", "rally", "bless", "shocking_grasp", "paralyzing_touch" ], "traits": ["piety"] },
+      "Adept":       { "str": 1,  "con": 2, "wis": 3, "int": 2, "abilities": [ "heal", "rally", "bless", "shocking_grasp", "paralyzing_touch", "raise_dead" ], "traits": ["piety"] },
       "Gravedigger":  { "str": 0,  "con": 2, "dex": 2, "abilities": [ "rapid_strike", "hide", "dig_in" ] },
       "Bandit":       { "str": 2,  "con": 3, "dex": 2, "abilities": [ "prepare_charge", "charge", "hide", "backstab", "rapid_strike" ], "traits": ["stealthy"] },
       "Tombrobber":   { "str": 2,  "con": 3, "dex": 1, "int": -1, "wis": -1, "cha": 2, "abilities": ["rapid_strike", "hide"] },
-      "Necromancer":  { "str": 3,  "con": 4, "dex": 2, "int": 8, "abilities": [ "life_drain", "curse", "fear", "poison_cloud", "summon_undead", "raise_dead", "animate_dead" ], "traits": ["fiendish"] },
+      "Necromancer":  { "str": 3,  "con": 4, "dex": 2, "int": 8, "abilities": [ "life_drain", "curse", "fear", "poison_cloud", "summon_undead", "resurrect", "animate_dead" ], "traits": ["fiendish"] },
       "Cult Master": { "str": 4,  "con": 5, "dex": 2, "int": 6, "wis": 4, "cha": 4, "abilities": [ "life_drain", "curse", "fear", "poison_cloud", "mass_curse" ], "traits": ["fiendish"] },
       "Death Priest": { "str": 6, "con": 4, "int": 4, "dex": 2, "wis": 6, "abilities": [ "heal", "curse", "fear", "life_drain", "burning_hands" ], "traits": ["fiendish", "piety"] },
       "Wizard":      { "str": -1, "dex": -1, "int": 3, "con": 1, "abilities": [ "missile", "shocking_grasp", "sleep", "fireball", "lightning_strike", "summon_elemental", "slow", "armor" ] },
+      "Poxmonger":   { "str": -2, "dex": -2, "con": -1, "int": 2, "wis": 1, "cha": 2, "abilities": [ "poison_cloud", "pestilence" ] },
 
       "Herald":       { "str": -1, "dex": -1, "int": 1, "wis": -1, "cha": 2, "abilities": ["inspire"] },
       "Benefactor":   { "str": -1, "dex": -1, "int": 2, "wis": -1, "cha": 2, "abilities": ["cure"] },
@@ -601,12 +603,12 @@
   "npcWeapon": {
     "discriminator": "race",
     "groups": {
-      "human": [ "longsword", "handaxe", "light_mace", "spear", "pole_arm", "light_crossbow" ],
+      "human": [ "longsword", "handaxe", "light_mace", "spear", "pole_arm", "light_crossbow", "wakizashi", "pike", "voulge" ],
       "goblin": [ "dagger", "club", "javelin", "shortsword", "sling", "dart" ],
       "kobold": [ "spear", "club", "dagger", "halberd", "light_warhammer", "dart" ],
-      "orc": [ "battleaxe", "heavy_mace", "heavy_flail", "greatsword", "claymore", "heavy_crossbow" ],
-      "ogre": [ "club", "heavy_mace", "battleaxe", "trident", "heavy_crossbow" ],
-      "troll": [ "claws", "club", "scimitar", "morningstar", "heavy_crossbow" ],
+      "orc": [ "battleaxe", "heavy_mace", "heavy_flail", "greatsword", "claymore", "heavy_crossbow", "scythe" ],
+      "ogre": [ "club", "heavy_mace", "battleaxe", "trident", "heavy_crossbow", "heavy_chain" ],
+      "troll": [ "claws", "club", "scimitar", "morningstar", "heavy_crossbow", "bec_de_corbin" ],
       "dragon": [ "bite", "claws" ],
       "elf": [ "longsword", "dagger", "heavy_crossbow", "shortsword", "spear" ],
       "dwarf": [ "battleaxe", "light_warhammer", "heavy_crossbow" ],
@@ -732,6 +734,27 @@
       "mine": [ "cave", "cavern", "lair", "delve", "tunnel", "hollow" ]
     }
   },
+  "otherCombatEntityTypes": {
+    "discriminator": "building_type",
+    "groups": {
+      "temple": [["antimagic_ward", "barrier"]],
+      "fortress": [["turret", "barrier"]],
+      "library": [["barrier"]],
+      "tomb": [["bomb"]],
+      "mine": [["bomb"]]
+    }
+  },
+  "combatEntityAbilities": {
+    "discriminator": "entity_type",
+    "groups": {
+      "antimagic_ward": [["silence", "dispel_magic"]],
+      "barrier": [[]],
+      "turret": [["arrow_volley"]],
+      "bomb": [["detonation"]],
+      "phylactery": [["summon_undead", "life_drain", "lich_summoning_ritual"]]
+    }
+  },
+
   "roomBias": {
     "discriminator": "building_type",
     "groups": {
@@ -770,13 +793,11 @@
       ],
       "tomb": [[
         "crypt",
-        "crypt",
-        "chamber",
-        "chamber",
+        "ossuary",
+        "fane",
         "alcove",
-        "hall",
-        "corridor",
         "reliquary",
+        "mortuary_garden",
         "phylactery",
         "ritual_chamber",
         "dark_altar"
@@ -796,11 +817,9 @@
     "discriminator": "room_type",
     "groups": {
       "phylactery": {
-        "monster_type": "Lich",
-        "_monsterLevelDistribution": ["=#_targetCr"],
-        "_npcCount": 2,
+        "_otherCombatEntityTypes": ["phylactery"],
+        "_npcCount": 3,
         "npc_type": "Cultist",
-        "challenging": true,
         "_companionCount": 0,
         "_treasureItems": ["soul gem", "ring_of_protection", "staff of power", "cloak of invisibility"],
         "bonusGold": "10 + 6d100"
@@ -808,7 +827,6 @@
       "ritual_chamber": {
         "_npcCount": 4,
         "_npc_types": ["Cult Master", "Acolyte", "Acolyte", "Acolyte"],
-        "challenging": false,
         "_companionCount": 0,
         "_treasureItems": ["amulet_of_health", "wand_of_magic_missiles", "robe of the archmagi"],
         "bonusGold": "10 + 5d20"
@@ -816,10 +834,26 @@
       "dark_altar": {
         "_npcCount": 3,
         "_npc_types": ["Death Priest", "Adept", "Adept"],
-        "challenging": false,
         "_companionCount": 0,
         "_treasureItems": ["unholy symbol", "ring_of_regeneration", "staff of the necromancer"],
         "bonusGold": "10 + 4d10"
+      },
+      "mortuary_garden": {
+        "_npcCount": 2,
+        "_npc_types": ["Poxmonger"],
+        "_companionCount": 0,
+        "_treasureItems": ["scroll_of_cure_disease"],
+        "bonusGold": "5 + 2d10"
+      },
+      "ossuary": {
+        "monster_type": "Golem",
+        "substance": "bone",
+        "_monsterLevelDistribution": ["=#_targetCr"],
+        "_npcCount": 1,
+        "_npc_types": ["Gravedigger"],
+        "_companionCount": 0,
+        "_treasureItems": ["shovel", "pick"],
+        "bonusGold": "1d10"
       }
     }
   },
@@ -828,7 +862,8 @@
     "groups": {
       "phylactery": ["miasma"],
       "ritual_chamber": ["cold"],
-      "dark_altar": ["evil"]
+      "dark_altar": ["evil"],
+      "mortuary_garden": ["calm"]
     }
   },
   "roomAuras": {
@@ -864,6 +899,15 @@
   "roomNarrative": {
     "discriminator": "type",
     "groups": {
+      "fane": [
+        "ancient fane, the air thick with the scent of incense. The walls are adorned with faded murals depicting long-forgotten deities."
+      ],
+      "ossuary": [
+        "ancient ossuary, the air thick with the scent of decay. Rows of skeletal remains line the walls, and a sense of unease lingers."
+      ],
+      "mortuary_garden": [
+        "overgrown mortuary garden, the air thick with the scent of decaying flowers. Cracked statues and broken fountains dot the landscape, and a sense of sorrow lingers."
+      ],
       "phylactery": [
         "dark phylactery chamber, the air thick with malevolent energy. The walls are adorned with ancient runes, and a sinister energy emanates from the center."
       ],
@@ -1552,41 +1596,76 @@
   "creatureAspects": {
     "discriminator": "type",
     "groups": {
-      "agile":      { "dex": 2 },
-      "nimble":     { "dex": 3, "abilities": [ "hide" ] },
-      "sturdy":     { "con": 2 },
-      "swift":      { "dex": 4 },
-      "vicious":    { "str": 4, "dex": 1, "abilities": [ "maul" ] },
-      "ferocious":  { "str": 3, "dex": 1, "abilities": [ "prepare_charge", "charge" ] },
-      "cunning":    { "wis": 3, "dex": 2, "int": 1, "abilities": [ "hide" ] },
+      "agile":      { "dex": 1, "wis": 1 },
+      "nimble":     { "dex": 2 },
+      "sturdy":     { "con": 1, "wis": 1 },
+      "swift":      { "dex": 3, "con": -1 },
+      "vicious":    { "str": 3, "dex": -1 },
+      "ferocious":  { "str": 2, "dex": -1, "con": 1 },
+      "cunning":    { "wis": 2, "dex": -1, "int": 1 },
 
-      "curious":    { "int": 4, "wis": 3, "cha": 2 },
-      "forgotten":  { "int": 1, "wis": 1, "con": -1, "abilities": [ "hide" ] },
-      "cruel":      { "str": 2, "int": -1, "cha": -2, "abilities": [ "enrage" ] },
-      "beloved":    { "cha": 3, "wis": 2, "abilities": [ "inspire", "charm" ] },
-      "dread":      { "cha": 3, "abilities": [ "maul", "enrage" ] },
-      "terrifying": { "cha": 3, "abilities": [ "fear" ] },
-      "mysterious": { "int": 2, "wis": 2, "abilities": [ "hide" ] },
-      "savage":     { "str": 3, "int": -1, "abilities": [ "prepare_charge", "charge" ] },
+      "curious":    { "int": 2, "wis": 2, "cha": -1 },
+      "forgotten":  { "int": 2, "wis": 1, "cha": 1, "con": -1 },
+      "cruel":      { "str": 3, "int": 1, "cha": -1 },
+      "beloved":    { "cha": 4, "wis": -1 },
+      "dread":      { "cha": 3, "str": 2, "con": -1 },
+      "terrifying": { "cha": 4, "str": 1 },
+      "mysterious": { "int": 2, "wis": 2, "cha": 2 },
+      "savage":     { "str": 3, "int": -1, "dex": 1 },
 
-      "alpha":      { "str": 2, "dex": 1, "con": 1, "int": 1 },
-      "venomous":   { "abilities": [ "poison_bite" ] },
-      "sacred":     { "wis": 3, "cha": 2, "abilities": [ "inspire" ] },
-      "cursed":     { "wis": 3, "int": 2, "abilities": [ "fear" ] },
-      "blessed":    { "cha": 2, "abilities": [ "inspire" ] },
-      "noble":      { "str": 2, "cha": 3, "abilities": [ "inspire", "charm" ] },
-      "majestic":   { "str": 3, "con": 2, "cha": 3, "abilities": [ "inspire", "bless" ] },
+      "alpha":      { "str": 2, "dex": 1, "con": 1, "int": 1, "wis": 1, "cha": 1 },
+      "venomous":   { "dex": 2, "con": 2 },
+      "sacred":     { "wis": 3, "cha": 2 },
+      "cursed":     { "wis": 3, "int": 2, "cha": -2 },
+      "blessed":    { "cha": 2 },
+      "noble":      { "str": 2, "cha": 3 },
+      "majestic":   { "str": 3, "con": 2, "cha": 3 },
 
-      "dauntless":  { "str": 3, "con": 2, "abilities": [ ] },
-      "primal":     { "str": 4, "dex": 1, "con": 2, "abilities": [ "maul", "enrage" ] },
-      "apex":       {  "str": 3, "dex": 2, "con": 2, "int": 1,  "abilities": [ "prepare_charge", "charge", "maul" ] },
-      "sovereign":  {  "str": 4, "con": 3, "wis": 2, "cha": 2, "abilities": [ "inspire", "fear" ] },
+      "dauntless":  { "str": 3, "con": 2, "wis": 1, "cha": 1 },
+      "primal":     { "str": 4, "dex": 1, "con": 2, "wis": 1 },
+      "apex":       { "str": 3, "dex": 2, "con": 2, "int": 1 },
+      "sovereign":  { "str": 4, "con": 3, "wis": 2, "cha": 2 },
 
-      "ancient":    {  "str": 2, "con": 2, "int": 3, "wis": 3, "abilities": [ "second_wind", "inspire"] },
-      "warped":     {  "str": -2, "int": 2, "con": -2, "dex": 2, "wis": -2, "cha": 2, "abilities": [ "charm", "enrage", "maul", "fear", "poison_bite" ] },
-      "giant":      {  "str": 6, "dex": -2, "wis": 2, "con": 2, "abilities": [ "maul" ] }
+      "ancient":    { "str": 2, "con": 2, "int": 3, "wis": 3, "cha": 2 },
+      "warped":     { "str": -2, "int": 2, "con": -2, "dex": 2, "wis": -2, "cha": 2 },
+      "giant":      { "str": 6, "dex": -2, "wis": 2, "con": 2 }
     }
   },
+  "creatureAspectAbilities": {
+    "discriminator": "type",
+    "groups": {
+      "agile": ["dodge"],
+      "nimble": ["hide"],
+      "sturdy": ["second_wind"],
+      "swift": ["rapid_strike"],
+      "vicious": ["maul"],
+      "ferocious": ["prepare_charge", "charge"],
+      "cunning": ["hide"],
+      "curious": [],
+      "forgotten": ["hide"],
+      "cruel": ["enrage", "vicious_mockery"],
+      "beloved": ["inspire", "charm"],
+      "dread": ["maul", "enrage"],
+      "terrifying": ["fear"],
+      "mysterious": ["confuse"],
+      "savage": ["prepare_charge", "charge"],
+      "alpha": ["taunt", "smash"],
+      "venomous": ["poison_bite"],
+      "sacred": ["inspire"],
+      "cursed": ["fear"],
+      "blessed": ["inspire"],
+      "noble": ["inspire", "charm"],
+      "majestic": ["inspire", "bless"],
+      "dauntless": ["second_wind", "rally"],
+      "primal": ["maul", "enrage"],
+      "apex": ["prepare_charge", "charge", "maul"],
+      "sovereign": ["inspire", "fear"],
+      "ancient": ["second_wind", "inspire"],
+      "warped": ["charm", "enrage", "maul", "fear", "poison_bite"],
+      "giant": ["maul"]
+    }
+  },
+
   "monsterKind": {
     "discriminator": "monster_type",
     "groups": {
@@ -1602,31 +1681,117 @@
     }
   },
 
+  "monsterTypeClass": {
+    "discriminator": "monster_type",
+    "groups": {
+      "Titan": "giant",
+      "Behemoth": "giant",
+      "Colossus": "giant",
+      "Lich": "undead",
+      "Vampire": "undead",
+      "Wraith": "undead",
+      "Banshee": "undead",
+      "Balor": "demon",
+      "Marilith": "demon",
+      "Fiend": "demon",
+      "Sprite": "elemental",
+      "Spirit": "elemental",
+      "Ifrit": "elemental",
+      "Ooze": "elemental",
+      "Mind Destroyer": "aberration",
+      "Discerner": "aberration",
+      "Mouther": "aberration",
+      "Golem": "construct",
+      "Automaton": "construct",
+      "Clockwork Soldier": "construct",
+      "Angel": "celestial",
+      "Archon": "celestial",
+      "Deva": "celestial",
+      "Solar": "celestial",
+      "Dryad": "fey",
+      "Satyr": "fey",
+      "Nymph": "fey",
+      "Pixie": "fey",
+      "Owlbear": "beast",
+      "Nightmare": "beast",
+      "Wendigo": "beast",
+      "Chimera": "beast"
+    }
+  },
+
   "monsterTypeModifier": {
     "discriminator": "monster_type",
     "groups": {
-      "Titan": { "str": 6, "con": 4, "maxHp": 60, "abilities": [ "earthquake", "maul" ], "traits": [ "formidable"], "class": "giant" },
-      "Behemoth": { "str": 5, "con": 3, "maxHp": 50, "abilities": [ "stomp", "dig_in", "maul" ], "traits": [ "formidable"], "class": "giant" },
-      "Colossus": { "str": 4, "con": 2, "maxHp": 40, "abilities": [ "smash", "maul" ], "traits": [ "formidable"], "class": "giant" },
-      "Lich": { "int": 6, "wis": 3, "maxHp": 80, "abilities": [ "life_drain", "curse", "fear" ], "traits": [ "formidable"], "class": "undead" },
-      "Vampire": { "dex": 4, "cha": 5, "maxHp": 70, "abilities": [ "charm", "life_drain" ], "traits": [ "regeneration"], "class": "undead" },
-      "Wraith": { "dex": 5, "wis": 4, "maxHp": 60, "abilities": [ "fear", "curse" ], "traits": [ "incorporeal"], "class": "undead" },
-      "Banshee": { "cha": 6, "wis": 4, "maxHp": 50, "abilities": [ "fear", "curse" ], "traits": [ "incorporeal"], "class": "undead" },
-      "Balor": { "str": 5, "dex": 4, "con": 4, "maxHp": 70, "abilities": [ "mass_curse", "curse" ], "traits": [ "fiendish"], "class": "demon" },
-      "Marilith": { "str": 4, "dex": 5, "con": 3, "maxHp": 60, "abilities": [ "rapid_strike", "curse" ], "traits": [ "fiendish"], "class": "demon" },
-      "Fiend": { "str": 3, "dex": 3, "con": 3, "maxHp": 50, "abilities": [ "curse" ], "traits": ["fiendish"], "class": "demon" },
-      "Sprite": { "dex": 6, "cha": 4, "maxHp": 40, "abilities": [ "hide", "missile" ],  "class": "elemental" },
-      "Spirit": { "wis": 5, "int": 4, "maxHp": 50, "abilities": [ "slow", "paralyzing_touch", "hide" ], "traits": [  "incorporeal"], "class": "elemental" },
-      "Ifrit": { "str": 4, "dex": 5, "con": 4, "maxHp": 60, "abilities": [ "fireball", "burning_hands" ],"class": "elemental" },
-      "Ooze": { "con": 6, "maxHp": 70, "abilities": [ "engulf", "acid_arrow" ],  "class": "elemental" },
-      "Mind Destroyer": { "int": 6, "wis": 5, "maxHp": 60, "abilities": [ "psionic_blast", "charm" ], "class": "aberration" },
-      "Discerner": { "int": 5, "wis": 6, "maxHp": 50, "abilities": [ "confuse", "charm", "flesh_to_stone", "paralyzing_touch", "sleep", "fear", "curse" ], "class": "aberration" },
-      "Mouther": { "con": 5, "maxHp": 70, "abilities": [ "acid_spray", "psionic_blast" ], "class": "aberration" },
-      "Golem": { "str": 6, "con": 6, "maxHp": 80, "abilities": [ "defend", "smash" ], "class": "construct" },
-      "Automaton": { "str": 4, "dex": 4, "con": 4, "maxHp": 70, "abilities": [ "rapid_strike", "defend" ], "class": "construct" },
-      "Clockwork Soldier": { "str": 5, "con": 5, "maxHp": 75, "abilities": [ "defend", "smash" ],"class": "construct" },
-      "Angel": { "str": 4, "dex": 4, "wis": 5, "cha": 6, "maxHp": 70, "abilities": [ "smite", "inspire" ],"class": "celestial" },
-      "Archon": { "str": 5, "dex": 5, "wis": 4, "cha": 5, "maxHp": 65, "abilities": [ "smite", "defend" ], "class": "celestial" }
+      "Titan": { "str": 8, "con": 6, "traits": [ "formidable"] },
+      "Behemoth": { "str": 5, "con": 3, "traits": [ "formidable"] },
+      "Colossus": { "str": 4, "con": 2, "traits": [ "formidable"] },
+      "Lich": { "con": 10, "int": 6, "wis": 3, "traits": ["formidable", "fiendish", "skeletal"] },
+      "Vampire": { "dex": 4, "cha": 5, "traits": ["regeneration"] },
+      "Wraith": { "dex": 5, "wis": 4, "traits": ["incorporeal"] },
+      "Banshee": { "cha": 6, "wis": 4, "traits": ["incorporeal"] },
+      "Balor": { "str": 5, "dex": 4, "con": 4 },
+      "Marilith": { "str": 4, "dex": 5, "con": 3 },
+      "Fiend": { "str": 3, "dex": 3, "con": 3 },
+      "Sprite": { "dex": 6, "cha": 4 },
+      "Spirit": { "wis": 5, "int": 4, "traits": ["incorporeal"]},
+      "Ifrit": { "str": 4, "dex": 5, "con": 4, "element": "fire"},
+      "Ooze": { "con": 6 },
+      "Mind Destroyer": { "int": 6, "wis": 5 },
+      "Discerner": { "int": 5, "wis": 6 },
+      "Mouther": { "con": 5, "int": 4, "wis": 3, "traits": ["regeneration"] },
+      "Golem": { "str": 4, "con": 3, "dex": -2 },
+      "Automaton": { "str": 3, "dex": -1, "con": 2 },
+      "Clockwork Soldier": { "str": 3, "con": 3, "dex": -1, "traits": ["disciplined"] },
+      "Angel": { "str": 4, "dex": 4, "wis": 5, "cha": 6, "traits": ["formidable", "piety"] },
+      "Archon": { "str": 5, "dex": 5, "wis": 4, "cha": 5 },
+      "Deva": { "str": 4, "dex": 4, "wis": 6, "cha": 5, "traits": ["formidable"] },
+      "Solar": { "str": 6, "dex": 5, "wis": 5, "cha": 6, "traits": ["formidable"] },
+      "Dryad": { "dex": 5, "cha": 5 },
+      "Satyr": { "dex": 4, "cha": 4 },
+      "Nymph": { "cha": 6, "wis": 4 },
+      "Pixie": { "dex": 6, "cha": 5 },
+      "Owlbear": { "str": 5, "con": 4 },
+      "Nightmare": { "str": 4, "dex": 5, "con": 4 },
+      "Wendigo": { "str": 6, "con": 5 },
+      "Chimera": { "str": 5, "dex": 4, "con": 4 }
+    }
+  },
+
+  "monsterTypeAbilities": {
+    "discriminator": "monster_type",
+    "groups": {
+      "Titan": [ "earthquake", "maul" ],
+      "Behemoth": [ "stomp", "dig_in", "maul" ],
+      "Colossus": [ "smash", "maul" ],
+      "Lich": [ "life_drain", "curse", "fear", "summon_undead", "death" ],
+      "Vampire": [ "charm", "life_drain" ],
+      "Wraith": [ "fear", "curse" ],
+      "Banshee": [ "fear", "curse" ],
+      "Balor": [ "mass_curse", "curse" ],
+      "Marilith": [ "rapid_strike", "curse" ],
+      "Fiend": [ "curse" ],
+      "Sprite": [ "hide", "missile" ],
+      "Spirit": [ "slow", "paralyzing_touch", "hide" ],
+      "Ifrit": [ "fireball", "burning_hands" ],
+      "Ooze": [ "engulf"],
+      "Mind Destroyer": [ "psionic_blast", "command", "confuse" ],
+      "Discerner": [ "confuse", "charm", "flesh_to_stone", "paralyzing_touch", "sleep", "fear", "curse" ],
+      "Mouther": [ "acid_spray", "psionic_blast" ],
+      "Golem": [ "defend", "smash" ],
+      "Automaton": [ "rapid_strike", "defend" ],
+      "Clockwork Soldier": [ "defend", "smash" ],
+      "Angel": [ "smite", "inspire" ],
+      "Archon": [ "smite", "defend" ],
+      "Deva": [ "smite", "inspire" ],
+      "Solar": [ "smite", "inspire", "rally" ],
+      "Dryad": [ "charm", "summon_animal" ],
+      "Satyr": [ "charm", "hide" ],
+      "Nymph": [ "charm", "summon_animal" ],
+      "Pixie": [ "charm", "hide", "confuse" ],
+      "Owlbear": [ "maul", "stomp" ],
+      "Nightmare": [ "charge", "maul", "fear" ],
+      "Wendigo": [ "maul", "life_drain" ],
+      "Chimera": [ "fireball", "maul", "lightning_strike" ]
     }
   },
 
@@ -1634,11 +1799,11 @@
     "discriminator": "monster_type",
     "groups": {
       "beast": 6,
-      "undead": 9,
+      "undead": 8,
+      "construct": 9,
       "fey": 10 ,
       "demon": 11,
       "elemental": 12,
-      "construct": 13,
       "celestial": 14,
       "aberration": 16,
       "giant": 18
@@ -1647,15 +1812,44 @@
   "monsterStat": {
     "discriminator": "monster_type",
     "groups": {
-      "giant":      { "hp": 45, "str": 4,  "dex": -2, "con": 3,  "int": -2, "wis": 0, "cha": -1 },
-      "beast":      { "hp": 10, "str": 2,  "dex": 1,  "con": 1,  "int": -2, "wis": 0, "cha": -1 },
-      "undead":     { "hp": 15, "str": 0,  "dex": 0,  "con": -2, "int": 2,  "wis": 1, "cha": -3 },
-      "demon":      { "hp": 18, "str": 4,  "dex": 2,  "con": 2,  "int": 1,  "wis": 0, "cha": -2 },
-      "elemental":  { "hp": 12, "str": 0,  "dex": 3,  "con": 0,  "int": 0,  "wis": 1, "cha": 0 },
-      "aberration": { "hp": 26, "str": 2,  "dex": 1,  "con": 2,  "int": 3,  "wis": 1, "cha": -2 },
-      "construct":  { "hp": 14, "str": 3,  "dex": -1, "con": 4,  "int": 0,  "wis": 0, "cha": -1 },
-      "celestial":  { "hp": 18, "str": 2,  "dex": 1,  "con": 2,  "int": 1,  "wis": 3, "cha": 2 },
-      "fey":        { "hp": 10, "str": -1, "dex": 2,  "con": 0,  "int": 1,  "wis": 2, "cha": 3 }
+      "construct":  { "hp": 4, "str": 3,  "dex": -1, "con": 4,  "int": 0,  "wis": 0, "cha": -1 },
+      "beast":      { "hp": 8,  "str": 6,  "dex": 2,  "con": 1,  "int": -4, "wis": -4, "cha": -4 },
+      "undead":     { "hp": 9, "str": 0,  "dex": 0,  "con": -2, "int": 2,  "wis": 1, "cha": -3 },
+      "fey":        { "hp": 12, "str": -1, "dex": 2,  "con": 0,  "int": 1,  "wis": 2, "cha": 3 },
+      "elemental":  { "hp": 14, "str": 0,  "dex": 3,  "con": 0,  "int": 0,  "wis": 1, "cha": 0 },
+      "demon":      { "hp": 16, "str": 4,  "dex": 2,  "con": 2,  "int": 1,  "wis": 0, "cha": -2 },
+      "celestial":  { "hp": 20, "str": 2,  "dex": 1,  "con": 2,  "int": 1,  "wis": 3, "cha": 2 },
+      "aberration": { "hp": 24, "str": 2,  "dex": 1,  "con": 2,  "int": 3,  "wis": 1, "cha": -2 },
+      "giant":      { "hp": 28, "str": 4,  "dex": -2, "con": 3,  "int": -2, "wis": 0, "cha": -1 }
+    }
+  },
+
+  "monsterRank": {
+    "discriminator": "rank",
+    "groups": {
+      "lesser":   { "maxHp": 1, "ac": 1 },
+      "minor":    { "maxHp": 2, "ac": 1 },
+      "standard": { "maxHp": 3, "ac": 0 },
+      "greater":  { "maxHp": 5, "ac": 0 },
+      "major":    { "maxHp": 8, "ac": -1 },
+      "champion": { "maxHp": 13, "ac": -1 },
+      "epic":     { "maxHp": 21, "ac": -2 },
+      "legendary":{ "maxHp": 34, "ac": -2 }
+    }
+  },
+
+  "monsterHome": {
+    "discriminator": "monster_type",
+    "groups": {
+      "celestial": [ "heavens" ],
+      "demon": [ "abyss" ],
+      "aberration": [ "void" ],
+      "undead": [ "crypt", "ruins" ],
+      "construct": [ "factory", "workshop" ],
+      "elemental": [ "elemental_plane" ],
+      "giant": [ "mountains", "hills", "caves" ],
+      "fey": [ "forest" ],
+      "beast": [ "wilderness" ]
     }
   },
 
@@ -1808,6 +2002,18 @@
       ]
     }
   },
+  "golemSubstances": {
+    "discriminator": "golem_type",
+    "groups": {
+      "clay": { "con": 2, "dex": -1 },
+      "stone": { "con": 3, "dex": -2 },
+      "iron": { "con": 4, "dex": -3, "str": 1 },
+      "wood": { "con": 1, "dex": 0, "str": -1 },
+      "gold": { "con": 5, "dex": -4, "str": 2 },
+      "bone": { "con": 2, "dex": -1, "str": 1 },
+      "crystal": { "con": 3, "dex": -2, "int": 1 }
+    }
+  },
   "monsterWeapon": {
     "discriminator": "monster_type",
     "groups": {
@@ -1830,7 +2036,7 @@
       "demon": 1,
       "elemental": 3,
       "aberration": 2,
-      "construct": 4,
+      "construct": 3,
       "celestial": 2,
       "fey": 1,
       "beast": 1
