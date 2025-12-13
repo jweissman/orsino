@@ -121,7 +121,7 @@ export default class Orsino {
     for (const monsterType of monsterTypes) {
       let monster = await Generator.gen("monster", { setting: 'fantasy', monster_type: monsterType, ...options });
       // console.log(`\n=== ${monster.name} ===\n`);
-      console.log(Presenter.characterRecord(monster as Combatant));
+      console.log(await Presenter.characterRecord(monster as Combatant));
     }
   }
 }

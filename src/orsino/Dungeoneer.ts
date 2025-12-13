@@ -4,12 +4,11 @@ import Presenter from "./tui/Presenter";
 import { Combatant } from "./types/Combatant";
 import { Select } from "./types/Select";
 import Words from "./tui/Words";
-import Stylist from "./tui/Style";
 import Deem from "../deem";
 import Files from "./util/Files";
 import { Fighting } from "./rules/Fighting";
 import { Roll } from "./types/Roll";
-import Events, { DungeonEvent } from "./Events";
+import Events, { DungeonEvent, EquipmentWornEvent } from "./Events";
 import { Commands } from "./rules/Commands";
 import CharacterRecord from "./rules/CharacterRecord";
 import AbilityHandler, { Ability, StatusEffect } from "./Ability";
@@ -137,7 +136,7 @@ export default class Dungeoneer {
 
   protected async emit(event: DungeonEvent) {
     this.journal.push(event);
-    this.note(Events.present(event));
+    this.note(await Events.present(event));
 
     await Events.appendToLogfile(event);
   }
@@ -158,7 +157,7 @@ export default class Dungeoneer {
     if (!this.dungeon) {
       await this.setUp();
     }
-    // this.presentCharacterRecords();
+    await this.presentCharacterRecords();
 
     await this.emit({
       type: "enterDungeon",
@@ -237,12 +236,10 @@ export default class Dungeoneer {
     return { actor, success: total >= dc };
   }
 
-  presentCharacterRecords(): void {
-    console.log("Your party:");
-    this.playerTeam.combatants.forEach(c => {
-      console.log(Presenter.minimalCombatant(c));
-      Presenter.printCharacterRecord(c);
-    });
+  async presentCharacterRecords(): Promise<void> {
+    for (const c of this.playerTeam.combatants) {
+      await Presenter.printCharacterRecord(c);
+    }
   }
 
   static dataPath = "./data"; // path.resolve(process.cwd() + "/data");
@@ -447,7 +444,7 @@ export default class Dungeoneer {
       let choice = await this.select("What would you like to do?", options);
       if (choice === "status") {
         for (const c of this.playerTeam.combatants) {
-          Presenter.printCharacterRecord(c);
+          await Presenter.printCharacterRecord(c);
         }
         this.outputSink(`Inventory:`);
         for (const [itemName, qty] of Object.entries(Inventory.quantities(this.playerTeam.inventory))) {
@@ -587,7 +584,7 @@ export default class Dungeoneer {
               actor.loot = actor.loot || [];
               actor.loot.push(maybeOldItem);
             }
-            await this.emit({ type: "equipmentWorn", itemName: item, slot });
+            await this.emit({ type: "equipmentWorn", itemName: item, slot, subject: actor } as EquipmentWornEvent);
           } else {
             // add to combatant.loot
             actor.loot = actor.loot || [];

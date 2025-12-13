@@ -2202,6 +2202,34 @@
       }
     ]
   },
+  "inflict_disease": {
+    "name": "Inflict Disease",
+    "type": "spell",
+    "level": 2,
+    "aspect": "dark",
+    "description": "Inflict a debilitating disease on an enemy, causing them to take 1d4 necrotic damage at the end of each of their turns.",
+    "target": [ "enemy" ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Diseased",
+          "effect": {
+            "con": -2,
+            "onTurnEnd": [
+              {
+                "type": "damage",
+                "amount": "=1d4",
+                "kind": "necrotic"
+              }
+            ]
+          }
+        },
+        "saveType": "fortitude",
+        "saveDC": 16
+      }
+    ]
+  },
   "pestilence": {
     "name": "Pestilence",
     "type": "spell",
@@ -2221,6 +2249,7 @@
         "status": {
           "name": "Diseased",
           "effect": {
+            "con": -2,
             "onTurnEnd": [
               {
                 "type": "damage",

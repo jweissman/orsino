@@ -1,4 +1,4 @@
-import { DamageKind } from "./Ability";
+import { DamageKind, StatusEffect } from "./Ability";
 import { never } from "./util/never";
 import Presenter from "./tui/Presenter";
 import Stylist from "./tui/Style";
@@ -21,7 +21,7 @@ export type CombatantEngagedEvent = BaseEvent & { type: "engage" };
 
 export type CombatEndEvent = BaseEvent & { type: "combatEnd"; winner: string };
 
-export type RoundStartEvent = BaseEvent & { type: "roundStart", combatants: Combatant[], parties: Team[]; environment?: string };
+export type RoundStartEvent = BaseEvent & { type: "roundStart", combatants: Combatant[], parties: Team[]; environment?: string, auras: StatusEffect[] };
 export type TurnStartEvent = BaseEvent & { type: "turnStart", combatants: Combatant[] };
 
 export type HitEvent = BaseEvent & { type: "hit"; damage: number; success: boolean; critical: boolean; by: string; damageKind: DamageKind };
@@ -132,6 +132,8 @@ export type RumorHeardEvent    = BaseModuleEvent & { type: "rumorHeard"; rumor: 
 export type TempleVisitedEvent = BaseModuleEvent & { type: "templeVisited"; templeName: string; blessingsGranted: string[]; itemsRecharged: string[]; };
 export type CampaignStopEvent  = BaseModuleEvent & { type: "campaignStop"; reason: string; at: Timestamp; };
 export type PartyOverviewEvent = BaseModuleEvent & { type: "partyOverview"; pcs: Combatant[];  itemQuantities: { [itemName: string]: number }; };
+export type HirelingOfferedEvent = BaseModuleEvent & { type: "hirelingOffered"; hireling: Combatant; cost: number; };
+export type HirelingHiredEvent = BaseModuleEvent & { type: "hirelingHired"; hireling: Combatant; cost: number; };
 
 export type ModuleEvent =
   | CampaignStartEvent
@@ -141,12 +143,14 @@ export type ModuleEvent =
   | RumorHeardEvent
   | TempleVisitedEvent
   | PartyOverviewEvent
+  | HirelingOfferedEvent
+  | HirelingHiredEvent
   | CampaignStopEvent
 
 export type GameEvent = CombatEvent | DungeonEvent | ModuleEvent
 
 export default class Events {
-  static present(event: GameEvent): string {
+  static async present(event: GameEvent): Promise<string> {
     let subjectName = event.subject ? event.subject.forename : null;
     let targetName = event.target ? event.target.forename : null;
     switch (event.type) {
@@ -229,8 +233,9 @@ export default class Events {
         let roundLabel = ("Round " + event.turn.toString()).padEnd(20) + Stylist.colorize(event.environment?.padStart(60) || "Unknown Location", 'cyan');
         let parties = Presenter.parties(event.parties || []);
         let hr = "=".repeat(80);
+        let auras = event.auras?.length > 0 ? "Auras:\n" + event.auras.map(aura => `- ${Stylist.colorize(aura.name, 'magenta')} (${aura.description})`).join("\n") : "No active auras.";
 
-        return `${hr}\n${roundLabel}\n${hr}\n${parties}`;
+        return `${hr}\n${roundLabel}\n${hr}\n${parties}\n\n${auras}`;
       case "turnStart":
         // let heading = `It's ${subject}'s turn!`;
         // let combatants = event.combatants.map(c => `\n- ${Presenter.combatant(c)}`).join("");
@@ -291,7 +296,7 @@ export default class Events {
         return "";
 
       case "resist":
-        return `${subjectName} resists ${event.finalDamage} ${event.damageKind} damage (originally ${event.originalDamage}) due to ${event.sources.join(", ")}.`;
+        return `${subjectName} resists, taking ${event.finalDamage} ${event.damageKind} damage (originally ${event.originalDamage}) due to ${event.sources.join(", ")}.`;
 
       case "vulnerable":
         return `${subjectName} is vulnerable and takes ${event.finalDamage} ${event.damageKind} damage (originally ${event.originalDamage}) due to ${event.sources.join(", ")}.`;
@@ -341,11 +346,20 @@ export default class Events {
         }
         return templeMessage;
       case "partyOverview":
+        let records = [];
+        for (let pc of event.pcs) {
+          records.push(await Presenter.characterRecord(pc));
+        }
         return Stylist.bold(`Party Overview:\n${
-          event.pcs.map(pc => Presenter.characterRecord(pc)).join("\n\n")
+          // event.pcs.map(pc => Presenter.characterRecord(pc)).join("\n\n")
+          records.join("\n\n")
         }\n\nInventory:\n${
           Object.entries(event.itemQuantities).map(([itemName, qty]) => `- ${qty} x ${Words.humanize(itemName)}`).join("\n")
         }`);
+      case "hirelingOffered":
+        return `A hireling is available: ${await Presenter.characterRecord(event.hireling)} for ${event.cost} gold per month.`;
+      case "hirelingHired":
+        return `${event.hireling.forename} has joined your party as a hireling for ${event.cost} gold per month.`;
       case "campaignStop":
         return Stylist.bold(`Campaign ended: ${event.reason || `at ${event.at}`}`);
       default:
@@ -358,7 +372,7 @@ export default class Events {
     if (Orsino.environment === 'test') {
       logFilename = `log/game-${new Date().toISOString().split('T')[0]}.test.txt`;
     }
-    let logMessage = Events.present(event);
+    let logMessage = await Events.present(event);
     // strip ANSI codes
     logMessage = logMessage.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
     if (!logMessage || logMessage.trim() === '') {

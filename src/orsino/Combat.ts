@@ -58,8 +58,9 @@ export default class Combat {
     let e: CombatEvent = { ...event, turn: this.turnNumber } as CombatEvent;
     this.journal.push(e);
 
-    if (Events.present(e) !== "") {
-      this._note(prefix + Events.present(e));
+    let presentedEvent = await Events.present(e);
+    if (presentedEvent !== "") {
+      this._note(prefix + presentedEvent);
     }
 
     let bark = await Bark.lookup(event);
@@ -107,6 +108,34 @@ export default class Combat {
     }, this.living(combatants)[0]);
   }
 
+  static async reifyTraits(combatant: Combatant): Promise<void> {
+    let traitHandler = TraitHandler.instance;
+    await traitHandler.loadTraits();
+    combatant.traits.forEach(traitName => {
+      const trait = traitHandler.getTrait(traitName);
+      if (trait) {
+        combatant.passiveEffects ||= [];
+        if (trait.statuses) {
+          for (const status of trait.statuses) {
+            if (!combatant.passiveEffects?.map(e => e.name).includes(status.name)) {
+              combatant.passiveEffects.push(status);
+            }
+          }
+        }
+
+        if (trait.abilities) {
+          for (const ability of trait.abilities || []) {
+            if (!combatant.abilities.includes(ability)) {
+              combatant.abilities.push(ability);
+            }
+          }
+        }
+      }
+    });
+  }
+
+  private auras: StatusEffect[] = [];
+
   async setUp(
     teams = Combat.defaultTeams(),
     environment = 'Dungeon | Room -1',
@@ -117,6 +146,7 @@ export default class Combat {
     this.winner = null;
     this.teams = teams;
     this.environmentName = environment;
+    this.auras = auras;
     this.dry = dry;
     for (let c of this.allCombatants) {
       c.abilitiesUsed = [];
@@ -127,29 +157,7 @@ export default class Combat {
       c.passiveEffects = [];
       c.traits = c.traits || [];
 
-      let traitHandler = TraitHandler.instance;
-      await traitHandler.loadTraits();
-      c.traits.forEach(traitName => {
-        const trait = traitHandler.getTrait(traitName);
-        if (trait) {
-          c.passiveEffects ||= [];
-          if (trait.statuses) {
-            for (const status of trait.statuses) {
-              if (!c.passiveEffects?.map(e => e.name).includes(status.name)) {
-                c.passiveEffects.push(status);
-              }
-            }
-          }
-
-          if (trait.abilities) {
-            for (const ability of trait.abilities || []) {
-              if (!c.abilities.includes(ability)) {
-                c.abilities.push(ability);
-              }
-            }
-          }
-        }
-      });
+      await Combat.reifyTraits(c);
 
       // apply auras
       c.activeEffects ||= [];
@@ -660,7 +668,8 @@ export default class Combat {
       type: "roundStart",
       combatants: Combat.living(this.combatantsByInitiative.map(c => ({ ...c.combatant, friendly: this.teams[0].combatants.includes(c.combatant) }))),
       parties: this.teams,
-      environment: this.environmentName
+      environment: this.environmentName,
+      auras: this.auras
     } as Omit<RoundStartEvent, "turn">);
 
     for (const { combatant } of this.combatantsByInitiative) {

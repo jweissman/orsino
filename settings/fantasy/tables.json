@@ -121,6 +121,12 @@
         "wis": 1,
         "cha": -2,
         "gp": 5
+      },
+      "hireling": {
+        "str": 1,
+        "con": 1,
+        "dex": 1,
+        "gp": 0
       }
     }
   },
@@ -265,15 +271,16 @@
   "npcRank": {
     "discriminator": "rank",
     "groups": {
-      "grunt":     { "maxHp": 0,   "ac": 3 },
-      "untested":  { "maxHp": 1,   "ac": 2 },
-      "rookie":    { "maxHp": 2,   "ac": 2 },
-      "seargeant": { "maxHp": 3,   "ac": 1 },
+      "grunt":     { "maxHp": 1,   "ac": 3 },
+      "untested":  { "maxHp": 2,   "ac": 2 },
+      "rookie":    { "maxHp": 3,   "ac": 2 },
+      "seargeant": { "maxHp": 4,   "ac": 1 },
       "captain":   { "maxHp": 5,   "ac": 1 },
       "veteran":   { "maxHp": 8,  "ac": 0 },
       "champion":  { "maxHp": 13,  "ac": 0 },
       "elite":     { "maxHp": 21,  "ac": -1, "traits": ["formidable"] },
-      "legendary": { "maxHp": 34,  "ac": -2, "traits": ["formidable", "favored"] }
+      "paragon":   { "maxHp": 34,  "ac": -1, "traits": ["formidable", "disciplined"] },
+      "legendary": { "maxHp": 55,  "ac": -2, "traits": ["formidable", "disciplined", "favored"] }
     }
   },
   "npcType": {
@@ -518,7 +525,7 @@
       "Cult Master": { "str": 4,  "con": 5, "dex": 2, "int": 6, "wis": 4, "cha": 4, "abilities": [ "life_drain", "curse", "fear", "poison_cloud", "mass_curse" ], "traits": ["fiendish"] },
       "Death Priest": { "str": 6, "con": 4, "int": 4, "dex": 2, "wis": 6, "abilities": [ "heal", "curse", "fear", "life_drain", "burning_hands" ], "traits": ["fiendish", "piety"] },
       "Wizard":      { "str": -1, "dex": -1, "int": 3, "con": 1, "abilities": [ "missile", "shocking_grasp", "sleep", "fireball", "lightning_strike", "summon_elemental", "slow", "armor" ] },
-      "Poxmonger":   { "str": -2, "dex": -2, "con": -1, "int": 2, "wis": 1, "cha": 2, "abilities": [ "poison_cloud", "pestilence" ] },
+      "Poxmonger":   { "str": -2, "dex": -2, "con": -1, "int": 2, "wis": 1, "cha": 2, "abilities": [ "poison_cloud", "inflict_disease" ] },
 
       "Herald":       { "str": -1, "dex": -1, "int": 1, "wis": -1, "cha": 2, "abilities": ["inspire"] },
       "Benefactor":   { "str": -1, "dex": -1, "int": 2, "wis": -1, "cha": 2, "abilities": ["cure"] },

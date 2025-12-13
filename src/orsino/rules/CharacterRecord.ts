@@ -118,7 +118,7 @@ export default class CharacterRecord {
           pc.abilities.push(...spellbook);
         // }
 
-        Presenter.printCharacterRecord(pc);
+        await Presenter.printCharacterRecord(pc);
         let confirm = await selectionMethod(
           'Do you want to use this PC? ' + whichPc,
           ['Yes', 'No']
@@ -147,7 +147,7 @@ export default class CharacterRecord {
         }
 
         if (!party.some(p => p.name === pc?.name)) {
-          Presenter.printCharacterRecord(pc);
+          await Presenter.printCharacterRecord(pc);
           let confirm = await selectionMethod(
             'Do you want to use this PC? ' + whichPc,
             ['Yes', 'No']

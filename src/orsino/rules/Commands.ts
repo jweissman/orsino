@@ -209,6 +209,12 @@ export class Commands {
     if (defender.hp <= 0) {
       return [];
     }
+    
+    if (defenderEffects.immuneDamage) {
+      // could emit immune event?
+      events.push({ type: "resist", subject: defender, target: defender, damageKind, originalDamage: damage, finalDamage: 0, sources: defenderFxWithNames.immuneDamage?.sources || [] } as Omit<GameEvent, "turn">);
+      return [];
+    }
 
     if (attackerEffects.bonusDamage) {
       let sources = attackerFxWithNames.bonusDamage?.sources || [];

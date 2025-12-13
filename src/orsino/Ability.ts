@@ -8,7 +8,6 @@ import Words from "./tui/Words";
 import { Combatant } from "./types/Combatant";
 import { GenerationTemplateType } from "./types/GenerationTemplateType";
 import { Roll } from "./types/Roll";
-import { Team } from "./types/Team";
 import Files from "./util/Files";
 import { never } from "./util/never";
 
@@ -70,6 +69,9 @@ export interface AbilityEffect {
 
   saveForHalf?: boolean;
   saveNegates?: boolean;
+
+  // ie for rez with animate dead which should apply an undead template
+  applyTraits?: string[];
 }
 
 export interface Ability {
@@ -523,16 +525,21 @@ export default class AbilityHandler {
     }
     else if (effect.type === "resurrect") {
       let rezzed = false;
+      let targetFx = await Fighting.gatherEffects(targetCombatant);
       if (targetCombatant.hp > 0) {
         console.warn(`${targetCombatant.name} is not dead and cannot be resurrected.`);
+      } else if (targetFx.resurrectable === false) {
+        console.warn(`${targetCombatant.name} cannot be resurrected.`);
       } else {
         // let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
         let amount = effect.hpPercent ? Math.floor((effect.hpPercent / 100) * (targetCombatant.maxHp || 10)) : 1;
-        targetCombatant.hp = Math.min(1, amount);
+        targetCombatant.hp = Math.max(1, amount);
         // todo handle applied traits + reify (and maybe update type???)
-        // if (effect.applyTraits) {
-        //   targetCombatant.traits = Array.from(new Set([...(targetCombatant.traits || []), ...effect.applyTraits]));
-        // }
+        if (effect.applyTraits) {
+          targetCombatant.traits = Array.from(new Set([...(targetCombatant.traits || []), ...effect.applyTraits]));
+          // reify traits
+          await Combat.reifyTraits(targetCombatant);
+        }
         events.push({ type: "resurrect", subject: targetCombatant, amount } as Omit<ResurrectEvent, "turn">);
         rezzed = true;
       }

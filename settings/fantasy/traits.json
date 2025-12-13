@@ -1008,5 +1008,23 @@
         "evasion": 3
       }
     }]
+  },
+
+  "inanimate": {
+    "type": "template",
+    "description": "Inanimate",
+    "statuses": [{
+      "name": "Inanimate Nature",
+      "description": "Immune to charm, fear, stun, sleep, poison, and disease. Cannot be resurrected.",
+      "effect": {
+        "immuneCharm": true,
+        "immuneFear": true,
+        "immuneStun": true,
+        "immuneSleep": true,
+        "immunePoison": true,
+        "immuneDisease": true,
+        "resurrectable": false
+      }
+    }]
   }
 }

@@ -156,7 +156,7 @@ describe('Orsino', () => {
       parties: teams,
       environment: "Dark Cave"
     };
-    console.log(Events.present(roundEvent as any));
+    console.log(await Events.present(roundEvent as any));
   });
 
   it.skip('party generator', async () => {
@@ -247,7 +247,7 @@ describe('Orsino', () => {
     expect(explorer.activeModule!.dungeons).toEqual(mod.dungeons);
 
     for (let pc in explorer.pcs) {
-      Presenter.printCharacterRecord(explorer.pcs[pc] as Combatant);
+      await Presenter.printCharacterRecord(explorer.pcs[pc] as Combatant);
     }
 
     console.log("\n----\nCombat statistics:", Combat.statistics);

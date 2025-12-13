@@ -19,13 +19,13 @@ export default class Presenter {
     }).join(", ");
   }
 
-  static printCharacterRecord = (combatant: Combatant) => {
+  static async printCharacterRecord(combatant: Combatant) {
     console.log("\n" + "=".repeat(40) + "\n");
-    console.log(this.characterRecord(combatant));
+    console.log(await this.characterRecord(combatant));
     console.log("\n" + "=".repeat(40) + "\n");
   }
 
-  static characterRecord = (combatant: Combatant) => {
+  static async characterRecord(combatant: Combatant) {
     let record = "";
     record += (Stylist.bold("\n\nCharacter Record\n"));
     record += (Stylist.format(`${this.combatant(combatant)}\n`, 'underline'));
@@ -41,8 +41,9 @@ export default class Presenter {
       ) + "\n\n"
     )
     let statNames = ['str', 'dex', 'int', 'wis', 'cha', 'con'];
+    let effective = await Fighting.effectiveStats(combatant);
     let statLine = statNames.map(stat => {
-      const value = (combatant as any)[stat];
+      const value = (effective as any)[stat];
       const mod = Fighting.statMod(value);
       const color = mod > 0 ? 'green' : (mod < 0 ? 'red' : 'white');
       const sign = mod >= 0 ? '+' : '';
@@ -68,7 +69,7 @@ export default class Presenter {
     let core = {
       // "Hit Points": Stylist.colorize(`${combatant.hp}/${combatant.maxHp}`, 'green'),
       "Attack Die": Stylist.colorize(combatant.attackDie, 'red'),
-      "Armor Class": Stylist.colorize(`${combatant.ac}`, 'yellow'),
+      "Armor Class": Stylist.colorize(`${(effective as any).ac}`, 'yellow'),
       "Spell Slots": ["mage", "bard", "cleric"].includes(combatant.class || '') ?
           bolt.repeat(Combat.maxSpellSlotsForCombatant(combatant)) : "none"
     }
@@ -149,7 +150,7 @@ export default class Presenter {
       // this.padLiteralEnd(Stylist.colorize(name, combatant.playerControlled ? 'cyan' : 'yellow'), 7),
       Stylist.colorize(name, combatant.playerControlled ? 'cyan' : 'yellow'),
       combatant.hp <= 0 ? Stylist.colorize('X', 'red') : Stylist.colorize(hpBar, color),
-      combatant.hp > 0 ? `${combatant.hp}/${combatant.maxHp}` : 'DEAD',
+      combatant.hp > 0 ? `${combatant.hp}/${combatant.maxHp}` : 'KO',
       // this.padLiteralStart(combatClass ? `${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '', 14),
       combatClass ? `${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '',
       // `(${combatant.hp}/${combatant.maxHp})`

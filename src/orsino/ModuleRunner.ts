@@ -80,7 +80,7 @@ export class ModuleRunner {
 
   protected async emit(event: ModuleEvent) {
     this.journal.push(event);
-    this.note(Events.present(event));
+    this.note(await Events.present(event));
 
     await Events.appendToLogfile(event);
   }
@@ -215,6 +215,10 @@ export class ModuleRunner {
         await this.shop('weapons');
       } else if (action === "rumors") {
         await this.showRumors();
+        let partySize = this.pcs.length;
+        if (partySize < 6) {
+          await this.presentHireling();
+        }
       } else if (action === "pray") {
         this.state.sharedGold -= 10;
         let blessingsGranted: string[] = [];
@@ -337,7 +341,7 @@ export class ModuleRunner {
           { short: "Arms", value: "armory", name: "Visit the Armorer (buy weapons)", disabled: false },
           { short: "Equip", value: "magicShop", name: "Visit the Magic Shop (buy equipment)", disabled: false },
           { short: "Items", value: "itemShop", name: "Visit the Alchemist (buy consumables)", disabled: false },
-          { short: "Chat", value: "rumors", name: "Visit the Tavern (hear rumors about the region)", disabled: available.length === 0 },
+          { short: "Chat", value: "rumors", name: "Visit the Tavern (gather hirelings, hear rumors about the region)", disabled: available.length === 0 },
           { short: "Pray", value: "pray", name: `Visit the Temple to ${Words.capitalize(this.mod.town.deity)}`, disabled: this.sharedGold < 10 },
           { short: "Show", value: "show", name: `Show Party Inventory/Character Records`, disabled: false },
         ]
@@ -569,6 +573,40 @@ export class ModuleRunner {
       rumor,
       day: this.days,
     });
+  }
+
+  private async presentHireling() {
+    // gen a level 1 PC as hireling
+    const hireling = await this.gen("pc", { level: 1, background: "hireling", setting: "fantasy" }) as Combatant;
+    const cost = 100;
+    // this.outputSink(`\n🍻 At the tavern, you meet a potential hireling:\n`);
+    // await Presenter.printCharacterRecord(hireling);
+
+    await this.emit({
+      type: "hirelingOffered",
+      hireling,
+      cost,
+      day: this.days,
+    });
+
+    const choice = await this.select(`Would you like to hire ${hireling.name} for 50g?`, [
+      { short: "Yes", value: true, name: "Hire the hireling", disabled: this.sharedGold < cost },
+      { short: "No", value: false, name: "Decline the offer", disabled: false },
+    ]);
+
+    if (choice) {
+      this.state.sharedGold -= cost;
+      this.state.party.push(hireling);
+      // this.outputSink(`✅ You have hired ${hireling.name} into your party!`);
+      await this.emit({
+        type: "hirelingHired",
+        hireling,
+        cost,
+        day: this.days,
+      });
+    } else {
+      this._outputSink(`You declined to hire ${hireling.name}.`);
+    }
   }
 
   private async selectDungeon(): Promise<Dungeon | null> {
