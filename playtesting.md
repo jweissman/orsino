@@ -100,7 +100,11 @@
 [ ] Show cooldown (at least indicators) as part of ability text/description
 [ ] Could ask if you want to use healing spells on short rest
 [ ] Skeletons should be immune to piercing damage
-[ ] 
+[ ] Autoplay doesn't seem to preserve character levels between modules??
+---
+[ ] Equipment from shop attaching to 'unknown' slot?
+[ ] Monster manual output
+[ ] Make `randomActions` effect from confuse work!!
 
 ## Fixed
 [x] Temple/shrine to local deity to get a blessing

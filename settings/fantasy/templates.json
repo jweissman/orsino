@@ -111,7 +111,6 @@
     "monster_type": "=lookup(monsterKind, #class)",
     "monster_aspect": "=lookup(creatureAspectTypes, oneOf(uncommon, rare, legendary))",
     "kind": "=capitalize(#monster_aspect)",
-    "_name": "=capitalize(#monster_aspect) + ' ' + capitalize(#monster_type)",
     "statLine": "=lookup(monsterStat, #class)",
     "statBase": "=lookup(monsterStatBase, #class)",
     "level": 1,
@@ -136,11 +135,13 @@
     "_elementalAbilities": "=if(#class == 'elemental', lookup(elementalAbilities, #_element), nihil)",
     "abilities": "=uniq(concat(#_baseAbilities, #_elementalAbilities))",
     "forename": "=capitalize(#monster_type)",
-    "name": "=if(#class == 'elemental', capitalize(#monster_aspect) + ' ' + capitalize(#_element) + ' ' + capitalize(#monster_type), #_name)",
     "xp": "=lookup(monsterXp, #class) + 50*#level",
     "gp": "=lookup(monsterGold, #class)",
     "*terrainModifier": "=lookup(terrainModifier, #terrain)",
     "*aspectModifier": "=lookup(creatureAspects, #monster_aspect)",
+    "*typeModifier": "=lookup(monsterTypeModifier, #monster_type)",
+    "_name": "=capitalize(#monster_aspect) + ' ' + capitalize(#monster_type)",
+    "name": "=if(#class == 'elemental', capitalize(#monster_aspect) + ' ' + capitalize(#_element) + ' ' + capitalize(#monster_type), #_name)",
     "hp": "=#maxHp"
   },
   "npc": {
@@ -206,12 +207,12 @@
   "encounter": {
     "race": "=if(#_targetCr <= 5, oneOf(goblin, kobold), if(#_targetCr <= 10, oneOf(orc, human), if(#_targetCr <= 18, oneOf(ogre, troll), oneOf(dragon))))",
     "targetCr": "=#_targetCr",
-    "_levelBudget": "=#targetCr*3",
+    "_levelBudget": "=#targetCr",
     "terrain": "=oneOf(forest, cave, swamp, mountain, snow, desert)",
-    "_companionCount": "=1d2",
+    "_companionCount": "=1d2-1",
     "_monsterCount": 0,
-    "_npcCount": "=1d4",
-    "_npcBudget": "=ceil(#_levelBudget * #_npcCount/(#_monsterCount + #_companionCount + #_npcCount))",
+    "_npcCount": "=1d2",
+    "_npcBudget": "=floor(#_levelBudget * #_npcCount/(#_monsterCount + #_companionCount + #_npcCount))",
     "_npcLevelDistribution": "=distribute(#_npcBudget, #_npcCount)",
     "npc_aspect_rarity": "=if(#targetCr <= 1, 'common', if(#targetCr <= 3, oneOf(common, uncommon), if(#targetCr <= 6, oneOf(uncommon, rare), oneOf(rare, epic))))",
     "_npcs": "=mapGenList(npc, #_npcLevelDistribution, 'level')",
@@ -224,7 +225,7 @@
     "_companions": "=mapGenList(animal, #_companionLevelDistribution, 'level')",
     "creatures": "=concat(#_npcs, #_companions, #_monsters)",
     "bonusGold": "=1d20 + 2 * count(#creatures)",
-    "cr": "=round(sum(#creatures, 'level')/3)"
+    "cr": "=round(sum(#creatures, 'level'))"
   },
   "room": {
     "_targetCr": 1,

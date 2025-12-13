@@ -800,7 +800,7 @@
         "_monsterLevelDistribution": ["=#_targetCr"],
         "_npcCount": 2,
         "npc_type": "Cultist",
-        "challenging": false,
+        "challenging": true,
         "_companionCount": 0,
         "_treasureItems": ["soul gem", "ring_of_protection", "staff of power", "cloak of invisibility"],
         "bonusGold": "10 + 6d100"
@@ -1469,7 +1469,8 @@
         "str": -2,
         "con": -3,
         "traits": [
-          "undead"
+          "undead",
+          "skeletal"
         ]
       },
       "zombie": {
@@ -1589,58 +1590,46 @@
   "monsterKind": {
     "discriminator": "monster_type",
     "groups": {
-      "giant": [
-        "Titan",
-        "Behemoth",
-        "Colossus"
-      ],
-      "undead": [
-        "Lich",
-        "Vampire",
-        "Wraith",
-        "Banshee"
-      ],
-      "demon": [
-        "Balor",
-        "Marilith",
-        "Fiend"
-      ],
-      "elemental": [
-        "Sprite",
-        "Spirit",
-        "Ifrit",
-        "Ooze"
-      ],
-      "aberration": [
-        "Mind Destroyer",
-        "Discerner",
-        "Mouther"
-      ],
-      "construct": [
-        "Golem",
-        "Automaton",
-        "Clockwork Soldier"
-      ],
-      "celestial": [
-        "Angel",
-        "Archon",
-        "Deva",
-        "Solar"
-      ],
-      "fey": [
-        "Dryad",
-        "Satyr",
-        "Nymph",
-        "Pixie"
-      ],
-      "beast": [
-        "Owlbear",
-        "Nightmare",
-        "Wendigo",
-        "Chimera"
-      ]
+      "giant": [ "Titan", "Behemoth", "Colossus" ],
+      "undead": [ "Lich", "Vampire", "Wraith", "Banshee" ],
+      "demon": [ "Balor", "Marilith", "Fiend" ],
+      "elemental": [ "Sprite", "Spirit", "Ifrit", "Ooze" ],
+      "aberration": [ "Mind Destroyer", "Discerner", "Mouther" ],
+      "construct": [ "Golem", "Automaton", "Clockwork Soldier" ],
+      "celestial": [ "Angel", "Archon", "Deva", "Solar" ],
+      "fey": [ "Dryad", "Satyr", "Nymph", "Pixie" ],
+      "beast": [ "Owlbear", "Nightmare", "Wendigo", "Chimera" ]
     }
   },
+
+  "monsterTypeModifier": {
+    "discriminator": "monster_type",
+    "groups": {
+      "Titan": { "str": 6, "con": 4, "maxHp": 60, "abilities": [ "earthquake", "maul" ], "traits": [ "formidable"], "class": "giant" },
+      "Behemoth": { "str": 5, "con": 3, "maxHp": 50, "abilities": [ "stomp", "dig_in", "maul" ], "traits": [ "formidable"], "class": "giant" },
+      "Colossus": { "str": 4, "con": 2, "maxHp": 40, "abilities": [ "smash", "maul" ], "traits": [ "formidable"], "class": "giant" },
+      "Lich": { "int": 6, "wis": 3, "maxHp": 80, "abilities": [ "life_drain", "curse", "fear" ], "traits": [ "formidable"], "class": "undead" },
+      "Vampire": { "dex": 4, "cha": 5, "maxHp": 70, "abilities": [ "charm", "life_drain" ], "traits": [ "regeneration"], "class": "undead" },
+      "Wraith": { "dex": 5, "wis": 4, "maxHp": 60, "abilities": [ "fear", "curse" ], "traits": [ "incorporeal"], "class": "undead" },
+      "Banshee": { "cha": 6, "wis": 4, "maxHp": 50, "abilities": [ "fear", "curse" ], "traits": [ "incorporeal"], "class": "undead" },
+      "Balor": { "str": 5, "dex": 4, "con": 4, "maxHp": 70, "abilities": [ "mass_curse", "curse" ], "traits": [ "fiendish"], "class": "demon" },
+      "Marilith": { "str": 4, "dex": 5, "con": 3, "maxHp": 60, "abilities": [ "rapid_strike", "curse" ], "traits": [ "fiendish"], "class": "demon" },
+      "Fiend": { "str": 3, "dex": 3, "con": 3, "maxHp": 50, "abilities": [ "curse" ], "traits": ["fiendish"], "class": "demon" },
+      "Sprite": { "dex": 6, "cha": 4, "maxHp": 40, "abilities": [ "hide", "missile" ],  "class": "elemental" },
+      "Spirit": { "wis": 5, "int": 4, "maxHp": 50, "abilities": [ "slow", "paralyzing_touch", "hide" ], "traits": [  "incorporeal"], "class": "elemental" },
+      "Ifrit": { "str": 4, "dex": 5, "con": 4, "maxHp": 60, "abilities": [ "fireball", "burning_hands" ],"class": "elemental" },
+      "Ooze": { "con": 6, "maxHp": 70, "abilities": [ "engulf", "acid_arrow" ],  "class": "elemental" },
+      "Mind Destroyer": { "int": 6, "wis": 5, "maxHp": 60, "abilities": [ "psionic_blast", "charm" ], "class": "aberration" },
+      "Discerner": { "int": 5, "wis": 6, "maxHp": 50, "abilities": [ "confuse", "charm", "flesh_to_stone", "paralyzing_touch", "sleep", "fear", "curse" ], "class": "aberration" },
+      "Mouther": { "con": 5, "maxHp": 70, "abilities": [ "acid_spray", "psionic_blast" ], "class": "aberration" },
+      "Golem": { "str": 6, "con": 6, "maxHp": 80, "abilities": [ "defend", "smash" ], "class": "construct" },
+      "Automaton": { "str": 4, "dex": 4, "con": 4, "maxHp": 70, "abilities": [ "rapid_strike", "defend" ], "class": "construct" },
+      "Clockwork Soldier": { "str": 5, "con": 5, "maxHp": 75, "abilities": [ "defend", "smash" ],"class": "construct" },
+      "Angel": { "str": 4, "dex": 4, "wis": 5, "cha": 6, "maxHp": 70, "abilities": [ "smite", "inspire" ],"class": "celestial" },
+      "Archon": { "str": 5, "dex": 5, "wis": 4, "cha": 5, "maxHp": 65, "abilities": [ "smite", "defend" ], "class": "celestial" }
+    }
+  },
+
   "monsterStatBase": {
     "discriminator": "monster_type",
     "groups": {

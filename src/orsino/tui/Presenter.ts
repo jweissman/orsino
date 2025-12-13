@@ -146,10 +146,12 @@ export default class Presenter {
     let combatClass = combatant.class;
     let combatKind = (combatant as any).kind || combatant.race || '';
     return [
-      this.padLiteralEnd(Stylist.colorize(name, combatant.playerControlled ? 'cyan' : 'yellow'), 7),
+      // this.padLiteralEnd(Stylist.colorize(name, combatant.playerControlled ? 'cyan' : 'yellow'), 7),
+      Stylist.colorize(name, combatant.playerControlled ? 'cyan' : 'yellow'),
       combatant.hp <= 0 ? Stylist.colorize('X', 'red') : Stylist.colorize(hpBar, color),
       combatant.hp > 0 ? `${combatant.hp}/${combatant.maxHp}` : 'DEAD',
-      this.padLiteralStart(combatClass ? `${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '', 14),
+      // this.padLiteralStart(combatClass ? `${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '', 14),
+      combatClass ? `${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '',
       // `(${combatant.hp}/${combatant.maxHp})`
     ].join(' ');
     //  `; // (${this.statLine(combatant)})`;
@@ -253,6 +255,7 @@ export default class Presenter {
     let partyDisplay = "";
     let lines = Math.max(...parties.map(p => p.combatants.length))
     for (let i = 0; i < lines; i++) {
+      // names
       let lhs = parties[0] ? parties[0].combatants[i] : null;
       let rhs = parties[1] ? parties[1].combatants[i] : null;
       let line = "";
@@ -268,6 +271,31 @@ export default class Presenter {
         line += ' '.repeat(40);
       }
       partyDisplay += line + '\n';
+
+      // traits / statuses
+      let ignoreStatuses = ['humanoid']
+      let lhsStatuses = lhs?.activeEffects?.map(e => e.name) || [];
+      lhsStatuses = lhsStatuses
+          .map(s => s.toLowerCase())
+          .filter(s => !ignoreStatuses.includes(s.toLowerCase()));
+      let rhsStatuses = rhs?.activeEffects?.map(e => e.name)
+        .concat(rhs?.traits) || [];
+      rhsStatuses = rhsStatuses
+          .map(s => s.toLowerCase())
+          .filter(s => !ignoreStatuses.includes(s));
+
+      let statusLine = "";
+      if (lhsStatuses.length > 0) {
+        statusLine += this.padLiteralEnd(Stylist.colorize(lhsStatuses.join(' * '), 'cyan'), 40);
+      } else {
+        statusLine += ' '.repeat(40);
+      }
+      if (rhsStatuses.length > 0) {
+        statusLine += this.padLiteralStart(Stylist.colorize(rhsStatuses.join(' * '), 'cyan'), 40);
+      } else {
+        statusLine += ' '.repeat(40);
+      }
+      partyDisplay += statusLine + '\n';
     }
     let headers = //parties.map(p => Stylist.format(p.name, 'underline').padEnd(40)).join('   ') + '\n';
       Stylist.format(parties[0].name.padEnd(40), 'italic') +

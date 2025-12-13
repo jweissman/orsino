@@ -10,6 +10,10 @@ import AbilityHandler from "./orsino/Ability";
 import TraitHandler from "./orsino/Trait";
 import Combat from "./orsino/Combat";
 import { Team } from "./orsino/types/Team";
+import Deem from "./deem";
+import Presenter from "./orsino/tui/Presenter";
+import { Table } from "./orsino/Table";
+import { Template } from "./orsino/Template";
 
 export type Prompt = (message: string) => Promise<string>;
 
@@ -27,7 +31,7 @@ export default class Orsino {
     type: PlaygroundType,
     options: Record<string, any> = {}
   ) {
-    const partySize = options.partySize || 3;
+    const partySize = options.partySize || 1;
     const pcs = await CharacterRecord.chooseParty(
       async (opts: Record<string, any>) => await Generator.gen("pc", { setting: 'fantasy', ...opts }) as Combatant,
       partySize
@@ -106,6 +110,18 @@ export default class Orsino {
       } catch (e) {
         console.error("Autoplay encountered an error:", e);
       }
+    }
+  }
+
+  async monsterManual(options: Record<string, any> = {}) {
+    await AbilityHandler.instance.loadAbilities();
+    await TraitHandler.instance.loadTraits();
+    await Template.bootstrapDeem();
+    const monsterTypes = await Deem.evaluate("gather(monsterTypeModifier)");
+    for (const monsterType of monsterTypes) {
+      let monster = await Generator.gen("monster", { setting: 'fantasy', monster_type: monsterType, ...options });
+      console.log(`\n=== ${monster.name} ===\n`);
+      console.log(Presenter.characterRecord(monster as Combatant));
     }
   }
 }

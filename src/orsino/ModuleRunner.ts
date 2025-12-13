@@ -465,11 +465,12 @@ export class ModuleRunner {
           // this.state.inventory[item.key] = (this.state.inventory[item.key] || 0) + 1;
           this.state.inventory.push(await Inventory.item(item.key));
           // this.outputSink(`✅ Purchased 1x ${item.name} for ${item.value}g`);
+          let firstPc = this.pcs[0];
           await this.emit({
             type: "purchase",
             itemName: item.key,
             cost: item.value,
-            buyer: { name: "Party" } as Combatant,
+            buyer: firstPc,
             day: this.days,
           });
         } else {

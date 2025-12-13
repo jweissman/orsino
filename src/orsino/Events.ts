@@ -25,6 +25,8 @@ export type RoundStartEvent = BaseEvent & { type: "roundStart", combatants: Comb
 export type TurnStartEvent = BaseEvent & { type: "turnStart", combatants: Combatant[] };
 
 export type HitEvent = BaseEvent & { type: "hit"; damage: number; success: boolean; critical: boolean; by: string; damageKind: DamageKind };
+export type DamageBonus = BaseEvent & { type: "damageBonus"; amount: number; damageKind: DamageKind; reason: string };
+export type DamageReduction = BaseEvent & { type: "damageReduction"; amount: number; damageKind: DamageKind; reason: string };
 export type CritEvent = BaseEvent & { type: "crit"; damage: number; by: string; damageKind: DamageKind };
 export type MissEvent = BaseEvent & { type: "miss"; };
 export type KillEvent = BaseEvent & { type: "kill"; };
@@ -55,6 +57,8 @@ export type ActionEvent = BaseEvent & { type: "action"; actionName: string };
 export type CombatEvent =
   | ActionEvent
   | HitEvent
+  | DamageBonus
+  | DamageReduction
   | CombatantEngagedEvent
   | KillEvent
   | CritEvent
@@ -87,7 +91,7 @@ export type LeaveDungeon = BaseDungeonEvent & { type: "leaveDungeon"; };
 export type EnterRoom  = BaseDungeonEvent & { type: "enterRoom"; roomDescription: string; };
 export type RoomCleared  = BaseDungeonEvent & { type: "roomCleared"; room: Room | BossRoom; combat?: Combat };
 export type DungeonCleared  = BaseDungeonEvent & { type: "dungeonCleared"; macguffin?: string; };
-export type DungeonFailed  = BaseDungeonEvent & { type: "dungeonFailed"; reason: string; };
+export type DungeonFailed  = BaseDungeonEvent & { type: "dungeonFailed"; dungeonName: string; reason: string; };
 export type ItemFoundEvent = BaseDungeonEvent & { type: "itemFound"; itemName: string; quantity: number; where: string; };
 export type EquipmentWornEvent = BaseDungeonEvent & { type: "equipmentWorn"; itemName: string; slot: EquipmentSlot; };
 export type RestEvent = BaseDungeonEvent & { type: "rest"; stabilizedCombatants: string[]; };
@@ -186,7 +190,7 @@ export default class Events {
         return `Victory! You have cleared the dungeon!`;
 
       case "dungeonFailed":
-        return `You have failed to cleanse the ${event.reason} of evil.`;
+        return `You have failed to cleanse ${event.dungeonName} of evil. ${event.reason}`;
 
       case "heal":
         if (subjectName === targetName) {
@@ -249,6 +253,12 @@ export default class Events {
           message = Stylist.colorize(message, 'green');
         }
         return message;
+      
+      case "damageBonus":
+        return `${targetName} takes an additional ${event.amount} damage from ${subjectName} due to ${event.reason}.`;
+
+      case "damageReduction":
+        return `${subjectName} reduces damage taken by ${event.amount} due to ${event.reason}.`;
 
       case "reaction":
         return `${subjectName} reacts ${(event.reactionName)} from ${event.target?.forename}.`;
@@ -298,7 +308,7 @@ export default class Events {
           return `${subjectName} uses ${Words.a_an(event.itemName)}.`;
         }
       case "action":
-        return Stylist.bold(`${subjectName} ${event.actionName}.`);
+        return Stylist.bold(`\n${subjectName} ${event.actionName}.`);
 
       case "campaignStart":
         return Stylist.bold(`You embark on the campaign '${event.moduleName}'\nParty Members: ${

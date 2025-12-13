@@ -1,6 +1,6 @@
 import AbilityHandler, { AbilityEffect, DamageKind, SaveKind } from "../Ability";
 import { RollResult } from "../types/RollResult";
-import { GameEvent, FallenEvent, HealEvent, HitEvent, MissEvent, StatusEffectEvent, StatusExpireEvent, SummonEvent, SaveEvent } from "../Events";
+import { GameEvent, FallenEvent, HealEvent, HitEvent, MissEvent, StatusEffectEvent, StatusExpireEvent, SummonEvent, SaveEvent, DamageBonus, DamageReduction } from "../Events";
 import Stylist from "../tui/Style";
 import Words from "../tui/Words";
 import { Combatant } from "../types/Combatant";
@@ -188,7 +188,9 @@ export class Commands {
     let events: TimelessEvent[] = [];
 
     let defenderEffects = await Fighting.gatherEffects(defender);
+    let defenderFxWithNames = await Fighting.gatherEffectsWithNames(defender);
     let attackerEffects = await Fighting.gatherEffects(attacker);
+    let attackerFxWithNames = await Fighting.gatherEffectsWithNames(attacker);
 
     if (!success) {
       // are there onMissReceived effects to process?
@@ -208,15 +210,21 @@ export class Commands {
       return [];
     }
 
-
     if (attackerEffects.bonusDamage) {
+      let sources = attackerFxWithNames.bonusDamage?.sources || [];
       let bonusDamage = await Deem.evaluate(attackerEffects.bonusDamage.toString()) as number || 0;
       damage += bonusDamage;
+      if (bonusDamage != 0) {
+        events.push({ type: "damageBonus", subject: attacker, target: defender, amount: bonusDamage, damageKind, reason: Words.humanizeList(sources) } as Omit<DamageBonus, "turn">);
+      }
     }
 
     if (attackerEffects[`${by}Multiplier`]) {
       let multiplier = attackerEffects[`${by}Multiplier`] as number || 1;
       damage = Math.floor(damage * multiplier);
+      let delta = damage - Math.floor(damage / multiplier);
+      let sources = attackerFxWithNames[`${by}Multiplier`]?.sources || [];
+      events.push({ type: "damageBonus", subject: attacker, target: defender, amount: delta, damageKind, reason: `a ${multiplier}x multiplier from ${Words.humanizeList(sources)}` } as Omit<DamageBonus, "turn">);
     }
 
     // what if they're immune to this damage kind? isn't that different from resistance?
@@ -248,6 +256,10 @@ export class Commands {
     if (defenderEffects.damageReduction) {
       let reduction = defenderEffects.damageReduction as number || 0;
       damage = Math.max(0, damage - reduction);
+      if (reduction != 0) {
+        let sources = defenderFxWithNames.damageReduction?.sources || [];
+        events.push({ type: "damageReduction", subject: defender, target: defender, amount: reduction, damageKind, reason: Words.humanizeList(sources) } as Omit<DamageReduction, "turn">);
+      }
     }
 
     // apply damage

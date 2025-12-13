@@ -828,6 +828,20 @@
       }
     }]
   },
+
+  "skeletal": {
+    "type": "template",
+    "description": "Animated Bones",
+    "statuses": [{
+      "name": "Bone Resilience",
+      "description": "Resistant to physical damage. Vulnerable to bludgeoning damage.",
+      "effect": {
+        "resistPiercing": 0.5,
+        "resistBludgeoning": -1
+      }
+    }]
+  },
+
   "incorporeal": {
     "name": "Incorporeal",
     "type": "template",

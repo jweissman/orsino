@@ -325,12 +325,12 @@ export default class Combat {
     //   return ({
     for (const ability of allAbilities) {
       // if (await this.validateAction(ability, combatant, allies, enemies)) {
-        choices.push({
-          value: ability,
-          name: `${ability.name.padEnd(15)} (${ability.description}/${ability.type === "spell" ? pips : "skill"})`,
-          short: ability.name,
-          disabled: !(await this.validateAction(ability, combatant, allies, enemies))
-        })
+      choices.push({
+        value: ability,
+        name: `${ability.name.padEnd(15)} (${ability.description}/${ability.type === "spell" ? pips : "skill"})`,
+        short: ability.name,
+        disabled: !(await this.validateAction(ability, combatant, allies, enemies))
+      })
       // }
     }
 
@@ -572,17 +572,17 @@ export default class Combat {
     }
 
     // if (a
-      // run onTurnEnd for all active effects
-      let ctx = { subject: combatant, allies, enemies: allEnemies };
-      // for (const status of activeFx) {
-        if (activeFx.onTurnEnd) {
-          for (const effect of activeFx.onTurnEnd as AbilityEffect[]) {
-            // apply fx to self
-            let { events } = await AbilityHandler.handleEffect(effect.description || 'turn end effect', effect, combatant, combatant, ctx, Commands.handlers(this.roller, this.teams.find(t => t.combatants.includes(combatant))!));
-            await this.emitAll(events, `Turn end effects`, combatant);
-          }
-        }
-      // }
+    // run onTurnEnd for all active effects
+    let ctx = { subject: combatant, allies, enemies: allEnemies };
+    // for (const status of activeFx) {
+    if (activeFx.onTurnEnd) {
+      for (const effect of activeFx.onTurnEnd as AbilityEffect[]) {
+        // apply fx to self
+        let { events } = await AbilityHandler.handleEffect(effect.description || 'turn end effect', effect, combatant, combatant, ctx, Commands.handlers(this.roller, this.teams.find(t => t.combatants.includes(combatant))!));
+        await this.emitAll(events, `Turn end effects`, combatant);
+      }
+    }
+    // }
     // }
 
     return { haltRound: false };
@@ -616,17 +616,23 @@ export default class Combat {
     if (!this.dry) {
       console.log(`\nThe next round begins...`);
       // wait for stdin input
-      // await new Promise<void>((resolve) => {
-      //   process.stdin.once('data', () => {
-      //     resolve();
-      //   });
-      // });
-      // ^^ this was causing crashes in some environments -- so we'll just wait 1 second instead
-      await new Promise<void>((resolve) => {
-        setTimeout(() => {
+      // await new Promise<void>(resolve => process.stdin.once('data', () => { resolve(); }));
+      process.stdin.setRawMode(true);
+      process.stdin.resume();
+
+      await new Promise<void>(resolve => {
+        process.stdin.once("data", () => {
+          process.stdin.setRawMode(false);
           resolve();
-        }, 1000);
+        });
       });
+      console.log('Let the battle continue!\n');
+      // ^^ this was causing crashes in some environments -- so we'll just wait 1 second instead
+      // await new Promise<void>((resolve) => {
+      //   setTimeout(() => {
+      //     resolve();
+      //   }, 1000);
+      // });
     }
     process.stdout.write('\x1Bc');
 

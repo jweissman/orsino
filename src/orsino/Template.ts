@@ -99,10 +99,9 @@ export class Template {
           } else if (v instanceof Number || typeof v === 'number') {
             assembled[k] = (assembled[k] || 0) + v;
           } else if (typeof v === 'string') {
-
-
             // console.log(`Adding ${k}=${v} to context (was ${localContext[k]})`);
-            assembled[k] = v + (assembled[k] || '');
+            // just replace!
+            assembled[k] = v; // + (assembled[k] || '');
             // localContext[k] = assembled[k];
           } else if (typeof v === 'boolean') {
             assembled[k] = v || assembled[k];

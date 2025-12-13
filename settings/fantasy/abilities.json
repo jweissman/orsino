@@ -95,6 +95,51 @@
       }
     ]
   },
+  "smash": {
+    "name": "Smash",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Powerful attack that deals 2d6 bludgeoning damage, plus 1 damage per level.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=2d6 + #level",
+        "kind": "bludgeoning"
+      }
+    ]
+  },
+  "stomp": {
+    "name": "Stomp",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Stomp the ground, dealing 1d6 bludgeoning damage to all adjacent enemies and knocking them prone.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d6",
+        "kind": "bludgeoning"
+      },
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Prone",
+          "duration": 2,
+          "effect": {
+            "prone": true
+          }
+        },
+        "saveType": "dex",
+        "saveDC": 14
+      }
+    ]
+  },
+
   "reckless_attack": {
     "name": "Reckless Attack",
     "type": "skill",
@@ -1408,14 +1453,14 @@
     "type": "spell",
     "level": 2,
     "aspect": "arcane",
-    "description": "Cause the ground to shake, dealing 1d6 damage to all enemies and knocking them prone.",
+    "description": "Cause the ground to shake, dealing 2d6 damage to all enemies and knocking them prone.",
     "target": [
       "enemies"
     ],
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d6",
+        "amount": "=2d6",
         "kind": "bludgeoning",
         "saveNegates": true
       },
@@ -1436,8 +1481,8 @@
   "drench": {
     "name": "Drench",
     "type": "spell",
-    "level": 1,
-    "aspect": "water",
+    "level": 3,
+    "aspect": "arcane",
     "description": "Drench an enemy, reducing their attack rolls by 2 for 3 rounds.",
     "target": [
       "enemy"
@@ -1484,7 +1529,7 @@
     "name": "Acid Arrow",
     "type": "spell",
     "level": 1,
-    "aspect": "acid",
+    "aspect": "arcane",
     "description": "Fire an arrow of acid, dealing 1d4 damage and applying Acid Burn.",
     "target": [
       "enemy"
@@ -1513,11 +1558,46 @@
       }
     ]
   },
+  "acid_spray": {
+    "name": "Acid Spray",
+    "type": "spell",
+    "level": 2,
+    "aspect": "arcane",
+    "description": "Spray a cone of acid, dealing 2d6 damage to all enemies in the area and applying Acid Burn.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=2d6",
+        "kind": "acid",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Acid Burn",
+          "duration": 3,
+          "effect": {
+            "onTurnEnd": [
+              {
+                "type": "damage",
+                "amount": "=1d3",
+                "kind": "acid"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+
   "ray_of_frost": {
     "name": "Ray of Frost",
     "type": "spell",
-    "level": 1,
-    "aspect": "ice",
+    "level": 2,
+    "aspect": "arcane",
     "description": "Fire a ray of frost, dealing 1d4 damage and reducing the target's speed by 10 feet for 3 rounds.",
     "target": [
       "enemy"
@@ -1968,6 +2048,87 @@
         "amount": "=10d6",
         "kind": "force",
         "saveForHalf": true
+      }
+    ]
+  },
+  "engulf": {
+    "name": "Engulf",
+    "type": "spell",
+    "level": 4,
+    "aspect": "ooze",
+    "description": "Absorb an enemy into the ooze, dealing 6d6 acid damage over 3 rounds.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Engulfed",
+          "duration": 3,
+          "effect": {
+            "onTurnEnd": [
+              {
+                "type": "damage",
+                "amount": "=2d6",
+                "kind": "acid"
+              }
+            ],
+            "noActions": true
+          }
+        },
+        "saveType": "con",
+        "saveDC": 16
+      }
+    ]
+  },
+
+  "confuse": {
+    "name": "Confuse",
+    "type": "spell",
+    "level": 3,
+    "aspect": "arcane",
+    "description": "Confuse an enemy, causing them to act randomly for 3 rounds.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Confused",
+          "duration": 3,
+          "effect": {
+            "randomActions": true
+          }
+        },
+        "saveType": "will",
+        "saveDC": 15
+      }
+    ]
+  },
+
+  "flesh_to_stone": {
+    "name": "Flesh to Stone",
+    "type": "spell",
+    "level": 4,
+    "aspect": "arcane",
+    "description": "Turn an enemy to stone.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Petrified",
+          "effect": {
+            "noActions": true,
+            "immuneDamage": true
+          }
+        },
+        "saveType": "con",
+        "saveDC": 18
       }
     ]
   }

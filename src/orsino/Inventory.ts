@@ -1,5 +1,4 @@
 import Deem from "../deem";
-import Words from "./tui/Words";
 import { Combatant, EquipmentSlot } from "./types/Combatant";
 import { ItemInstance } from "./types/ItemInstance";
 

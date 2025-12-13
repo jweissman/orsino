@@ -211,7 +211,7 @@ export default class Dungeoneer {
       }
     } else {
       // this.note("\n💀 Party defeated...\n");
-      await this.emit({ type: "dungeonFailed", reason: "Your party has been defeated." });
+      await this.emit({ type: "dungeonFailed", dungeonName: this.dungeon!.dungeon_name, reason: "Your party has been defeated." });
     }
   }
 

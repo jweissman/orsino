@@ -27,7 +27,7 @@ export default class CharacterRecord {
 
   static async chooseParty(
     pcGenerator: (options?: any) => Promise<Combatant>,
-    partySize: number = 3,
+    partySize: number = 1,
     selectionMethod: (prompt: string, options: string[]) => Promise<string> = User.selection
   ): Promise<Combatant[]> {
         let abilityHandler = AbilityHandler.instance;
