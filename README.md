@@ -135,6 +135,7 @@ There are some simple math and lexical operations as well:
 
 # TODO
 
-- Dungeoneering: explore the generated dungeons
+- Dungeone- Dungeoneering: explore the generated dungeons
 - World mode: explore the hinterlands and return to cities to spend gold
 - Textual gloss? Illustrations?
+- Generator trace/debug mode: Add a mode to visualize the step-by-step evaluation of a template.
