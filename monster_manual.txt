@@ -1,0 +1,774 @@
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mNoble Lesser Titan[0m[0m     Lvl. 1  Noble Giant
+[0m[3mGuardian Giant from the caves, 72 years old. They are of average build with light hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 33 ([32m+8[0m) | [1mDEX[0m 17 ([32m+2[0m) | [1mINT[0m 16 ([32m+2[0m) | [1mWIS[0m 18 ([32m+3[0m) | [1mCHA[0m 20 ([32m+3[0m) | [1mCON[0m 28 ([32m+6[0m)
+Hit Points: [32m36/36
+[0m
+[1mWeapon[0m Greatsword           [1mArmor[0m None                  [1mXp[0m 550                      [1mGp[0m 5d10
+[1mAttack Die[0m [31m1d10[0m             [1mArmor Class[0m [33m9[0m               [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mMaul[0m                Make a powerful attack that deals 1d6 + strength modifier extra damage and inflicts Bleed on a successful hit.
+  [35mPrepare Charge[0m      Prepare to charge on your next turn, gaining +2 to hit and +2 damage.
+  [35mCharge[0m              Charge at an enemy, dealing 3d8+1 damage. Each level adds +1 to damage.
+  [35mTaunt[0m               Taunt an enemy, forcing them to target you on their next turn.
+  [35mEarthquake[0m          Cause the ground to shake, dealing 2d6 damage to all enemies and knocking them prone.
+  [35mInspire[0m             Inspire your allies, granting them a +2 bonus to attack rolls for the next 3 rounds.
+[1m
+Traits
+[0m  [34mFormidable[0m
+  [36mFormidable[0m (This creature is particularly tough, granting it additional resilience in combat.)
+
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mSavage Lesser Behemoth[0m[0m Lvl. 1  Savage Giant
+[0m[3mGuardian Giant from the mountains, 54 years old. They are of towering build with spiky hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 29 ([32m+6[0m) | [1mDEX[0m 18 ([32m+3[0m) | [1mINT[0m 15 ([32m+2[0m) | [1mWIS[0m 18 ([32m+3[0m) | [1mCHA[0m 17 ([32m+2[0m) | [1mCON[0m 25 ([32m+5[0m)
+Hit Points: [32m35/35
+[0m
+[1mWeapon[0m Greatsword           [1mArmor[0m None                  [1mXp[0m 550                      [1mGp[0m 5d10
+[1mAttack Die[0m [31m1d10[0m             [1mArmor Class[0m [33m9[0m               [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mMaul[0m                Make a powerful attack that deals 1d6 + strength modifier extra damage and inflicts Bleed on a successful hit.
+  [35mPrepare Charge[0m      Prepare to charge on your next turn, gaining +2 to hit and +2 damage.
+  [35mCharge[0m              Charge at an enemy, dealing 3d8+1 damage. Each level adds +1 to damage.
+  [35mTaunt[0m               Taunt an enemy, forcing them to target you on their next turn.
+  [35mStomp[0m               Stomp the ground, dealing 1d6 bludgeoning damage to all adjacent enemies and knocking them prone.
+[1m
+Traits
+[0m  [34mFormidable[0m
+  [36mFormidable[0m (This creature is particularly tough, granting it additional resilience in combat.)
+
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mCurious Lesser Colossus[0m[0mLvl. 1  Curious Giant
+[0m[3mWandering Giant from the mountains, 49 years old. They are of towering build with sleek hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 27 ([32m+6[0m) | [1mDEX[0m 16 ([32m+2[0m) | [1mINT[0m 18 ([32m+3[0m) | [1mWIS[0m 20 ([32m+3[0m) | [1mCHA[0m 16 ([32m+2[0m) | [1mCON[0m 21 ([32m+4[0m)
+Hit Points: [32m34/34
+[0m
+[1mWeapon[0m Greatsword           [1mArmor[0m None                  [1mXp[0m 550                      [1mGp[0m 5d10
+[1mAttack Die[0m [31m1d10[0m             [1mArmor Class[0m [33m9[0m               [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mMaul[0m                Make a powerful attack that deals 1d6 + strength modifier extra damage and inflicts Bleed on a successful hit.
+  [35mPrepare Charge[0m      Prepare to charge on your next turn, gaining +2 to hit and +2 damage.
+  [35mCharge[0m              Charge at an enemy, dealing 3d8+1 damage. Each level adds +1 to damage.
+  [35mTaunt[0m               Taunt an enemy, forcing them to target you on their next turn.
+  [35mSmash[0m               Powerful attack that deals 2d6 bludgeoning damage, plus 1 damage per level.
+[1m
+Traits
+[0m  [34mFormidable[0m
+  [36mFormidable[0m (This creature is particularly tough, granting it additional resilience in combat.)
+
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mAncient Minor Lich[0m[0m     Lvl. 1  Ancient Undead
+[0m[3mGuardian Undead from the ruins, 48 years old. They are of towering build with matted hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 9 ([37m+0[0m) | [1mDEX[0m 9 ([37m+0[0m) | [1mINT[0m 19 ([32m+3[0m) | [1mWIS[0m 15 ([32m+2[0m) | [1mCHA[0m 7 ([31m-1[0m) | [1mCON[0m 19 ([32m+3[0m)
+Hit Points: [32m15/15
+[0m
+[1mWeapon[0m Claws                [1mArmor[0m None                  [1mXp[0m 350                      [1mGp[0m 2d10
+[1mAttack Die[0m [31m1d4[0m              [1mArmor Class[0m [33m11[0m              [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mCurse[0m               Curse an enemy, reducing all stats by 1.
+  [35mScream[0m              Let out a horrific scream, frightening nearby enemies.
+  [35mLife Drain[0m          Drain life from an enemy, healing yourself for damage dealt.
+  [35mSecond Wind[0m         Regain 1d10 + level hit points.
+[1m
+Traits
+[0m  [34mBrought Back[0m
+  [36mUndead Nature[0m (Immune to poison, charm, sleep, and disease.)
+
+  [34mFormidable[0m
+  [36mFormidable[0m (This creature is particularly tough, granting it additional resilience in combat.)
+
+  [34mDemonic[0m
+  [36mFiendish Resilience[0m (Resistant to fire and poison damage. Immune to charm effects.)
+
+  [34mAnimated Bones[0m
+  [36mBone Resilience[0m (Resistant to physical damage. Vulnerable to bludgeoning damage.)
+
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mSavage Minor Vampire[0m[0m   Lvl. 1  Savage Undead
+[0m[3mGuardian Undead from the ruins, 55 years old. They are of bulky build with sleek hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 10 ([37m+0[0m) | [1mDEX[0m 14 ([32m+1[0m) | [1mINT[0m 9 ([37m+0[0m) | [1mWIS[0m 9 ([37m+0[0m) | [1mCHA[0m 10 ([37m+0[0m) | [1mCON[0m 7 ([31m-1[0m)
+Hit Points: [32m11/11
+[0m
+[1mWeapon[0m Claws                [1mArmor[0m None                  [1mXp[0m 350                      [1mGp[0m 2d10
+[1mAttack Die[0m [31m1d4[0m              [1mArmor Class[0m [33m11[0m              [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mCurse[0m               Curse an enemy, reducing all stats by 1.
+  [35mScream[0m              Let out a horrific scream, frightening nearby enemies.
+  [35mLife Drain[0m          Drain life from an enemy, healing yourself for damage dealt.
+  [35mCharm Person[0m        Attempt to charm an enemy, making them friendly towards you for 3 rounds.
+  [35mCharge[0m              Charge at an enemy, dealing 3d8+1 damage. Each level adds +1 to damage.
+[1m
+Traits
+[0m  [34mBrought Back[0m
+  [36mUndead Nature[0m (Immune to poison, charm, sleep, and disease.)
+
+  [34mRegeneration[0m
+  [36mRegeneration[0m (This creature regenerates health over time, allowing it to recover from wounds quickly.)
+
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mTerrifying Minor Wraith[0m[0mLvl. 1  Terrifying Undead
+[0m[3mGuardian Undead from the crypt, 63 years old. They are of towering build with sleek hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 11 ([37m+0[0m) | [1mDEX[0m 12 ([32m+1[0m) | [1mINT[0m 10 ([37m+0[0m) | [1mWIS[0m 13 ([32m+1[0m) | [1mCHA[0m 9 ([37m+0[0m) | [1mCON[0m 7 ([31m-1[0m)
+Hit Points: [32m11/11
+[0m
+[1mWeapon[0m Claws                [1mArmor[0m None                  [1mXp[0m 350                      [1mGp[0m 2d10
+[1mAttack Die[0m [31m1d4[0m              [1mArmor Class[0m [33m11[0m              [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mCurse[0m               Curse an enemy, reducing all stats by 1.
+  [35mScream[0m              Let out a horrific scream, frightening nearby enemies.
+  [35mLife Drain[0m          Drain life from an enemy, healing yourself for damage dealt.
+[1m
+Traits
+[0m  [34mBrought Back[0m
+  [36mUndead Nature[0m (Immune to poison, charm, sleep, and disease.)
+
+  [34mA being of pure spirit, able to pass through solid objects.[0m
+  [36mEthereal Form[0m (Resistant to physical damage and difficult to hit.)
+
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mMajestic Lesser Banshee[0m[0mLvl. 1  Majestic Undead
+[0m[3mWandering Undead from the crypt, 39 years old. They are of bulky build with matted hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 10 ([37m+0[0m) | [1mDEX[0m 7 ([31m-1[0m) | [1mINT[0m 10 ([37m+0[0m) | [1mWIS[0m 13 ([32m+1[0m) | [1mCHA[0m 14 ([32m+1[0m) | [1mCON[0m 9 ([37m+0[0m)
+Hit Points: [32m11/11
+[0m
+[1mWeapon[0m Claws                [1mArmor[0m None                  [1mXp[0m 350                      [1mGp[0m 2d10
+[1mAttack Die[0m [31m1d4[0m              [1mArmor Class[0m [33m11[0m              [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mCurse[0m               Curse an enemy, reducing all stats by 1.
+  [35mScream[0m              Let out a horrific scream, frightening nearby enemies.
+  [35mLife Drain[0m          Drain life from an enemy, healing yourself for damage dealt.
+  [35mInspire[0m             Inspire your allies, granting them a +2 bonus to attack rolls for the next 3 rounds.
+[1m
+Traits
+[0m  [34mBrought Back[0m
+  [36mUndead Nature[0m (Immune to poison, charm, sleep, and disease.)
+
+  [34mA being of pure spirit, able to pass through solid objects.[0m
+  [36mEthereal Form[0m (Resistant to physical damage and difficult to hit.)
+
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mAncient Lesser Balor[0m[0m   Lvl. 1  Ancient Demon
+[0m[3mWandering Demon from the abyss, 511 years old. They are of bulky build with no hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 24 ([32m+5[0m) | [1mDEX[0m 16 ([32m+2[0m) | [1mINT[0m 15 ([32m+2[0m) | [1mWIS[0m 14 ([32m+1[0m) | [1mCHA[0m 11 ([37m+0[0m) | [1mCON[0m 20 ([32m+3[0m)
+Hit Points: [32m21/21
+[0m
+[1mWeapon[0m Claws                [1mArmor[0m None                  [1mXp[0m 450                      [1mGp[0m 3d10
+[1mAttack Die[0m [31m1d4[0m              [1mArmor Class[0m [33m10[0m              [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mCurse[0m               Curse an enemy, reducing all stats by 1.
+  [35mScream[0m              Let out a horrific scream, frightening nearby enemies.
+  [35mBurning Hands[0m       Unleash a cone of fire, dealing 1d6 damage to all enemies in the area.
+  [35mInspire[0m             Inspire your allies, granting them a +2 bonus to attack rolls for the next 3 rounds.
+[1m
+Traits
+[0m  [34mDemonic[0m
+  [36mFiendish Resilience[0m (Resistant to fire and poison damage. Immune to charm effects.)
+
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mAncient Minor Marilith[0m[0m Lvl. 1  Ancient Demon
+[0m[3mGuardian Demon from the abyss, 541 years old. They are of towering build with no hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 21 ([32m+4[0m) | [1mDEX[0m 19 ([32m+3[0m) | [1mINT[0m 16 ([32m+2[0m) | [1mWIS[0m 14 ([32m+1[0m) | [1mCHA[0m 11 ([37m+0[0m) | [1mCON[0m 17 ([32m+2[0m)
+Hit Points: [32m21/21
+[0m
+[1mWeapon[0m Claws                [1mArmor[0m None                  [1mXp[0m 450                      [1mGp[0m 3d10
+[1mAttack Die[0m [31m1d4[0m              [1mArmor Class[0m [33m10[0m              [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mCurse[0m               Curse an enemy, reducing all stats by 1.
+  [35mScream[0m              Let out a horrific scream, frightening nearby enemies.
+  [35mBurning Hands[0m       Unleash a cone of fire, dealing 1d6 damage to all enemies in the area.
+  [35mInspire[0m             Inspire your allies, granting them a +2 bonus to attack rolls for the next 3 rounds.
+[1m
+Traits
+[0m  [34mDemonic[0m
+  [36mFiendish Resilience[0m (Resistant to fire and poison damage. Immune to charm effects.)
+
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mAncient Minor Fiend[0m[0m    Lvl. 1  Ancient Demon
+[0m[3mWandering Demon from the abyss, 410 years old. They are of slim build with light hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 22 ([32m+4[0m) | [1mDEX[0m 15 ([32m+2[0m) | [1mINT[0m 15 ([32m+2[0m) | [1mWIS[0m 14 ([32m+1[0m) | [1mCHA[0m 11 ([37m+0[0m) | [1mCON[0m 19 ([32m+3[0m)
+Hit Points: [32m22/22
+[0m
+[1mWeapon[0m Claws                [1mArmor[0m None                  [1mXp[0m 450                      [1mGp[0m 3d10
+[1mAttack Die[0m [31m1d4[0m              [1mArmor Class[0m [33m10[0m              [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mCurse[0m               Curse an enemy, reducing all stats by 1.
+  [35mScream[0m              Let out a horrific scream, frightening nearby enemies.
+  [35mBurning Hands[0m       Unleash a cone of fire, dealing 1d6 damage to all enemies in the area.
+  [35mSecond Wind[0m         Regain 1d10 + level hit points.
+[1m
+Traits
+[0m  [34mDemonic[0m
+  [36mFiendish Resilience[0m (Resistant to fire and poison damage. Immune to charm effects.)
+
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mWarped Minor Water Sprite[0m[0mLvl. 1  Warped Elemental
+[0m[3mGuardian Elemental from the plane of water, 585 years old. They are of towering build with spiky hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 10 ([37m+0[0m) | [1mDEX[0m 24 ([32m+5[0m) | [1mINT[0m 15 ([32m+2[0m) | [1mWIS[0m 11 ([37m+0[0m) | [1mCHA[0m 18 ([32m+3[0m) | [1mCON[0m 9 ([37m+0[0m)
+Hit Points: [32m17/17
+[0m
+[1mWeapon[0m Slam                 [1mArmor[0m None                  [1mXp[0m 250                      [1mGp[0m 1d10
+[1mAttack Die[0m [31m1d6[0m              [1mArmor Class[0m [33m8[0m               [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mDefend[0m              Gain 2 AC until the start of your next turn.
+  [35mDrench[0m              Drench an enemy, reducing their attack rolls by 2 for 3 rounds.
+  [35mMagic Missile[0m       Fire three magical bolts that automatically hit and deal 1d3 damage each (more bolts and damage at higher levels).
+  [35mScream[0m              Let out a horrific scream, frightening nearby enemies.
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mWarped Lesser Earth Spirit[0m[0mLvl. 1  Warped Elemental
+[0m[3mWandering Elemental from the plane of earth, 486 years old. They are of bulky build with matted hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 11 ([37m+0[0m) | [1mDEX[0m 18 ([32m+3[0m) | [1mINT[0m 18 ([32m+3[0m) | [1mWIS[0m 16 ([32m+2[0m) | [1mCHA[0m 14 ([32m+1[0m) | [1mCON[0m 11 ([37m+0[0m)
+Hit Points: [32m16/16
+[0m
+[1mWeapon[0m Slam                 [1mArmor[0m None                  [1mXp[0m 250                      [1mGp[0m 1d10
+[1mAttack Die[0m [31m1d6[0m              [1mArmor Class[0m [33m8[0m               [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mDefend[0m              Gain 2 AC until the start of your next turn.
+  [35mEarthquake[0m          Cause the ground to shake, dealing 2d6 damage to all enemies and knocking them prone.
+  [35mParalyzing Touch[0m    Touch an enemy to paralyze them for 2 rounds.
+  [35mRage[0m                Enter a frenzied state, gaining +2 to damage rolls and +1 toHit but degrading AC for by 3.
+[1m
+Traits
+[0m  [34mA being of pure spirit, able to pass through solid objects.[0m
+  [36mEthereal Form[0m (Resistant to physical damage and difficult to hit.)
+
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mAncient Lesser Fire Ifrit[0m[0mLvl. 1  Ancient Elemental
+[0m[3mWandering Elemental from the plane of earth, 378 years old. They are of towering build with matted hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 17 ([32m+2[0m) | [1mDEX[0m 21 ([32m+4[0m) | [1mINT[0m 15 ([32m+2[0m) | [1mWIS[0m 16 ([32m+2[0m) | [1mCHA[0m 14 ([32m+1[0m) | [1mCON[0m 19 ([32m+3[0m)
+Hit Points: [32m19/19
+[0m
+[1mWeapon[0m Slam                 [1mArmor[0m None                  [1mXp[0m 250                      [1mGp[0m 1d10
+[1mAttack Die[0m [31m1d6[0m              [1mArmor Class[0m [33m8[0m               [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mDefend[0m              Gain 2 AC until the start of your next turn.
+  [35mEarthquake[0m          Cause the ground to shake, dealing 2d6 damage to all enemies and knocking them prone.
+  [35mBurning Hands[0m       Unleash a cone of fire, dealing 1d6 damage to all enemies in the area.
+  [35mInspire[0m             Inspire your allies, granting them a +2 bonus to attack rolls for the next 3 rounds.
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mWarped Minor Air Ooze[0m[0m  Lvl. 1  Warped Elemental
+[0m[3mWandering Elemental from the plane of air, 458 years old. They are of towering build with spiky hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 9 ([37m+0[0m) | [1mDEX[0m 16 ([32m+2[0m) | [1mINT[0m 14 ([32m+1[0m) | [1mWIS[0m 11 ([37m+0[0m) | [1mCHA[0m 14 ([32m+1[0m) | [1mCON[0m 17 ([32m+2[0m)
+Hit Points: [32m19/19
+[0m
+[1mWeapon[0m Slam                 [1mArmor[0m None                  [1mXp[0m 250                      [1mGp[0m 1d10
+[1mAttack Die[0m [31m1d6[0m              [1mArmor Class[0m [33m8[0m               [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mDefend[0m              Gain 2 AC until the start of your next turn.
+  [35mLightning Strike[0m    Strike random enemies with lightning, dealing 1d8 damage and paralyzing them for 1 round.
+  [35mEngulf[0m              Absorb an enemy into the ooze, dealing 6d6 acid damage over 3 rounds.
+  [35mPoison Bite[0m         Bite an enemy, dealing 1d4 damage and poisoning them.
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mGiant Lesser Mind Destroyer[0m[0mLvl. 1  Giant Aberration
+[0m[3mGuardian Aberration from the void, 526 years old. They are of towering build with light hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 24 ([32m+5[0m) | [1mDEX[0m 16 ([32m+2[0m) | [1mINT[0m 26 ([32m+5[0m) | [1mWIS[0m 24 ([32m+5[0m) | [1mCHA[0m 14 ([32m+1[0m) | [1mCON[0m 19 ([32m+3[0m)
+Hit Points: [32m29/29
+[0m
+[1mWeapon[0m Tentacles            [1mArmor[0m None                  [1mXp[0m 650                      [1mGp[0m 4d10
+[1mAttack Die[0m [31m1d4+1[0m            [1mArmor Class[0m [33m9[0m               [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mScream[0m              Let out a horrific scream, frightening nearby enemies.
+  [35mCurse[0m               Curse an enemy, reducing all stats by 1.
+  [35mSleep[0m               Put all enemies to sleep for 2 rounds.
+  [35mCharm Person[0m        Attempt to charm an enemy, making them friendly towards you for 3 rounds.
+  [35mMind Melt[0m           Invade minds of all enemies, dealing 1d6 psychic damage and stunning them.
+  [35mConfuse[0m             Confuse an enemy, causing them to act randomly for 3 rounds.
+  [35mMaul[0m                Make a powerful attack that deals 1d6 + strength modifier extra damage and inflicts Bleed on a successful hit.
+[1m
+Traits
+[0m  [34mOtherworldly[0m
+  [36mPlanar Adaptation[0m (Resistant to elements and gain +2 to save vs magic.)
+
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mWarped Minor Discerner[0m[0m Lvl. 1  Warped Aberration
+[0m[3mGuardian Aberration from the void, 609 years old. They are of slim build with spiky hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 17 ([32m+2[0m) | [1mDEX[0m 20 ([32m+3[0m) | [1mINT[0m 26 ([32m+5[0m) | [1mWIS[0m 21 ([32m+4[0m) | [1mCHA[0m 16 ([32m+2[0m) | [1mCON[0m 17 ([32m+2[0m)
+Hit Points: [32m29/29
+[0m
+[1mWeapon[0m Tentacles            [1mArmor[0m None                  [1mXp[0m 650                      [1mGp[0m 4d10
+[1mAttack Die[0m [31m1d4+1[0m            [1mArmor Class[0m [33m9[0m               [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mScream[0m              Let out a horrific scream, frightening nearby enemies.
+  [35mCurse[0m               Curse an enemy, reducing all stats by 1.
+  [35mSleep[0m               Put all enemies to sleep for 2 rounds.
+  [35mCharm Person[0m        Attempt to charm an enemy, making them friendly towards you for 3 rounds.
+  [35mMind Melt[0m           Invade minds of all enemies, dealing 1d6 psychic damage and stunning them.
+  [35mRage[0m                Enter a frenzied state, gaining +2 to damage rolls and +1 toHit but degrading AC for by 3.
+[1m
+Traits
+[0m  [34mOtherworldly[0m
+  [36mPlanar Adaptation[0m (Resistant to elements and gain +2 to save vs magic.)
+
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mWarped Lesser Mouther[0m[0m  Lvl. 1  Warped Aberration
+[0m[3mWandering Aberration from the void, 545 years old. They are of slim build with dark hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 17 ([32m+2[0m) | [1mDEX[0m 19 ([32m+3[0m) | [1mINT[0m 25 ([32m+5[0m) | [1mWIS[0m 18 ([32m+3[0m) | [1mCHA[0m 16 ([32m+2[0m) | [1mCON[0m 19 ([32m+3[0m)
+Hit Points: [32m29/29
+[0m
+[1mWeapon[0m Tentacles            [1mArmor[0m None                  [1mXp[0m 650                      [1mGp[0m 4d10
+[1mAttack Die[0m [31m1d4+1[0m            [1mArmor Class[0m [33m9[0m               [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mScream[0m              Let out a horrific scream, frightening nearby enemies.
+  [35mCurse[0m               Curse an enemy, reducing all stats by 1.
+  [35mSleep[0m               Put all enemies to sleep for 2 rounds.
+  [35mCharm Person[0m        Attempt to charm an enemy, making them friendly towards you for 3 rounds.
+  [35mMind Melt[0m           Invade minds of all enemies, dealing 1d6 psychic damage and stunning them.
+  [35mRage[0m                Enter a frenzied state, gaining +2 to damage rolls and +1 toHit but degrading AC for by 3.
+[1m
+Traits
+[0m  [34mOtherworldly[0m
+  [36mPlanar Adaptation[0m (Resistant to elements and gain +2 to save vs magic.)
+
+  [34mRegeneration[0m
+  [36mRegeneration[0m (This creature regenerates health over time, allowing it to recover from wounds quickly.)
+
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mTerrifying Minor Clay Golem[0m[0mLvl. 1  Terrifying Construct
+[0m[3mGuardian Construct from the factory, 55 years old. They are of bulky build with matted hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 17 ([32m+2[0m) | [1mDEX[0m 6 ([31m-1[0m) | [1mINT[0m 10 ([37m+0[0m) | [1mWIS[0m 9 ([37m+0[0m) | [1mCHA[0m 12 ([32m+1[0m) | [1mCON[0m 17 ([32m+2[0m)
+Hit Points: [32m9/9
+[0m
+[1mWeapon[0m Slam                 [1mArmor[0m None                  [1mXp[0m 400                      [1mGp[0m 2d10
+[1mAttack Die[0m [31m1d6[0m              [1mArmor Class[0m [33m8[0m               [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mDefend[0m              Gain 2 AC until the start of your next turn.
+  [35mPrepare Charge[0m      Prepare to charge on your next turn, gaining +2 to hit and +2 damage.
+  [35mCharge[0m              Charge at an enemy, dealing 3d8+1 damage. Each level adds +1 to damage.
+  [35mHide[0m                Attempt to hide from enemies.
+  [35mScream[0m              Let out a horrific scream, frightening nearby enemies.
+[1m
+Traits
+[0m  [34mAutomaton[0m
+  [36mConstructed Resilience[0m (Immune to poison, sleep and disease. Weak to physical damage.)
+
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mMajestic Lesser Automaton[0m[0mLvl. 1  Majestic Construct
+[0m[3mGuardian Construct from the factory, 59 years old. They are of average build with light hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 19 ([32m+3[0m) | [1mDEX[0m 8 ([31m-1[0m) | [1mINT[0m 9 ([37m+0[0m) | [1mWIS[0m 9 ([37m+0[0m) | [1mCHA[0m 11 ([37m+0[0m) | [1mCON[0m 18 ([32m+3[0m)
+Hit Points: [32m9/9
+[0m
+[1mWeapon[0m Slam                 [1mArmor[0m None                  [1mXp[0m 400                      [1mGp[0m 2d10
+[1mAttack Die[0m [31m1d6[0m              [1mArmor Class[0m [33m8[0m               [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mDefend[0m              Gain 2 AC until the start of your next turn.
+  [35mPrepare Charge[0m      Prepare to charge on your next turn, gaining +2 to hit and +2 damage.
+  [35mCharge[0m              Charge at an enemy, dealing 3d8+1 damage. Each level adds +1 to damage.
+  [35mHide[0m                Attempt to hide from enemies.
+  [35mBless[0m               Grant divine favor, adding +1 to all rolls for 6 rounds.
+[1m
+Traits
+[0m  [34mAutomaton[0m
+  [36mConstructed Resilience[0m (Immune to poison, sleep and disease. Weak to physical damage.)
+
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mCurious Minor Clockwork Soldier[0m[0mLvl. 1  Curious Construct
+[0m[3mGuardian Construct from the factory, 53 years old. They are of towering build with sleek hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 16 ([32m+2[0m) | [1mDEX[0m 8 ([31m-1[0m) | [1mINT[0m 11 ([37m+0[0m) | [1mWIS[0m 11 ([37m+0[0m) | [1mCHA[0m 7 ([31m-1[0m) | [1mCON[0m 17 ([32m+2[0m)
+Hit Points: [32m9/9
+[0m
+[1mWeapon[0m Slam                 [1mArmor[0m None                  [1mXp[0m 400                      [1mGp[0m 2d10
+[1mAttack Die[0m [31m1d6[0m              [1mArmor Class[0m [33m8[0m               [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mDefend[0m              Gain 2 AC until the start of your next turn.
+  [35mPrepare Charge[0m      Prepare to charge on your next turn, gaining +2 to hit and +2 damage.
+  [35mCharge[0m              Charge at an enemy, dealing 3d8+1 damage. Each level adds +1 to damage.
+  [35mHide[0m                Attempt to hide from enemies.
+[1m
+Traits
+[0m  [34mAutomaton[0m
+  [36mConstructed Resilience[0m (Immune to poison, sleep and disease. Weak to physical damage.)
+
+  [34mDisciplined[0m
+  [36mDisciplined[0m (This creature has a disciplined mind and body, granting it enhanced focus and resilience.)
+
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mAncient Lesser Angel[0m[0m   Lvl. 1  Ancient Celestial
+[0m[3mWandering Celestial from the heavens, 461 years old. They are of average build with sleek hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 21 ([32m+4[0m) | [1mDEX[0m 18 ([32m+3[0m) | [1mINT[0m 18 ([32m+3[0m) | [1mWIS[0m 25 ([32m+5[0m) | [1mCHA[0m 24 ([32m+5[0m) | [1mCON[0m 19 ([32m+3[0m)
+Hit Points: [32m25/25
+[0m
+[1mWeapon[0m Longsword            [1mArmor[0m None                  [1mXp[0m 500                      [1mGp[0m 3d10
+[1mAttack Die[0m [31m1d8[0m              [1mArmor Class[0m [33m9[0m               [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mSmite Evil[0m          Smite an enemy, dealing 1d8 + level radiant damage.
+  [35mHeal Ally[0m           Restore health to a wounded ally.
+  [35mBless[0m               Grant divine favor, adding +1 to all rolls for 6 rounds.
+  [35mInspire[0m             Inspire your allies, granting them a +2 bonus to attack rolls for the next 3 rounds.
+  [35mSecond Wind[0m         Regain 1d10 + level hit points.
+[1m
+Traits
+[0m  [34mHoly[0m
+  [36mCelestial Radiance[0m (Resistant to radiant and necrotic damage. Gain +1d4 healing on all healing spells.)
+
+  [34mFormidable[0m
+  [36mFormidable[0m (This creature is particularly tough, granting it additional resilience in combat.)
+
+  [34mPiety[0m
+  [36mDivine Favor[0m (+1d4 healing on all healing spells.)
+
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mGiant Minor Archon[0m[0m     Lvl. 1  Giant Celestial
+[0m[3mGuardian Celestial from the heavens, 533 years old. They are of average build with dark hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 26 ([32m+5[0m) | [1mDEX[0m 19 ([32m+3[0m) | [1mINT[0m 15 ([32m+2[0m) | [1mWIS[0m 23 ([32m+4[0m) | [1mCHA[0m 21 ([32m+4[0m) | [1mCON[0m 19 ([32m+3[0m)
+Hit Points: [32m26/26
+[0m
+[1mWeapon[0m Longsword            [1mArmor[0m None                  [1mXp[0m 500                      [1mGp[0m 3d10
+[1mAttack Die[0m [31m1d8[0m              [1mArmor Class[0m [33m9[0m               [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mSmite Evil[0m          Smite an enemy, dealing 1d8 + level radiant damage.
+  [35mHeal Ally[0m           Restore health to a wounded ally.
+  [35mBless[0m               Grant divine favor, adding +1 to all rolls for 6 rounds.
+  [35mDefend[0m              Gain 2 AC until the start of your next turn.
+  [35mMaul[0m                Make a powerful attack that deals 1d6 + strength modifier extra damage and inflicts Bleed on a successful hit.
+[1m
+Traits
+[0m  [34mHoly[0m
+  [36mCelestial Radiance[0m (Resistant to radiant and necrotic damage. Gain +1d4 healing on all healing spells.)
+
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mGiant Lesser Deva[0m[0m      Lvl. 1  Giant Celestial
+[0m[3mWandering Celestial from the heavens, 387 years old. They are of average build with dark hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 27 ([32m+6[0m) | [1mDEX[0m 17 ([32m+2[0m) | [1mINT[0m 15 ([32m+2[0m) | [1mWIS[0m 25 ([32m+5[0m) | [1mCHA[0m 21 ([32m+4[0m) | [1mCON[0m 16 ([32m+2[0m)
+Hit Points: [32m24/24
+[0m
+[1mWeapon[0m Longsword            [1mArmor[0m None                  [1mXp[0m 500                      [1mGp[0m 3d10
+[1mAttack Die[0m [31m1d8[0m              [1mArmor Class[0m [33m9[0m               [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mSmite Evil[0m          Smite an enemy, dealing 1d8 + level radiant damage.
+  [35mHeal Ally[0m           Restore health to a wounded ally.
+  [35mBless[0m               Grant divine favor, adding +1 to all rolls for 6 rounds.
+  [35mInspire[0m             Inspire your allies, granting them a +2 bonus to attack rolls for the next 3 rounds.
+  [35mMaul[0m                Make a powerful attack that deals 1d6 + strength modifier extra damage and inflicts Bleed on a successful hit.
+[1m
+Traits
+[0m  [34mHoly[0m
+  [36mCelestial Radiance[0m (Resistant to radiant and necrotic damage. Gain +1d4 healing on all healing spells.)
+
+  [34mFormidable[0m
+  [36mFormidable[0m (This creature is particularly tough, granting it additional resilience in combat.)
+
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mGiant Lesser Solar[0m[0m     Lvl. 1  Giant Celestial
+[0m[3mWandering Celestial from the heavens, 485 years old. They are of bulky build with matted hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 29 ([32m+6[0m) | [1mDEX[0m 18 ([32m+3[0m) | [1mINT[0m 15 ([32m+2[0m) | [1mWIS[0m 24 ([32m+5[0m) | [1mCHA[0m 22 ([32m+4[0m) | [1mCON[0m 16 ([32m+2[0m)
+Hit Points: [32m24/24
+[0m
+[1mWeapon[0m Longsword            [1mArmor[0m None                  [1mXp[0m 500                      [1mGp[0m 3d10
+[1mAttack Die[0m [31m1d8[0m              [1mArmor Class[0m [33m9[0m               [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mSmite Evil[0m          Smite an enemy, dealing 1d8 + level radiant damage.
+  [35mHeal Ally[0m           Restore health to a wounded ally.
+  [35mBless[0m               Grant divine favor, adding +1 to all rolls for 6 rounds.
+  [35mRally[0m               Rally your allies, healing them for 1d6 hit points.
+  [35mMaul[0m                Make a powerful attack that deals 1d6 + strength modifier extra damage and inflicts Bleed on a successful hit.
+[1m
+Traits
+[0m  [34mHoly[0m
+  [36mCelestial Radiance[0m (Resistant to radiant and necrotic damage. Gain +1d4 healing on all healing spells.)
+
+  [34mFormidable[0m
+  [36mFormidable[0m (This creature is particularly tough, granting it additional resilience in combat.)
+
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mCursed Lesser Dryad[0m[0m    Lvl. 1  Cursed Fey
+[0m[3mGuardian Fey from the forest, 52 years old. They are of slim build with spiky hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 8 ([31m-1[0m) | [1mDEX[0m 18 ([32m+3[0m) | [1mINT[0m 13 ([32m+1[0m) | [1mWIS[0m 15 ([32m+2[0m) | [1mCHA[0m 16 ([32m+2[0m) | [1mCON[0m 11 ([37m+0[0m)
+Hit Points: [32m14/14
+[0m
+[1mWeapon[0m Dagger               [1mArmor[0m None                  [1mXp[0m 300                      [1mGp[0m 1d10
+[1mAttack Die[0m [31m1d4[0m              [1mArmor Class[0m [33m10[0m              [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mCharm Person[0m        Attempt to charm an enemy, making them friendly towards you for 3 rounds.
+  [35mSleep[0m               Put all enemies to sleep for 2 rounds.
+  [35mHide[0m                Attempt to hide from enemies.
+  [35mCall Animal Companion[0m A friendly animal comes to your aid in battle.
+  [35mScream[0m              Let out a horrific scream, frightening nearby enemies.
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mCursed Lesser Satyr[0m[0m    Lvl. 1  Cursed Fey
+[0m[3mGuardian Fey from the forest, 57 years old. They are of bulky build with matted hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 10 ([37m+0[0m) | [1mDEX[0m 16 ([32m+2[0m) | [1mINT[0m 13 ([32m+1[0m) | [1mWIS[0m 15 ([32m+2[0m) | [1mCHA[0m 15 ([32m+2[0m) | [1mCON[0m 8 ([31m-1[0m)
+Hit Points: [32m13/13
+[0m
+[1mWeapon[0m Dagger               [1mArmor[0m None                  [1mXp[0m 300                      [1mGp[0m 1d10
+[1mAttack Die[0m [31m1d4[0m              [1mArmor Class[0m [33m10[0m              [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mCharm Person[0m        Attempt to charm an enemy, making them friendly towards you for 3 rounds.
+  [35mSleep[0m               Put all enemies to sleep for 2 rounds.
+  [35mHide[0m                Attempt to hide from enemies.
+  [35mScream[0m              Let out a horrific scream, frightening nearby enemies.
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mGiant Lesser Nymph[0m[0m     Lvl. 1  Giant Fey
+[0m[3mGuardian Fey from the forest, 42 years old. They are of bulky build with matted hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 16 ([32m+2[0m) | [1mDEX[0m 11 ([37m+0[0m) | [1mINT[0m 11 ([37m+0[0m) | [1mWIS[0m 18 ([32m+3[0m) | [1mCHA[0m 19 ([32m+3[0m) | [1mCON[0m 13 ([32m+1[0m)
+Hit Points: [32m15/15
+[0m
+[1mWeapon[0m Dagger               [1mArmor[0m None                  [1mXp[0m 300                      [1mGp[0m 1d10
+[1mAttack Die[0m [31m1d4[0m              [1mArmor Class[0m [33m10[0m              [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mCharm Person[0m        Attempt to charm an enemy, making them friendly towards you for 3 rounds.
+  [35mSleep[0m               Put all enemies to sleep for 2 rounds.
+  [35mHide[0m                Attempt to hide from enemies.
+  [35mCall Animal Companion[0m A friendly animal comes to your aid in battle.
+  [35mMaul[0m                Make a powerful attack that deals 1d6 + strength modifier extra damage and inflicts Bleed on a successful hit.
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mWarped Minor Pixie[0m[0m     Lvl. 1  Warped Fey
+[0m[3mGuardian Fey from the forest, 43 years old. They are of bulky build with no hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 8 ([31m-1[0m) | [1mDEX[0m 21 ([32m+4[0m) | [1mINT[0m 13 ([32m+1[0m) | [1mWIS[0m 10 ([37m+0[0m) | [1mCHA[0m 20 ([32m+3[0m) | [1mCON[0m 9 ([37m+0[0m)
+Hit Points: [32m15/15
+[0m
+[1mWeapon[0m Dagger               [1mArmor[0m None                  [1mXp[0m 300                      [1mGp[0m 1d10
+[1mAttack Die[0m [31m1d4[0m              [1mArmor Class[0m [33m10[0m              [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mCharm Person[0m        Attempt to charm an enemy, making them friendly towards you for 3 rounds.
+  [35mSleep[0m               Put all enemies to sleep for 2 rounds.
+  [35mHide[0m                Attempt to hide from enemies.
+  [35mMaul[0m                Make a powerful attack that deals 1d6 + strength modifier extra damage and inflicts Bleed on a successful hit.
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mAlpha Minor Owlbear[0m[0m    Lvl. 1  Alpha Beast
+[0m[3mGuardian Beast from the wilderness, 56 years old. They are of slim build with dark hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 21 ([32m+4[0m) | [1mDEX[0m 8 ([31m-1[0m) | [1mINT[0m 4 ([31m-2[0m) | [1mWIS[0m 4 ([31m-2[0m) | [1mCHA[0m 4 ([31m-2[0m) | [1mCON[0m 13 ([32m+1[0m)
+Hit Points: [32m12/12
+[0m
+[1mWeapon[0m Claws                [1mArmor[0m None                  [1mXp[0m 200                      [1mGp[0m 0
+[1mAttack Die[0m [31m1d4[0m              [1mArmor Class[0m [33m10[0m              [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mMaul[0m                Make a powerful attack that deals 1d6 + strength modifier extra damage and inflicts Bleed on a successful hit.
+  [35mPrepare Charge[0m      Prepare to charge on your next turn, gaining +2 to hit and +2 damage.
+  [35mCharge[0m              Charge at an enemy, dealing 3d8+1 damage. Each level adds +1 to damage.
+  [35mRage[0m                Enter a frenzied state, gaining +2 to damage rolls and +1 toHit but degrading AC for by 3.
+  [35mPoison Bite[0m         Bite an enemy, dealing 1d4 damage and poisoning them.
+  [35mSmash[0m               Powerful attack that deals 2d6 bludgeoning damage, plus 1 damage per level.
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mGiant Lesser Nightmare[0m[0m Lvl. 1  Giant Beast
+[0m[3mWandering Beast from the wilderness, 56 years old. They are of bulky build with matted hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 21 ([32m+4[0m) | [1mDEX[0m 10 ([37m+0[0m) | [1mINT[0m 3 ([31m-2[0m) | [1mWIS[0m 5 ([31m-2[0m) | [1mCHA[0m 3 ([31m-2[0m) | [1mCON[0m 14 ([32m+1[0m)
+Hit Points: [32m11/11
+[0m
+[1mWeapon[0m Claws                [1mArmor[0m None                  [1mXp[0m 200                      [1mGp[0m 0
+[1mAttack Die[0m [31m1d4[0m              [1mArmor Class[0m [33m10[0m              [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mMaul[0m                Make a powerful attack that deals 1d6 + strength modifier extra damage and inflicts Bleed on a successful hit.
+  [35mPrepare Charge[0m      Prepare to charge on your next turn, gaining +2 to hit and +2 damage.
+  [35mCharge[0m              Charge at an enemy, dealing 3d8+1 damage. Each level adds +1 to damage.
+  [35mRage[0m                Enter a frenzied state, gaining +2 to damage rolls and +1 toHit but degrading AC for by 3.
+  [35mPoison Bite[0m         Bite an enemy, dealing 1d4 damage and poisoning them.
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mTerrifying Minor Wendigo[0m[0mLvl. 1  Terrifying Beast
+[0m[3mGuardian Beast from the wilderness, 60 years old. They are of slim build with light hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 20 ([32m+3[0m) | [1mDEX[0m 8 ([31m-1[0m) | [1mINT[0m 3 ([31m-2[0m) | [1mWIS[0m 3 ([31m-2[0m) | [1mCHA[0m 7 ([31m-1[0m) | [1mCON[0m 10 ([37m+0[0m)
+Hit Points: [32m11/11
+[0m
+[1mWeapon[0m Claws                [1mArmor[0m None                  [1mXp[0m 200                      [1mGp[0m 0
+[1mAttack Die[0m [31m1d4[0m              [1mArmor Class[0m [33m10[0m              [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mMaul[0m                Make a powerful attack that deals 1d6 + strength modifier extra damage and inflicts Bleed on a successful hit.
+  [35mPrepare Charge[0m      Prepare to charge on your next turn, gaining +2 to hit and +2 damage.
+  [35mCharge[0m              Charge at an enemy, dealing 3d8+1 damage. Each level adds +1 to damage.
+  [35mRage[0m                Enter a frenzied state, gaining +2 to damage rolls and +1 toHit but degrading AC for by 3.
+  [35mPoison Bite[0m         Bite an enemy, dealing 1d4 damage and poisoning them.
+  [35mScream[0m              Let out a horrific scream, frightening nearby enemies.
+
+[1m
+
+Character Record
+[0m[4m[32m█[0m [1m[33mVenomous Lesser Chimera[0m[0mLvl. 1  Venomous Beast
+[0m[3mGuardian Beast from the wilderness, 48 years old. They are of slim build with sleek hair, dark eyes and an unreadable disposition.[0m
+
+[1mSTR[0m 16 ([32m+2[0m) | [1mDEX[0m 15 ([32m+2[0m) | [1mINT[0m 3 ([31m-2[0m) | [1mWIS[0m 3 ([31m-2[0m) | [1mCHA[0m 3 ([31m-2[0m) | [1mCON[0m 14 ([32m+1[0m)
+Hit Points: [32m11/11
+[0m
+[1mWeapon[0m Claws                [1mArmor[0m None                  [1mXp[0m 200                      [1mGp[0m 0
+[1mAttack Die[0m [31m1d4[0m              [1mArmor Class[0m [33m10[0m              [1mSpell Slots[0m None
+[1m
+Abilities
+[0m  [35mMelee Attack[0m        Make a melee attack against an enemy with your primary weapon.
+  [35mMaul[0m                Make a powerful attack that deals 1d6 + strength modifier extra damage and inflicts Bleed on a successful hit.
+  [35mPrepare Charge[0m      Prepare to charge on your next turn, gaining +2 to hit and +2 damage.
+  [35mCharge[0m              Charge at an enemy, dealing 3d8+1 damage. Each level adds +1 to damage.
+  [35mRage[0m                Enter a frenzied state, gaining +2 to damage rolls and +1 toHit but degrading AC for by 3.
+  [35mPoison Bite[0m         Bite an enemy, dealing 1d4 damage and poisoning them.
+  [35mFireball[0m            Hurl a fiery ball that explodes, dealing 6d6 fire damage to all enemies in the area.
