@@ -2,9 +2,11 @@ import Stylist from "./Style";
 import { Combatant } from "../types/Combatant";
 import Words from "./Words";
 import { Fighting } from "../rules/Fighting";
-import AbilityHandler from "../Ability";
+import AbilityHandler, { Ability, AbilityEffect, Target } from "../Ability";
 import TraitHandler from "../Trait";
 import Combat from "../Combat";
+import { StatusEffect, StatusModifications } from "../Status";
+import { never } from "../util/never";
 
 export default class Presenter {
   static colors = ['magenta', 'red', 'yellow', 'yellow', 'yellow', 'green', 'green', 'green', 'green'];
@@ -27,7 +29,7 @@ export default class Presenter {
 
   static async characterRecord(combatant: Combatant) {
     let record = "";
-    record += (Stylist.bold("\n\nCharacter Record\n"));
+    // record += (Stylist.bold("\n\nCharacter Record\n"));
     record += (Stylist.format(`${this.combatant(combatant)}\n`, 'underline'));
 
     // "Human Female Warrior of Hometown (41 years old)"
@@ -71,7 +73,7 @@ export default class Presenter {
       "Attack Die": Stylist.colorize(combatant.attackDie, 'red'),
       "Armor Class": Stylist.colorize(`${(effective as any).ac}`, 'yellow'),
       "Spell Slots": ["mage", "bard", "cleric"].includes(combatant.class || '') ?
-          bolt.repeat(Combat.maxSpellSlotsForCombatant(combatant)) : "none"
+        bolt.repeat(Combat.maxSpellSlotsForCombatant(combatant)) : "none"
     }
     record += (Object.entries(core).map(([key, value]) => {
       return this.padLiteralEnd(`${Stylist.bold(Words.capitalize(key))} ${Words.humanize(value)}`, 25);
@@ -106,8 +108,10 @@ export default class Presenter {
     // active and passive effects
     if (combatant.activeEffects && combatant.activeEffects.length > 0) {
       record += Stylist.bold("\nActive Effects\n");
-      combatant.activeEffects.forEach(effect => {
-        record += `  ${Stylist.colorize(effect.name, 'cyan')} (${effect.description})\n`;
+      combatant.activeEffects.forEach(status => {
+        record += `  ${Stylist.colorize(status.name, 'cyan')} (${
+          this.analyzeStatus(status)
+        })\n`;
       });
     }
     const otherPassives = combatant.passiveEffects?.filter(effect => !passiveEffectsFromAbilities.includes(effect.name)) || [];
@@ -278,13 +282,13 @@ export default class Presenter {
       let lhsStatuses = lhs?.activeEffects?.map(e => e.duration ? `${e.name} (${e.duration})` : e.name)
         || [];
       lhsStatuses = lhsStatuses
-          .map(s => s.toLowerCase())
-          .filter(s => !ignoreStatuses.includes(s.toLowerCase()));
+        .map(s => s.toLowerCase())
+        .filter(s => !ignoreStatuses.includes(s.toLowerCase()));
       let rhsStatuses = rhs?.activeEffects?.map(e => e.duration ? `${e.name} (${e.duration})` : e.name)
         .concat(rhs?.traits) || [];
       rhsStatuses = rhsStatuses
-          .map(s => s.toLowerCase())
-          .filter(s => !ignoreStatuses.includes(s));
+        .map(s => s.toLowerCase())
+        .filter(s => !ignoreStatuses.includes(s));
 
       let statusLine = "";
       if (lhsStatuses.length > 0) {
@@ -303,5 +307,342 @@ export default class Presenter {
       Stylist.format(parties[0].name.padEnd(40), 'italic') +
       Stylist.format(parties[1]?.name.padStart(40) || '', 'italic') + '\n';
     return headers + partyDisplay;
+  }
+
+  static describeStatus(status: StatusEffect): string {
+    return `${status.name} (${status.description || this.analyzeStatus(status)})`;
+    // return this.analyzeStatus(status);
+  }
+
+  static analyzeStatus(status: StatusEffect): string {
+    let parts: string[] = [];
+    let effect = status.effect;
+
+    for (let [key, value] of Object.entries(effect)) {
+      if (value === undefined) continue;
+      let k: keyof StatusModifications = key as keyof StatusModifications;
+      switch (k) {
+        case "allRolls":
+          parts.push(`All rolls ${this.increaseDecrease(value as number)}`);
+          break;
+        case "rerollNaturalOnes":
+          if (value) {
+            parts.push(`Reroll natural ones`);
+          }
+          break;
+        case "str":
+        case "dex":
+        case "con":
+        case "int":
+        case "wis":
+        case "cha":
+          parts.push(`${Words.statName(k)} ${this.increaseDecrease(value)}`);
+          break;
+        case "initiative":
+          parts.push(`Initiative ${this.increaseDecrease(value)}`);
+          break;
+        case "toHit":
+          parts.push(`To Hit ${this.increaseDecrease(value)}`);
+          break;
+        case "bonusDamage":
+          parts.push(`Bonus Damage ${this.increaseDecrease(value)}`);
+          break;
+        case "ac":
+          parts.push(`AC ${this.increaseDecrease(-value)}`);
+          break;
+        case "evasion":
+          parts.push(`Evasion ${this.increaseDecrease(value)}`);
+          break;
+        case "bonusHealing":
+          parts.push(`Bonus Healing ${this.increaseDecrease(value)}`);
+          break;
+        case "allSaves":
+          parts.push(`All Saves ${this.increaseDecrease(value)}`);
+          break;
+        case "resistBleed":
+        case "resistPoison":
+        case "resistPsychic":
+        case "resistLightning":
+        case "resistFire":
+        case "resistCold":
+        case "resistBludgeoning":
+        case "resistPiercing":
+        case "resistSlashing":
+        case "resistForce":
+        case "resistRadiant":
+        case "resistNecrotic":
+        case "resistAcid":
+        case "resistTrue":
+          if (value as number > 0) {
+            parts.push(`${Math.round((value as number) * 100)}% resistance to ${Words.humanize(k.replace("resist", ""))}`);
+          } else {
+            parts.push(`${Math.round(Math.abs((value as number)) * 100)}% vulnerability to ${Words.humanize(k.replace("resist", ""))}`);
+          }
+          break;
+        case "saveVersusPoison":
+        case "saveVersusDisease":
+        case "saveVersusDeath":
+        case "saveVersusMagic":
+        case "saveVersusInsanity":
+        case "saveVersusCharm":
+        case "saveVersusFear":
+        case "saveVersusStun":
+        case "saveVersusWill":
+        case "saveVersusBreath":
+        case "saveVersusParalyze":
+        case "saveVersusSleep":
+          parts.push(`Save versus ${Words.humanize(k.replace("saveVersus", ""))} ${this.increaseDecrease(value)}`);
+          break;
+
+        case "immunePoison":
+        case "immuneDisease":
+        case "immuneDeath":
+        case "immuneMagic":
+        case "immuneInsanity":
+        case "immuneCharm":
+        case "immuneFear":
+        case "immuneStun":
+        case "immuneWill":
+        case "immuneBreath":
+        case "immuneParalyze":
+        case "immuneSleep":
+          if (value) {
+            parts.push(`Immunity to ${Words.humanize(k.replace("immune", ""))}`);
+          }
+          break;
+        case "immuneDamage":
+          if (value) {
+            parts.push(`Immunity to all damage`);
+          }
+          break;
+        case "noActions":
+          if (value) {
+            parts.push(`Cannot take actions`);
+          }
+          break;
+        case "randomActions":
+          if (value) {
+            parts.push(`Actions are random`);
+          }
+          break;
+        case "noSpellcasting":
+          if (value) {
+            parts.push(`Cannot cast spells`);
+          }
+          break;
+        case "noStatusExpiry":
+          if (value) {
+            parts.push(`Status effects do not expire`);
+          }
+          break;
+        case "flee":
+          if (value) {
+            parts.push(`Fleeing`);
+          }
+          break;
+        case "onAttack":
+        case "onAttackHit":
+        case "onTurnEnd":
+        case "onKill":
+        case "onAttacked":
+        case "onExpire":
+        case "onLevelUp":
+        case "onEnemyCharge":
+        case "onEnemyMelee":
+        case "onMissReceived":
+          parts.push(`${this.describeEffects(value, 'self')} ${Words.humanize(k)}`);
+          break;
+
+        case "summonAnimalBonus":
+          parts.push(`Summon Animal bonus ${this.increaseDecrease(value)}`);
+          break;
+        case "bonusSpellSlots":
+          parts.push(`Bonus spell slots ${this.increaseDecrease(value)}`);
+          break;
+        case "bonusSpellDC":
+          parts.push(`Bonus spell DC ${this.increaseDecrease(value)}`);
+          break;
+        case "statusDuration":
+          parts.push(`Status duration ${this.increaseDecrease(value)}`);
+          break;
+        case "backstabMultiplier":
+          parts.push(`Backstab damage multiplied by ${value}x`);
+          break;
+        case "resurrectable":
+          if (value) {
+            parts.push(`Resurrectable`);
+          } else {
+            parts.push(`Not resurrectable`);
+          }
+          break;
+
+        case "extraAttacksPerTurn":
+          parts.push(`Extra attacks per turn ${this.increaseDecrease(value)}`);
+          break;
+
+        // noncombat
+        case "examineBonus":
+          parts.push(`Examine bonus ${this.increaseDecrease(value)}`);
+          break;
+        case "searchBonus":
+          parts.push(`Search bonus ${this.increaseDecrease(value)}`);
+          break;
+        case "pickLockBonus":
+          parts.push(`Pick Lock bonus ${this.increaseDecrease(value)}`);
+          break;
+        case "disarmTrapBonus":
+          parts.push(`Disarm Trap bonus ${this.increaseDecrease(value)}`);
+          break;
+        case "lootBonus":
+          parts.push(`Loot bonus ${this.increaseDecrease(value)}`);
+          break;
+
+        case "xpMultiplier":
+          parts.push(`XP multiplied by ${value}x`);
+          break;
+        case "goldMultiplier":
+          parts.push(`Gold earned multiplied by ${value}x`);
+          break;
+        case "consumableMultiplier":
+          parts.push(`Consumables effectiveness multiplied by ${value}x`);
+          break;
+        case "changeAllegiance":
+          if (value) {
+            parts.push(`Allegiance changed`);
+          }
+          break;
+
+        case "compelNextMove":
+          if (value) {
+            parts.push(`Next move compelled to be ${value}`);
+          }
+          break;
+
+        // TODO figure out where this comes from
+        case "by":
+          // ignore
+          break;
+
+        default:
+          return never(k);
+      }
+    }
+    return parts.join(", ");
+  }
+
+  static increaseDecrease(value: number): string {
+    return value >= 0 ? `increased by ${value}` : `decreased by ${Math.abs(value)}`;
+  }
+
+  static describeDuration(duration?: number): string {
+    if (duration) {
+      return duration > 1 ? `for ${duration} turns` : `for ${duration} turn`;
+    }
+    return "indefinitely";
+  }
+
+  static describeEffect(effect: AbilityEffect, targetDescription: string): string {
+    let description = "";
+    let amount = effect.amount ? effect.amount.toString() : "1";
+    if (amount.startsWith('=')) {
+      amount = amount.slice(1);
+    }
+
+    switch (effect.type) {
+      case "attack": description = (`Attack ${targetDescription}`); break;
+      case "damage":
+        description = (`Deal ${amount} ${effect.kind || "true"} damage to ${targetDescription}`);
+        break;
+      case "heal": description = (`Heal ${targetDescription} ${amount} HP`); break;
+      case "drain": description = (`Drain ${targetDescription} ${amount} HP`); break;
+      case "buff":
+        if (effect.status) {
+          description = (`Grant ${targetDescription} ${this.describeStatus(effect.status)} ${this.describeDuration(effect.status.duration)}`);
+        } else {
+          throw new Error(`Buff effect must have a status defined`);
+        }
+        break;
+      case "debuff":
+        if (effect.status) {
+          const verb = targetDescription.startsWith("all") || targetDescription.includes("enemies")
+            ? "suffer"
+            : "suffers";
+          description = (`${Words.capitalize(targetDescription)} ${verb} ${this.describeStatus(effect.status)} ${this.describeDuration(effect.status.duration)}`);
+        } else {
+          throw new Error(`Debuff effect must have a status defined`);
+        }
+        break;
+      case "summon":
+        let options = "";
+        if ((effect.options as any)._class) {
+          options += `${Words.capitalize((effect.options as any)._class)} `;
+        }
+        description = (`Summon ${options}${effect.creature || "creature"} (options: ${JSON.stringify(effect.options)})`); break;
+      case "removeStatus":
+        description = (`Purge ${targetDescription} of ${effect.statusName}`); break;
+      case "upgrade":
+        if (effect.stat) {
+          description = (`Increase ${Words.statName(effect.stat)} by ${effect.amount || "1"}`);
+        } else {
+          throw new Error(`Upgrade effect must specify a stat`);
+        }
+        break;
+      case "flee":
+        description = (`Force ${targetDescription} to flee`); break;
+      case "resurrect":
+        let hp = effect.hpPercent && effect.hpPercent < 100 ? `${effect.hpPercent}%` : "full";
+        description = (`Restore ${targetDescription} to life${effect.hpPercent ? ` with ${hp} health` : ""}`); break;
+      case "kill":
+        description = (`Instantly kill ${targetDescription}`); break;
+      case "gold":
+        description = (`Gain ${amount} gold`); break;
+      case "xp":
+        description = (`Gain ${amount} XP`); break;
+      default: return never(effect.type);
+    }
+
+    let condition = effect.condition ? ` if ${effect.condition.trait}` : "";
+    description += condition;
+
+    return description;
+  }
+
+  static describeEffects(effects: AbilityEffect[], targetDescription: string): string {
+    let parts: string[] = [];
+    if (effects.every(e => e.type === 'removeStatus')) {
+      const statuses = effects.map(e => e.statusName).join(', ');
+      return `Remove ${statuses} from ${targetDescription}`;
+    }
+    for (const effect of effects) {
+      parts.push(this.describeEffect(effect, effect.target || targetDescription));
+    }
+    return parts.join("; ");
+  }
+
+  static describeTarget(target: Target[]): string {
+    let parts: string[] = [];
+    for (const t of target) {
+      let desc = "";
+      switch (t) {
+        case "self": desc = "yourself"; break;
+        case "ally": desc = "an ally"; break;
+        case "enemy": desc = "an enemy"; break;
+        case "allies": desc = "all allies"; break;
+        case "enemies": desc = "all enemies"; break;
+        case "all": desc = "all combatants"; break;
+        case "deadAlly": desc = "a fallen ally"; break;
+        case "randomEnemies": return `${target[1]} random enemies`;
+        default: return never(t);
+      }
+      parts.push(desc);
+    }
+    return parts.join(" or ");
+  }
+
+  static describeAbility(ability: Ability): string {
+    let parts: string[] = [];
+    parts.push("Narrative: " + ability.description);
+    parts.push("Mechanical: " + this.describeEffects(ability.effects, this.describeTarget(ability.target)) + ".");
+    return parts.join("\n");
   }
 }

@@ -11,9 +11,10 @@ import { Roll } from "./types/Roll";
 import Events, { DungeonEvent, EquipmentWornEvent } from "./Events";
 import { Commands } from "./rules/Commands";
 import CharacterRecord from "./rules/CharacterRecord";
-import AbilityHandler, { Ability, StatusEffect } from "./Ability";
+import AbilityHandler, { Ability } from "./Ability";
 import { Inventory } from "./Inventory";
 import Orsino from "../orsino";
+import { StatusEffect } from "./Status";
 
 type SkillType = "search" | "examine"; // | "disarm" | "pickLock" | "climb" | "swim" | "jump" | "listen" | "spot";
 

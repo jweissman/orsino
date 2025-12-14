@@ -12,16 +12,27 @@ import Deem from "../deem";
 import { ItemInstance } from "./types/ItemInstance";
 import { Inventory } from "./Inventory";
 import Events, { ModuleEvent } from "./Events";
+import StatusHandler, { StatusEffect, StatusModifications } from "./Status";
+import Presenter from "./tui/Presenter";
 
 type TownSize = 'hamlet' | 'village' | 'town' | 'city' | 'metropolis' | 'capital';
 type Race = 'human' | 'elf' | 'dwarf' | 'halfling' | 'gnome' | 'orc' | 'fae';
+
+export interface Deity {
+  name: string;
+  domain: string;
+  blessing: StatusModifications;
+  forename: string;
+  gender: "male" | "female";
+  title: string;
+}
 
 export interface Town {
   name: string;
   adjective: string;
   population: number;
   size: TownSize;
-  deity: string;
+  deity: Deity;
   race: Race;
 }
 
@@ -133,7 +144,7 @@ export class ModuleRunner {
       town: {
         name: "Port Vesper",
         population: 5000,
-        deity: "The Serpent Queen"
+        deity: { name: "The Serpent Queen" }
       },
       dungeons: [Dungeoneer.defaultGen()]
     }
@@ -222,18 +233,21 @@ export class ModuleRunner {
       } else if (action === "pray") {
         this.state.sharedGold -= 10;
         let blessingsGranted: string[] = [];
+        const effect = mod.town.deity.blessing;
+        const duration = 10;
+        const deityName = mod.town.deity.name;
+        let blessing: StatusEffect = { name: `Blessing of ${deityName}`, duration, effect };
+        blessing.description = Presenter.describeStatus(blessing);
         // this.outputSink(`You pray to ${Words.capitalize(mod.town.deity)}.`);
         this.pcs.forEach(pc => {
           pc.activeEffects = pc.activeEffects || [];
-          if (!pc.activeEffects.some(e => e.name === `Blessing of ${mod.town.deity}`)) {
+          if (!pc.activeEffects.some(e => e.name === `Blessing of ${deityName}`)) {
             // this.outputSink(`The priest blesses ${pc.name}.`);
-            const blessing = { toHit: 1, initiative: 2 };
-            const duration = 5;
-            pc.activeEffects.push({
-              name: `Blessing of ${mod.town.deity}`, duration, effect: blessing,
-              description: `+${blessing.toHit} to hit, +${blessing.initiative} initiative for ${duration} turns`
-            });
-            blessingsGranted.push(`Blessings of ${mod.town.deity} upon ${pc.name}`);
+            pc.activeEffects.push(
+              // { name: `Blessing of ${deityName}`, duration, effect, description }
+              blessing
+            );
+            blessingsGranted.push(`Blessings of ${deityName} upon ${pc.name}`);
             // this.outputSink(`${pc.name} gains ${Words.humanizeList(
             //   Object.entries(blessing).map(([k, v]) => `${v > 0 ? "+" : ""}${v} ${k}`)
             // )} for ${duration} turns!`)
@@ -247,7 +261,7 @@ export class ModuleRunner {
           }
         }
         await this.emit({
-          type: "templeVisited", templeName: `${mod.town.name} Temple of ${Words.capitalize(mod.town.deity)}`, day: this.days,
+          type: "templeVisited", templeName: `${mod.town.name} Temple of ${Words.capitalize(deityName)}`, day: this.days,
           blessingsGranted,
           itemsRecharged: this.state.inventory
             .filter(i => i.maxCharges !== undefined)
@@ -342,7 +356,7 @@ export class ModuleRunner {
           { short: "Equip", value: "magicShop", name: "Visit the Magic Shop (buy equipment)", disabled: false },
           { short: "Items", value: "itemShop", name: "Visit the Alchemist (buy consumables)", disabled: false },
           { short: "Chat", value: "rumors", name: "Visit the Tavern (gather hirelings, hear rumors about the region)", disabled: available.length === 0 },
-          { short: "Pray", value: "pray", name: `Visit the Temple to ${Words.capitalize(this.mod.town.deity)}`, disabled: this.sharedGold < 10 },
+          { short: "Pray", value: "pray", name: `Visit the Temple to ${Words.capitalize(this.mod.town.deity.name)}`, disabled: this.sharedGold < 10 },
           { short: "Show", value: "show", name: `Show Party Inventory/Character Records`, disabled: false },
         ]
       );
@@ -589,7 +603,7 @@ export class ModuleRunner {
       day: this.days,
     });
 
-    const choice = await this.select(`Would you like to hire ${hireling.name} for 50g?`, [
+    const choice = await this.select(`Would you like to hire ${hireling.name} for ${cost}?`, [
       { short: "Yes", value: true, name: "Hire the hireling", disabled: this.sharedGold < cost },
       { short: "No", value: false, name: "Decline the offer", disabled: false },
     ]);

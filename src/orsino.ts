@@ -14,6 +14,7 @@ import Deem from "./deem";
 import Presenter from "./orsino/tui/Presenter";
 import { Table } from "./orsino/Table";
 import { Template } from "./orsino/Template";
+import Stylist from "./orsino/tui/Style";
 
 export type Prompt = (message: string) => Promise<string>;
 
@@ -119,9 +120,48 @@ export default class Orsino {
     await Template.bootstrapDeem();
     const monsterTypes = await Deem.evaluate("gather(monsterTypeModifier)");
     for (const monsterType of monsterTypes) {
-      let monster = await Generator.gen("monster", { setting: 'fantasy', monster_type: monsterType, monster_aspect_type: 'uncommon', rank: 'standard', ...options });
+      let monster = await Generator.gen("monster", {
+        setting: 'fantasy', monster_type: monsterType, monster_aspect: 'wildtype', rank: 'standard',
+        ...options
+      });
       // console.log(`\n=== ${monster.name} ===\n`);
       console.log(await Presenter.characterRecord(monster as Combatant));
+    }
+  }
+
+  async spellbook(options: Record<string, any> = {}) {
+    await AbilityHandler.instance.loadAbilities();
+    await TraitHandler.instance.loadTraits();
+    await Template.bootstrapDeem();
+
+    let aspects = ['arcane', 'divine'];
+    for (const aspect of aspects) {
+      console.log(`\n=== ${aspect.toUpperCase()} SPELLS ===\n`);
+
+      let spells = AbilityHandler.instance.allSpellNames(aspect)
+      spells.sort(
+        (a, b) => {
+          const abilityA = AbilityHandler.instance.getAbility(a);
+          const abilityB = AbilityHandler.instance.getAbility(b);
+          if (abilityA && abilityB) {
+            return ((abilityA.level || 1) - (abilityB.level || 1)) || a.localeCompare(b);
+          }
+          return a.localeCompare(b);
+        }
+      )
+
+      spells.forEach(spellName => {
+        const ability = AbilityHandler.instance.getAbility(spellName);
+        if (ability && ability.type === "spell") {
+          console.log("\n--------------------\n");
+          console.log(`${Stylist.italic(ability.name)} (${ability.domain || ability.school}/${ability.level})`);
+          // console.log(`Target: ${ability.target}`);
+
+          console.log(
+            Presenter.describeAbility(ability)
+          )
+        }
+      });
     }
   }
 }

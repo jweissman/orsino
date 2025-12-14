@@ -596,6 +596,7 @@
     "groups": {
       "kobold": { "str": 6,  "dex": 9,  "con": 6,  "int": 6,  "wis": 6,  "cha": 6,  "naturalArmor": -4, "hitDie": 2 },
       "goblin": { "str": 8,  "dex": 12, "con": 8,  "int": 8,  "wis": 8,  "cha": 8,  "naturalArmor": -3, "hitDie": 3 },
+
       "human":  { "str": 10, "dex": 10, "con": 10, "int": 10, "wis": 10, "cha": 10, "naturalArmor": -2, "hitDie": 4 },
       "orc":    { "str": 16, "dex": 12, "con": 16, "int": 8,  "wis": 8,  "cha": 8,  "naturalArmor": -1 , "hitDie": 6 },
       "ogre":   { "str": 19, "dex": 8,  "con": 19, "int": 5,  "wis": 5,  "cha": 5,  "naturalArmor": 0 , "hitDie": 8 },
@@ -612,13 +613,14 @@
   "npcWeapon": {
     "discriminator": "race",
     "groups": {
+      "goblin": [ "dagger", "club", "shortsword", "sling" ],
+      "kobold": [ "club", "spear", "dart", "whip" ],
       "human": [ "longsword", "handaxe", "light_mace", "spear", "pole_arm", "light_crossbow", "wakizashi", "pike", "voulge" ],
-      "goblin": [ "dagger", "club", "javelin", "shortsword", "sling", "dart" ],
-      "kobold": [ "spear", "club", "dagger", "halberd", "light_warhammer", "dart" ],
       "orc": [ "battleaxe", "heavy_mace", "heavy_flail", "greatsword", "claymore", "heavy_crossbow", "scythe" ],
       "ogre": [ "club", "heavy_mace", "battleaxe", "trident", "heavy_crossbow", "heavy_chain" ],
       "troll": [ "claws", "club", "scimitar", "morningstar", "heavy_crossbow", "bec_de_corbin" ],
       "dragon": [ "bite", "claws" ],
+
       "elf": [ "longsword", "dagger", "heavy_crossbow", "shortsword", "spear" ],
       "dwarf": [ "battleaxe", "light_warhammer", "heavy_crossbow" ],
       "halfling": [ "shortsword", "sling", "dagger" ],
@@ -629,9 +631,10 @@
   "npcArmor": {
     "discriminator": "race",
     "groups": {
-      "human": [ "cloth", "leather", "chainmail", "scale" ],
       "goblin": [ "cloth", "leather", "hide" ],
-      "kobold": [ "cloth", "studded" ],
+      "kobold": [ "cloth", "hide" ],
+
+      "human": [ "cloth", "leather", "chainmail", "scale" ],
       "orc": [ "scale", "plate", "ring" ],
       "ogre": [ "hide", "leather" ],
       "troll": [ "hide", "leather" ],
@@ -873,6 +876,13 @@
         "_companionCount": 0,
         "_treasureItems": ["shovel", "pick"],
         "bonusGold": "1d10"
+      },
+      "reliquary": {
+        "_npcCount": 4,
+        "_npc_types": ["Wizard", "Adept", "Adept", "Adept"],
+        "_companionCount": 0,
+        "_treasureItems": ["scroll_of_fireball", "wand_of_magic_missiles"],
+        "bonusGold": "10 + 5d50"
       }
     }
   },
@@ -884,7 +894,8 @@
       "dark_altar": ["evil"],
       "mortuary_garden": ["calm"],
       "ossuary": ["toxic"],
-      "catacombs": ["claustrophobic"]
+      "catacombs": ["claustrophobic"],
+      "reliquary": ["energizing"]
     }
   },
   "roomAuras": {
@@ -893,32 +904,38 @@
       "calm": {
         "name": "Serene",
         "description": "Your mind is strangely at peace in this area",
-        "effect": { "toHit": 1, "bonusHealing": 1 }
+        "effect": { "toHit": 1, "bonusHealing": 1 },
+        "aura": true
       },
       "energizing": {
         "name": "Vigor",
         "description": "A revitalizing energy fills the room",
-        "effect": { "bonusDamage": 1, "toHit": 1 }
+        "effect": { "bonusDamage": 1, "toHit": 1 },
+        "aura": true
       },
       "toxic": {
         "name": "Toxicity",
         "description": "The air is thick with poisonous fumes",
-        "effect": {  "resistPoison": -2 }
+        "effect": {  "resistPoison": -2 },
+        "aura": true
       },
       "miasma": {
         "name": "Miasma",
         "description": "An oppressive aura saps your strength and willpower",
-        "effect": {  "toHit": -1, "resistPoison": -1, "resistDisease": -1 }
+        "effect": {  "toHit": -1, "resistPoison": -1 },
+        "aura": true
       },
       "cold": {
         "name": "Frigid",
         "description": "A biting cold permeates the area, chilling you to the bone",
-        "effect": { "toHit": -1, "resistFire": -1 }
+        "effect": { "toHit": -1, "resistFire": -1 },
+        "aura": true
       },
       "evil": {
         "name": "Malevolent",
         "description": "A dark energy fills this room, unsettling all who enter",
-        "effect": { "bonusDamage": 1 }
+        "effect": { "bonusDamage": 1 },
+        "aura": true
       },
       "claustrophobic": {
         "name": "Claustrophobic",
@@ -1246,6 +1263,22 @@
       ]
     }
   },
+  "dungeonOverlay": {
+    "discriminator": "building_type",
+    "groups": {
+      "temple": {
+        "patron_deity": "=gen(deity)",
+        "deity_name": "=dig(#patron_deity, forename)"
+      },
+      "tomb": {
+        "_npc_template_type_expr": "(#npc_type != Necromancer && 1d10 < 8) ? undead : nihil"
+      },
+      "fortress": {},
+      "library": {},
+      "mine": {}
+    }
+  },
+
   "terrains": {
     "discriminator": "d6",
     "groups": {
@@ -1280,61 +1313,71 @@
       "oecumenopolis": "1d100*1000000"
     }
   },
-  "deity": {
-    "discriminator": "race",
+
+  "deityName": {
+    "discriminator": "domain",
     "groups": {
-      "elf": [
-        "Lathander",
-        "Corellon",
-        "Sehanine",
-        "Hanali",
-        "Aerdrie",
-        "Labelas",
-        "Solonor"
-      ],
-      "dwarf": [
-        "Marduk",
-        "Ashurbanipal",
-        "Nergal",
-        "Enlil",
-        "Ishtar",
-        "Tiamat",
-        "Ninurta"
-      ],
-      "human": [
-        "Zeus",
-        "Hera",
-        "Poseidon",
-        "Demeter",
-        "Athena",
-        "Apollo",
-        "Artemis"
-      ],
-      "halfling": [
-        "Yondalla",
-        "Brandobaris",
-        "Flandal",
-        "Baervan"
-      ],
-      "fae": [
-        "Oberon",
-        "Titania",
-        "Aelos"
-      ],
-      "gnome": [
-        "Eru Ilúvatar",
-        "Mandos",
-        "Nienna",
-        "Vairë",
-        "Lórien",
-        "Tulkas",
-        "Ulmo"
-      ],
-      "orc": [
-        "Melkor"
-      ]
+      "life": [ "Eir", "Xipe Totec", "Danu", "Vaire" ],
+      "light": [ "Lathander", "Apollo", "Sol Invictus", "Ra", "Amaterasu", "Eru Ilúvatar" ],
+      "darkness": [ "Nyx", "Erebus", "Apophis" ],
+      "war": [ "Ares", "Marduk", "Sekhmet", "Huitzilopochtli", "Kartikeya", "Oromë" ],
+      "nature": [ "Corellon", "Gaia", "Cernunnos", "Pachamama", "Osanyin", "Yavanna" ],
+      "death": [ "Hades", "Anubis", "Hel", "Mictlantecuhtli", "Yama", "Mandos" ],
+      "knowledge": [ "Athena", "Thoth", "Saraswati", "Quetzalcoatl", "Nienna" ],
+      "trickery": [ "Loki", "Coyote", "Anansi", "Hermes", "Varda" ],
+      "magic": [ "Mystra", "Isis", "Odin", "Tezcatlipoca" ],
+      "oceans": [ "Poseidon", "Yemaya", "Njord", "Tiamat", "Ulmo" ],
+      "love": [ "Aphrodite", "Freya", "Hanali", "Inanna", "Xochiquetzal", "Vána" ],
+      "storms": [ "Zeus", "Thor", "Tlaloc", "Indra", "Manwë" ],
+      "order": [ "Tyr", "Maat", "Forseti", "Varuna", "Nabu", "Aulë"  ],
+      "chaos": [ "Eris", "Set", "Kali", "Melkor" ]
     }
   },
+  "deityGender": {
+    "discriminator": "name",
+    "groups": {
+      "Eir": "female", "Xipe Totec": "male", "Danu": "female", "Vaire": "female",
+      "Lathander": "male", "Apollo": "male", "Sol Invictus": "male", "Ra": "male", "Amaterasu": "female", "Eru Ilúvatar": "male",
+      "Nyx": "female", "Erebus": "male", "Apophis": "male",
+      "Ares": "male", "Marduk": "male", "Sekhmet": "female", "Huitzilopochtli": "male", "Kartikeya": "male", "Oromë": "male",
+      "Corellon": "male", "Gaia": "female", "Cernunnos": "male", "Pachamama": "female", "Osanyin": "male", "Yavanna": "female",
+      "Hades": "male", "Anubis": "male", "Hel": "female", "Mictlantecuhtli": "male", "Yama": "male", "Mandos": "male",
+      "Athena": "female", "Thoth": "male", "Saraswati": "female", "Quetzalcoatl": "male", "Nienna": "female",
+      "Loki": "male", "Coyote": "male", "Anansi": "male", "Hermes": "male", "Varda": "female",
+      "Mystra": "female", "Isis": "female", "Odin": "male", "Tezcatlipoca": "male",
+      "Poseidon": "male", "Yemaya": "female", "Njord": "male", "Tiamat": "female", "Ulmo": "male",
+      "Aphrodite": "female", "Freya": "female", "Hanali": "female", "Inanna": "female", "Xochiquetzal": "female", "Vána": "female",
+      "Zeus": "male", "Thor": "male", "Tlaloc": "male", "Indra": "male", "Manwë": "male",
+      "Tyr": "male", "Maat": "female", "Forseti": "male", "Varuna": "male", "Nabu": "male", "Aulë": "male",
+      "Eris": "female", "Set": "male", "Kali": "female", "Melkor": "male"
+    }
+  },
+
+  "deityBlessings": {
+    "discriminator": "domain",
+    "groups": {
+      "life": { "bonusHealing": 3, "resistPoison": 2, "immuneDisease": true, "onTurnEnd": [
+        {
+          "type": "heal",
+          "amount": "1d3"
+        }
+      ] },
+      "light": { "toHit": 1, "bonusHealing": 2 },
+      "darkness": { "searchBonus": 2, "resistNecrotic": 0.2 },
+      "war": { "bonusDamage": 2, "str": 1 },
+      "nature": { "dex": 1, "con": 1 },
+      "death": { "bonusDamage": "=1d4", "resistNecrotic": 0.2 },
+      "knowledge": { "int": 2, "wis": 1, "examineBonus": 2 },
+      "trickery": { "dex": 2, "cha": 1, "disarmTrapBonus": 2 },
+      "magic": { "int": 1, "wis": 1, "bonusSpellDC": 1 },
+      "oceans": { "con": 2, "resistCold": 0.5 },
+      "love": { "cha": 2, "immuneCharm": true },
+      "storms": { "str": 1, "dex": 1, "bonusDamage": 1 },
+      "order": { "wis": 2, "ac": -1, "immuneFear": true },
+      "chaos": { "cha": 2, "bonusDamage": "=1d6" }
+    }
+  },
+
   "companionType": {
     "discriminator": "race",
     "groups": {
@@ -1587,6 +1630,7 @@
     "discriminator": "rarity",
     "groups": {
       "common": [
+        "wildtype",
         "agile",
         "nimble",
         "sturdy",
@@ -1630,6 +1674,7 @@
   "creatureAspects": {
     "discriminator": "type",
     "groups": {
+      "wildtype":  { },
       "agile":      { "dex": 1, "wis": 1 },
       "nimble":     { "dex": 2 },
       "sturdy":     { "con": 1, "wis": 1 },
@@ -1668,6 +1713,7 @@
   "creatureAspectAbilities": {
     "discriminator": "type",
     "groups": {
+      "wildtype": [],
       "agile": ["dodge"],
       "nimble": ["hide"],
       "sturdy": ["second_wind"],

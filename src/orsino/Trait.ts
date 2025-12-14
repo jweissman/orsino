@@ -1,4 +1,4 @@
-import { StatusEffect } from "./Ability";
+import { StatusEffect } from "./Status";
 import { Combatant } from "./types/Combatant";
 import Files from "./util/Files";
 

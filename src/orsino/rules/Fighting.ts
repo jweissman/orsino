@@ -1,5 +1,5 @@
 import Deem from "../../deem";
-import { StatusEffect } from "../Ability";
+import { StatusEffect } from "../Status";
 import Presenter from "../tui/Presenter";
 import Words from "../tui/Words";
 import { AttackResult } from "../types/AttackResult";

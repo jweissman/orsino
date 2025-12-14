@@ -5,7 +5,7 @@ import { Team } from "./types/Team";
 import { Roll } from "./types/Roll";
 import { Fighting } from "./rules/Fighting";
 import Events, { CombatEvent, StatusExpireEvent, RoundStartEvent, CombatEndEvent, FleeEvent, GameEvent, CombatantEngagedEvent, WaitEvent, NoActionsForCombatant, AllegianceChangeEvent, ItemUsedEvent, ActionEvent, ActedRandomly, StatusExpiryPreventedEvent } from "./Events";
-import AbilityHandler, { Ability, AbilityEffect, StatusEffect } from "./Ability";
+import AbilityHandler, { Ability, AbilityEffect} from "./Ability";
 import { Answers } from "inquirer";
 import { AbilityScoring } from "./tactics/AbilityScoring";
 import { Commands } from "./rules/Commands";
@@ -16,6 +16,7 @@ import Bark from "./Bark";
 import { Inventory } from "./Inventory";
 import Orsino from "../orsino";
 import Words from "./tui/Words";
+import { StatusEffect } from "./Status";
 
 export type ChoiceSelector<T extends Answers> = (description: string, options: Choice<T>[], combatant?: Combatant) => Promise<T>;
 
@@ -45,6 +46,8 @@ export default class Combat {
   protected journal: CombatEvent[] = [];
   protected outputSink: (message: string) => void;
   public dry: boolean = false;
+
+  private auras: StatusEffect[] = [];
 
   constructor(
     options: Record<string, any> = {},
@@ -135,8 +138,6 @@ export default class Combat {
     });
   }
 
-  private auras: StatusEffect[] = [];
-
   async setUp(
     teams = Combat.defaultTeams(),
     environment = 'Dungeon | Room -1',
@@ -162,7 +163,12 @@ export default class Combat {
 
       // apply auras
       c.activeEffects ||= [];
+      // remove other auras
+      c.activeEffects = c.activeEffects.filter(effect => !effect.aura);
       c.activeEffects.push(...auras);
+      // remove duplicates
+      c.activeEffects = c.activeEffects.filter((effect, index, self) =>
+        index === self.findIndex((e) => (e.name === effect.name)));
 
       await this.emit({ type: "engage", subject: c } as Omit<CombatantEngagedEvent, "turn">);
     }

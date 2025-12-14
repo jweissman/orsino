@@ -4,6 +4,7 @@ import { GameEvent, ReactionEvent, ResurrectEvent, UpgradeEvent } from "./Events
 import Generator from "./Generator";
 import { CommandHandlers } from "./rules/Commands";
 import { Fighting } from "./rules/Fighting";
+import { StatusEffect } from "./Status";
 import Words from "./tui/Words";
 import { Combatant } from "./types/Combatant";
 import { GenerationTemplateType } from "./types/GenerationTemplateType";
@@ -11,29 +12,9 @@ import { Roll } from "./types/Roll";
 import Files from "./util/Files";
 import { never } from "./util/never";
 
-type Target = "self" | "ally" | "enemy" | "allies" | "enemies" | "all" | "randomEnemies" | "deadAlly";
-export type DamageKind = "bleed" | "poison" | "psychic" | "lightning" | "earth" | "fire" | "ice" | "bludgeoning" | "piercing" | "slashing" | "force" | "radiant" | "necrotic" | "acid" | "true";
+export type Target = "self" | "ally" | "enemy" | "allies" | "enemies" | "all" | "randomEnemies" | "deadAlly";
+export type DamageKind = "bleed" | "poison" | "psychic" | "lightning" | "fire" | "cold" | "bludgeoning" | "piercing" | "slashing" | "force" | "radiant" | "necrotic" | "acid" | "true";
 export type SaveKind = "poison" | "disease" | "death" | "magic" | "insanity" | "charm" | "fear" | "stun" | "will" | "breath" | "paralyze" | "sleep";
-
-export interface StatusEffect {
-  name: string;
-  description?: string;
-  effect: { [key: string]: any };
-  duration?: number;
-  by?: Combatant;
-  whileEnvironment?: string;
-
-  onAttack?: AbilityEffect[];
-  onAttackHit?: AbilityEffect[];
-  onTurnEnd?: AbilityEffect[];
-  // onCastSpell?: AbilityEffect[];
-  // onHit?: AbilityEffect[];
-  onKill?: AbilityEffect[];
-  onAttacked?: AbilityEffect[];
-  // onTakeDamage?: AbilityEffect[];
-  // onGiveHealing?: AbilityEffect[];
-  // onBuff?: AbilityEffect[];
-}
 
 export interface AbilityEffect {
   description?: string;
@@ -82,6 +63,7 @@ export interface Ability {
   level?: number;
   kind?: string;
   domain?: "life" | "death" | "nature" | "knowledge" | "war" | "trickery" | "law" | "chaos";
+  school?: "abjuration" | "conjuration" | "divination" | "enchantment" | "evocation" | "illusion" | "necromancy" | "transmutation";
   aspect: "arcane" | "physical" | "divine" | "social" | "stealth" | "nature";
   target: Target[];
   effects: AbilityEffect[];
@@ -152,7 +134,6 @@ export default class AbilityHandler {
     });
   }
 
-
   getAbility(name: string): Ability {
     let ability = this.abilities[name];
     if (!ability) {
@@ -175,6 +156,7 @@ export default class AbilityHandler {
           .filter(([_key, ab]) => ab.aspect === aspect && ab.type === 'spell' && (ab.level ?? 0) <= maxLevel && (!excludeEvilSpells || ab.alignment !== 'evil'))
           .map(([key, _ab]) => key);
   }
+
 
   static resolveTarget(targetName: string, user: Combatant, allies: Combatant[], enemies: Combatant[]): (Combatant | Combatant[]) {
     let targets: (Combatant | Combatant[]) = [];
@@ -426,7 +408,8 @@ export default class AbilityHandler {
     } else if (effect.type === "debuff") {
       // same as buff with a save
       if (effect.status) {
-        let { success: saved, events: saveEvents } = await save(targetCombatant, effect.saveType || "magic", effect.saveDC || 15, handlers.roll);
+        let dc = (effect.saveDC || 15) + (userFx.bonusSpellDC as number || 0) + (user.level || 0);
+        let { success: saved, events: saveEvents } = await save(targetCombatant, effect.saveType || "magic", dc, handlers.roll);
         events.push(...saveEvents);
         if (!saved) {
           let statusEvents = await status(user, targetCombatant, effect.status.name, { ...effect.status.effect, by: user }, effect.status.duration);
@@ -588,10 +571,12 @@ export default class AbilityHandler {
     if (isSpell && isOffensive) {
       let hasSaveFlags = ability.effects.some(e => e.saveForHalf || e.saveNegates);
       if (hasSaveFlags) {
+        let userFx = await Fighting.gatherEffects(user);
+        let spellDC = 15 + user.level + (userFx.bonusSpellDC as number || 0);
         targets.forEach(t => { t._savedVersusSpell = false; });
         // give a save vs magic chance to avoid
         for (const t of targets) {
-          let { success: saved, events: saveEvents } = await handlers.save(t, "magic", 25, handlers.roll);
+          let { success: saved, events: saveEvents } = await handlers.save(t, "magic", spellDC, handlers.roll);
           if (saved) {
             savedTargets.push(t);
             t._savedVersusSpell = true;

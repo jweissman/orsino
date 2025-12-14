@@ -131,7 +131,7 @@
           "name": "Prone",
           "duration": 2,
           "effect": {
-            "prone": true
+            "noActions": true
           }
         },
         "saveType": "dex",
@@ -385,7 +385,7 @@
           "duration": 5,
           "effect": {
             "toHit": 2,
-            "saveVersusAll": 2
+            "allSaves": 2
           }
         }
       }
@@ -393,6 +393,7 @@
   },
   "shield": {
     "name": "Shield of Faith",
+    "level": 1,
     "type": "spell",
     "aspect": "divine",
     "domain": "law",
@@ -419,6 +420,7 @@
     "type": "spell",
     "level": 1,
     "aspect": "arcane",
+    "school": "abjuration",
     "description": "Gain 4 AC for 3 rounds.",
     "target": [
       "self"
@@ -569,6 +571,7 @@
     "type": "spell",
     "level": 1,
     "aspect": "arcane",
+    "school": "evocation",
     "description": "Fire three magical bolts that automatically hit and deal 1d3 damage each (more bolts and damage at higher levels).",
     "target": [
       "randomEnemies",
@@ -587,6 +590,7 @@
     "type": "spell",
     "level": 1,
     "aspect": "arcane",
+    "school": "evocation",
     "description": "Unleash a cone of fire, dealing 1d6 damage to all enemies in the area.",
     "target": [
       "enemies"
@@ -620,6 +624,7 @@
     "type": "spell",
     "level": 1,
     "aspect": "arcane",
+    "school": "evocation",
     "description": "Deliver a jolt of electricity, dealing 1d4 damage and stunning the target for 2 rounds.",
     "target": [
       "enemy"
@@ -649,6 +654,7 @@
     "type": "spell",
     "level": 4,
     "aspect": "arcane",
+    "school": "evocation",
     "description": "Strike multiple enemies with lightning, dealing 1d6 damage to each.",
     "target": [
       "enemy"
@@ -706,7 +712,7 @@
           "name": "Riposting",
           "duration": 3,
           "effect": {
-            "evade": 3,
+            "evasion": 3,
             "ac": 1,
             "onMissReceived": [
               {
@@ -747,6 +753,7 @@
     "type": "spell",
     "level": 1,
     "aspect": "arcane",
+    "school": "illusion",
     "description": "Become blurred, granting you a 50% chance to avoid attacks for 3 rounds.",
     "target": [
       "self"
@@ -779,7 +786,7 @@
           "name": "Mirror Images",
           "duration": 5,
           "effect": {
-            "evade": 15
+            "evasion": 15
           }
         }
       }
@@ -790,6 +797,7 @@
     "type": "spell",
     "level": 1,
     "aspect": "arcane",
+    "school": "enchantment",
     "description": "Put all enemies to sleep for 2 rounds.",
     "target": [
       "enemies"
@@ -812,9 +820,10 @@
   "haste": {
     "name": "Haste",
     "type": "spell",
-    "description": "Increase an ally's speed, granting +4 Dexterity, +10 Initiative, 1 bonus attack per turn, and 2 AC for 5 rounds.",
+    "description": "Increase an ally's speed.",
     "level": 3,
     "aspect": "arcane",
+    "school": "transmutation",
     "target": [
       "ally"
     ],
@@ -828,7 +837,7 @@
             "dex": 4,
             "initiative": 10,
             "extraAttacksPerTurn": 1,
-            "ac": 2
+            "ac": -2
           }
         }
       }
@@ -839,6 +848,7 @@
     "type": "spell",
     "level": 3,
     "aspect": "arcane",
+    "school": "evocation",
     "description": "Hurl a fiery ball that explodes, dealing 6d6 fire damage to all enemies in the area.",
     "target": [ "enemies" ],
     "effects": [
@@ -868,6 +878,7 @@
   },
   "bless": {
     "name": "Bless",
+    "level": 1,
     "type": "spell",
     "aspect": "divine",
     "domain": "life",
@@ -891,6 +902,7 @@
   },
   "smite": {
     "name": "Smite Evil",
+    "level": 1,
     "type": "spell",
     "aspect": "divine",
     "domain": "war",
@@ -908,6 +920,7 @@
   },
   "command": {
     "name": "Command",
+    "level": 1,
     "type": "spell",
     "aspect": "divine",
     "domain": "law",
@@ -925,6 +938,7 @@
   },
   "hold_person": {
     "name": "Hold Person",
+    "level": 2,
     "type": "spell",
     "aspect": "divine",
     "domain": "law",
@@ -952,6 +966,7 @@
   },
   "turn_undead": {
     "name": "Turn Undead",
+    "level": 3,
     "type": "spell",
     "aspect": "divine",
     "domain": "light",
@@ -975,7 +990,7 @@
     "type": "spell",
     "level": 0,
     "aspect": "social",
-    "description": "Hurl a string of insults at an enemy, dealing 1d4 psychic damage and giving them -1 to hit for 2 rounds.",
+    "description": "Hurl a string of insults at an enemy.",
     "target": [
       "enemy"
     ],
@@ -1103,6 +1118,7 @@
   },
   "heal": {
     "name": "Heal Ally",
+    "level": 1,
     "type": "spell",
     "aspect": "divine",
     "domain": "life",
@@ -1422,6 +1438,7 @@
     "type": "spell",
     "level": 2,
     "aspect": "arcane",
+    "school": "evocation",
     "description": "Strike random enemies with lightning, dealing 1d8 damage and paralyzing them for 1 round.",
     "target": [
       "randomEnemies",
@@ -1453,6 +1470,7 @@
     "type": "spell",
     "level": 2,
     "aspect": "arcane",
+    "school": "evocation",
     "description": "Cause the ground to shake, dealing 2d6 damage to all enemies and knocking them prone.",
     "target": [
       "enemies"
@@ -1483,6 +1501,7 @@
     "type": "spell",
     "level": 3,
     "aspect": "arcane",
+    "school": "transmutation",
     "description": "Drench an enemy, reducing their attack rolls by 2 for 3 rounds.",
     "target": [
       "enemy"
@@ -1530,6 +1549,7 @@
     "type": "spell",
     "level": 1,
     "aspect": "arcane",
+    "school": "conjuration",
     "description": "Fire an arrow of acid, dealing 1d4 damage and applying Acid Burn.",
     "target": [
       "enemy"
@@ -1563,6 +1583,7 @@
     "type": "spell",
     "level": 2,
     "aspect": "arcane",
+    "school": "conjuration",
     "description": "Spray a cone of acid, dealing 2d6 damage to all enemies in the area and applying Acid Burn.",
     "target": [
       "enemies"
@@ -1598,6 +1619,7 @@
     "type": "spell",
     "level": 2,
     "aspect": "arcane",
+    "school": "evocation",
     "description": "Fire a ray of frost, dealing 1d4 damage and reducing the target's speed by 10 feet for 3 rounds.",
     "target": [
       "enemy"
@@ -1606,7 +1628,7 @@
       {
         "type": "damage",
         "amount": "=1d4",
-        "kind": "ice"
+        "kind": "cold"
       },
       {
         "type": "debuff",
@@ -1643,6 +1665,7 @@
     "name": "Summon Elemental",
     "type": "spell",
     "aspect": "arcane",
+    "school": "conjuration",
     "level": 4,
     "description": "Summon a random elemental to fight for you.",
     "target": [
@@ -1653,7 +1676,7 @@
         "type": "summon",
         "creature": "monster",
         "options": {
-          "class": "elemental"
+          "_class": "elemental"
         }
       }
     ]
@@ -1662,6 +1685,7 @@
     "name": "Summon Monster",
     "type": "spell",
     "aspect": "arcane",
+    "school": "conjuration",
     "level": 3,
     "description": "Summon a random monster (beast or fey type) to fight for you.",
     "target": [
@@ -1672,7 +1696,7 @@
         "type": "summon",
         "creature": "monster",
         "options": {
-          "class": "=oneOf(beast, fey)"
+          "_class": "=oneOf(beast, fey)"
         }
       }
     ]
@@ -1681,6 +1705,7 @@
     "name": "Summon Undead",
     "type": "spell",
     "aspect": "arcane",
+    "school": "conjuration",
     "alignment": "evil",
     "level": 2,
     "description": "Summon a random undead creature to fight for you.",
@@ -1742,6 +1767,7 @@
   },
   "raise_dead": {
     "name": "Raise Dead",
+    "level": 3,
     "type": "spell",
     "aspect": "divine",
     "domain": "life",
@@ -1850,6 +1876,7 @@
           "name": "Protected",
           "duration": 6,
           "effect": {
+            "resistNecrotic": 0.5,
             "immuneCharm": true,
             "immuneFear": true
           }
@@ -1861,6 +1888,7 @@
     "name": "Dispel Magic",
     "type": "spell",
     "aspect": "arcane",
+    "school": "abjuration",
     "level": 2,
     "description": "Remove charm, cursed, paralyzed and magical stun effects from a target; also removes positive arcane buffs.",
     "target": [
@@ -2015,6 +2043,7 @@
     "type": "spell",
     "level": 3,
     "aspect": "arcane",
+    "school": "illusion",
     "description": "Create an area of silence, preventing spellcasting for 3 rounds.",
     "target": [
       "enemies"
@@ -2037,6 +2066,7 @@
     "type": "spell",
     "level": 2,
     "aspect": "arcane",
+    "school": "transmutation",
     "description": "Reduce dexterity of all enemies by 5 for 4 rounds.",
     "target": [
       "enemies"
@@ -2061,6 +2091,7 @@
     "type": "spell",
     "level": 5,
     "aspect": "arcane",
+    "school": "evocation",
     "description": "Disintegrate an enemy, dealing 10d6 force damage.",
     "target": [
       "enemy"
@@ -2111,6 +2142,7 @@
     "type": "spell",
     "level": 3,
     "aspect": "arcane",
+    "school": "illusion",
     "description": "Confuse an enemy, causing them to act randomly for 3 rounds.",
     "target": [
       "enemy"
@@ -2136,6 +2168,7 @@
     "type": "spell",
     "level": 4,
     "aspect": "arcane",
+    "school": "transmutation",
     "description": "Turn an enemy to stone.",
     "target": [
       "enemy"
@@ -2161,6 +2194,7 @@
     "alignment": "evil",
     "level": 3,
     "aspect": "arcane",
+    "school": "evocation",
     "description": "Countdown to a fiery explosion, dealing 4d6 fire damage to all enemies in a 10-foot radius.",
     "target": [ "self" ],
     "effects": [

@@ -239,9 +239,7 @@ export class Commands {
     if (damageKind) {
       // const defEffects = Fighting.gatherEffects(defender);
       const defEffects = await Fighting.gatherEffectsWithNames(defender);
-      // console.log(`Applying resistances for damage kind ${damageKind} on defender ${defender.name}:`, defEffects);
       let resistanceName = `resist${damageKind.charAt(0).toUpperCase() + damageKind.slice(1)}`;
-      // const resistance = defenderEffects.resistances?.[damageKind] ?? 1.0;
       const resistance: number = (defEffects[resistanceName]?.value as number) ?? 0.0;
 
       if (resistance !== 0) {

@@ -1,7 +1,6 @@
 # Notes from Playtesting
 
 ## Bugs
-[ ] Effects from shrine not getting applied to characters? (maybe getting erased at Combat#setUp if configured as activeEffect but also I don't think I was even seeing it immediately on the character rec at all?)
 [ ] Hidden seems to be removed whenever the hiding creature _gets_ attacked (should be removed whenever the hiding creature itself _attacks_)
 [ ] Zero handling
   [ ] Was seeing 0-damage attacks on elite units (maybe something to do with DR but a 0-damage attack is a miss, although we could gloss as 'graze' or something?)
@@ -31,7 +30,6 @@
 [ ] Should at least be a _chance_ for AI to pick on someone other than weakest enemy
 ---
 [ ] Better adventure module names (not just quest/saga/adventure of the $terrain...)
-[ ] If you don't have enough to buy the quantity you like it should not say "You purchase X" (even if the next line is saying "not enough gold")
 [ ] Should only be able to visit temple _once_ per long rest/visit in town
 [ ] Found "letter" and "wanted poster" items could have clues about the dungeon boss (if not other bosses etc)
 ---
@@ -64,7 +62,6 @@
 [ ] Would be nice to let _all_ PCs attempt to interact/examine/search (as opposed to one and done for the action)
 [ ] Maybe charm is dispelled if the charmer dies??
 ---
-[ ] Disable summon abilities if you already have 6 allied creatures (alive or dead...) / Shouldn't be able to call animal companion if 6 allies present! (standing or not)
 [ ] Would be nice to have more narrow utilty-cleric abilities (neutralize poison, remove paralysis, ultimately a high-level 'heal' which fixes status effects AND brings health back...)
 [ ] Should permit player to _leave_ the dungeon (they _can_ but would have to flee and even that's disabled now, maybe to focus autoplay -- but anyway seems to be entirely disabled in fact rn)
 ---
@@ -88,8 +85,6 @@
 [ ] Treasure that is just coins should just be gp (we could give platinum/copper/silver for variety but fine if not!!)
 [ ] Should your own summoned creatures be able to flee?? (presumably henchmen can flee if morale drops too low but we don't have henches proper yet)
 ---
-[ ] Would be nice to see literal HP for your party (ie not just approximate bar)
----
 [ ] Staff/quarterstaff may not be listed in armory for some reason?
 [ ] Acid should degrade armor/weapons...
 [ ] Traps/lockpicking
@@ -99,12 +94,9 @@
 [ ] Should silence disable wands/scrolls??? [it seems to disable (at least certain) wands but _not_ (at least certain) scrolls right now?]
 [ ] Show cooldown (at least indicators) as part of ability text/description
 [ ] Could ask if you want to use healing spells on short rest
-[ ] Skeletons should be immune to piercing damage
 [ ] Autoplay doesn't seem to preserve character levels between modules??
 ---
-[ ] Equipment from shop attaching to 'unknown' slot?
-[ ] Monster manual output
-[ ] Make `randomActions` effect from confuse work!!
+[ ] Display healing item names used during rest
 
 ## Fixed
 [x] Temple/shrine to local deity to get a blessing
@@ -194,6 +186,14 @@
 [x] Restrict wands to caster classes (and clerics can only use healing ones) - should be done!
 [x] Maybe only mages can use wands/scrolls?? -- should be done
 [x] Reduce consumable treasure-drop rate (90% is way too high!!) and maybe try to govern the tier of loot found (should not find scrolls of apocalypse/powerful wands everywhere!)
+[x] Equipment from shop attaching to 'unknown' slot? -- maybe fixed now?
+[x] Monster manual output
+[x] Make `randomActions` effect from confuse work!!
+[x] Skeletons should be immune to piercing damage
+[x] Would be nice to see literal HP for your party (ie not just approximate bar)
+[x] Disable summon abilities if you already have 6 allied creatures (alive or dead...) / Shouldn't be able to call animal companion if 6 allies present! (standing or not)
+[x] Effects from shrine not getting applied to characters? (maybe getting erased at Combat#setUp if configured as activeEffect but also I don't think I was even seeing it immediately on the character rec at all?) -- this was about activeEffects getting cleared [should be fixed now]
+[x] If you don't have enough to buy the quantity you like it should not say "You purchase X" (even if the next line is saying "not enough gold") -- should be fixed
 
 ## Not really issues atm
 - "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]

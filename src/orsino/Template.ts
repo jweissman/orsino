@@ -75,7 +75,7 @@ export class Template {
 
       localContext[key] = assembled[key];
 
-      if (key.startsWith("*")) {
+      if (key.startsWith("*") || key.startsWith("^")) {
         // we have evaluated the value (confirm we have gotten an object) 
         // then 'overlay' (add) each property onto the context
         // Object.entries(assembled[key] || {}).forEach(([k, v]) => {
@@ -100,6 +100,11 @@ export class Template {
           } else if (v instanceof Number || typeof v === 'number') {
             assembled[k] = (assembled[k] || 0) + v;
           } else if (typeof v === 'string') {
+            if (key.startsWith("^")) {
+              // console.log(`Evaluating overlaid property ${k} with expression: ${v}`);
+              // deem evaluate the string before overlaying
+              v = await Template.evaluatePropertyExpression(v, { ...context, ...assembled });
+            }
             // console.log(`Adding ${k}=${v} to context (was ${localContext[k]})`);
             // just replace!
             assembled[k] = v; // + (assembled[k] || '');
@@ -116,23 +121,16 @@ export class Template {
           localContext[k] = assembled[k];
         }
       }
+
+      // console.log(`Assembled property: ${key} =`, assembled[key]);
     }
 
     // omit internal/overlay properties starting with '_' or '*'
     Object.keys(assembled).forEach(key => {
-      if (key.startsWith('_') || key.startsWith('*')) {
+      if (key.startsWith('_') || key.startsWith('*') || key.startsWith('^')) {
         delete assembled[key];
       }
     });
-
-    // let assembledWithoutNested = { ...assembled };
-    // Object.entries(assembled).forEach(([key, value]) => {
-    //   if (typeof value === 'object' && value !== null) {
-    //     delete assembledWithoutNested[key];
-    //   }
-    // });
-    // console.log(`Generated ${this.type}:`);
-    // console.table(assembledWithoutNested);
 
     return assembled;
   }
@@ -144,7 +142,7 @@ export class Template {
 
     if (expr.startsWith("=")) {
       try {
-        return await Deem.evaluate(expr.slice(1), context);
+        return await Deem.evaluate(expr, context);
       } catch (e) {
         console.error(`Error evaluating expression ${expr}`, e);
 

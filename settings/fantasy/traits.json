@@ -85,9 +85,8 @@
     "statuses": [
       {
         "name": "Keen Senses",
-        "description": "Immune to surprise, +4 to search checks.",
+        "description": "+4 to search checks.",
         "effect": {
-          "immuneSurprise": true,
           "searchBonus": 4
         }
       }
@@ -988,7 +987,7 @@
           {
             "type": "heal",
             "target": "self",
-            "amount": "=1d4"
+            "amount": "=1d2"
           }
         ]
       }

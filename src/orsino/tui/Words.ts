@@ -1,4 +1,15 @@
 export default class Words {
+  static statName(stat: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'): string {
+    switch (stat) {
+      case 'str': return 'Strength';
+      case 'dex': return 'Dexterity';
+      case 'con': return 'Constitution';
+      case 'int': return 'Intelligence';
+      case 'wis': return 'Wisdom';
+      case 'cha': return 'Charisma';
+    }
+  }
+
   static ordinal(nth: number): string {
     const j = nth % 10,
           k = nth % 100;

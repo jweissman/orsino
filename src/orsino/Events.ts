@@ -1,4 +1,4 @@
-import { DamageKind, StatusEffect } from "./Ability";
+import { DamageKind } from "./Ability";
 import { never } from "./util/never";
 import Presenter from "./tui/Presenter";
 import Stylist from "./tui/Style";
@@ -9,6 +9,7 @@ import Files from "./util/Files";
 import Words from "./tui/Words";
 import { BossRoom, Room } from "./Dungeoneer";
 import Combat from "./Combat";
+import { StatusEffect } from "./Status";
 
 type BaseEvent = {
   turn: number;

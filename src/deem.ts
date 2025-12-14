@@ -91,7 +91,12 @@ export default class Deem {
     async LogExp_and(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) && (await right.eval(ctx)); },
     async LogExp_or(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) || (await right.eval(ctx)); },
     async LogExp_not(_not, exp) { let ctx = this.args.context;  return !(await exp.eval(ctx)); },
-    async TernaryExp(cond, _q, trueExp, _c, falseExp) { let ctx = this.args.context;  return (await cond.eval(ctx)) ? (await trueExp.eval(ctx)) : (await falseExp.eval(ctx)); },
+    async TernaryExp(cond, _q, trueExp, _c, falseExp) {
+      let ctx = this.args.context;
+      let condition = await cond.eval(ctx);
+      // console.log(`Ternary condition ${cond.pretty} evaluated to: ${condition}`);
+      return condition ? (await trueExp.eval(ctx)) : (await falseExp.eval(ctx));
+    },
     async CompExp_lt(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) < (await right.eval(ctx)); },
     async CompExp_gt(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) > (await right.eval(ctx)); },
     async CompExp_eq(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) == (await right.eval(ctx)); },
@@ -277,6 +282,11 @@ export default class Deem {
     if (expression.startsWith('=')) {
       expression = expression.slice(1);
     }
+
+    // if it _still_ starts with an '=', we could return the value as-is
+    // if (expression.startsWith('=')) {
+    //   return expression;
+    // }
 
     const match = this.grammar.match(expression);
     if (match.succeeded()) {
