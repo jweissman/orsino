@@ -203,8 +203,10 @@ export default class CharacterRecord {
       hitPointIncrease = Math.max(1, hitPointIncrease);
       pc.maxHp += hitPointIncrease;
       pc.hp = pc.maxHp;
-      console.log(`${Presenter.minimalCombatant(pc)} leveled up to level ${pc.level}!`);
-      console.log(`Hit points increased by ${hitPointIncrease} to ${pc.maxHp}.`);
+      // console.log(`${Presenter.minimalCombatant(pc)} leveled up to level ${pc.level}!`);
+      events.push({ type: "upgrade", stat: "level", subject: pc, amount: 1, newValue: pc.level } );
+      // console.log(`Hit points increased by ${hitPointIncrease} to ${pc.maxHp}.`);
+      events.push({ type: "upgrade", stat: "maxHp", subject: pc, amount: hitPointIncrease, newValue: pc.maxHp });
       const stat = await select(`Choose a stat to increase:`, [
         { disabled: pc.level <= 20 && pc.str >= 18, name: `Strength (${pc.str})`, value: 'str', short: 'Strength' },
         { disabled: pc.level <= 20 && pc.dex >= 18, name: `Dexterity (${pc.dex})`, value: 'dex', short: 'Dexterity' },

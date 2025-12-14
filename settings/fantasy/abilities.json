@@ -2168,12 +2168,12 @@
         "type": "buff",
         "status": {
           "name": "Ticking",
-          "duration": 5,
+          "duration": 4,
           "effect": {
             "onExpire": [
               {
                 "type": "damage",
-                "amount": "=4d6",
+                "amount": "=2d6",
                 "kind": "fire",
                 "target": "enemies"
               },
@@ -2287,6 +2287,7 @@
                 "creature": "monster",
                 "options": {
                   "monster_type": "Lich",
+                  "rank": "epic",
                   "level": 10
                 }
               }
@@ -2313,6 +2314,29 @@
         "type": "kill",
         "saveType": "fortitude",
         "saveDC": 20
+      }
+    ]
+  },
+
+  "disable": {
+    "name": "Deactivate Device",
+    "type": "skill",
+    "aspect": "stealth",
+    "description": "Attempt to disable a mechanical trap or device.",
+    "target": [ "enemy" ],
+    "effects": [
+      {
+        "type": "debuff",
+        "condition": {
+          "trait": "inanimate"
+        },
+        "status": {
+          "name": "Disabled",
+          "effect": {
+            "noActions": true,
+            "noStatusExpiry": true
+          }
+        }
       }
     ]
   }

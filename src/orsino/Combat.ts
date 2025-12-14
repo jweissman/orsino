@@ -4,7 +4,7 @@ import Presenter from "./tui/Presenter";
 import { Team } from "./types/Team";
 import { Roll } from "./types/Roll";
 import { Fighting } from "./rules/Fighting";
-import Events, { CombatEvent, StatusExpireEvent, RoundStartEvent, CombatEndEvent, FleeEvent, GameEvent, CombatantEngagedEvent, WaitEvent, NoActionsForCombatant, AllegianceChangeEvent, ItemUsedEvent, ActionEvent, ActedRandomly } from "./Events";
+import Events, { CombatEvent, StatusExpireEvent, RoundStartEvent, CombatEndEvent, FleeEvent, GameEvent, CombatantEngagedEvent, WaitEvent, NoActionsForCombatant, AllegianceChangeEvent, ItemUsedEvent, ActionEvent, ActedRandomly, StatusExpiryPreventedEvent } from "./Events";
 import AbilityHandler, { Ability, AbilityEffect, StatusEffect } from "./Ability";
 import { Answers } from "inquirer";
 import { AbilityScoring } from "./tactics/AbilityScoring";
@@ -15,6 +15,7 @@ import Stylist from "./tui/Style";
 import Bark from "./Bark";
 import { Inventory } from "./Inventory";
 import Orsino from "../orsino";
+import Words from "./tui/Words";
 
 export type ChoiceSelector<T extends Answers> = (description: string, options: Choice<T>[], combatant?: Combatant) => Promise<T>;
 
@@ -152,7 +153,7 @@ export default class Combat {
       c.abilitiesUsed = [];
       c.abilityCooldowns = {};
       c.savedTimes = {};
-      c.activeEffects = []; // c.activeEffects || [];
+      // c.activeEffects = []; // c.activeEffects || [];
 
       c.passiveEffects = [];
       c.traits = c.traits || [];
@@ -689,7 +690,11 @@ export default class Combat {
 
       // tick down status
       let expiryEvents: StatusExpireEvent[] = [];
-      if (combatant.activeEffects) {
+      let noStatusExpiry = combatant.activeEffects?.some((se: StatusEffect) => se.effect?.noStatusExpiry);
+      if (noStatusExpiry) {
+        let sources = combatant.activeEffects?.filter((se: StatusEffect) => se.effect?.noStatusExpiry).map((se: StatusEffect) => se.name) || [];
+        await this.emit({ type: "statusExpiryPrevented", subject: combatant, reason: Words.humanize(sources) } as Omit<StatusExpiryPreventedEvent, "turn">);
+      } else if (combatant.activeEffects) {
         combatant.activeEffects.forEach((it: StatusEffect) => {
           if (it.duration !== undefined && it.duration !== Infinity) {
             it.duration = Math.max(0, it.duration - 1);

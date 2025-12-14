@@ -253,7 +253,7 @@
       "mage": [[]],
       "cleric": [[ ]],
       "ranger": [ [ "heal", "summon_animal", "set_spear", "hunters_mark", "ensnare" ] ],
-      "thief": [ [ "dodge", "poison_weapon", "smoke_screen", "backstab", "dirty_trick" ] ],
+      "thief": [ [ "dodge", "poison_weapon", "smoke_screen", "backstab", "dirty_trick", "disable" ] ],
       "bard": [[ "cure", "inspire", "charm", "taunt", "riposte", "vicious_mockery" ]]
     }
   },
@@ -271,16 +271,18 @@
   "npcRank": {
     "discriminator": "rank",
     "groups": {
-      "grunt":     { "maxHp": 1,   "ac": 3 },
-      "untested":  { "maxHp": 2,   "ac": 2 },
-      "rookie":    { "maxHp": 3,   "ac": 2 },
-      "seargeant": { "maxHp": 4,   "ac": 1 },
-      "captain":   { "maxHp": 5,   "ac": 1 },
-      "veteran":   { "maxHp": 8,  "ac": 0 },
-      "champion":  { "maxHp": 13,  "ac": 0 },
-      "elite":     { "maxHp": 21,  "ac": -1, "traits": ["formidable"] },
-      "paragon":   { "maxHp": 34,  "ac": -1, "traits": ["formidable", "disciplined"] },
-      "legendary": { "maxHp": 55,  "ac": -2, "traits": ["formidable", "disciplined", "favored"] }
+      "peasant":   { "maxHp": 2,    "ac": 3 },
+      "grunt":     { "maxHp": 3,    "ac": 2 },
+      "untested":  { "maxHp": 4,    "ac": 2 },
+      "rookie":    { "maxHp": 5,    "ac": 1 },
+      "seargeant": { "maxHp": 8,    "ac": 1 },
+      "captain":   { "maxHp": 13,   "ac": 0 },
+      "veteran":   { "maxHp": 21,   "ac": 0 },
+      "champion":  { "maxHp": 34,   "ac": -1, "traits": ["fierce"] },
+      "elite":     { "maxHp": 55,   "ac": -1, "traits": ["fierce", "formidable"] },
+      "paragon":   { "maxHp": 89,   "ac": -2, "traits": ["fierce", "formidable", "disciplined"] },
+      "epic":      { "maxHp": 144,  "ac": -2, "traits": ["fierce", "formidable", "disciplined", "resilient"] },
+      "legendary": { "maxHp": 233,  "ac": -3, "traits": ["fierce", "formidable", "disciplined", "resilient", "favored"] }
     }
   },
   "npcType": {
@@ -801,6 +803,7 @@
       "tomb": [[
         "crypt",
         "ossuary",
+        "catacombs",
         "fane",
         "alcove",
         "reliquary",
@@ -831,6 +834,15 @@
         "_treasureItems": ["soul gem", "ring_of_protection", "staff of power", "cloak of invisibility"],
         "bonusGold": "10 + 6d100"
       },
+      "catacombs": {
+        "monster_type": "Mummy",
+        "_monsterLevelDistribution": ["=#_targetCr"],
+        "_npcCount": 4,
+        "_npc_types": ["Gravedigger", "Tombrobber", "Adept", "Acolyte"],
+        "_companionCount": 0,
+        "_treasureItems": ["wand_of_cure_minor_wounds", "bone armor"],
+        "bonusGold": "5 + 4d20"
+      },
       "ritual_chamber": {
         "_npcCount": 4,
         "_npc_types": ["Cult Master", "Acolyte", "Acolyte", "Acolyte"],
@@ -853,8 +865,8 @@
         "bonusGold": "5 + 2d10"
       },
       "ossuary": {
-        "monster_type": "Golem",
         "substance": "bone",
+        "monster_type": "Golem",
         "_monsterLevelDistribution": ["=#_targetCr"],
         "_npcCount": 1,
         "_npc_types": ["Gravedigger"],
@@ -870,62 +882,77 @@
       "phylactery": ["miasma"],
       "ritual_chamber": ["cold"],
       "dark_altar": ["evil"],
-      "mortuary_garden": ["calm"]
+      "mortuary_garden": ["calm"],
+      "ossuary": ["toxic"],
+      "catacombs": ["claustrophobic"]
     }
   },
   "roomAuras": {
     "discriminator": "aura_type",
     "groups": {
       "calm": {
-        "name": "Calm",
+        "name": "Serene",
         "description": "Your mind is strangely at peace in this area",
-        "effect": { "toHit": 2 }
+        "effect": { "toHit": 1, "bonusHealing": 1 }
       },
       "energizing": {
         "name": "Vigor",
         "description": "A revitalizing energy fills the room",
         "effect": { "bonusDamage": 1, "toHit": 1 }
       },
+      "toxic": {
+        "name": "Toxicity",
+        "description": "The air is thick with poisonous fumes",
+        "effect": {  "resistPoison": -2 }
+      },
       "miasma": {
-        "name": "Decay",
+        "name": "Miasma",
         "description": "An oppressive aura saps your strength and willpower",
         "effect": {  "toHit": -1, "resistPoison": -1, "resistDisease": -1 }
       },
       "cold": {
-        "name": "Chill",
+        "name": "Frigid",
         "description": "A biting cold permeates the area, chilling you to the bone",
-        "effect": { "toHit": -2 }
+        "effect": { "toHit": -1, "resistFire": -1 }
       },
       "evil": {
-        "name": "Malevolence",
+        "name": "Malevolent",
         "description": "A dark energy fills this room, unsettling all who enter",
-        "effect": { "bonusDamage": 2 }
+        "effect": { "bonusDamage": 1 }
+      },
+      "claustrophobic": {
+        "name": "Claustrophobic",
+        "description": "The confined space makes it hard to breathe and think clearly",
+        "effect": { "toHit": -1 }
       }
     }
   },
   "roomNarrative": {
     "discriminator": "type",
     "groups": {
+      "catacombs": [
+        "dense catacombs, walls lined with ancient tombs and sarcophagi."
+      ],
       "fane": [
-        "ancient fane, the air thick with the scent of incense. The walls are adorned with faded murals depicting long-forgotten deities."
+        "ancient fane. There is a lingering scent of incense. The walls are adorned with faded murals depicting long-forgotten deities."
       ],
       "ossuary": [
-        "ancient ossuary, the air thick with the scent of decay. Rows of skeletal remains line the walls, and a sense of unease lingers."
+        "ancient ossuary. It is eerie and silent. Rows of skeletal remains line the walls, and a sense of unease lingers."
       ],
       "mortuary_garden": [
-        "overgrown mortuary garden, the air thick with the scent of decaying flowers. Cracked statues and broken fountains dot the landscape, and a sense of sorrow lingers."
+        "overgrown mortuary garden. The air is redolent with decaying flowers. Amid cracked statues and broken fountains, a sense of sorrow lingers."
       ],
       "phylactery": [
-        "dark phylactery chamber, the air thick with malevolent energy. The walls are adorned with ancient runes, and a sinister energy emanates from the center."
+        "dark phylactery chamber charged with malevolent energy. The walls are adorned with ancient runes, and a sinister energy emanates from the center."
       ],
       "ritual_chamber": [
-        "ritual chamber, the air smoky with the scent of incense and burning candles. Carvings of dark symbols adorn the walls, and a powerful energy pulses."
+        "ritual chamber dense with smoke from burning candles. Carvings of dark symbols adorn the walls, and a powerful energy pulses."
       ],
       "dark_altar": [
-        "twisted altar room, the air heavy with an oppressive energy. The walls are adorned with sinister engravings of cruel rituals. An irredeemable malevolence pulsates from within."
+        "twisted altar room overflowing with an oppressive energy. The walls are adorned with sinister engravings of cruel rituals. An irredeemable malevolence pulsates from within."
       ],
       "crypt": [
-        "cold crypt, the air heavy with the scent of decay. The walls are lined with ancient sarcophagi, and you can hear the faint sound of dripping water."
+        "cold crypt whose air is heavy and still. You can hear the faint sound of dripping water."
       ],
       "alcove": [
         "hidden alcove, tucked away behind a crumbling wall.",
@@ -1677,7 +1704,7 @@
     "discriminator": "monster_type",
     "groups": {
       "giant": [ "Titan", "Behemoth", "Colossus" ],
-      "undead": [ "Lich", "Vampire", "Wraith", "Banshee" ],
+      "undead": [ "Lich", "Vampire", "Wraith", "Banshee", "Mummy", "Ghoul" ],
       "demon": [ "Balor", "Marilith", "Fiend" ],
       "elemental": [ "Sprite", "Spirit", "Ifrit", "Ooze" ],
       "aberration": [ "Mind Destroyer", "Discerner", "Mouther" ],
@@ -1698,6 +1725,8 @@
       "Vampire": "undead",
       "Wraith": "undead",
       "Banshee": "undead",
+      "Mummy": "undead",
+      "Ghoul": "undead",
       "Balor": "demon",
       "Marilith": "demon",
       "Fiend": "demon",
@@ -1736,6 +1765,8 @@
       "Vampire": { "dex": 4, "cha": 5, "traits": ["regeneration"] },
       "Wraith": { "dex": 5, "wis": 4, "traits": ["incorporeal"] },
       "Banshee": { "cha": 6, "wis": 4, "traits": ["incorporeal"] },
+      "Mummy": { "con": 6, "str": 4, "wis": 3, "traits": ["undead", "regeneration"] },
+      "Ghoul": { "con": 4, "str": 3, "dex": 3, "traits": ["undead", "regeneration"] },
       "Balor": { "str": 5, "dex": 4, "con": 4 },
       "Marilith": { "str": 4, "dex": 5, "con": 3 },
       "Fiend": { "str": 3, "dex": 3, "con": 3 },
@@ -1774,6 +1805,8 @@
       "Vampire": [ "charm", "life_drain" ],
       "Wraith": [ "fear", "curse" ],
       "Banshee": [ "fear", "curse" ],
+      "Mummy": [ "mass_curse", "fear", "reckless_attack" ],
+      "Ghoul": [ "life_drain", "paralyzing_touch" ],
       "Balor": [ "mass_curse", "curse" ],
       "Marilith": [ "rapid_strike", "curse" ],
       "Fiend": [ "curse" ],

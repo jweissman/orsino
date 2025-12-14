@@ -21,7 +21,7 @@ export type CommandHandlers = {
       cascade: { count: number, damageRatio: number } | null,
     combatContext: CombatContext, roll: Roll) => Promise<TimelessEvent[]>;
   heal: (healer: Combatant, target: Combatant, amount: number) => Promise<TimelessEvent[]>;
-  status: (user: Combatant, target: Combatant, name: string, effect: { [key: string]: any }, duration: number) => Promise<TimelessEvent[]>;
+  status: (user: Combatant, target: Combatant, name: string, effect: { [key: string]: any }, duration?: number) => Promise<TimelessEvent[]>;
   removeStatus: (target: Combatant, name: string) => Promise<TimelessEvent[]>;
   // removeItem: (user: Combatant, item: keyof Team) => Promise<TimelessEvent[]>;
   save: (target: Combatant, saveType: SaveKind, dc: number, roll: Roll) => Promise<{
@@ -406,7 +406,7 @@ export class Commands {
   }
 
   static async handleStatusEffect(
-    user: Combatant, target: Combatant, name: string, effect: { [key: string]: any }, duration: number 
+    user: Combatant, target: Combatant, name: string, effect: { [key: string]: any }, duration?: number 
   ): Promise<TimelessEvent[]> {
     // console.log(`${Presenter.combatant(user)} applies status effect ${name} to ${Presenter.combatant(target)} for ${duration} turns!`);
     // if they already have the effect, remove it and reapply it with the new duration
@@ -419,7 +419,7 @@ export class Commands {
 
     const userFx = await Fighting.gatherEffects(user);
     // Apply status duration bonus
-    if (userFx.statusDuration) {
+    if (duration && userFx.statusDuration) {
       duration += (userFx.statusDuration as number);
       // console.log(`Status duration of ${target.forename} increased by ${userFx.statusDuration}!`);
     }

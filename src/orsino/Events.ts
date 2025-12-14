@@ -52,6 +52,7 @@ export type VulnerableEvent = BaseEvent & { type: "vulnerable"; damageKind: Dama
 
 export type StatusEffectEvent = BaseEvent & { type: "statusEffect"; effectName: string; effect: { [key: string]: any }; duration: number };
 export type StatusExpireEvent = BaseEvent & { type: "statusExpire"; effectName: string };
+export type StatusExpiryPreventedEvent = BaseEvent & { type: "statusExpiryPrevented"; reason: string };
 
 export type ActionEvent = BaseEvent & { type: "action"; actionName: string };
 
@@ -77,6 +78,7 @@ export type CombatEvent =
   | FleeEvent
   | StatusEffectEvent
   | StatusExpireEvent
+  | StatusExpiryPreventedEvent
   | SummonEvent
   | SaveEvent
   | ReactionEvent
@@ -220,6 +222,8 @@ export default class Events {
         //   return `${subjectName}'s blade is no longer coated in poison.`;
         // }
         return `${subjectName} is no longer ${event.effectName}.`;
+      case "statusExpiryPrevented":
+        return `${subjectName}'s status effects do not expire (${event.reason}).`;
       case "initiate":
         return '';  //`Turn order: ${event.order.map((o, i) => `${i + 1}. ${o.combatant.forename}`).join(" | ")}`;
       case "roundStart":

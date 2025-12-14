@@ -67,7 +67,7 @@ export default class User {
     if (!subject.playerControlled) {
       const result = await Commands.roll(subject, description, sides);
       // await Spinner.run(`${subject.name} is rolling ${description}`, 20 + Math.random() * 140, result.description);
-      console.log(result.description);
+      // console.log(result.description);
       return result;
     }
 
@@ -78,7 +78,7 @@ export default class User {
     // );
     // // Then do the actual roll
     let result = await Commands.roll(subject, description, sides);
-    console.log(result.description);
+    // console.log(result.description);
     return result;
   }
 }

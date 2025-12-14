@@ -417,7 +417,7 @@ export default class AbilityHandler {
       success = true;
     } else if (effect.type === "buff") {
       if (effect.status) {
-        let statusEvents = await status(user, targetCombatant, effect.status.name, { ...effect.status.effect, by: user }, effect.status.duration || 3);
+        let statusEvents = await status(user, targetCombatant, effect.status.name, { ...effect.status.effect, by: user }, effect.status.duration);
         events.push(...statusEvents);
         success = true;
       } else {
@@ -429,7 +429,7 @@ export default class AbilityHandler {
         let { success: saved, events: saveEvents } = await save(targetCombatant, effect.saveType || "magic", effect.saveDC || 15, handlers.roll);
         events.push(...saveEvents);
         if (!saved) {
-          let statusEvents = await status(user, targetCombatant, effect.status.name, { ...effect.status.effect, by: user }, effect.status.duration || 3);
+          let statusEvents = await status(user, targetCombatant, effect.status.name, { ...effect.status.effect, by: user }, effect.status.duration);
           events.push(...statusEvents);
           success = true;
         }
