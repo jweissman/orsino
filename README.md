@@ -138,4 +138,4 @@ There are some simple math and lexical operations as well:
 - Dungeone- Dungeoneering: explore the generated dungeons
 - World mode: explore the hinterlands and return to cities to spend gold
 - Textual gloss? Illustrations?
-- Generator trace/debug mode: Add a mode to visualize the step-by-step evaluation of a template.
+- Generator trace/debug mode: Add a `--trace` flag to the CLI that logs the evaluation stack of a template. This should include the key being processed, the expression being evaluated, and the result. This will provide a clear, step-by-step visualization of the generation process for debugging complex templates.
