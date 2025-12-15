@@ -987,7 +987,7 @@
           {
             "type": "heal",
             "target": "self",
-            "amount": "=1d2"
+            "amount": "=1d2-1"
           }
         ]
       }
@@ -1023,6 +1023,20 @@
         "immunePoison": true,
         "immuneDisease": true,
         "resurrectable": false
+      }
+    }]
+  },
+
+  "cursed": {
+    "type": "template",
+    "description": "Cursed",
+    "statuses": [{
+      "name": "Cursed Fate",
+      "description": "Vulnerable to radiant damage",
+      "effect": {
+        "resistRadiant": -1,
+        "saveVersusMagic": -2,
+        "allRolls": -1
       }
     }]
   }

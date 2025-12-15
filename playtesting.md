@@ -35,15 +35,14 @@
 ---
 [ ] Poison damage should indicate who _inflicted_ it (this is sort of tracked but not surfaced...)
 ---
-[ ] Should reset abilities used on long rest? (why isn't this happening)
+[ ] Should reset abilities used on long rest? (why isn't this happening -- is this still happening at all?)
 [ ] It would be nice to able to explore more freely (move back to previous rooms?)
 [ ] Show party status before asking to rest
 [ ] Losing a wandering monster battle should not leave you in the room waiting to decide what to do!
 [ ] You should be able to visit the Inn even if at full HP?
 ---
-[ ] Temple blessings should take account of the deity somehow... (war gods give toHit, love goddess grants chance to charm on hit etc)
 ---
-[ ] Bring back status displays on the per turn overview...
+[ ] Bring back status displays on the per turn overview... (we have per-round overview)
 [ ] Show full enemy name more often (we often default to just the forename ie 'minimal' combatant view with forename + HP but this is ... not very much information)
 ---
 [ ] Player party _must_ be able to attempt to flee intentionally (could be a dex skill check?)
@@ -97,6 +96,14 @@
 [ ] Autoplay doesn't seem to preserve character levels between modules??
 ---
 [ ] Display healing item names used during rest
+[ ] NPCs with wildtype aspect shouldn't have that as part of their name
+[ ] AI heuristic scoring for disable devices (AI thieves should favor disable if there's a non-disabled device etc)
+[ ] Show mechanical descriptions of all statuses/auras/traits (not just flavor)
+[ ] Impose max summons cap for wizards (1 at level 1, growing slowly)
+[ ] Summon undead doesn't seem to summon appropriate races for the given dungeon
+[ ] Remove auras at end of combat
+[ ] Some kind of temp hp/buffer for glass cannons
+[ ] A dispelling buffer would be amazing too?
 
 ## Fixed
 [x] Temple/shrine to local deity to get a blessing
@@ -194,6 +201,7 @@
 [x] Disable summon abilities if you already have 6 allied creatures (alive or dead...) / Shouldn't be able to call animal companion if 6 allies present! (standing or not)
 [x] Effects from shrine not getting applied to characters? (maybe getting erased at Combat#setUp if configured as activeEffect but also I don't think I was even seeing it immediately on the character rec at all?) -- this was about activeEffects getting cleared [should be fixed now]
 [x] If you don't have enough to buy the quantity you like it should not say "You purchase X" (even if the next line is saying "not enough gold") -- should be fixed
+[x] Temple blessings should take account of the deity somehow... (war gods give toHit, love goddess grants chance to charm on hit etc)
 
 ## Not really issues atm
 - "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]

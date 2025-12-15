@@ -237,7 +237,6 @@ export class Commands {
 
     // Apply resistances FIRST
     if (damageKind) {
-      // const defEffects = Fighting.gatherEffects(defender);
       const defEffects = await Fighting.gatherEffectsWithNames(defender);
       let resistanceName = `resist${damageKind.charAt(0).toUpperCase() + damageKind.slice(1)}`;
       const resistance: number = (defEffects[resistanceName]?.value as number) ?? 0.0;

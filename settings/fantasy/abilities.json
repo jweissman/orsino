@@ -13,7 +13,7 @@
     "name": "Escape",
     "type": "skill",
     "aspect": "physical",
-    "description": "Attempt to flee from combat.",
+    "description": "Run away!",
     "target": [
       "self"
     ],
@@ -29,7 +29,7 @@
     "name": "Melee Attack",
     "type": "skill",
     "aspect": "physical",
-    "description": "Make a melee attack against an enemy with your primary weapon.",
+    "description": "Use your primary weapon.",
     "target": [
       "enemy"
     ],
@@ -43,7 +43,7 @@
     "name": "Ranged Attack",
     "type": "skill",
     "aspect": "physical",
-    "description": "Make a ranged attack against an enemy with your primary weapon.",
+    "description": "Fire your primary weapon.",
     "target": [
       "enemy"
     ],
@@ -58,7 +58,7 @@
     "type": "skill",
     "aspect": "physical",
     "cooldown": 4,
-    "description": "Gain 2 AC until the start of your next turn.",
+    "description": "Take a defensive stance.",
     "target": [
       "self"
     ],
@@ -79,7 +79,7 @@
     "name": "Rapid Strike",
     "type": "skill",
     "aspect": "physical",
-    "description": "Make up to three quick attacks against an enemy.",
+    "description": "Quickly inflict damage.",
     "target": [
       "enemy"
     ],
@@ -99,7 +99,7 @@
     "name": "Smash",
     "type": "skill",
     "aspect": "physical",
-    "description": "Powerful attack that deals 2d6 bludgeoning damage, plus 1 damage per level.",
+    "description": "Unleash a powerful blow.",
     "target": [
       "enemy"
     ],
@@ -258,7 +258,7 @@
           "name": "Stunned",
           "duration": 1,
           "effect": {
-            "skipTurn": true
+            "noActions": true
           }
         },
         "saveNegates": true,
@@ -308,7 +308,7 @@
     "level": 5,
     "aspect": "divine",
     "domain": "light",
-    "description": "Create a burst of radiant light, dealing 4d6 radiant damage to all enemies in the area.",
+    "description": "Create a burst of radiant light.",
     "target": [
       "enemies"
     ],
@@ -397,7 +397,7 @@
     "type": "spell",
     "aspect": "divine",
     "domain": "law",
-    "description": "Grant yourself or an ally 2 AC for 10 rounds.",
+    "description": "Faith protects.",
     "target": [
       "self",
       "ally"
@@ -554,7 +554,7 @@
     "level": 2,
     "aspect": "divine",
     "domain": "life",
-    "description": "Heal yourself or an ally for 1d8 hit points.",
+    "description": "Bind serious injuries.",
     "target": [
       "self",
       "ally"
@@ -798,7 +798,7 @@
     "level": 1,
     "aspect": "arcane",
     "school": "enchantment",
-    "description": "Put all enemies to sleep for 2 rounds.",
+    "description": "Lull enemies into a magical slumber.",
     "target": [
       "enemies"
     ],
@@ -882,11 +882,8 @@
     "type": "spell",
     "aspect": "divine",
     "domain": "life",
-    "description": "Grant divine favor, adding +1 to all rolls for 6 rounds.",
-    "target": [
-      "self",
-      "ally"
-    ],
+    "description": "Divine favor!",
+    "target": [ "self", "ally" ],
     "effects": [
       {
         "type": "buff",
@@ -906,7 +903,7 @@
     "type": "spell",
     "aspect": "divine",
     "domain": "war",
-    "description": "Smite an enemy, dealing 1d8 + level radiant damage.",
+    "description": "Smite an enemy.",
     "target": [
       "enemy"
     ],
@@ -924,10 +921,8 @@
     "type": "spell",
     "aspect": "divine",
     "domain": "law",
-    "description": "Force enemy to flee.",
-    "target": [
-      "enemy"
-    ],
+    "description": "Give an instruction.",
+    "target": [ "enemy" ],
     "effects": [
       {
         "type": "flee",
@@ -970,7 +965,7 @@
     "type": "spell",
     "aspect": "divine",
     "domain": "light",
-    "description": "Force undead enemies to flee.",
+    "description": "The dead recoil from your holy presence.",
     "target": [
       "enemies"
     ],
@@ -1122,7 +1117,7 @@
     "type": "spell",
     "aspect": "divine",
     "domain": "life",
-    "description": "Restore health to a wounded ally.",
+    "description": "Offer restoration.",
     "target": [
       "ally"
     ],
@@ -1138,7 +1133,7 @@
     "type": "skill",
     "aspect": "dark",
     "cooldown": 6,
-    "description": "Let out a horrific scream, frightening nearby enemies.",
+    "description": "Let out a horrific scream.",
     "target": [
       "enemies"
     ],
@@ -1163,7 +1158,7 @@
     "aspect": "divine",
     "domain": "death",
     "alignment": "evil",
-    "description": "Curse an enemy, reducing all stats by 1.",
+    "description": "Curse an enemy.",
     "target": [
       "enemy"
     ],
@@ -1471,7 +1466,7 @@
     "level": 2,
     "aspect": "arcane",
     "school": "evocation",
-    "description": "Cause the ground to shake, dealing 2d6 damage to all enemies and knocking them prone.",
+    "description": "Cause the ground to shake.",
     "target": [
       "enemies"
     ],
@@ -1709,9 +1704,7 @@
     "alignment": "evil",
     "level": 2,
     "description": "Summon a random undead creature to fight for you.",
-    "target": [
-      "self"
-    ],
+    "target": [ "self" ],
     "effects": [
       {
         "type": "summon",
@@ -1751,7 +1744,7 @@
     "aspect": "divine",
     "domain": "death",
     "alignment": "evil",
-    "description": "Raise a fallen ally as an undead servant to fight for you.",
+    "description": "Bind souls to your service.",
     "target": [
       "deadAlly"
     ],
@@ -1759,9 +1752,7 @@
       {
         "type": "resurrect",
         "hpPercent": 40,
-        "applyTraits": [
-          "undead"
-        ]
+        "applyTraits": [ "undead" ]
       }
     ]
   },
@@ -1771,7 +1762,7 @@
     "type": "spell",
     "aspect": "divine",
     "domain": "life",
-    "description": "Restore a fallen ally to life with 50% health.",
+    "description": "Restore life to the dead.",
     "target": [
       "deadAlly"
     ],
@@ -1788,7 +1779,7 @@
     "aspect": "divine",
     "domain": "life",
     "level": 5,
-    "description": "Restore a fallen ally to life with full health.",
+    "description": "It's alive!", 
     "target": [
       "deadAlly"
     ],

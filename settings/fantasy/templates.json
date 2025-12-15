@@ -269,7 +269,7 @@
     "_companionBudget": "=floor(#_levelBudget * #_companionCount/(#_monsterCount + #_companionCount + #_npcCount))",
     "_companionLevelDistribution": "=distribute(#_companionBudget, #_companionCount)",
     "_companions": "=mapGenList(animal, #_companionLevelDistribution, level)",
-    "_otherCombatEntityCount": "=1d2-1",
+    "_otherCombatEntityCount": "=1d10 > 7 ? 1 : 0",
     "_otherCombatEntityTypes": "=sample(lookup(otherCombatEntityTypes, #building_type), #_otherCombatEntityCount)",
     "_otherCombatEntities": "=mapGenList(combatEntity, #_otherCombatEntityTypes, 'entity_type')",
     "creatures": "=concat(#_npcs, #_companions, #_monsters, #_otherCombatEntities)",

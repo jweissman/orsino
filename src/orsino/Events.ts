@@ -9,7 +9,7 @@ import Files from "./util/Files";
 import Words from "./tui/Words";
 import { BossRoom, Room } from "./Dungeoneer";
 import Combat from "./Combat";
-import { StatusEffect } from "./Status";
+import StatusHandler, { StatusEffect } from "./Status";
 
 type BaseEvent = {
   turn: number;
@@ -238,9 +238,10 @@ export default class Events {
         let roundLabel = ("Round " + event.turn.toString()).padEnd(20) + Stylist.colorize(event.environment?.padStart(60) || "Unknown Location", 'cyan');
         let parties = Presenter.parties(event.parties || []);
         let hr = "=".repeat(80);
-        let auras = event.auras?.length > 0 ? "Auras:\n" + event.auras.map(aura => `- ${Stylist.colorize(aura.name, 'magenta')} (${aura.description})`).join("\n") : "No active auras.";
+        let auras = event.auras?.length > 0 ? "\n\nAuras:\n" + event.auras.map(aura => `- ${Stylist.colorize(aura.name, 'magenta')} (${Presenter.analyzeStatus(aura)
+          })`).join("\n") : "";  //No active auras.";
 
-        return `${hr}\n${roundLabel}\n${hr}\n${parties}\n\n${auras}`;
+        return `${hr}\n${roundLabel}\n${hr}\n${parties}${auras}`;
       case "turnStart":
         // let heading = `It's ${subject}'s turn!`;
         // let combatants = event.combatants.map(c => `\n- ${Presenter.combatant(c)}`).join("");

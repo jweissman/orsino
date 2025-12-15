@@ -4,6 +4,7 @@ import { Combatant } from "./types/Combatant";
 export interface StatusModifications {
   changeAllegiance?: boolean;
   compelNextMove?: boolean;
+  forceTarget?: boolean;
   
   allRolls?: number;
   rerollNaturalOnes?: boolean;

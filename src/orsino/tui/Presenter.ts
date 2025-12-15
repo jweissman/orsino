@@ -83,8 +83,8 @@ export default class Presenter {
     record += Stylist.bold("\nAbilities\n");
     let abilityHandler = AbilityHandler.instance;
     for (let abilityName of combatant.abilities || []) {
-      let ability = abilityHandler.getAbility(abilityName);
-      record += `  ${Stylist.colorize(ability.name, 'magenta').padEnd(28)} ${ability ? ability.description : 'No description available'}\n`;
+      let ability = abilityHandler.getAbility(abilityName)!;
+      record += `  ${Stylist.colorize(ability.name, 'magenta').padEnd(28)} ${ability.description} ${this.describeAbility(ability)}\n`;
     }
 
     // traits
@@ -279,25 +279,27 @@ export default class Presenter {
 
       // traits / statuses
       let ignoreStatuses = ['humanoid']
-      let lhsStatuses = lhs?.activeEffects?.map(e => e.duration ? `${e.name} (${e.duration})` : e.name)
+      let lhsStatuses = lhs?.activeEffects?.map(e => e.duration ? `${e.name}(${e.duration})` : e.name)
         || [];
       lhsStatuses = lhsStatuses
         .map(s => s.toLowerCase())
         .filter(s => !ignoreStatuses.includes(s.toLowerCase()));
-      let rhsStatuses = rhs?.activeEffects?.map(e => e.duration ? `${e.name} (${e.duration})` : e.name)
+      let rhsStatuses = rhs?.activeEffects?.map(e => e.duration ? `${e.name}(${e.duration})` : e.name)
         .concat(rhs?.traits) || [];
       rhsStatuses = rhsStatuses
         .map(s => s.toLowerCase())
         .filter(s => !ignoreStatuses.includes(s));
 
+      let sep = // dot
+          '·';
       let statusLine = "";
       if (lhsStatuses.length > 0) {
-        statusLine += this.padLiteralEnd(Stylist.colorize(lhsStatuses.join(' * '), 'cyan'), 40);
+        statusLine += this.padLiteralEnd(Stylist.colorize(lhsStatuses.join(sep), 'cyan'), 40);
       } else {
         statusLine += ' '.repeat(40);
       }
       if (rhsStatuses.length > 0) {
-        statusLine += this.padLiteralStart(Stylist.colorize(rhsStatuses.join(' * '), 'cyan'), 40);
+        statusLine += this.padLiteralStart(Stylist.colorize(rhsStatuses.join(sep), 'cyan'), 40);
       } else {
         statusLine += ' '.repeat(40);
       }
@@ -323,7 +325,7 @@ export default class Presenter {
       let k: keyof StatusModifications = key as keyof StatusModifications;
       switch (k) {
         case "allRolls":
-          parts.push(`All rolls ${this.increaseDecrease(value as number)}`);
+          parts.push(this.increaseDecrease('all rolls', value as number));
           break;
         case "rerollNaturalOnes":
           if (value) {
@@ -336,28 +338,28 @@ export default class Presenter {
         case "int":
         case "wis":
         case "cha":
-          parts.push(`${Words.statName(k)} ${this.increaseDecrease(value)}`);
+          parts.push(this.increaseDecrease(Words.statName(k), value));
           break;
         case "initiative":
-          parts.push(`Initiative ${this.increaseDecrease(value)}`);
+          parts.push(this.increaseDecrease('initiative', value));
           break;
         case "toHit":
-          parts.push(`To Hit ${this.increaseDecrease(value)}`);
+          parts.push(this.increaseDecrease('to hit', value));
           break;
         case "bonusDamage":
-          parts.push(`Bonus Damage ${this.increaseDecrease(value)}`);
+          parts.push(this.increaseDecrease('bonus damage', value));
           break;
         case "ac":
-          parts.push(`AC ${this.increaseDecrease(-value)}`);
+          parts.push(this.increaseDecrease('AC', -value));
           break;
         case "evasion":
-          parts.push(`Evasion ${this.increaseDecrease(value)}`);
+          parts.push(this.increaseDecrease('evasion', value));
           break;
         case "bonusHealing":
-          parts.push(`Bonus Healing ${this.increaseDecrease(value)}`);
+          parts.push(this.increaseDecrease('bonus healing', value));
           break;
         case "allSaves":
-          parts.push(`All Saves ${this.increaseDecrease(value)}`);
+          parts.push(this.increaseDecrease('all saves', value));
           break;
         case "resistBleed":
         case "resistPoison":
@@ -391,7 +393,8 @@ export default class Presenter {
         case "saveVersusBreath":
         case "saveVersusParalyze":
         case "saveVersusSleep":
-          parts.push(`Save versus ${Words.humanize(k.replace("saveVersus", ""))} ${this.increaseDecrease(value)}`);
+          let save = `Save versus ${Words.humanize(k.replace("saveVersus", ""))}`;
+          parts.push(this.increaseDecrease(save, value));
           break;
 
         case "immunePoison":
@@ -454,16 +457,16 @@ export default class Presenter {
           break;
 
         case "summonAnimalBonus":
-          parts.push(`Summon Animal bonus ${this.increaseDecrease(value)}`);
+          parts.push(this.increaseDecrease('summon animal bonus', value));
           break;
         case "bonusSpellSlots":
-          parts.push(`Bonus spell slots ${this.increaseDecrease(value)}`);
+          parts.push(this.increaseDecrease('bonus spell slots', value));
           break;
         case "bonusSpellDC":
-          parts.push(`Bonus spell DC ${this.increaseDecrease(value)}`);
+          parts.push(this.increaseDecrease('bonus spell DC', value));
           break;
         case "statusDuration":
-          parts.push(`Status duration ${this.increaseDecrease(value)}`);
+          parts.push(this.increaseDecrease('status duration', value));
           break;
         case "backstabMultiplier":
           parts.push(`Backstab damage multiplied by ${value}x`);
@@ -477,24 +480,24 @@ export default class Presenter {
           break;
 
         case "extraAttacksPerTurn":
-          parts.push(`Extra attacks per turn ${this.increaseDecrease(value)}`);
+          parts.push(this.increaseDecrease('attacks per turn', value));
           break;
 
         // noncombat
         case "examineBonus":
-          parts.push(`Examine bonus ${this.increaseDecrease(value)}`);
+          parts.push(this.increaseDecrease('examine bonus', value));
           break;
         case "searchBonus":
-          parts.push(`Search bonus ${this.increaseDecrease(value)}`);
+          parts.push(this.increaseDecrease('search bonus', value));
           break;
         case "pickLockBonus":
-          parts.push(`Pick Lock bonus ${this.increaseDecrease(value)}`);
+          parts.push(this.increaseDecrease('pick lock bonus', value));
           break;
         case "disarmTrapBonus":
-          parts.push(`Disarm Trap bonus ${this.increaseDecrease(value)}`);
+          parts.push(this.increaseDecrease('disarm trap bonus', value));
           break;
         case "lootBonus":
-          parts.push(`Loot bonus ${this.increaseDecrease(value)}`);
+          parts.push(this.increaseDecrease('loot bonus', value));
           break;
 
         case "xpMultiplier":
@@ -518,6 +521,12 @@ export default class Presenter {
           }
           break;
 
+        case "forceTarget":
+          if (value) {
+            parts.push(`Next target forced to be ${value}`);
+          }
+          break;
+
         // TODO figure out where this comes from
         case "by":
           // ignore
@@ -530,8 +539,8 @@ export default class Presenter {
     return parts.join(", ");
   }
 
-  static increaseDecrease(value: number): string {
-    return value >= 0 ? `increased by ${value}` : `decreased by ${Math.abs(value)}`;
+  static increaseDecrease(what: string, value: number): string {
+    return value >= 0 ? `increase ${what} by ${value}` : `decrease ${what} by ${Math.abs(value)}`;
   }
 
   static describeDuration(duration?: number): string {
@@ -549,7 +558,9 @@ export default class Presenter {
     }
 
     switch (effect.type) {
-      case "attack": description = (`Attack ${targetDescription}`); break;
+      case "attack":
+        description = (`Attack ${targetDescription}`);
+        break;
       case "damage":
         description = (`Deal ${amount} ${effect.kind || "true"} damage to ${targetDescription}`);
         break;
@@ -574,10 +585,10 @@ export default class Presenter {
         break;
       case "summon":
         let options = "";
-        if ((effect.options as any)._class) {
+        if ((effect.options as any)?._class) {
           options += `${Words.capitalize((effect.options as any)._class)} `;
         }
-        description = (`Summon ${options}${effect.creature || "creature"} (options: ${JSON.stringify(effect.options)})`); break;
+        description = (`Summon ${options}${effect.creature || "creature"}`); break;
       case "removeStatus":
         description = (`Purge ${targetDescription} of ${effect.statusName}`); break;
       case "upgrade":
@@ -600,6 +611,14 @@ export default class Presenter {
         description = (`Gain ${amount} XP`); break;
       default: return never(effect.type);
     }
+
+    if (effect.spillover) {
+      description += ` with spillover to adjacent targets`;
+    }
+
+    let cascade = effect.cascade ? ` cascading ${effect.cascade.count} times` : "";
+    description += cascade;
+
 
     let condition = effect.condition ? ` if ${effect.condition.trait}` : "";
     description += condition;
@@ -640,9 +659,10 @@ export default class Presenter {
   }
 
   static describeAbility(ability: Ability): string {
-    let parts: string[] = [];
-    parts.push("Narrative: " + ability.description);
-    parts.push("Mechanical: " + this.describeEffects(ability.effects, this.describeTarget(ability.target)) + ".");
-    return parts.join("\n");
+    // let parts: string[] = [];
+    // parts.push("Narrative: " + ability.description);
+    // parts.push("Mechanical: " + this.describeEffects(ability.effects, this.describeTarget(ability.target)) + ".");
+    // return parts.join("\n");
+    return this.describeEffects(ability.effects, this.describeTarget(ability.target)) + ".";
   }
 }

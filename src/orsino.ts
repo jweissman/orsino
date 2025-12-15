@@ -93,7 +93,7 @@ export default class Orsino {
       await Generator.gen("pc", { setting: 'fantasy', class: 'warrior', playerControlled: true }) as Combatant,
       await Generator.gen("pc", { setting: 'fantasy', class: 'thief', playerControlled: true }) as Combatant,
       await Generator.gen("pc", { setting: 'fantasy', class: 'mage', playerControlled: true }) as Combatant,
-    ]
+    ].map(pc => ({ ...pc, playerControlled: true }))
     while (true) {
       let averagePartyLevel = Math.round(pcs.reduce((sum, pc) => sum + pc.level, 0) / pcs.length);
       try {
@@ -101,9 +101,15 @@ export default class Orsino {
         outputSink: console.log,
         moduleGen: () => Generator.gen("module", { setting: 'fantasy', ...options, _moduleLevel: averagePartyLevel }),
         gen: Generator.gen, //.bind(this),
-        pcs: pcs.map(pc => ({ ...pc, playerControlled: true })),
+        pcs //: pcs.map(pc => ({ ...pc, playerControlled: true })),
       });
       await moduleRunner.run(true);
+
+      // show pc records
+      for (let pc of pcs) {
+        console.log(await Presenter.characterRecord(pc as Combatant));
+      }
+
       console.log("\n----\nCombat statistics:", Combat.statistics);
       console.log("Rounds per combat:", (Combat.statistics.combats > 0) ? (Combat.statistics.totalRounds / Combat.statistics.combats).toFixed(2) : 0);
       console.log("Victory rate:", Combat.statistics.combats > 0 ? ((Combat.statistics.victories / Combat.statistics.combats) * 100).toFixed(2) + "%" : "N/A");
@@ -157,6 +163,7 @@ export default class Orsino {
           console.log(`${Stylist.italic(ability.name)} (${ability.domain || ability.school}/${ability.level})`);
           // console.log(`Target: ${ability.target}`);
 
+          console.log(Stylist.bold(ability.description));
           console.log(
             Presenter.describeAbility(ability)
           )
