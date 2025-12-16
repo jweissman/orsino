@@ -30,7 +30,7 @@ export default class Presenter {
   static async characterRecord(combatant: Combatant) {
     let record = "";
     // record += (Stylist.bold("\n\nCharacter Record\n"));
-    record += (Stylist.format(`${this.combatant(combatant)}\n`, 'underline'));
+    record += (Stylist.format(`${this.combatant(combatant)}\t${(await this.statLine(combatant))}\n`, 'underline'));
 
     // "Human Female Warrior of Hometown (41 years old)"
     let descriptor = {
@@ -156,16 +156,12 @@ export default class Presenter {
       tempHp += poolAmount;
     }
     return [
-      // this.padLiteralEnd(Stylist.colorize(name, combatant.playerControlled ? 'cyan' : 'yellow'), 7),
       Stylist.colorize(name, combatant.playerControlled ? 'cyan' : 'yellow'),
       combatant.hp <= 0 ? Stylist.colorize('X', 'red') : Stylist.colorize(hpBar, color),
       tempHp > 0 ? Stylist.colorize(`(+${tempHp})`, 'blue') : '',
       combatant.hp > 0 ? `${combatant.hp}/${combatant.maxHp}` : 'KO',
-      // this.padLiteralStart(combatClass ? `${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '', 14),
       combatClass ? `${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '',
-      // `(${combatant.hp}/${combatant.maxHp})`
     ].join(' ');
-    //  `; // (${this.statLine(combatant)})`;
   }
 
   static combatant = (combatant: Combatant) => {

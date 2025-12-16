@@ -4,8 +4,8 @@
 [ ] Hidden seems to be removed whenever the hiding creature _gets_ attacked (should be removed whenever the hiding creature itself _attacks_)
 [ ] Zero handling
   [ ] Was seeing 0-damage attacks on elite units (maybe something to do with DR but a 0-damage attack is a miss, although we could gloss as 'graze' or something?)
-  [ ] Healing for 0 HP should be presented as a failure (not "heals for 0 damage" but "tried to heal but fails") -- thought we had repaired this but still seeing 0-amount heals
-  [ ] Magic missile that does 0 damage should be glossed as a miss I think?
+  [ ] Healing for 0 HP should be presented as a failure (not "heals for 0 damage" but "tried to heal but fails") -- thought we had repaired this but still seeing 0-amount heals -- we'd need to elide these events (for turn-end regen effects I think but maybe other places)
+  [ ] Magic missile that does 0 damage should be glossed as a miss I think? (even though they're supposed to have 'perfect' targeting!)
 
 ## Features
 [ ] Rest could reset status effects? (would be nice to do this _before_ persisting PCs?)
@@ -99,11 +99,12 @@
 [ ] NPCs with wildtype aspect shouldn't have that as part of their name
 [ ] AI heuristic scoring for disable devices (AI thieves should favor disable if there's a non-disabled device etc)
 [ ] Show mechanical descriptions of all statuses/auras/traits (not just flavor)
-[ ] Impose max summons cap for wizards (1 at level 1, growing slowly)
+[ ] Impose max summons cap for wizards (1 at level 1, growing slowly; slots for: familiar, animal, monsters)
 [ ] Summon undead doesn't seem to summon appropriate races for the given dungeon
 [ ] Remove auras at end of combat
-[ ] Some kind of temp hp/buffer for glass cannons
-[ ] A dispelling buffer would be amazing too?
+[ ] A dispelling buffer would be amazing too (for _arcane ward_)
+[ ] Make _heavy handed_ feat actually improve proficiency with heavy weapons _only_
+[ ] Morale/loyalty for hirelings?
 
 ## Fixed
 [x] Temple/shrine to local deity to get a blessing
@@ -202,6 +203,7 @@
 [x] Effects from shrine not getting applied to characters? (maybe getting erased at Combat#setUp if configured as activeEffect but also I don't think I was even seeing it immediately on the character rec at all?) -- this was about activeEffects getting cleared [should be fixed now]
 [x] If you don't have enough to buy the quantity you like it should not say "You purchase X" (even if the next line is saying "not enough gold") -- should be fixed
 [x] Temple blessings should take account of the deity somehow... (war gods give toHit, love goddess grants chance to charm on hit etc)
+[x] Some kind of temp hp/buffer for glass cannons
 
 ## Not really issues atm
 - "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]

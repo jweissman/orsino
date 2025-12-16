@@ -2204,7 +2204,8 @@
           "effect": {
             "noActions": true,
             "immuneDamage": true
-          }
+          },
+          "duration": 10
         },
         "saveType": "con",
         "saveDC": 18

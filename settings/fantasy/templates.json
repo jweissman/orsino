@@ -82,7 +82,7 @@
     "forename": "=lookup(companionName, #animal_type)",
     "animal_aspect": "=lookup(creatureAspectTypes, if(#challenging, oneOf(rare, legendary), oneOf(common, uncommon)))",
     "class": "=capitalize(#terrain) + ' ' + capitalize(#animal_type)",
-    "kind": "=capitalize(#background)",
+    "kind": "=#background != 'wildtype' ? capitalize(#background) : ''",
     "name": "=capitalize(#animal_aspect) + ' ' + capitalize(#forename)",
     "_statLine": "=lookup(animalStat, #animal_type)",
     "_statBase": 3,
@@ -189,6 +189,7 @@
     "npc_template_type": "=#_npc_template_type_expr != nihil ? eval(#_npc_template_type_expr) : nihil",
     "npc_template": "=#npc_template_type != nihil ? lookup(creatureTemplateOverlays, #npc_template_type) : nihil",
     "class": "=if(#challenging, capitalize(#rank) + ' ', '') + #npc_type",
+    "kind": "=(#npc_template_type != nihil ? capitalize(#npc_template) + ' ' : '') + capitalize(#race)",
     "name": "=capitalize(#npc_aspect) + ' ' + #forename",
     "referenceName": "='the ' + capitalize(#race) + ' ' + #npc_type + oneOf(' named ', ' known as ') + #forename",
     "_statLine": "=lookup(npcStat, #race)",
@@ -352,7 +353,7 @@
     "terrain": "=lookup(terrains, 1d6)",
     "town": "=gen(town)",
     "_townName": "=dig(#town, 'name')",
-    "dungeons": "=genList(dungeon, 4)",
+    "dungeons": "=genList(dungeon, 3)",
     "_moduleLevel": 0,
     "name": "=oneOf('Adventure', 'Saga', 'Reckoning', 'Quest', 'Expedition') + ' ' + oneOf('in the ' + capitalize(#terrain), 'at ' + capitalize(#_townName), 'for the ' + capitalize(#terrain))"
   }
