@@ -84,7 +84,7 @@ export default class Presenter {
     let abilityHandler = AbilityHandler.instance;
     for (let abilityName of combatant.abilities || []) {
       let ability = abilityHandler.getAbility(abilityName)!;
-      record += `  ${Stylist.colorize(ability.name, 'magenta').padEnd(28)} ${ability.description} ${this.describeAbility(ability)}\n`;
+      record += `  ${Stylist.colorize(ability.name, 'magenta').padEnd(28)} ${ability.description + ' ' || ''}${this.describeAbility(ability)}\n`;
     }
 
     // traits
@@ -98,7 +98,8 @@ export default class Presenter {
           record += `  ${Stylist.colorize(trait.description, 'blue')}\n`;
           trait.statuses?.forEach(status => {
             passiveEffectsFromAbilities.push(status.name);
-            record += `  ${Stylist.colorize(status.name, 'cyan')} (${status.description})\n`;
+            // record += `  ${Stylist.colorize(status.name, 'cyan')} (${status.description})\n`;
+            record += `  ${this.describeStatus(status)}\n`;
           });
           record += "\n";
         }
@@ -150,10 +151,15 @@ export default class Presenter {
     let name = Stylist.format(combatant.forename, 'bold');
     let combatClass = combatant.class;
     let combatKind = (combatant as any).kind || combatant.race || '';
+    let tempHp = 0;
+    for (let poolAmount of Object.values(combatant.tempHpPools || {})) {
+      tempHp += poolAmount;
+    }
     return [
       // this.padLiteralEnd(Stylist.colorize(name, combatant.playerControlled ? 'cyan' : 'yellow'), 7),
       Stylist.colorize(name, combatant.playerControlled ? 'cyan' : 'yellow'),
       combatant.hp <= 0 ? Stylist.colorize('X', 'red') : Stylist.colorize(hpBar, color),
+      tempHp > 0 ? Stylist.colorize(`(+${tempHp})`, 'blue') : '',
       combatant.hp > 0 ? `${combatant.hp}/${combatant.maxHp}` : 'KO',
       // this.padLiteralStart(combatClass ? `${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '', 14),
       combatClass ? `${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '',
@@ -312,7 +318,7 @@ export default class Presenter {
   }
 
   static describeStatus(status: StatusEffect): string {
-    return `${status.name} (${status.description || this.analyzeStatus(status)})`;
+    return `${Stylist.colorize(status.name, 'cyan')} (${(status.description ? status.description + " " : '') + this.analyzeStatus(status)})`;
     // return this.analyzeStatus(status);
   }
 
@@ -393,6 +399,7 @@ export default class Presenter {
         case "saveVersusBreath":
         case "saveVersusParalyze":
         case "saveVersusSleep":
+        case "saveVersusAll":
           let save = `Save versus ${Words.humanize(k.replace("saveVersus", ""))}`;
           parts.push(this.increaseDecrease(save, value));
           break;
@@ -449,10 +456,24 @@ export default class Presenter {
         case "onKill":
         case "onAttacked":
         case "onExpire":
+        case "onHeal":
         case "onLevelUp":
+        case "onOffensiveCasting":
         case "onEnemyCharge":
         case "onEnemyMelee":
         case "onMissReceived":
+        case "onResistPoison":
+        case "onResistDisease":
+        case "onResistDeath":
+        case "onResistMagic":
+        case "onResistInsanity":
+        case "onResistCharm":
+        case "onResistFear":
+        case "onResistStun":
+        case "onResistWill":
+        case "onResistBreath":
+        case "onResistParalyze":
+        case "onResistSleep":
           parts.push(`${this.describeEffects(value, 'self')} ${Words.humanize(k)}`);
           break;
 
@@ -527,12 +548,30 @@ export default class Presenter {
           }
           break;
 
+        case "tempHp":
+          parts.push(`Gain ${value} temporary HP`);
+          break;
+
+        case "damageReduction":
+          parts.push(`Reduce all damage by ${value}`);
+          break;
+
         // TODO figure out where this comes from
         case "by":
           // ignore
           break;
 
         default:
+          // @ts-ignore
+          if (k.startsWith("onEnemy")) {
+            parts.push(`${this.describeEffects(value, 'self')} ${Words.humanize(k)}`);
+            break;
+          // @ts-ignore
+          } else if (k.endsWith("Multiplier")) {
+            parts.push(`${Words.humanize(k)} multiplied by ${value}x`);
+            break;
+          }
+
           return never(k);
       }
     }
@@ -620,7 +659,11 @@ export default class Presenter {
     description += cascade;
 
 
-    let condition = effect.condition ? ` if ${effect.condition.trait}` : "";
+    let condition = '';
+    if (effect.condition) {
+      condition += effect.condition.trait ? ` if ${effect.condition.trait}` : "";
+      // condition += effect.condition.status ? ` if ${effect.condition.status}` : "";
+    }
     description += condition;
 
     return description;
@@ -633,7 +676,7 @@ export default class Presenter {
       return `Remove ${statuses} from ${targetDescription}`;
     }
     for (const effect of effects) {
-      parts.push(this.describeEffect(effect, effect.target || targetDescription));
+      parts.push(this.describeEffect(effect, effect.target || targetDescription || ""));
     }
     return parts.join("; ");
   }

@@ -14,7 +14,7 @@ import CharacterRecord from "./rules/CharacterRecord";
 import AbilityHandler, { Ability } from "./Ability";
 import { Inventory } from "./Inventory";
 import Orsino from "../orsino";
-import { StatusEffect } from "./Status";
+import { StatusEffect, StatusModifications } from "./Status";
 
 type SkillType = "search" | "examine"; // | "disarm" | "pickLock" | "climb" | "swim" | "jump" | "listen" | "spot";
 
@@ -215,21 +215,21 @@ export default class Dungeoneer {
     }
   }
 
-  async skillCheck(type: SkillType, action: string, skill: keyof Combatant, dc: number): Promise<{
+  async skillCheck(type: SkillType, action: string, stat: keyof Combatant, dc: number): Promise<{
     actor: Combatant;
     success: boolean;
   }> {
     const actor = await this.select(`Who will attempt ${action}?`, this.playerTeam.combatants.map(c => ({
-      name: `${c.name} ${Presenter.stat(skill, c[skill])} (${Presenter.statMod(c[skill])})`,
+      name: `${c.name} ${Presenter.stat(stat, c[stat])} (${Presenter.statMod(c[stat])})`,
       value: c,
       short: c.name,
       disabled: c.hp <= 0
     })));
 
     let actorFx = await Fighting.gatherEffects(actor);
-    let skillBonusName = `${type}Bonus`;
+    let skillBonusName = `${type}Bonus` as keyof StatusModifications;
     let skillBonus = actorFx[skillBonusName] as number || 0;
-    let skillMod = Fighting.statMod(actor[skill] as number);
+    let skillMod = Fighting.statMod(actor[stat] as number);
 
     // this.note(`${actor.name} attempts ${action} with modifier ${skillMod}` + (skillBonus > 0 ? ` and +${skillBonus} bonus.` : '.'));
     const roll = await this.roller(actor, action, 20);

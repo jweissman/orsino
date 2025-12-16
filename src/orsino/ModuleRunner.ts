@@ -236,12 +236,17 @@ export class ModuleRunner {
         const effect = mod.town.deity.blessing;
         const duration = 10;
         const deityName = mod.town.deity.name;
-        let blessing: StatusEffect = { name: `Blessing of ${deityName}`, duration, effect };
+        const blessingName = `${deityName}'s favor`;
+        let blessing: StatusEffect = {
+          name: blessingName,
+          description: "Blessed by " + Words.capitalize(deityName),
+          duration, effect, aura: false
+        };
         blessing.description = Presenter.describeStatus(blessing);
         // this.outputSink(`You pray to ${Words.capitalize(mod.town.deity)}.`);
         this.pcs.forEach(pc => {
           pc.activeEffects = pc.activeEffects || [];
-          if (!pc.activeEffects.some(e => e.name === `Blessing of ${deityName}`)) {
+          if (!pc.activeEffects.some(e => e.name === blessingName)) {
             // this.outputSink(`The priest blesses ${pc.name}.`);
             pc.activeEffects.push(
               // { name: `Blessing of ${deityName}`, duration, effect, description }

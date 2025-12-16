@@ -4,7 +4,7 @@ import { GameEvent, ReactionEvent, ResurrectEvent, UpgradeEvent } from "./Events
 import Generator from "./Generator";
 import { CommandHandlers } from "./rules/Commands";
 import { Fighting } from "./rules/Fighting";
-import { StatusEffect } from "./Status";
+import { StatusEffect, StatusModifications } from "./Status";
 import Words from "./tui/Words";
 import { Combatant } from "./types/Combatant";
 import { GenerationTemplateType } from "./types/GenerationTemplateType";
@@ -308,7 +308,7 @@ export default class AbilityHandler {
     // check if _any_ ally of the target has a reaction effect for this ability
     for (const targetAlly of context.enemies) {
       if (targetAlly.hp <= 0) { continue; }
-      let reactionEffectName = `onEnemy${Words.capitalize(name.replace(/\s+/g, ""))}`;
+      let reactionEffectName = `onEnemy${Words.capitalize(name.replace(/\s+/g, ""))}` as keyof StatusModifications;
       let allyFx = await Fighting.gatherEffects(targetAlly);
       if (allyFx[reactionEffectName]) {
         events.push({ type: "reaction", subject: targetAlly, target: user, reactionName: `to ${name}` } as Omit<ReactionEvent, "turn">);

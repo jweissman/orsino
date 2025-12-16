@@ -29,9 +29,11 @@ export class AbilityScoring {
     // are we being taunted?
     let tauntEffect = user.activeEffects?.find(e => e.effect.forceTarget);
     if (tauntEffect) {
-      if (validTargets.some(t => t === tauntEffect.effect.by)) {
-        console.warn(`${Presenter.combatant(user)} is taunted by ${Presenter.combatant(tauntEffect.effect.by)} and must target them!`);
-        return tauntEffect.effect.by;
+      if (tauntEffect.by && validTargets.some(t => t === tauntEffect.by)) {
+        console.warn(`${(user.forename)} is taunted by ${Presenter.combatant(tauntEffect.by)} and must target them!`);
+        return tauntEffect.by as Combatant;
+      // } else {
+      //   console.warn(`${(user.forename)} is taunted but the taunter is no longer a valid target (${tauntEffect.by?.name || 'name unknown'})`);
       }
     }
 

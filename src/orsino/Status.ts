@@ -3,7 +3,7 @@ import { Combatant } from "./types/Combatant";
 
 export interface StatusModifications {
   changeAllegiance?: boolean;
-  compelNextMove?: boolean;
+  compelNextMove?: string;
   forceTarget?: boolean;
   
   allRolls?: number;
@@ -41,6 +41,8 @@ export interface StatusModifications {
   resistAcid?: number;
   resistTrue?: number;
 
+  // resistAll?: number
+
   saveVersusPoison?: number;
   saveVersusDisease?: number;
   saveVersusDeath?: number;
@@ -53,6 +55,7 @@ export interface StatusModifications {
   saveVersusBreath?: number;
   saveVersusParalyze?: number;
   saveVersusSleep?: number;
+  saveVersusAll?: number;
 
   immunePoison?: boolean;
   immuneDisease?: boolean;
@@ -82,10 +85,27 @@ export interface StatusModifications {
   onAttacked?: AbilityEffect[];
   onExpire?: AbilityEffect[];
   onLevelUp?: AbilityEffect[];
-
   onMissReceived?: AbilityEffect[];
+  onHeal?: AbilityEffect[];
+  onOffensiveCasting?: AbilityEffect[];
+
   onEnemyCharge?: AbilityEffect[];
   onEnemyMelee?: AbilityEffect[];
+  // [key: `onEnemy${string}`]: AbilityEffect[] | undefined;
+
+  onResistPoison?: AbilityEffect[];
+  onResistDisease?: AbilityEffect[];
+  onResistDeath?: AbilityEffect[];
+  onResistMagic?: AbilityEffect[];
+  onResistInsanity?: AbilityEffect[];
+  onResistCharm?: AbilityEffect[];
+  onResistFear?: AbilityEffect[];
+  onResistStun?: AbilityEffect[];
+  onResistWill?: AbilityEffect[];
+  onResistBreath?: AbilityEffect[];
+  onResistParalyze?: AbilityEffect[];
+  onResistSleep?: AbilityEffect[];
+  // onResistAll?: AbilityEffect[];
 
   flee?: boolean;
 
@@ -94,10 +114,14 @@ export interface StatusModifications {
   summonAnimalBonus?: number;
   statusDuration?: number;
   backstabMultiplier?: number;
+  // [key: `${string}Multiplier`]: number | undefined;
 
   extraAttacksPerTurn?: number;
 
   resurrectable?: boolean;
+
+  tempHp?: number;
+  damageReduction?: number;
 
   // noncombat
   examineBonus?: number;

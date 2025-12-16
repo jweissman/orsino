@@ -681,7 +681,7 @@
     "statuses": [
       {
         "name": "Fearsome Shout",
-        "description": "After killing an enemy, gain +1d3 damage for your next attack.",
+        "description": "You have an empowering battle cry.",
         "effect": {
           "onKill": [
             {
@@ -690,7 +690,7 @@
                 "name": "Hollering",
                 "duration": 2,
                 "effect": {
-                  "bonusDamage": "1d3"
+                  "bonusDamage": "=1d3"
                 }
               }
             }
@@ -730,7 +730,6 @@
         "name": "Silent Footsteps",
         "description": "+4 to stealth checks and +2 to pick lock checks. Backstab damage increased by 25%.",
         "effect": {
-          "stealthBonus": 4,
           "pickLockBonus": 2,
           "backstabMultiplier": 1.25
         }
@@ -809,7 +808,20 @@
       "level": 3,
       "class": "warrior"
     },
-    "abilities": [ "taunt", "shield_bash", "overwatch" ]
+    "abilities": [ "taunt", "shield_bash", "overwatch" ],
+    "statuses": [
+      {
+        "name": "Heavy Handed",
+        "description": "You are proficient with heavy weaponry.",
+        "condition": {
+          "weapon": { "weight": "heavy" }
+        },
+        "effect": {
+          "toHit": 1,
+          "bonusDamage": 2
+        }
+      }
+    ]
   },
 
   "undead": {

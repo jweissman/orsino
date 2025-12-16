@@ -940,7 +940,8 @@
       "claustrophobic": {
         "name": "Claustrophobic",
         "description": "The confined space makes it hard to breathe and think clearly",
-        "effect": { "toHit": -1 }
+        "effect": { "toHit": -1 },
+        "aura": true
       }
     }
   },

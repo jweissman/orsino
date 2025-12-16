@@ -1,5 +1,5 @@
 import Deem from "../../deem";
-import { StatusEffect } from "../Status";
+import { StatusEffect, StatusModifications } from "../Status";
 import Presenter from "../tui/Presenter";
 import Words from "../tui/Words";
 import { AttackResult } from "../types/AttackResult";
@@ -15,8 +15,8 @@ export class Fighting {
     return Math.round((stat - 10) / 3);
   }
 
-  static turnBonus(combatant: Combatant, keys: (string)[] = []): { [key: string]: number } {
-    let bonuses: { [key: string]: number } = {};
+  static turnBonus(combatant: Combatant, keys: (string)[] = []): Partial<StatusModifications> {
+    let bonuses: Partial<StatusModifications> = {};
     let fx = [
       ...(combatant.passiveEffects || []),
       ...(combatant.activeEffects || [])
@@ -30,8 +30,12 @@ export class Fighting {
             return;
           }
           if (typeof value === "number") {
+            let theKey = key as keyof StatusModifications;
             if (keys.length === 0 || keys.includes(key)) {
-              bonuses[key] = (bonuses[key] || 0) + value;
+              if (typeof bonuses[theKey] === "number") {
+                // @ts-ignore
+                bonuses[theKey] = ((bonuses[theKey] || 0) + value);
+              }
             }
           }
         });
@@ -81,7 +85,7 @@ export class Fighting {
   }
 
   // gather all current passive + active effects and try to calculate any cumulative bonuses
-  static async gatherEffects(combatant: Combatant): Promise<{ [key: string]: number | string | boolean | Array<any> }> {
+  static async gatherEffects(combatant: Combatant): Promise<Partial<StatusModifications>> {
     let equipmentKeys = Object.values(combatant.equipment || []).filter(it => it !== undefined);
     let equipmentList: StatusEffect[] = [];
     for (let eq of equipmentKeys) {
@@ -97,7 +101,7 @@ export class Fighting {
       ...equipmentList,
     ];
 
-    let resultingEffects: { [key: string]: number | string | Array<any> } = {
+    let resultingEffects: Partial<StatusModifications> = {
       // could gather effective resistances/saves here too if the combatant has them specified in their record?
     };
     // effectList.forEach(it => {
@@ -117,14 +121,20 @@ export class Fighting {
             continue;
           }
 
+          let theKey = key as keyof StatusModifications;
+
           // value = await Deem.evaluate(value, { subject: combatant });
-          if (typeof value === "number" && typeof resultingEffects[key] === "number") {
-            resultingEffects[key] = (resultingEffects[key] || 0) + value;
-          } else if (Array.isArray(value) && Array.isArray(resultingEffects[key])) {
-            resultingEffects[key] = (resultingEffects[key] || []).concat(value);
+          if (typeof value === "number" && typeof resultingEffects[theKey] === "number") {
+            // @ts-ignore
+            resultingEffects[theKey] = ((resultingEffects[theKey] || 0) + value) as number;
+          } else if (Array.isArray(value) && Array.isArray(resultingEffects[theKey])) {
+            // console.warn("Merging array effect values for modifications key:", theKey);
+            // hmmm why do we need to handle array? -- for effect triggers like onEnemyMelee, onResistPoison, etc
+            // @ts-ignore
+            resultingEffects[theKey] = (resultingEffects[theKey] || []).concat(value);
           } else {
-            // console.warn(`Overriding effect ${key} with value ${value} (was ${resultingEffects[key]})`);
-            resultingEffects[key] = value;
+            // console.warn(`Overriding effect ${key} with value ${value} (was ${resultingEffects[theKey]})`);
+            resultingEffects[theKey] = value;
           }
         }
       }

@@ -29,8 +29,12 @@ export interface Combatant {
   race?: string;
   hometown?: string;
   forename: string;
+
   hp: number;
   maxHp: number;
+  // tempHp?: number;
+  tempHpPools?: { [source: string]: number };
+
   level: number;
   ac: number;
   str: number;

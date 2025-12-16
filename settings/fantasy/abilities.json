@@ -416,28 +416,53 @@
     ]
   },
   "armor": {
-    "name": "Magic Armor",
+    "name": "Mage Armor",
     "type": "spell",
     "level": 1,
     "aspect": "arcane",
     "school": "abjuration",
-    "description": "Gain 4 AC for 3 rounds.",
-    "target": [
-      "self"
-    ],
+    "description": "Arcane force protects you.",
+    "target": [ "self" ],
     "effects": [
       {
         "type": "buff",
         "status": {
           "name": "Mage-Armored",
           "effect": {
-            "ac": -4
+            "ac": -4,
+            "tempHp": 20
           },
-          "duration": 3
+          "duration": 25
         }
       }
     ]
   },
+  "ward": {
+    "name": "Arcane Ward",
+    "type": "spell",
+    "level": 1,
+    "aspect": "arcane",
+    "school": "abjuration",
+    "description": "Conjure a magical absorption ward.",
+    "target": [ "self", "ally" ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Warded",
+          "effect": {
+            "saveVersusMagic": 2,
+            "resistFire": 0.5,
+            "resistCold": 0.5,
+            "resistLightning": 0.5,
+            "tempHp": "=14 + 2 * #level"
+          },
+          "duration": 20
+        }
+      }
+    ]
+  },
+
   "prepare_charge": {
     "name": "Prepare Charge",
     "type": "skill",
@@ -775,6 +800,8 @@
     "name": "Mirror Image",
     "description": "Illusory duplicates confound attackers",
     "type": "spell",
+    "aspect": "arcane",
+    "school": "illusion",
     "level": 2,
     "target": [
       "self"

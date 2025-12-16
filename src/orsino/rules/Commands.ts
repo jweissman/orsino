@@ -10,6 +10,7 @@ import { Fighting } from "./Fighting";
 import { CombatContext } from "../Combat";
 import Presenter from "../tui/Presenter";
 import Deem from "../../deem";
+import { StatusModifications } from "../Status";
 
 type TimelessEvent = Omit<GameEvent, "turn">;
 
@@ -116,12 +117,12 @@ export class Commands {
   static async handleSave(target: Combatant, saveType: SaveKind, dc: number = 15, roll: Roll): Promise<{ success: boolean, events: TimelessEvent[] }> {
     let targetFx = await Fighting.gatherEffects(target);
     let saveKind = saveType.charAt(0).toUpperCase() + saveType.slice(1);
-    let isImmune = targetFx[`immune${saveKind}`] as boolean;
+    let isImmune = targetFx[`immune${saveKind}` as keyof StatusModifications] as boolean;
     if (isImmune) {
       return { success: true, events: [{ type: "save", subject: target, success: true, dc, immune: true, reason: "immunity", versus: saveKind } as Omit<SaveEvent, "turn">] };
     }
 
-    let saveVersusType = `saveVersus${saveKind}`;
+    let saveVersusType: keyof StatusModifications = `saveVersus${saveKind}` as keyof StatusModifications;
     const saveBonus: number = {
       "death": Fighting.statMod(target.con),
       "poison": Fighting.statMod(target.con),
@@ -157,7 +158,7 @@ export class Commands {
       // return { success: true, events: [{ type: "save", versus: saveKind, subject: target, success: true, dc, immune: false, reason: "successful roll" } as Omit<SaveEvent, "turn">] };
 
       // check for onResistX effects
-      let onResistFx = targetFx[`onResist${saveKind}`] as AbilityEffect[] || [];
+      let onResistFx = targetFx[`onResist${saveKind}` as keyof StatusModifications] as AbilityEffect[] || [];
       let resistEvents: TimelessEvent[] = [];
       for (let fx of onResistFx) {
 
@@ -225,11 +226,12 @@ export class Commands {
       }
     }
 
-    if (attackerEffects[`${by}Multiplier`]) {
-      let multiplier = attackerEffects[`${by}Multiplier`] as number || 1;
+    let multiplierKey = `${by}Multiplier` as keyof StatusModifications;
+    if (attackerEffects[multiplierKey]) {
+      let multiplier = attackerEffects[multiplierKey] as number || 1;
       damage = Math.floor(damage * multiplier);
       let delta = damage - Math.floor(damage / multiplier);
-      let sources = attackerFxWithNames[`${by}Multiplier`]?.sources || [];
+      let sources = attackerFxWithNames[multiplierKey]?.sources || [];
       events.push({ type: "damageBonus", subject: attacker, target: defender, amount: delta, damageKind, reason: `a ${multiplier}x multiplier from ${Words.humanizeList(sources)}` } as Omit<DamageBonus, "turn">);
     }
 
@@ -273,6 +275,31 @@ export class Commands {
     }
 
     let originalHp = defender.hp;
+    for (let [source, pool] of Object.entries(defender.tempHpPools || {})) {
+      let originalTempHp = pool;
+      if (isNaN(originalTempHp)) {
+        throw new Error(`Temporary HP pool '${source}' is NaN for ${Presenter.minimalCombatant(defender)}.`);
+      }
+      // let originalTempHp = defender.tempHp || 0;
+      if (originalTempHp > 0) {
+        if (damage >= originalTempHp) {
+          damage -= originalTempHp;
+          console.warn(`${defender.forename}'s ${source} absorbed part of the damage! (Now at 0 temp HP left from ${source})`);
+          // defender.tempHp = 0;
+          pool = 0;
+        } else {
+          // defender.tempHp = originalTempHp - damage;
+          pool = originalTempHp - damage;
+          console.warn(`${defender.forename}'s ${source} temporary HP absorbed all the damage! (Now at ${pool} temp HP left from ${source})`);
+          damage = 0;
+        }
+        defender.tempHpPools = defender.tempHpPools || {};
+        defender.tempHpPools[source] = pool;
+        if (damage <= 0) {
+          break;
+        }
+      }
+    }
     defender.hp -= damage;
 
     if (defender.hp <= 0) {
@@ -403,10 +430,8 @@ export class Commands {
   }
 
   static async handleStatusEffect(
-    user: Combatant, target: Combatant, name: string, effect: { [key: string]: any }, duration?: number 
+    user: Combatant, target: Combatant, name: string, effect: StatusModifications, duration?: number 
   ): Promise<TimelessEvent[]> {
-    // console.log(`${Presenter.combatant(user)} applies status effect ${name} to ${Presenter.combatant(target)} for ${duration} turns!`);
-    // if they already have the effect, remove it and reapply it with the new duration
     if (target.activeEffects) {
       let existingEffectIndex = target.activeEffects.findIndex(e => e.name === name);
       if (existingEffectIndex !== -1) {
@@ -418,14 +443,18 @@ export class Commands {
     // Apply status duration bonus
     if (duration && userFx.statusDuration) {
       duration += (userFx.statusDuration as number);
-      // console.log(`Status duration of ${target.forename} increased by ${userFx.statusDuration}!`);
     }
 
     target.activeEffects = target.activeEffects || [];
-    target.activeEffects.push({ name, effect, duration });
-    // this.emit({
-    //   type: "statusEffect", subject: target, effectName: name, effect, duration
-    // } as Omit<StatusEffectEvent, "turn">);
+    target.activeEffects.push({ name, effect, duration, by: user });
+    if (effect.tempHp) {
+      let pool = await Deem.evaluate(effect.tempHp.toString(), { ...user }) as number || 0;
+      console.warn(`${Presenter.combatant(target)} gains ${pool} temporary HP from status effect ${name}.`);
+      // target.tempHp = (target.tempHp || 0) + effect.tempHp;
+      target.tempHpPools = target.tempHpPools || {};
+
+      target.tempHpPools[name] = pool;
+    }
 
     return [{
       type: "statusEffect", subject: target, effectName: name, effect, duration
@@ -435,6 +464,13 @@ export class Commands {
   static async handleRemoveStatusEffect(target: Combatant, name: string): Promise<TimelessEvent[]> {
     if (target.activeEffects) {
       let existingEffectIndex = target.activeEffects.findIndex(e => e.name === name);
+      let effect = target.activeEffects[existingEffectIndex]?.effect;
+      if (effect?.tempHp) {
+        console.warn(`${Presenter.combatant(target)} loses ${effect.tempHp} temporary HP from removal of status effect ${name}.`);
+        // target.tempHp = Math.max(0, (target.tempHp || 0) - effect.tempHp);
+        target.tempHpPools = target.tempHpPools || {};
+        delete target.tempHpPools[name];
+      }
       if (existingEffectIndex !== -1) {
         target.activeEffects.splice(existingEffectIndex, 1);
         // this.emit({

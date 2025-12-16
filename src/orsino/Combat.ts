@@ -165,10 +165,11 @@ export default class Combat {
       c.activeEffects ||= [];
       // remove other auras
       c.activeEffects = c.activeEffects.filter(effect => !effect.aura);
+
       c.activeEffects.push(...auras);
       // remove duplicates
-      c.activeEffects = c.activeEffects.filter((effect, index, self) =>
-        index === self.findIndex((e) => (e.name === effect.name)));
+      // c.activeEffects = c.activeEffects.filter((effect, index, self) =>
+      //   index === self.findIndex((e) => (e.name === effect.name)));
 
       await this.emit({ type: "engage", subject: c } as Omit<CombatantEngagedEvent, "turn">);
     }
@@ -180,11 +181,11 @@ export default class Combat {
   static maxSpellSlotsForLevel(level: number): number { return 2 + Math.ceil(level); }
   static maxSpellSlotsForCombatant(combatant: Combatant): number {
     if (combatant.class === "mage") {
-      return Combat.maxSpellSlotsForLevel(combatant.level || 1) + Math.max(0, Fighting.statMod(combatant.int));
-    } else if (combatant.class === "bard") {
-      return Combat.maxSpellSlotsForLevel(combatant.level || 1) + Math.max(0, Fighting.statMod(combatant.cha));
+      return 4 + Combat.maxSpellSlotsForLevel(combatant.level || 1) + 2*Math.max(0, Fighting.statMod(combatant.int));
     } else if (combatant.class === "cleric") {
-      return Combat.maxSpellSlotsForLevel(combatant.level || 1) + Math.max(0, Fighting.statMod(combatant.wis));
+      return 2 + Combat.maxSpellSlotsForLevel(combatant.level || 1) + Math.max(0, Fighting.statMod(combatant.wis));
+    } else if (combatant.class === "bard") {
+      return 1 + Combat.maxSpellSlotsForLevel(combatant.level || 1) + Math.max(0, Fighting.statMod(combatant.cha));
     }
 
     return Combat.maxSpellSlotsForLevel(combatant.level || 1)
@@ -193,7 +194,7 @@ export default class Combat {
   async validateAction(ability: Ability, combatant: Combatant, allies: Combatant[], enemies: Combatant[]): Promise<boolean> {
     let activeFx = await Fighting.gatherEffects(combatant);
     if (activeFx.compelNextMove) {
-      let compelledAbility = this.abilityHandler.getAbility(activeFx.compelNextMove as string);
+      let compelledAbility = this.abilityHandler.getAbility(activeFx.compelNextMove);
       let validTargets = AbilityHandler.validTargets(compelledAbility, combatant, allies, enemies);
       if (compelledAbility && validTargets.length > 0) {
         return ability.name === compelledAbility.name;
@@ -695,7 +696,7 @@ export default class Combat {
       }
 
       // tick down status
-      let expiryEvents: StatusExpireEvent[] = [];
+      let expiryEvents: Omit<GameEvent, "turn">[] = [];
       let noStatusExpiry = combatant.activeEffects?.some((se: StatusEffect) => se.effect?.noStatusExpiry);
       if (noStatusExpiry) {
         let sources = combatant.activeEffects?.filter((se: StatusEffect) => se.effect?.noStatusExpiry).map((se: StatusEffect) => se.name) || [];
@@ -709,7 +710,9 @@ export default class Combat {
 
         for (const status of combatant.activeEffects) {
           if (status.duration === 0) {
-            expiryEvents.push({ type: "statusExpire", subject: combatant, effectName: status.name, turn: this.turnNumber });
+            // expiryEvents.push({ type: "statusExpire", subject: combatant, effectName: status.name, turn: this.turnNumber });
+            // call into commands api instead
+            expiryEvents.push(...(await Commands.handleRemoveStatusEffect(combatant, status.name)));
 
             if (status.effect.onExpire) {
               let ctx = {
@@ -727,7 +730,8 @@ export default class Combat {
                   ctx,
                   Commands.handlers(this.roller, this.teams.find(t => t.combatants.includes(combatant))!)
                 );
-                await this.emitAll(events, `Status effect ${status.name} expires`, combatant);
+                // await this.emitAll(events, `Status effect ${status.name} expires`, combatant);
+                expiryEvents.push(...events);
               }
             }
           }
