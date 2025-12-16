@@ -578,7 +578,10 @@ export default class Presenter {
     return parts.join(", ");
   }
 
-  static increaseDecrease(what: string, value: number): string {
+  static increaseDecrease(what: string, value: number | string): string {
+    if (typeof value === 'string') {
+      return `add ${value} to ${what}`;
+    }
     return value >= 0 ? `increase ${what} by ${value}` : `decrease ${what} by ${Math.abs(value)}`;
   }
 

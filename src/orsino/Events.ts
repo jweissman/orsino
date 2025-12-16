@@ -28,6 +28,7 @@ export type TurnStartEvent = BaseEvent & { type: "turnStart", combatants: Combat
 export type HitEvent = BaseEvent & { type: "hit"; damage: number; success: boolean; critical: boolean; by: string; damageKind: DamageKind };
 export type DamageBonus = BaseEvent & { type: "damageBonus"; amount: number; damageKind: DamageKind; reason: string };
 export type DamageReduction = BaseEvent & { type: "damageReduction"; amount: number; damageKind: DamageKind; reason: string };
+export type DamageAbsorb = BaseEvent & { type: "tempHpAbsorb"; amount: number; source: string };
 export type CritEvent = BaseEvent & { type: "crit"; damage: number; by: string; damageKind: DamageKind };
 export type MissEvent = BaseEvent & { type: "miss"; };
 export type KillEvent = BaseEvent & { type: "kill"; };
@@ -63,6 +64,7 @@ export type CombatEvent =
   | HitEvent
   | DamageBonus
   | DamageReduction
+  | DamageAbsorb
   | CombatantEngagedEvent
   | KillEvent
   | CritEvent
@@ -272,6 +274,9 @@ export default class Events {
 
       case "damageReduction":
         return `${subjectName} reduces damage taken by ${event.amount} due to ${event.reason}.`;
+
+      case "tempHpAbsorb":
+        return `${subjectName}'s ${event.source} absorbs ${event.amount} damage.`;
 
       case "reaction":
         return `${subjectName} reacts ${(event.reactionName)} from ${event.target?.forename}.`;

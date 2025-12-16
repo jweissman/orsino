@@ -1271,7 +1271,7 @@
             ]
           }
         },
-        "saveType": "will",
+        "saveType": "death",
         "saveDC": 10
       }
     ]
@@ -1819,8 +1819,11 @@
   },
   "paralyzing_touch": {
     "name": "Paralyzing Touch",
-    "type": "skill",
-    "aspect": "dark",
+    "type": "spell",
+    "level": 2,
+    "aspect": "arcane",
+    "school": "necromancy",
+    "alignment": "evil",
     "description": "Touch an enemy to paralyze them for 2 rounds.",
     "target": [
       "enemy"
@@ -1842,9 +1845,11 @@
   },
   "rally": {
     "name": "Rally",
-    "type": "skill",
-    "aspect": "social",
-    "description": "Rally your allies, healing them for 1d6 hit points.",
+    "type": "spell",
+    "level": 3,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Restore your team's spirit.",
     "target": [
       "allies"
     ],

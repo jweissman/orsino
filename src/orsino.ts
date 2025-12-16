@@ -150,7 +150,11 @@ export default class Orsino {
           const abilityA = AbilityHandler.instance.getAbility(a);
           const abilityB = AbilityHandler.instance.getAbility(b);
           if (abilityA && abilityB) {
-            return ((abilityA.level || 1) - (abilityB.level || 1)) || a.localeCompare(b);
+            let levelDiff = ((abilityA.level || 1) - (abilityB.level || 1));
+            if (levelDiff !== 0) {
+              return levelDiff;
+            }
+            return ((abilityA.school || abilityA.domain || "").localeCompare(abilityB.school || abilityB.domain || "")) || a.localeCompare(b);
           }
           return a.localeCompare(b);
         }

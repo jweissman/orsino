@@ -236,7 +236,7 @@ export class ModuleRunner {
         const effect = mod.town.deity.blessing;
         const duration = 10;
         const deityName = mod.town.deity.name;
-        const blessingName = `${deityName}'s favor`;
+        const blessingName = `${mod.town.deity.forename}'s Favor`;
         let blessing: StatusEffect = {
           name: blessingName,
           description: "Blessed by " + Words.capitalize(deityName),

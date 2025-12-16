@@ -708,8 +708,11 @@ export default class Combat {
           }
         });
 
-        for (const status of combatant.activeEffects) {
-          if (status.duration === 0) {
+        const activeFx: StatusEffect[] = combatant.activeEffects ?? [];
+        const expired = activeFx.filter(s => s.duration === 0);
+
+        for (const status of expired) { //}combatant.activeEffects) {
+          // if (status.duration === 0) {
             // expiryEvents.push({ type: "statusExpire", subject: combatant, effectName: status.name, turn: this.turnNumber });
             // call into commands api instead
             expiryEvents.push(...(await Commands.handleRemoveStatusEffect(combatant, status.name)));
@@ -734,13 +737,14 @@ export default class Combat {
                 expiryEvents.push(...events);
               }
             }
-          }
+          // }
         }
       }
 
-      combatant.activeEffects = combatant.activeEffects?.filter((it: StatusEffect) =>
-        it.duration === undefined || it.duration === Infinity || it.duration > 0
-      );
+      // should be handled by remove effect command above
+      // combatant.activeEffects = combatant.activeEffects?.filter((it: StatusEffect) =>
+      //   it.duration === undefined || it.duration === Infinity || it.duration > 0
+      // );
 
       if (expiryEvents.length > 0) {
         await this.emitAll(expiryEvents, "effects expire", combatant);

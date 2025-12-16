@@ -1,6 +1,6 @@
 import AbilityHandler, { AbilityEffect, DamageKind, SaveKind } from "../Ability";
 import { RollResult } from "../types/RollResult";
-import { GameEvent, FallenEvent, HealEvent, HitEvent, MissEvent, StatusEffectEvent, StatusExpireEvent, SummonEvent, SaveEvent, DamageBonus, DamageReduction } from "../Events";
+import { GameEvent, FallenEvent, HealEvent, HitEvent, MissEvent, StatusEffectEvent, StatusExpireEvent, SummonEvent, SaveEvent, DamageBonus, DamageReduction, DamageAbsorb } from "../Events";
 import Stylist from "../tui/Style";
 import Words from "../tui/Words";
 import { Combatant } from "../types/Combatant";
@@ -284,13 +284,11 @@ export class Commands {
       if (originalTempHp > 0) {
         if (damage >= originalTempHp) {
           damage -= originalTempHp;
-          console.warn(`${defender.forename}'s ${source} absorbed part of the damage! (Now at 0 temp HP left from ${source})`);
-          // defender.tempHp = 0;
+          events.push({ type: "tempHpAbsorb", subject: defender, target: defender, amount: originalTempHp, source } as Omit<DamageAbsorb, "turn">);
           pool = 0;
         } else {
-          // defender.tempHp = originalTempHp - damage;
           pool = originalTempHp - damage;
-          console.warn(`${defender.forename}'s ${source} temporary HP absorbed all the damage! (Now at ${pool} temp HP left from ${source})`);
+          events.push({ type: "tempHpAbsorb", subject: defender, target: defender, amount: damage, source } as Omit<DamageAbsorb, "turn">);
           damage = 0;
         }
         defender.tempHpPools = defender.tempHpPools || {};

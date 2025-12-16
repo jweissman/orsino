@@ -568,7 +568,7 @@
           "onTurnEnd": [
             {
               "type": "heal",
-              "amount": "=1d6+1"
+              "amount": "=1d3-1"
             }
           ]
         }
