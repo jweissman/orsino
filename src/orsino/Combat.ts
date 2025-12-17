@@ -4,7 +4,7 @@ import Presenter from "./tui/Presenter";
 import { Team } from "./types/Team";
 import { Roll } from "./types/Roll";
 import { Fighting } from "./rules/Fighting";
-import Events, { CombatEvent, StatusExpireEvent, RoundStartEvent, CombatEndEvent, FleeEvent, GameEvent, CombatantEngagedEvent, WaitEvent, NoActionsForCombatant, AllegianceChangeEvent, ItemUsedEvent, ActionEvent, ActedRandomly, StatusExpiryPreventedEvent } from "./Events";
+import Events, { CombatEvent, RoundStartEvent, CombatEndEvent, FleeEvent, GameEvent, CombatantEngagedEvent, WaitEvent, NoActionsForCombatant, AllegianceChangeEvent, ItemUsedEvent, ActionEvent, ActedRandomly, StatusExpiryPreventedEvent } from "./Events";
 import AbilityHandler, { Ability, AbilityEffect} from "./Ability";
 import { Answers } from "inquirer";
 import { AbilityScoring } from "./tactics/AbilityScoring";
@@ -95,7 +95,7 @@ export default class Combat {
     let initiativeOrder = [];
     for (let c of this.allCombatants) {
       let effective = await Fighting.effectiveStats(c);
-      let initBonus = Fighting.turnBonus(c, ["initiative"]).initiative || 0;
+      let initBonus = (await Fighting.turnBonus(c, ["initiative"])).initiative || 0;
       const initiative = (await Commands.roll(c, "for initiative", 20)).amount + Fighting.statMod(effective.dex) + initBonus;
       // (await this.roller(c, "for initiative", 20)).amount + Fighting.statMod(effective.dex) + initBonus;
       initiativeOrder.push({ combatant: c, initiative });
@@ -607,8 +607,6 @@ export default class Combat {
       }
     }
 
-    // if (a
-    // run onTurnEnd for all active effects
     let ctx = { subject: combatant, allies, enemies: allEnemies };
     let activeEffectsWithNames = await Fighting.gatherEffectsWithNames(combatant);
     if (activeFx.onTurnEnd) {
@@ -620,8 +618,6 @@ export default class Combat {
       }
       await this.emitAll(turnEndEvents, `turn end effects from ${Words.humanizeList(activeEffectsWithNames.onTurnEnd.sources)}`, combatant);
     }
-    // }
-    // }
 
     return { haltRound: false };
   }
@@ -653,8 +649,6 @@ export default class Combat {
     // ask to press enter
     if (!this.dry) {
       console.log(`\nThe next round begins...`);
-      // wait for stdin input
-      // await new Promise<void>(resolve => process.stdin.once('data', () => { resolve(); }));
       process.stdin.setRawMode(true);
       process.stdin.resume();
 
@@ -664,13 +658,6 @@ export default class Combat {
           resolve();
         });
       });
-      console.log('Let the battle continue!\n');
-      // ^^ this was causing crashes in some environments -- so we'll just wait 1 second instead
-      // await new Promise<void>((resolve) => {
-      //   setTimeout(() => {
-      //     resolve();
-      //   }, 1000);
-      // });
     }
     process.stdout.write('\x1Bc');
 

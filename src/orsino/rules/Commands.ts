@@ -217,7 +217,7 @@ export class Commands {
       return [];
     }
 
-    if (attackerEffects.bonusDamage) {
+    if (attackerEffects.bonusDamage && attacker != defender) {
       let sources = attackerFxWithNames.bonusDamage?.sources || [];
       let bonusDamage = await Deem.evaluate(attackerEffects.bonusDamage.toString()) as number || 0;
       damage += bonusDamage;
