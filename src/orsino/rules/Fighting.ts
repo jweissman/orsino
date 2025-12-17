@@ -45,7 +45,7 @@ export class Fighting {
         let meetsCondition = true;
         if (it.condition.weapon) {
           if (it.condition.weapon.weight) {
-            let weaponRecord = await Deem.evaluate(`lookup(weapons, '${combatant.weapon}')`);
+            let weaponRecord = await Deem.evaluate(`lookup(masterWeapon, '${combatant.weapon}')`);
             if (weaponRecord.weight !== it.condition.weapon.weight) {
               meetsCondition = false;
             }

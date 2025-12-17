@@ -5,7 +5,7 @@ import { Team } from "./types/Team";
 import { Roll } from "./types/Roll";
 import { Fighting } from "./rules/Fighting";
 import Events, { CombatEvent, RoundStartEvent, CombatEndEvent, FleeEvent, GameEvent, CombatantEngagedEvent, WaitEvent, NoActionsForCombatant, AllegianceChangeEvent, ItemUsedEvent, ActionEvent, ActedRandomly, StatusExpiryPreventedEvent } from "./Events";
-import AbilityHandler, { Ability, AbilityEffect} from "./Ability";
+import AbilityHandler, { Ability, AbilityEffect } from "./Ability";
 import { Answers } from "inquirer";
 import { AbilityScoring } from "./tactics/AbilityScoring";
 import { Commands } from "./rules/Commands";
@@ -181,7 +181,7 @@ export default class Combat {
   static maxSpellSlotsForLevel(level: number): number { return 2 + Math.ceil(level); }
   static maxSpellSlotsForCombatant(combatant: Combatant): number {
     if (combatant.class === "mage") {
-      return 4 + Combat.maxSpellSlotsForLevel(combatant.level || 1) + 2*Math.max(0, Fighting.statMod(combatant.int));
+      return 4 + Combat.maxSpellSlotsForLevel(combatant.level || 1) + 2 * Math.max(0, Fighting.statMod(combatant.int));
     } else if (combatant.class === "cleric") {
       return 2 + Combat.maxSpellSlotsForLevel(combatant.level || 1) + Math.max(0, Fighting.statMod(combatant.wis));
     } else if (combatant.class === "bard") {
@@ -622,6 +622,8 @@ export default class Combat {
     return { haltRound: false };
   }
 
+  private roundsWithoutNetHpChange: number = 0;
+
   async round(
     creatureFlees: (combatant: Combatant) => Promise<void> = async (_c: Combatant) => { }
   ) {
@@ -669,6 +671,7 @@ export default class Combat {
       auras: this.auras
     } as Omit<RoundStartEvent, "turn">);
 
+    let netHp = this.allCombatants.reduce((sum, c) => sum + c.hp, 0);
     for (const { combatant } of this.combatantsByInitiative) {
       let nonplayerCombatants = this.teams[1].combatants.filter(c => c.hp > 0);
       if (nonplayerCombatants.length === 0) {
@@ -702,33 +705,34 @@ export default class Combat {
 
         for (const status of expired) { //}combatant.activeEffects) {
           // if (status.duration === 0) {
-            // expiryEvents.push({ type: "statusExpire", subject: combatant, effectName: status.name, turn: this.turnNumber });
-            // call into commands api instead
-            expiryEvents.push(...(await Commands.handleRemoveStatusEffect(combatant, status.name)));
+          // expiryEvents.push({ type: "statusExpire", subject: combatant, effectName: status.name, turn: this.turnNumber });
+          // call into commands api instead
+          expiryEvents.push(...(await Commands.handleRemoveStatusEffect(combatant, status.name)));
 
-            if (status.effect.onExpire) {
-              let ctx = {
-                subject: combatant,
-                allies: this.teams.find(team => team.combatants.includes(combatant))?.combatants.filter(c => c !== combatant) || [],
-                enemies: this.teams.find(team => team.combatants.includes(combatant)) === this.teams[0] ? (this.teams[1].combatants) : (this.teams[0].combatants)
-              };
-              for (const effect of status.effect.onExpire as AbilityEffect[]) {
-                let target = AbilityHandler.resolveTarget(effect.target || "self", combatant, ctx.allies, ctx.enemies);
-                let { events } = await AbilityHandler.handleEffect(
-                  effect.description || 'status expire effect',
-                  effect,
-                  combatant,
-                  target,
-                  ctx,
-                  Commands.handlers(this.roller, this.teams.find(t => t.combatants.includes(combatant))!)
-                );
-                // await this.emitAll(events, `Status effect ${status.name} expires`, combatant);
-                expiryEvents.push(...events);
-              }
+          if (status.effect.onExpire) {
+            let ctx = {
+              subject: combatant,
+              allies: this.teams.find(team => team.combatants.includes(combatant))?.combatants.filter(c => c !== combatant) || [],
+              enemies: this.teams.find(team => team.combatants.includes(combatant)) === this.teams[0] ? (this.teams[1].combatants) : (this.teams[0].combatants)
+            };
+            for (const effect of status.effect.onExpire as AbilityEffect[]) {
+              let target = AbilityHandler.resolveTarget(effect.target || "self", combatant, ctx.allies, ctx.enemies);
+              let { events } = await AbilityHandler.handleEffect(
+                effect.description || 'status expire effect',
+                effect,
+                combatant,
+                target,
+                ctx,
+                Commands.handlers(this.roller, this.teams.find(t => t.combatants.includes(combatant))!)
+              );
+              // await this.emitAll(events, `Status effect ${status.name} expires`, combatant);
+              expiryEvents.push(...events);
             }
+          }
           // }
         }
       }
+
 
       // should be handled by remove effect command above
       // combatant.activeEffects = combatant.activeEffects?.filter((it: StatusEffect) =>
@@ -741,12 +745,32 @@ export default class Combat {
     }
 
 
+
     for (const team of this.teams) {
       if (team.combatants.every((c: any) => c.hp <= 0)) {
         this.winner = team === this.teams[0] ? this.teams[1].name : this.teams[0].name;
         await this.emit({ type: "combatEnd", winner: this.winner } as Omit<CombatEndEvent, "turn">);
         break;
       }
+    }
+
+    let netHpAfter = this.allCombatants.reduce((sum, c) => sum + c.hp, 0);
+    let netHpLoss = netHp - netHpAfter;
+    if (netHpLoss === 0) {
+      this.roundsWithoutNetHpChange += 1;
+    } else {
+      this.roundsWithoutNetHpChange = 0;
+    }
+
+    if (this.roundsWithoutNetHpChange >= 10) {
+      console.warn("Combat has reached stalemate (10 rounds without net HP change). Ending combat.");
+      this.winner = "Player";
+      // enemies flee
+      for (const combatant of this.teams[1].combatants) {
+        await creatureFlees(combatant);
+      }
+
+      await this.emit({ type: "combatEnd", winner: this.winner } as Omit<CombatEndEvent, "turn">);
     }
 
     return;
