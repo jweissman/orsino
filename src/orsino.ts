@@ -12,9 +12,8 @@ import Combat from "./orsino/Combat";
 import { Team } from "./orsino/types/Team";
 import Deem from "./deem";
 import Presenter from "./orsino/tui/Presenter";
-import { Table } from "./orsino/Table";
 import { Template } from "./orsino/Template";
-import Stylist from "./orsino/tui/Style";
+import Words from "./orsino/tui/Words";
 
 export type Prompt = (message: string) => Promise<string>;
 
@@ -32,7 +31,7 @@ export default class Orsino {
     type: PlaygroundType,
     options: Record<string, any> = {}
   ) {
-    const partySize = options.partySize || 1;
+    const partySize = options.partySize || 3;
     const pcs = await CharacterRecord.chooseParty(
       async (opts: Record<string, any>) => await Generator.gen("pc", { setting: 'fantasy', ...opts }) as Combatant,
       partySize
@@ -135,14 +134,74 @@ export default class Orsino {
     }
   }
 
-  async spellbook(options: Record<string, any> = {}) {
+  async skillbook(_options: Record<string, any> = {}) {
     await AbilityHandler.instance.loadAbilities();
     await TraitHandler.instance.loadTraits();
     await Template.bootstrapDeem();
 
+    console.log(`# Skills\n`);
+
+    let skills = AbilityHandler.instance.allSkillNames()
+    skills.sort((a, b) => a.localeCompare(b));
+
+    skills.forEach(skillName => {
+      const ability = AbilityHandler.instance.getAbility(skillName);
+      if (ability && ability.type === "skill") {
+        console.log(`\n## ${ability.name}`);
+        console.log("_" + ability.description + "_");
+        console.log(
+          Presenter.describeAbility(ability)
+        )
+      }
+    })
+  }
+
+  async traitbook(_options: Record<string, any> = {}) {
+    await AbilityHandler.instance.loadAbilities();
+    await TraitHandler.instance.loadTraits();
+    await Template.bootstrapDeem();
+
+    let traits = TraitHandler.instance.allTraitNames()
+    traits.sort((a, b) => a.localeCompare(b));
+
+    console.log(`# Traits\n`);
+
+    traits.forEach(traitName => {
+      const trait = TraitHandler.instance.getTrait(traitName);
+      if (trait) {
+        console.log(`\n## ${Words.humanize(trait.name)}`);
+        // console.log(trait.description);
+        trait.abilities?.forEach(abilityName => {
+          const ability = AbilityHandler.instance.getAbility(abilityName);
+          if (ability) {
+            console.log(`\n#### ${ability.name}`);
+            console.log("_" + ability.description + "_");
+            console.log(
+              Presenter.describeAbility(ability)
+            )
+          }
+        });
+        trait.statuses?.forEach(status => {
+          console.log(`\n#### ${status.name}`);
+          console.log(
+            Presenter.describeStatus(status)
+          )
+        });
+      }
+    })
+  }
+
+  async spellbook(_options: Record<string, any> = {}) {
+    await AbilityHandler.instance.loadAbilities();
+    await TraitHandler.instance.loadTraits();
+    await Template.bootstrapDeem();
+
+
+    console.log(`# Spells\n`);
     let aspects = ['arcane', 'divine'];
     for (const aspect of aspects) {
-      console.log(`\n=== ${aspect.toUpperCase()} SPELLS ===\n`);
+      // console.log(`\n=== ${aspect.toUpperCase()} SPELLS ===\n`);
+      console.log(`\n## ${Words.capitalize(aspect)} Spells\n`);
 
       let spells = AbilityHandler.instance.allSpellNames(aspect)
       spells.sort(
@@ -163,11 +222,22 @@ export default class Orsino {
       spells.forEach(spellName => {
         const ability = AbilityHandler.instance.getAbility(spellName);
         if (ability && ability.type === "spell") {
-          console.log("\n--------------------\n");
-          console.log(`${Stylist.italic(ability.name)} (${ability.domain || ability.school}/${ability.level})`);
+          console.log(`\n### ${ability.name}`); // (${ability.domain || ability.school}/${ability.level})`);
+          // console.log(`Level: ${ability.level || 1} ${ability.school ? `| School: ${ability.school}` : ''}${ability.domain ? `| Domain: ${ability.domain}` : ''}`);
+          // markdown table
+          console.log("\n| | |");
+          console.log("|---|---|");
+          console.log(`| **Level** | ${ability.level || "??"} |`);
+          if (ability.school) {
+            console.log(`| **School** | ${ability.school} |`);
+          }
+          if (ability.domain) {
+            console.log(`| **Domain** | ${ability.domain} |`);
+          }
+          console.log("\n");
           // console.log(`Target: ${ability.target}`);
 
-          console.log(Stylist.bold(ability.description));
+          console.log("_" + ability.description + "_");
           console.log(
             Presenter.describeAbility(ability)
           )

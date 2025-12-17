@@ -33,7 +33,7 @@
     "statuses": [
       {
         "name": "Cosmopolitan",
-        "description": "Gain +10 to search when in a city environment.",
+        "description": "You are adept at navigating the city.",
         "whileEnvironment": "urban",
         "effect": {
           "searchBonus": 10
@@ -62,14 +62,14 @@
   },
   "adaptable": {
     "type": "racial",
-    "description": "Adaptable",
+    "description": "Adaptability",
     "requirements": {
       "race": "human"
     },
     "statuses": [
       {
         "name": "Fast Learner",
-        "description": "+10% XP gain.",
+        "description": "You acquire new skills rapidly.",
         "effect": {
           "xpMultiplier": 1.1
         }
@@ -101,34 +101,10 @@
     "statuses": [
       {
         "name": "Graceful",
-        "description": "+1 AC and +1 to save vs magic.",
+        "description": "You move with an otherworldly grace.",
         "effect": {
           "ac": -1,
           "saveVersusMagic": 1
-        }
-      }
-    ]
-  },
-  "vitalist": {
-    "type": "racial",
-    "description": "Vitalism",
-    "requirements": {
-      "race": "elf"
-    },
-    "statuses": [
-      {
-        "name": "Undying",
-        "description": "On successful attack hit, heal yourself for 1 HP.",
-        "effect": {
-          "onAttackHit": [
-            {
-              "type": "heal",
-              "target": [
-                "self"
-              ],
-              "amount": 1
-            }
-          ]
         }
       }
     ]
@@ -192,7 +168,7 @@
     "statuses": [
       {
         "name": "Tinker",
-        "description": "Consumables are 25% more effective.",
+        "description": "You make the most out of your resources.",
         "effect": {
           "consumableMultiplier": 1.25
         }
@@ -507,6 +483,7 @@
         "effect": {
           "onOffensiveCasting": [
             {
+              "target": "target",
               "type": "damage",
               "amount": "=1d3",
               "damageType": "true"
@@ -594,7 +571,7 @@
     "statuses": [
       {
         "name": "Lisan Al-Gaib",
-        "description": "Gain +1 to search and +2 to Hit while in the desert.",
+        "description": "You are adept at navigating the sandsea.",
         "whileEnvironment": "desert",
         "effect": {
           "toHit": 2,
@@ -728,7 +705,7 @@
     "statuses": [
       {
         "name": "Silent Footsteps",
-        "description": "+4 to stealth checks and +2 to pick lock checks. Backstab damage increased by 25%.",
+        "description": "You are adept at moving silently and picking locks.",
         "effect": {
           "pickLockBonus": 2,
           "backstabMultiplier": 1.25
@@ -829,12 +806,18 @@
     "description": "Brought Back",
     "statuses": [{
       "name": "Undead Nature",
-      "description": "Immune to poison, charm, sleep, and disease.",
+      "description": "Unaffected by biological effects.",
       "effect": {
         "immunePoison": true,
         "immuneCharm": true,
         "immuneSleep": true,
-        "immuneDisease": true,
+        "immuneDisease": true
+      }
+    },
+    {
+      "name": "Radiant Vulnerability",
+      "description": "Vulnerable to radiant damage.",
+      "effect": {
         "resistRadiant": -1
       }
     }]
@@ -845,7 +828,7 @@
     "description": "Animated Bones",
     "statuses": [{
       "name": "Bone Resilience",
-      "description": "Resistant to physical damage. Vulnerable to bludgeoning damage.",
+      "description": "Arrows and pointed blades pass through you, but blunt force harms you more.",
       "effect": {
         "resistPiercing": 0.5,
         "resistBludgeoning": -1
@@ -886,7 +869,7 @@
     "description": "Holy",
     "statuses": [{
       "name": "Celestial Radiance",
-      "description": "Resistant to radiant and necrotic damage. Gain +1d4 healing on all healing spells.",
+      "description": "You were forged in the light of the heavens.",
       "effect": {
         "resistRadiant": 0.5,
         "resistNecrotic": 0.5,
@@ -963,7 +946,7 @@
       "effect": {
         "allRolls": 2,
         "evasion": 3,
-        "resistMagic": 0.1,
+        "resistAll": 0.1,
         "saveVersusDeath": 2
       }
     }]

@@ -11,10 +11,11 @@ import { Roll } from "./types/Roll";
 import Events, { DungeonEvent, EquipmentWornEvent } from "./Events";
 import { Commands } from "./rules/Commands";
 import CharacterRecord from "./rules/CharacterRecord";
-import AbilityHandler, { Ability } from "./Ability";
+import AbilityHandler, { Ability, AbilityEffect } from "./Ability";
 import { Inventory } from "./Inventory";
 import Orsino from "../orsino";
 import { StatusEffect, StatusModifications } from "./Status";
+import { Deity } from "./ModuleRunner";
 
 type SkillType = "search" | "examine"; // | "disarm" | "pickLock" | "climb" | "swim" | "jump" | "listen" | "spot";
 
@@ -22,6 +23,25 @@ interface Encounter {
   creatures: Combatant[];
   bonusGold?: number;
   cr?: number;
+}
+
+type Domain = 'light' | 'darkness' | 'nature' | 'war' | 'knowledge' | 'trickery' | 'life' | 'death' | 'magic' | 'order' | 'chaos' | 'oceans' | 'love' | 'storms';
+
+interface Deity {
+  domain: Domain;
+  alignment: 'good' | 'neutral' | 'evil';
+  forename: string;
+  gender: 'male' | 'female' | 'androgynous' | 'unknown';
+  title: string;
+  name: string;
+}
+
+interface RoomFeature {
+  name: string;
+  description: string;
+  deity?: Deity;
+  effects: AbilityEffect[];
+  offer: number | string;
 }
 
 interface RoomBase {
@@ -34,6 +54,7 @@ interface RoomBase {
   gear: string[] | null;
   features: string[] | null;
   aura: StatusEffect | null;
+  shrine: RoomFeature | null;
 }
 
 export interface Room extends RoomBase {
@@ -440,6 +461,9 @@ export default class Dungeoneer {
           }
         });
       }
+      if (room.shrine && !inspectedFeatures.includes('shrine')) {
+        options.push({ name: `Pay respects to the shrine of ${Words.humanize(room.shrine.deity?.forename ?? 'a forgotten deity')}`, value: `feature:shrine`, short: 'Visit Shrine', disabled: false });
+      }
       // options.push({ name: "Leave the dungeon", value: "leave", short: 'Leave', disabled: false });
 
       let choice = await this.select("What would you like to do?", options);
@@ -509,7 +533,12 @@ export default class Dungeoneer {
     let check = await this.skillCheck("examine", `to inspect ${Words.a_an(Words.humanize(featureName))}`, "int", 10);
     await this.emit({ type: "investigate", subject: check.actor, clue: `the ${Words.humanize(featureName)}`, discovery: check.success ? `an interesting feature` : `nothing of interest` });
     if (check.success) {
-      let interaction = await Deem.evaluate(`=lookup(roomFeature, ${featureName})`) as Ability;
+      let interaction = null;
+      if (featureName === 'shrine' && this.currentRoom?.shrine) {
+        interaction = this.currentRoom.shrine;
+      } else {
+        interaction = await Deem.evaluate(`=lookup(roomFeature, ${featureName})`) as Ability;
+      }
       this.note(interaction.description);
       if (interaction.offer) {
         let gpCost = await Deem.evaluate(interaction.offer.toString());
@@ -532,8 +561,12 @@ export default class Dungeoneer {
             this.note(`Purchased ${interaction.name} from ${Words.humanize(featureName)}.`);
             let nullCombatContext: CombatContext = { subject: check.actor, allies: [], enemies: [] };
             for (let effect of interaction.effects) {
+              this.note(`Applying effect: ${JSON.stringify(effect)}`);
               let { events } = await AbilityHandler.handleEffect(interaction.name, effect, check.actor, check.actor, nullCombatContext, Commands.handlers(this.roller, this.playerTeam));
-              events.forEach(e => this.emit({ ...e, turn: -1 } as DungeonEvent));
+              // events.forEach(e => this.emit({ ...e, turn: -1 } as DungeonEvent));
+              for (const event of events) {
+                await this.emit(event as DungeonEvent);
+              }
             }
           }
         } else {

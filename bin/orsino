@@ -48,6 +48,24 @@ program.command('spellbook')
     process.exit(0);
   });
 
+program.command('traitbook')
+  .description('Generate a traitbook for the setting')
+  .option('-s, --setting <setting>', 'Specify the setting to use', 'fantasy')
+  .action(async (options) => {
+    const orsino = new Orsino(options.setting || 'fantasy');
+    await orsino.traitbook(options);
+    process.exit(0);
+  });
+
+program.command('skillbook')
+  .description('Generate a skillbook for the setting')
+  .option('-s, --setting <setting>', 'Specify the setting to use', 'fantasy')
+  .action(async (options) => {
+    const orsino = new Orsino(options.setting || 'fantasy');
+    await orsino.skillbook(options);
+    process.exit(0);
+  });
+
 program
   .command('gen <type>')
   .description('Generate a response based on the type')

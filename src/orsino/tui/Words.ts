@@ -1,5 +1,5 @@
 export default class Words {
-  static statName(stat: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'): string {
+  static statName(stat: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha' | 'maxHp'): string {
     switch (stat) {
       case 'str': return 'Strength';
       case 'dex': return 'Dexterity';
@@ -7,6 +7,9 @@ export default class Words {
       case 'int': return 'Intelligence';
       case 'wis': return 'Wisdom';
       case 'cha': return 'Charisma';
+      case 'maxHp': return 'Max HP';
+      default: 
+        throw new Error(`Unknown stat: ${stat}`);
     }
   }
 

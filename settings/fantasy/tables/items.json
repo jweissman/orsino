@@ -568,7 +568,7 @@
           "onTurnEnd": [
             {
               "type": "heal",
-              "amount": "=1d3-1"
+              "amount": "=1d2-1"
             }
           ]
         }
@@ -687,14 +687,15 @@
       },
       "ring_of_spell_turning": {
         "name": "Ring of Spell Turning",
-        "description": "Improve magic resistance, inflicting 1d6 true damage back to caster on save.",
+        "description": "Improve all resistances and inflict damage back to caster on spell saves.",
         "type": "equipment",
         "kind": "ring",
         "rarity": "legendary",
         "value": 1200,
         "effect": {
-          "resistMagic": 5,
-          "onResistMagic": [{
+          "resistAll": 0.2,
+          "saveVersusMagic": 4,
+          "onSaveVersusMagic": [{
             "type": "damage",
             "amount": "=1d6",
             "target": "attacker",

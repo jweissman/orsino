@@ -241,7 +241,8 @@ export class Commands {
     if (damageKind) {
       const defEffects = await Fighting.gatherEffectsWithNames(defender);
       let resistanceName = `resist${damageKind.charAt(0).toUpperCase() + damageKind.slice(1)}`;
-      const resistance: number = (defEffects[resistanceName]?.value as number) ?? 0.0;
+      const resistance: number = (((defEffects.resistAll?.value) ?? 0.0) as number)
+        + ((defEffects[resistanceName]?.value as number) ?? 0.0 as number);
 
       if (resistance !== 0) {
         const originalDamage = damage;

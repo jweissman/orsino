@@ -157,6 +157,11 @@ export default class AbilityHandler {
           .map(([key, _ab]) => key);
   }
 
+  allSkillNames(): string[] {
+    return Object.entries(this.abilities)
+      .filter(([_key, ab]) => ab.type === 'skill')
+      .map(([key, _ab]) => key);
+  }
 
   static resolveTarget(targetName: string, user: Combatant, allies: Combatant[], enemies: Combatant[]): (Combatant | Combatant[]) {
     let targets: (Combatant | Combatant[]) = [];
@@ -610,7 +615,7 @@ export default class AbilityHandler {
             // console.log(`Triggering onOffensiveCasting effects for ${ability.name}...`);
             for (const spellFx of userFx.onOffensiveCasting as Array<AbilityEffect>) {
               let fxTarget: Combatant | Combatant[] = target;
-              if (spellFx.target) {
+              if (spellFx.target && spellFx.target !== "target") {
                 // TODO should use a simpler 'resolveTarget' kind of model here maybe?
                 fxTarget = this.validTargets({ target: [spellFx.target] } as unknown as Ability, user, [], Array.isArray(target) ? target : [target])[0];
               }

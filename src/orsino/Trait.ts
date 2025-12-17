@@ -41,6 +41,10 @@ export default class TraitHandler {
     this.loadedTraits = true;
   }
 
+  allTraitNames(): string[] {
+    return Object.keys(this.traits);
+  }
+
   getTrait(name: string): Trait | null { return this.traits[name] || null; }
 
   partyTraits(combatant: Combatant[]): Trait[] {

@@ -99,7 +99,7 @@ export default class Presenter {
           trait.statuses?.forEach(status => {
             passiveEffectsFromAbilities.push(status.name);
             // record += `  ${Stylist.colorize(status.name, 'cyan')} (${status.description})\n`;
-            record += `  ${this.describeStatus(status)}\n`;
+            record += `  ${this.describeStatusWithName(status)}\n`;
           });
           record += "\n";
         }
@@ -283,6 +283,7 @@ export default class Presenter {
       let ignoreStatuses = ['humanoid']
       let lhsStatuses = lhs?.activeEffects?.map(e => e.duration ? `${e.name}(${e.duration})` : e.name)
         || [];
+      // console.log("Rendering statuses for line", i, lhsStatuses);
       lhsStatuses = lhsStatuses
         .map(s => s.toLowerCase())
         .filter(s => !ignoreStatuses.includes(s.toLowerCase()));
@@ -313,14 +314,56 @@ export default class Presenter {
     return headers + partyDisplay;
   }
 
-  static describeStatus(status: StatusEffect): string {
-    return `${Stylist.colorize(status.name, 'cyan')} (${(status.description ? status.description + " " : '') + this.analyzeStatus(status)})`;
+  static describeStatusWithName(status: StatusEffect): string {
+    return `${status.name} (${this.describeStatus(status)})`;
     // return this.analyzeStatus(status);
+  }
+
+  static describeStatus(status: StatusEffect): string {
+    return (status.description ? status.description + " " : '') + Words.capitalize(this.analyzeStatus(status));
   }
 
   static analyzeStatus(status: StatusEffect): string {
     let parts: string[] = [];
     let effect = status.effect;
+
+    if (status.whileEnvironment) {
+      parts.push(`While in ${Words.a_an(status.whileEnvironment)} environment`);
+    }
+    if (status.condition) {
+      if (status.condition.weapon) {
+        if (status.condition.weapon.weight) {
+          parts.push(`When wielding a ${Words.humanize(status.condition.weapon.weight)} weapon`);
+        }
+      }
+    }
+
+    // if all effect entries are saves or immunities, summarize differently
+    const allSavesOrImmunities = Object.keys(effect).every(key => {
+      return key.startsWith("saveVersus") || key.startsWith("immune");
+    });
+    const allSameValue = Object.values(effect).every(value => value === Object.values(effect)[0]);
+    if (allSavesOrImmunities && allSameValue) {
+      let saves: string[] = [];
+      let immunities: string[] = [];
+      for (let [key, value] of Object.entries(effect)) {
+        if (value === undefined) continue;
+        let k: keyof StatusModifications = key as keyof StatusModifications;
+        if (key.startsWith("saveVersus") && (value as number) > 0) {
+          saves.push(Words.humanize(k.replace("saveVersus", "")));
+        } else if (key.startsWith("immune") && (value as boolean)) {
+          immunities.push(Words.humanize(k.replace("immune", "")));
+        }
+      }
+      if (saves.length > 0) {
+        parts.push(`+${Object.values(effect)[0]} to saves versus ${saves.join(', ')}`);
+      }
+      if (immunities.length > 0) {
+        parts.push(`Immunity to ${immunities.join(', ')}`);
+      }
+      return parts.join('; ');
+    }
+
 
     for (let [key, value] of Object.entries(effect)) {
       if (value === undefined) continue;
@@ -377,6 +420,7 @@ export default class Presenter {
         case "resistNecrotic":
         case "resistAcid":
         case "resistTrue":
+        case "resistAll":
           if (value as number > 0) {
             parts.push(`${Math.round((value as number) * 100)}% resistance to ${Words.humanize(k.replace("resist", ""))}`);
           } else {
@@ -470,7 +514,19 @@ export default class Presenter {
         case "onResistBreath":
         case "onResistParalyze":
         case "onResistSleep":
-          parts.push(`${this.describeEffects(value, 'self')} ${Words.humanize(k)}`);
+        case "onSaveVersusPoison":
+        case "onSaveVersusDisease":
+        case "onSaveVersusDeath":
+        case "onSaveVersusMagic":
+        case "onSaveVersusInsanity":
+        case "onSaveVersusCharm":
+        case "onSaveVersusFear":
+        case "onSaveVersusStun":
+        case "onSaveVersusWill":
+        case "onSaveVersusBreath":
+        case "onSaveVersusParalyze":
+        case "onSaveVersusSleep":
+          parts.push(`${this.describeEffects(value, 'self')} ${Words.humanize(k).toLocaleLowerCase()}`);
           break;
 
         case "summonAnimalBonus":
@@ -486,7 +542,9 @@ export default class Presenter {
           parts.push(this.increaseDecrease('status duration', value));
           break;
         case "backstabMultiplier":
-          parts.push(`Backstab damage multiplied by ${value}x`);
+          // parts.push(`Backstab damage multiplied by ${value}x`);
+
+          parts.push(this.multipliedBy('backstab damage', value as number));
           break;
         case "resurrectable":
           if (value) {
@@ -518,13 +576,14 @@ export default class Presenter {
           break;
 
         case "xpMultiplier":
-          parts.push(`XP multiplied by ${value}x`);
+          parts.push(this.multipliedBy('XP gain', value as number));
           break;
         case "goldMultiplier":
-          parts.push(`Gold earned multiplied by ${value}x`);
+          parts.push(this.multipliedBy('Gold earned', value as number));
           break;
         case "consumableMultiplier":
-          parts.push(`Consumables effectiveness multiplied by ${value}x`);
+          // parts.push(`Consumables effectiveness multiplied by ${value}x`);
+          parts.push(this.multipliedBy('consumable effectiveness', value as number));
           break;
         case "changeAllegiance":
           if (value) {
@@ -548,14 +607,18 @@ export default class Presenter {
           parts.push(`Gain ${value} temporary HP`);
           break;
 
+        case "maxHp":
+          parts.push(this.increaseDecrease('max HP', value));
+          break;
+
         case "damageReduction":
           parts.push(`Reduce all damage by ${value}`);
           break;
 
         // TODO figure out where this comes from
-        case "by":
-          // ignore
-          break;
+        // case "by":
+        //   // ignore
+        //   break;
 
         default:
           // @ts-ignore
@@ -564,7 +627,10 @@ export default class Presenter {
             break;
           // @ts-ignore
           } else if (k.endsWith("Multiplier")) {
-            parts.push(`${Words.humanize(k)} multiplied by ${value}x`);
+            // get just first part
+            // @ts-ignore
+            let what = k.replace("Multiplier", "");
+            parts.push(this.multipliedBy(Words.humanize(what), value as number));
             break;
           }
 
@@ -578,7 +644,14 @@ export default class Presenter {
     if (typeof value === 'string') {
       return `add ${value} to ${what}`;
     }
-    return value >= 0 ? `increase ${what} by ${value}` : `decrease ${what} by ${Math.abs(value)}`;
+    return value >= 0
+      ? `improve ${what} by ${value}`
+      : `degrade ${what} by ${Math.abs(value)}`;
+  }
+
+  static multipliedBy(what: string, value: number): string {
+    let percentage = typeof value === 'number' ? Math.round((value - 1) * 100) : null;
+    return value >= 1 ? `+${percentage}% ${what}` : `-${Math.abs(percentage || 0)}% ${what}`;
   }
 
   static describeDuration(duration?: number): string {
@@ -606,7 +679,7 @@ export default class Presenter {
       case "drain": description = (`Drain ${targetDescription} ${amount} HP`); break;
       case "buff":
         if (effect.status) {
-          description = (`Grant ${targetDescription} ${this.describeStatus(effect.status)} ${this.describeDuration(effect.status.duration)}`);
+          description = (`Grant ${targetDescription} ${this.describeStatusWithName(effect.status)} ${this.describeDuration(effect.status.duration)}`);
         } else {
           throw new Error(`Buff effect must have a status defined`);
         }
@@ -616,7 +689,7 @@ export default class Presenter {
           const verb = targetDescription.startsWith("all") || targetDescription.includes("enemies")
             ? "suffer"
             : "suffers";
-          description = (`${Words.capitalize(targetDescription)} ${verb} ${this.describeStatus(effect.status)} ${this.describeDuration(effect.status.duration)}`);
+          description = (`${Words.capitalize(targetDescription)} ${verb} ${this.describeStatusWithName(effect.status)} ${this.describeDuration(effect.status.duration)}`);
         } else {
           throw new Error(`Debuff effect must have a status defined`);
         }
@@ -670,12 +743,12 @@ export default class Presenter {
 
   static describeEffects(effects: AbilityEffect[], targetDescription: string): string {
     let parts: string[] = [];
-    if (effects.every(e => e.type === 'removeStatus')) {
+    if (effects.every(e => e.type === 'removeStatus') && effects.length > 0) {
       const statuses = effects.map(e => e.statusName).join(', ');
       return `Remove ${statuses} from ${targetDescription}`;
     }
     for (const effect of effects) {
-      parts.push(this.describeEffect(effect, effect.target || targetDescription || ""));
+      parts.push(this.describeEffect(effect, effect.target || targetDescription || "[missing target]"));
     }
     return parts.join("; ");
   }
@@ -701,6 +774,9 @@ export default class Presenter {
   }
 
   static describeAbility(ability: Ability): string {
+    if (ability.effects.length === 0) {
+      return "Does nothing.";
+    }
     // let parts: string[] = [];
     // parts.push("Narrative: " + ability.description);
     // parts.push("Mechanical: " + this.describeEffects(ability.effects, this.describeTarget(ability.target)) + ".");

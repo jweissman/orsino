@@ -40,8 +40,7 @@ export interface StatusModifications {
   resistNecrotic?: number;
   resistAcid?: number;
   resistTrue?: number;
-
-  // resistAll?: number
+  resistAll?: number
 
   saveVersusPoison?: number;
   saveVersusDisease?: number;
@@ -107,6 +106,20 @@ export interface StatusModifications {
   onResistSleep?: AbilityEffect[];
   // onResistAll?: AbilityEffect[];
 
+  onSaveVersusPoison?: AbilityEffect[];
+  onSaveVersusDisease?: AbilityEffect[];
+  onSaveVersusDeath?: AbilityEffect[];
+  onSaveVersusMagic?: AbilityEffect[];
+  onSaveVersusInsanity?: AbilityEffect[];
+  onSaveVersusCharm?: AbilityEffect[];
+  onSaveVersusFear?: AbilityEffect[];
+  onSaveVersusStun?: AbilityEffect[];
+  onSaveVersusWill?: AbilityEffect[];
+  onSaveVersusBreath?: AbilityEffect[];
+  onSaveVersusParalyze?: AbilityEffect[];
+  onSaveVersusSleep?: AbilityEffect[];
+  // onSaveVersusAll?: AbilityEffect[];
+
   flee?: boolean;
 
   bonusSpellSlots?: number;
@@ -133,6 +146,8 @@ export interface StatusModifications {
   xpMultiplier?: number;
   goldMultiplier?: number;
   consumableMultiplier?: number;
+
+  maxHp?: number;
 }
 
 export interface StatusEffect {
@@ -143,6 +158,10 @@ export interface StatusEffect {
   by?: Combatant;
   whileEnvironment?: string;
   aura?: boolean;
+
+  condition?: {
+    weapon?: { weight?: 'light' | 'medium' | 'heavy' };
+  }
 }
 
 export default class StatusHandler {

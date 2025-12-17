@@ -1,6 +1,7 @@
 {
   "deity": {
     "domain": "=oneOf(light, darkness, nature, war, knowledge, trickery, life, death, magic, order, chaos, oceans, love, storms)",
+    "alignment": "=(#domain == light || #domain == life || #domain == order || #domain == knowledge) ? good : ((#domain == darkness || #domain == death || #domain == chaos || #domain == trickery) ? evil : neutral)",
     "blessing": "=lookup(deityBlessings, #domain)",
     "forename": "=lookup(deityName, #domain)",
     "gender": "=lookup(deityGender, #forename)",
@@ -277,6 +278,18 @@
     "bonusGold": "=1d20 + 2 * count(#creatures)",
     "cr": "=round(sum(#creatures, 'level'))"
   },
+  "shrine": {
+    "deity": "=gen(deity)",
+    "_deityName": "=dig(#deity, 'forename')",
+    "_deityAlignment": "=dig(#deity, 'alignment')",
+    "blessing": "=dig(#deity, 'blessing')",
+    "effects": "=concat((#_deityAlignment == 'good') ? fxHeal('=1d3') : fxDamage('=1d3', oneOf(necrotic, radiant)), fxBuff(\"#{#_deityName}'s Favor\", #blessing))",
+    "_appearance": "=oneOf(ancient, 'well-maintained', ornate, simple, overgrown, hidden, glowing, cracked, majestic, humble)",
+    "_shrine_type": "=oneOf(altar, statue, fountain, obelisk, mural, relic)",
+    "name": "=capitalize(#_shrine_type) + ' of ' + dig(#deity, 'name')",
+    "description": "=\"#_appearance #_shrine_type dedicated to #_deityName\"",
+    "offer": "=1d4 + 1"
+  },
   "room": {
     "_targetCr": 1,
     "_index": 0,
@@ -297,7 +310,8 @@
     "decor": "=lookup(roomDecoration, 1d100)",
     "gear": "=gather(masterGear, 1)",
     "features": "=uniq(gather(roomFeature, if(rand() < 0.3, 2, 1)))",
-    "aura": "=lookup(roomAuras, hasEntry(specialRoomAuras, #room_type) ? lookup(specialRoomAuras, #room_type) : oneOf(calm, energizing))"
+    "aura": "=lookup(roomAuras, hasEntry(specialRoomAuras, #room_type) ? lookup(specialRoomAuras, #room_type) : oneOf(calm, energizing))",
+    "shrine": "=gen(shrine)"
   },
   "boss_room": {
     "_targetCr": 1,
@@ -335,7 +349,7 @@
     "dungeon_aspect": "=lookup(dungeonAspect, #building_type)",
     "_dungeon_name": "=capitalize(#dungeon_aspect) + \" \" + capitalize(#race) + \" \" + capitalize(#dungeon_type) + \" of \" + capitalize(#theme)",
     "dungeon_name": "=\"#{capitalize(#dungeon_aspect)} #{capitalize(#race)} #{capitalize(#dungeon_type)} of #{capitalize(#domain)}\"",
-    "depth": "=2+3d4",
+    "depth": "=1+2d3",
     "dungeonIndex": "=#_index",
     "intendedCr": "=#_targetCr",
     "^dungeonOverlay": "=lookup(dungeonOverlay, #building_type)",

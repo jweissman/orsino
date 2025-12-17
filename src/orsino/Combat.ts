@@ -610,13 +610,15 @@ export default class Combat {
     // if (a
     // run onTurnEnd for all active effects
     let ctx = { subject: combatant, allies, enemies: allEnemies };
-    // for (const status of activeFx) {
+    let activeEffectsWithNames = await Fighting.gatherEffectsWithNames(combatant);
     if (activeFx.onTurnEnd) {
+      let turnEndEvents: Omit<GameEvent, "turn">[] = [];
       for (const effect of activeFx.onTurnEnd as AbilityEffect[]) {
         // apply fx to self
         let { events } = await AbilityHandler.handleEffect(effect.description || 'turn end effect', effect, combatant, combatant, ctx, Commands.handlers(this.roller, this.teams.find(t => t.combatants.includes(combatant))!));
-        await this.emitAll(events, `Turn end effects`, combatant);
+        turnEndEvents.push(...events);
       }
+      await this.emitAll(turnEndEvents, `turn end effects from ${Words.humanizeList(activeEffectsWithNames.onTurnEnd.sources)}`, combatant);
     }
     // }
     // }

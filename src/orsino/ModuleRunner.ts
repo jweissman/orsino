@@ -242,7 +242,7 @@ export class ModuleRunner {
           description: "Blessed by " + Words.capitalize(deityName),
           duration, effect, aura: false
         };
-        blessing.description = Presenter.describeStatus(blessing);
+        blessing.description = Presenter.describeStatusWithName(blessing);
         // this.outputSink(`You pray to ${Words.capitalize(mod.town.deity)}.`);
         this.pcs.forEach(pc => {
           pc.activeEffects = pc.activeEffects || [];

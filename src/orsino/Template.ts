@@ -1,6 +1,7 @@
 // src/orsino/Template.ts
 import Deem from "../deem";
 import Generator from "./Generator";
+import { StatusEffect, StatusModifications } from "./Status";
 import { Table } from "./Table";
 import { GenerationTemplateType } from "./types/GenerationTemplateType";
 import deepCopy from "./util/deepCopy";
@@ -50,6 +51,10 @@ export class Template {
       // process.stdout.write(`.`);
       return results;
     }
+
+    Deem.stdlib.fxHeal = (amount: number | string) => ({ type: 'heal', amount });
+    Deem.stdlib.fxDamage = (amount: number | string, damageType?: string) => ({ type: 'damage', amount, kind: damageType });
+    Deem.stdlib.fxBuff = (name: string, effect: StatusModifications, duration: number | string = 10) => ({ type: 'buff', status: { effect, name, duration } });
   }
 
   async assembleProperties(

@@ -159,6 +159,7 @@
       },
       {
         "type": "debuff",
+        "target": "self",
         "status": {
           "name": "Reckless",
           "duration": 2,
@@ -755,7 +756,7 @@
     "name": "Dodge",
     "type": "skill",
     "aspect": "physical",
-    "description": "Focus on dodging attacks, granting you evasion and a +2 bonus to AC until your next turn.",
+    "description": "Focus on dodging attacks, granting you evasion and enhanced AC.",
     "target": [
       "self"
     ],
@@ -765,7 +766,7 @@
         "status": {
           "name": "Dodging",
           "effect": {
-            "ac": 2,
+            "ac": -2,
             "evasion": 5
           },
           "duration": 2
@@ -1052,7 +1053,8 @@
         "status": {
           "name": "Inspired",
           "effect": {
-            "toHit": 2
+            "toHit": 2,
+            "tempHp": 5
           },
           "duration": 3
         }
@@ -1130,7 +1132,7 @@
           "name": "taunted",
           "duration": 4,
           "effect": {
-            "forceTarget": true
+            "forceTarget": "you"
           }
         },
         "saveType": "will",
@@ -2393,6 +2395,28 @@
           "effect": {
             "noActions": true,
             "noStatusExpiry": true
+          }
+        }
+      }
+    ]
+  },
+
+  "false_life": {
+    "name": "False Life",
+    "type": "spell",
+    "level": 1,
+    "aspect": "arcane",
+    "school": "necromancy",
+    "description": "Grant yourself temporary hit points.",
+    "target": [ "self" ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "False Life",
+          "duration": 10,
+          "effect": {
+            "tempHp": "=4d4 + #level * 2"
           }
         }
       }
