@@ -324,7 +324,7 @@ export class Fighting {
         let whatNumberEvades = 20 - evasionBonus;
         const evasionRoll = await roll(defender, `for evasion (must roll ${whatNumberEvades} or higher)`, 20);
         if (evasionRoll.amount >= whatNumberEvades) {
-          console.warn(`${Presenter.minimalCombatant(defender)} evades the attack!`);
+          // console.warn(`${Presenter.minimalCombatant(defender)} evades the attack!`);
           // this.emit({ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">);
           // return [{ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">];
           description += ` ${defender.name} evades the attack!`;

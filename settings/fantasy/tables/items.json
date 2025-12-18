@@ -665,7 +665,7 @@
         "kind": "cloak",
         "rarity": "uncommon",
         "value": 200,
-        "effect": { "cha": 2 }
+        "effect": { "cha": 4 }
       },
       "ring_of_the_firmament": {
         "name": "Ring of the Firmament",
@@ -674,7 +674,7 @@
         "kind": "ring",
         "rarity": "rare",
         "value": 500,
-        "effect": { "resistFire": 3, "resistCold": 3, "resistLightning": 3 }
+        "effect": { "resistFire": 0.5, "resistCold": 0.5, "resistLightning": 0.5 }
       },
       "helm_of_the_stars": {
         "name": "Helm of the Stars",
@@ -693,6 +693,7 @@
         "rarity": "legendary",
         "value": 1200,
         "effect": {
+          "reflectSpellChance": 0.5,
           "resistAll": 0.2,
           "saveVersusMagic": 4,
           "onSaveVersusMagic": [{
@@ -701,6 +702,18 @@
             "target": "attacker",
             "kind": "true"
           }]
+        }
+      },
+      "ring_of_perfect_turning": {
+        "name": "Ring of Perfect Turning",
+        "description": "Grants high resistance to all damage types, and good chance to reflect spells back to caster.",
+        "type": "equipment",
+        "kind": "ring",
+        "rarity": "legendary",
+        "value": 2000,
+        "effect": {
+          "resistAll": 0.5,
+          "reflectSpellChance": 0.75
         }
       }
     }

@@ -80,7 +80,7 @@
     "race": "=oneOf(goblin, kobold, orc, human, ogre, troll, dragon, human, elf, dwarf, halfling, gnome, fae)",
     "age": "=5+1d10",
     "animal_type": "=lookup(companionType, #race)",
-    "forename": "=lookup(companionName, #animal_type)",
+    "forename": "=lookupUnique(companionName, #animal_type)",
     "animal_aspect": "=lookup(creatureAspectTypes, if(#challenging, oneOf(rare, legendary), oneOf(common, uncommon)))",
     "class": "=capitalize(#terrain) + ' ' + capitalize(#animal_type)",
     "kind": "=#background != 'wildtype' ? capitalize(#background) : ''",
@@ -167,7 +167,7 @@
     "*rankModifier": "=lookup(monsterRank, #rank)",
     "archetype": "=#class",
     "_name": "=(#kind != '' ? capitalize(#kind) + ' ' : '') + (#rank != 'standard' ? capitalize(#rank) + ' ' : '') + (#substance ? capitalize(#substance) + ' ' : '') + capitalize(#monster_type)",
-    "name": "=if(#class == 'elemental', capitalize(#monster_aspect) + ' ' + (#rank != 'standard' ? capitalize(#rank) + ' ' : '') + capitalize(#element) + ' ' + capitalize(#monster_type), #_name)",
+    "name": "=if(#class == 'elemental', capitalize(#kind) + ' ' + (#rank != 'standard' ? capitalize(#rank) + ' ' : '') + capitalize(#element) + ' ' + capitalize(#monster_type), #_name)",
     "hp": "=#maxHp"
   },
   "npc": {
@@ -191,7 +191,7 @@
     "npc_template": "=#npc_template_type != nihil ? lookup(creatureTemplateOverlays, #npc_template_type) : nihil",
     "class": "=if(#challenging, capitalize(#rank) + ' ', '') + #npc_type",
     "kind": "=(#npc_template_type != nihil ? capitalize(#npc_template) + ' ' : '') + capitalize(#race)",
-    "name": "=capitalize(#npc_aspect) + ' ' + #forename",
+    "name": "=(#npc_aspect != wildtype ? capitalize(#npc_aspect) + ' ' : '') + #forename",
     "referenceName": "='the ' + capitalize(#race) + ' ' + #npc_type + oneOf(' named ', ' known as ') + #forename",
     "_statLine": "=lookup(npcStat, #race)",
     "level": "=#_targetCr",
@@ -349,7 +349,7 @@
     "dungeon_aspect": "=lookup(dungeonAspect, #building_type)",
     "_dungeon_name": "=capitalize(#dungeon_aspect) + \" \" + capitalize(#race) + \" \" + capitalize(#dungeon_type) + \" of \" + capitalize(#theme)",
     "dungeon_name": "=\"#{capitalize(#dungeon_aspect)} #{capitalize(#race)} #{capitalize(#dungeon_type)} of #{capitalize(#domain)}\"",
-    "depth": "=1+2d3",
+    "depth": "=5+4d6",
     "dungeonIndex": "=#_index",
     "intendedCr": "=#_targetCr",
     "^dungeonOverlay": "=lookup(dungeonOverlay, #building_type)",
@@ -367,7 +367,7 @@
     "terrain": "=lookup(terrains, 1d6)",
     "town": "=gen(town)",
     "_townName": "=dig(#town, 'name')",
-    "dungeons": "=genList(dungeon, 3)",
+    "dungeons": "=genList(dungeon, 6)",
     "_moduleLevel": 0,
     "name": "=oneOf('Adventure', 'Saga', 'Reckoning', 'Quest', 'Expedition') + ' ' + oneOf('in the ' + capitalize(#terrain), 'at ' + capitalize(#_townName), 'for the ' + capitalize(#terrain))"
   }

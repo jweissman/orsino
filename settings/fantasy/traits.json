@@ -1034,5 +1034,36 @@
         "allRolls": -1
       }
     }]
+  },
+  "elemental": {
+    "type": "template",
+    "description": "Elemental",
+    "statuses": [{
+      "name": "Elemental Affinity",
+      "description": "Resistant to all elemental damage types.",
+      "effect": {
+        "resistFire": 0.5,
+        "resistCold": 0.5,
+        "resistLightning": 0.5,
+        "resistAcid": 0.5
+      }
+    }]
+  },
+
+  "wild": {
+    "name": "Wild",
+    "type": "trait",
+    "description": "Wild",
+    "statuses": [{
+      "name": "Wild",
+      "description": "This creature is attuned to the primal forces of nature, granting it enhanced physical prowess and resilience.",
+      "effect": {
+        "allRolls": 1,
+        "toHit": 2,
+        "bonusDamage": 2,
+        "evasion": 2,
+        "resistAll": 0.1
+      }
+    }]
   }
 }

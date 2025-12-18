@@ -1171,9 +1171,11 @@
         "type": "debuff",
         "status": {
           "name": "Frightened",
-          "duration": 2,
+          "duration": 3,
           "effect": {
-            "toHit": -2
+            "toHit": -2,
+            "initiative": -5,
+            "allRolls": -1
           }
         },
         "saveType": "fear",
@@ -1369,13 +1371,20 @@
   },
   "poison_cloud": {
     "name": "Poison Cloud",
-    "type": "skill",
-    "aspect": "toxic",
+    "type": "spell",
+    "level": 2,
+    "aspect": "arcane",
+    "school": "conjuration",
     "description": "Release a cloud of toxic gas.",
     "target": [
       "enemies"
     ],
     "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d4",
+        "kind": "poison"
+      },
       {
         "type": "debuff",
         "status": {
@@ -2417,6 +2426,118 @@
           "duration": 10,
           "effect": {
             "tempHp": "=4d4 + #level * 2"
+          }
+        }
+      }
+    ]
+  },
+  "reflection": {
+    "name": "Reflection",
+    "type": "spell",
+    "level": 2,
+    "aspect": "arcane",
+    "school": "abjuration",
+    "description": "Create a magical shield that reflects some incoming damage.",
+    "target": [ "self" ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Reflect",
+          "duration": 4,
+          "effect": {
+            "reflectDamagePercent": 0.5
+          }
+        }
+      }
+    ]
+  },
+  "spellturning": {
+    "name": "Spellturning",
+    "type": "spell",
+    "level": 4,
+    "aspect": "arcane",
+    "school": "abjuration",
+    "description": "Create a magical barrier may reflect spells back to their caster.",
+    "target": [ "self" ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Spellturn",
+          "duration": 4,
+          "effect": {
+            "reflectSpellChance": 0.5
+          }
+        }
+      }
+    ]
+  },
+  "terror": {
+    "name": "Terror",
+    "type": "spell",
+    "aspect": "divine",
+    "level": 2,
+    "domain": "death",
+    "alignment": "evil",
+    "description": "Frighten an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Frightened",
+          "duration": 3,
+          "effect": {
+            "toHit": -2,
+            "initiative": -5,
+            "allRolls": -1
+          }
+        },
+        "saveType": "will",
+        "saveDC": 15
+      }
+    ]
+  },
+  "deathtouch": {
+    "name": "Death Touch",
+    "description": "Touch an enemy to attempt to kill or curse them.",
+    "type": "spell",
+    "aspect": "divine",
+    "level": 4,
+    "domain": "death",
+    "alignment": "evil",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=3d6",
+        "kind": "necrotic",
+        "saveForHalf": true
+      },
+      {
+        "type": "kill",
+        "saveType": "fortitude",
+        "saveDC": 10
+      },
+      {
+        "type": "debuff",
+        "saveType": "will",
+        "saveDC": 15,
+        "status": {
+          "name": "Cursed",
+          "duration": 4,
+          "effect": {
+            "str": -1,
+            "dex": -1,
+            "int": -1,
+            "wis": -1,
+            "cha": -1,
+            "con": -1
           }
         }
       }

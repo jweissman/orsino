@@ -12,7 +12,7 @@ import Deem from "../deem";
 import { ItemInstance } from "./types/ItemInstance";
 import { Inventory } from "./Inventory";
 import Events, { ModuleEvent } from "./Events";
-import StatusHandler, { StatusEffect, StatusModifications } from "./Status";
+import { StatusEffect, StatusModifications } from "./Status";
 import Presenter from "./tui/Presenter";
 
 type TownSize = 'hamlet' | 'village' | 'town' | 'city' | 'metropolis' | 'capital';
@@ -59,7 +59,7 @@ export class ModuleRunner {
   private moduleGen: () => Promise<CampaignModule>;
   private state: GameState = {
     party: [],
-    sharedGold: 200,
+    sharedGold: 10000,
     inventory: [],
     completedDungeons: []
   };

@@ -1,0 +1,182 @@
+{
+  "genericBarks": {
+    "discriminator": "eventType",
+    "groups": {
+      "onSummonReceived": [
+        "From the trembling earth, {forename} rises to join the fray!",
+        "{referenceName} emerges from the shadows, ready to fight!",
+        "'I heed your call!', declares {forename} as they enter the battle."
+      ],
+      "onResurrect": [
+        "{referenceName} gasps and returns to the fight!",
+        "{forename} shakes off death and stands once more!"
+      ],
+      "onFall": [
+        "{referenceName} falls to the ground, defeated.",
+        "{forename} collapses, unable to continue."
+      ],
+      "onFlee": [
+        "{referenceName} turns and runs away!",
+        "{forename} flees the battle!"
+      ]
+    }
+  },
+
+  "pcPersonalityBarks": {
+    "discriminator": "personality",
+    "groups": {
+      "proud": {
+        "onKill": ["{forename} stands over the fallen foe: \"As expected.\""],
+        "onCrit": ["{forename} smirks: \"Flawless.\""],
+        "onMiss": ["{forename} scowls in irritation."]
+      },
+      "grim": {
+        "onKill": ["{forename} says coldly: \"Another one falls.\""],
+        "onCrit": ["{forename} strikes without emotion."],
+        "onMiss": ["{forename} growls: \"Damn it.\""]
+      },
+      "cheerful": {
+        "onKill": ["{forename} grins: \"Got 'em!\""],
+        "onCrit": ["{forename} laughs: \"How about that?\""],
+        "onMiss": ["{forename} chuckles: \"Almost had 'em!\""]
+      },
+      "acerbic": {
+        "onKill": ["{forename} sneers: \"Pathetic.\""],
+        "onCrit": ["{forename} mutters sarcastically: \"Impressive. For them.\""],
+        "onFall": ["{forename} sighs: \"Of course.\""]
+      },
+      "compassionate": {
+        "onKill": ["{forename} looks away solemnly."],
+        "onCrit": ["{forename} winces: \"I'm sorry it had to be this way.\""]
+      },
+      "stoic": {
+        "onKill": ["{forename} nods slightly."],
+        "onCrit": ["{forename} remains expressionless."],
+        "onFall": ["{forename} accepts their fate with quiet dignity."]
+      },
+      "jovial": {
+        "onKill": ["{forename} chuckles: \"That was fun!\""],
+        "onCrit": ["{forename} laughs heartily: \"Bullseye!\""],
+        "onMissReceived": ["{forename} grins: \"You'll have to do better than that!\""]
+      }
+    }
+  },
+
+  "npcBarks": {
+    "discriminator": "type",
+    "groups": {
+      "Novice": {
+        "onEngage": [
+          "{referenceName} shouts: \"I, {forename}, will protect the sacred grounds!\"",
+          "{forename} nervously whines: \"Please, don't harm me! It's my first day!\""
+        ],
+        "onCrit": [
+          "{referenceName} shouts: \"Take that!\"",
+          "{forename} yells: \"You'll regret coming here!\"",
+          "{forename} shouts: \"For the temple!\""
+        ],
+        "onHitReceived": [
+          "{referenceName} cries out in pain!",
+          "{forename} stammers: \"You'll pay for that!\""
+        ],
+        "onFall": [
+          "{forename} gasps: \"I... I can't go on...\"",
+          "{referenceName} pleads: \"Mercy... please...\"",
+          "{referenceName} collapses: \"Tell... the Master...\"",
+          "{forename} falls silent, their eyes glazing over."
+        ],
+        "onFlee": [
+          "\"Retreat! Retreat!\", shouts {forename}.",
+          "{referenceName} cries: \"I must live to fight another day!\""
+        ]
+      },
+      "Acolyte": {
+        "onEngage": [
+          "{referenceName} prays: \"By the dark lord, you shall not pass!\"",
+          "{referenceName} warns: \"Leave this unhallowed place at once!\""
+        ]
+      },
+      "Cultist": {
+        "onEngage": [
+          "{referenceName} cries: \"You dare to enter this unholy place?!\"",
+          "{forename} hisses: \"Your soul will be mine!\"",
+          "{referenceName} chants: \"Dark powers, arise and smite these intruders!\""
+        ],
+        "onCrit": [
+          "{referenceName} snarls: \"Feel the wrath of the dark gods!\"",
+          "{forename} growls: \"Your flesh will feed the shadows!\""
+        ],
+        "onHitReceived": [
+          "{referenceName} hisses: \"You will regret that!\"",
+          "{forename} snarls: \"The dark gods will avenge me!\""
+        ],
+        "onFall": [
+          "{referenceName} gasps: \"No... the dark gods... have forsaken me...\"",
+          "{forename} collapses: \"My faith... shattered...\""
+        ]
+      },
+      "Gravedigger":  {
+        "onEngage": [
+          "{referenceName} is startled: \"Who goes there? Stay away from my graves!\"",
+          "{forename} growls: \"This is sacred ground! Begone!\"",
+          "'Keep away from the graves!', shouts {forename}.",
+          "{referenceName} warns: \"Disturb not the dead!\""
+        ],
+        "onFall": [
+          "{referenceName} groans: \"The earth claims me at last...\"",
+          "{forename} falls silent, their eyes glazing over."
+        ]
+      },
+      "Bandit":       {
+        "onEngage": [
+          "{referenceName} sneers: \"Your money or your life!\"",
+          "{forename} laughs: \"Easy pickings ahead!\""
+        ]
+      },
+      "Tombrobber":   {
+        "onEngage": [
+          "{referenceName} hisses: \"This tomb's treasures will be mine!\"",
+          "{forename} snarls: \"Step aside, or taste my blade!\""
+        ],
+        "onKill": [
+          "{referenceName} smirks: \"Another obstacle removed.\""
+        ]
+      },
+      "Necromancer":  {
+        "onEngage": [
+          "{referenceName} intones: \"You shall join my immortal legion!\"",
+          "{forename} declares: \"Your flesh will nourish my dark arts!\"",
+          "{referenceName} cackles."
+        ],
+        "onSummon": [
+          "{forename} commands: \"Rise, my minions!\"",
+          "{referenceName} chants: \"From the depths, I call you forth!\"",
+          "{forename} waves their hands about, summoning undead servants!"
+        ],
+        "onCrit": [
+          "{referenceName} hisses: \"Feel the chill of death!\"",
+          "{forename} snarls: \"Your life force is mine!\"",
+          "{referenceName} growls: \"You cannot escape death!\""
+        ],
+        "onKill": [
+          "{referenceName} intones: \"Another soul for my collection.\"",
+          "{forename} murmurs: \"Your death serves a greater purpose.\"",
+          "{referenceName} whispers darkly: \"So your life ends, but have no fear. Death is but a doorway.\"",
+          "{forename} says coldly: \"Your soul will fuel my power.\""
+        ],
+        "onHitReceived": [
+          "{referenceName} growls: \"You will pay for that!\"",
+          "{forename} snarls: \"This isn't over yet!\""
+        ],
+        "onMissReceived": [
+          "{forename} hisses: \"I will not be thwarted so easily!\"",
+          "{referenceName} snarls: \"Not so easy, is it?\""
+        ],
+        "onFall": [
+          "{referenceName} gasps: \"No... this cannot be...\"",
+          "{forename} collapses: \"My plans... foiled...\""
+        ]
+      }
+    }
+  }
+}

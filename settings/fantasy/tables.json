@@ -313,7 +313,7 @@
   "npcTypesForDungeon": {
     "discriminator": "dungeonType",
     "groups": {
-      "temple": [[ "Acolyte", "Adept", "Cleric", "Cultist", "Sage", "Elder", "Guardian", "Elder", "Death Priest"  ]],
+      "temple": [[ "Acolyte", "Adept", "Cleric", "Cultist", "Sage", "Elder", "Guardian", "Death Priest"  ]],
       "mine": [[ "Miner", "Dweller", "Brute", "Thug", "Lurker" ]],
       "fortress": [[ "Soldier", "Mercenary", "Warrior", "Chieftain" ]],
       "tomb": [[ "Novice", "Acolyte", "Gravedigger", "Cultist", "Bandit", "Tombrobber", "Wizard" ]],
@@ -332,202 +332,27 @@
     }
   },
 
-  "genericBarks": {
-    "discriminator": "eventType",
-    "groups": {
-      "onSummonReceived": [
-        "From the trembling earth, {forename} rises to join the fray!",
-        "{referenceName} emerges from the shadows, ready to fight!",
-        "'I heed your call!', declares {forename} as they enter the battle."
-      ],
-      "onResurrect": [
-        "{referenceName} gasps and returns to the fight!",
-        "{forename} shakes off death and stands once more!"
-      ],
-      "onFall": [
-        "{referenceName} falls to the ground, defeated.",
-        "{forename} collapses, unable to continue."
-      ],
-      "onFlee": [
-        "{referenceName} turns and runs away!",
-        "{forename} flees the battle!"
-      ]
-    }
-  },
-
-  "pcPersonalityBarks": {
-    "discriminator": "personality",
-    "groups": {
-      "proud": {
-        "onKill": ["{forename} stands over the fallen foe: \"As expected.\""],
-        "onCrit": ["{forename} smirks: \"Flawless.\""],
-        "onMiss": ["{forename} scowls in irritation."]
-      },
-      "grim": {
-        "onKill": ["{forename} says coldly: \"Another one falls.\""],
-        "onCrit": ["{forename} strikes without emotion."],
-        "onMiss": ["{forename} growls: \"Damn it.\""]
-      },
-      "cheerful": {
-        "onKill": ["{forename} grins: \"Got 'em!\""],
-        "onCrit": ["{forename} laughs: \"How about that?\""],
-        "onMiss": ["{forename} chuckles: \"Almost had 'em!\""]
-      },
-      "acerbic": {
-        "onKill": ["{forename} sneers: \"Pathetic.\""],
-        "onCrit": ["{forename} mutters sarcastically: \"Impressive. For them.\""],
-        "onFall": ["{forename} sighs: \"Of course.\""]
-      },
-      "compassionate": {
-        "onKill": ["{forename} looks away solemnly."],
-        "onCrit": ["{forename} winces: \"I'm sorry it had to be this way.\""]
-      },
-      "stoic": {
-        "onKill": ["{forename} nods slightly."],
-        "onCrit": ["{forename} remains expressionless."],
-        "onFall": ["{forename} accepts their fate with quiet dignity."]
-      },
-      "jovial": {
-        "onKill": ["{forename} chuckles: \"That was fun!\""],
-        "onCrit": ["{forename} laughs heartily: \"Bullseye!\""],
-        "onMissReceived": ["{forename} grins: \"You'll have to do better than that!\""]
-      }
-    }
-  },
-
-  "npcBarks": {
-    "discriminator": "type",
-    "groups": {
-      "Novice": {
-        "onEngage": [
-          "{referenceName} shouts: \"I, {forename}, will protect the sacred grounds!\"",
-          "{forename} nervously whines: \"Please, don't harm me! It's my first day!\""
-        ],
-        "onCrit": [
-          "{referenceName} shouts: \"Take that!\"",
-          "{forename} yells: \"You'll regret coming here!\"",
-          "{forename} shouts: \"For the temple!\""
-        ],
-        "onHitReceived": [
-          "{referenceName} cries out in pain!",
-          "{forename} stammers: \"You'll pay for that!\""
-        ],
-        "onFall": [
-          "{forename} gasps: \"I... I can't go on...\"",
-          "{referenceName} pleads: \"Mercy... please...\"",
-          "{referenceName} collapses: \"Tell... the Master...\"",
-          "{forename} falls silent, their eyes glazing over."
-        ],
-        "onFlee": [
-          "\"Retreat! Retreat!\", shouts {forename}.",
-          "{referenceName} cries: \"I must live to fight another day!\""
-        ]
-      },
-      "Acolyte": {
-        "onEngage": [
-          "{referenceName} prays: \"By the dark lord, you shall not pass!\"",
-          "{referenceName} warns: \"Leave this unhallowed place at once!\""
-        ]
-      },
-      "Cultist": {
-        "onEngage": [
-          "{referenceName} cries: \"You dare to enter this unholy place?!\"",
-          "{forename} hisses: \"Your soul will be mine!\"",
-          "{referenceName} chants: \"Dark powers, arise and smite these intruders!\""
-        ],
-        "onCrit": [
-          "{referenceName} snarls: \"Feel the wrath of the dark gods!\"",
-          "{forename} growls: \"Your flesh will feed the shadows!\""
-        ],
-        "onHitReceived": [
-          "{referenceName} hisses: \"You will regret that!\"",
-          "{forename} snarls: \"The dark gods will avenge me!\""
-        ],
-        "onFall": [
-          "{referenceName} gasps: \"No... the dark gods... have forsaken me...\"",
-          "{forename} collapses: \"My faith... shattered...\""
-        ]
-      },
-      "Gravedigger":  {
-        "onEngage": [
-          "{referenceName} is startled: \"Who goes there? Stay away from my graves!\"",
-          "{forename} growls: \"This is sacred ground! Begone!\"",
-          "'Keep away from the graves!', shouts {forename}.",
-          "{referenceName} warns: \"Disturb not the dead!\""
-        ],
-        "onFall": [
-          "{referenceName} groans: \"The earth claims me at last...\"",
-          "{forename} falls silent, their eyes glazing over."
-        ]
-      },
-      "Bandit":       {
-        "onEngage": [
-          "{referenceName} sneers: \"Your money or your life!\"",
-          "{forename} laughs: \"Easy pickings ahead!\""
-        ]
-      },
-      "Tombrobber":   {
-        "onEngage": [
-          "{referenceName} hisses: \"This tomb's treasures will be mine!\"",
-          "{forename} snarls: \"Step aside, or taste my blade!\""
-        ],
-        "onKill": [
-          "{referenceName} smirks: \"Another obstacle removed.\""
-        ]
-      },
-      "Necromancer":  {
-        "onEngage": [
-          "{referenceName} intones: \"You shall join my immortal legion!\"",
-          "{forename} declares: \"Your flesh will nourish my dark arts!\"",
-          "{referenceName} cackles."
-        ],
-        "onSummon": [
-          "{forename} commands: \"Rise, my minions!\"",
-          "{referenceName} chants: \"From the depths, I call you forth!\"",
-          "{forename} waves their hands about, summoning undead servants!"
-        ],
-        "onCrit": [
-          "{referenceName} hisses: \"Feel the chill of death!\"",
-          "{forename} snarls: \"Your life force is mine!\"",
-          "{referenceName} growls: \"You cannot escape death!\""
-        ],
-        "onKill": [
-          "{referenceName} intones: \"Another soul for my collection.\"",
-          "{forename} murmurs: \"Your death serves a greater purpose.\"",
-          "{referenceName} whispers darkly: \"So your life ends, but have no fear. Death is but a doorway.\"",
-          "{forename} says coldly: \"Your soul will fuel my power.\""
-        ],
-        "onHitReceived": [
-          "{referenceName} growls: \"You will pay for that!\"",
-          "{forename} snarls: \"This isn't over yet!\""
-        ],
-        "onMissReceived": [
-          "{forename} hisses: \"I will not be thwarted so easily!\"",
-          "{referenceName} snarls: \"Not so easy, is it?\""
-        ],
-        "onFall": [
-          "{referenceName} gasps: \"No... this cannot be...\"",
-          "{forename} collapses: \"My plans... foiled...\""
-        ]
-      }
-    }
-  },
-
   "npcTypeModifier": {
     "discriminator": "type",
     "groups": {
-      "Novice":       { "str": -1, "con": 0, "dex": -2, "int": 1, "wis": 1, "cha": -1, "abilities": ["rapid_strike", "paralyzing_touch"] },
-      "Acolyte":      { "str": 0,  "con": 1, "wis": 2, "int": 1, "abilities": [ "heal", "rally", "bless", "paralyzing_touch" ], "traits": ["piety"] },
-      "Cultist":      { "str": 1,  "con": 2, "int": 2, "abilities": [ "heal", "curse", "fear", "paralyzing_touch", "silence", "animate_dead" ], "traits": ["piety", "radiant"] },
-      "Adept":       { "str": 1,  "con": 2, "wis": 3, "int": 2, "abilities": [ "heal", "rally", "bless", "shocking_grasp", "paralyzing_touch", "raise_dead" ], "traits": ["piety"] },
+      "Novice":       { "str": -1, "con": 0, "dex": -2, "int": 1, "wis": 1, "cha": -1, "abilities": ["rapid_strike", "paralyzing_touch", "life_drain" ] },
       "Gravedigger":  { "str": 0,  "con": 2, "dex": 2, "abilities": [ "rapid_strike", "hide", "dig_in" ] },
       "Bandit":       { "str": 2,  "con": 3, "dex": 2, "abilities": [ "prepare_charge", "charge", "hide", "backstab", "rapid_strike" ], "traits": ["stealthy"] },
       "Tombrobber":   { "str": 2,  "con": 3, "dex": 1, "int": -1, "wis": -1, "cha": 2, "abilities": ["rapid_strike", "hide"] },
-      "Necromancer":  { "str": 3,  "con": 4, "dex": 2, "int": 8, "abilities": [ "life_drain", "curse", "fear", "poison_cloud", "summon_undead", "resurrect", "animate_dead" ], "traits": ["fiendish"] },
-      "Cult Master": { "str": 4,  "con": 5, "dex": 2, "int": 6, "wis": 4, "cha": 4, "abilities": [ "life_drain", "curse", "fear", "poison_cloud", "mass_curse" ], "traits": ["fiendish"] },
-      "Death Priest": { "str": 6, "con": 4, "int": 4, "dex": 2, "wis": 6, "abilities": [ "heal", "curse", "fear", "life_drain", "burning_hands" ], "traits": ["fiendish", "piety"] },
-      "Wizard":      { "str": -1, "dex": -1, "int": 3, "con": 1, "abilities": [ "missile", "shocking_grasp", "sleep", "lightning_strike", "slow", "armor" ] },
-      "Poxmonger":   { "str": -2, "dex": -2, "con": -1, "int": 2, "wis": 1, "cha": 2, "abilities": [ "poison_cloud", "inflict_disease" ] },
+      "Necromancer":  { "str": 3,  "con": 4, "dex": 2, "int": 8, "abilities": [ "life_drain", "curse", "terror", "poison_cloud", "deathtouch", "summon_undead", "resurrect", "animate_dead" ], "traits": ["fiendish"] },
+      "Cult Master": { "str": 4,  "con": 5, "dex": 2, "int": 6, "wis": 4, "cha": 4, "abilities": [ "life_drain",  "terror", "poison_cloud", "mass_curse", "deathtouch" ], "traits": ["fiendish"] },
+      "Wizard":      { "str": -1, "dex": -1, "int": 3, "con": 1, "abilities": [ "missile", "shocking_grasp", "sleep", "lightning_strike", "slow", "armor", "acid_arrow" ] },
+      "Poxmonger":   { "str": -2, "dex": -2, "con": -1, "int": 2, "wis": 1, "cha": 2, "abilities": [ "terror", "poison_cloud", "inflict_disease", "deathtouch" ] },
+
+      "Adept":       { "str": 1,  "con": 2, "wis": 3, "int": 2, "abilities": [ "heal", "rally", "bless", "shocking_grasp", "paralyzing_touch", "raise_dead" ], "traits": ["piety"] },
+      "Acolyte":      { "str": 0,  "con": 1, "wis": 2, "int": 1, "abilities": [ "heal", "rally", "bless", "paralyzing_touch" ], "traits": ["piety"] },
+      "Cultist":      { "str": 1,  "con": 2, "int": 2, "abilities": [ "heal", "curse", "terror", "paralyzing_touch", "silence", "animate_dead" ], "traits": ["piety", "radiant"] },
+      "Cleric":       { "wis": 3, "con": 2, "abilities": [ "smite", "cure", "bless" ] },
+      "Sage":         { "int": 4, "abilities": [ "heal", "curse", "terror" ] },
+      "Guardian":     { "con": 4, "abilities": [ "second_wind", "taunt", "shield", "prepare_charge", "charge" ] },
+      "Elder":        { "int": 6, "con": 4, "abilities": [ "heal", "curse", "terror", "life_drain", "silence" ] },
+      "Death Priest": { "str": 6, "con": 4, "int": 4, "dex": 2, "wis": 6, "abilities": [ "heal", "curse", "terror", "life_drain", "burning_hands" ], "traits": ["fiendish", "piety"] },
+      "High Priest":  { "str": -2, "con": 4, "int": 6, "dex": 2, "wis": 8, "cha": 8, "abilities": [ "smite", "bless", "curse", "inspire", "heal" ] },
 
       "Herald":       { "str": -1, "dex": -1, "int": 1, "wis": -1, "cha": 2, "abilities": ["inspire"] },
       "Benefactor":   { "str": -1, "dex": -1, "int": 2, "wis": -1, "cha": 2, "abilities": ["cure"] },
@@ -557,7 +382,6 @@
       "Warden":       { "con": 2, "str": 1, "abilities": [ "second_wind", "taunt" ] },
 
       "Warrior":      { "str": 3, "dex": 2, "con": 2, "abilities": [ "second_wind", "prepare_charge", "charge" ] },
-      "Cleric":       { "wis": 3, "con": 2, "abilities": [ "smite", "cure", "bless" ] },
       "Thief":        { "dex": 2, "cha": 1, "abilities": [ "hide", "backstab" ] },
       "Mage":         { "int": 6, "con": 4, "dex": 2, "str": 2, "abilities": [ "missile", "shocking_grasp", "sleep" ] },
       "Ranger":       { "str": 4, "dex": 4, "con": 2, "abilities": [ "heal", "set_spear", "prepare_charge", "charge" ] },
@@ -568,22 +392,18 @@
       "Brute":        { "str": 4, "abilities": [ "enrage", "prepare_charge", "charge" ] },
       "Berserker":    { "str": 6, "abilities": [ "enrage", "prepare_charge", "charge" ] },
       "Scholar":      { "int": 4, "abilities": [ "missile", "sleep", "shocking_grasp" ] },
-      "Sage":         { "int": 4, "abilities": [ "heal", "curse", "fear" ] },
-      "Guardian":     { "con": 4, "abilities": [ "second_wind", "taunt", "shield", "prepare_charge", "charge" ] },
-      "Elder":        { "int": 6, "con": 4, "abilities": [ "heal", "curse", "fear", "life_drain" ] },
       "Fury":         { "str": 8, "con": 6, "abilities": [ "enrage", "prepare_charge", "charge" ] },
-      "Princeling":   { "str": 6, "con": 4, "int": 4, "dex": 2, "abilities": [ "inspire", "fear", "prepare_charge", "charge" ] },
+      "Princeling":   { "str": 6, "con": 4, "int": 4, "dex": 2, "abilities": [ "inspire", "terror", "prepare_charge", "charge" ] },
 
       "Chieftain":    { "str": 4, "con": 3, "abilities": [ "enrage", "prepare_charge", "charge" ] },
       "Assassin":     { "dex": 4, "str": 2, "int": 1, "abilities": [ "hide", "backstab", "poison_weapon", "prepare_charge", "charge" ] },
-      "Shaman King":  { "str": 4, "con": 4, "int": 6, "dex": 2, "wis": 6, "abilities": [ "heal", "curse", "fear" ] },
+      "Shaman King":  { "str": 4, "con": 4, "int": 6, "dex": 2, "wis": 6, "abilities": [ "heal", "curse", "terror" ] },
       "Hierophant":   { "int": 6, "con": 4, "dex": 2, "str": 2, "abilities": [ "prepare_charge", "charge", "sleep", "curse", "fear", "life_drain", "poison_cloud" ] },
       "General":      { "str": 6, "con": 4, "int": 2, "dex": 2, "abilities": [ "enrage", "prepare_charge", "charge", "inspire", "second_wind" ] },
       "Warlord":      { "str": 7, "con": 6, "int": 5, "wis": 4, "dex": 3, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ] },
       "Chosen One":   { "str": 5, "con": 5, "int": 5, "dex": 5, "wis": 5, "abilities": [ "enrage", "heal", "inspire", "curse", "fear", "inspire", "charm", "prepare_charge", "charge" ] },
       "Destroyer":    { "str": 8, "con": 6, "int": 2, "dex": 2, "abilities": [ "fear", "maul", "curse", "enrage", "prepare_charge", "charge" ] },
 
-      "High Priest":  { "str": -2, "con": 4, "int": 6, "dex": 2, "wis": 8, "cha": 8, "abilities": [ "smite", "bless", "curse", "inspire", "heal" ] },
       "Archmage":     { "int": 8, "con": 4, "dex": 2, "str": -2, "abilities": [ "armor", "missile", "life_drain", "shocking_grasp", "sleep" ] },
       "King":         { "str": 6, "con": 6, "int": 4, "dex": 2, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ] },
       "Lord":         { "str": 8, "con": 8, "int": 6, "wis": 6, "dex": 4, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ] },
@@ -1943,15 +1763,15 @@
   "monsterTraits": {
     "discriminator": "monster_type",
     "groups": {
-      "giant": [[ "large" ]],
+      "giant": [[ "huge" ]],
       "undead": [[ "undead" ]],
       "demon": [[ "fiendish" ]],
-      "elemental": [[ ]],
+      "elemental": [[ "elemental" ]],
       "aberration": [[ "outsider" ]],
       "construct": [[ "construct" ]],
       "celestial": [[ "celestial" ]],
-      "fey": [[]],
-      "beast": [[]]
+      "fey": [[ "enchanting" ]],
+      "beast": [[ "wild" ]]
     }
   },
   "monsterXp": {
@@ -2006,7 +1826,7 @@
         [
           "melee",
           "curse",
-          "fear",
+          "terror",
           "burning_hands"
         ]
       ],
@@ -2019,7 +1839,7 @@
       "aberration": [
         [
           "melee",
-          "fear",
+          "terror",
           "curse",
           "sleep",
           "charm",

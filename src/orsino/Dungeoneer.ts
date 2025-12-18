@@ -15,7 +15,6 @@ import AbilityHandler, { Ability, AbilityEffect } from "./Ability";
 import { Inventory } from "./Inventory";
 import Orsino from "../orsino";
 import { StatusEffect, StatusModifications } from "./Status";
-import { Deity } from "./ModuleRunner";
 
 type SkillType = "search" | "examine"; // | "disarm" | "pickLock" | "climb" | "swim" | "jump" | "listen" | "spot";
 
@@ -561,7 +560,7 @@ export default class Dungeoneer {
             this.note(`Purchased ${interaction.name} from ${Words.humanize(featureName)}.`);
             let nullCombatContext: CombatContext = { subject: check.actor, allies: [], enemies: [] };
             for (let effect of interaction.effects) {
-              this.note(`Applying effect: ${JSON.stringify(effect)}`);
+              // this.note(`Applying effect: ${JSON.stringify(effect)}`);
               let { events } = await AbilityHandler.handleEffect(interaction.name, effect, check.actor, check.actor, nullCombatContext, Commands.handlers(this.roller, this.playerTeam));
               // events.forEach(e => this.emit({ ...e, turn: -1 } as DungeonEvent));
               for (const event of events) {
@@ -767,7 +766,8 @@ export default class Dungeoneer {
         features: [],
         aura: null,
         decor: "a magical portal",
-        gear: ["a legendary sword"]
+        gear: ["a legendary sword"],
+        shrine: null
       },
       rooms: [
         {
@@ -788,7 +788,8 @@ export default class Dungeoneer {
                 playerControlled: false, xp: 50, gp: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: []
               }
             ]
-          }
+          },
+          shrine: null
         },
         {
           narrative: "A grand hall with ancient tapestries.",
@@ -808,7 +809,8 @@ export default class Dungeoneer {
                 playerControlled: false, xp: 100, gp: 20, weapon: "Axe", damageKind: "slashing", abilities: ["melee"], traits: []
               },
             ]
-          }
+          },
+          shrine: null
         }
       ]
     }

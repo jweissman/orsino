@@ -117,7 +117,8 @@ export class Commands {
   static async handleSave(target: Combatant, saveType: SaveKind, dc: number = 15, roll: Roll): Promise<{ success: boolean, events: TimelessEvent[] }> {
     let targetFx = await Fighting.gatherEffects(target);
     let saveKind = saveType.charAt(0).toUpperCase() + saveType.slice(1);
-    let isImmune = targetFx[`immune${saveKind}` as keyof StatusModifications] as boolean;
+    let isImmune = (targetFx[`immune${saveKind}` as keyof StatusModifications] as boolean);
+      // || (targetFx.immuneAll as boolean);
     if (isImmune) {
       return { success: true, events: [{ type: "save", subject: target, success: true, dc, immune: true, reason: "immunity", versus: saveKind } as Omit<SaveEvent, "turn">] };
     }
@@ -241,20 +242,24 @@ export class Commands {
     if (damageKind) {
       const defEffects = await Fighting.gatherEffectsWithNames(defender);
       let resistanceName = `resist${damageKind.charAt(0).toUpperCase() + damageKind.slice(1)}`;
-      const resistance: number = (((defEffects.resistAll?.value) ?? 0.0) as number)
-        + ((defEffects[resistanceName]?.value as number) ?? 0.0 as number);
+      const resistance: number = (((defEffects.resistAll?.value) ?? 0) as number)
+        + ((defEffects[resistanceName]?.value as number) ?? 0 as number);
 
       if (resistance !== 0) {
         const originalDamage = damage;
+        let sources = [
+          ...(defEffects.resistAll?.sources || []),
+          ...(defEffects[resistanceName]?.sources || []),
+        ]
         if (resistance > 0) {
           damage = Math.floor(originalDamage * (1 - resistance));
           // emit a resistant event
-          events.push({ type: "resist", subject: defender, target: defender, damageKind, originalDamage, finalDamage: damage, sources: defEffects[resistanceName].sources || [] } as Omit<GameEvent, "turn">);
+          events.push({ type: "resist", subject: defender, target: defender, damageKind, originalDamage, finalDamage: damage, sources } as Omit<GameEvent, "turn">);
         } else if (resistance < 0) {
           // this is a vulnerability, so we increase damage by the percentage below zero
           damage = Math.floor(originalDamage * (1 + Math.abs(resistance)))
           // emit a vulnerable event
-          events.push({ type: "vulnerable", subject: defender, target: defender, damageKind, originalDamage, finalDamage: damage, sources: defEffects[resistanceName].sources || [] } as Omit<GameEvent, "turn">);
+          events.push({ type: "vulnerable", subject: defender, target: defender, damageKind, originalDamage, finalDamage: damage, sources} as Omit<GameEvent, "turn">);
         }
       }
     }
@@ -266,6 +271,20 @@ export class Commands {
         let sources = defenderFxWithNames.damageReduction?.sources || [];
         events.push({ type: "damageReduction", subject: defender, target: defender, amount: reduction, damageKind, reason: Words.humanizeList(sources) } as Omit<DamageReduction, "turn">);
       }
+    }
+
+    if (defenderEffects.reflectDamagePercent && attacker != defender) {
+      let reflectPercent = defenderEffects.reflectDamagePercent as number || 0;
+      let reflectedDamage = Math.floor(damage * reflectPercent);
+      if (reflectedDamage > 0) {
+        console.log(`${Presenter.minimalCombatant(defender)} reflects ${reflectedDamage} ${damageKind} damage back to ${Presenter.minimalCombatant(attacker)}!`);
+        let reflectEvents = await Commands.handleHit(
+          defender, attacker, reflectedDamage, false, `reflect from ${defender.forename}`, true, damageKind,
+          null, combatContext, roll
+        );
+        events.push(...reflectEvents);
+      }
+      damage = Math.floor(damage * (1 - reflectPercent));
     }
 
     // apply damage
@@ -406,7 +425,7 @@ export class Commands {
         let otherTargets = context.enemies.filter(c => c !== target && c.hp > 0);
         while (otherTargets.length > 0) {
           let newTarget = otherTargets[Math.floor(Math.random() * otherTargets.length)];
-          console.log(`${Presenter.combatant(target)} spilled over ${spillover} damage to ${Presenter.combatant(newTarget)}!`);
+          // console.log(`${Presenter.combatant(target)} spilled over ${spillover} damage to ${Presenter.combatant(newTarget)}!`);
           let newTargetOriginalHp = newTarget.hp;
           let spilloverEvents = await Commands.handleHit(
             combatant, newTarget, spillover, false, `${combatant.forename}'s ${Words.humanize(combatant.weapon)} (spillover, ${spillover} damage remaining)`, true, combatant.damageKind || "true",
@@ -448,7 +467,7 @@ export class Commands {
     target.activeEffects.push({ name, effect, duration, by: user });
     if (effect.tempHp) {
       let pool = await Deem.evaluate(effect.tempHp.toString(), { ...user }) as number || 0;
-      console.warn(`${Presenter.combatant(target)} gains ${pool} temporary HP from status effect ${name}.`);
+      // console.warn(`${Presenter.combatant(target)} gains ${pool} temporary HP from status effect ${name}.`);
       // target.tempHp = (target.tempHp || 0) + effect.tempHp;
       target.tempHpPools = target.tempHpPools || {};
 
@@ -465,7 +484,7 @@ export class Commands {
       let existingEffectIndex = target.activeEffects.findIndex(e => e.name === name);
       let effect = target.activeEffects[existingEffectIndex]?.effect;
       if (effect?.tempHp) {
-        console.warn(`${Presenter.combatant(target)} loses ${effect.tempHp} temporary HP from removal of status effect ${name}.`);
+        // console.warn(`${Presenter.combatant(target)} loses ${effect.tempHp} temporary HP from removal of status effect ${name}.`);
         // target.tempHp = Math.max(0, (target.tempHp || 0) - effect.tempHp);
         target.tempHpPools = target.tempHpPools || {};
         delete target.tempHpPools[name];

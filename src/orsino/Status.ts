@@ -68,8 +68,11 @@ export interface StatusModifications {
   immuneBreath?: boolean;
   immuneParalyze?: boolean;
   immuneSleep?: boolean;
+  // this is way too powerful!
+  // immuneAll?: boolean;
 
   immuneDamage?: boolean;
+  // immunePhysical?: boolean;
 
   noActions?: boolean;
   randomActions?: boolean;
@@ -135,6 +138,8 @@ export interface StatusModifications {
 
   tempHp?: number;
   damageReduction?: number;
+  reflectDamagePercent?: number;
+  reflectSpellChance?: number;
 
   // noncombat
   examineBonus?: number;

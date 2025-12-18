@@ -4,7 +4,7 @@ import Presenter from "./tui/Presenter";
 import { Team } from "./types/Team";
 import { Roll } from "./types/Roll";
 import { Fighting } from "./rules/Fighting";
-import Events, { CombatEvent, RoundStartEvent, CombatEndEvent, FleeEvent, GameEvent, CombatantEngagedEvent, WaitEvent, NoActionsForCombatant, AllegianceChangeEvent, ItemUsedEvent, ActionEvent, ActedRandomly, StatusExpiryPreventedEvent } from "./Events";
+import Events, { CombatEvent, RoundStartEvent, CombatEndEvent, FleeEvent, GameEvent, CombatantEngagedEvent, WaitEvent, NoActionsForCombatant, AllegianceChangeEvent, ItemUsedEvent, ActionEvent, ActedRandomly, StatusExpiryPreventedEvent, HealEvent, HitEvent } from "./Events";
 import AbilityHandler, { Ability, AbilityEffect } from "./Ability";
 import { Answers } from "inquirer";
 import { AbilityScoring } from "./tactics/AbilityScoring";
@@ -77,6 +77,28 @@ export default class Combat {
   }
 
   protected async emitAll(events: Omit<GameEvent, "turn">[], message: string, subject: Combatant): Promise<void> {
+    events = events.filter(e => {
+      // remove heal events for 0
+      if (e.type === "heal") {
+        let healEvent = e as HealEvent;
+        if (healEvent.amount <= 0) {
+          return false;
+        }
+      } else if (e.type === "hit") {
+        let damageEvent = e as HitEvent;
+        if (damageEvent.damage <= 0) {
+          return false;
+        }
+      } else if (e.type === "tempHpAbsorb") {
+        let tempHpEvent = e as HealEvent;
+        if (tempHpEvent.amount <= 0) {
+          return false;
+        }
+      }
+      return true;
+    })
+    if (events.length === 0) { return; }
+
     await this.emit({ type: "action", subject, actionName: message } as Omit<ActionEvent, "turn">);
     if (message) {
       // this._note(Stylist.bold(message));

@@ -9,7 +9,7 @@ import Files from "./util/Files";
 import Words from "./tui/Words";
 import { BossRoom, Room } from "./Dungeoneer";
 import Combat from "./Combat";
-import StatusHandler, { StatusEffect } from "./Status";
+import { StatusEffect, StatusModifications } from "./Status";
 
 type BaseEvent = {
   turn: number;
@@ -49,10 +49,12 @@ export type NoActionsForCombatant = BaseEvent & { type: "inactive"; statusName: 
 export type AllegianceChangeEvent = BaseEvent & { type: "allegianceChange"; statusName: string };
 export type ItemUsedEvent = BaseEvent & { type: "itemUsed"; itemName: string; chargesLeft?: number; countLeft?: number; };
 
+export type SpellTurnedEvent = BaseEvent & { type: "spellTurned"; spellName: string };
+
 export type ResistantEvent = BaseEvent & { type: "resist"; damageKind: DamageKind; originalDamage: number; finalDamage: number; sources: string[] };
 export type VulnerableEvent = BaseEvent & { type: "vulnerable"; damageKind: DamageKind; originalDamage: number; finalDamage: number; sources: string[] };
 
-export type StatusEffectEvent = BaseEvent & { type: "statusEffect"; effectName: string; effect: { [key: string]: any }; duration: number };
+export type StatusEffectEvent = BaseEvent & { type: "statusEffect"; effectName: string; effect: StatusModifications; duration: number };
 export type StatusExpireEvent = BaseEvent & { type: "statusExpire"; effectName: string };
 export type StatusExpiryPreventedEvent = BaseEvent & { type: "statusExpiryPrevented"; reason: string };
 
@@ -69,6 +71,7 @@ export type CombatEvent =
   | KillEvent
   | CritEvent
   | WaitEvent
+  | SpellTurnedEvent
   | NoActionsForCombatant
   | AllegianceChangeEvent
   | ItemUsedEvent
@@ -216,10 +219,10 @@ export default class Events {
       case "flee": return `${subjectName} flees from combat.`;
       case "statusEffect":
         let effectName = Stylist.colorize(event.effectName, 'magenta');
-        if (event.effect.by && event.effect.by.forename !== subjectName) {
-          return `${subjectName} is ${effectName} by ${event.effect.by.forename} for ${event.duration} turns.`;
-        }
-        return `${subjectName} is ${effectName}.`
+        // if (event.by && event.by.forename !== subjectName) {
+        //   return `${subjectName} is ${effectName} by ${event.effect.by.forename} for ${event.duration} turns.`;
+        // }
+        return `${subjectName} is ${effectName} (${Presenter.describeModifications(event.effect)}).`
       case "statusExpire":
         // if (event.effectName === "Poisoned Blade") {
         //   return `${subjectName}'s blade is no longer coated in poison.`;
@@ -284,7 +287,7 @@ export default class Events {
         return `${subjectName} summons ${event.target?.referenceName || event.target?.forename}.`;
       case "save":
         if (event.immune) {
-          return `${subjectName} is immune.`; // and automatically succeeds on their Save vs ${event.versus} (DC ${event.dc}).`;
+          return `${subjectName} is immune to ${event.versus}.`; // and automatically succeeds on their Save vs ${event.versus} (DC ${event.dc}).`;
         } else if (event.success) {
           // return '';  //`${subjectName} succeeds on their Save vs ${event.versus} (DC ${event.dc}).`;
           return `${subjectName} resists the ${event.versus} effect.`;
@@ -305,6 +308,9 @@ export default class Events {
         return `${subjectName} has defeated ${targetName}!`;
       case "crit":
         return "";
+
+      case "spellTurned":
+        return `${subjectName} turns the spell ${event.spellName} cast by ${targetName}.`;
 
       case "resist":
         return `${subjectName} resists, taking ${event.finalDamage} ${event.damageKind} damage (originally ${event.originalDamage}) due to ${event.sources.join(", ")}.`;

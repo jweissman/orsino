@@ -53,6 +53,8 @@ export interface AbilityEffect {
 
   // ie for rez with animate dead which should apply an undead template
   applyTraits?: string[];
+
+  reflected?: boolean;
 }
 
 export interface Ability {
@@ -395,6 +397,13 @@ export default class AbilityHandler {
       success = true;
     } else if (effect.type === "drain") {
       let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
+      if (targetCombatant._savedVersusSpell) {
+        if (effect.saveForHalf) {
+          amount = Math.floor(amount / 2);
+        } else if (effect.saveNegates) {
+          amount = 0;
+        }
+      }
       let healEvents = await heal(user, user, amount);
       let hitEvents = await hit(user, targetCombatant, amount, false, name, true, effect.kind || "true",
         effect.cascade || null,
@@ -412,7 +421,7 @@ export default class AbilityHandler {
       }
     } else if (effect.type === "debuff") {
       // same as buff with a save
-      if (effect.status) {
+      if (effect.status && !targetCombatant._savedVersusSpell) {
         let dc = (effect.saveDC || 15) + (userFx.bonusSpellDC as number || 0) + (user.level || 0);
         let { success: saved, events: saveEvents } = await save(targetCombatant, effect.saveType || "magic", dc, handlers.roll);
         events.push(...saveEvents);
@@ -430,7 +439,7 @@ export default class AbilityHandler {
       events.push(...saveEvents);
 
       let saved = success;
-      if (saved) {
+      if (saved || targetCombatant._savedVersusSpell) {
         console.log(`${targetCombatant.name} resists the urge to flee!`);
         return { success: false, events };
       }
@@ -589,10 +598,28 @@ export default class AbilityHandler {
           events.push(...saveEvents);
         }
       }
-      // remove saved targets from the list
-      // targets = targets.filter(t => !savedTargets.includes(t));
-    }
 
+      let turnedTargets: Combatant[] = [];
+      for (const t of targets) {
+        let tFx = await Fighting.gatherEffects(t);
+        let turned = tFx.reflectSpellChance && Math.random() < (tFx.reflectSpellChance as number);
+        if (turned) {
+          turnedTargets.push(t);
+          events.push({ type: "spellTurned", subject: t, target: user, spellName: ability.name } as Omit<GameEvent, "turn">);
+          for (const effect of ability.effects) {
+            let { success, events: effectEvents } = await this.handleEffect(ability.name, { ...effect, reflected: true }, t, user, context, handlers);
+            result = result || success;
+            events.push(...effectEvents);
+            if (success === false) {
+              break;
+            }
+          }
+        }
+      }
+
+      // filter out turned targets from normal processing
+      targets = targets.filter(t => !turnedTargets.includes(t));
+    }
 
     // console.log(`${user.name} is performing ${ability.name} on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target?.name}...`);
     for (const effect of ability.effects) {

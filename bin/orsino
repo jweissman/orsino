@@ -4,6 +4,7 @@ import Orsino from '../src/orsino';
 import { GenerationTemplateType } from "../src/orsino/types/GenerationTemplateType";
 import { program } from 'commander';
 import Generator from '../src/orsino/Generator';
+import Books from '../src/orsino/Books';
 
 program
   .name('orsino')
@@ -30,41 +31,61 @@ program.command('autoplay')
     process.exit(0);
   });
 
-program.command('mm')
-  .description('Generate a monster manual for all monsters in the setting')
+program.command('book <type>')
+  .description('Generate a book of the specified type (monsters, spells, traits, skills, items)')
   .option('-s, --setting <setting>', 'Specify the setting to use', 'fantasy')
-  .action(async (options) => {
-    const orsino = new Orsino(options.setting || 'fantasy');
-    await orsino.monsterManual(options);
+  .action(async (type, options) => {
+    const _orsino = new Orsino(options.setting || 'fantasy');
+    if (type === 'monster' || type === 'monsters') {
+      await Books.monsters(options);
+    } else if (type === 'spell' || type === 'spells') {
+      await Books.spellbook(options);
+    } else if (type === 'trait' || type === 'traits') {
+      await Books.traitbook(options);
+    } else if (type === 'skill' || type === 'skills') {
+      await Books.skillbook(options);
+    } else  if (type === 'item' || type === 'items') {
+      await Books.itembook(options);
+    } else {
+      console.error(`Unknown book type: ${type}`);
+    }
     process.exit(0);
-  });
+  }
+);
 
-program.command('spellbook')
-  .description('Generate a spellbook for the setting')
-  .option('-s, --setting <setting>', 'Specify the setting to use', 'fantasy')
-  .action(async (options) => {
-    const orsino = new Orsino(options.setting || 'fantasy');
-    await orsino.spellbook(options);
-    process.exit(0);
-  });
+// program.command('mm')
+//   .description('Generate a monster manual for all monsters in the setting')
+//   .option('-s, --setting <setting>', 'Specify the setting to use', 'fantasy')
+//   .action(async (options) => {
+//     await Books.monsterManual(options);
+//     process.exit(0);
+//   });
 
-program.command('traitbook')
-  .description('Generate a traitbook for the setting')
-  .option('-s, --setting <setting>', 'Specify the setting to use', 'fantasy')
-  .action(async (options) => {
-    const orsino = new Orsino(options.setting || 'fantasy');
-    await orsino.traitbook(options);
-    process.exit(0);
-  });
+// program.command('spellbook')
+//   .description('Generate a spellbook for the setting')
+//   .option('-s, --setting <setting>', 'Specify the setting to use', 'fantasy')
+//   .action(async (options) => {
+//     await Books.spellbook(options);
+//     process.exit(0);
+//   });
 
-program.command('skillbook')
-  .description('Generate a skillbook for the setting')
-  .option('-s, --setting <setting>', 'Specify the setting to use', 'fantasy')
-  .action(async (options) => {
-    const orsino = new Orsino(options.setting || 'fantasy');
-    await orsino.skillbook(options);
-    process.exit(0);
-  });
+// program.command('traitbook')
+//   .description('Generate a traitbook for the setting')
+//   .option('-s, --setting <setting>', 'Specify the setting to use', 'fantasy')
+//   .action(async (options) => {
+//     // const orsino = new Orsino(options.setting || 'fantasy');
+//     await Books.traitbook(options);
+//     process.exit(0);
+//   });
+
+// program.command('skillbook')
+//   .description('Generate a skillbook for the setting')
+//   .option('-s, --setting <setting>', 'Specify the setting to use', 'fantasy')
+//   .action(async (options) => {
+//     const orsino = new Orsino(options.setting || 'fantasy');
+//     await orsino.skillbook(options);
+//     process.exit(0);
+//   });
 
 program
   .command('gen <type>')
