@@ -111,6 +111,7 @@
 - [ ] Better verbs for wand/stave actions (not 'performs', maybe 'use')
 ---
 - [ ] Smokescreen should hide the caster too! (Maybe we need a 'party' target?)
+- [ ] mapLookup (to reify more things at gen time)
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing

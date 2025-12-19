@@ -10,10 +10,7 @@ import AbilityHandler from "./orsino/Ability";
 import TraitHandler from "./orsino/Trait";
 import Combat from "./orsino/Combat";
 import { Team } from "./orsino/types/Team";
-import Deem from "./deem";
 import Presenter from "./orsino/tui/Presenter";
-import { Template } from "./orsino/Template";
-import Words from "./orsino/tui/Words";
 
 export type Prompt = (message: string) => Promise<string>;
 
@@ -115,6 +112,7 @@ export default class Orsino {
 
       } catch (e) {
         console.error("Autoplay encountered an error:", e);
+        throw e;
       }
     }
   }

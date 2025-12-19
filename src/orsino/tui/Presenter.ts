@@ -596,18 +596,6 @@ export default class Presenter {
         case "onEnemyCharge":
         case "onEnemyMelee":
         case "onMissReceived":
-        case "onResistPoison":
-        case "onResistDisease":
-        case "onResistDeath":
-        case "onResistMagic":
-        case "onResistInsanity":
-        case "onResistCharm":
-        case "onResistFear":
-        case "onResistStun":
-        case "onResistWill":
-        case "onResistBreath":
-        case "onResistParalyze":
-        case "onResistSleep":
         case "onSaveVersusPoison":
         case "onSaveVersusDisease":
         case "onSaveVersusDeath":

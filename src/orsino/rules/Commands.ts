@@ -111,7 +111,17 @@ export class Commands {
     amount = Math.min(amount, target.maxHp - target.hp);
     target.hp = Math.min(target.maxHp, target.hp + amount);
 
-    return [{ type: "heal", subject: healer, target, amount } as Omit<HealEvent, "turn">];
+    // check for onHeal effects
+    let events: TimelessEvent[] = [{ type: "heal", subject: healer, target, amount } as Omit<HealEvent, "turn">];
+    let onHealFx = healerFx.onHeal as AbilityEffect[] || [];
+    for (let fx of onHealFx) {
+      let { events: healFxEvents } = await AbilityHandler.handleEffect(
+        fx.description || "healing effect", fx, healer, target, null as unknown as CombatContext, Commands.handlers(Commands.roll, null as unknown as Team)
+      );
+      events.push(...healFxEvents);
+    }
+
+    return events;
   }
 
   static async handleSave(target: Combatant, saveType: SaveKind, dc: number = 15, roll: Roll): Promise<{ success: boolean, events: TimelessEvent[] }> {
@@ -159,9 +169,9 @@ export class Commands {
       // return { success: true, events: [{ type: "save", versus: saveKind, subject: target, success: true, dc, immune: false, reason: "successful roll" } as Omit<SaveEvent, "turn">] };
 
       // check for onResistX effects
-      let onResistFx = targetFx[`onResist${saveKind}` as keyof StatusModifications] as AbilityEffect[] || [];
+      let onSaveFx = targetFx[`onSaveVersus${saveKind}` as keyof StatusModifications] as AbilityEffect[] || [];
       let resistEvents: TimelessEvent[] = [];
-      for (let fx of onResistFx) {
+      for (let fx of onSaveFx) {
 
         let { events: resistFxEvents } = await AbilityHandler.handleEffect(
           fx.description || "an effect", fx, target, target, null as unknown as CombatContext, Commands.handlers(roll, null as unknown as Team)

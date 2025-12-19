@@ -629,16 +629,25 @@ export default class Combat {
       }
     }
 
+    // gather fx again since we may have changed status during our turn!
+    activeFx = await Fighting.gatherEffects(combatant);
     let ctx = { subject: combatant, allies, enemies: allEnemies };
-    let activeEffectsWithNames = await Fighting.gatherEffectsWithNames(combatant);
     if (activeFx.onTurnEnd) {
+      let activeEffectsWithNames = await Fighting.gatherEffectsWithNames(combatant);
+      if (!activeEffectsWithNames || !activeEffectsWithNames.onTurnEnd) {
+        console.log("Active fx on turn end:", activeFx.onTurnEnd);
+        console.log("Combatant active effects:", await Fighting.effectList(combatant));
+        console.log("Active fx with names:", activeEffectsWithNames);
+
+        throw new Error("Could not gather active effects with names for combatant: " + combatant.forename);
+      }
       let turnEndEvents: Omit<GameEvent, "turn">[] = [];
       for (const effect of activeFx.onTurnEnd as AbilityEffect[]) {
         // apply fx to self
         let { events } = await AbilityHandler.handleEffect(effect.description || 'turn end effect', effect, combatant, combatant, ctx, Commands.handlers(this.roller, this.teams.find(t => t.combatants.includes(combatant))!));
         turnEndEvents.push(...events);
       }
-      await this.emitAll(turnEndEvents, `turn end effects from ${Words.humanizeList(activeEffectsWithNames.onTurnEnd.sources)}`, combatant);
+      await this.emitAll(turnEndEvents, `turn end effects from ${Words.humanizeList(activeEffectsWithNames.onTurnEnd?.sources || ['unknown'])}`, combatant);
     }
 
     return { haltRound: false };

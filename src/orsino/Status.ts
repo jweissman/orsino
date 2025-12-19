@@ -95,18 +95,19 @@ export interface StatusModifications {
   onEnemyMelee?: AbilityEffect[];
   // [key: `onEnemy${string}`]: AbilityEffect[] | undefined;
 
-  onResistPoison?: AbilityEffect[];
-  onResistDisease?: AbilityEffect[];
-  onResistDeath?: AbilityEffect[];
-  onResistMagic?: AbilityEffect[];
-  onResistInsanity?: AbilityEffect[];
-  onResistCharm?: AbilityEffect[];
-  onResistFear?: AbilityEffect[];
-  onResistStun?: AbilityEffect[];
-  onResistWill?: AbilityEffect[];
-  onResistBreath?: AbilityEffect[];
-  onResistParalyze?: AbilityEffect[];
-  onResistSleep?: AbilityEffect[];
+  // note: these are equivalent to onSaveVersus?? but trigger effects
+  // onResistPoison?: AbilityEffect[];
+  // onResistDisease?: AbilityEffect[];
+  // onResistDeath?: AbilityEffect[];
+  // onResistMagic?: AbilityEffect[];
+  // onResistInsanity?: AbilityEffect[];
+  // onResistCharm?: AbilityEffect[];
+  // onResistFear?: AbilityEffect[];
+  // onResistStun?: AbilityEffect[];
+  // onResistWill?: AbilityEffect[];
+  // onResistBreath?: AbilityEffect[];
+  // onResistParalyze?: AbilityEffect[];
+  // onResistSleep?: AbilityEffect[];
   // onResistAll?: AbilityEffect[];
 
   onSaveVersusPoison?: AbilityEffect[];

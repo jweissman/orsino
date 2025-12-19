@@ -340,7 +340,7 @@
     "_moduleLevel": 1,
     "_targetCr": "=#_moduleLevel + round(#_index)",
     "__building_type": "=oneOf(temple, fortress, library, tomb, mine)",
-    "building_type": "tomb",
+    "building_type": "=oneOf(temple, tomb)",
     "_roomBias": "=lookup(roomBias, #building_type)",
     "dungeon_type": "=lookup(dungeonTypes, #building_type)",
     "race": "=if(#_targetCr <= 5, oneOf(goblin, kobold), if(#_targetCr <= 10, oneOf(orc, human), if(#_targetCr <= 15, oneOf(ogre, troll), oneOf(dragon))))",
@@ -349,7 +349,7 @@
     "dungeon_aspect": "=lookup(dungeonAspect, #building_type)",
     "_dungeon_name": "=capitalize(#dungeon_aspect) + \" \" + capitalize(#race) + \" \" + capitalize(#dungeon_type) + \" of \" + capitalize(#theme)",
     "dungeon_name": "=\"#{capitalize(#dungeon_aspect)} #{capitalize(#race)} #{capitalize(#dungeon_type)} of #{capitalize(#domain)}\"",
-    "depth": "=5+4d6",
+    "depth": "=2+3d4",
     "dungeonIndex": "=#_index",
     "intendedCr": "=#_targetCr",
     "^dungeonOverlay": "=lookup(dungeonOverlay, #building_type)",
@@ -367,7 +367,7 @@
     "terrain": "=lookup(terrains, 1d6)",
     "town": "=gen(town)",
     "_townName": "=dig(#town, 'name')",
-    "dungeons": "=genList(dungeon, 6)",
+    "dungeons": "=genList(dungeon, 2)",
     "_moduleLevel": 0,
     "name": "=oneOf('Adventure', 'Saga', 'Reckoning', 'Quest', 'Expedition') + ' ' + oneOf('in the ' + capitalize(#terrain), 'at ' + capitalize(#_townName), 'for the ' + capitalize(#terrain))"
   }

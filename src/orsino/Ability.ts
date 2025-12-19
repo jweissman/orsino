@@ -421,17 +421,19 @@ export default class AbilityHandler {
       }
     } else if (effect.type === "debuff") {
       // same as buff with a save
-      if (effect.status && !targetCombatant._savedVersusSpell) {
-        let dc = (effect.saveDC || 15) + (userFx.bonusSpellDC as number || 0) + (user.level || 0);
-        let { success: saved, events: saveEvents } = await save(targetCombatant, effect.saveType || "magic", dc, handlers.roll);
-        events.push(...saveEvents);
-        if (!saved) {
-          let statusEvents = await status(user, targetCombatant, effect.status.name, { ...effect.status.effect}, effect.status.duration);
-          events.push(...statusEvents);
-          success = true;
+      if (effect.status) { 
+        if (!targetCombatant._savedVersusSpell) {
+          let dc = (effect.saveDC || 15) + (userFx.bonusSpellDC as number || 0) + (user.level || 0);
+          let { success: saved, events: saveEvents } = await save(targetCombatant, effect.saveType || "magic", dc, handlers.roll);
+          events.push(...saveEvents);
+          if (!saved) {
+            let statusEvents = await status(user, targetCombatant, effect.status.name, { ...effect.status.effect }, effect.status.duration);
+            events.push(...statusEvents);
+            success = true;
+          }
         }
       } else {
-        throw new Error(`Debuff effect must have a status defined`);
+        throw new Error(`Debuff effect ${effect.status} must have a status defined`);
       }
     } else if (effect.type === "flee") {
       // roll save vs fear
