@@ -159,6 +159,12 @@ export default class CharacterRecord {
       }
     };
     // assign formation bonuses + racial traits
+    this.assignPartyPassives(party);
+    
+    return party;
+  }
+
+  static async assignPartyPassives(party: Combatant[]) {
     let traitHandler = TraitHandler.instance;
     await traitHandler.loadTraits();
     let partyPassives: Trait[] = traitHandler.partyTraits(party);
@@ -185,7 +191,6 @@ export default class CharacterRecord {
         }
       });
     });
-    return party;
   }
 
   static async levelUp(pc: Combatant, team: Team, roller: Roll, select: ChoiceSelector<any>): Promise<DungeonEvent[]> {

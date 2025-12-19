@@ -112,6 +112,8 @@
 ---
 - [ ] Smokescreen should hide the caster too! (Maybe we need a 'party' target?)
 - [ ] mapLookup (to reify more things at gen time)
+- [ ] Arbitrary scrolls/wands for every effect
+- [ ] Elemental template (iterate through each element for MM)
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing

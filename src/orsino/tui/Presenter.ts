@@ -343,6 +343,10 @@ export default class Presenter {
   static parties = (parties: { name: string; combatants: Combatant[] }[]) => {
     let partyDisplay = "";
     let lines = Math.max(...parties.map(p => p.combatants.length))
+    // sort combatants alphabetically within each party
+    parties.forEach(party => {
+      party.combatants.sort((a, b) => a.name.localeCompare(b.forename));
+    });
     for (let i = 0; i < lines; i++) {
       // names
       let lhs = parties[0] ? parties[0].combatants[i] : null;
@@ -370,7 +374,7 @@ export default class Presenter {
         .map(s => s.toLowerCase())
         .filter(s => !ignoreStatuses.includes(s.toLowerCase()));
       let rhsStatuses = rhs?.activeEffects?.map(e => e.duration ? `${e.name}(${e.duration})` : e.name)
-        .concat(rhs?.traits) || [];
+        .concat(rhs?.traits || []) || [];
       rhsStatuses = rhsStatuses
         .map(s => s.toLowerCase())
         .filter(s => !ignoreStatuses.includes(s));
@@ -432,10 +436,10 @@ export default class Presenter {
     let parts: string[] = [];
 
     // if all effect entries are saves or immunities, summarize differently
+    const allSameValue = Object.values(effect).every(value => value === Object.values(effect)[0]);
     const allSavesOrImmunities = Object.keys(effect).every(key => {
       return key.startsWith("saveVersus") || key.startsWith("immune");
     });
-    const allSameValue = Object.values(effect).every(value => value === Object.values(effect)[0]);
     if (allSavesOrImmunities && allSameValue) {
       let saves: string[] = [];
       let immunities: string[] = [];
@@ -454,6 +458,14 @@ export default class Presenter {
       if (immunities.length > 0) {
         parts.push(`Immunity to ${immunities.join(', ')}`);
       }
+      return parts.join('; ');
+    }
+
+    const allStatMods = ['str', 'dex', 'con', 'int', 'wis', 'cha'].every(stat => {
+      return effect[stat as keyof StatusModifications] !== undefined;
+    })
+    if (allStatMods && allSameValue) {
+      parts.push(this.increaseDecrease('all stats', effect.str as number));
       return parts.join('; ');
     }
 
@@ -593,8 +605,16 @@ export default class Presenter {
         case "onHeal":
         case "onLevelUp":
         case "onOffensiveCasting":
+        
         case "onEnemyCharge":
         case "onEnemyMelee":
+        case "onEnemyAttack":
+        case "onEnemyDamage":
+        case "onEnemyHeal":
+        case "onEnemySummon":
+        case "onEnemyCasting":
+        case "onEnemyOffensiveCasting":
+
         case "onMissReceived":
         case "onSaveVersusPoison":
         case "onSaveVersusDisease":
@@ -608,7 +628,7 @@ export default class Presenter {
         case "onSaveVersusBreath":
         case "onSaveVersusParalyze":
         case "onSaveVersusSleep":
-          parts.push(`${this.describeEffects(value, 'self')} ${Words.humanize(k).toLocaleLowerCase()}`);
+          parts.push(`${Words.humanize(k).toLocaleLowerCase()}, ${this.describeEffects(value, 'self')}`);
           break;
 
         case "summonAnimalBonus":
@@ -704,6 +724,12 @@ export default class Presenter {
         case "reflectSpellChance":
           parts.push(this.increaseDecrease('spell reflection chance', value * 100 + '%'));
           break;
+        
+        case "untargetable":
+          if (value) {
+            parts.push(`Untargetable`);
+          }
+          break;
 
         // TODO figure out where this comes from
         // case "by":
@@ -769,7 +795,7 @@ export default class Presenter {
       case "drain": description = (`Drain ${targetDescription} ${amount} HP`); break;
       case "buff":
         if (effect.status) {
-          description = (`Grant ${targetDescription} ${this.describeStatusWithName(effect.status)} ${this.describeDuration(effect.status.duration)}`);
+          description = (`Grant ${targetDescription} ${this.describeStatusWithName(effect.status)}`);
         } else {
           throw new Error(`Buff effect must have a status defined`);
         }
@@ -779,7 +805,7 @@ export default class Presenter {
           const verb = targetDescription.startsWith("all") || targetDescription.includes("enemies")
             ? "suffer"
             : "suffers";
-          description = (`${Words.capitalize(targetDescription)} ${verb} ${this.describeStatusWithName(effect.status)} ${this.describeDuration(effect.status.duration)}`);
+          description = (`${Words.capitalize(targetDescription)} ${verb} ${this.describeStatusWithName(effect.status)}`); // ${this.describeDuration(effect.status.duration)}`);
         } else {
           throw new Error(`Debuff effect must have a status defined`);
         }
@@ -787,7 +813,13 @@ export default class Presenter {
       case "summon":
         let options = "";
         if ((effect.options as any)?._class) {
-          options += `${Words.capitalize((effect.options as any)._class)} `;
+          options += ` of class ${Words.capitalize((effect.options as any)._class)} `;
+        } else if ((effect.options as any)?.level) {
+          options += ` level ${(effect.options as any).level} `;
+        } else if ((effect.options as any)?.monster_type) {
+          options += ` with type ${(effect.options as any).monster_type} `;
+        } else if ((effect.options as any)?.rank) {
+          options += ` at rank ${(effect.options as any).rank} `;
         }
         description = (`Summon ${options}${effect.creature || "creature"}`); break;
       case "removeStatus":

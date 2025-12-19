@@ -97,15 +97,15 @@ export default class Books {
       let spells = AbilityHandler.instance.allSpellNames(aspect, Infinity, false)
       spells.sort(
         (a, b) => {
-          const abilityA = AbilityHandler.instance.getAbility(a);
-          const abilityB = AbilityHandler.instance.getAbility(b);
-          if (abilityA && abilityB) {
-            let levelDiff = ((abilityA.level || 1) - (abilityB.level || 1));
-            if (levelDiff !== 0) {
-              return levelDiff;
-            }
-            return ((abilityA.school || abilityA.domain || "").localeCompare(abilityB.school || abilityB.domain || "")) || a.localeCompare(b);
-          }
+          // const abilityA = AbilityHandler.instance.getAbility(a);
+          // const abilityB = AbilityHandler.instance.getAbility(b);
+          // if (abilityA && abilityB) {
+          //   let levelDiff = ((abilityA.level || 1) - (abilityB.level || 1));
+          //   if (levelDiff !== 0) {
+          //     return levelDiff;
+          //   }
+          //   return ((abilityA.school || abilityA.domain || "").localeCompare(abilityB.school || abilityB.domain || "")) || a.localeCompare(b);
+          // }
           return a.localeCompare(b);
         }
       )

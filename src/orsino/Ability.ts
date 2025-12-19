@@ -155,8 +155,8 @@ export default class AbilityHandler {
 
   allSpellNames(aspect: string, maxLevel = Infinity, excludeEvilSpells = true): string[] {
     return Object.entries(this.abilities)
-          .filter(([_key, ab]) => ab.aspect === aspect && ab.type === 'spell' && (ab.level ?? 0) <= maxLevel && (!excludeEvilSpells || ab.alignment !== 'evil'))
-          .map(([key, _ab]) => key);
+      .filter(([_key, ab]) => ab.aspect === aspect && ab.type === 'spell' && (ab.level ?? 0) <= maxLevel && (!excludeEvilSpells || ab.alignment !== 'evil'))
+      .map(([key, _ab]) => key);
   }
 
   allSkillNames(): string[] {
@@ -167,43 +167,43 @@ export default class AbilityHandler {
 
   static resolveTarget(targetName: string, user: Combatant, allies: Combatant[], enemies: Combatant[]): (Combatant | Combatant[]) {
     let targets: (Combatant | Combatant[]) = [];
-      switch (targetName) {
-        case "self":
-          // if (healing) {
-          //   if (user.hp < user.maxHp) {
-          //     targets.push(user);
-          //   }
-          // } else {
-            targets.push(user);
-          // }
-          break;
-        case "ally":
-          // if (healing) {
-          //   targets.push(...Combat.wounded(allies));
-          // } else {
-            targets.push(...Combat.living(allies));
-          // }
-          break;
-        case "deadAlly": targets.push(...(allies.filter(a => a.hp <= 0))); break;
-        case "enemy": targets.push(...(enemies)); break;
-        case "allies":
-          // if (healing) {
-          //   targets.push(Combat.wounded(allies));
-          // } else {
-            targets.push(...Combat.living(allies));
-          // }
-          break;
-        case "enemies": targets.push(...(enemies)); break;
-        case "all": targets.push(...([user, ...allies, ...enemies])); break;
+    switch (targetName) {
+      case "self":
+        // if (healing) {
+        //   if (user.hp < user.maxHp) {
+        //     targets.push(user);
+        //   }
+        // } else {
+        targets.push(user);
+        // }
+        break;
+      case "ally":
+        // if (healing) {
+        //   targets.push(...Combat.wounded(allies));
+        // } else {
+        targets.push(...Combat.living(allies));
+        // }
+        break;
+      case "deadAlly": targets.push(...(allies.filter(a => a.hp <= 0))); break;
+      case "enemy": targets.push(...(enemies)); break;
+      case "allies":
+        // if (healing) {
+        //   targets.push(Combat.wounded(allies));
+        // } else {
+        targets.push(...Combat.living(allies));
+        // }
+        break;
+      case "enemies": targets.push(...(enemies)); break;
+      case "all": targets.push(...([user, ...allies, ...enemies])); break;
 
-        // we need to special case randomEnemies since we need to select them ourselves
-        case "randomEnemies": break;
+      // we need to special case randomEnemies since we need to select them ourselves
+      case "randomEnemies": break;
 
-        // default:
-        // throw new Error(`Unknown target type: ${t}`);
-      }
-    return targets;
+      // default:
+      // throw new Error(`Unknown target type: ${t}`);
     }
+    return targets;
+  }
 
   static validTargets(ability: Ability, user: Combatant, allies: Combatant[], enemies: Combatant[]): (Combatant | Combatant[])[] {
     let healing = ability.effects.every(fx => fx.type === "heal") && ability.effects.length > 0;
@@ -306,20 +306,37 @@ export default class AbilityHandler {
 
     // does the target meet all conditions?
     if (effect.condition) {
-      if (effect.condition.trait && !(targetCombatant.traits||[]).includes(effect.condition.trait)) {
+      if (effect.condition.trait && !(targetCombatant.traits || []).includes(effect.condition.trait)) {
         console.warn(`${targetCombatant.name} does not have required trait ${effect.condition.trait} for effect ${effect.type} of ability ${name}, skipping effect.`);
         return { success, events };
       }
     }
 
-    // check if _any_ ally of the target has a reaction effect for this ability
-    for (const targetAlly of context.enemies) {
+    // check if _any_ ally of the target has a reaction effect for this ability or effect type
+    const enemies = context?.enemies ?? [];
+    for (const targetAlly of enemies) {
       if (targetAlly.hp <= 0) { continue; }
       let reactionEffectName = `onEnemy${Words.capitalize(name.replace(/\s+/g, ""))}` as keyof StatusModifications;
       let allyFx = await Fighting.gatherEffects(targetAlly);
       if (allyFx[reactionEffectName]) {
         events.push({ type: "reaction", subject: targetAlly, target: user, reactionName: `to ${name}` } as Omit<ReactionEvent, "turn">);
         let reactionEffects = allyFx[reactionEffectName] as Array<AbilityEffect>;
+        for (const reactionEffect of reactionEffects) {
+          let { success, events: reactionEvents } = await this.handleEffect(
+            (reactionEffect.status?.name || name) + " Reaction",
+            reactionEffect, targetAlly, user, context, handlers
+          );
+          events.push(...reactionEvents);
+          if (!success) {
+            break;
+          }
+        }
+      }
+
+      let typeReactionEffectName = `onEnemy${Words.capitalize(effect.type)}` as keyof StatusModifications;
+      if (allyFx[typeReactionEffectName]) {
+        events.push({ type: "reaction", subject: targetAlly, target: user, reactionName: `to ${effect.type}` } as Omit<ReactionEvent, "turn">);
+        let reactionEffects = allyFx[typeReactionEffectName] as Array<AbilityEffect>;
         for (const reactionEffect of reactionEffects) {
           let { success, events: reactionEvents } = await this.handleEffect(
             (reactionEffect.status?.name || name) + " Reaction",
@@ -392,7 +409,7 @@ export default class AbilityHandler {
       success = true;
     } else if (effect.type === "heal") {
       let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
-      let healEvents = await heal(user, targetCombatant, amount);
+      let healEvents = await heal(user, targetCombatant, amount, context);
       events.push(...healEvents);
       success = true;
     } else if (effect.type === "drain") {
@@ -404,7 +421,7 @@ export default class AbilityHandler {
           amount = 0;
         }
       }
-      let healEvents = await heal(user, user, amount);
+      let healEvents = await heal(user, user, amount, context);
       let hitEvents = await hit(user, targetCombatant, amount, false, name, true, effect.kind || "true",
         effect.cascade || null,
         context, handlers.roll);
@@ -421,9 +438,9 @@ export default class AbilityHandler {
       }
     } else if (effect.type === "debuff") {
       // same as buff with a save
-      if (effect.status) { 
+      if (effect.status) {
         if (!targetCombatant._savedVersusSpell) {
-          let dc = (effect.saveDC || 15) + (userFx.bonusSpellDC as number || 0) + (user.level || 0);
+          let dc = (effect.saveDC || 15) + (userFx.bonusSpellDC as number || 0) + (user.level || 0); // note: we don't subtract (targetCombatant.level || 0) here
           let { success: saved, events: saveEvents } = await save(targetCombatant, effect.saveType || "magic", dc, handlers.roll);
           events.push(...saveEvents);
           if (!saved) {
@@ -454,13 +471,13 @@ export default class AbilityHandler {
         console.log(`${targetCombatant.name} wanted to flee but resisted!`);
       }
       // }
-    // } else if (effect.type === "removeItem") {
-    //   if (!effect.item) {
-    //     throw new Error(`removeItem effect must specify an item`);
-    //   }
-    //   let itemEvents = await removeItem(targetCombatant, effect.item as keyof Team);
-    //   events.push(...itemEvents);
-    //   success = true;
+      // } else if (effect.type === "removeItem") {
+      //   if (!effect.item) {
+      //     throw new Error(`removeItem effect must specify an item`);
+      //   }
+      //   let itemEvents = await removeItem(targetCombatant, effect.item as keyof Team);
+      //   events.push(...itemEvents);
+      //   success = true;
     } else if (effect.type === "removeStatus") {
       if (!effect.statusName) {
         throw new Error(`removeStatus effect must specify a statusName`);
@@ -583,12 +600,31 @@ export default class AbilityHandler {
       targets = [target];
     }
 
+    // filter 'untargetable' targets
+    let untargetable = [];
+    for (const t of targets) {
+      let tFx = await Fighting.gatherEffects(t);
+      let effectiveTarget = await Fighting.effectiveStats(t);
+      if (tFx.untargetable) {
+        // give a save chance to avoid
+        let dc = Math.max(8, Math.min(25, 15 + (Fighting.statMod(effectiveTarget.wis))));
+        let { success: canTarget, events: saveEvents } = await handlers.save(user, "magic", dc, handlers.roll);
+        events.push(...saveEvents);
+        if (canTarget) {
+          continue;
+        }
+        untargetable.push(t);
+        events.push({ type: "untargetable", subject: t, target: user, abilityName: ability.name } as Omit<GameEvent, "turn">);
+      }
+    }
+    targets = targets.filter(t => !untargetable.includes(t));
+
     let savedTargets: Combatant[] = [];
     if (isSpell && isOffensive) {
       let hasSaveFlags = ability.effects.some(e => e.saveForHalf || e.saveNegates);
       if (hasSaveFlags) {
         let userFx = await Fighting.gatherEffects(user);
-        let spellDC = 15 + user.level + (userFx.bonusSpellDC as number || 0);
+        let spellDC = 15 + (userFx.bonusSpellDC as number || 0);
         targets.forEach(t => { t._savedVersusSpell = false; });
         // give a save vs magic chance to avoid
         for (const t of targets) {
@@ -623,6 +659,8 @@ export default class AbilityHandler {
       targets = targets.filter(t => !turnedTargets.includes(t));
     }
 
+
+
     // console.log(`${user.name} is performing ${ability.name} on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target?.name}...`);
     for (const effect of ability.effects) {
       // console.log("performing effect of type", effect.type, "...");
@@ -638,24 +676,100 @@ export default class AbilityHandler {
       // console.log(`${user.name} successfully uses ${ability.name} on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target.name}!`);
       if (isSpell) {
         if (isOffensive) {
-          // trigger spell attack fx
-          let userFx = await Fighting.gatherEffects(user);
-          if (userFx.onOffensiveCasting) {
-            // console.log(`Triggering onOffensiveCasting effects for ${ability.name}...`);
-            for (const spellFx of userFx.onOffensiveCasting as Array<AbilityEffect>) {
-              let fxTarget: Combatant | Combatant[] = target;
-              if (spellFx.target && spellFx.target !== "target") {
-                // TODO should use a simpler 'resolveTarget' kind of model here maybe?
-                fxTarget = this.validTargets({ target: [spellFx.target] } as unknown as Ability, user, [], Array.isArray(target) ? target : [target])[0];
-              }
-              let { events: postCastEvents } = await this.handleEffect(ability.name, spellFx, user, fxTarget, context, handlers);
-              events.push(...postCastEvents);
-            }
-          }
+          events.push(...await this.performHooks(
+            `onOffensiveCasting` as keyof StatusModifications,
+            user,
+            context,
+            handlers,
+            ability.name
+          ));
+          // do enemies have onEnemyOffensiveSpell reactions?
+          const enemies = context?.enemies ?? [];
+          events.push(...await this.performReactions(
+            `onEnemyOffensiveCasting` as keyof StatusModifications,
+            enemies,
+            user,
+            context,
+            handlers,
+            ability.name
+          ));
         }
+
+        // do any enemies have `onEnemySpell` reactions?
+        const enemies = context?.enemies ?? [];
+
+        events.push(...await this.performReactions(
+          `onEnemyCasting` as keyof StatusModifications,
+          enemies,
+          user,
+          context,
+          handlers,
+          ability.name
+        ));
       }
     }
 
     return { success: result, events };
   }
+
+  static async performHooks(
+    hookKey: keyof StatusModifications,
+    user: Combatant,
+    context: CombatContext,
+    handlers: CommandHandlers,
+    label: string
+  ): Promise<Omit<GameEvent, "turn">[]> {
+    let events: Omit<GameEvent, "turn">[] = [];
+
+    let hookFx = await Fighting.gatherEffects(user);
+    if (hookFx[hookKey]) {
+      let hookEffects = hookFx[hookKey] as Array<AbilityEffect>;
+      for (const hookEffect of hookEffects) {
+        let { success, events: hookEvents } = await this.handleEffect(
+          (hookEffect.status?.name || label) + " Hook",
+          hookEffect, user, user, context, handlers
+        );
+        events.push(...hookEvents);
+        if (!success) {
+          break;
+        }
+      }
+    }
+
+    return events;
+  }
+
+  static async performReactions(
+    reactionKey: keyof StatusModifications,
+    reactors: Combatant[],
+    user: Combatant,
+    context: CombatContext,
+    handlers: CommandHandlers,
+    label: string
+  ): Promise<Omit<GameEvent, "turn">[]> {
+    let events: Omit<GameEvent, "turn">[] = [];
+
+    for (const reactor of reactors) {
+      if (reactor.hp <= 0) { continue; }
+      let reactionFx = await Fighting.gatherEffects(reactor);
+      if (reactionFx[reactionKey]) {
+        events.push({ type: "reaction", subject: reactor, target: user, reactionName: `to ${label}` } as Omit<ReactionEvent, "turn">);
+        let reactionEffects = reactionFx[reactionKey] as Array<AbilityEffect>;
+        for (const reactionEffect of reactionEffects) {
+          let { success, events: reactionEvents } = await this.handleEffect(
+            (reactionEffect.status?.name || label) + " Reaction",
+            reactionEffect, reactor, user, context, handlers
+          );
+          events.push(...reactionEvents);
+          if (!success) {
+            break;
+          }
+        }
+      }
+    }
+
+    return events;
+  }
+
+
 }

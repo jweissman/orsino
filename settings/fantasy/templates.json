@@ -21,6 +21,13 @@
     "adjective": "=oneOf(peaceful, bustling, prosperous, decaying, ancient, vibrant, sleepy, lively, fair, grim, quaint, thriving, quiet, rustic, quaint, noble, humble, proud)"
   },
   "pc": {
+    "_zodiac_animal": "=oneOf(rat, ox, tiger, rabbit, dragon, snake, horse, goat, monkey, rooster, dog, pig)",
+    "_annual_element": "=oneOf(wood, fire, earth, metal, water)",
+    "_season_of_birth": "=oneOf(spring, summer, autumn, winter)",
+    "sign": "=#_annual_element + ' ' + #_zodiac_animal",
+    "auspicious": "=#_zodiac_animal == 'dragon' || #_zodiac_animal == 'rabbit' || #_season_of_birth == 'spring' || #_season_of_birth == 'autumn'",
+
+    "skin": "=oneOf(pale, fair, tan, olive, brown, dark, ebony, ruddy, sallow)",
     "hair": "=oneOf(black, brown, blonde, red, gray, white, no, sandy, auburn, chestnut, silver, golden)",
     "eye_color": "=oneOf(brown, blue, green, gray, hazel, amber, violet, olive, gold)",
     "alignment": "=oneOf(good, neutral)",
@@ -111,7 +118,8 @@
     "gp": 0,
     "*terrainModifier": "=lookup(terrainModifier, #terrain)",
     "*aspectModifier": "=lookup(creatureAspects, #animal_aspect)",
-    "hp": "=#maxHp"
+    "hp": "=#maxHp",
+    "traits": []
   },
   "monster": {
     "_targetCr": 1,

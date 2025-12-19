@@ -577,24 +577,7 @@
       }
     ]
   },
-  "cure": {
-    "name": "Cure Major Wounds",
-    "type": "spell",
-    "level": 2,
-    "aspect": "divine",
-    "domain": "life",
-    "description": "Bind serious injuries.",
-    "target": [
-      "self",
-      "ally"
-    ],
-    "effects": [
-      {
-        "type": "heal",
-        "amount": "=1d8"
-      }
-    ]
-  },
+  
   "missile": {
     "name": "Magic Missile",
     "type": "spell",
@@ -909,115 +892,7 @@
       }
     ]
   },
-  "bless": {
-    "name": "Bless",
-    "level": 1,
-    "type": "spell",
-    "aspect": "divine",
-    "domain": "life",
-    "description": "Divine favor!",
-    "target": [
-      "self",
-      "ally"
-    ],
-    "effects": [
-      {
-        "type": "buff",
-        "status": {
-          "name": "Blessed",
-          "duration": 6,
-          "effect": {
-            "allRolls": 1
-          }
-        }
-      }
-    ]
-  },
-  "smite": {
-    "name": "Smite Evil",
-    "level": 1,
-    "type": "spell",
-    "aspect": "divine",
-    "domain": "war",
-    "description": "Smite an enemy.",
-    "target": [
-      "enemy"
-    ],
-    "effects": [
-      {
-        "type": "damage",
-        "amount": "=#level + 1d8",
-        "kind": "radiant"
-      }
-    ]
-  },
-  "command": {
-    "name": "Command",
-    "level": 1,
-    "type": "spell",
-    "aspect": "divine",
-    "domain": "law",
-    "description": "Give an instruction.",
-    "target": [
-      "enemy"
-    ],
-    "effects": [
-      {
-        "type": "flee",
-        "succeedDC": 20,
-        "succeedType": "will"
-      }
-    ]
-  },
-  "hold_person": {
-    "name": "Hold Person",
-    "level": 2,
-    "type": "spell",
-    "aspect": "divine",
-    "domain": "law",
-    "description": "Paralyze an enemy for 4 rounds.",
-    "target": [
-      "enemy"
-    ],
-    "effects": [
-      {
-        "type": "debuff",
-        "condition": {
-          "trait": "humanoid"
-        },
-        "status": {
-          "name": "Paralyzed",
-          "duration": 4,
-          "effect": {
-            "noActions": true
-          }
-        },
-        "saveType": "paralyze",
-        "saveDC": 20
-      }
-    ]
-  },
-  "turn_undead": {
-    "name": "Turn Undead",
-    "level": 3,
-    "type": "spell",
-    "aspect": "divine",
-    "domain": "light",
-    "description": "The dead recoil from your holy presence.",
-    "target": [
-      "enemies"
-    ],
-    "effects": [
-      {
-        "type": "flee",
-        "succeedDC": 25,
-        "succeedType": "will",
-        "condition": {
-          "trait": "undead"
-        }
-      }
-    ]
-  },
+  
   "vicious_mockery": {
     "name": "Vicious Mockery",
     "type": "spell",
@@ -2366,7 +2241,7 @@
       {
         "type": "buff",
         "status": {
-          "name": "Chanting",
+          "name": "Summoning",
           "duration": 3,
           "effect": {
             "onExpire": [
@@ -2707,6 +2582,30 @@
       }
     ]
   },
+
+  "chant": {
+    "name": "Chant",
+    "type": "skill",
+    "aspect": "divine",
+    "domain": "light",
+    "level": 1,
+    "description": "Bolster yourself with a holy chant.",
+    "target": [ "self" ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Chanting",
+          "duration": 5,
+          "effect": {
+            "allSaves": 1,
+            "toHit": 1
+          }
+        }
+      }
+    ]
+  },
+
   "meditate": {
     "name": "Meditate",
     "type": "skill",
@@ -2729,6 +2628,321 @@
               }
             ],
             "noActions": true
+          }
+        }
+      }
+    ]
+  },
+
+  "bless": {
+    "name": "Bless",
+    "level": 1,
+    "type": "spell",
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Divine favor!",
+    "target": [
+      "self",
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Blessed",
+          "duration": 6,
+          "effect": {
+            "toHit": 1,
+            "bonusDamage": 1
+          }
+        }
+      }
+    ]
+  },
+  "prayer": {
+    "name": "Prayer",
+    "level": 2,
+    "type": "spell",
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Bolster allies and weaken enemies.",
+    "target": [ "allies" ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Prayer",
+          "duration": 5,
+          "effect": {
+            "toHit": 1,
+            "allSaves": 1
+          }
+        }
+      }
+    ]
+  },
+  "smite": {
+    "name": "Smite Evil",
+    "level": 1,
+    "type": "spell",
+    "aspect": "divine",
+    "domain": "war",
+    "description": "Smite an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=#level + 1d8",
+        "kind": "radiant"
+      }
+    ]
+  },
+  "command": {
+    "name": "Command",
+    "level": 1,
+    "type": "spell",
+    "aspect": "divine",
+    "domain": "law",
+    "description": "Give an instruction.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "flee",
+        "succeedDC": 20,
+        "succeedType": "will"
+      }
+    ]
+  },
+  "hold_person": {
+    "name": "Hold Person",
+    "level": 2,
+    "type": "spell",
+    "aspect": "divine",
+    "domain": "law",
+    "description": "Paralyze an enemy for 4 rounds.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "condition": {
+          "trait": "humanoid"
+        },
+        "status": {
+          "name": "Paralyzed",
+          "duration": 4,
+          "effect": {
+            "noActions": true
+          }
+        },
+        "saveType": "paralyze",
+        "saveDC": 20
+      }
+    ]
+  },
+  "turn_undead": {
+    "name": "Turn Undead",
+    "level": 3,
+    "type": "spell",
+    "aspect": "divine",
+    "domain": "light",
+    "description": "The dead recoil from your holy presence.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "flee",
+        "succeedDC": 25,
+        "succeedType": "will",
+        "condition": {
+          "trait": "undead"
+        }
+      }
+    ]
+  },
+  "cure": {
+    "name": "Cure Light Wounds",
+    "type": "spell",
+    "level": 1,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Bind moderate injuries.",
+    "target": [ "self", "ally" ],
+    "effects": [
+      {
+        "type": "heal",
+        "amount": "=1d8"
+      }
+    ]
+  },
+
+  "cure_moderate": {
+    "name": "Cure Moderate Wounds",
+    "type": "spell",
+    "level": 3,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Bind moderate injuries.",
+    "target": [ "self", "ally" ],
+    "effects": [
+      {
+        "type": "heal",
+        "amount": "=2d8"
+      }
+    ]
+  },
+
+  "cure_serious": {
+    "name": "Cure Serious Wounds",
+    "type": "spell",
+    "level": 4,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Bind serious injuries.",
+    "target": [ "self", "ally" ],
+    "effects": [
+      {
+        "type": "heal",
+        "amount": "=3d8"
+      }
+    ]
+  },
+
+  "cure_critical": {
+    "name": "Cure Critical Wounds",
+    "type": "spell",
+    "level": 5,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Bind critical injuries.",
+    "target": [ "self", "ally" ],
+    "effects": [
+      {
+        "type": "heal",
+        "amount": "=4d8"
+      }
+    ]
+  },
+
+  "remove_fear": {
+    "name": "Remove Fear",
+    "type": "spell",
+    "level": 1,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Calm a frightened ally.",
+    "target": [ "ally" ],
+    "effects": [
+      {
+        "type": "removeStatus",
+        "statusName": "Frightened"
+      }
+    ]
+  },
+
+  "resist_fire": {
+    "name": "Resist Fire",
+    "type": "spell",
+    "level": 2,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Grant an ally resistance to fire damage for 5 rounds.",
+    "target": [ "ally" ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Fire Resistance",
+          "duration": 5,
+          "effect": {
+            "resistFire": 0.5
+          }
+        }
+      }
+    ]
+  },
+
+  "cure_disease": {
+    "name": "Cure Disease",
+    "type": "spell",
+    "level": 3,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Cure an ally of disease.",
+    "target": [ "ally" ],
+    "effects": [
+      {
+        "type": "removeStatus",
+        "statusName": "Diseased"
+      }
+    ]
+  },
+
+  "aegis": {
+    "name": "Aegis of Faith",
+    "type": "spell",
+    "level": 1,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Ward against all effects for 4 rounds.",
+    "target": [ "self" ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Aegis",
+          "duration": 4,
+          "effect": {
+            "untargetable": true
+          }
+        }
+      }
+    ]
+  },
+
+  "consecrated_ground": {
+    "name": "Consecrated Ground",
+    "type": "spell",
+    "level": 1,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Consecrate the ground, damaging enemies who attack or cast spells near you.",
+    "target": [ "self" ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Consecrated",
+          "duration": 5,
+          "effect": {
+            "onEnemyOffensiveCasting": [
+              {
+                "type": "removeStatus",
+                "statusName": "Consecrated"
+              },
+              {
+                "type": "damage",
+                "amount": "=2d6",
+                "kind": "radiant"
+              }
+            ],
+            "onEnemyAttack": [
+              {
+                "type": "removeStatus",
+                "statusName": "Consecrated"
+              },
+              {
+                "type": "damage",
+                "amount": "=2d6",
+                "kind": "radiant"
+              }
+            ]
           }
         }
       }

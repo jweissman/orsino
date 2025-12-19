@@ -89,7 +89,12 @@ export default class Orsino {
       await Generator.gen("pc", { setting: 'fantasy', class: 'warrior', playerControlled: true }) as Combatant,
       await Generator.gen("pc", { setting: 'fantasy', class: 'thief', playerControlled: true }) as Combatant,
       await Generator.gen("pc", { setting: 'fantasy', class: 'mage', playerControlled: true }) as Combatant,
+      await Generator.gen("pc", { setting: 'fantasy', class: 'cleric', playerControlled: true }) as Combatant,
+      await Generator.gen("pc", { setting: 'fantasy', class: 'ranger', playerControlled: true }) as Combatant,
+      await Generator.gen("pc", { setting: 'fantasy', class: 'bard', playerControlled: true }) as Combatant,
     ].map(pc => ({ ...pc, playerControlled: true }))
+    await CharacterRecord.assignPartyPassives(pcs);
+
     while (true) {
       let averagePartyLevel = Math.round(pcs.reduce((sum, pc) => sum + pc.level, 0) / pcs.length);
       try {
