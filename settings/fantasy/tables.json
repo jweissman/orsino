@@ -313,7 +313,11 @@
   "npcTypesForDungeon": {
     "discriminator": "dungeonType",
     "groups": {
-      "temple": [[ "Acolyte", "Adept", "Cleric", "Cultist", "Sage", "Elder", "Guardian", "Death Priest"  ]],
+      "temple": [[
+        "Priest", "Herald", "Devotee", "Mendicant", "Benefactor", "Preacher",
+        "Acolyte", "Adept", "Cleric", "Cultist", "Sage", "Elder", "Guardian",
+        "High Priest", "Primate", "Death Priest", "Hierophant"
+      ]],
       "mine": [[ "Miner", "Dweller", "Brute", "Thug", "Lurker" ]],
       "fortress": [[ "Soldier", "Mercenary", "Warrior", "Chieftain" ]],
       "tomb": [[ "Novice", "Acolyte", "Gravedigger", "Cultist", "Bandit", "Tombrobber", "Wizard" ]],
@@ -344,21 +348,27 @@
       "Wizard":      { "str": -1, "dex": -1, "int": 3, "con": 1, "abilities": [ "missile", "shocking_grasp", "sleep", "lightning_strike", "slow", "armor", "acid_arrow" ] },
       "Poxmonger":   { "str": -2, "dex": -2, "con": -1, "int": 2, "wis": 1, "cha": 2, "abilities": [ "terror", "poison_cloud", "inflict_disease", "deathtouch" ] },
 
-      "Adept":       { "str": 1,  "con": 2, "wis": 3, "int": 2, "abilities": [ "heal", "rally", "bless", "shocking_grasp", "paralyzing_touch", "raise_dead" ], "traits": ["piety"] },
-      "Acolyte":      { "str": 0,  "con": 1, "wis": 2, "int": 1, "abilities": [ "heal", "rally", "bless", "paralyzing_touch" ], "traits": ["piety"] },
-      "Cultist":      { "str": 1,  "con": 2, "int": 2, "abilities": [ "heal", "curse", "terror", "paralyzing_touch", "silence", "animate_dead" ], "traits": ["piety", "radiant"] },
-      "Cleric":       { "wis": 3, "con": 2, "abilities": [ "smite", "cure", "bless" ] },
-      "Sage":         { "int": 4, "abilities": [ "heal", "curse", "terror" ] },
-      "Guardian":     { "con": 4, "abilities": [ "second_wind", "taunt", "shield", "prepare_charge", "charge" ] },
-      "Elder":        { "int": 6, "con": 4, "abilities": [ "heal", "curse", "terror", "life_drain", "silence" ] },
-      "Death Priest": { "str": 6, "con": 4, "int": 4, "dex": 2, "wis": 6, "abilities": [ "heal", "curse", "terror", "life_drain", "burning_hands" ], "traits": ["fiendish", "piety"] },
-      "High Priest":  { "str": -2, "con": 4, "int": 6, "dex": 2, "wis": 8, "cha": 8, "abilities": [ "smite", "bless", "curse", "inspire", "heal" ] },
-
+      "Mendicant":    { "str": -2, "dex": -2, "con": -2, "int": 1, "wis": 2, "cha": 2, "abilities": [
+        "cure", "bless", "meditate", "chant"
+      ] },
       "Herald":       { "str": -1, "dex": -1, "int": 1, "wis": -1, "cha": 2, "abilities": ["inspire"] },
       "Benefactor":   { "str": -1, "dex": -1, "int": 2, "wis": -1, "cha": 2, "abilities": ["cure"] },
+      "Devotee":      { "str": -1, "dex": -1, "int": 1, "wis": 2, "cha": 1, "abilities": ["cure"] },
+      "Preacher":     { "str": -1, "dex": -1, "int": 2, "wis": 2, "cha": 2, "abilities": ["rally", "inspire", "bless", "remove_fear"] },
+      "Adept":       { "str": 1,  "con": 2, "wis": 3, "int": 2, "abilities": [ "cure_moderate", "bless", "shocking_grasp", "paralyzing_touch", "raise_dead", "resist_fire" ], "traits": ["piety"] },
+      "Acolyte":      { "str": 0,  "con": 1, "wis": 2, "int": 1, "abilities": [ "heal", "bless", "paralyzing_touch" ], "traits": ["piety"] },
+      "Cultist":      { "str": 1,  "con": 2, "int": 2, "abilities": [ "heal", "curse", "terror", "paralyzing_touch", "silence", "animate_dead" ], "traits": ["piety", "radiant"] },
+      "Cleric":       { "wis": 3, "con": 2, "abilities": [ "smite", "cure", "bless", "resist_fire", "hold_person" ] },
+      "Sage":         { "int": 4, "abilities": [ "curse", "terror", "blade_barrier", "command" ] },
+      "Guardian":     { "con": 4, "abilities": [ "second_wind", "taunt", "shield", "prepare_charge", "charge", "remove_fear", "cure_disease", "chant" ] },
+      "Elder":        { "int": 6, "con": 4, "abilities": [ "cure", "curse", "terror", "life_drain", "silence", "judgment", "command", "blade_barrier" ] },
+      "Priest":        { "str": -1, "con": 1, "int": 2, "wis": 3, "cha": 2, "abilities": [ "cure_moderate", "bless", "paralyzing_touch", "holy", "judgment", "curse", "chant", "prayer" ], "traits": ["piety"] },
+      "Death Priest": { "str": 3, "con": 4, "int": 4, "dex": 2, "wis": 6, "abilities": [ "cure_moderate", "curse", "terror", "life_drain", "burning_hands", "chant" ], "traits": ["fiendish", "piety"] },
+      "High Priest":  { "str": -2, "con": 4, "int": 6, "dex": 2, "wis": 8, "cha": 8, "abilities": [ "smite", "bless", "curse", "inspire", "cure_serious", "holy", "prayer" ] },
+      "Primate":      { "str": 4, "con": 4, "int": 6, "dex": 2, "wis": 8, "cha": 6, "abilities": [ "smite", "bless", "curse", "inspire", "cure_serious", "judgment", "holy", "mass_curse", "prayer" ] },
+      "Hierophant":   { "str": 2, "con": 4, "int": 3, "dex": 2, "wis": 5, "cha": 5, "abilities": [ "prepare_charge", "charge", "sleep", "curse", "fear", "life_drain", "poison_cloud", "resist_fire", "cure_serious", "blade_barrier" ] },
+
       "Apprentice":   { "str": -1, "dex": -1, "int": 2, "wis": 1, "cha": -1, "abilities": [ "missile" ] },
-      "Devotee":      { "str": -1, "dex": -1, "int": 1, "wis": 2, "cha": 1, "abilities": ["heal"] },
-      "Mendicant":    { "str": -2, "dex": -2, "con": -2, "int": 1, "wis": 2, "cha": 2, "abilities": [] },
       "Whelp":        { "str": -1, "dex": -1, "abilities": [] },
       "Runt":         { "str": -2, "abilities": ["hide"] },
       "Creep":        { "str": -1, "dex": 1, "abilities": ["hide"] },
@@ -398,7 +408,6 @@
       "Chieftain":    { "str": 4, "con": 3, "abilities": [ "enrage", "prepare_charge", "charge" ] },
       "Assassin":     { "dex": 4, "str": 2, "int": 1, "abilities": [ "hide", "backstab", "poison_weapon", "prepare_charge", "charge" ] },
       "Shaman King":  { "str": 4, "con": 4, "int": 6, "dex": 2, "wis": 6, "abilities": [ "heal", "curse", "terror" ] },
-      "Hierophant":   { "int": 6, "con": 4, "dex": 2, "str": 2, "abilities": [ "prepare_charge", "charge", "sleep", "curse", "fear", "life_drain", "poison_cloud" ] },
       "General":      { "str": 6, "con": 4, "int": 2, "dex": 2, "abilities": [ "enrage", "prepare_charge", "charge", "inspire", "second_wind" ] },
       "Warlord":      { "str": 7, "con": 6, "int": 5, "wis": 4, "dex": 3, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ] },
       "Chosen One":   { "str": 5, "con": 5, "int": 5, "dex": 5, "wis": 5, "abilities": [ "enrage", "heal", "inspire", "curse", "fear", "inspire", "charm", "prepare_charge", "charge" ] },
@@ -598,8 +607,15 @@
           "altar",
           "altar",
           "shrine",
+          "fane",
+          "study",
+          "treasury",
           "sanctum",
-          "reliquary"
+          "reliquary",
+          "crypt",
+          "garden",
+          "cloister",
+          "narthex"
         ]
       ],
       "fortress": [
@@ -610,6 +626,7 @@
           "guardroom",
           "watchtower",
           "cell",
+          "praetorium",
           "hall"
         ]
       ],
@@ -703,6 +720,15 @@
         "_companionCount": 0,
         "_treasureItems": ["scroll_of_fireball", "wand_of_magic_missiles"],
         "bonusGold": "10 + 5d50"
+      },
+
+      "narthex": {
+        "_otherCombatEntityTypes": ["antimagic_ward"],
+        "_npcCount": 3,
+        "_npc_types": ["Priest", "Herald", "Preacher"],
+        "_companionCount": 0,
+        "_treasureItems": ["holy symbol", "blessed water"],
+        "bonusGold": "1d20"
       }
     }
   },
@@ -715,12 +741,29 @@
       "mortuary_garden": ["calm"],
       "ossuary": ["toxic"],
       "catacombs": ["claustrophobic"],
-      "reliquary": ["energizing"]
+      "reliquary": ["energizing"],
+
+      "narthex": ["calm"],
+      "garden": ["energizing"],
+      "cloister": ["healing"],
+      "alcove": ["claustrophobic"]
     }
   },
   "roomAuras": {
     "discriminator": "aura_type",
     "groups": {
+      "consecrated": {
+        "name": "Purified",
+        "description": "A holy energy fills the area",
+        "effect": { "toHit": 1, "resistPoison": 0.2, "resistFire": 0.2 },
+        "aura": true
+      },
+      "healing": {
+        "name": "Restorative",
+        "description": "A soothing energy permeates the area",
+        "effect": { "bonusHealing": 1 },
+        "aura": true
+      },
       "calm": {
         "name": "Serene",
         "description": "Your mind is strangely at peace in this area",
@@ -788,6 +831,18 @@
       ],
       "dark_altar": [
         "twisted altar room overflowing with an oppressive energy. The walls are adorned with sinister engravings of cruel rituals. An irredeemable malevolence pulsates from within."
+      ],
+      "garden": [
+        "serene garden, the air filled with the scent of blooming flowers. Sunlight filters through the leaves, casting dappled shadows on the ground."
+      ],
+      "cloister": [
+        "quiet cloister, the sound of rustling leaves and chirping birds filling the air. The walls are covered in ivy, and a sense of peace pervades the area."
+      ],
+      "narthex": [
+        "spacious narthex, the air filled with the scent of polished wood and stone. The walls are adorned with intricate carvings, and a sense of reverence hangs in the air."
+      ],
+      "praetorium": [
+        "grand praetorium, the air heavy with the scent of incense and polished stone. The walls are adorned with banners and tapestries, and a sense of authority fills the space."
       ],
       "crypt": [
         "cold crypt whose air is heavy and still. You can hear the faint sound of dripping water."

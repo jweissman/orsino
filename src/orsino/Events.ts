@@ -50,6 +50,7 @@ export type AllegianceChangeEvent = BaseEvent & { type: "allegianceChange"; stat
 export type ItemUsedEvent = BaseEvent & { type: "itemUsed"; itemName: string; chargesLeft?: number; countLeft?: number; };
 
 export type SpellTurnedEvent = BaseEvent & { type: "spellTurned"; spellName: string };
+export type UntargetableEvent = BaseEvent & { type: "untargetable"; abilityName: string };
 
 export type ResistantEvent = BaseEvent & { type: "resist"; damageKind: DamageKind; originalDamage: number; finalDamage: number; sources: string[] };
 export type VulnerableEvent = BaseEvent & { type: "vulnerable"; damageKind: DamageKind; originalDamage: number; finalDamage: number; sources: string[] };
@@ -72,6 +73,7 @@ export type CombatEvent =
   | CritEvent
   | WaitEvent
   | SpellTurnedEvent
+  | UntargetableEvent
   | NoActionsForCombatant
   | AllegianceChangeEvent
   | ItemUsedEvent
@@ -311,6 +313,9 @@ export default class Events {
 
       case "spellTurned":
         return `${subjectName} turns the spell ${event.spellName} cast by ${targetName}.`;
+
+      case "untargetable":
+        return `${subjectName} is untargetable by ${targetName}'s ${event.abilityName}.`;
 
       case "resist":
         return `${subjectName} resists, taking ${event.finalDamage} ${event.damageKind} damage (originally ${event.originalDamage}) due to ${event.sources.join(", ")}.`;

@@ -10,10 +10,7 @@ import AbilityHandler from "./orsino/Ability";
 import TraitHandler from "./orsino/Trait";
 import Combat from "./orsino/Combat";
 import { Team } from "./orsino/types/Team";
-import Deem from "./deem";
 import Presenter from "./orsino/tui/Presenter";
-import { Template } from "./orsino/Template";
-import Words from "./orsino/tui/Words";
 
 export type Prompt = (message: string) => Promise<string>;
 
@@ -92,7 +89,12 @@ export default class Orsino {
       await Generator.gen("pc", { setting: 'fantasy', class: 'warrior', playerControlled: true }) as Combatant,
       await Generator.gen("pc", { setting: 'fantasy', class: 'thief', playerControlled: true }) as Combatant,
       await Generator.gen("pc", { setting: 'fantasy', class: 'mage', playerControlled: true }) as Combatant,
+      await Generator.gen("pc", { setting: 'fantasy', class: 'cleric', playerControlled: true }) as Combatant,
+      await Generator.gen("pc", { setting: 'fantasy', class: 'ranger', playerControlled: true }) as Combatant,
+      await Generator.gen("pc", { setting: 'fantasy', class: 'bard', playerControlled: true }) as Combatant,
     ].map(pc => ({ ...pc, playerControlled: true }))
+    await CharacterRecord.assignPartyPassives(pcs);
+
     while (true) {
       let averagePartyLevel = Math.round(pcs.reduce((sum, pc) => sum + pc.level, 0) / pcs.length);
       try {
@@ -115,6 +117,7 @@ export default class Orsino {
 
       } catch (e) {
         console.error("Autoplay encountered an error:", e);
+        throw e;
       }
     }
   }

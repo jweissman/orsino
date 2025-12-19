@@ -94,20 +94,16 @@ export interface StatusModifications {
   onEnemyCharge?: AbilityEffect[];
   onEnemyMelee?: AbilityEffect[];
   // [key: `onEnemy${string}`]: AbilityEffect[] | undefined;
+  onEnemyAttack?: AbilityEffect[]; // enemy makes an attack
+  onEnemyDamage?: AbilityEffect[]; // enemy deals direct damage
+  onEnemyHeal?: AbilityEffect[];   // enemy heals
+  onEnemyBuff?: AbilityEffect[];   // enemy gains a status
+  onEnemyDebuff?: AbilityEffect[]; // enemy gains a negative status
+  onEnemySummon?: AbilityEffect[]; // enemy summons creature(s)
 
-  onResistPoison?: AbilityEffect[];
-  onResistDisease?: AbilityEffect[];
-  onResistDeath?: AbilityEffect[];
-  onResistMagic?: AbilityEffect[];
-  onResistInsanity?: AbilityEffect[];
-  onResistCharm?: AbilityEffect[];
-  onResistFear?: AbilityEffect[];
-  onResistStun?: AbilityEffect[];
-  onResistWill?: AbilityEffect[];
-  onResistBreath?: AbilityEffect[];
-  onResistParalyze?: AbilityEffect[];
-  onResistSleep?: AbilityEffect[];
-  // onResistAll?: AbilityEffect[];
+  onEnemyCasting?: AbilityEffect[];
+  onEnemyOffensiveCasting?: AbilityEffect[];
+
 
   onSaveVersusPoison?: AbilityEffect[];
   onSaveVersusDisease?: AbilityEffect[];
@@ -121,7 +117,6 @@ export interface StatusModifications {
   onSaveVersusBreath?: AbilityEffect[];
   onSaveVersusParalyze?: AbilityEffect[];
   onSaveVersusSleep?: AbilityEffect[];
-  // onSaveVersusAll?: AbilityEffect[];
 
   flee?: boolean;
 
@@ -140,6 +135,8 @@ export interface StatusModifications {
   damageReduction?: number;
   reflectDamagePercent?: number;
   reflectSpellChance?: number;
+
+  untargetable?: boolean;
 
   // noncombat
   examineBonus?: number;

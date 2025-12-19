@@ -21,7 +21,10 @@ export type CommandHandlers = {
     attacker: Combatant, defender: Combatant, damage: number, critical: boolean, by: string, success: boolean, damageKind: DamageKind,
       cascade: { count: number, damageRatio: number } | null,
     combatContext: CombatContext, roll: Roll) => Promise<TimelessEvent[]>;
-  heal: (healer: Combatant, target: Combatant, amount: number) => Promise<TimelessEvent[]>;
+  heal: (
+    healer: Combatant, target: Combatant, amount: number,
+    combatContext: CombatContext
+  ) => Promise<TimelessEvent[]>;
   status: (user: Combatant, target: Combatant, name: string, effect: { [key: string]: any }, duration?: number) => Promise<TimelessEvent[]>;
   removeStatus: (target: Combatant, name: string) => Promise<TimelessEvent[]>;
   // removeItem: (user: Combatant, item: keyof Team) => Promise<TimelessEvent[]>;
@@ -94,7 +97,9 @@ export class Commands {
     return { amount: result, description: rollDescription };
   }
 
-  static async handleHeal(healer: Combatant, target: Combatant, amount: number): Promise<TimelessEvent[]> {
+  static async handleHeal(
+    healer: Combatant, target: Combatant, amount: number, combatContext: CombatContext
+  ): Promise<TimelessEvent[]> {
     const effective = await Fighting.effectiveStats(healer);
     const wisBonus = Math.max(0, Fighting.statMod(effective.wis));
     if (wisBonus > 0) {
@@ -111,7 +116,23 @@ export class Commands {
     amount = Math.min(amount, target.maxHp - target.hp);
     target.hp = Math.min(target.maxHp, target.hp + amount);
 
-    return [{ type: "heal", subject: healer, target, amount } as Omit<HealEvent, "turn">];
+    // check for onHeal effects
+    let events: TimelessEvent[] = [{ type: "heal", subject: healer, target, amount } as Omit<HealEvent, "turn">];
+    const targetFx = await Fighting.gatherEffects(target);
+    let onHealFx = targetFx.onHeal as AbilityEffect[] || [];
+    // let combatContext: CombatContext = {
+    //   subject: healer,
+    //   allies: [],
+    //   enemies: []
+    // } as CombatContext;
+    for (let fx of onHealFx) {
+      let { events: healFxEvents } = await AbilityHandler.handleEffect(
+        fx.description || "healing effect", fx, healer, target, combatContext, Commands.handlers(Commands.roll, null as unknown as Team)
+      );
+      events.push(...healFxEvents);
+    }
+
+    return events;
   }
 
   static async handleSave(target: Combatant, saveType: SaveKind, dc: number = 15, roll: Roll): Promise<{ success: boolean, events: TimelessEvent[] }> {
@@ -159,9 +180,9 @@ export class Commands {
       // return { success: true, events: [{ type: "save", versus: saveKind, subject: target, success: true, dc, immune: false, reason: "successful roll" } as Omit<SaveEvent, "turn">] };
 
       // check for onResistX effects
-      let onResistFx = targetFx[`onResist${saveKind}` as keyof StatusModifications] as AbilityEffect[] || [];
+      let onSaveFx = targetFx[`onSaveVersus${saveKind}` as keyof StatusModifications] as AbilityEffect[] || [];
       let resistEvents: TimelessEvent[] = [];
-      for (let fx of onResistFx) {
+      for (let fx of onSaveFx) {
 
         let { events: resistFxEvents } = await AbilityHandler.handleEffect(
           fx.description || "an effect", fx, target, target, null as unknown as CombatContext, Commands.handlers(roll, null as unknown as Team)

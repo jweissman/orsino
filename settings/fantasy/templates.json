@@ -21,6 +21,13 @@
     "adjective": "=oneOf(peaceful, bustling, prosperous, decaying, ancient, vibrant, sleepy, lively, fair, grim, quaint, thriving, quiet, rustic, quaint, noble, humble, proud)"
   },
   "pc": {
+    "_zodiac_animal": "=oneOf(rat, ox, tiger, rabbit, dragon, snake, horse, goat, monkey, rooster, dog, pig)",
+    "_annual_element": "=oneOf(wood, fire, earth, metal, water)",
+    "_season_of_birth": "=oneOf(spring, summer, autumn, winter)",
+    "sign": "=#_annual_element + ' ' + #_zodiac_animal",
+    "auspicious": "=#_zodiac_animal == 'dragon' || #_zodiac_animal == 'rabbit' || #_season_of_birth == 'spring' || #_season_of_birth == 'autumn'",
+
+    "skin": "=oneOf(pale, fair, tan, olive, brown, dark, ebony, ruddy, sallow)",
     "hair": "=oneOf(black, brown, blonde, red, gray, white, no, sandy, auburn, chestnut, silver, golden)",
     "eye_color": "=oneOf(brown, blue, green, gray, hazel, amber, violet, olive, gold)",
     "alignment": "=oneOf(good, neutral)",
@@ -111,7 +118,8 @@
     "gp": 0,
     "*terrainModifier": "=lookup(terrainModifier, #terrain)",
     "*aspectModifier": "=lookup(creatureAspects, #animal_aspect)",
-    "hp": "=#maxHp"
+    "hp": "=#maxHp",
+    "traits": []
   },
   "monster": {
     "_targetCr": 1,
@@ -340,7 +348,7 @@
     "_moduleLevel": 1,
     "_targetCr": "=#_moduleLevel + round(#_index)",
     "__building_type": "=oneOf(temple, fortress, library, tomb, mine)",
-    "building_type": "tomb",
+    "building_type": "=oneOf(temple, tomb)",
     "_roomBias": "=lookup(roomBias, #building_type)",
     "dungeon_type": "=lookup(dungeonTypes, #building_type)",
     "race": "=if(#_targetCr <= 5, oneOf(goblin, kobold), if(#_targetCr <= 10, oneOf(orc, human), if(#_targetCr <= 15, oneOf(ogre, troll), oneOf(dragon))))",
@@ -349,7 +357,7 @@
     "dungeon_aspect": "=lookup(dungeonAspect, #building_type)",
     "_dungeon_name": "=capitalize(#dungeon_aspect) + \" \" + capitalize(#race) + \" \" + capitalize(#dungeon_type) + \" of \" + capitalize(#theme)",
     "dungeon_name": "=\"#{capitalize(#dungeon_aspect)} #{capitalize(#race)} #{capitalize(#dungeon_type)} of #{capitalize(#domain)}\"",
-    "depth": "=5+4d6",
+    "depth": "=2+3d4",
     "dungeonIndex": "=#_index",
     "intendedCr": "=#_targetCr",
     "^dungeonOverlay": "=lookup(dungeonOverlay, #building_type)",
@@ -367,7 +375,7 @@
     "terrain": "=lookup(terrains, 1d6)",
     "town": "=gen(town)",
     "_townName": "=dig(#town, 'name')",
-    "dungeons": "=genList(dungeon, 6)",
+    "dungeons": "=genList(dungeon, 2)",
     "_moduleLevel": 0,
     "name": "=oneOf('Adventure', 'Saga', 'Reckoning', 'Quest', 'Expedition') + ' ' + oneOf('in the ' + capitalize(#terrain), 'at ' + capitalize(#_townName), 'for the ' + capitalize(#terrain))"
   }
