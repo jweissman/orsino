@@ -238,6 +238,7 @@
   },
   "combatEntity": {
     "entity_type": "=oneOf(turret, antimagic_ward, barrier, bomb)",
+    "class": "device",
     "name": "=humanize(#entity_type)",
     "race": "=oneOf(goblin, kobold, orc, human, ogre, troll, dragon, human, elf, dwarf, halfling, gnome, fae)",
     "forename": "=#name",

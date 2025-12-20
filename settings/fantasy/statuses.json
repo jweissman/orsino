@@ -118,7 +118,6 @@
   },
   "fire_resistance": {
     "name": "Fireproof",
-    "duration": 5,
     "effect": {
       "resistFire": 0.5
     }
@@ -261,7 +260,7 @@
           "type": "damage",
           "description": "being a marked target",
           "target": "self",
-          "amount": "=1d4",
+          "amount": "=1d8",
           "kind": "true"
         }
       ]
@@ -315,13 +314,13 @@
       "noStatusExpiry": true
     }
   },
-  "anemic": {
-    "name": "Anemia",
+  "infected": {
+    "name": "Infected",
     "effect": {
-      "con": -2,
-      "allSaves": -2,
-      "toHit": -2,
-      "bonusDamage": -2
+      "con": -1,
+      "saveVersusAll": -2,
+      "toHit": -1,
+      "bonusDamage": -1
     },
     "trigger": {
       "damage": "bleed"
@@ -334,7 +333,7 @@
         {
           "type": "damage",
           "amount": "=1d4",
-          "kind": "poison"
+          "kind": "true"
         }
       ]
     },
@@ -381,7 +380,7 @@
       "onTurnEnd": [
         {
           "type": "damage",
-          "amount": "=1d4",
+          "amount": "=1d3",
           "kind": "fire"
         }
       ]
@@ -416,13 +415,35 @@
       "onTurnEnd": [
         {
           "type": "damage",
-          "amount": "=1d4",
+          "amount": "=1d2",
           "kind": "bleed"
         }
       ]
     },
     "trigger": {
       "damage": "piercing"
+    },
+    "saveKind": "bleed"
+  },
+  "shred": {
+    "name": "Armor Shred",
+    "effect": {
+      "ac": 2
+    },
+    "trigger": {
+      "damage": "slashing"
+    }
+  },
+  "fatigue": {
+    "name": "Fatigued",
+    "effect": {
+      "str": -1,
+      "dex": -1,
+      "con": -1,
+      "allRolls": -1
+    },
+    "trigger": {
+      "damage": "force"
     }
   },
   "blinded": {
@@ -460,7 +481,7 @@
       "onTurnEnd": [
         {
           "type": "damage",
-          "amount": "=1d3",
+          "amount": "=1d6",
           "kind": "acid"
         }
       ]

@@ -1,17 +1,17 @@
-import AbilityHandler, { AbilityEffect, DamageKind } from "../Ability";
+import AbilityHandler, { AbilityEffect } from "../Ability";
+import { DamageKind } from "../types/DamageKind";
 import { RollResult } from "../types/RollResult";
 import { GameEvent, FallenEvent, HealEvent, HitEvent, MissEvent, StatusEffectEvent, StatusExpireEvent, SummonEvent, SaveEvent, DamageBonus, DamageReduction, DamageAbsorb, UnsummonEvent } from "../Events";
 import Stylist from "../tui/Style";
 import Words from "../tui/Words";
 import { Combatant } from "../types/Combatant";
 import { Roll } from "../types/Roll";
-import { Team } from "../types/Team";
 import { Fighting } from "./Fighting";
 import Combat, { CombatContext } from "../Combat";
 import Presenter from "../tui/Presenter";
 import Deem from "../../deem";
-import { StatusModifications } from "../Status";
-import { SaveKind } from "../types/SaveKind";
+import StatusHandler, { StatusModifications } from "../Status";
+import { SAVE_KINDS, SaveKind } from "../types/SaveKind";
 
 type TimelessEvent = Omit<GameEvent, "turn">;
 
@@ -157,6 +157,12 @@ export class Commands {
   static async handleSave(target: Combatant, saveKind: SaveKind, dc: number = 15, roll: Roll): Promise<{ success: boolean, events: TimelessEvent[] }> {
     let targetFx = await Fighting.gatherEffects(target);
     let saveKindName = saveKind.charAt(0).toUpperCase() + saveKind.slice(1);
+
+    if (SAVE_KINDS.indexOf(saveKind) === -1) {
+      throw new Error(`Unknown save kind "${saveKind}" requested in handleSave.`);
+    }
+
+
     let isImmune = (targetFx[`immune${saveKindName}` as keyof StatusModifications] as boolean);
       // || (targetFx.immuneAll as boolean);
     if (isImmune) {
@@ -177,6 +183,9 @@ export class Commands {
       "sleep": Fighting.statMod(target.wis),
       "stun": Fighting.statMod(target.con),
       "insanity": Fighting.statMod(target.int),
+      "bleed": Fighting.statMod(target.con),
+      "reflex": Fighting.statMod(target.dex),
+      "fortitude": Fighting.statMod(target.con),
     }[saveKind] || 0;
 
     const saveValue = (targetFx[saveVersusType] as number || 0) + (targetFx.saveVersusAll as number || 0) + saveBonus;
@@ -251,12 +260,6 @@ export class Commands {
     if (defender.hp <= 0) {
       return [];
     }
-    
-    // if (defenderEffects.immuneDamage) {
-    //   // could emit immune event?
-    //   events.push({ type: "resist", subject: defender, target: defender, damageKind, originalDamage: damage, finalDamage: 0, sources: defenderFxWithNames.immuneDamage?.sources || [] } as Omit<GameEvent, "turn">);
-    //   return [];
-    // }
 
     if (attackerEffects.bonusDamage && attacker != defender) {
       let sources = attackerFxWithNames.bonusDamage?.sources || [];
@@ -369,9 +372,7 @@ export class Commands {
         // this.note(`${Presenter.combatant(defender)} drops to 1 HP instead of 0!`);
         // console.warn(`${Presenter.minimalCombatant(defender)} drops to 1 HP instead of 0!`);
       }
-    }
-
-    
+    } //else
 
     // let events: TimelessEvent[] = [{
     events.push({
@@ -422,6 +423,29 @@ export class Commands {
         events.push(...onKillEvents);
       }
     } else {
+      // chance to cause status effect based on damage type
+      // console.log(`Checking for status effects triggered by ${damageKind} damage...`);
+      let triggers = StatusHandler.instance.triggersForDamageType(damageKind || "true"); //.forEach(async (statusName) => {
+      for (let statusName of triggers) {
+        let statusEffect = StatusHandler.instance.getStatus(statusName);
+
+        // console.log(`Found status effect trigger: ${statusName}`);
+        if (statusEffect) {
+          let { success: saved, events: saveEvents } = await Commands.handleSave(defender, statusEffect.saveKind || "magic", 15, roll);
+          events.push(...saveEvents);
+          if (!saved) {
+            // console.log(`${Presenter.minimalCombatant(defender)} failed their save against status effect ${statusName} triggered by ${damageKind} damage! Applying status effect...`);
+            let statusEvents = await Commands.handleStatusEffect(
+              // user, targetCombatant,
+              attacker, defender,
+              statusEffect.name, { ...statusEffect.effect }, statusEffect.duration || 3
+            );
+            // console.log("Status effect events:", statusEvents);
+            events.push(...statusEvents);
+          }
+        }
+      }
+
       // does defender have onAttacked effects? (and attacker is not themselves...)
       if (attacker !== defender) {
         let onAttackedFx = defenderEffects.onAttacked as AbilityEffect[] || [];
@@ -436,7 +460,6 @@ export class Commands {
           events.push(...onAttackedEvents);
         }
       }
-
     }
 
     return events;

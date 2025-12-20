@@ -1,5 +1,6 @@
 import Deem from "../deem";
 import Combat, { CombatContext } from "./Combat";
+import { DamageKind } from "./types/DamageKind";
 import { GameEvent, ReactionEvent, ResurrectEvent, UpgradeEvent } from "./Events";
 import Generator from "./Generator";
 import { CommandHandlers } from "./rules/Commands";
@@ -13,25 +14,16 @@ import { SaveKind } from "./types/SaveKind";
 import Files from "./util/Files";
 import { never } from "./util/never";
 
-export type Target = "self" | "ally" | "enemy" | "allies" | "enemies" | "all" | "randomEnemies" | "deadAlly";
-
-export type DamageKind
-  = "bleed"
-  | "poison"
-  | "psychic"
-  | "lightning"
-  | "fire"
-  | "cold"
-  | "bludgeoning"
-  | "piercing"
-  | "slashing"
-  | "force"
-  | "radiant"
-  | "necrotic"
-  | "acid"
-  | "sonic"
-  | "true";
-
+export type TargetKind
+  = "self"
+  | "ally"
+  | "deadAlly"
+  | "allies"
+  | "party"
+  | "enemy"
+  | "enemies"
+  | "randomEnemies"
+  | "all";
 
 export interface AbilityEffect {
   description?: string;
@@ -87,7 +79,7 @@ export interface Ability {
   domain?: "life" | "death" | "nature" | "knowledge" | "war" | "trickery" | "law" | "chaos";
   school?: "abjuration" | "conjuration" | "divination" | "enchantment" | "evocation" | "illusion" | "necromancy" | "transmutation";
   aspect: "arcane" | "physical" | "divine" | "social" | "stealth" | "nature";
-  target: Target[];
+  target: TargetKind[];
   effects: AbilityEffect[];
   condition?: {
     hasInterceptWeapon?: boolean;
@@ -185,42 +177,27 @@ export default class AbilityHandler {
       .map(([key, _ab]) => key);
   }
 
-  static resolveTarget(targetName: string, user: Combatant, allies: Combatant[], enemies: Combatant[]): (Combatant | Combatant[]) {
+  static resolveTarget(targetName: TargetKind, user: Combatant, allies: Combatant[], enemies: Combatant[]): (Combatant | Combatant[]) {
     let targets: (Combatant | Combatant[]) = [];
     switch (targetName) {
-      case "self":
-        // if (healing) {
-        //   if (user.hp < user.maxHp) {
-        //     targets.push(user);
-        //   }
-        // } else {
-        targets.push(user);
-        // }
-        break;
-      case "ally":
-        // if (healing) {
-        //   targets.push(...Combat.wounded(allies));
-        // } else {
-        targets.push(...Combat.living(allies));
-        // }
-        break;
+      case "self": targets.push(user); break;
+      case "ally": targets.push(...Combat.living(allies)); break;
       case "deadAlly": targets.push(...(allies.filter(a => a.hp <= 0))); break;
+      case "allies": targets.push(...Combat.living(allies)); break;
+      case "party": targets.push(...([user, ...Combat.living(allies)])); break;
+
       case "enemy": targets.push(...(enemies)); break;
-      case "allies":
-        // if (healing) {
-        //   targets.push(Combat.wounded(allies));
-        // } else {
-        targets.push(...Combat.living(allies));
-        // }
-        break;
       case "enemies": targets.push(...(enemies)); break;
+
       case "all": targets.push(...([user, ...allies, ...enemies])); break;
 
       // we need to special case randomEnemies since we need to select them ourselves
       case "randomEnemies": break;
 
-      // default:
-      // throw new Error(`Unknown target type: ${t}`);
+      default:
+        // return never(targetName);
+        // console.warn(`Unknown target type: ${targetName}`);
+        break;
     }
     return targets;
   }
@@ -253,6 +230,13 @@ export default class AbilityHandler {
             targets.push(Combat.wounded(allies));
           } else {
             targets.push(Combat.living(allies));
+          }
+          break;
+        case "party":
+          if (healing) {
+            targets.push(Combat.wounded([user, ...allies]));
+          } else {
+            targets.push([user, ...Combat.living(allies)]);
           }
           break;
         case "enemies": targets.push((enemies)); break;
@@ -369,18 +353,23 @@ export default class AbilityHandler {
     if (effect.type === "attack") {
       // let success = false;
 
-      if (userFx.onAttack) {
-        for (const attackFx of userFx.onAttack as Array<AbilityEffect>) {
-          let result = await this.handleEffect(name, attackFx, user, targetCombatant, context, handlers);
-          events.push(...result.events);
-        }
-      }
+      let onAttackEvents = await this.performHooks(
+        'onAttack', user, context, handlers, "on ability " + name
+      )
+      events.push(...onAttackEvents);
+      // if (userFx.onAttack) {
+      //   for (const attackFx of userFx.onAttack as Array<AbilityEffect>) {
+      //     console.log("Processing onAttack effect:", attackFx);
+      //     let { success: _onAttackHookSuccess, events: onAttackEvents } = await this.handleEffect(name, attackFx, user, targetCombatant, context, handlers);
+      //     events.push(...onAttackEvents);
+      //   }
+      // }
 
       let result = await attack(user, targetCombatant, context, effect.spillover || false, handlers.roll);
       success = result.success;
       events.push(...result.events);
       if (!success) {
-        return { success: false, events: result.events };
+        return { success: false, events };
       } else {
         if (userFx.onAttackHit) {
           for (const attackFx of userFx.onAttackHit as Array<AbilityEffect>) {
@@ -415,19 +404,19 @@ export default class AbilityHandler {
         context, handlers.roll
       );
       events.push(...hitEvents);
-      success = true;
+      success = hitEvents.some(e => e.type === "hit" && (e as any).amount > 0);
 
       // chance to cause status effect based on damage type
-      StatusHandler.instance.triggersForDamageType(effect.kind || "true").forEach(async (statusName) => {
-        let statusEffect = StatusHandler.instance.getStatus(statusName);
-        if (statusEffect) {
-          let statusEvents = await status(
-            user, targetCombatant,
-            statusEffect.name, { ...statusEffect.effect }, statusEffect.duration || 3
-          );
-          events.push(...statusEvents);
-        }
-      });
+      //StatusHandler.instance.triggersForDamageType(effect.kind || "true").forEach(async (statusName) => {
+      //  let statusEffect = StatusHandler.instance.getStatus(statusName);
+      //  if (statusEffect) {
+      //    let statusEvents = await status(
+      //      user, targetCombatant,
+      //      statusEffect.name, { ...statusEffect.effect }, statusEffect.duration || 3
+      //    );
+      //    events.push(...statusEvents);
+      //  }
+      //});
 
     } else if (effect.type === "heal") {
       let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
@@ -783,7 +772,7 @@ export default class AbilityHandler {
       for (const hookEffect of hookEffects) {
         // console.log(`${user.name} has hook ${String(hookKey)} due to ${Words.humanizeList(hookFxWithNames[hookKey].sources)}`);
         let { success, events: hookEvents } = await this.handleEffect(
-          (hookEffect.status?.name || label) + " Hook from " + Words.humanizeList(hookFxWithNames[hookKey].sources),
+          (hookEffect.status?.name || label) + " due to " + Words.humanizeList(hookFxWithNames[hookKey].sources),
           hookEffect, user, user, context, handlers
         );
         events.push(...hookEvents);

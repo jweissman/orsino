@@ -4,9 +4,7 @@
     "type": "skill",
     "aspect": "physical",
     "description": "Wait and do nothing this turn.",
-    "target": [
-      "self"
-    ],
+    "target": [ "self" ],
     "effects": []
   },
   "flee": {
@@ -14,9 +12,7 @@
     "type": "skill",
     "aspect": "physical",
     "description": "Run away!",
-    "target": [
-      "self"
-    ],
+    "target": [ "self" ],
     "effects": [
       {
         "type": "flee",
@@ -66,7 +62,7 @@
       {
         "type": "buff",
         "status": "defending",
-        "duration": 2
+        "duration": 1
       }
     ]
   },
@@ -129,7 +125,7 @@
             "noActions": true
           }
         },
-        "saveKind": "dex",
+        "saveKind": "reflex",
         "saveDC": 14
       }
     ]
@@ -258,7 +254,7 @@
         },
         "saveNegates": true,
         "saveDC": 15,
-        "saveKind": "con"
+        "saveKind": "fortitude"
       }
     ]
   },
@@ -1429,7 +1425,7 @@
             "toHit": -2
           }
         },
-        "saveKind": "dex",
+        "saveKind": "reflex",
         "saveDC": 10
       }
     ]
@@ -1552,7 +1548,6 @@
             "dex": -5
           }
         },
-        "saveKind": "con",
         "saveDC": 10
       }
     ]
@@ -1852,26 +1847,12 @@
     "type": "skill",
     "aspect": "stealth",
     "description": "Create a smoke screen that grants all allies within it evasion and 4 AC for 3 rounds.",
-    "target": [
-      "allies"
-    ],
+    "target": [ "party" ],
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Hidden",
-          "duration": 5,
-          "effect": {
-            "ac": -4,
-            "evasion": 10,
-            "onAttack": [
-              {
-                "type": "removeStatus",
-                "statusName": "Hidden"
-              }
-            ]
-          }
-        }
+        "status": "hidden",
+        "duration": 6
       }
     ]
   },
@@ -1949,7 +1930,7 @@
             "initiative": -5
           }
         },
-        "saveKind": "dex",
+        "saveKind": "reflex",
         "saveDC": 12
       }
     ]
@@ -1997,7 +1978,7 @@
             "dex": -5
           }
         },
-        "saveKind": "dex",
+        "saveKind": "reflex",
         "saveDC": 14
       }
     ]
@@ -2047,7 +2028,7 @@
             "noActions": true
           }
         },
-        "saveKind": "con",
+        "saveKind": "fortitude",
         "saveDC": 16
       }
     ]
@@ -2103,7 +2084,7 @@
           },
           "duration": 10
         },
-        "saveKind": "con",
+        "saveKind": "fortitude",
         "saveDC": 18
       }
     ]
@@ -3029,28 +3010,28 @@
         "randomEffects": [
           {
             "type": "damage",
-            "amount": "=1d6+1",
+            "amount": "=1d3+1",
             "kind": "fire",
             "saveForHalf": true,
             "target": "enemy"
           },
           {
             "type": "damage",
-            "amount": "=1d4+1",
+            "amount": "=1d4",
             "kind": "cold",
             "saveForHalf": true,
             "target": "enemy"
           },
           {
             "type": "damage",
-            "amount": "=1d3",
+            "amount": "=1d2",
             "kind": "acid",
             "saveForHalf": true,
             "target": "enemy"
           },
           {
             "type": "damage",
-            "amount": "=1d8",
+            "amount": "=1d3",
             "kind": "lightning",
             "saveForHalf": true,
             "target": "enemy"
@@ -3064,21 +3045,21 @@
           },
           {
             "type": "damage",
-            "amount": "=1d6",
+            "amount": "=1d4",
             "kind": "psychic",
             "saveForHalf": true,
             "target": "enemy"
           },
           {
             "type": "damage",
-            "amount": "=1d4+2",
+            "amount": "=1d2+1",
             "kind": "radiant",
             "saveForHalf": true,
             "target": "enemy"
           },
           {
             "type": "damage",
-            "amount": "=1d6",
+            "amount": "=1d2",
             "kind": "necrotic",
             "saveForHalf": true
           }
@@ -3104,17 +3085,7 @@
       },
       {
         "type": "debuff",
-        "status": {
-          "name": "Deafened",
-          "duration": 4,
-          "effect": {
-            "resistSonic": 0.5,
-            "bonusDamage": -2,
-            "ac": 2,
-            "toHit": -2,
-            "allSaves": -1
-          }
-        }
+        "status": "deafened"
       }
     ]
   }

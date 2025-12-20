@@ -1,4 +1,4 @@
-import { DamageKind } from "./Ability";
+import { DamageKind } from "./types/DamageKind";
 import { never } from "./util/never";
 import Presenter from "./tui/Presenter";
 import Stylist from "./tui/Style";

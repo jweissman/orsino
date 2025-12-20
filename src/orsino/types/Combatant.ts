@@ -1,4 +1,4 @@
-import { DamageKind } from "../Ability";
+import { DamageKind } from "./DamageKind";
 import { StatusEffect } from "../Status";
 import { SaveKind } from "./SaveKind";
 

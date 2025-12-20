@@ -57,7 +57,10 @@ export interface StatusModifications {
   saveVersusWill?: number;
   saveVersusBreath?: number;
   saveVersusParalyze?: number;
+  saveVersusBleed?: number;
   saveVersusSleep?: number;
+  saveVersusReflex?: number;
+  saveVersusFortitude?: number;
   saveVersusAll?: number;
 
   immunePoison?: boolean;
@@ -71,7 +74,11 @@ export interface StatusModifications {
   immuneWill?: boolean;
   immuneBreath?: boolean;
   immuneParalyze?: boolean;
+  immuneBleed?: boolean;
   immuneSleep?: boolean;
+  immuneReflex?: boolean;
+  immuneFortitude?: boolean;
+
 
   // maybe too powerful also??
   // immuneDamage?: boolean;
@@ -108,7 +115,7 @@ export interface StatusModifications {
   onEnemyCasting?: AbilityEffect[];
   onEnemyOffensiveCasting?: AbilityEffect[];
 
-
+  // these feel _so_ narrow?
   onSaveVersusPoison?: AbilityEffect[];
   onSaveVersusDisease?: AbilityEffect[];
   onSaveVersusDeath?: AbilityEffect[];
@@ -120,7 +127,10 @@ export interface StatusModifications {
   onSaveVersusWill?: AbilityEffect[];
   onSaveVersusBreath?: AbilityEffect[];
   onSaveVersusParalyze?: AbilityEffect[];
+  onSaveVersusBleed?: AbilityEffect[];
   onSaveVersusSleep?: AbilityEffect[];
+  onSaveVersusReflex?: AbilityEffect[];
+  onSaveVersusFortitude?: AbilityEffect[];
 
   flee?: boolean;
 

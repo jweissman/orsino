@@ -830,6 +830,7 @@
       "name": "Bone Resilience",
       "description": "Arrows and pointed blades pass through you, but blunt force harms you more.",
       "effect": {
+        "immuneBleed": true,
         "resistPiercing": 0.5,
         "resistBludgeoning": -1
       }
@@ -976,8 +977,6 @@
       "name": "Regeneration",
       "description": "This creature regenerates health over time, allowing it to recover from wounds quickly.",
       "effect": {
-        "resistPoison": 0.1,
-        "saveVersusStun": 2,
         "onTurnEnd": [
           {
             "type": "heal",
@@ -1017,6 +1016,7 @@
         "immuneSleep": true,
         "immunePoison": true,
         "immuneDisease": true,
+        "immuneBleed": true,
         "resurrectable": false
       }
     }]

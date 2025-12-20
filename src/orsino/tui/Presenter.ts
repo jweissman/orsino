@@ -2,7 +2,7 @@ import Stylist from "./Style";
 import { Combatant } from "../types/Combatant";
 import Words from "./Words";
 import { Fighting } from "../rules/Fighting";
-import AbilityHandler, { Ability, AbilityEffect, Target } from "../Ability";
+import AbilityHandler, { Ability, AbilityEffect, TargetKind } from "../Ability";
 import TraitHandler from "../Trait";
 import Combat from "../Combat";
 import StatusHandler, { StatusEffect, StatusModifications } from "../Status";
@@ -570,7 +570,10 @@ export default class Presenter {
         case "saveVersusBreath":
         case "saveVersusParalyze":
         case "saveVersusSleep":
+        case "saveVersusBleed":
         case "saveVersusAll":
+        case "saveVersusReflex":
+        case "saveVersusFortitude":
           let save = `Save versus ${Words.humanize(k.replace("saveVersus", ""))}`;
           parts.push(this.increaseDecrease(save, value));
           break;
@@ -587,16 +590,14 @@ export default class Presenter {
         case "immuneBreath":
         case "immuneParalyze":
         case "immuneSleep":
-        // case "immuneAll":
+        case "immuneBleed":
+        case "immuneReflex":
+        case "immuneFortitude":
           if (value) {
             parts.push(`Immunity to ${Words.humanize(k.replace("immune", ""))}`);
           }
           break;
-        // case "immuneDamage":
-        //   if (value) {
-        //     parts.push(`Immunity to all damage`);
-        //   }
-        //   break;
+
         case "noActions":
           if (value) {
             parts.push(`Cannot take actions`);
@@ -657,7 +658,10 @@ export default class Presenter {
         case "onSaveVersusWill":
         case "onSaveVersusBreath":
         case "onSaveVersusParalyze":
+        case "onSaveVersusBleed":
         case "onSaveVersusSleep":
+        case "onSaveVersusReflex":
+        case "onSaveVersusFortitude":
           parts.push(`${Words.capitalize(Words.humanize(k).toLocaleLowerCase())}, ${this.describeEffects(value, 'self')}`);
           break;
 
@@ -909,7 +913,7 @@ export default class Presenter {
     return Words.capitalize(parts.join("; "));
   }
 
-  static describeTarget(target: Target[]): string {
+  static describeTarget(target: TargetKind[]): string {
     let parts: string[] = [];
     for (const t of target) {
       let desc = "";
@@ -918,6 +922,7 @@ export default class Presenter {
         case "ally": desc = "an ally"; break;
         case "enemy": desc = "an enemy"; break;
         case "allies": desc = "all allies"; break;
+        case "party": desc = "your party"; break;
         case "enemies": desc = "all enemies"; break;
         case "all": desc = "all combatants"; break;
         case "deadAlly": desc = "a fallen ally"; break;
