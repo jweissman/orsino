@@ -17,77 +17,463 @@
   "masterWeapon": {
     "discriminator": "kind",
     "groups": {
-      "fist": { "natural": true, "damage": "1d2", "type": "bludgeoning" },
-      "kick": { "natural": true, "damage": "1d2", "type": "bludgeoning" },
-
-      "battleaxe": { "damage": "1d8", "type": "slashing",  "value": 5, "kind": "axe", "weight": "heavy" },
-      "handaxe": { "damage": "1d6", "type": "slashing", "value": 1, "kind": "axe", "weight": "light" },
-      "longbow": { "damage": "1d6", "type": "piercing", "missile": true, "value": 30, "kind": "bow", "weight": "medium" },
-      "shortbow": { "damage": "1d4", "type": "piercing", "missile": true, "value": 15, "kind": "bow", "weight": "light" },
-      "club": { "damage": "1d4", "type": "bludgeoning", "value": 1, "kind": "club", "weight": "light" },
-      "dagger": { "damage": "1d4", "type": "piercing", "value": 2, "kind": "blade", "weight": "light" },
-      "dart": { "damage": "1d3", "type": "piercing", "missile": true, "value": 1, "kind": "dart", "weight": "light" },
-      "heavy_flail": { "damage": "1d6+1", "type": "bludgeoning", "value": 3, "kind": "flail", "weight": "heavy" },
-      "light_flail": { "damage": "1d4+1", "type": "bludgeoning", "value": 6, "kind": "flail", "weight": "light" },
-      "halberd": { "damage": "1d10", "type": "slashing", "value": 9, "kind": "polearm", "weight": "heavy" },
-      "heavy_warhammer": { "damage": "1d6+1", "type": "bludgeoning", "value": 7, "kind": "warhammer", "weight": "heavy" },
-      "light_warhammer": { "damage": "1d4+1", "type": "bludgeoning", "value": 4, "kind": "warhammer", "weight": "light" },
-      "javelin": { "damage": "1d6", "type": "piercing", "intercept": true, "value": 1, "kind": "polearm", "weight": "light" },
-      "lance": { "damage": "2d4+1", "type": "piercing", "intercept": true, "value": 6, "kind": "polearm", "weight": "heavy" },
-      "heavy_mace": { "damage": "1d6+1", "type": "bludgeoning", "value": 10, "kind": "mace", "weight": "heavy" },
-      "light_mace": { "damage": "1d4+1", "type": "bludgeoning", "value": 4, "kind": "mace", "weight": "light" },
-      "morningstar": { "damage": "2d4", "type": "piercing", "value": 5, "kind": "morningstar", "weight": "medium" },
-      "heavy_pick": { "damage": "1d6+1", "type": "piercing", "value": 8, "kind": "pick", "weight": "heavy" },
-      "light_pick": { "damage": "1d4+1", "type": "piercing", "value": 5, "kind": "pick", "weight": "light" },
-      "pole_arm": { "damage": "1d6+1", "type": "piercing", "intercept": true, "value": 6, "kind": "polearm", "weight": "medium" },
-      "spear": { "damage": "1d6", "type": "piercing", "intercept": true, "value": 1, "kind": "spear", "weight": "light" },
-      "staff": { "damage": "1d6", "type": "bludgeoning", "value": 1, "kind": "staff", "weight": "medium" },
-      "quarterstaff": { "damage": "1d6+2", "type": "bludgeoning", "value": 10, "kind": "staff", "weight": "medium" },
-      "claymore": { "damage": "2d4", "type": "slashing", "value": 25, "kind": "blade", "weight": "heavy" },
-      "broadsword": { "damage": "2d4", "type": "slashing", "value": 10, "kind": "blade", "weight": "medium" },
-      "longsword": { "damage": "1d8", "type": "slashing", "value": 15, "kind": "blade", "weight": "medium" },
-      "scimitar": { "damage": "1d8", "type": "slashing", "value": 15, "kind": "blade", "weight": "medium" },
-      "shortsword": { "damage": "1d6", "type": "slashing", "value": 8, "kind": "blade", "weight": "light" },
-      "greatsword": { "damage": "1d10", "type": "slashing", "value": 30, "kind": "blade", "weight": "heavy" },
-      "falchion": { "damage": "2d4", "type": "slashing", "value": 20, "kind": "blade", "weight": "medium" },
-      "cutlass": { "damage": "1d6", "type": "slashing", "value": 10, "kind": "blade", "weight": "light" },
-      "trident": { "damage": "1d6+1", "type": "piercing", "intercept": true, "value": 4, "kind": "trident", "weight": "medium" },
-      "sling": { "damage": "1d4", "type": "bludgeoning", "missile": true, "value": 1, "kind": "sling", "weight": "light" },
-      "heavy_crossbow": { "damage": "1d6+1", "type": "piercing", "missile": true, "value": 20, "kind": "crossbow", "weight": "heavy" },
-      "light_crossbow": { "damage": "1d4+1", "type": "piercing", "missile": true, "value": 12, "kind": "crossbow", "weight": "light" },
-      "composite_bow": { "damage": "1d6", "type": "piercing", "missile": true, "value": 75, "kind": "bow", "weight": "medium" },
-      "whip": { "damage": "1d4+2", "type": "slashing", "value": 2, "kind": "whip", "weight": "light" },
-      "light_chain": { "damage": "1d6+2", "type": "slashing", "value": 7, "kind": "whip", "weight": "medium" },
-      "heavy_chain": { "damage": "1d8+2", "type": "slashing", "value": 12, "kind": "whip", "weight": "heavy" },
-      "rapier": { "damage": "1d6+2", "type": "piercing", "value": 40, "kind": "blade", "weight": "light" },
-      "bec_de_corbin": { "damage": "1d8+1", "type": "piercing", "value": 18, "kind": "polearm", "weight": "heavy" },
-      "voulge": { "damage": "1d10+1", "type": "slashing", "intercept": true, "value": 14, "kind": "polearm", "weight": "heavy" },
-
-      "scythe": { "damage": "2d4+1", "type": "slashing", "intercept": true, "value": 10, "kind": "polearm", "weight": "medium" },
-      "pike": { "damage": "1d10+1", "type": "piercing", "intercept": true, "value": 15, "kind": "polearm", "weight": "heavy" },
-      "greatclub": { "damage": "1d8+2", "type": "bludgeoning", "value": 8, "kind": "club", "weight": "heavy" },
-      "glaive": { "damage": "1d10+1", "type": "slashing", "intercept": true, "value": 12, "kind": "polearm", "weight": "heavy" },
-
-      "katana": { "damage": "1d8+2", "type": "slashing", "value": 50, "kind": "blade", "weight": "medium" },
-      "wakizashi": { "damage": "1d6+2", "type": "slashing", "value": 30, "kind": "blade", "weight": "light" },
-      "naginata": { "damage": "1d10+1", "type": "slashing", "intercept": true, "value": 20, "kind": "polearm", "weight": "heavy" },
-      "kusarigama": { "damage": "1d6+2", "type": "slashing", "value": 18, "kind": "polearm", "weight": "medium" },
-      "nunchaku": { "damage": "1d6+2", "type": "bludgeoning", "value": 15, "kind": "club", "weight": "light" },
-      "shuriken": { "damage": "1d4+2", "type": "piercing", "missile": true, "value": 5, "kind": "shuriken", "weight": "light" },
-
-      "antlers":   { "damage": "1d6", "natural": true, "type": "piercing" },
-      "bite":      { "damage": "1d6", "natural": true, "type": "piercing" },
-      "claws":     { "damage": "1d4", "natural": true, "type": "slashing" },
-      "sting":     { "damage": "1d3", "natural": true, "type": "piercing" },
-      "horns":     { "damage": "1d4", "natural": true, "type": "bludgeoning" },
-      "slam":      { "damage": "1d6", "natural": true, "type": "piercing" },
-      "talons":    { "damage": "1d8", "natural": true, "type": "piercing" },
-      "tusks":     { "damage": "1d8", "natural": true, "type": "piercing" },
-      "quills":    { "damage": "1d3", "natural": true, "type": "piercing" },
-      "headbutt":  { "damage": "1d4", "natural": true, "type": "bludgeoning" },
-      "beak":      { "damage": "1d4", "natural": true, "type": "piercing" },
-      "flutter":   { "damage": "1d2", "natural": true, "type": "bludgeoning" },
-      "tentacles": { "damage": "1d4+1", "natural": true, "type": "bludgeoning" }
+      "fist": {
+        "natural": true,
+        "damage": "1d2",
+        "type": "bludgeoning"
+      },
+      "kick": {
+        "natural": true,
+        "damage": "1d2",
+        "type": "bludgeoning"
+      },
+      "battleaxe": {
+        "damage": "1d8",
+        "type": "slashing",
+        "value": 5,
+        "kind": "axe",
+        "weight": "heavy"
+      },
+      "handaxe": {
+        "damage": "1d6",
+        "type": "slashing",
+        "value": 1,
+        "kind": "axe",
+        "weight": "light"
+      },
+      "longbow": {
+        "damage": "1d6",
+        "type": "piercing",
+        "missile": true,
+        "value": 30,
+        "kind": "bow",
+        "weight": "medium"
+      },
+      "shortbow": {
+        "damage": "1d4",
+        "type": "piercing",
+        "missile": true,
+        "value": 15,
+        "kind": "bow",
+        "weight": "light"
+      },
+      "club": {
+        "damage": "1d4",
+        "type": "bludgeoning",
+        "value": 1,
+        "kind": "club",
+        "weight": "light"
+      },
+      "dagger": {
+        "damage": "1d4",
+        "type": "piercing",
+        "value": 2,
+        "kind": "blade",
+        "weight": "light"
+      },
+      "dart": {
+        "damage": "1d3",
+        "type": "piercing",
+        "missile": true,
+        "value": 1,
+        "kind": "dart",
+        "weight": "light"
+      },
+      "heavy_flail": {
+        "damage": "1d6+1",
+        "type": "bludgeoning",
+        "value": 3,
+        "kind": "flail",
+        "weight": "heavy"
+      },
+      "light_flail": {
+        "damage": "1d4+1",
+        "type": "bludgeoning",
+        "value": 6,
+        "kind": "flail",
+        "weight": "light"
+      },
+      "halberd": {
+        "damage": "1d10",
+        "type": "slashing",
+        "value": 9,
+        "kind": "polearm",
+        "weight": "heavy"
+      },
+      "heavy_warhammer": {
+        "damage": "1d6+1",
+        "type": "bludgeoning",
+        "value": 7,
+        "kind": "warhammer",
+        "weight": "heavy"
+      },
+      "light_warhammer": {
+        "damage": "1d4+1",
+        "type": "bludgeoning",
+        "value": 4,
+        "kind": "warhammer",
+        "weight": "light"
+      },
+      "javelin": {
+        "damage": "1d6",
+        "type": "piercing",
+        "intercept": true,
+        "value": 1,
+        "kind": "polearm",
+        "weight": "light"
+      },
+      "lance": {
+        "damage": "2d4+1",
+        "type": "piercing",
+        "intercept": true,
+        "value": 6,
+        "kind": "polearm",
+        "weight": "heavy"
+      },
+      "heavy_mace": {
+        "damage": "1d6+1",
+        "type": "bludgeoning",
+        "value": 10,
+        "kind": "mace",
+        "weight": "heavy"
+      },
+      "light_mace": {
+        "damage": "1d4+1",
+        "type": "bludgeoning",
+        "value": 4,
+        "kind": "mace",
+        "weight": "light"
+      },
+      "morningstar": {
+        "damage": "2d4",
+        "type": "piercing",
+        "value": 5,
+        "kind": "morningstar",
+        "weight": "medium"
+      },
+      "heavy_pick": {
+        "damage": "1d6+1",
+        "type": "piercing",
+        "value": 8,
+        "kind": "pick",
+        "weight": "heavy"
+      },
+      "light_pick": {
+        "damage": "1d4+1",
+        "type": "piercing",
+        "value": 5,
+        "kind": "pick",
+        "weight": "light"
+      },
+      "pole_arm": {
+        "damage": "1d6+1",
+        "type": "piercing",
+        "intercept": true,
+        "value": 6,
+        "kind": "polearm",
+        "weight": "medium"
+      },
+      "spear": {
+        "damage": "1d6",
+        "type": "piercing",
+        "intercept": true,
+        "value": 1,
+        "kind": "spear",
+        "weight": "light"
+      },
+      "staff": {
+        "damage": "1d6",
+        "type": "bludgeoning",
+        "value": 1,
+        "kind": "staff",
+        "weight": "medium"
+      },
+      "quarterstaff": {
+        "damage": "1d6+2",
+        "type": "bludgeoning",
+        "value": 10,
+        "kind": "staff",
+        "weight": "medium"
+      },
+      "claymore": {
+        "damage": "2d4",
+        "type": "slashing",
+        "value": 25,
+        "kind": "blade",
+        "weight": "heavy"
+      },
+      "broadsword": {
+        "damage": "2d4",
+        "type": "slashing",
+        "value": 10,
+        "kind": "blade",
+        "weight": "medium"
+      },
+      "longsword": {
+        "damage": "1d8",
+        "type": "slashing",
+        "value": 15,
+        "kind": "blade",
+        "weight": "medium"
+      },
+      "scimitar": {
+        "damage": "1d8",
+        "type": "slashing",
+        "value": 15,
+        "kind": "blade",
+        "weight": "medium"
+      },
+      "shortsword": {
+        "damage": "1d6",
+        "type": "slashing",
+        "value": 8,
+        "kind": "blade",
+        "weight": "light"
+      },
+      "greatsword": {
+        "damage": "1d10",
+        "type": "slashing",
+        "value": 30,
+        "kind": "blade",
+        "weight": "heavy"
+      },
+      "falchion": {
+        "damage": "2d4",
+        "type": "slashing",
+        "value": 20,
+        "kind": "blade",
+        "weight": "medium"
+      },
+      "cutlass": {
+        "damage": "1d6",
+        "type": "slashing",
+        "value": 10,
+        "kind": "blade",
+        "weight": "light"
+      },
+      "trident": {
+        "damage": "1d6+1",
+        "type": "piercing",
+        "intercept": true,
+        "value": 4,
+        "kind": "trident",
+        "weight": "medium"
+      },
+      "sling": {
+        "damage": "1d4",
+        "type": "bludgeoning",
+        "missile": true,
+        "value": 1,
+        "kind": "sling",
+        "weight": "light"
+      },
+      "heavy_crossbow": {
+        "damage": "1d6+1",
+        "type": "piercing",
+        "missile": true,
+        "value": 20,
+        "kind": "crossbow",
+        "weight": "heavy"
+      },
+      "light_crossbow": {
+        "damage": "1d4+1",
+        "type": "piercing",
+        "missile": true,
+        "value": 12,
+        "kind": "crossbow",
+        "weight": "light"
+      },
+      "composite_bow": {
+        "damage": "1d6",
+        "type": "piercing",
+        "missile": true,
+        "value": 75,
+        "kind": "bow",
+        "weight": "medium"
+      },
+      "whip": {
+        "damage": "1d4+2",
+        "type": "slashing",
+        "value": 2,
+        "kind": "whip",
+        "weight": "light"
+      },
+      "light_chain": {
+        "damage": "1d6+2",
+        "type": "slashing",
+        "value": 7,
+        "kind": "whip",
+        "weight": "medium"
+      },
+      "heavy_chain": {
+        "damage": "1d8+2",
+        "type": "slashing",
+        "value": 12,
+        "kind": "whip",
+        "weight": "heavy"
+      },
+      "rapier": {
+        "damage": "1d6+2",
+        "type": "piercing",
+        "value": 40,
+        "kind": "blade",
+        "weight": "light"
+      },
+      "bec_de_corbin": {
+        "damage": "1d8+1",
+        "type": "piercing",
+        "value": 18,
+        "kind": "polearm",
+        "weight": "heavy"
+      },
+      "voulge": {
+        "damage": "1d10+1",
+        "type": "slashing",
+        "intercept": true,
+        "value": 14,
+        "kind": "polearm",
+        "weight": "heavy"
+      },
+      "scythe": {
+        "damage": "2d4+1",
+        "type": "slashing",
+        "intercept": true,
+        "value": 10,
+        "kind": "polearm",
+        "weight": "medium"
+      },
+      "pike": {
+        "damage": "1d10+1",
+        "type": "piercing",
+        "intercept": true,
+        "value": 15,
+        "kind": "polearm",
+        "weight": "heavy"
+      },
+      "greatclub": {
+        "damage": "1d8+2",
+        "type": "bludgeoning",
+        "value": 8,
+        "kind": "club",
+        "weight": "heavy"
+      },
+      "glaive": {
+        "damage": "1d10+1",
+        "type": "slashing",
+        "intercept": true,
+        "value": 12,
+        "kind": "polearm",
+        "weight": "heavy"
+      },
+      "katana": {
+        "damage": "1d8+2",
+        "type": "slashing",
+        "value": 50,
+        "kind": "blade",
+        "weight": "medium"
+      },
+      "wakizashi": {
+        "damage": "1d6+2",
+        "type": "slashing",
+        "value": 30,
+        "kind": "blade",
+        "weight": "light"
+      },
+      "naginata": {
+        "damage": "1d10+1",
+        "type": "slashing",
+        "intercept": true,
+        "value": 20,
+        "kind": "polearm",
+        "weight": "heavy"
+      },
+      "kusarigama": {
+        "damage": "1d6+2",
+        "type": "slashing",
+        "value": 18,
+        "kind": "polearm",
+        "weight": "medium"
+      },
+      "nunchaku": {
+        "damage": "1d6+2",
+        "type": "bludgeoning",
+        "value": 15,
+        "kind": "club",
+        "weight": "light"
+      },
+      "shuriken": {
+        "damage": "1d4+2",
+        "type": "piercing",
+        "missile": true,
+        "value": 5,
+        "kind": "shuriken",
+        "weight": "light"
+      },
+      "antlers": {
+        "damage": "1d6",
+        "natural": true,
+        "type": "piercing"
+      },
+      "bite": {
+        "damage": "1d6",
+        "natural": true,
+        "type": "piercing"
+      },
+      "claws": {
+        "damage": "1d4",
+        "natural": true,
+        "type": "slashing"
+      },
+      "sting": {
+        "damage": "1d3",
+        "natural": true,
+        "type": "piercing"
+      },
+      "horns": {
+        "damage": "1d4",
+        "natural": true,
+        "type": "bludgeoning"
+      },
+      "slam": {
+        "damage": "1d6",
+        "natural": true,
+        "type": "piercing"
+      },
+      "talons": {
+        "damage": "1d8",
+        "natural": true,
+        "type": "piercing"
+      },
+      "tusks": {
+        "damage": "1d8",
+        "natural": true,
+        "type": "piercing"
+      },
+      "quills": {
+        "damage": "1d3",
+        "natural": true,
+        "type": "piercing"
+      },
+      "headbutt": {
+        "damage": "1d4",
+        "natural": true,
+        "type": "bludgeoning"
+      },
+      "beak": {
+        "damage": "1d4",
+        "natural": true,
+        "type": "piercing"
+      },
+      "flutter": {
+        "damage": "1d2",
+        "natural": true,
+        "type": "bludgeoning"
+      },
+      "tentacles": {
+        "damage": "1d4+1",
+        "natural": true,
+        "type": "bludgeoning"
+      }
     }
   },
   "masterGear": {
@@ -336,7 +722,6 @@
       }
     }
   },
-
   "consumables": {
     "discriminator": "kind",
     "groups": {
@@ -348,8 +733,20 @@
         "rarity": "common",
         "aspect": "healing",
         "value": 25,
-        "target": ["self", "ally"],
-        "effects": [{ "type": "heal", "amount": "1d4+1" }, { "type": "removeStatus", "statusName": "Bleeding" }]
+        "target": [
+          "self",
+          "ally"
+        ],
+        "effects": [
+          {
+            "type": "heal",
+            "amount": "1d4+1"
+          },
+          {
+            "type": "removeStatus",
+            "statusName": "Bleeding"
+          }
+        ]
       },
       "antidote": {
         "name": "Antidote",
@@ -359,8 +756,16 @@
         "rarity": "common",
         "aspect": "poison",
         "value": 30,
-        "target": ["self", "ally"],
-        "effects": [{ "type": "removeStatus", "statusName": "Poison" }]
+        "target": [
+          "self",
+          "ally"
+        ],
+        "effects": [
+          {
+            "type": "removeStatus",
+            "statusName": "Poison"
+          }
+        ]
       },
       "minor_healing_potion": {
         "name": "Minor Potion of Healing",
@@ -370,8 +775,16 @@
         "rarity": "common",
         "aspect": "healing",
         "value": 50,
-        "target": ["self", "ally"],
-        "effects": [{ "type": "heal", "amount": "2d4+2" }]
+        "target": [
+          "self",
+          "ally"
+        ],
+        "effects": [
+          {
+            "type": "heal",
+            "amount": "2d4+2"
+          }
+        ]
       },
       "major_healing_potion": {
         "name": "Major Potion of Healing",
@@ -381,8 +794,16 @@
         "kind": "potion",
         "aspect": "healing",
         "value": 150,
-        "target": ["self", "ally"],
-        "effects": [{ "type": "heal", "amount": "4d4+4" }]
+        "target": [
+          "self",
+          "ally"
+        ],
+        "effects": [
+          {
+            "type": "heal",
+            "amount": "4d4+4"
+          }
+        ]
       },
       "elixir_of_strength": {
         "name": "Elixir of Strength",
@@ -392,19 +813,59 @@
         "aspect": "strength",
         "rarity": "uncommon",
         "value": 100,
-        "target": ["self", "ally"],
+        "target": [
+          "self",
+          "ally"
+        ],
         "effects": [
           {
             "type": "buff",
             "status": {
               "name": "Enhanced Strength",
               "duration": 5,
-              "effect": { "str": 4 }
+              "effect": {
+                "str": 4
+              }
             }
           }
         ]
       },
-
+      "alchemist_fire": {
+        "name": "Alchemist's Fire",
+        "description": "A sticky, flammable substance that ignites when exposed to air.",
+        "type": "consumable",
+        "kind": "flask",
+        "aspect": "fire",
+        "rarity": "common",
+        "value": 40,
+        "target": [
+          "enemy"
+        ],
+        "effects": [
+          {
+            "type": "damage",
+            "amount": "1d6",
+            "kind": "fire"
+          },
+          {
+            "type": "debuff",
+            "status": {
+              "name": "Burning",
+              "duration": 3,
+              "effect": {
+                "onTurnEnd": [
+                  {
+                    "type": "damage",
+                    "amount": "=1d4",
+                    "kind": "fire"
+                  }
+                ]
+              }
+            },
+            "saveDC": 15
+          }
+        ]
+      },
       "wand_of_cure_minor_wounds": {
         "name": "Wand of Cure Minor Wounds",
         "description": "A slender wand that can channel healing energy to mend minor wounds.",
@@ -414,7 +875,10 @@
         "aspect": "healing",
         "rarity": "common",
         "value": 100,
-        "target": ["self", "ally"],
+        "target": [
+          "self",
+          "ally"
+        ],
         "effects": [
           {
             "type": "heal",
@@ -422,7 +886,6 @@
           }
         ]
       },
-
       "wand_of_paralyzing_touch": {
         "name": "Wand of Paralyzing Touch",
         "description": "A slender wand that can deliver a paralyzing touch to a target.",
@@ -432,7 +895,9 @@
         "aspect": "arcane",
         "rarity": "uncommon",
         "value": 150,
-        "target": ["enemy"],
+        "target": [
+          "enemy"
+        ],
         "effects": [
           {
             "type": "debuff",
@@ -456,7 +921,10 @@
         "aspect": "arcane",
         "rarity": "rare",
         "value": 250,
-        "target": ["randomEnemies", 3],
+        "target": [
+          "randomEnemies",
+          3
+        ],
         "effects": [
           {
             "type": "damage",
@@ -473,14 +941,18 @@
         "aspect": "fire",
         "rarity": "common",
         "value": 20,
-        "target": ["enemy"],
+        "target": [
+          "enemy"
+        ],
         "effects": [
           {
             "type": "debuff",
             "status": {
               "name": "Oiled",
               "duration": 3,
-              "effect": { "resistFire": -2 }
+              "effect": {
+                "resistFire": -2
+              }
             },
             "saveDC": 25
           }
@@ -493,7 +965,9 @@
         "kind": "scroll",
         "rarity": "rare",
         "value": 200,
-        "target": ["enemies"],
+        "target": [
+          "enemies"
+        ],
         "effects": [
           {
             "type": "damage",
@@ -509,7 +983,10 @@
         "kind": "scroll",
         "rarity": "uncommon",
         "value": 150,
-        "target": ["self", "ally"],
+        "target": [
+          "self",
+          "ally"
+        ],
         "effects": [
           {
             "type": "removeStatus",
@@ -524,7 +1001,9 @@
         "kind": "scroll",
         "rarity": "legendary",
         "value": 1000,
-        "target": ["enemies"],
+        "target": [
+          "enemies"
+        ],
         "effects": [
           {
             "type": "damage",
@@ -536,7 +1015,14 @@
             "status": {
               "name": "Doomed",
               "duration": 3,
-              "effect": { "str": -4, "dex": -4, "con": -4, "int": -4, "wis": -4, "cha": -4 }
+              "effect": {
+                "str": -4,
+                "dex": -4,
+                "con": -4,
+                "int": -4,
+                "wis": -4,
+                "cha": -4
+              }
             },
             "saveDC": 25
           }
@@ -544,7 +1030,6 @@
       }
     }
   },
-
   "equipment": {
     "discriminator": "kind",
     "groups": {
@@ -555,7 +1040,9 @@
         "kind": "ring",
         "rarity": "rare",
         "value": 300,
-        "effect": { "ac": -2 }
+        "effect": {
+          "ac": -2
+        }
       },
       "ring_of_regeneration": {
         "name": "Ring of Regeneration",
@@ -580,7 +1067,9 @@
         "kind": "amulet",
         "rarity": "uncommon",
         "value": 200,
-        "effect": { "con": 2 }
+        "effect": {
+          "con": 2
+        }
       },
       "crown_of_insight": {
         "name": "Crown of Insight",
@@ -589,7 +1078,9 @@
         "kind": "helm",
         "rarity": "legendary",
         "value": 1000,
-        "effect": { "wis": 4 }
+        "effect": {
+          "wis": 4
+        }
       },
       "ring_of_thorns": {
         "name": "Ring of Thorns",
@@ -611,14 +1102,18 @@
       "ring_of_minor_protection": {
         "name": "Ring of Minor Protection",
         "kind": "ring",
-        "effect": { "ac": -1 },
+        "effect": {
+          "ac": -1
+        },
         "value": 50,
         "description": "A simple enchanted ring providing slight protection"
       },
       "amulet_of_vitality": {
-        "name": "Amulet of Vitality", 
+        "name": "Amulet of Vitality",
         "kind": "amulet",
-        "effect": { "con": 1 },
+        "effect": {
+          "con": 1
+        },
         "value": 50,
         "description": "A minor health charm"
       },
@@ -629,7 +1124,9 @@
         "kind": "belt",
         "rarity": "uncommon",
         "value": 250,
-        "effect": { "str": 3 }
+        "effect": {
+          "str": 3
+        }
       },
       "boots_of_swiftness": {
         "name": "Boots of Swiftness",
@@ -638,7 +1135,9 @@
         "kind": "boots",
         "rarity": "uncommon",
         "value": 200,
-        "effect": { "dex": 2 }
+        "effect": {
+          "dex": 2
+        }
       },
       "gloves_of_dexterity": {
         "name": "Gloves of Dexterity",
@@ -647,7 +1146,9 @@
         "kind": "gloves",
         "rarity": "uncommon",
         "value": 50,
-        "effect": { "dex": 1 }
+        "effect": {
+          "dex": 1
+        }
       },
       "helm_of_intellect": {
         "name": "Helm of Intellect",
@@ -656,7 +1157,9 @@
         "kind": "helm",
         "rarity": "uncommon",
         "value": 150,
-        "effect": { "int": 2 }
+        "effect": {
+          "int": 2
+        }
       },
       "mantle_of_charisma": {
         "name": "Mantle of Charisma",
@@ -665,7 +1168,9 @@
         "kind": "cloak",
         "rarity": "uncommon",
         "value": 200,
-        "effect": { "cha": 4 }
+        "effect": {
+          "cha": 4
+        }
       },
       "ring_of_the_firmament": {
         "name": "Ring of the Firmament",
@@ -674,7 +1179,11 @@
         "kind": "ring",
         "rarity": "rare",
         "value": 500,
-        "effect": { "resistFire": 0.5, "resistCold": 0.5, "resistLightning": 0.5 }
+        "effect": {
+          "resistFire": 0.5,
+          "resistCold": 0.5,
+          "resistLightning": 0.5
+        }
       },
       "helm_of_the_stars": {
         "name": "Helm of the Stars",
@@ -683,7 +1192,14 @@
         "kind": "helm",
         "rarity": "rare",
         "value": 400,
-        "effect": { "str": 1, "dex": 1, "con": 1, "int": 1, "wis": 1, "cha": 1 }
+        "effect": {
+          "str": 1,
+          "dex": 1,
+          "con": 1,
+          "int": 1,
+          "wis": 1,
+          "cha": 1
+        }
       },
       "ring_of_spell_turning": {
         "name": "Ring of Spell Turning",
@@ -696,12 +1212,14 @@
           "reflectSpellChance": 0.5,
           "resistAll": 0.2,
           "saveVersusMagic": 4,
-          "onSaveVersusMagic": [{
-            "type": "damage",
-            "amount": "=1d6",
-            "target": "attacker",
-            "kind": "true"
-          }]
+          "onSaveVersusMagic": [
+            {
+              "type": "damage",
+              "amount": "=1d6",
+              "target": "attacker",
+              "kind": "true"
+            }
+          ]
         }
       },
       "ring_of_perfect_turning": {
@@ -740,60 +1258,72 @@
       }
     }
   },
-
   "treasure": {
     "discriminator": "tier",
     "groups": {
-      "basic": [[
-        "a wooden bowl",
-        "a cloth pouch",
-        "a broken dagger",
-        "a tattered map",
-        "a wooden figurine",
-        "minor_healing_potion",
-        "firewood",
-        "rope",
-        "candle",
-        "manacles"
-      ]],
-      "negligible": [[
-        "a simple ring",
-        "a small statue",
-        "a bronze bracelet",
-        "a faded painting",
-        "major_healing_potion",
-        "crowbar",
-        "dice",
-        "lantern",
-        "flask_of_oil"
-      ]],
-      "minor": [[
-        "a small gemstone",
-        "holy_symbol",
-        "thieves_tools",
-        "antidote",
-        "elixir_of_strength",
-        "wand_of_magic_missiles",
-        "scroll_of_fireball",
-        "amulet_of_health"
-      ]],
-      "major": [[
-        "a magic sword",
-        "an enchanted ring",
-        "a crystal orb",
-        "a jeweled crown",
-        "a bag of precious gems",
-        "a rare artifact"
-      ]],
-      "legendary": [[
-        "scroll_of_apocalypse",
-        "an ancient relic",
-        "a lost tome",
-        "a sacred idol",
-        "a crown of the lost king",
-        "a fabled sword of legends",
-        "a wondrous amulet of protection"
-      ]]
+      "basic": [
+        [
+          "a wooden bowl",
+          "a cloth pouch",
+          "a broken dagger",
+          "a tattered map",
+          "a wooden figurine",
+          "minor_healing_potion",
+          "firewood",
+          "rope",
+          "candle",
+          "manacles"
+        ]
+      ],
+      "negligible": [
+        [
+          "a simple ring",
+          "a small statue",
+          "a bronze bracelet",
+          "a faded painting",
+          "major_healing_potion",
+          "crowbar",
+          "dice",
+          "lantern",
+          "flask_of_oil"
+        ]
+      ],
+      "minor": [
+        [
+          "a small gemstone",
+          "holy_symbol",
+          "thieves_tools",
+          "antidote",
+          "ring_of_minor_protection",
+          "elixir_of_strength",
+          "wand_of_magic_missiles",
+          "scroll_of_fireball",
+          "amulet_of_health"
+        ]
+      ],
+      "major": [
+        [
+          "a magic sword",
+          "an enchanted ring",
+          "ring_of_protection",
+          "boots_of_swiftness",
+          "a crystal orb",
+          "a jeweled crown",
+          "a bag of precious gems",
+          "a rare artifact"
+        ]
+      ],
+      "legendary": [
+        [
+          "scroll_of_apocalypse",
+          "an ancient relic",
+          "a lost tome",
+          "a sacred idol",
+          "a crown of the lost king",
+          "a fabled sword of legends",
+          "a wondrous amulet of protection"
+        ]
+      ]
     }
   }
 }

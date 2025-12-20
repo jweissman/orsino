@@ -1,26 +1,42 @@
-import { useEffect } from "react";
 import Deem from "../deem";
 import Combat, { CombatContext } from "./Combat";
 import { GameEvent, ReactionEvent, ResurrectEvent, UpgradeEvent } from "./Events";
 import Generator from "./Generator";
 import { CommandHandlers } from "./rules/Commands";
 import { Fighting } from "./rules/Fighting";
-import { StatusEffect, StatusModifications } from "./Status";
+import StatusHandler, { StatusEffect, StatusModifications } from "./Status";
 import Words from "./tui/Words";
 import { Combatant } from "./types/Combatant";
 import { GenerationTemplateType } from "./types/GenerationTemplateType";
 import { Roll } from "./types/Roll";
+import { SaveKind } from "./types/SaveKind";
 import Files from "./util/Files";
 import { never } from "./util/never";
 
 export type Target = "self" | "ally" | "enemy" | "allies" | "enemies" | "all" | "randomEnemies" | "deadAlly";
-export type DamageKind = "bleed" | "poison" | "psychic" | "lightning" | "fire" | "cold" | "bludgeoning" | "piercing" | "slashing" | "force" | "radiant" | "necrotic" | "acid" | "true";
-export type SaveKind = "poison" | "disease" | "death" | "magic" | "insanity" | "charm" | "fear" | "stun" | "will" | "breath" | "paralyze" | "sleep";
+
+export type DamageKind
+  = "bleed"
+  | "poison"
+  | "psychic"
+  | "lightning"
+  | "fire"
+  | "cold"
+  | "bludgeoning"
+  | "piercing"
+  | "slashing"
+  | "force"
+  | "radiant"
+  | "necrotic"
+  | "acid"
+  | "sonic"
+  | "true";
+
 
 export interface AbilityEffect {
   description?: string;
   kind?: DamageKind;
-  type: "attack" | "damage" | "heal" | "buff" | "debuff" | "flee" | "drain" | "summon" | "removeStatus" | "upgrade" | "gold" | "xp" | "resurrect" | "kill";
+  type: "attack" | "damage" | "heal" | "buff" | "debuff" | "flee" | "drain" | "summon" | "removeStatus" | "upgrade" | "gold" | "xp" | "resurrect" | "kill" | "randomEffect";
   stat?: "str" | "dex" | "con" | "int" | "wis" | "cha";
 
   amount?: string; // e.g. "=1d6", "=2d8", "3"
@@ -29,7 +45,8 @@ export interface AbilityEffect {
   statusName?: string;
   status?: StatusEffect;
   saveDC?: number;
-  saveType?: SaveKind;
+  // saveType?: SaveKind;
+  saveKind?: SaveKind;
   succeedDC?: number;
   succeedType?: SaveKind;
   chance?: number; // 0.0-1.0
@@ -56,6 +73,8 @@ export interface AbilityEffect {
   applyTraits?: string[];
 
   reflected?: boolean;
+
+  randomEffects?: AbilityEffect[];
 }
 
 export interface Ability {
@@ -397,6 +416,19 @@ export default class AbilityHandler {
       );
       events.push(...hitEvents);
       success = true;
+
+      // chance to cause status effect based on damage type
+      StatusHandler.instance.triggersForDamageType(effect.kind || "true").forEach(async (statusName) => {
+        let statusEffect = StatusHandler.instance.getStatus(statusName);
+        if (statusEffect) {
+          let statusEvents = await status(
+            user, targetCombatant,
+            statusEffect.name, { ...statusEffect.effect }, statusEffect.duration || 3
+          );
+          events.push(...statusEvents);
+        }
+      });
+
     } else if (effect.type === "heal") {
       let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
       let healEvents = await heal(user, targetCombatant, amount, context);
@@ -419,22 +451,47 @@ export default class AbilityHandler {
       events.push(...hitEvents);
       success = true;
     } else if (effect.type === "buff") {
-      if (effect.status) {
-        let statusEvents = await status(user, targetCombatant, effect.status.name, { ...effect.status.effect }, effect.status.duration);
-        events.push(...statusEvents);
-        success = true;
-      } else {
+      if (!effect.status) {
         throw new Error(`Buff effect must have a status defined`);
       }
+
+      let statusEffect = StatusHandler.instance.dereference(effect.status);
+      if (!statusEffect) {
+        throw new Error(`Buff effect has unknown status: ${JSON.stringify(effect.status)}`);
+      }
+      // let statusName = "";
+      // let statusEffect: StatusModifications | undefined;
+      // let statusDuration: number | undefined = effect.duration;
+      // if (typeof effect.status === "string") {
+      //   statusName = effect.status;
+      //   statusEffect = StatusHandler.instance.getStatus(statusName)?.effect;
+      // } else {
+      //   statusName = effect.status.name;
+      //   statusEffect = effect.status.effect;
+      // }
+
+      let statusEvents = await status(
+        user, targetCombatant,
+        statusEffect.name, { ...statusEffect.effect }, effect.duration || 3
+      );
+      events.push(...statusEvents);
+      success = true;
     } else if (effect.type === "debuff") {
       // same as buff with a save
       if (effect.status) {
+        let statusEffect = StatusHandler.instance.dereference(effect.status);
+        if (!statusEffect) {
+          throw new Error(`Buff effect has unknown status: ${JSON.stringify(effect.status)}`);
+        }
         if (!targetCombatant._savedVersusSpell) {
           let dc = (effect.saveDC || 15) + (userFx.bonusSpellDC as number || 0) + (user.level || 0); // note: we don't subtract (targetCombatant.level || 0) here
-          let { success: saved, events: saveEvents } = await save(targetCombatant, effect.saveType || "magic", dc, handlers.roll);
+          let { success: saved, events: saveEvents } = await save(targetCombatant, effect.saveKind || statusEffect.saveKind || "magic", dc, handlers.roll);
           events.push(...saveEvents);
           if (!saved) {
-            let statusEvents = await status(user, targetCombatant, effect.status.name, { ...effect.status.effect }, effect.status.duration);
+            let statusEvents = await status(user, targetCombatant,
+              // effect.status.name, { ...effect.status.effect }, effect.status.duration
+              statusEffect.name, { ...statusEffect.effect }, effect.duration || 3
+            );
             events.push(...statusEvents);
             success = true;
           }
@@ -559,6 +616,15 @@ export default class AbilityHandler {
         events.push({ type: "fall", subject: targetCombatant } as Omit<GameEvent, "turn">);
         success = true;
       }
+    } else if (effect.type === "randomEffect") {
+      if (!effect.randomEffects || effect.randomEffects.length === 0) {
+        throw new Error(`randomEffect type must have randomEffects defined`);
+      }
+      let randomIndex = Math.floor(Math.random() * effect.randomEffects.length);
+      let randomEffect = effect.randomEffects[randomIndex];
+      let result = await this.handleEffect(name, randomEffect, user, targetCombatant, context, handlers);
+      success = result.success;
+      events.push(...result.events);
     }
     else {
       // throw new Error(`Unknown effect type: ${effect.type}`);

@@ -9,7 +9,7 @@ type AbilityAnalysis = {
   damage: boolean;
   buff: boolean;
   debuff: boolean;
-  defense: boolean;
+  // defense: boolean;
   aoe: boolean;
   flee: boolean;
   summon: boolean;
@@ -112,12 +112,12 @@ export class AbilityScoring {
         }
       });
     }
-    if (analysis.defense) {
-      // are we low on hp?
-      if (user.hp / user.maxHp <= 0.5) {
-        score += 5;
-      }
-    }
+    // if (analysis.defense) {
+    //   // are we low on hp?
+    //   if (user.hp / user.maxHp <= 0.5) {
+    //     score += 5;
+    //   }
+    // }
     if (analysis.buff) {
       // if we already _have_ this buff and it targets ["self"] -- don't use it
       if (ability.target.includes("self") && ability.target.length === 1 &&
@@ -189,11 +189,12 @@ export class AbilityScoring {
     let aoe = ability.target.includes("enemies");
     let buff = ability.effects.some(e => e.type === "buff");
     let debuff = ability.effects.some(e => e.type === "debuff");
-    let defense = ability.effects.some(e => e.type === "buff" && e.status?.effect.ac);
+    // let defense = ability.effects.some(e => e.type === "buff"
+      // && e.status?.effect.ac);
     let flee = ability.effects.some(e => e.type === "flee");
     let summon = ability.effects.some(e => e.type === "summon");
     let rez = ability.effects.some(e => e.type === "resurrect");
 
-    return { attack, heal, damage, buff, debuff, defense, aoe, flee, summon, rez };
+    return { attack, heal, damage, buff, debuff, aoe, flee, summon, rez };
   }
 }

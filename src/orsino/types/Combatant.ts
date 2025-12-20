@@ -1,5 +1,6 @@
-import { DamageKind, SaveKind } from "../Ability";
+import { DamageKind } from "../Ability";
 import { StatusEffect } from "../Status";
+import { SaveKind } from "./SaveKind";
 
 export type EquipmentSlot = 'ring1' | 'ring2' | 'amulet' | 'cloak' | 'boots' | 'helm' | 'gloves' | 'belt';
 export interface Combatant {

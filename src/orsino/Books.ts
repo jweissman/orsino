@@ -1,6 +1,7 @@
 import Deem from "../deem";
 import AbilityHandler from "./Ability";
 import Generator from "./Generator";
+import StatusHandler from "./Status";
 import { Template } from "./Template";
 import TraitHandler from "./Trait";
 import Presenter from "./tui/Presenter";
@@ -8,28 +9,72 @@ import Words from "./tui/Words";
 import { Combatant } from "./types/Combatant";
 
 export default class Books {
-  static async monsters(options: Record<string, any> = {}) {
+  static async bootstrap() {
     await AbilityHandler.instance.loadAbilities();
     await TraitHandler.instance.loadTraits();
+    await StatusHandler.instance.loadStatuses();
     await Template.bootstrapDeem();
+  }
 
-    console.log(`## Monsters\n`);
-    const monsterTypes = await Deem.evaluate("gather(monsterTypeModifier)");
-    monsterTypes.sort((a: string, b: string) => a.localeCompare(b));
-    for (const monsterType of monsterTypes) {
-      let monster = await Generator.gen("monster", {
-        setting: 'fantasy', monster_type: monsterType, monster_aspect: 'wildtype', rank: 'standard',
-        ...options
-      });
-      // console.log(`\n=== ${monster.name} ===\n`);
-      console.log(await Presenter.markdownCharacterRecord(monster as Combatant));
+  static async monsters(options: Record<string, any> = {}) {
+    await this.bootstrap();
+
+    // console.log(`## Monsters\n`);
+    const monsterKinds = await Deem.evaluate("gather(monsterKind)");
+    monsterKinds.sort((a: string, b: string) => a.localeCompare(b));
+    for (const monsterKind of monsterKinds) {
+      console.log(`\n## ${Words.capitalize(monsterKind)}s\n`);
+      let monsterNames = await Deem.evaluate("lookup(monsterKind, '" + monsterKind + "')");
+      monsterNames.sort((a: string, b: string) => a.localeCompare(b));
+
+      if (monsterKind === "elemental") {
+        // loop through known elements
+        let elements = await Deem.evaluate("gather(elementalModifiers)");
+        for (const element of elements) {
+          for (const monsterName of monsterNames) {
+            let monster = await Generator.gen("monster", {
+              setting: 'fantasy',
+              monster_type: monsterName,
+              monster_aspect: 'wildtype',
+              rank: 'standard',
+              element,
+              ...options
+            });
+            console.log(
+              await Presenter.markdownCharacterRecord(monster as Combatant)
+            )
+          }
+        }
+      } else {
+        for (const monsterName of monsterNames) {
+          let monster = await Generator.gen("monster", {
+            setting: 'fantasy',
+            monster_type: monsterName,
+            monster_aspect: 'wildtype',
+            rank: 'standard',
+            ...options
+          });
+          console.log(
+            await Presenter.markdownCharacterRecord(monster as Combatant)
+          )
+        }
+      }
     }
+    // const monsterTypes = await Deem.evaluate("gather(monsterTypeModifier)");
+    // monsterTypes.sort((a: string, b: string) => a.localeCompare(b));
+    // for (const monsterType of monsterTypes) {
+    //   let monster = await Generator.gen("monster", {
+    //     setting: 'fantasy', monster_type: monsterType, monster_aspect: 'wildtype', rank: 'standard',
+    //     ...options
+    //   });
+
+    //   // console.log(`\n=== ${monster.name} ===\n`);
+    //   console.log(await Presenter.markdownCharacterRecord(monster as Combatant));
+    // }
   }
 
   static async skillbook(_options: Record<string, any> = {}) {
-    await AbilityHandler.instance.loadAbilities();
-    await TraitHandler.instance.loadTraits();
-    await Template.bootstrapDeem();
+    await this.bootstrap();
 
     console.log(`## Skills\n`);
 
@@ -84,9 +129,7 @@ export default class Books {
   }
 
   static async spellbook(_options: Record<string, any> = {}) {
-    await AbilityHandler.instance.loadAbilities();
-    await TraitHandler.instance.loadTraits();
-    await Template.bootstrapDeem();
+    await this.bootstrap();
 
     console.log(`## Spells\n`);
     let aspects = ['arcane', 'divine'];
@@ -138,9 +181,7 @@ export default class Books {
   }
 
   static async itembook(_options: Record<string, any> = {}) {
-    await AbilityHandler.instance.loadAbilities();
-    await TraitHandler.instance.loadTraits();
-    await Template.bootstrapDeem();
+    await this.bootstrap();
 
     console.log(`## Items\n`);
     // magic items

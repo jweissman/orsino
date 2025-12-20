@@ -1,4 +1,4 @@
-import AbilityHandler, { AbilityEffect, DamageKind, SaveKind } from "../Ability";
+import AbilityHandler, { AbilityEffect, DamageKind } from "../Ability";
 import { RollResult } from "../types/RollResult";
 import { GameEvent, FallenEvent, HealEvent, HitEvent, MissEvent, StatusEffectEvent, StatusExpireEvent, SummonEvent, SaveEvent, DamageBonus, DamageReduction, DamageAbsorb, UnsummonEvent } from "../Events";
 import Stylist from "../tui/Style";
@@ -11,6 +11,7 @@ import Combat, { CombatContext } from "../Combat";
 import Presenter from "../tui/Presenter";
 import Deem from "../../deem";
 import { StatusModifications } from "../Status";
+import { SaveKind } from "../types/SaveKind";
 
 type TimelessEvent = Omit<GameEvent, "turn">;
 
@@ -25,10 +26,10 @@ export type CommandHandlers = {
     healer: Combatant, target: Combatant, amount: number,
     combatContext: CombatContext
   ) => Promise<TimelessEvent[]>;
-  status: (user: Combatant, target: Combatant, name: string, effect: { [key: string]: any }, duration?: number) => Promise<TimelessEvent[]>;
+  status: (user: Combatant, target: Combatant, name: string, effect: StatusModifications, duration?: number) => Promise<TimelessEvent[]>;
   removeStatus: (target: Combatant, name: string) => Promise<TimelessEvent[]>;
   // removeItem: (user: Combatant, item: keyof Team) => Promise<TimelessEvent[]>;
-  save: (target: Combatant, saveType: SaveKind, dc: number, roll: Roll) => Promise<{
+  save: (target: Combatant, saveKind: SaveKind, dc: number, roll: Roll) => Promise<{
     success: boolean;
     events: TimelessEvent[];
   }>;
@@ -153,16 +154,16 @@ export class Commands {
     return events;
   }
 
-  static async handleSave(target: Combatant, saveType: SaveKind, dc: number = 15, roll: Roll): Promise<{ success: boolean, events: TimelessEvent[] }> {
+  static async handleSave(target: Combatant, saveKind: SaveKind, dc: number = 15, roll: Roll): Promise<{ success: boolean, events: TimelessEvent[] }> {
     let targetFx = await Fighting.gatherEffects(target);
-    let saveKind = saveType.charAt(0).toUpperCase() + saveType.slice(1);
-    let isImmune = (targetFx[`immune${saveKind}` as keyof StatusModifications] as boolean);
+    let saveKindName = saveKind.charAt(0).toUpperCase() + saveKind.slice(1);
+    let isImmune = (targetFx[`immune${saveKindName}` as keyof StatusModifications] as boolean);
       // || (targetFx.immuneAll as boolean);
     if (isImmune) {
       return { success: true, events: [{ type: "save", subject: target, success: true, dc, immune: true, reason: "immunity", versus: saveKind } as Omit<SaveEvent, "turn">] };
     }
 
-    let saveVersusType: keyof StatusModifications = `saveVersus${saveKind}` as keyof StatusModifications;
+    let saveVersusType: keyof StatusModifications = `saveVersus${saveKindName}` as keyof StatusModifications;
     const saveBonus: number = {
       "death": Fighting.statMod(target.con),
       "poison": Fighting.statMod(target.con),
@@ -176,14 +177,14 @@ export class Commands {
       "sleep": Fighting.statMod(target.wis),
       "stun": Fighting.statMod(target.con),
       "insanity": Fighting.statMod(target.int),
-    }[saveType] || 0;
+    }[saveKind] || 0;
 
     const saveValue = (targetFx[saveVersusType] as number || 0) + (targetFx.saveVersusAll as number || 0) + saveBonus;
     const saveVersus = dc - saveValue - target.level;
     // const saveVersus = dc - (targetFx[saveVersusType] as number || 0) - target.level;
     // let saved = false;
     target.savedTimes = target.savedTimes || {};
-    let saveCount = target.savedTimes[saveType] || 0;
+    let saveCount = target.savedTimes[saveKind] || 0;
     if (saveCount >= 3) {
       return { success: false, events: [{ type: "save", subject: target, success: false, dc, immune: false, reason: "max saves reached", versus: saveKind } as Omit<SaveEvent, "turn">] };
     }
@@ -194,7 +195,7 @@ export class Commands {
     if (success) {
       // saved = true;
 
-      target.savedTimes[saveType] = (target.savedTimes[saveType] || 0) + 1;
+      target.savedTimes[saveKind] = (target.savedTimes[saveKind] || 0) + 1;
       // return { success: true, events: [{ type: "save", versus: saveKind, subject: target, success: true, dc, immune: false, reason: "successful roll" } as Omit<SaveEvent, "turn">] };
 
       // check for onResistX effects
@@ -251,11 +252,11 @@ export class Commands {
       return [];
     }
     
-    if (defenderEffects.immuneDamage) {
-      // could emit immune event?
-      events.push({ type: "resist", subject: defender, target: defender, damageKind, originalDamage: damage, finalDamage: 0, sources: defenderFxWithNames.immuneDamage?.sources || [] } as Omit<GameEvent, "turn">);
-      return [];
-    }
+    // if (defenderEffects.immuneDamage) {
+    //   // could emit immune event?
+    //   events.push({ type: "resist", subject: defender, target: defender, damageKind, originalDamage: damage, finalDamage: 0, sources: defenderFxWithNames.immuneDamage?.sources || [] } as Omit<GameEvent, "turn">);
+    //   return [];
+    // }
 
     if (attackerEffects.bonusDamage && attacker != defender) {
       let sources = attackerFxWithNames.bonusDamage?.sources || [];

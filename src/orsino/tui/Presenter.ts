@@ -5,7 +5,7 @@ import { Fighting } from "../rules/Fighting";
 import AbilityHandler, { Ability, AbilityEffect, Target } from "../Ability";
 import TraitHandler from "../Trait";
 import Combat from "../Combat";
-import { StatusEffect, StatusModifications } from "../Status";
+import StatusHandler, { StatusEffect, StatusModifications } from "../Status";
 import { never } from "../util/never";
 import Deem from "../../deem";
 
@@ -109,6 +109,10 @@ export default class Presenter {
   }
 
   static async characterRecord(combatant: Combatant) {
+    await AbilityHandler.instance.loadAbilities();
+    await TraitHandler.instance.loadTraits();
+    await StatusHandler.instance.loadStatuses();
+
     let record = "";
     // record += (Stylist.bold("\n\nCharacter Record\n"));
     record += (Stylist.format(`${this.combatant(combatant)}\t${(await this.statLine(combatant))}\n`, 'underline'));
@@ -400,14 +404,35 @@ export default class Presenter {
     return headers + partyDisplay;
   }
 
-  static describeStatusWithName(status: StatusEffect): string {
-    return `${status.name} (${this.describeStatus(status)})`;
+  static describeStatusWithName(status: StatusEffect | string): string {
+    let statusEffect = StatusHandler.instance.dereference(status);
+        if (!statusEffect) {
+          throw new Error(`Buff effect has unknown status: ${JSON.stringify(status)}`);
+        }
+
+    // let concreteStatus: StatusEffect;
+    // if (typeof status === 'string') {
+    //   const fetchedStatus = StatusHandler.instance.getStatus(status);
+    //   if (!fetchedStatus) {
+    //     throw new Error(`Status ${status} not found`);
+    //   }
+    //   concreteStatus = fetchedStatus;
+    // } else {
+    //   concreteStatus = status;
+    // }
+    return `${statusEffect.name} (${this.describeStatus(statusEffect)})`;
     // return this.analyzeStatus(status);
   }
 
-  static describeStatus(status: StatusEffect): string {
+  static describeStatus(status: StatusEffect | string): string {
+    let statusEffect = StatusHandler.instance.dereference(status);
+        if (!statusEffect) {
+          throw new Error(`Buff effect has unknown status: ${JSON.stringify(status)}`);
+        }
+
+
  //(status.description ? status.description + " " : '') +
-    return Words.capitalize(this.analyzeStatus(status));
+    return Words.capitalize(this.analyzeStatus(statusEffect));
   }
 
   static analyzeStatus(status: StatusEffect): string {
@@ -524,6 +549,7 @@ export default class Presenter {
         case "resistRadiant":
         case "resistNecrotic":
         case "resistAcid":
+        case "resistSonic":
         case "resistTrue":
         case "resistAll":
           if (value as number > 0) {
@@ -566,11 +592,11 @@ export default class Presenter {
             parts.push(`Immunity to ${Words.humanize(k.replace("immune", ""))}`);
           }
           break;
-        case "immuneDamage":
-          if (value) {
-            parts.push(`Immunity to all damage`);
-          }
-          break;
+        // case "immuneDamage":
+        //   if (value) {
+        //     parts.push(`Immunity to all damage`);
+        //   }
+        //   break;
         case "noActions":
           if (value) {
             parts.push(`Cannot take actions`);
@@ -846,6 +872,10 @@ export default class Presenter {
         description = (`Gain ${amount} gold`); break;
       case "xp":
         description = (`Gain ${amount} XP`); break;
+      case "randomEffect":
+        description = (`Apply one of the following random effects to ${targetDescription}: ${
+          (effect.randomEffects || []).map((opt: AbilityEffect) => this.describeEffect(opt, targetDescription)).join('; ')
+        }`); break;
       default: return never(effect.type);
     }
 

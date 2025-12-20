@@ -1,5 +1,7 @@
 import { AbilityEffect } from "./Ability";
 import { Combatant } from "./types/Combatant";
+import { SaveKind } from "./types/SaveKind";
+import Files from "./util/Files";
 
 export interface StatusModifications {
   changeAllegiance?: boolean;
@@ -39,7 +41,9 @@ export interface StatusModifications {
   resistRadiant?: number;
   resistNecrotic?: number;
   resistAcid?: number;
+  resistSonic?: number;
   resistTrue?: number;
+
   resistAll?: number
 
   saveVersusPoison?: number;
@@ -68,10 +72,9 @@ export interface StatusModifications {
   immuneBreath?: boolean;
   immuneParalyze?: boolean;
   immuneSleep?: boolean;
-  // this is way too powerful!
-  // immuneAll?: boolean;
 
-  immuneDamage?: boolean;
+  // maybe too powerful also??
+  // immuneDamage?: boolean;
   // immunePhysical?: boolean;
 
   noActions?: boolean;
@@ -165,8 +168,56 @@ export interface StatusEffect {
   condition?: {
     weapon?: { weight?: 'light' | 'medium' | 'heavy' };
   }
+
+  trigger?: {
+    damage?: string;
+  }
+
+  saveKind?: SaveKind;
 }
 
+type StatusDictionary = { [key: string]: StatusEffect };
 export default class StatusHandler {
-  // todo - load statuses from big statuses JSON (to be extracted from abilities...) for indirection/consistency
+  statusDictionary: StatusDictionary = {}
+  loaded: boolean = false;
+
+  static instance: StatusHandler = new StatusHandler();
+
+  async loadStatuses() {
+    if (this.loaded) return;
+    const statuses: StatusDictionary = await Files.readJSON<StatusDictionary>("./settings/fantasy/statuses.json");
+    this.statusDictionary = statuses;
+    this.loaded = true;
+  }
+
+  triggersForDamageType(damageType: string): string[] {
+    const triggers: string[] = [];
+    for (const [statusName, status] of Object.entries(this.statusDictionary)) {
+      if (status.trigger && status.trigger.damage === damageType) {
+        triggers.push(statusName);
+      }
+    }
+    return triggers;
+  }
+
+  getStatus(statusName: string): StatusEffect | undefined {
+    return this.statusDictionary[statusName];
+  }
+
+  get statusList(): StatusEffect[] {
+    return Object.values(this.statusDictionary);
+  }
+
+  dereference(statusNameOrObject: string | StatusEffect): StatusEffect | null {
+    if (typeof statusNameOrObject === "string") {
+      const status = this.getStatus(statusNameOrObject);
+      if (!status) {
+        console.warn(`Status "${statusNameOrObject}" not found in status dictionary.`);
+        return null;
+      }
+      return status;
+    } else {
+      return statusNameOrObject;
+    }
+  }
 }

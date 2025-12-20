@@ -65,13 +65,8 @@
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Defending",
-          "effect": {
-            "ac": -2
-          },
-          "duration": 2
-        }
+        "status": "defending",
+        "duration": 2
       }
     ]
   },
@@ -134,7 +129,7 @@
             "noActions": true
           }
         },
-        "saveType": "dex",
+        "saveKind": "dex",
         "saveDC": 14
       }
     ]
@@ -263,7 +258,7 @@
         },
         "saveNegates": true,
         "saveDC": 15,
-        "saveType": "con"
+        "saveKind": "con"
       }
     ]
   },
@@ -297,7 +292,7 @@
             "toHit": -4
           }
         },
-        "saveType": "will",
+        "saveKind": "will",
         "saveDC": 18
       }
     ]
@@ -656,7 +651,7 @@
             "noActions": true
           }
         },
-        "saveType": "will",
+        "saveKind": "will",
         "saveDC": 10
       }
     ]
@@ -705,7 +700,7 @@
             "changeAllegiance": true
           }
         },
-        "saveType": "charm",
+        "saveKind": "charm",
         "saveDC": 16
       }
     ]
@@ -826,7 +821,7 @@
             "noActions": true
           }
         },
-        "saveType": "sleep",
+        "saveKind": "sleep",
         "saveDC": 12
       }
     ]
@@ -918,7 +913,7 @@
             "toHit": -1
           }
         },
-        "saveType": "will",
+        "saveKind": "will",
         "saveDC": 10
       }
     ]
@@ -965,7 +960,7 @@
             "onAttackHit": [
               {
                 "type": "debuff",
-                "saveType": "poison",
+                "saveKind": "poison",
                 "saveDC": 12,
                 "status": {
                   "name": "Poison",
@@ -1020,7 +1015,7 @@
             "forceTarget": "you"
           }
         },
-        "saveType": "will",
+        "saveKind": "will",
         "saveDC": 18
       }
     ]
@@ -1063,7 +1058,7 @@
             "allRolls": -1
           }
         },
-        "saveType": "fear",
+        "saveKind": "fear",
         "saveDC": 12
       }
     ]
@@ -1081,7 +1076,7 @@
     "effects": [
       {
         "type": "debuff",
-        "saveType": "will",
+        "saveKind": "will",
         "saveDC": 10,
         "status": {
           "name": "Cursed",
@@ -1111,7 +1106,7 @@
     "effects": [
       {
         "type": "debuff",
-        "saveType": "will",
+        "saveKind": "will",
         "saveDC": 15,
         "status": {
           "name": "Cursed",
@@ -1160,7 +1155,7 @@
             ]
           }
         },
-        "saveType": "death",
+        "saveKind": "death",
         "saveDC": 10
       }
     ]
@@ -1249,7 +1244,7 @@
             ]
           }
         },
-        "saveType": "poison",
+        "saveKind": "poison",
         "saveDC": 10
       }
     ]
@@ -1285,7 +1280,7 @@
             ]
           }
         },
-        "saveType": "poison",
+        "saveKind": "poison",
         "saveDC": 10
       }
     ]
@@ -1314,19 +1309,19 @@
             "noActions": true
           }
         },
-        "saveType": "stun",
+        "saveKind": "stun",
         "saveDC": 15
       },
       {
         "type": "debuff",
         "status": {
-          "name": "Chaos",
+          "name": "Charmed",
           "duration": 2,
           "effect": {
             "changeAllegiance": true
           }
         },
-        "saveType": "insanity",
+        "saveKind": "insanity",
         "saveDC": 12
       }
     ]
@@ -1378,7 +1373,7 @@
             "noActions": true
           }
         },
-        "saveType": "will",
+        "saveKind": "will",
         "saveDC": 12
       }
     ]
@@ -1409,7 +1404,7 @@
             "noActions": true
           }
         },
-        "saveType": "stun",
+        "saveKind": "stun",
         "saveDC": 12
       }
     ]
@@ -1434,7 +1429,7 @@
             "toHit": -2
           }
         },
-        "saveType": "dex",
+        "saveKind": "dex",
         "saveDC": 10
       }
     ]
@@ -1557,7 +1552,7 @@
             "dex": -5
           }
         },
-        "saveType": "con",
+        "saveKind": "con",
         "saveDC": 10
       }
     ]
@@ -1736,7 +1731,7 @@
             "noActions": true
           }
         },
-        "saveType": "paralyze",
+        "saveKind": "paralyze",
         "saveDC": 14
       }
     ]
@@ -1898,7 +1893,7 @@
             "toHit": -4
           }
         },
-        "saveType": "magic",
+        "saveKind": "magic",
         "saveDC": 14
       }
     ]
@@ -1954,7 +1949,7 @@
             "initiative": -5
           }
         },
-        "saveType": "dex",
+        "saveKind": "dex",
         "saveDC": 12
       }
     ]
@@ -2002,7 +1997,7 @@
             "dex": -5
           }
         },
-        "saveType": "dex",
+        "saveKind": "dex",
         "saveDC": 14
       }
     ]
@@ -2052,7 +2047,7 @@
             "noActions": true
           }
         },
-        "saveType": "con",
+        "saveKind": "con",
         "saveDC": 16
       }
     ]
@@ -2077,7 +2072,7 @@
             "randomActions": true
           }
         },
-        "saveType": "will",
+        "saveKind": "will",
         "saveDC": 15
       }
     ]
@@ -2099,11 +2094,16 @@
           "name": "Petrified",
           "effect": {
             "noActions": true,
-            "immuneDamage": true
+            "immuneFear": true,
+            "immuneCharm": true,
+            "immuneStun": true,
+            "immuneSleep": true,
+            "immunePoison": true,
+            "immuneDisease": true
           },
           "duration": 10
         },
-        "saveType": "con",
+        "saveKind": "con",
         "saveDC": 18
       }
     ]
@@ -2112,10 +2112,10 @@
     "name": "Detonation",
     "type": "spell",
     "alignment": "evil",
-    "level": 3,
+    "level": 0,
     "aspect": "arcane",
     "school": "evocation",
-    "description": "Countdown to a fiery explosion, dealing 4d6 fire damage to all enemies in a 10-foot radius.",
+    "description": "Countdown to a fiery explosion.",
     "target": [
       "self"
     ],
@@ -2147,7 +2147,7 @@
     "name": "Arrow Volley",
     "type": "skill",
     "aspect": "physical",
-    "description": "Shoot a volley of arrows at all enemies, dealing 3d4 piercing damage.",
+    "description": "Shoot a volley of arrows.",
     "target": [
       "enemies"
     ],
@@ -2165,7 +2165,7 @@
     "type": "spell",
     "level": 2,
     "aspect": "dark",
-    "description": "Inflict a debilitating disease on an enemy, causing them to take 1d4 necrotic damage at the end of each of their turns.",
+    "description": "Inflict a debilitating disease on a foe.",
     "target": [
       "enemy"
     ],
@@ -2185,7 +2185,7 @@
             ]
           }
         },
-        "saveType": "fortitude",
+        "saveKind": "fortitude",
         "saveDC": 16
       }
     ]
@@ -2221,7 +2221,7 @@
             ]
           }
         },
-        "saveType": "fortitude",
+        "saveKind": "fortitude",
         "saveDC": 16
       }
     ]
@@ -2274,7 +2274,7 @@
     "effects": [
       {
         "type": "kill",
-        "saveType": "fortitude",
+        "saveKind": "fortitude",
         "saveDC": 20
       }
     ]
@@ -2395,7 +2395,7 @@
             "allRolls": -1
           }
         },
-        "saveType": "will",
+        "saveKind": "will",
         "saveDC": 15
       }
     ]
@@ -2420,12 +2420,12 @@
       },
       {
         "type": "kill",
-        "saveType": "fortitude",
+        "saveKind": "fortitude",
         "saveDC": 10
       },
       {
         "type": "debuff",
-        "saveType": "will",
+        "saveKind": "will",
         "saveDC": 15,
         "status": {
           "name": "Cursed",
@@ -2501,7 +2501,7 @@
             "toHit": -4
           }
         },
-        "saveType": "fortitude",
+        "saveKind": "fortitude",
         "saveDC": 16
       },
       {
@@ -2521,7 +2521,7 @@
             ]
           }
         },
-        "saveType": "will",
+        "saveKind": "will",
         "saveDC": 14
       }
     ]
@@ -2546,7 +2546,7 @@
             "saveVersusWill": -2
           }
         },
-        "saveType": "insanity",
+        "saveKind": "insanity",
         "saveDC": 15
       }
     ]
@@ -2571,13 +2571,14 @@
           "name": "Deafened",
           "duration": 4,
           "effect": {
+            "resistSonic": 0.5,
             "bonusDamage": -2,
             "ac": 2,
             "toHit": -2,
             "allSaves": -1
           }
         },
-        "saveType": "fortitude",
+        "saveKind": "fortitude",
         "saveDC": 18
       }
     ]
@@ -2740,7 +2741,7 @@
             "noActions": true
           }
         },
-        "saveType": "paralyze",
+        "saveKind": "paralyze",
         "saveDC": 20
       }
     ]
@@ -2948,6 +2949,170 @@
                 "target": "self"
               }
             ]
+          }
+        }
+      }
+    ]
+  },
+
+  "sandstorm": {
+    "name": "Sandstorm",
+    "type": "spell",
+    "level": 4,
+    "aspect": "arcane",
+    "school": "evocation",
+    "description": "Create a swirling sandstorm that damages and blinds enemies within it for 3 rounds.",
+    "target": [ "enemies" ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=2d6",
+        "kind": "bludgeoning"
+      },
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Blinded",
+          "duration": 3,
+          "effect": {
+            "toHit": -4
+          }
+        },
+        "saveKind": "fortitude",
+        "saveDC": 15
+      }
+    ]
+  },
+
+  "scald": {
+    "name": "Scald",
+    "type": "spell",
+    "level": 2,
+    "aspect": "arcane",
+    "school": "evocation",
+    "description": "Blast an enemy with superheated steam.",
+    "target": [ "enemy" ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=3d6",
+        "kind": "fire",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Scalded",
+          "duration": 2,
+          "effect": {
+            "toHit": -1,
+            "allRolls": -2
+          }
+        },
+        "saveKind": "fortitude",
+        "saveDC": 14
+      }
+    ]
+  },
+
+  "prismatic_spray": {
+    "name": "Prismatic Spray",
+    "type": "spell",
+    "level": 1,
+    "aspect": "arcane",
+    "school": "evocation",
+    "description": "A dazzling array of multicolored beams springs from your hand.",
+    "target": [ "randomEnemies", 5 ],
+    "effects": [
+      {
+        "type": "randomEffect",
+        "randomEffects": [
+          {
+            "type": "damage",
+            "amount": "=1d6+1",
+            "kind": "fire",
+            "saveForHalf": true,
+            "target": "enemy"
+          },
+          {
+            "type": "damage",
+            "amount": "=1d4+1",
+            "kind": "cold",
+            "saveForHalf": true,
+            "target": "enemy"
+          },
+          {
+            "type": "damage",
+            "amount": "=1d3",
+            "kind": "acid",
+            "saveForHalf": true,
+            "target": "enemy"
+          },
+          {
+            "type": "damage",
+            "amount": "=1d8",
+            "kind": "lightning",
+            "saveForHalf": true,
+            "target": "enemy"
+          },
+          {
+            "type": "damage",
+            "amount": "=1d3",
+            "kind": "poison",
+            "saveForHalf": true,
+            "target": "enemy"
+          },
+          {
+            "type": "damage",
+            "amount": "=1d6",
+            "kind": "psychic",
+            "saveForHalf": true,
+            "target": "enemy"
+          },
+          {
+            "type": "damage",
+            "amount": "=1d4+2",
+            "kind": "radiant",
+            "saveForHalf": true,
+            "target": "enemy"
+          },
+          {
+            "type": "damage",
+            "amount": "=1d6",
+            "kind": "necrotic",
+            "saveForHalf": true
+          }
+        ]
+      }
+    ]
+  },
+
+  "sound_lance": {
+    "name": "Sound Lance",
+    "type": "spell",
+    "level": 2,
+    "aspect": "arcane",
+    "school": "evocation",
+    "description": "A concentrated blast of noise explodes from your hand.",
+    "target": [ "enemy" ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=4d6",
+        "kind": "sonic",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Deafened",
+          "duration": 4,
+          "effect": {
+            "resistSonic": 0.5,
+            "bonusDamage": -2,
+            "ac": 2,
+            "toHit": -2,
+            "allSaves": -1
           }
         }
       }
