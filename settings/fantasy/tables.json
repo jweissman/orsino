@@ -1625,17 +1625,20 @@
   "monsterKind": {
     "discriminator": "monster_type",
     "groups": {
-      "giant": [ "Titan", "Behemoth", "Colossus" ],
-      "undead": [ "Lich", "Vampire", "Wraith", "Banshee", "Mummy", "Ghoul" ],
-      "demon": [ "Balor", "Marilith", "Fiend" ],
-      "elemental": [ "Sprite", "Spirit", "Ifrit", "Ooze" ],
-      "aberration": [ "Mind Destroyer", "Discerner", "Mouther" ],
-      "construct": [ "Golem", "Automaton", "Clockwork Soldier" ],
-      "celestial": [ "Angel", "Archon", "Deva", "Solar" ],
-      "fey": [ "Dryad", "Satyr", "Nymph", "Pixie" ],
-      "beast": [ "Owlbear", "Nightmare", "Wendigo", "Chimera" ]
+      "giant": [[ "Titan", "Behemoth", "Colossus" ]],
+      "undead": [[ "Lich", "Vampire", "Wraith", "Banshee", "Mummy", "Ghoul" ]],
+      "demon": [[ "Ifrit", "Balor", "Marilith", "Fiend" ]],
+      "elemental": [[
+        "Sprite", "Spirit", "Mephit", "Elemental"
+      ]],
+      "aberration": [[ "Ooze", "Mind Destroyer", "Discerner", "Mouther" ]],
+      "construct": [[ "Golem", "Automaton", "Clockwork Soldier" ]],
+      "celestial": [[ "Angel", "Archon", "Deva", "Solar" ]],
+      "fey": [[ "Dryad", "Satyr", "Nymph", "Pixie" ]],
+      "beast": [[ "Owlbear", "Nightmare", "Wendigo", "Chimera" ]]
     }
   },
+
 
   "monsterTypeClass": {
     "discriminator": "monster_type",
@@ -1654,8 +1657,11 @@
       "Fiend": "demon",
       "Sprite": "elemental",
       "Spirit": "elemental",
-      "Ifrit": "elemental",
-      "Ooze": "elemental",
+      "Ifrit": "demon",
+      "Ooze": "aberration",
+      "Mephit": "elemental",
+      "Elemental": "elemental",
+
       "Mind Destroyer": "aberration",
       "Discerner": "aberration",
       "Mouther": "aberration",
@@ -1694,8 +1700,10 @@
       "Fiend": { "str": 3, "dex": 3, "con": 3 },
       "Sprite": { "dex": 6, "cha": 4 },
       "Spirit": { "wis": 5, "int": 4, "traits": ["incorporeal"]},
-      "Ifrit": { "str": 4, "dex": 5, "con": 4, "element": "fire"},
+      "Ifrit": { "str": 4, "dex": 5, "con": 4 },
       "Ooze": { "con": 6 },
+      "Mephit": { "dex": 5, "con": -4 },
+      "Elemental": { "str": 4, "dex": 4, "con": 4 },
       "Mind Destroyer": { "int": 6, "wis": 5 },
       "Discerner": { "int": 5, "wis": 6 },
       "Mouther": { "con": 5, "int": 4, "wis": 3, "traits": ["regeneration"] },
@@ -1736,6 +1744,9 @@
       "Spirit": [ "slow", "paralyzing_touch", "hide" ],
       "Ifrit": [ "fireball", "burning_hands" ],
       "Ooze": [ "engulf"],
+      "Mephit": [],
+      "Elemental": [],
+
       "Mind Destroyer": [ "psionic_blast", "command", "confuse" ],
       "Discerner": [ "confuse", "charm", "flesh_to_stone", "paralyzing_touch", "sleep", "fear", "curse" ],
       "Mouther": [ "acid_spray", "psionic_blast" ],
@@ -1936,34 +1947,57 @@
       ]
     }
   },
-  "elements": {
+  "terrainElements": {
     "discriminator": "terrain",
     "groups": {
-      "forest": "earth",
-      "cave": "earth",
-      "swamp": "water",
-      "mountain": "earth",
-      "snow": "air",
-      "desert": "fire"
+      "forest": ["earth", "water", "air", "wood", "jewel", "mud"],
+      "cave": ["earth", "ash", "air", "jewel", "smoke", "dust"],
+      "swamp": ["water", "earth", "mud", "steam", "smoke", "salt"],
+      "mountain": ["earth", "crystal", "smoke", "storm", "lava", "sand"],
+      "snow": ["water", "ice", "air", "crystal", "steam", "dust"],
+      "desert": ["fire", "sand", "air", "salt", "ash", "dust"]
     }
   },
+
+  "elementalModifiers": {
+    "discriminator": "type",
+    "groups": {
+      "fire": { "traits": [ "fire_affinity", "water_vulnerability" ] },
+      "water": { "traits": [ "water_affinity", "earth_vulnerability" ] },
+      "earth": { "traits": [ "earth_affinity", "air_vulnerability" ] },
+      "air": { "traits": [ "air_affinity", "fire_vulnerability" ] },
+
+      "smoke": { "traits": [ "air_affinity", "fire_vulnerability" ] },
+      "lava":  { "traits": [ "fire_affinity", "water_vulnerability" ] },
+      "ice":   { "traits": [ "water_affinity", "earth_vulnerability" ] },
+      "mud":   { "traits": [ "earth_affinity", "air_vulnerability" ] },
+
+      "storm":   { "traits": [ "air_affinity", "fire_vulnerability" ] },
+      "steam":   { "traits": [ "fire_affinity", "water_vulnerability" ] },
+      "crystal": { "traits": [ "water_affinity", "earth_vulnerability" ] },
+      "sand":    { "traits": [ "earth_affinity", "air_vulnerability" ] },
+
+      "ash":     { "traits": [ "air_affinity", "fire_vulnerability" ] },
+      "salt":    { "traits": [ "fire_affinity", "water_vulnerability" ] },
+      "dust":    { "traits": [ "earth_affinity", "air_vulnerability" ] },
+      "jewel":  { "traits": [ "water_affinity", "earth_vulnerability" ] },
+
+      "wood":   { "traits": [ "earth_affinity", "air_vulnerability" ]  }
+
+    }
+  },
+
   "elementalAbilities": {
     "discriminator": "elemental_type",
     "groups": {
-      "fire": [
-        "burning_hands"
-      ],
-      "water": [
-        "drench"
-      ],
-      "earth": [
-        "earthquake"
-      ],
-      "air": [
-        "lightning_strike"
-      ]
+      "fire": [ "burning_hands" ], "water": [ "drench" ], "earth": [ "earthquake" ], "air": [ "lightning_strike" ],
+      "smoke": [ "hide" ], "lava": [ "burning_hands" ], "ice": [ "ray_of_frost" ], "mud": [ "slow" ],
+      "storm": [ "lightning_strike" ], "steam": [ "scald" ], "crystal": [ "prismatic_spray" ], "sand": [ "sandstorm" ],
+      "ash": [ "hide" ], "salt": [ "acid_spray" ], "dust": [ "poison_cloud"], "jewel": [ "prismatic_spray" ],
+      "wood": [ "ensnare" ]
     }
   },
+
   "golemSubstances": {
     "discriminator": "golem_type",
     "groups": {
@@ -1973,9 +2007,13 @@
       "wood": { "con": 1, "dex": 0, "str": -1 },
       "gold": { "con": 5, "dex": -4, "str": 2 },
       "bone": { "con": 2, "dex": -1, "str": 1 },
-      "crystal": { "con": 3, "dex": -2, "int": 1 }
+      "crystal": { "con": 3, "dex": -2, "int": 1 },
+      "silver": { "con": 4, "dex": -3, "cha": 1, "wis": 1 },
+      "glass": { "con": 1, "dex": 0, "cha": 2, "int": 1 },
+      "platinum": { "con": 5, "dex": -4, "str": 2, "cha": 1 }
     }
   },
+
   "monsterWeapon": {
     "discriminator": "monster_type",
     "groups": {

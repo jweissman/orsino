@@ -154,6 +154,12 @@ export default class Combat {
       return current.hp < weakest.hp ? current : weakest;
     }, this.living(combatants)[0]);
   }
+  static visible(combatants: Combatant[]): Combatant[] {
+    return combatants.filter(c => {
+      let invisibleEffect = c.activeEffects?.find(e => e.effect.invisible);
+      return !invisibleEffect;
+    });
+  }
 
   static async reifyTraits(combatant: Combatant): Promise<void> {
     let traitHandler = TraitHandler.instance;
@@ -675,7 +681,7 @@ export default class Combat {
     // activeFx = await Fighting.gatherEffects(combatant);
     let ctx = { subject: combatant, allies, enemies: livingEnemies };
     let events = await AbilityHandler.performHooks("onTurnEnd", combatant, ctx, Commands.handlers(this.roller), "turn end effects");
-    await this.emitAll(events, `turn end effects`, combatant);
+    await this.emitAll(events, `ends their turn`, combatant);
     // if (activeFx.onTurnEnd) {
     //   let activeEffectsWithNames = await Fighting.gatherEffectsWithNames(combatant);
     //   if (!activeEffectsWithNames || !activeEffectsWithNames.onTurnEnd) {
@@ -753,6 +759,7 @@ export default class Combat {
 
     let netHp = this.allCombatants.reduce((sum, c) => sum + c.hp, 0);
     for (const { combatant } of this.combatantsByInitiative) {
+
       // let nonplayerCombatants = this.teams[1].combatants.filter(c => c.hp > 0);
       // if (nonplayerCombatants.length === 0) {
       if (this.enemyTeam.combatants.every(c => c.hp <= 0)) {
@@ -763,10 +770,6 @@ export default class Combat {
       }
       if (combatant.hp <= 0) { continue; } // Skip defeated combatants
       if ((combatant.activeEffects || []).some((e: StatusEffect) => e.effect?.flee)) { continue; } // Skip fleeing combatants
-      let result = await this.turn(combatant);
-      if (result.haltRound) {
-        break;
-      }
 
       // tick down status
       let expiryEvents: Omit<GameEvent, "turn">[] = [];
@@ -784,47 +787,21 @@ export default class Combat {
         const activeFx: StatusEffect[] = combatant.activeEffects ?? [];
         const expired = activeFx.filter(s => s.duration === 0);
 
-        for (const status of expired) { //}combatant.activeEffects) {
-          // if (status.duration === 0) {
-          // expiryEvents.push({ type: "statusExpire", subject: combatant, effectName: status.name, turn: this.turnNumber });
-          // call into commands api instead
+        for (const status of expired) {
           expiryEvents.push(...(await Commands.handleRemoveStatusEffect(combatant, status.name)));
           let expiryHookEvents = await AbilityHandler.performHooks("onExpire", combatant, { subject: combatant, allies: this.alliesOf(combatant), enemies: this.enemiesOf(combatant) }, Commands.handlers(this.roller), "status expire hook");
           expiryEvents.push(...expiryHookEvents);
-
-          // if (status.effect.onExpire) {
-          //   let ctx = {
-          //     subject: combatant,
-          //     allies: this.alliesOf(combatant), // this.teams.find(team => team.combatants.includes(combatant))?.combatants.filter(c => c !== combatant) || [],
-          //     enemies: this.enemiesOf(combatant) // this.teams.find(team => team.combatants.includes(combatant)) === this.teams[0] ? (this.teams[1].combatants) : (this.teams[0].combatants)
-          //   };
-          //   for (const effect of status.effect.onExpire as AbilityEffect[]) {
-          //     let target = AbilityHandler.resolveTarget(effect.target || "self", combatant, ctx.allies, ctx.enemies);
-          //     let { events } = await AbilityHandler.handleEffect(
-          //       effect.description || 'status expire effect',
-          //       effect,
-          //       combatant,
-          //       target,
-          //       ctx,
-          //       Commands.handlers(this.roller)
-          //     );
-          //     // await this.emitAll(events, `Status effect ${status.name} expires`, combatant);
-          //     expiryEvents.push(...events);
-          //   }
-          // }
-          // }
         }
       }
-
-
-      // should be handled by remove effect command above
-      // combatant.activeEffects = combatant.activeEffects?.filter((it: StatusEffect) =>
-      //   it.duration === undefined || it.duration === Infinity || it.duration > 0
-      // );
 
       if (expiryEvents.length > 0) {
         await this.emitAll(expiryEvents, "effects expire", combatant);
       }
+      let result = await this.turn(combatant);
+      if (result.haltRound) {
+        break;
+      }
+
     }
 
     for (const team of this._teams) {

@@ -44,8 +44,10 @@ program.command('book <type>')
       await Books.traitbook(options);
     } else if (type === 'skill' || type === 'skills') {
       await Books.skillbook(options);
-    } else  if (type === 'item' || type === 'items') {
+    } else if (type === 'item' || type === 'items') {
       await Books.itembook(options);
+    } else if (type === 'status' || type === 'statuses') {
+      await Books.statusbook(options);
     } else {
       console.error(`Unknown book type: ${type}`);
     }

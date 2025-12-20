@@ -1,0 +1,550 @@
+{
+  "enraged": {
+    "name": "Raging",
+    "description": "Utterly overcome with fury.",
+    "effect": {
+      "toHit": 1,
+      "bonusDamage": 2,
+      "ac": 3
+    }
+  },
+  "defending": {
+    "name": "Defending",
+    "description": "Adapting a defensive stance.",
+    "effect": {
+      "ac": -2
+    }
+  },
+  "dodge": {
+    "name": "Dodging",
+    "description": "Focusing on avoiding attacks.",
+    "effect": {
+      "ac": -2,
+      "evasion": 5
+    }
+  },
+  "dug_in": {
+    "name": "Dug In",
+    "description": "Taking a fortified position.",
+    "effect": {
+      "ac": -2,
+      "allSaves": 2,
+      "toHit": -2
+    }
+  },
+  "overwatch": {
+    "name": "Overwatching",
+    "description": "Ready to strike at any enemy that comes close.",
+    "effect": {
+      "bonusDamage": 2,
+      "onEnemyMelee": [
+        {
+          "type": "attack",
+          "target": "attacker",
+          "description": "overwatch attack"
+        },
+        {
+          "type": "removeStatus",
+          "statusName": "Overwatching"
+        }
+      ]
+    }
+  },
+  "riposte": {
+    "name": "Riposting",
+    "description": "Punishing missed attacks.",
+    "effect": {
+      "evasion": 3,
+      "ac": 1,
+      "onMissReceived": [
+        {
+          "type": "attack",
+          "target": "attacker",
+          "description": "riposte"
+        }
+      ]
+    }
+  },
+  "hidden": {
+    "name": "Hidden",
+    "description": "Concealed from enemies.",
+    "effect": {
+      "ac": -4,
+      "evasion": 10,
+      "onAttack": [
+        {
+          "type": "removeStatus",
+          "statusName": "Hidden"
+        }
+      ]
+    }
+  },
+  "haste": {
+    "name": "Haste",
+    "description": "Moving with supernatural speed.",
+    "effect": {
+      "dex": 4,
+      "initiative": 10,
+      "extraAttacksPerTurn": 1,
+      "ac": -2
+    }
+  },
+  "barkskinned": {
+    "name": "Barkskinned",
+    "effect": {
+      "ac": -3
+    }
+  },
+  "mage_armored": {
+    "name": "Mage-Armored",
+    "effect": {
+      "ac": -4,
+      "tempHp": 20
+    }
+  },
+  "inspired": {
+    "name": "Inspired",
+    "effect": {
+      "toHit": 2,
+      "tempHp": 5
+    }
+  },
+  "anointed": {
+    "name": "Anointed",
+    "effect": {
+      "resistRadiant": 0.5,
+      "bonusDamage": 1,
+      "toHit": 1,
+      "allSaves": 2
+    }
+  },
+  "shielded": {
+    "name": "Shielded",
+    "effect": {
+      "ac": -2
+    }
+  },
+  "fire_resistance": {
+    "name": "Fireproof",
+    "effect": {
+      "resistFire": 0.5
+    }
+  },
+  "protected": {
+    "name": "Protected",
+    "effect": {
+      "resistNecrotic": 0.5,
+      "immuneCharm": true,
+      "immuneFear": true
+    }
+  },
+  "blessed": {
+    "name": "Blessed",
+    "effect": {
+      "toHit": 1,
+      "bonusDamage": 1
+    }
+  },
+  "warded": {
+    "name": "Warded",
+    "effect": {
+      "saveVersusMagic": 1,
+      "resistFire": 0.5,
+      "resistCold": 0.5,
+      "resistLightning": 0.5,
+      "resistForce": 1,
+      "tempHp": "=14 + 2 * #level"
+    }
+  },
+  "blurred": {
+    "name": "Blurred",
+    "effect": {
+      "saveVersusMagic": 2,
+      "ac": -1,
+      "evasion": 10
+    }
+  },
+  "mirror_images": {
+    "name": "Mirror Images",
+    "effect": {
+      "ac": -2,
+      "saveVersusAll": 2,
+      "evasion": 15
+    }
+  },
+  "reflect": {
+    "name": "Reflect",
+    "effect": {
+      "reflectDamagePercent": 0.5
+    }
+  },
+  "spellturn": {
+    "name": "Spellturn",
+    "effect": {
+      "reflectSpellChance": 0.5
+    }
+  },
+  "invulnerable": {
+    "name": "Invulnerable",
+    "effect": {
+      "untargetable": true
+    }
+  },
+  "prone": {
+    "name": "Prone",
+    "effect": {
+      "noActions": true
+    }
+  },
+  "reckless": {
+    "name": "Reckless",
+    "effect": {
+      "toHit": -2,
+      "ac": 2
+    }
+  },
+  "asleep": {
+    "name": "Asleep",
+    "effect": {
+      "noActions": true
+    },
+    "saveKind": "sleep"
+  },
+  "scalded": {
+    "name": "Scalded",
+    "effect": {
+      "allRolls": -1
+    },
+    "saveKind": "fortitude"
+  },
+  "charmed": {
+    "name": "Charmed",
+    "effect": {
+      "changeAllegiance": true
+    },
+    "saveKind": "charm"
+  },
+  "mocked": {
+    "name": "Mocked",
+    "effect": {
+      "toHit": -1,
+      "bonusDamage": -1,
+      "saveVersusAll": -1
+    },
+    "saveKind": "will"
+  },
+  "taunted": {
+    "name": "Taunted",
+    "description": "Compelled to attack the taunter if able.",
+    "effect": {
+      "forceTarget": "you"
+    },
+    "saveKind": "will"
+  },
+  "frightened": {
+    "name": "Frightened",
+    "effect": {
+      "toHit": -2,
+      "initiative": -5,
+      "allRolls": -1
+    },
+    "saveKind": "fear"
+  },
+  "cursed": {
+    "name": "Cursed",
+    "effect": {
+      "str": -1,
+      "dex": -1,
+      "int": -1,
+      "wis": -1,
+      "cha": -1,
+      "con": -1
+    },
+    "saveKind": "will"
+  },
+  "prey": {
+    "name": "Hunting Prey",
+    "effect": {
+      "ac": 2,
+      "onAttacked": [
+        {
+          "type": "damage",
+          "description": "being a marked target",
+          "target": "self",
+          "amount": "=1d8",
+          "kind": "true"
+        }
+      ]
+    }
+  },
+  "entangled": {
+    "name": "Entangled",
+    "effect": {
+      "dex": -5,
+      "toHit": -2,
+      "evasion": -5,
+      "initiative": -5
+    },
+    "saveKind": "reflex"
+  },
+  "drench": {
+    "name": "Drench",
+    "effect": {
+      "toHit": -2,
+      "resistLightning": -1,
+      "allSaves": -1
+    }
+  },
+  "silence": {
+    "name": "Silence",
+    "effect": {
+      "noSpellcasting": true
+    },
+    "saveKind": "will"
+  },
+  "slow": {
+    "name": "Slow",
+    "effect": {
+      "dex": -5
+    },
+    "saveKind": "reflex"
+  },
+  "petrified": {
+    "name": "Petrified",
+    "effect": {
+      "noActions": true,
+      "immuneFear": true,
+      "immuneCharm": true,
+      "immuneStun": true,
+      "immuneSleep": true,
+      "immunePoison": true,
+      "immuneDisease": true
+    }
+  },
+  "disabled": {
+    "name": "Disabled",
+    "effect": {
+      "noActions": true,
+      "noStatusExpiry": true
+    }
+  },
+  "infected": {
+    "name": "Infected",
+    "effect": {
+      "con": -1,
+      "saveVersusAll": -2,
+      "toHit": -1,
+      "bonusDamage": -1
+    },
+    "trigger": {
+      "damage": "bleed"
+    },
+    "saveKind": "disease"
+  },
+  "poison": {
+    "name": "Poison",
+    "effect": {
+      "onTurnEnd": [
+        {
+          "type": "damage",
+          "amount": "=1d4",
+          "kind": "true"
+        }
+      ]
+    },
+    "trigger": {
+      "damage": "poison"
+    },
+    "saveKind": "poison"
+  },
+  "confused": {
+    "name": "Confused",
+    "effect": {
+      "randomActions": true
+    },
+    "trigger": {
+      "damage": "psychic"
+    },
+    "saveKind": "will"
+  },
+  "insane": {
+    "name": "Insane",
+    "effect": {
+      "randomActions": true,
+      "allRolls": -1,
+      "saveVersusWill": -2
+    },
+    "trigger": {
+      "damage": "psychic"
+    },
+    "saveKind": "insanity"
+  },
+  "paralyzed": {
+    "name": "Paralyzed",
+    "effect": {
+      "noActions": true,
+      "str": -5,
+      "dex": -5
+    },
+    "trigger": {
+      "damage": "lightning"
+    },
+    "saveKind": "paralyze"
+  },
+  "burning": {
+    "name": "Burning",
+    "effect": {
+      "onTurnEnd": [
+        {
+          "type": "damage",
+          "amount": "=1d3",
+          "kind": "fire"
+        }
+      ]
+    },
+    "trigger": {
+      "damage": "fire"
+    },
+    "saveKind": "fortitude"
+  },
+  "frozen": {
+    "name": "Frozen",
+    "effect": {
+      "noActions": true,
+      "dex": -5
+    },
+    "trigger": {
+      "damage": "cold"
+    },
+    "saveKind": "reflex"
+  },
+  "stun": {
+    "name": "Stunned",
+    "effect": {
+      "noActions": true,
+      "allRolls": -2
+    },
+    "trigger": {
+      "damage": "bludgeoning"
+    },
+    "saveKind": "stun"
+  },
+  "bleed": {
+    "name": "Bleeding",
+    "effect": {
+      "onTurnEnd": [
+        {
+          "type": "damage",
+          "amount": "=1d2",
+          "kind": "bleed"
+        }
+      ]
+    },
+    "trigger": {
+      "damage": "piercing"
+    },
+    "saveKind": "bleed"
+  },
+  "shred": {
+    "name": "Armor Shred",
+    "effect": {
+      "ac": 2
+    },
+    "trigger": {
+      "damage": "slashing"
+    },
+    "saveKind": "reflex"
+  },
+  "fatigue": {
+    "name": "Fatigued",
+    "effect": {
+      "str": -1,
+      "dex": -1,
+      "con": -1,
+      "allRolls": -1
+    },
+    "trigger": {
+      "damage": "force"
+    },
+    "saveKind": "fortitude"
+  },
+  "blinded": {
+    "name": "Blinded",
+    "effect": {
+      "toHit": -4,
+      "evasion": -10,
+      "allRolls": -2
+    },
+    "trigger": {
+      "damage": "radiant"
+    },
+    "saveKind": "reflex"
+  },
+  "disease": {
+    "name": "Diseased",
+    "effect": {
+      "con": -2,
+      "saveVersusAll": -2,
+      "onTurnEnd": [
+        {
+          "type": "damage",
+          "amount": "=1d4",
+          "kind": "necrotic"
+        }
+      ]
+    },
+    "trigger": {
+      "damage": "necrotic"
+    },
+    "saveKind": "disease"
+  },
+  "acid_burn": {
+    "name": "Acid Burn",
+    "effect": {
+      "onTurnEnd": [
+        {
+          "type": "damage",
+          "amount": "=1d6",
+          "kind": "acid"
+        }
+      ]
+    },
+    "trigger": {
+      "damage": "acid"
+    },
+    "saveKind": "fortitude"
+  },
+  "deafened": {
+    "name": "Deafened",
+    "effect": {
+      "resistSonic": 0.5,
+      "bonusDamage": -2,
+      "ac": 2,
+      "toHit": -2,
+      "allSaves": -1
+    },
+    "trigger": {
+      "damage": "sonic"
+    },
+    "saveKind": "fortitude"
+  },
+  "invisible": {
+    "name": "Invisible",
+    "description": "Cannot be seen by enemies.",
+    "effect": {
+      "invisible": true,
+      "onAttack": [
+        {
+          "type": "removeStatus",
+          "statusName": "Invisible"
+        }
+      ],
+      "onOffensiveCasting": [
+        {
+          "type": "removeStatus",
+          "statusName": "Invisible"
+        }
+      ]
+    }
+  }
+}

@@ -830,6 +830,7 @@
       "name": "Bone Resilience",
       "description": "Arrows and pointed blades pass through you, but blunt force harms you more.",
       "effect": {
+        "immuneBleed": true,
         "resistPiercing": 0.5,
         "resistBludgeoning": -1
       }
@@ -839,7 +840,7 @@
   "incorporeal": {
     "name": "Incorporeal",
     "type": "template",
-    "description": "A being of pure spirit, able to pass through solid objects.",
+    "description": "Ghostly",
     "statuses": [{
       "name": "Ethereal Form",
       "description": "Resistant to physical damage and difficult to hit.",
@@ -976,8 +977,6 @@
       "name": "Regeneration",
       "description": "This creature regenerates health over time, allowing it to recover from wounds quickly.",
       "effect": {
-        "resistPoison": 0.1,
-        "saveVersusStun": 2,
         "onTurnEnd": [
           {
             "type": "heal",
@@ -1017,6 +1016,7 @@
         "immuneSleep": true,
         "immunePoison": true,
         "immuneDisease": true,
+        "immuneBleed": true,
         "resurrectable": false
       }
     }]
@@ -1040,12 +1040,12 @@
     "description": "Elemental",
     "statuses": [{
       "name": "Elemental Affinity",
-      "description": "Resistant to all elemental damage types.",
+      "description": "Resistant to nonstandard elemental damage types.",
       "effect": {
-        "resistFire": 0.5,
-        "resistCold": 0.5,
-        "resistLightning": 0.5,
-        "resistAcid": 0.5
+        "resistAcid": 0.1,
+        "resistSonic": 0.1,
+        "resistForce": 0.1,
+        "resistPsychic": 0.1
       }
     }]
   },
@@ -1063,6 +1063,64 @@
         "bonusDamage": 2,
         "evasion": 2,
         "resistAll": 0.1
+      }
+    }]
+  },
+
+  "air_affinity": {
+    "type": "template",
+    "description": "Air Affinity",
+    "statuses": [{
+      "name": "Air Affinity",
+      "description": "Resistant to lightning and cold damage. Immune to paralysis effects.",
+      "effect": {
+        "resistLightning": 0.5,
+        "resistCold": 0.5,
+        "resistFire": -1,
+        "immuneParalyze": true
+      }
+    }]
+  },
+
+  "fire_affinity": {
+    "type": "template",
+    "description": "Fire Affinity",
+    "statuses": [{
+      "name": "Fire Affinity",
+      "description": "Resistant to fire damage. Immune to breath effects.",
+      "effect": {
+        "resistFire": 0.5,
+        "resistCold": -1,
+        "immuneBreath": true
+      }
+    }]
+  },
+
+  "earth_affinity": {
+    "type": "template",
+    "description": "Earth Affinity",
+    "statuses": [{
+      "name": "Earth Affinity",
+      "description": "Resistant to bludgeoning damage. Immune to stun effects.",
+      "effect": {
+        "resistBludgeoning": 0.5,
+        "immuneStun": true,
+        "resistLightning": -1
+      }
+    }]
+  },
+
+  "water_affinity": {
+    "type": "template",
+    "description": "Water Affinity",
+    "statuses": [{
+      "name": "Water Affinity",
+      "description": "Resistant to cold damage.",
+      "effect": {
+        "resistCold": 0.5,
+        "resistFire": -1,
+        "resistLightning": -1,
+        "immuneWill": true
       }
     }]
   }
