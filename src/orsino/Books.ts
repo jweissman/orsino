@@ -210,4 +210,23 @@ export default class Books {
       )
     }
   }
+
+  static async statusbook(_options: Record<string, any> = {}) {
+    await this.bootstrap();
+
+    console.log(`## Status Effects\n`);
+
+    let statuses = StatusHandler.instance.statusList;
+    statuses.sort((a, b) => a.name.localeCompare(b.name));
+    console.log("| Status Effect | Description | Details |");
+    console.log("|---------------|-------------|---------|");
+
+    statuses.forEach(status => {
+      let row = `| ${status.name} | `;
+      row += status.description ? `_${status.description}_ | ` : " | ";
+      row += Presenter.describeStatus(status).replace(/\n/g, " ") + " |";
+      console.log(row);
+    });
+    
+  }
 }

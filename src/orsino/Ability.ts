@@ -224,7 +224,7 @@ export default class AbilityHandler {
           }
           break;
         case "deadAlly": targets.push(...(allies.filter(a => a.hp <= 0))); break;
-        case "enemy": targets.push(...(enemies)); break;
+        case "enemy": targets.push(...Combat.visible(enemies)); break;
         case "allies":
           if (healing) {
             targets.push(Combat.wounded(allies));
@@ -637,7 +637,9 @@ export default class AbilityHandler {
     let result = false;
     let events = [];
     let isSpell = ability.type === 'spell';
-    let isOffensive = ability.target.some(t => t.includes("enemy") || t.includes("enemies") || t.includes("randomEnemies"));
+    // let isOffensive = ability.target.some(t => t.includes("enemy") || t.includes("enemies") || t.includes("randomEnemies"));
+    let isOffensive = ability.target.some(t => ["enemy", "enemies", "randomEnemies"].includes(t));
+    console.log("AbilityHandler.perform:", ability.name, "isSpell:", isSpell, "isOffensive:", isOffensive);
     let targets: Combatant[] = [];
     if (Array.isArray(target)) {
       targets = target;
@@ -718,12 +720,12 @@ export default class AbilityHandler {
     }
 
     const enemies = context?.enemies ?? [];
-    if (result) {
+    // if (result) {
       // console.log(`${user.name} successfully uses ${ability.name} on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target.name}!`);
       if (isSpell) {
         if (isOffensive) {
           events.push(...await this.performHooks(
-            `onOffensiveCasting` as keyof StatusModifications,
+            'onOffensiveCasting',
             user,
             context,
             handlers,
@@ -731,7 +733,7 @@ export default class AbilityHandler {
           ));
           // do enemies have onEnemyOffensiveSpell reactions?
           events.push(...await this.performReactions(
-            `onEnemyOffensiveCasting` as keyof StatusModifications,
+            'onEnemyOffensiveCasting',
             enemies,
             user,
             context,
@@ -742,7 +744,7 @@ export default class AbilityHandler {
 
           // do any enemies have `onEnemySpell` reactions?
           events.push(...await this.performReactions(
-            `onEnemyCasting` as keyof StatusModifications,
+            'onEnemyCasting',
             enemies,
             user,
             context,
@@ -750,7 +752,7 @@ export default class AbilityHandler {
             ability.name
           ));
       }
-    }
+    // }
 
     return { success: result, events };
   }
@@ -766,7 +768,9 @@ export default class AbilityHandler {
 
     let hookFx = await Fighting.gatherEffects(user);
     let hookFxWithNames = await Fighting.gatherEffectsWithNames(user);
+    // console.log("performHooks:", String(hookKey), "for", user.name, "with effects:", hookFx[hookKey]);
     if (hookFx[hookKey]) {
+      // console.log(`${user.name} has hook ${String(hookKey)} due to ${Words.humanizeList(hookFxWithNames[hookKey].sources)}`);
       let hookEffects = hookFx[hookKey] as Array<AbilityEffect>;
 
       for (const hookEffect of hookEffects) {

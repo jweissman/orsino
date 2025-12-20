@@ -150,6 +150,7 @@ export interface StatusModifications {
   reflectDamagePercent?: number;
   reflectSpellChance?: number;
 
+  invisible?: boolean;
   untargetable?: boolean;
 
   // noncombat

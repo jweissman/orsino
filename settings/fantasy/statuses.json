@@ -1,6 +1,7 @@
 {
   "enraged": {
     "name": "Raging",
+    "description": "Utterly overcome with fury.",
     "effect": {
       "toHit": 1,
       "bonusDamage": 2,
@@ -9,12 +10,14 @@
   },
   "defending": {
     "name": "Defending",
+    "description": "Adapting a defensive stance.",
     "effect": {
       "ac": -2
     }
   },
   "dodge": {
     "name": "Dodging",
+    "description": "Focusing on avoiding attacks.",
     "effect": {
       "ac": -2,
       "evasion": 5
@@ -22,6 +25,7 @@
   },
   "dug_in": {
     "name": "Dug In",
+    "description": "Taking a fortified position.",
     "effect": {
       "ac": -2,
       "allSaves": 2,
@@ -30,6 +34,7 @@
   },
   "overwatch": {
     "name": "Overwatching",
+    "description": "Ready to strike at any enemy that comes close.",
     "effect": {
       "bonusDamage": 2,
       "onEnemyMelee": [
@@ -47,6 +52,7 @@
   },
   "riposte": {
     "name": "Riposting",
+    "description": "Punishing missed attacks.",
     "effect": {
       "evasion": 3,
       "ac": 1,
@@ -61,6 +67,7 @@
   },
   "hidden": {
     "name": "Hidden",
+    "description": "Concealed from enemies.",
     "effect": {
       "ac": -4,
       "evasion": 10,
@@ -74,6 +81,7 @@
   },
   "haste": {
     "name": "Haste",
+    "description": "Moving with supernatural speed.",
     "effect": {
       "dex": 4,
       "initiative": 10,
@@ -206,7 +214,8 @@
     "name": "Scalded",
     "effect": {
       "allRolls": -1
-    }
+    },
+    "saveKind": "fortitude"
   },
   "charmed": {
     "name": "Charmed",
@@ -225,7 +234,8 @@
     "saveKind": "will"
   },
   "taunted": {
-    "name": "taunted",
+    "name": "Taunted",
+    "description": "Compelled to attack the taunter if able.",
     "effect": {
       "forceTarget": "you"
     },
@@ -249,7 +259,8 @@
       "wis": -1,
       "cha": -1,
       "con": -1
-    }
+    },
+    "saveKind": "will"
   },
   "prey": {
     "name": "Hunting Prey",
@@ -273,7 +284,8 @@
       "toHit": -2,
       "evasion": -5,
       "initiative": -5
-    }
+    },
+    "saveKind": "reflex"
   },
   "drench": {
     "name": "Drench",
@@ -287,13 +299,15 @@
     "name": "Silence",
     "effect": {
       "noSpellcasting": true
-    }
+    },
+    "saveKind": "will"
   },
   "slow": {
     "name": "Slow",
     "effect": {
       "dex": -5
-    }
+    },
+    "saveKind": "reflex"
   },
   "petrified": {
     "name": "Petrified",
@@ -324,7 +338,8 @@
     },
     "trigger": {
       "damage": "bleed"
-    }
+    },
+    "saveKind": "disease"
   },
   "poison": {
     "name": "Poison",
@@ -367,7 +382,9 @@
   "paralyzed": {
     "name": "Paralyzed",
     "effect": {
-      "noActions": true
+      "noActions": true,
+      "str": -5,
+      "dex": -5
     },
     "trigger": {
       "damage": "lightning"
@@ -387,7 +404,8 @@
     },
     "trigger": {
       "damage": "fire"
-    }
+    },
+    "saveKind": "fortitude"
   },
   "frozen": {
     "name": "Frozen",
@@ -397,12 +415,14 @@
     },
     "trigger": {
       "damage": "cold"
-    }
+    },
+    "saveKind": "reflex"
   },
   "stun": {
     "name": "Stunned",
     "effect": {
-      "noActions": true
+      "noActions": true,
+      "allRolls": -2
     },
     "trigger": {
       "damage": "bludgeoning"
@@ -432,7 +452,8 @@
     },
     "trigger": {
       "damage": "slashing"
-    }
+    },
+    "saveKind": "reflex"
   },
   "fatigue": {
     "name": "Fatigued",
@@ -444,7 +465,8 @@
     },
     "trigger": {
       "damage": "force"
-    }
+    },
+    "saveKind": "fortitude"
   },
   "blinded": {
     "name": "Blinded",
@@ -455,7 +477,8 @@
     },
     "trigger": {
       "damage": "radiant"
-    }
+    },
+    "saveKind": "reflex"
   },
   "disease": {
     "name": "Diseased",
@@ -488,7 +511,8 @@
     },
     "trigger": {
       "damage": "acid"
-    }
+    },
+    "saveKind": "fortitude"
   },
   "deafened": {
     "name": "Deafened",
@@ -501,6 +525,26 @@
     },
     "trigger": {
       "damage": "sonic"
+    },
+    "saveKind": "fortitude"
+  },
+  "invisible": {
+    "name": "Invisible",
+    "description": "Cannot be seen by enemies.",
+    "effect": {
+      "invisible": true,
+      "onAttack": [
+        {
+          "type": "removeStatus",
+          "statusName": "Invisible"
+        }
+      ],
+      "onOffensiveCasting": [
+        {
+          "type": "removeStatus",
+          "statusName": "Invisible"
+        }
+      ]
     }
   }
 }

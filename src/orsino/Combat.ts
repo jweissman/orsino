@@ -154,6 +154,12 @@ export default class Combat {
       return current.hp < weakest.hp ? current : weakest;
     }, this.living(combatants)[0]);
   }
+  static visible(combatants: Combatant[]): Combatant[] {
+    return combatants.filter(c => {
+      let invisibleEffect = c.activeEffects?.find(e => e.effect.invisible);
+      return !invisibleEffect;
+    });
+  }
 
   static async reifyTraits(combatant: Combatant): Promise<void> {
     let traitHandler = TraitHandler.instance;

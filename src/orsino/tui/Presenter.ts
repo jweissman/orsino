@@ -764,11 +764,12 @@ export default class Presenter {
             parts.push(`Untargetable`);
           }
           break;
-
-        // TODO figure out where this comes from
-        // case "by":
-        //   // ignore
-        //   break;
+        
+        case "invisible":
+          if (value) {
+            parts.push(`Invisible`);
+          }
+          break;
 
         default:
           // @ts-ignore

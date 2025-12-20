@@ -30,103 +30,117 @@ export default class CharacterRecord {
     pcGenerator: (options?: any) => Promise<Combatant>,
     selectionMethod: (prompt: string, options: string[]) => Promise<string> = User.selection
   ): Promise<Combatant> {
-    // throw new Error("CharacterRecord.chargen not yet implemented");
-    let shouldWizard = await selectionMethod(
-      'Would you like to customize this PC? ' + prompt,
-      ['Yes', 'No']
-    );
-    let pc: Combatant;
-    if (shouldWizard === 'Yes') {
-      let raceSelect = await selectionMethod(
-        'Select a race for this PC: ' + prompt,
-        ['human', 'elf', 'dwarf', 'halfling', 'orc', 'fae', 'gnome']
-      );
 
-      let occupationSelect = await selectionMethod(
-        'Select an occupation for this PC: ' + prompt,
-        ['warrior', 'thief', 'mage', 'cleric', 'ranger', 'bard']
-        // ['ranger']
-      );
-
-      pc = await pcGenerator({ setting: 'fantasy', race: raceSelect, class: occupationSelect }) as Combatant;
-      // console.log(`Picked name for a ${raceSelect} ${occupationSelect}: ${(pc.name)}`);
-      let spellbook: string[] = [];
-      if (occupationSelect === 'mage') {
-        let availableSpells = AbilityHandler.instance.allSpellNames('arcane', 1);
-        for (let i = 0; i < 3; i++) {
-          let spell = await selectionMethod(
-            `Select spell ${i + 1} for this PC: ` + prompt,
-            availableSpells.sort()
-          );
-          spellbook.push(spell);
-          availableSpells = availableSpells.filter(s => s !== spell);
-        }
-      } else if (occupationSelect === 'cleric') {
-        // clerics select a 'domain' (life, death, war, knowledge, etc.) which influences their spell selection
-        let domainSelect = await selectionMethod(
-          'Select a divine domain for this PC: ' + prompt,
-          ['life', 'law']
-        );
-
-        pc.domain = domainSelect;
-
-        let domainSpells = AbilityHandler.instance.allSpellNames('divine', 1).filter(spellName => {
-          let spell = AbilityHandler.instance.getAbility(spellName);
-          return spell.domain === domainSelect;
-        });
-
-        // give all domain spells for now
-        spellbook.push(...domainSpells);
-
-        // then select additional spells
-        let availableSpells = AbilityHandler.instance.allSpellNames('divine', 1).filter(spellName => {
-          let spell = AbilityHandler.instance.getAbility(spellName);
-          return spell.domain !== domainSelect;
-        });
-
-        for (let i = 0; i < 2; i++) {
-          let spell = await selectionMethod(
-            `Select additional spell ${i + 1} for this PC: ` + prompt,
-            availableSpells.sort()
-          );
-          spellbook.push(spell);
-          availableSpells = availableSpells.filter(s => s !== spell);
-        }
-      }
-      // if (pc.class === "mage" || pc.class === "cleric") {
-      pc.abilities.push(...spellbook);
-      // }
-
-      await Presenter.printCharacterRecord(pc);
-      let confirm = await selectionMethod(
-        'Do you want to use this PC? ' + prompt,
+    let pc: Combatant = await pcGenerator({ setting: 'fantasy' }) as Combatant;
+    let accepted = false;
+    while (!accepted) {
+      // throw new Error("CharacterRecord.chargen not yet implemented");
+      let shouldWizard = await selectionMethod(
+        'Would you like to customize this PC? ' + prompt,
         ['Yes', 'No']
       );
-      if (confirm === 'No') {
-        // party.push(pc);
-        // pc = null;
-        return this.chargen(prompt, pcGenerator, selectionMethod);
-      }
-    } else {
-      pc = await pcGenerator({ setting: 'fantasy' }) as Combatant;
-      if (pc.class === 'mage') {
-        const spells = Sample.count(3, ...AbilityHandler.instance.allSpellNames('arcane', 1))
-        console.log("Adding to " + pc.name + "'s spellbook: " + spells.join(", ") + " (already has " + pc.abilities.join(", ") + ")");
-        pc.abilities.push(...spells);
-      } else if (pc.class === 'cleric') {
-        const domainSpells = AbilityHandler.instance.allSpellNames('divine', 1).filter(spellName => {
-          let spell = AbilityHandler.instance.getAbility(spellName);
-          return spell.domain === 'life'; // default to life domain for random clerics
-        });
-        pc.abilities.push(...domainSpells);
-        const additionalSpells = Sample.count(2, ...AbilityHandler.instance.allSpellNames('divine', 1).filter(spellName => {
-          let spell = AbilityHandler.instance.getAbility(spellName);
-          return spell.domain !== 'life';
-        }));
-        console.log("Adding to " + pc.name + "'s spellbook: " + additionalSpells.join(", ") + " (already has " + pc.abilities.join(", ") + ")");
-        pc.abilities.push(...additionalSpells);
-      }
+      if (shouldWizard === 'Yes') {
+        let raceSelect = await selectionMethod(
+          'Select a race for this PC: ' + prompt,
+          ['human', 'elf', 'dwarf', 'halfling', 'orc', 'fae', 'gnome']
+        );
 
+        let occupationSelect = await selectionMethod(
+          'Select an occupation for this PC: ' + prompt,
+          ['warrior', 'thief', 'mage', 'cleric', 'ranger', 'bard']
+          // ['ranger']
+        );
+
+        pc = await pcGenerator({ setting: 'fantasy', race: raceSelect, class: occupationSelect }) as Combatant;
+        // console.log(`Picked name for a ${raceSelect} ${occupationSelect}: ${(pc.name)}`);
+        let spellbook: string[] = [];
+        if (occupationSelect === 'mage') {
+          let availableSpells = AbilityHandler.instance.allSpellNames('arcane', 1);
+          for (let i = 0; i < 3; i++) {
+            let spell = await selectionMethod(
+              `Select spell ${i + 1} for this PC: ` + prompt,
+              availableSpells.sort()
+            );
+            spellbook.push(spell);
+            availableSpells = availableSpells.filter(s => s !== spell);
+          }
+        } else if (occupationSelect === 'cleric') {
+          // clerics select a 'domain' (life, death, war, knowledge, etc.) which influences their spell selection
+          let domainSelect = await selectionMethod(
+            'Select a divine domain for this PC: ' + prompt,
+            ['life', 'law']
+          );
+
+          pc.domain = domainSelect;
+
+          let domainSpells = AbilityHandler.instance.allSpellNames('divine', 1).filter(spellName => {
+            let spell = AbilityHandler.instance.getAbility(spellName);
+            return spell.domain === domainSelect;
+          });
+
+          // give all domain spells for now
+          spellbook.push(...domainSpells);
+
+          // then select additional spells
+          let availableSpells = AbilityHandler.instance.allSpellNames('divine', 1).filter(spellName => {
+            let spell = AbilityHandler.instance.getAbility(spellName);
+            return spell.domain !== domainSelect;
+          });
+
+          for (let i = 0; i < 2; i++) {
+            let spell = await selectionMethod(
+              `Select additional spell ${i + 1} for this PC: ` + prompt,
+              availableSpells.sort()
+            );
+            spellbook.push(spell);
+            availableSpells = availableSpells.filter(s => s !== spell);
+          }
+        }
+        // if (pc.class === "mage" || pc.class === "cleric") {
+        pc.abilities.push(...spellbook);
+        // }
+
+        await Presenter.printCharacterRecord(pc);
+        let confirm = await selectionMethod(
+          'Do you want to use this PC? ' + prompt,
+          ['Yes', 'No']
+        );
+        accepted = confirm === 'Yes';
+        // if (confirm === 'No') {
+        //   // party.push(pc);
+        //   // pc = null;
+        //   return this.chargen(prompt, pcGenerator, selectionMethod);
+        // }
+      } else {
+        pc = await pcGenerator({ setting: 'fantasy' }) as Combatant;
+        if (pc.class === 'mage') {
+          const spells = Sample.count(3, ...AbilityHandler.instance.allSpellNames('arcane', 1))
+          console.log("Adding to " + pc.name + "'s spellbook: " + spells.join(", ") + " (already has " + pc.abilities.join(", ") + ")");
+          pc.abilities.push(...spells);
+        } else if (pc.class === 'cleric') {
+          const domainSpells = AbilityHandler.instance.allSpellNames('divine', 1).filter(spellName => {
+            let spell = AbilityHandler.instance.getAbility(spellName);
+            return spell.domain === 'life'; // default to life domain for random clerics
+          });
+          pc.abilities.push(...domainSpells);
+          const additionalSpells = Sample.count(2, ...AbilityHandler.instance.allSpellNames('divine', 1).filter(spellName => {
+            let spell = AbilityHandler.instance.getAbility(spellName);
+            return spell.domain !== 'life';
+          }));
+          console.log("Adding to " + pc.name + "'s spellbook: " + additionalSpells.join(", ") + " (already has " + pc.abilities.join(", ") + ")");
+          pc.abilities.push(...additionalSpells);
+        }
+
+        await Presenter.printCharacterRecord(pc);
+        accepted = await selectionMethod(
+          'Do you want to use this PC? ' + prompt,
+          ['Yes', 'No']
+        ) === 'Yes';
+        // if (useThisPc === 'No') {
+        //   return this.chargen(prompt, pcGenerator, selectionMethod);
+        // }
+
+      }
     }
     return pc;
   }

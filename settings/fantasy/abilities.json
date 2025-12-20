@@ -2376,7 +2376,7 @@
             "allRolls": -1
           }
         },
-        "saveKind": "will",
+        "saveKind": "fear",
         "saveDC": 15
       }
     ]
@@ -3086,6 +3086,21 @@
       {
         "type": "debuff",
         "status": "deafened"
+      }
+    ]
+  },
+  "invisibility": {
+    "name": "Invisibility",
+    "type": "spell",
+    "level": 1,
+    "aspect": "arcane",
+    "school": "illusion",
+    "description": "Turn invisible for 5 rounds or until you attack or cast a spell.",
+    "target": [ "self", "ally" ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "invisible"
       }
     ]
   }
