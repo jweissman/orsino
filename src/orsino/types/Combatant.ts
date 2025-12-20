@@ -108,4 +108,6 @@ export interface Combatant {
 
   // for clerics/paladins
   domain?: string;
+
+  activeSummonings?: Combatant[];
 }

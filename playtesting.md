@@ -1,11 +1,11 @@
 # Notes from Playtesting
 
 ## Bugs
-[ ] Hidden seems to be removed whenever the hiding creature _gets_ attacked (should be removed whenever the hiding creature itself _attacks_)
-[ ] Zero handling
-  [ ] Was seeing 0-damage attacks on elite units (maybe something to do with DR but a 0-damage attack is a miss, although we could gloss as 'graze' or something?)
-  [ ] Healing for 0 HP should be presented as a failure (not "heals for 0 damage" but "tried to heal but fails") -- thought we had repaired this but still seeing 0-amount heals -- we'd need to elide these events (for turn-end regen effects I think but maybe other places)
-  [ ] Magic missile that does 0 damage should be glossed as a miss I think? (even though they're supposed to have 'perfect' targeting!)
+- [ ] Hidden seems to be removed whenever the hiding creature _gets_ attacked (should be removed whenever the hiding creature itself _attacks_)
+- [ ] Zero handling
+  - [ ] Was seeing 0-damage attacks on elite units (maybe something to do with DR but a 0-damage attack is a miss, although we could gloss as 'graze' or something?)
+  - [ ] Healing for 0 HP should be presented as a failure (not "heals for 0 damage" but "tried to heal but fails") -- thought we had repaired this but still seeing 0-amount heals -- we'd need to elide these events (for turn-end regen effects I think but maybe other places)
+  - [ ] Magic missile that does 0 damage should be glossed as a miss I think? (even though they're supposed to have 'perfect' targeting!)
 
 ## Features
 - [ ] Rest could reset status effects? (would be nice to do this _before_ persisting PCs?)
@@ -16,7 +16,6 @@
 - [ ] A cage could have a chance to have a prisoner (who could become ally); incidentally would be nice for it to be more likely within a 'cell' room
 - ---
 - [ ] Larger rooms could give more search opps?
-- [ ] Adventuring kit could be a consumable that is needed to give first aid?
 - [ ] Found treasure should be redeemable for gold
 - ---
 - [ ] Remind players to rest if they're not at full health going into boss battle
@@ -48,7 +47,6 @@
 - [ ] Player party _must_ be able to attempt to flee intentionally (could be a dex skill check?)
 - [ ] They should also have a chance to flee 'involuntarily' if they fail a save vs fear? (don't necessarily want to model 'splitting the party' but ... they could find individually-flown characters in previous rooms of the dungeon?)
 - [ ] Why is save vs Bleed a will check? Seems weird?
-- [ ] Are we adding stat bonuses to save checks? (Probably not but maybe we should in at least some cases?)
 - [ ] Some statuses still sound weird ("[defender] is Chaos by [inflicter]" - odd)
 - ---
 - [ ] AI should not use buffs that only target allies if all allies are dead
@@ -213,6 +211,8 @@
 - [x] If you don't have enough to buy the quantity you like it should not say "You purchase X" (even if the next line is saying "not enough gold") -- should be fixed
 - [x] Temple blessings should take account of the deity somehow... (war gods give toHit, love goddess grants chance to charm on hit etc)
 - [x] Some kind of temp hp/buffer for glass cannons
+- [x] Are we adding stat bonuses to save checks? (Probably not but maybe we should in at least some cases?) -- yes!
+- [x] Adventuring kit could be a consumable that is needed to give first aid? - just 'first aid kit' but this exists now!
 
 ## Not really issues atm
 - "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]

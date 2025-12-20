@@ -76,10 +76,10 @@ describe('Orsino', () => {
 
     await combat.setUp(Combat.defaultTeams());
     expect(combat.isOver()).toBe(false);
-    expect(combat.teams[0]).toHaveProperty('name');
-    expect(combat.teams[1]).toHaveProperty('name');
-    expect(combat.teams[0].combatants[0].hp).toBeGreaterThan(0);
-    expect(combat.teams[1].combatants[0].hp).toBeGreaterThan(0);
+    expect(combat._teams[0]).toHaveProperty('name');
+    expect(combat._teams[1]).toHaveProperty('name');
+    expect(combat._teams[0].combatants[0].hp).toBeGreaterThan(0);
+    expect(combat._teams[1].combatants[0].hp).toBeGreaterThan(0);
 
     // await combat.setUp();
     let turn = await combat.round();

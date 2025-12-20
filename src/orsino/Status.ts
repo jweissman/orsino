@@ -80,6 +80,7 @@ export interface StatusModifications {
 
   noStatusExpiry?: boolean;
 
+  onCombatStart?: AbilityEffect[];
   onAttack?: AbilityEffect[];
   onAttackHit?: AbilityEffect[];
   onTurnEnd?: AbilityEffect[];

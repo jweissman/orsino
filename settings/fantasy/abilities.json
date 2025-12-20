@@ -308,7 +308,7 @@
     "level": 5,
     "aspect": "divine",
     "domain": "light",
-    "description": "Create a burst of radiant light.",
+    "description": "A brilliant burst of solar energy injures your foes.",
     "target": [
       "enemies"
     ],
@@ -1104,7 +1104,7 @@
     "aspect": "divine",
     "domain": "death",
     "alignment": "evil",
-    "description": "Curse all enemies, reducing all their stats by 1.",
+    "description": "Your venomous words fill your enemies with a sense of doom.",
     "target": [
       "enemies"
     ],
@@ -2013,7 +2013,7 @@
     "level": 5,
     "aspect": "arcane",
     "school": "evocation",
-    "description": "Disintegrate an enemy, dealing 10d6 force damage.",
+    "description": "A green ray that dematerializes living forms leaps from your fingertips.",
     "target": [
       "enemy"
     ],
@@ -2226,14 +2226,14 @@
       }
     ]
   },
-  "lich_summoning_ritual": {
+  "black_ritual": {
     "name": "Black Ritual",
     "type": "spell",
     "aspect": "divine",
     "domain": "death",
     "alignment": "evil",
     "level": 5,
-    "description": "Begin the ritual to summon a powerful lich in 3 rounds.",
+    "description": "A profane ritual summons an undead creature to serve you.",
     "target": [
       "self"
     ],
@@ -2267,7 +2267,7 @@
     "aspect": "divine",
     "domain": "death",
     "alignment": "evil",
-    "description": "Instantly kill an enemy with a failed save.",
+    "description": "Utter a power word in the blackest of tongues.",
     "target": [
       "enemy"
     ],
@@ -2922,25 +2922,30 @@
           "duration": 5,
           "effect": {
             "onEnemyOffensiveCasting": [
-              {
-                "type": "removeStatus",
-                "statusName": "Consecrated"
-              },
+
               {
                 "type": "damage",
                 "amount": "=2d6",
-                "kind": "radiant"
+                "kind": "radiant",
+                "target": "caster"
+              },
+              {
+                "type": "removeStatus",
+                "statusName": "Consecrated",
+                "target": "self"
               }
             ],
             "onEnemyAttack": [
               {
-                "type": "removeStatus",
-                "statusName": "Consecrated"
-              },
-              {
                 "type": "damage",
                 "amount": "=2d6",
-                "kind": "radiant"
+                "kind": "radiant",
+                "target": "attacker"
+              },
+              {
+                "type": "removeStatus",
+                "statusName": "Consecrated",
+                "target": "self"
               }
             ]
           }

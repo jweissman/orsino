@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Deem from "../deem";
 import Combat, { CombatContext } from "./Combat";
 import { GameEvent, ReactionEvent, ResurrectEvent, UpgradeEvent } from "./Events";
@@ -304,6 +305,8 @@ export default class AbilityHandler {
     let success = false;
     let events: Omit<GameEvent, "turn">[] = [];
 
+    // console.log(`Handling effect ${effect.type} of ability ${name} from ${user.name} to ${targetCombatant.name}`);
+
     // does the target meet all conditions?
     if (effect.condition) {
       if (effect.condition.trait && !(targetCombatant.traits || []).includes(effect.condition.trait)) {
@@ -313,41 +316,28 @@ export default class AbilityHandler {
     }
 
     // check if _any_ ally of the target has a reaction effect for this ability or effect type
-    const enemies = context?.enemies ?? [];
-    for (const targetAlly of enemies) {
-      if (targetAlly.hp <= 0) { continue; }
+    const isHostileAction =
+      (context.enemies ?? []).includes(targetCombatant); // had: && (context.allies ?? []).includes(user);
+
+    // console.log(
+    //   "abilityName:", name,
+    //   "isHostileAction:", isHostileAction, "user:", user.name, "target:", targetCombatant.name, "context.allies:", (context.allies ?? []).map(a => a.name), "context.enemies:", (context.enemies ?? []).map(e => e.name));
+    if (isHostileAction) {
+      const targetsParty = context.enemies;
+      // was alliesOfTarget = (context.allies ?? []).includes(targetCombatant)
+        //   ? (context.allies ?? [])
+        //   : (context.enemies ?? []);
       let reactionEffectName = `onEnemy${Words.capitalize(name.replace(/\s+/g, ""))}` as keyof StatusModifications;
-      let allyFx = await Fighting.gatherEffects(targetAlly);
-      if (allyFx[reactionEffectName]) {
-        events.push({ type: "reaction", subject: targetAlly, target: user, reactionName: `to ${name}` } as Omit<ReactionEvent, "turn">);
-        let reactionEffects = allyFx[reactionEffectName] as Array<AbilityEffect>;
-        for (const reactionEffect of reactionEffects) {
-          let { success, events: reactionEvents } = await this.handleEffect(
-            (reactionEffect.status?.name || name) + " Reaction",
-            reactionEffect, targetAlly, user, context, handlers
-          );
-          events.push(...reactionEvents);
-          if (!success) {
-            break;
-          }
-        }
-      }
+      let reactionEvents = await this.performReactions(
+        reactionEffectName, targetsParty, user, context, handlers, "ability " + name
+      );
+      events.push(...reactionEvents);
 
       let typeReactionEffectName = `onEnemy${Words.capitalize(effect.type)}` as keyof StatusModifications;
-      if (allyFx[typeReactionEffectName]) {
-        events.push({ type: "reaction", subject: targetAlly, target: user, reactionName: `to ${effect.type}` } as Omit<ReactionEvent, "turn">);
-        let reactionEffects = allyFx[typeReactionEffectName] as Array<AbilityEffect>;
-        for (const reactionEffect of reactionEffects) {
-          let { success, events: reactionEvents } = await this.handleEffect(
-            (reactionEffect.status?.name || name) + " Reaction",
-            reactionEffect, targetAlly, user, context, handlers
-          );
-          events.push(...reactionEvents);
-          if (!success) {
-            break;
-          }
-        }
-      }
+      let typeReactionEvents = await this.performReactions(
+        typeReactionEffectName, targetsParty, user, context, handlers, "ability " + name
+      );
+      events.push(...typeReactionEvents);
     }
 
     if ((targetCombatant.hp <= 0 && effect.type !== "resurrect") || user.hp <= 0) {
@@ -605,7 +595,7 @@ export default class AbilityHandler {
     for (const t of targets) {
       let tFx = await Fighting.gatherEffects(t);
       let effectiveTarget = await Fighting.effectiveStats(t);
-      if (tFx.untargetable) {
+      if (tFx.untargetable && !(t === user)) {
         // give a save chance to avoid
         let dc = Math.max(8, Math.min(25, 15 + (Fighting.statMod(effectiveTarget.wis))));
         let { success: canTarget, events: saveEvents } = await handlers.save(user, "magic", dc, handlers.roll);
@@ -672,6 +662,7 @@ export default class AbilityHandler {
       }
     }
 
+    const enemies = context?.enemies ?? [];
     if (result) {
       // console.log(`${user.name} successfully uses ${ability.name} on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target.name}!`);
       if (isSpell) {
@@ -684,7 +675,6 @@ export default class AbilityHandler {
             ability.name
           ));
           // do enemies have onEnemyOffensiveSpell reactions?
-          const enemies = context?.enemies ?? [];
           events.push(...await this.performReactions(
             `onEnemyOffensiveCasting` as keyof StatusModifications,
             enemies,
@@ -695,17 +685,15 @@ export default class AbilityHandler {
           ));
         }
 
-        // do any enemies have `onEnemySpell` reactions?
-        const enemies = context?.enemies ?? [];
-
-        events.push(...await this.performReactions(
-          `onEnemyCasting` as keyof StatusModifications,
-          enemies,
-          user,
-          context,
-          handlers,
-          ability.name
-        ));
+          // do any enemies have `onEnemySpell` reactions?
+          events.push(...await this.performReactions(
+            `onEnemyCasting` as keyof StatusModifications,
+            enemies,
+            user,
+            context,
+            handlers,
+            ability.name
+          ));
       }
     }
 
@@ -722,11 +710,14 @@ export default class AbilityHandler {
     let events: Omit<GameEvent, "turn">[] = [];
 
     let hookFx = await Fighting.gatherEffects(user);
+    let hookFxWithNames = await Fighting.gatherEffectsWithNames(user);
     if (hookFx[hookKey]) {
       let hookEffects = hookFx[hookKey] as Array<AbilityEffect>;
+
       for (const hookEffect of hookEffects) {
+        // console.log(`${user.name} has hook ${String(hookKey)} due to ${Words.humanizeList(hookFxWithNames[hookKey].sources)}`);
         let { success, events: hookEvents } = await this.handleEffect(
-          (hookEffect.status?.name || label) + " Hook",
+          (hookEffect.status?.name || label) + " Hook from " + Words.humanizeList(hookFxWithNames[hookKey].sources),
           hookEffect, user, user, context, handlers
         );
         events.push(...hookEvents);
@@ -748,19 +739,54 @@ export default class AbilityHandler {
     label: string
   ): Promise<Omit<GameEvent, "turn">[]> {
     let events: Omit<GameEvent, "turn">[] = [];
+    const actorSide = [user, ...(context.allies ?? [])];
+    const opponentSide = [...(context.enemies ?? [])];
 
     for (const reactor of reactors) {
       if (reactor.hp <= 0) { continue; }
+      const reactorOnActorSide = actorSide.includes(reactor);
+      // If reactor is on the same side as the acting user, then reactor's enemies are context.enemies.
+      // Otherwise reactor's enemies are context.allies.
+      // const reactorAllies = reactorIsAllyOfUser ? (context.allies ?? []) : (context.enemies ?? []);
+      // const reactorEnemies = reactorIsAllyOfUser ? (context.enemies ?? []) : (context.allies ?? []);
+      const reactorAllies = (reactorOnActorSide ? actorSide : opponentSide).filter(c => c !== reactor);
+      const reactorEnemies = reactorOnActorSide ? opponentSide : actorSide;
+
+      let reactorContext: CombatContext = {
+        subject: reactor,
+        allies: reactorAllies,
+        enemies: reactorEnemies,
+      };
+      // let flippedContext: CombatContext = {
+      //   subject: reactor,
+      //   allies: context.enemies,
+      //   enemies: context.allies,
+      // };
       let reactionFx = await Fighting.gatherEffects(reactor);
+      let reactionFxWithNames = await Fighting.gatherEffectsWithNames(reactor);
       if (reactionFx[reactionKey]) {
-        events.push({ type: "reaction", subject: reactor, target: user, reactionName: `to ${label}` } as Omit<ReactionEvent, "turn">);
+        let sources = Words.humanizeList(reactionFxWithNames[reactionKey].sources);
+        // console.log(`${reactor.name} has reaction ${String(reactionKey)} to ${label} due to ${sources}`);
         let reactionEffects = reactionFx[reactionKey] as Array<AbilityEffect>;
         for (const reactionEffect of reactionEffects) {
+          let target: (Combatant | Combatant[]) = user;
+          if (reactionEffect.target) {
+            target = this.validTargets({ target: [reactionEffect.target], effects: [reactionEffect] } as Ability, reactor, reactorAllies, reactorEnemies).flat();
+            if (target.length === 0) {
+              // console.log(`No valid targets '${reactionEffect.target}' for ${reactor.name} reaction ${String(reactionKey)} for ${reactionEffect.type} effect type, default to ${user.name}`);
+              target = user;
+            } else {
+              // console.log(`Resolved reaction target(s) for ${reactor.name} reaction ${String(reactionKey)} for ${reactionEffect.type} effect type:`, target.map(t => t.name));
+            }
+          }
           let { success, events: reactionEvents } = await this.handleEffect(
-            (reactionEffect.status?.name || label) + " Reaction",
-            reactionEffect, reactor, user, context, handlers
+            reactor.forename + "'s " + (reactionEffect.status?.name || label).toLocaleLowerCase() + " reaction from " + sources,
+            reactionEffect, reactor, target, reactorContext, handlers
           );
-          events.push(...reactionEvents);
+          if (reactionEvents.length > 0) {
+            events.push({ type: "reaction", subject: reactor, target: user, reactionName: `to ${label}` } as Omit<ReactionEvent, "turn">);
+            events.push(...reactionEvents);
+          }
           if (!success) {
             break;
           }

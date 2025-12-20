@@ -233,7 +233,7 @@ export default class CharacterRecord {
           console.log(`Applying level-up effect to ${pc.name}...`);
           let pseudocontext = { subject: pc, allies: team.combatants.filter(c => c !== pc), enemies: [] };
           let { events: levelUpEvents } = await AbilityHandler.handleEffect(
-            'onLevelUp', effect, pc, pc, pseudocontext, Commands.handlers(roller, team) // this.roller, this.playerTeam)
+            'onLevelUp', effect, pc, pc, pseudocontext, Commands.handlers(roller) // this.roller, this.playerTeam)
           );
           // events.forEach(e => this.emit({ ...e, turn: 0 } as DungeonEvent));
           events.push(...levelUpEvents as DungeonEvent[]);

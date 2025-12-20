@@ -592,7 +592,7 @@
       "barrier": [[]],
       "turret": [["arrow_volley"]],
       "bomb": [["detonation"]],
-      "phylactery": [["summon_undead", "life_drain", "lich_summoning_ritual"]]
+      "phylactery": [["summon_undead", "life_drain", "black_ritual"]]
     }
   },
 
@@ -685,7 +685,7 @@
       },
       "ritual_chamber": {
         "_npcCount": 4,
-        "_npc_types": ["Cult Master", "Acolyte", "Acolyte", "Acolyte"],
+        "_npc_types": ["Cult Master", "Wizard", "Acolyte", "Acolyte"],
         "_companionCount": 0,
         "_treasureItems": ["amulet_of_health", "wand_of_magic_missiles", "robe of the archmagi"],
         "bonusGold": "10 + 5d20"
@@ -699,7 +699,7 @@
       },
       "mortuary_garden": {
         "_npcCount": 2,
-        "_npc_types": ["Poxmonger"],
+        "_npc_types": ["Wizard", "Poxmonger"],
         "_companionCount": 0,
         "_treasureItems": ["scroll_of_cure_disease"],
         "bonusGold": "5 + 2d10"
@@ -709,7 +709,7 @@
         "monster_type": "Golem",
         "_monsterLevelDistribution": ["=#_targetCr"],
         "_npcCount": 1,
-        "_npc_types": ["Gravedigger"],
+        "_npc_types": ["Wizard", "Gravedigger"],
         "_companionCount": 0,
         "_treasureItems": ["shovel", "pick"],
         "bonusGold": "1d10"
