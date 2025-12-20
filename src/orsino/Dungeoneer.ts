@@ -269,7 +269,7 @@ export default class Dungeoneer {
   private persistCharacterRecords(): void {
     for (const pc of this.playerTeam.combatants) {
       // write pc record to file (running into cyclic structure issues!!)
-      let safePc = { ...pc, activeEffects: [], passiveEffects: [] }; // will need to recompute effects on load...
+      let safePc = { ...pc, activeEffects: [], passiveEffects: [], activeSummonings: [] }; // will need to recompute effects on load...
       Files.write(`${Dungeoneer.dataPath}/pcs/${pc.name}.json`, JSON.stringify(safePc, null, 2));
     }
   }
@@ -352,6 +352,8 @@ export default class Dungeoneer {
       );
     }
 
+    combat.tearDown();
+
     // console.log(`Combat complete. Winner: '${combat.winner}'`);
 
     Combat.statistics.victories += (combat.winner === this.playerTeam.name) ? 1 : 0;
@@ -360,7 +362,7 @@ export default class Dungeoneer {
     // Award XP/gold
     if (combat.winner === this.playerTeam.name) {
       // const encounter = this.currentEncounter!;
-      const enemies = combat.teams.find(t => t.name === "Enemies")?.combatants || [];
+      const enemies = combat.enemyCombatants || [];  //teams.find(t => t.name === "Enemies")?.combatants || [];
 
       let xp = 0;
       let gold = await Deem.evaluate(String(this.currentEncounter?.bonusGold || 0)) || 0;
@@ -463,7 +465,9 @@ export default class Dungeoneer {
       if (room.shrine && !inspectedFeatures.includes('shrine')) {
         options.push({ name: `Pay respects to the shrine of ${Words.humanize(room.shrine.deity?.forename ?? 'a forgotten deity')}`, value: `feature:shrine`, short: 'Visit Shrine', disabled: false });
       }
-      // options.push({ name: "Leave the dungeon", value: "leave", short: 'Leave', disabled: false });
+      if (!this.dry) {
+        options.push({ name: "Leave the dungeon", value: "leave", short: 'Leave', disabled: false });
+      }
 
       let choice = await this.select("What would you like to do?", options);
       if (choice === "status") {
@@ -561,7 +565,7 @@ export default class Dungeoneer {
             let nullCombatContext: CombatContext = { subject: check.actor, allies: [], enemies: [] };
             for (let effect of interaction.effects) {
               // this.note(`Applying effect: ${JSON.stringify(effect)}`);
-              let { events } = await AbilityHandler.handleEffect(interaction.name, effect, check.actor, check.actor, nullCombatContext, Commands.handlers(this.roller, this.playerTeam));
+              let { events } = await AbilityHandler.handleEffect(interaction.name, effect, check.actor, check.actor, nullCombatContext, Commands.handlers(this.roller));
               // events.forEach(e => this.emit({ ...e, turn: -1 } as DungeonEvent));
               for (const event of events) {
                 await this.emit(event as DungeonEvent);
@@ -682,7 +686,8 @@ export default class Dungeoneer {
       let someoneWounded = this.playerTeam.combatants.some(c => c.hp < c.maxHp);
 
       let healingItems = [];
-      let inventoryQuantities = Combat.inventoryQuantities(this.playerTeam);
+      let inventoryQuantities = Inventory.quantities(this.playerTeam.inventory);
+        //Combat.inventoryQuantities(this.playerTeam);
       for (const [item, qty] of Object.entries(inventoryQuantities)) {
         let it = await Deem.evaluate(`=lookup(consumables, "${item}")`);
         if (qty > 0 && it.aspect === "healing") {
@@ -704,9 +709,10 @@ export default class Dungeoneer {
                 if (qty > 0 && c.hp < c.maxHp) {
                   let it = await Deem.evaluate(`=lookup(consumables, "${itemName}")`);
                   let effects = it.effects;
-                  let nullCombatContext: CombatContext = { subject: c, allies: [], enemies: [] };
+                  let nullCombatContext: CombatContext = {
+                    subject: c, allies: this.playerTeam.combatants.filter(ally => ally.name !== c.name && ally.hp > 0), enemies: [] };
                   for (let effect of effects) {
-                    let { events } = await AbilityHandler.handleEffect(it.name, effect, c, c, nullCombatContext, Commands.handlers(this.roller, this.playerTeam));
+                    let { events } = await AbilityHandler.handleEffect(it.name, effect, c, c, nullCombatContext, Commands.handlers(this.roller));
                     // events.forEach(e => this.emit({ ...e, turn: -1 } as DungeonEvent));
                     for (const event of events) {
                       await this.emit({ ...event, turn: -1 } as DungeonEvent);

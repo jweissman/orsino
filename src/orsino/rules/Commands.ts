@@ -1,13 +1,13 @@
 import AbilityHandler, { AbilityEffect, DamageKind, SaveKind } from "../Ability";
 import { RollResult } from "../types/RollResult";
-import { GameEvent, FallenEvent, HealEvent, HitEvent, MissEvent, StatusEffectEvent, StatusExpireEvent, SummonEvent, SaveEvent, DamageBonus, DamageReduction, DamageAbsorb } from "../Events";
+import { GameEvent, FallenEvent, HealEvent, HitEvent, MissEvent, StatusEffectEvent, StatusExpireEvent, SummonEvent, SaveEvent, DamageBonus, DamageReduction, DamageAbsorb, UnsummonEvent } from "../Events";
 import Stylist from "../tui/Style";
 import Words from "../tui/Words";
 import { Combatant } from "../types/Combatant";
 import { Roll } from "../types/Roll";
 import { Team } from "../types/Team";
 import { Fighting } from "./Fighting";
-import { CombatContext } from "../Combat";
+import Combat, { CombatContext } from "../Combat";
 import Presenter from "../tui/Presenter";
 import Deem from "../../deem";
 import { StatusModifications } from "../Status";
@@ -36,7 +36,7 @@ export type CommandHandlers = {
 }
 
 export class Commands {
-  static handlers(roll = this.roll, team: Team): CommandHandlers {
+  static handlers(roll = this.roll): CommandHandlers {
     return {
       roll,
       save: this.handleSave,
@@ -58,11 +58,29 @@ export class Commands {
         // console.log(`${user.name} summons ${summoned.map(s => s.name).join(", ")}!`);
         // team.combatants.push(...summoned);
         let summoningEvents: TimelessEvent[] = [];
-        for (let s of summoned) {
-          if (team.combatants.length < 6) {
-            team.combatants.push(s);
-            summoningEvents.push({ type: "summon", subject: user, target: s } as Omit<SummonEvent, "turn">);
+        user.activeSummonings = user.activeSummonings || [];
+        if (summoned.length + (user.activeSummonings?.length || 0) > Combat.maxSummoningsForCombatant(user)) {
+          // un-summon extras
+          // summoned = summoned.slice(0, Combat.maxSummoningsForCombatant(user) - (user.activeSummonings?.length || 0));
+          let unsummoned = [];
+          while (summoned.length + (user.activeSummonings?.length || 0) > Combat.maxSummoningsForCombatant(user)) {
+            let s = user.activeSummonings.pop();
+            if (s) {
+              unsummoned.push(s);
+            }
           }
+
+          unsummoned.forEach(s => {
+            summoningEvents.push({ type: "unsummon", subject: user, target: s } as Omit<UnsummonEvent, "turn">);
+          })
+        }
+
+        for (let s of summoned) {
+          // if (team.combatants.length < 6) {
+            // team.combatants.push(s);
+            user.activeSummonings.push(s);
+            summoningEvents.push({ type: "summon", subject: user, target: s } as Omit<SummonEvent, "turn">);
+          // }
         }
         return summoningEvents;
         // return [{ type: "summon", subject: user, summoned } as Omit<SummonEvent, "turn">];
@@ -100,12 +118,12 @@ export class Commands {
   static async handleHeal(
     healer: Combatant, target: Combatant, amount: number, combatContext: CombatContext
   ): Promise<TimelessEvent[]> {
-    const effective = await Fighting.effectiveStats(healer);
-    const wisBonus = Math.max(0, Fighting.statMod(effective.wis));
-    if (wisBonus > 0) {
-      amount += wisBonus;
-      // console.log(`Healing increased by ${wisBonus} for WIS ${healer.wis}`);
-    }
+    // const effective = await Fighting.effectiveStats(healer);
+    // const wisBonus = Math.max(0, Fighting.statMod(effective.wis));
+    // if (wisBonus > 0) {
+    //   amount += wisBonus;
+    //   // console.log(`Healing increased by ${wisBonus} for WIS ${healer.wis}`);
+    // }
     let healerFx = await Fighting.gatherEffects(healer);
     if (healerFx.bonusHealing) {
       amount += await Deem.evaluate(healerFx.bonusHealing.toString()) as number || 0;
@@ -127,7 +145,7 @@ export class Commands {
     // } as CombatContext;
     for (let fx of onHealFx) {
       let { events: healFxEvents } = await AbilityHandler.handleEffect(
-        fx.description || "healing effect", fx, healer, target, combatContext, Commands.handlers(Commands.roll, null as unknown as Team)
+        fx.description || "healing effect", fx, healer, target, combatContext, Commands.handlers(Commands.roll)
       );
       events.push(...healFxEvents);
     }
@@ -185,7 +203,7 @@ export class Commands {
       for (let fx of onSaveFx) {
 
         let { events: resistFxEvents } = await AbilityHandler.handleEffect(
-          fx.description || "an effect", fx, target, target, null as unknown as CombatContext, Commands.handlers(roll, null as unknown as Team)
+          fx.description || "an effect", fx, target, target, null as unknown as CombatContext, Commands.handlers(roll)
         );
         resistEvents.push(...resistFxEvents);
       }
@@ -223,7 +241,7 @@ export class Commands {
         if (fx.target === "attacker") {
           target = attacker;
         }
-        let { events: onMissReceivedEvents } = await AbilityHandler.handleEffect(fx.description || "an effect", fx, defender, target, combatContext, Commands.handlers(roll, null as unknown as Team));
+        let { events: onMissReceivedEvents } = await AbilityHandler.handleEffect(fx.description || "an effect", fx, defender, target, combatContext, Commands.handlers(roll));
         events.push(...onMissReceivedEvents);
       }
       return [{ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">, ...events];
@@ -399,7 +417,7 @@ export class Commands {
       // need to find attacker team...
       let onKillFx = attackerEffects.onKill as AbilityEffect[] || [];
       for (let fx of onKillFx) {
-        let { events: onKillEvents } = await AbilityHandler.handleEffect(fx.description || "an effect", fx, attacker, attacker, combatContext, Commands.handlers(roll, null as unknown as Team));
+        let { events: onKillEvents } = await AbilityHandler.handleEffect(fx.description || "an effect", fx, attacker, attacker, combatContext, Commands.handlers(roll));
         events.push(...onKillEvents);
       }
     } else {
@@ -413,7 +431,7 @@ export class Commands {
           if (fx.target === "attacker") {
             target = attacker;
           }
-          let { events: onAttackedEvents } = await AbilityHandler.handleEffect(fx.description || "an effect", fx, defender, target, combatContext, Commands.handlers(roll, null as unknown as Team));
+          let { events: onAttackedEvents } = await AbilityHandler.handleEffect(fx.description || "an effect", fx, defender, target, combatContext, Commands.handlers(roll));
           events.push(...onAttackedEvents);
         }
       }
@@ -517,6 +535,8 @@ export class Commands {
           type: "statusExpire", subject: target, effectName: name
         } as Omit<StatusExpireEvent, "turn">];
       }
+    } else {
+      console.warn(`Tried to remove status effect ${name} from ${target.forename} but they have no active effects.`);
     }
     return [];
   }

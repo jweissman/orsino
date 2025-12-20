@@ -40,6 +40,7 @@ export type HealEvent = BaseEvent & { type: "heal"; amount: number };
 export type DefendEvent = BaseEvent & { type: "defend"; bonusAc: number };
 export type QuaffEvent = BaseEvent & { type: "quaff" };
 export type SummonEvent = BaseEvent & { type: "summon" };
+export type UnsummonEvent = BaseEvent & { type: "unsummon" };
 export type SaveEvent = BaseEvent & { type: "save"; success: boolean; dc: number; immune: boolean; reason: string; versus: string; };
 export type ReactionEvent = BaseEvent & { type: "reaction"; reactionName: string; success: boolean };
 export type ResurrectEvent = BaseEvent & { type: "resurrect"; amount: number; };
@@ -88,6 +89,7 @@ export type CombatEvent =
   | StatusExpireEvent
   | StatusExpiryPreventedEvent
   | SummonEvent
+  | UnsummonEvent
   | SaveEvent
   | ReactionEvent
   | ResurrectEvent
@@ -182,7 +184,7 @@ export default class Events {
 
       case "roomCleared":
         if (event.combat) {
-          return `The ${Words.humanize(event.room.room_type)} is pacified after combat. You have defeated ${Words.humanizeList(event.combat.teams[1].combatants.map(c => c.referenceName || c.name))}.`;
+          return `The ${Words.humanize(event.room.room_type)} is pacified after combat. You have defeated ${Words.humanizeList(event.combat.enemyCombatants.map(c => c.referenceName || c.name))}.`;
         }
         return `The ${Words.humanize(event.room.room_type)} is pacified.`;
       case "investigate":
@@ -287,6 +289,8 @@ export default class Events {
         return `${subjectName} reacts ${(event.reactionName)} from ${event.target?.forename}.`;
       case "summon":
         return `${subjectName} summons ${event.target?.referenceName || event.target?.forename}.`;
+      case "unsummon":
+        return `${subjectName} unsummons ${event.target?.referenceName || event.target?.forename}.`;
       case "save":
         if (event.immune) {
           return `${subjectName} is immune to ${event.versus}.`; // and automatically succeeds on their Save vs ${event.versus} (DC ${event.dc}).`;

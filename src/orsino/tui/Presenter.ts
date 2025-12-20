@@ -596,6 +596,8 @@ export default class Presenter {
             parts.push(`Fleeing`);
           }
           break;
+
+        case "onCombatStart":
         case "onAttack":
         case "onAttackHit":
         case "onTurnEnd":
@@ -611,6 +613,8 @@ export default class Presenter {
         case "onEnemyAttack":
         case "onEnemyDamage":
         case "onEnemyHeal":
+        case "onEnemyBuff":
+        case "onEnemyDebuff":
         case "onEnemySummon":
         case "onEnemyCasting":
         case "onEnemyOffensiveCasting":
@@ -628,7 +632,7 @@ export default class Presenter {
         case "onSaveVersusBreath":
         case "onSaveVersusParalyze":
         case "onSaveVersusSleep":
-          parts.push(`${Words.humanize(k).toLocaleLowerCase()}, ${this.describeEffects(value, 'self')}`);
+          parts.push(`${Words.capitalize(Words.humanize(k).toLocaleLowerCase())}, ${this.describeEffects(value, 'self')}`);
           break;
 
         case "summonAnimalBonus":

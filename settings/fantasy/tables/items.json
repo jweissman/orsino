@@ -715,6 +715,28 @@
           "resistAll": 0.5,
           "reflectSpellChance": 0.75
         }
+      },
+      "wardstone": {
+        "name": "Wardstone",
+        "description": "A mystical stone that provides a protective barrier to the bearer.",
+        "type": "equipment",
+        "kind": "amulet",
+        "rarity": "rare",
+        "value": 600,
+        "effect": {
+          "onCombatStart": [
+            {
+              "type": "buff",
+              "status": {
+                "name": "Wardstone",
+                "duration": 10,
+                "effect": {
+                  "tempHp": 15
+                }
+              }
+            }
+          ]
+        }
       }
     }
   },
