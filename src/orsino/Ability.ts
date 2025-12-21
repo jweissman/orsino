@@ -25,10 +25,13 @@ export type TargetKind
   | "randomEnemies"
   | "all";
 
+export type AbilityType
+    ="attack" | "damage" | "heal" | "buff" | "debuff" | "flee" | "drain" | "summon" | "removeStatus" | "upgrade" | "gold" | "xp" | "resurrect" | "kill" | "randomEffect" | "cycleEffects"
+
 export interface AbilityEffect {
   description?: string;
   kind?: DamageKind;
-  type: "attack" | "damage" | "heal" | "buff" | "debuff" | "flee" | "drain" | "summon" | "removeStatus" | "upgrade" | "gold" | "xp" | "resurrect" | "kill" | "randomEffect";
+  type: AbilityType;
   stat?: "str" | "dex" | "con" | "int" | "wis" | "cha";
 
   amount?: string; // e.g. "=1d6", "=2d8", "3"
@@ -67,6 +70,8 @@ export interface AbilityEffect {
   reflected?: boolean;
 
   randomEffects?: AbilityEffect[];
+  cycledEffects: AbilityEffect[];
+  lastCycledEffect?: AbilityEffect;
 }
 
 export interface Ability {
@@ -614,6 +619,22 @@ export default class AbilityHandler {
       let result = await this.handleEffect(name, randomEffect, user, targetCombatant, context, handlers);
       success = result.success;
       events.push(...result.events);
+    } else if (effect.type === "cycleEffects") {
+      if (!effect.cycledEffects || effect.cycledEffects.length === 0) {
+        throw new Error(`cycleEffects type must have cycledEffects defined`);
+      }
+      let lastCycledIndex = -1;
+      if (effect.lastCycledEffect !== undefined) {
+        lastCycledIndex = effect.cycledEffects.findIndex(ce => {
+          return ce.type === effect.lastCycledEffect!.type && ce.kind === effect.lastCycledEffect!.kind && ce.amount === effect.lastCycledEffect!.amount;
+        });
+      }
+      let nextIndex = (lastCycledIndex + 1) % effect.cycledEffects.length;
+      let nextEffect = effect.cycledEffects[nextIndex];
+      effect.lastCycledEffect = nextEffect;
+      let result = await this.handleEffect(name, nextEffect, user, targetCombatant, context, handlers);
+      success = result.success;
+      events.push(...result.events);
     }
     else {
       // throw new Error(`Unknown effect type: ${effect.type}`);
@@ -639,7 +660,6 @@ export default class AbilityHandler {
     let isSpell = ability.type === 'spell';
     // let isOffensive = ability.target.some(t => t.includes("enemy") || t.includes("enemies") || t.includes("randomEnemies"));
     let isOffensive = ability.target.some(t => ["enemy", "enemies", "randomEnemies"].includes(t));
-    console.log("AbilityHandler.perform:", ability.name, "isSpell:", isSpell, "isOffensive:", isOffensive);
     let targets: Combatant[] = [];
     if (Array.isArray(target)) {
       targets = target;

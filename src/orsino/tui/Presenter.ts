@@ -842,7 +842,7 @@ export default class Presenter {
             : "suffers";
           description = (`${Words.capitalize(targetDescription)} ${verb} ${this.describeStatusWithName(effect.status)}`); // ${this.describeDuration(effect.status.duration)}`);
         } else {
-          throw new Error(`Debuff effect must have a status defined`);
+          throw new Error(`Debuff effect ${JSON.stringify(effect)} must have a status defined`);
         }
         break;
       case "summon":
@@ -881,7 +881,13 @@ export default class Presenter {
         description = (`Apply one of the following random effects to ${targetDescription}: ${
           (effect.randomEffects || []).map((opt: AbilityEffect) => this.describeEffect(opt, targetDescription)).join('; ')
         }`); break;
-      default: return never(effect.type);
+      case "cycleEffects":
+        description = (`Cycle through the following effects on ${targetDescription}: ${
+          (effect.cycledEffects || []).map((opt: AbilityEffect) => this.describeEffect(opt, targetDescription)).join('; ')
+        }`); break;
+      default:
+        console.warn(`Unknown effect type: ${effect.type} for effect ${JSON.stringify(effect)}`);
+        return never(effect.type);
     }
 
     if (effect.spillover) {

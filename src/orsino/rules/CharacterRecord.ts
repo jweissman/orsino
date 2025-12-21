@@ -9,9 +9,12 @@ import Words from "../tui/Words";
 import { Combatant } from "../types/Combatant";
 import { Roll } from "../types/Roll";
 import { Team } from "../types/Team";
+import { never } from "../util/never";
 import Sample from "../util/Sample";
 import { Commands } from "./Commands";
 import { Fighting } from "./Fighting";
+
+type PlayerCharacterRace = "human" | "elf" | "dwarf" | "halfling" | "orc" | "fae" | "gnome";
 
 export default class CharacterRecord {
 
@@ -23,6 +26,39 @@ export default class CharacterRecord {
   static crForParty(party: Combatant[]): number {
     const totalLevels = party.reduce((sum, c) => sum + c.level, 0);
     return Math.max(1, Math.round(totalLevels / 3));
+  }
+
+  static get pcRaces(): PlayerCharacterRace[] {
+    return ["human", "elf", "dwarf", "halfling", "orc", "fae", "gnome"];
+  }
+
+  static validClassesForRace(race: PlayerCharacterRace): string[] {
+    let occupationOptions: string[] = [];
+    switch (race) {
+      case "human":
+        occupationOptions = ["warrior", "thief", "mage", "cleric", "ranger", "bard"];
+        break;
+      case "elf":
+        occupationOptions = ["warrior", "thief", "mage", "ranger", "bard"];
+        break;
+      case "dwarf":
+        occupationOptions = ["warrior", "thief", "cleric"];
+        break;
+      case "halfling":
+        occupationOptions = ["warrior", "thief", "bard"];
+        break;
+      case "orc":
+        occupationOptions = ["warrior", "thief", "ranger"];
+        break;
+      case "fae":
+        occupationOptions = ["mage", "cleric", "bard"];
+        break;
+      case "gnome":
+        occupationOptions = ["thief", "mage", "bard"];
+        break;
+      default: never(race);
+    }
+    return occupationOptions;
   }
 
   static async chargen(
@@ -47,7 +83,8 @@ export default class CharacterRecord {
 
         let occupationSelect = await selectionMethod(
           'Select an occupation for this PC: ' + prompt,
-          ['warrior', 'thief', 'mage', 'cleric', 'ranger', 'bard']
+          this.validClassesForRace(raceSelect as PlayerCharacterRace)
+          // ['warrior', 'thief', 'mage', 'cleric', 'ranger', 'bard']
           // ['ranger']
         );
 
@@ -112,7 +149,15 @@ export default class CharacterRecord {
         //   return this.chargen(prompt, pcGenerator, selectionMethod);
         // }
       } else {
-        pc = await pcGenerator({ setting: 'fantasy' }) as Combatant;
+        let race = this.pcRaces[Math.floor(Math.random() * this.pcRaces.length)];
+        let validClasses = this.validClassesForRace(race);
+        let occupation = validClasses[Math.floor(Math.random() * validClasses.length)];
+        pc = await pcGenerator({
+          setting: 'fantasy',
+          race,
+          class: occupation
+
+         }) as Combatant;
         if (pc.class === 'mage') {
           const spells = Sample.count(3, ...AbilityHandler.instance.allSpellNames('arcane', 1))
           console.log("Adding to " + pc.name + "'s spellbook: " + spells.join(", ") + " (already has " + pc.abilities.join(", ") + ")");

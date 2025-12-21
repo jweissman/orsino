@@ -94,9 +94,10 @@ export default class Books {
   }
 
   static async traitbook(_options: Record<string, any> = {}) {
-    await AbilityHandler.instance.loadAbilities();
-    await TraitHandler.instance.loadTraits();
-    await Template.bootstrapDeem();
+    await this.bootstrap();
+    // await AbilityHandler.instance.loadAbilities();
+    // await TraitHandler.instance.loadTraits();
+    // await Template.bootstrapDeem();
 
     let traits = TraitHandler.instance.allTraitNames()
     traits.sort((a, b) => a.localeCompare(b));

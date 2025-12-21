@@ -665,6 +665,7 @@ export default class Combat {
     let activeFx = await Fighting.gatherEffects(combatant);
     if (activeFx.extraAttacksPerTurn) {
       attacksPerTurn += activeFx.extraAttacksPerTurn as number;
+      attacksPerTurn = Math.max(1, attacksPerTurn);
     }
     for (let i = 0; i < attacksPerTurn; i++) {
       if (combatant.playerControlled && !allegianceEffect) {

@@ -1,5 +1,5 @@
 {
-  "enraged": {
+  "rage": {
     "name": "Raging",
     "description": "Utterly overcome with fury.",
     "effect": {
@@ -89,12 +89,28 @@
       "ac": -2
     }
   },
-  "barkskinned": {
-    "name": "Barkskinned",
-    "effect": {
-      "ac": -3
-    }
+
+  "barkskin": {
+    "name": "Barkskin",
+    "effect": { "ac": -2 }
   },
+  "stoneskin": {
+    "name": "Stoneskin",
+    "effect": { "ac": -3 }
+  },
+  "ironskin": {
+    "name": "Ironskin",
+    "effect": { "ac": -5 }
+  },
+  "scaleskin": {
+    "name": "Scaleskin",
+    "effect": { "ac": -8, "resistFire": 0.25 }
+  },
+  "steelskin": {
+    "name": "Steelskin",
+    "effect": { "ac": -10, "resistPiercing": 0.5, "resistSlashing": 0.5 }
+  },
+
   "mage_armored": {
     "name": "Mage-Armored",
     "effect": {
@@ -106,7 +122,8 @@
     "name": "Inspired",
     "effect": {
       "toHit": 2,
-      "tempHp": 5
+      "tempHp": 5,
+      "allSaves": 1
     }
   },
   "anointed": {
@@ -121,15 +138,16 @@
   "shielded": {
     "name": "Shielded",
     "effect": {
-      "ac": -2
+      "ac": -1,
+      "tempHp": 10,
+      "saveVersusMagic": 1
     }
   },
-  "fire_resistance": {
-    "name": "Fireproof",
-    "effect": {
-      "resistFire": 0.5
-    }
-  },
+
+  "fireproof": { "name": "Fireproof", "effect": { "resistFire": 0.5 } },
+  "waterproof": { "name": "Waterproof", "effect": { "resistCold": 0.5 } },
+  "lightningrod": { "name": "Lightningrod", "effect": { "resistLightning": 0.5 } },
+
   "protected": {
     "name": "Protected",
     "effect": {
@@ -149,10 +167,10 @@
     "name": "Warded",
     "effect": {
       "saveVersusMagic": 1,
-      "resistFire": 0.5,
-      "resistCold": 0.5,
-      "resistLightning": 0.5,
-      "resistForce": 1,
+      "resistFire": 0.15,
+      "resistCold": 0.15,
+      "resistLightning": 0.15,
+      "resistForce": 0.5,
       "tempHp": "=14 + 2 * #level"
     }
   },
@@ -180,24 +198,29 @@
   },
   "spellturn": {
     "name": "Spellturn",
+    "description": "Reflecting spells back at their casters.",
     "effect": {
       "reflectSpellChance": 0.5
     }
   },
   "invulnerable": {
     "name": "Invulnerable",
+    "description": "Temporarily immune to harm.",
     "effect": {
       "untargetable": true
     }
   },
   "prone": {
     "name": "Prone",
+    "description": "Lying on the ground, vulnerable to attacks.",
     "effect": {
-      "noActions": true
+      "noActions": true,
+      "dex": -2
     }
   },
   "reckless": {
     "name": "Reckless",
+    "description": "Throwing caution to the wind.",
     "effect": {
       "toHit": -2,
       "ac": 2
@@ -205,6 +228,7 @@
   },
   "asleep": {
     "name": "Asleep",
+    "description": "In a deep slumber, unaware of surroundings.",
     "effect": {
       "noActions": true
     },
@@ -219,6 +243,7 @@
   },
   "charmed": {
     "name": "Charmed",
+    "description": "Exuding an aura of helpfulness.",
     "effect": {
       "changeAllegiance": true
     },
@@ -226,6 +251,7 @@
   },
   "mocked": {
     "name": "Mocked",
+    "description": "Distracted by jeers and taunts.",
     "effect": {
       "toHit": -1,
       "bonusDamage": -1,
@@ -243,6 +269,7 @@
   },
   "frightened": {
     "name": "Frightened",
+    "description": "Overcome with fear and hesitation.",
     "effect": {
       "toHit": -2,
       "initiative": -5,
@@ -252,6 +279,7 @@
   },
   "cursed": {
     "name": "Cursed",
+    "description": "Afflicted by a malevolent doom.",
     "effect": {
       "str": -1,
       "dex": -1,
@@ -305,7 +333,9 @@
   "slow": {
     "name": "Slow",
     "effect": {
-      "dex": -5
+      "dex": -5,
+      "initiative": -10,
+      "extraAttacksPerTurn": -1
     },
     "saveKind": "reflex"
   },
@@ -327,6 +357,15 @@
       "noActions": true,
       "noStatusExpiry": true
     }
+  },
+  "distracted": {
+    "name": "Distracted",
+    "effect": {
+      "toHit": -1,
+      "bonusDamage": -1,
+      "evasion": -5
+    },
+    "saveKind": "will"
   },
   "infected": {
     "name": "Infected",
@@ -530,7 +569,7 @@
   },
   "invisible": {
     "name": "Invisible",
-    "description": "Cannot be seen by enemies.",
+    "description": "Unable to be seen by enemies.",
     "effect": {
       "invisible": true,
       "onAttack": [

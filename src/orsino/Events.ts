@@ -112,6 +112,7 @@ export type RestEvent = BaseDungeonEvent & { type: "rest"; stabilizedCombatants:
 export type GoldEvent  = BaseDungeonEvent & { type: "gold"; amount: number };
 export type ExperienceEvent  = BaseDungeonEvent & { type: "xp"; amount: number };
 export type InvestigateEvent  = BaseDungeonEvent & { type: "investigate"; clue: string; discovery: string; };
+export type RiddleEvent = BaseDungeonEvent & { type: "riddle"; challenge: string; solution: string;  reward: string; };
 
 export type UpgradeEvent = BaseDungeonEvent & { type: "upgrade"; stat: keyof Combatant; amount: number, newValue: number };
 
@@ -126,6 +127,7 @@ export type DungeonEvent =
   | RestEvent
   | EquipmentWornEvent
   | InvestigateEvent
+  | RiddleEvent
   | GoldEvent
   | ExperienceEvent
   | UpgradeEvent;
@@ -345,6 +347,9 @@ export default class Events {
 
       case "actedRandomly":
         return `${subjectName} is acting erratically.`;
+
+      case "riddle":
+        return `${subjectName} has solved the riddle: "${event.challenge}" (answer: ${event.solution}) and receives ${Words.a_an(event.reward)}.`;
 
       case "campaignStart":
         return Stylist.bold(`You embark on the campaign '${event.moduleName}'\nParty Members: ${
