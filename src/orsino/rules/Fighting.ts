@@ -15,56 +15,57 @@ export class Fighting {
     return Math.round((stat - 10) / 3);
   }
 
-  static async effectList(combatant: Combatant): Promise<StatusEffect[]> {
-    let equipmentKeys = Object.values(combatant.equipment || []).filter(it => it !== undefined);
-    let equipmentList: StatusEffect[] = [];
-    for (let eq of equipmentKeys) {
-      let eqEffects = await Deem.evaluate(`lookup(equipment, '${eq}')`);
-      if (eqEffects.effect) {
-        equipmentList.push(eqEffects);
-      }
-    }
+  static effectList(combatant: Combatant): StatusEffect[] {
+    // let equipmentKeys = Object.values(combatant.equipment || []).filter(it => it !== undefined);
+    // let equipmentList: StatusEffect[] = [];
+    // for (let eq of equipmentKeys) {
+    //   let eqEffects = await Deem.evaluate(`lookup(equipment, '${eq}')`);
+    //   if (eqEffects.effect) {
+    //     equipmentList.push(eqEffects);
+    //   }
+    // }
 
     let effectList = [
       ...(combatant.passiveEffects || []),
       ...(combatant.activeEffects || []),
-      ...equipmentList,
+      // ...equipmentList,
     ];
 
     // effectList = effectList.filter(it => it.effect && (
     //   await this.hasCondition(it.condition, combatant)
     // ));
-    let filteredEffects: StatusEffect[] = [];
-    for (let it of effectList) {
-      if (it.whileEnvironment) {
-        if (combatant.currentEnvironment !== it.whileEnvironment) {
-          continue;
-        }
-      }
-      if (it.condition) {
-        let meetsCondition = true;
-        if (it.condition.weapon) {
-          if (it.condition.weapon.weight) {
-            let weaponRecord = await Deem.evaluate(`lookup(masterWeapon, '${combatant.weapon}')`);
-            if (weaponRecord.weight !== it.condition.weapon.weight) {
-              meetsCondition = false;
-            }
-          }
-        }
-        if (meetsCondition) {
-          filteredEffects.push(it);
-        }
-      } else {
-        filteredEffects.push(it);
-      }
-    }
+    // let filteredEffects: StatusEffect[] = [];
+    // for (let it of effectList) {
+    //   if (it.whileEnvironment) {
+    //     if (combatant.currentEnvironment !== it.whileEnvironment) {
+    //       continue;
+    //     }
+    //   }
+    //   if (it.condition) {
+    //     let meetsCondition = true;
+    //     if (it.condition.weapon) {
+    //       if (it.condition.weapon.weight) {
+    //         let weaponRecord = await Deem.evaluate(`lookup(masterWeapon, '${combatant.weapon}')`);
+    //         if (weaponRecord.weight !== it.condition.weapon.weight) {
+    //           meetsCondition = false;
+    //         }
+    //       }
+    //     }
+    //     if (meetsCondition) {
+    //       filteredEffects.push(it);
+    //     }
+    //   } else {
+    //     filteredEffects.push(it);
+    //   }
+    // }
 
-    return filteredEffects;
+    // return filteredEffects;
+    return effectList;
   }
 
-  static async turnBonus(combatant: Combatant, keys: (string)[] = []): Promise<Partial<StatusModifications>> {
+  static turnBonus(combatant: Combatant, keys: (string)[] = []): Partial<StatusModifications> {
     let bonuses: Partial<StatusModifications> = {};
-    let fx = await this.effectList(combatant);
+    let fx = this.effectList(combatant);
     //  [
     //  ...(combatant.passiveEffects || []),
     //  ...(combatant.activeEffects || [])
@@ -142,7 +143,7 @@ export class Fighting {
     //   }
     // }
 
-    let effectList = await this.effectList(combatant);
+    let effectList = this.effectList(combatant);
       // ...equipmentList,
     // ];
 

@@ -32,7 +32,7 @@ program.command('autoplay')
   });
 
 program.command('book <type>')
-  .description('Generate a book of the specified type (monsters, spells, traits, skills, items)')
+  .description('Generate a book of the specified type (monsters, spells, traits, skills, items, statuses, wonders, planes)')
   .option('-s, --setting <setting>', 'Specify the setting to use', 'fantasy')
   .action(async (type, options) => {
     const _orsino = new Orsino(options.setting || 'fantasy');
@@ -48,6 +48,10 @@ program.command('book <type>')
       await Books.itembook(options);
     } else if (type === 'status' || type === 'statuses') {
       await Books.statusbook(options);
+    } else if (type === 'wonder' || type === 'wonders') {
+      await Books.wonderbook(options);
+    } else if (type === 'plane' || type === 'planes') {
+      await Books.planebook(options);
     } else {
       console.error(`Unknown book type: ${type}`);
     }

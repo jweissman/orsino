@@ -28,7 +28,7 @@
     "description": "Taking a fortified position.",
     "effect": {
       "ac": -2,
-      "allSaves": 2,
+      "saveVersusAll": 2,
       "toHit": -2
     }
   },
@@ -111,6 +111,78 @@
     "effect": { "ac": -10, "resistPiercing": 0.5, "resistSlashing": 0.5 }
   },
 
+  "wisdom": {
+    "name": "Owl's Wisdom",
+    "effect": {
+      "wis": 2,
+      "saveVersusAll": 1
+    }
+  },
+  "strength": {
+    "name": "Bull's Strength",
+    "effect": {
+      "str": 2,
+      "bonusDamage": 2
+    }
+  },
+  "grace": {
+    "name": "Cat's Grace",
+    "effect": {
+      "dex": 2,
+      "evasion": 5
+    }
+  },
+  "cunning": {
+    "name": "Fox's Cunning",
+    "effect": {
+      "int": 2,
+      "allRolls": 1
+    }
+  },
+  "endurance": {
+    "name": "Bear's Endurance",
+    "effect": {
+      "con": 2,
+      "tempHp": 15
+    }
+  },
+  "splendor": {
+    "name": "Eagle's Splendor",
+    "effect": {
+      "cha": 2,
+      "toHit": 1
+    }
+  },
+
+  "courage": {
+    "name": "Courage",
+    "effect": {
+      "saveVersusAll": 2,
+      "immuneFear": true
+    }
+  },
+  "clarity": {
+    "name": "Clarity",
+    "effect": {
+      "allRolls": 2,
+      "immuneCharm": true
+    }
+  },
+  "focus": {
+    "name": "Focus",
+    "effect": {
+      "toHit": 2,
+      "saveVersusMagic": 2,
+      "bonusSpellDC": 2
+    }
+  },
+  "insight": {
+    "name": "Insight",
+    "effect": {
+      "saveVersusAll": 2
+    }
+  },
+
   "mage_armored": {
     "name": "Mage-Armored",
     "effect": {
@@ -123,7 +195,7 @@
     "effect": {
       "toHit": 2,
       "tempHp": 5,
-      "allSaves": 1
+      "saveVersusAll": 1
     }
   },
   "anointed": {
@@ -132,7 +204,7 @@
       "resistRadiant": 0.5,
       "bonusDamage": 1,
       "toHit": 1,
-      "allSaves": 2
+      "saveVersusAll": 2
     }
   },
   "shielded": {
@@ -146,7 +218,34 @@
 
   "fireproof": { "name": "Fireproof", "effect": { "resistFire": 0.5 } },
   "waterproof": { "name": "Waterproof", "effect": { "resistCold": 0.5 } },
-  "lightningrod": { "name": "Lightningrod", "effect": { "resistLightning": 0.5 } },
+  "stormproof": { "name": "Stormproof", "effect": { "resistLightning": 0.5 } },
+  "acidproof": { "name": "Acidproof", "effect": { "resistAcid": 0.5 } },
+  "soundproof": { "name": "Soundproof", "effect": { "resistSonic": 0.5 } },
+  "lightproof": { "name": "Lightproof", "effect": { "resistRadiant": 0.5 } },
+
+  "mageproof": { "name": "Mageproof", "effect": { "resistForce": 0.5, "saveVersusMagic": 2 } },
+
+  "mind_blank": {
+    "name": "Mind Blank",
+    "effect": {
+      "resistPsychic": 0.5,
+      "saveVersusWill": 2,
+      "immuneCharm": true,
+      "immuneInsanity": true,
+      "immuneFear": true,
+      "immuneSleep": true
+    }
+  },
+
+  "keensense": {
+    "name": "Keen Senses",
+    "effect": {
+      "toHit": 2,
+      "evasion": 5,
+      "bonusDamage": 1,
+      "saveVersusAll": 1
+    }
+  },
 
   "protected": {
     "name": "Protected",
@@ -320,7 +419,7 @@
     "effect": {
       "toHit": -2,
       "resistLightning": -1,
-      "allSaves": -1
+      "saveVersusAll": -1
     }
   },
   "silence": {
@@ -560,7 +659,7 @@
       "bonusDamage": -2,
       "ac": 2,
       "toHit": -2,
-      "allSaves": -1
+      "saveVersusAll": -1
     },
     "trigger": {
       "damage": "sonic"
@@ -585,5 +684,10 @@
         }
       ]
     }
+  },
+  "truesight": {
+    "name": "True Sight",
+    "description": "Seeing through illusions and invisibility.",
+    "effect": { "seeInvisible": true }
   }
 }

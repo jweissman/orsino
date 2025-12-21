@@ -8,7 +8,7 @@ import Deem from "../deem";
 import Files from "./util/Files";
 import { Fighting } from "./rules/Fighting";
 import { Roll } from "./types/Roll";
-import Events, { DungeonEvent, EquipmentWornEvent } from "./Events";
+import Events, { DungeonEvent, EquipmentWornEvent, PlaneshiftEvent, TeleportEvent } from "./Events";
 import { Commands } from "./rules/Commands";
 import CharacterRecord from "./rules/CharacterRecord";
 import AbilityHandler, { Ability, AbilityEffect } from "./Ability";
@@ -44,6 +44,22 @@ interface RoomFeature {
   offer: number | string;
 }
 
+interface Riddle {
+  difficulty: "easy" | "medium" | "hard" | "deadly";
+  form: string;
+  challenge: { question: string; answer: string; };
+  reward: string;
+}
+
+interface Wonder {
+  legendary: boolean;
+  appearance: string;
+  effects: AbilityEffect[];
+  name: string;
+  description: string;
+  offer: number | string;
+}
+
 interface RoomBase {
   room_type: string;
   narrative: string;
@@ -55,12 +71,8 @@ interface RoomBase {
   features: string[] | null;
   aura: StatusEffect | null;
   shrine: RoomFeature | null;
-  riddle?: {
-    difficulty: "easy" | "medium" | "hard" | "deadly";
-    form: string;
-    challenge: { question: string; answer: string; };
-    reward: string;
-  }
+  riddle?: Riddle;
+  wonder?: Wonder;
 }
 
 export interface Room extends RoomBase {
@@ -181,7 +193,9 @@ export default class Dungeoneer {
   }
 
   // Main run loop
-  async run(): Promise<void> {
+  async run(): Promise<{
+    newPlane?: string
+  }> {
     if (!this.dungeon) {
       await this.setUp();
     }
@@ -215,9 +229,18 @@ export default class Dungeoneer {
       if (result.leaving) {
         // this.note(`\nYou decide to leave the dungeon.`);
         await this.emit({ type: "leaveDungeon" });
-        return;
+        return { newPlane: result.newPlane };
+      } else if (result.newLocation) {
+        // we are moving to a new location within the dungeon (firstRoom, lastRoom, bossRoom, etc.)
+        switch (result.newLocation) {
+          case "firstRoom": this.currentRoomIndex = 0; break;
+          case "lastRoom": this.currentRoomIndex = this.dungeon!.rooms.length - 1; break;
+          case "randomRoom": this.currentRoomIndex = Math.floor(Math.random() * this.dungeon!.rooms.length); break;
+          default: this.currentRoomIndex = Math.min(Math.max(0, parseInt(result.newLocation)), this.dungeon!.rooms.length - 1); break;
+        }
+      } else {
+        this.moveToNextRoom();
       }
-      this.moveToNextRoom();
     }
 
     // Display outcome
@@ -240,7 +263,10 @@ export default class Dungeoneer {
       // this.note("\n💀 Party defeated...\n");
       await this.emit({ type: "dungeonFailed", dungeonName: this.dungeon!.dungeon_name, reason: "Your party has been defeated." });
     }
+
+    return {}
   }
+
 
   async skillCheck(type: SkillType, action: string, stat: keyof Combatant, dc: number): Promise<{
     actor: Combatant;
@@ -300,20 +326,8 @@ export default class Dungeoneer {
 
   async enterRoom(room: Room | BossRoom): Promise<void> {
     this.persistCharacterRecords();
-
-
     let roomDescription = this.describeRoom(room, ["enter", "step into", "find yourself in"][Math.floor(Math.random() * 3)]);
-    // this.note(Stylist.italic(roomDescription));
     await this.emit({ type: "enterRoom", roomDescription });
-
-    // if (this.currentEncounter && Combat.living(this.currentEncounter.creatures).length > 0) {
-    //   const monsters = this.currentEncounter.creatures.map(m => `\n - ${Presenter.combatant(m)}`).join("");
-    //   this.note(`👹 Encounter: ${monsters}`);
-    // }
-
-    // display current party status
-    // const partyStatus = this.playerTeam.combatants.map(c => Presenter.minimalCombatant(c)).join("\n");
-    // this.note(`🧙‍ Party Status:\n${partyStatus}\n`);
   }
 
   private async runCombat(): Promise<{ playerWon: boolean, combat: Combat }> {
@@ -336,24 +350,17 @@ export default class Dungeoneer {
     );
     while (!combat.isOver()) {
       await combat.round(
+        // flee callback
         async (combatant: Combatant) => {
-          // console.warn(`Combatant '${combatant.name}' has fled the combat.`);
           // find another room for them
           let newRoom = this.nextRoom;
           if (newRoom) {
-            // this.note(`\n${combatant.name} escapes to the next room (${newRoom.room_type}).`);
             combatant.activeEffects = [];
             if ((newRoom as Room).encounter) {
-              // console.log("New room creature count before escape:", (newRoom as Room).encounter?.creatures.length);
               (newRoom as Room).encounter?.creatures.push(combatant);
-              // console.log("New room creature count after escape:", (newRoom as Room).encounter?.creatures.length);
             } else if ((newRoom as BossRoom).boss_encounter) {
-              // console.log("New boss room creature count before escape:", (newRoom as BossRoom).boss_encounter?.creatures.length);
               (newRoom as BossRoom).boss_encounter?.creatures.push(combatant);
-              // console.log("New boss room creature count after escape:", (newRoom as BossRoom).boss_encounter?.creatures.length);
             }
-          // } else {
-            // this.note(`\n${combatant.name} escapes the dungeon entirely!`);
           }
         }
       );
@@ -361,36 +368,27 @@ export default class Dungeoneer {
 
     combat.tearDown();
 
-    // console.log(`Combat complete. Winner: '${combat.winner}'`);
-
     Combat.statistics.victories += (combat.winner === this.playerTeam.name) ? 1 : 0;
     Combat.statistics.defeats += (combat.winner !== this.playerTeam.name) ? 1 : 0;
 
     // Award XP/gold
     if (combat.winner === this.playerTeam.name) {
-      // const encounter = this.currentEncounter!;
-      const enemies = combat.enemyCombatants || [];  //teams.find(t => t.name === "Enemies")?.combatants || [];
+      const enemies = combat.enemyCombatants || [];
 
       let xp = 0;
       let gold = await Deem.evaluate(String(this.currentEncounter?.bonusGold || 0)) || 0;
 
       if (enemies.length > 0) {
-        // this.note(`\n🎉 You defeated ${Words.humanizeList(enemies.map(e => e.name))}!`);
-
         let monsterCount = enemies.length;
         xp = enemies.reduce((sum, m) => sum + (m.xp || 0), 0)
           + (monsterCount * monsterCount * 10)
           + 25;
 
-        // gold = (encounter.bonusGold || 0) +
-        //   enemies.reduce((sum, m) => sum + (Deem.evaluate(String(m.gp) || "1+1d2")), 0);
         for (const m of enemies) {
           const monsterGold = (await Deem.evaluate(String(m.gp))) || 0;
-          // console.log(`Monster '${m.name}' yields ${monsterGold} gold (${m.gp})`);
           gold += monsterGold;
         }
 
-        // this.note(`\nVictory! +${xp} XP, +${gold} GP\n`);
       }
 
       let consumablesFound = Math.random();
@@ -398,16 +396,9 @@ export default class Dungeoneer {
         let consumableRarity = (consumablesFound < 0.05) ? 'rare' : (consumablesFound < 0.1) ? 'uncommon' : 'common';
         let consumable = await Deem.evaluate(`pick(gather(consumables, -1, 'dig(#__it, rarity) == ${consumableRarity}'))`) as any;
         let consumableName = Words.humanize(consumable);
-        // this.note(`You found ${Words.a_an(consumableName)} in the remains of your foes.`);
         await this.emit({ type: "itemFound", itemName: Words.humanize(consumableName), quantity: 1, where: "in the remains of your foes" });
         this.playerTeam.inventory.push(await Inventory.item(consumable));
-        // if (consumable.charges) {
-        //   this.playerTeam.inventory.push({ name: consumable, maxCharges: consumable.charges, charges: Math.random() * consumable.charges });
-        // } else {
-        //   this.playerTeam.inventory.push({ name: consumable });
-        // }
-        //[consumable] = (this.playerTeam.inventory[consumable] || 0) + 1;
-        // this.playerTeam.inventory['minor_healing_potion'] = (this.playerTeam.inventory['minor_healing_potion'] || 0) + 1;
+
       }
 
       if (xp > 0 || gold > 0) {
@@ -433,7 +424,6 @@ export default class Dungeoneer {
 
       if (xp > 0) {
         let events = await CharacterRecord.levelUp(c, this.playerTeam, this.roller, this.select);
-        // events.forEach(e => this.emit({ ...e, turn: -1 } as DungeonEvent));
         for (const event of events) {
           await this.emit({ ...event } as DungeonEvent);
         }
@@ -443,10 +433,8 @@ export default class Dungeoneer {
 
   // After clearing room
   private async roomActions(room: Room | BossRoom): Promise<{
-    leaving: boolean
+    leaving: boolean, newPlane?: string, newLocation?: string
   }> {
-    // this.note(this.describeRoom(room));
-
     let searched = false, examinedDecor = false, inspectedFeatures: string[] = [];
     let done = false;
 
@@ -464,9 +452,9 @@ export default class Dungeoneer {
       }
       if (room.features && room.features.length > 0) {
         room.features.forEach(feature => {
-          if (!inspectedFeatures.includes(feature)) {
-            options.push({ name: `Inspect ${Words.humanize(feature)}`, value: `feature:${feature}`, short: 'Inspect', disabled: false });
-          }
+          // if (!inspectedFeatures.includes(feature)) {
+            options.push({ name: `Inspect ${Words.humanize(feature)}`, value: `feature:${feature}`, short: 'Inspect', disabled: inspectedFeatures.includes(feature) });
+          // }
         });
       }
       if (room.shrine) {
@@ -475,7 +463,11 @@ export default class Dungeoneer {
       if (room.riddle) {
         options.push({ name: `Inspect the curious ${Words.humanize(room.riddle.form)}`, value: "riddle", short: 'Solve Riddle', disabled: inspectedFeatures.includes('riddle') || this.dry });
       }
-        options.push({ name: "Leave the dungeon", value: "leave", short: 'Leave', disabled: this.dry });
+      if (room.wonder) {
+        options.push({ name: `Behold wondrous ${Words.humanize(room.wonder.appearance)}`, value: `feature:wonder`, short: 'Behold Wonder', disabled: inspectedFeatures.includes('wonder') });
+      }
+
+      options.push({ name: "Leave the dungeon", value: "leave", short: 'Leave', disabled: this.dry });
 
       let choice = await this.select("What would you like to do?", options);
       if (choice === "status") {
@@ -520,57 +512,14 @@ export default class Dungeoneer {
         examinedDecor = true;
       } else if (typeof choice === "string" && choice.startsWith("feature:")) {
         const featureName = choice.split(":")[1];
-        await this.interactWithFeature(featureName);
+        let {leaving, newPlane, newLocation} = await this.interactWithFeature(featureName);
         inspectedFeatures.push(featureName);
+        if (leaving) {
+          return { leaving, ...(newPlane ? { newPlane } : {}), ...(newLocation ? { newLocation } : {}) };
+        }
       } else if (choice === "riddle") {
         const riddle = room.riddle!;
-        let check = await this.skillCheck("examine", `to understand the ${Words.humanize(riddle.form)}`, "int", (riddle.difficulty === "easy") ? 10 : (riddle.difficulty === "medium") ? 15 : (riddle.difficulty === "hard") ? 20 : 25);
-        if (check.success) {
-          let wrongAnswerPool = [
-            "River", "Mountain", "Shadow", "Fire", "Wind", "Stone", "Tree", "Cave",
-            "Dream", "Star", "Cloud", "Leaf", "Rain", "Sun", "Wave", "Forest", "Love",
-            "Firefly", "Shadow", "Whisper", "Flame", "Frost", "Storm", "Ember", "Glade",
-            "Blade", "Crown", "Throne", "Sword", "Shield", "Spear", "Bow", "Dagger",
-            "Wolf", "Lion", "Eagle", "Bear", "Fox", "Hawk", "Stag", "Serpent",
-            "Star", "Moon", "Sun", "Comet", "Planet", "Galaxy", "Universe", "Nebula",
-            "Map", "Time", "Echo", "Silence", "Light", "Darkness", "Sky",
-            "Lead", "Gold", "Silver", "Bronze", "Iron", "Copper", "Steel",
-            "Memory", "Thought", "Breath", "Heart", "Soul", "Path", "Journey", "Destiny",
-            "Needle", "Thread", "Fabric", "Comb", "Button", "Cloth", "Rope", "Chain",
-            "Pocket", "Box", "Chest", "Bag", "Jar", "Vase", "Cup", "Bowl",
-            "Clock", "Bell", "Lantern", "Candle", "Torch", "Mirror", "Window",
-            "Glove", "Boot", "Hat", "Cloak", "Belt", "Ring", "Amulet", "Bracelet",
-            "Hurricane", "Tornado", "Earthquake", "Volcano", "Avalanche", "Flood",
-            "Day", "Night", "Dawn", "Dusk", "Twilight", "Midnight",
-            "Today", "Tomorrow", "Yesterday", "Forever", "Always", "Never",
-            "Word", "Song", "Dance", "Story", "Poem", "Tale", "Legend",
-            "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P",
-            "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
-          ];
-          let answer = await this.select(`The ${Words.humanize(riddle.form)} asks: "${riddle.challenge.question}"`, [
-            ...Sample.shuffle(...[
-              { name: riddle.challenge.answer, value: "correct", short: 'Answer', disabled: false },
-              ...(Sample.count(5, ...wrongAnswerPool).map((w, i) => ({ name: w, value: 'wrong', short: 'Answer', disabled: false })))
-            ]),
-            { name: "Remain silent", value: "silent", short: 'Silent', disabled: false },
-          ]);
-          if (answer === "correct") {
-            await this.emit({ type: "riddle", subject: check.actor, challenge: riddle.challenge.question, reward: riddle.reward, solution: riddle.challenge.answer });
-            this.note(`${check.actor.forename} answered correctly and received ${Words.a_an(riddle.reward)}!`);
-            // give reward
-            let isConsumable = await Deem.evaluate(`hasEntry(consumables, '${riddle.reward}')`);
-            if (isConsumable) {
-              this.playerTeam.inventory.push(await Inventory.item(riddle.reward));
-            } else {
-              check.actor.gear = check.actor.gear || [];
-              check.actor.gear.push(riddle.reward);
-            }
-          } else {
-            this.note(`${check.actor.forename} answered incorrectly.`);
-          }
-        } else {
-          this.note(`${check.actor.forename} could not make sense of the ${Words.humanize(riddle.form)}.`);
-        }
+        await this.solveRiddle(riddle);
         inspectedFeatures.push('riddle');
       }
 
@@ -582,21 +531,81 @@ export default class Dungeoneer {
         if (confirm === "yes") {
           return { leaving: true };
         }
+      } else if (choice === "move") {
+        done = true;
       }
       else {
-        done = true;
+        throw new Error(`Unknown room action choice: ${choice}`);
       }
     }
     return { leaving: Combat.living(this.playerTeam.combatants).length === 0 };
   }
 
-  private async interactWithFeature(featureName: string): Promise<void> {
+  private async solveRiddle(riddle: Riddle) {
+    let check = await this.skillCheck("examine", `to understand the ${Words.humanize(riddle.form)}`, "int", (riddle.difficulty === "easy") ? 10 : (riddle.difficulty === "medium") ? 15 : (riddle.difficulty === "hard") ? 20 : 25);
+    if (check.success) {
+      let wrongAnswerPool = [
+        "River", "Mountain", "Shadow", "Fire", "Wind", "Stone", "Tree", "Cave",
+        "Dream", "Star", "Cloud", "Leaf", "Rain", "Sun", "Wave", "Forest", "Love",
+        "Firefly", "Shadow", "Whisper", "Flame", "Frost", "Storm", "Ember", "Glade",
+        "Blade", "Crown", "Throne", "Sword", "Shield", "Spear", "Bow", "Dagger",
+        "Wolf", "Lion", "Eagle", "Bear", "Fox", "Hawk", "Stag", "Serpent",
+        "Star", "Moon", "Sun", "Comet", "Planet", "Galaxy", "Universe", "Nebula",
+        "Map", "Time", "Echo", "Silence", "Light", "Darkness", "Sky",
+        "Lead", "Gold", "Silver", "Bronze", "Iron", "Copper", "Steel",
+        "Memory", "Thought", "Breath", "Heart", "Soul", "Path", "Journey", "Destiny",
+        "Needle", "Thread", "Fabric", "Comb", "Button", "Cloth", "Rope", "Chain",
+        "Pocket", "Box", "Chest", "Bag", "Jar", "Vase", "Cup", "Bowl",
+        "Clock", "Bell", "Lantern", "Candle", "Torch", "Mirror", "Window",
+        "Glove", "Boot", "Hat", "Cloak", "Belt", "Ring", "Amulet", "Bracelet",
+        "Hurricane", "Tornado", "Earthquake", "Volcano", "Avalanche", "Flood",
+        "Day", "Night", "Dawn", "Dusk", "Twilight", "Midnight",
+        "Today", "Tomorrow", "Yesterday", "Forever", "Always", "Never",
+        "Word", "Song", "Dance", "Story", "Poem", "Tale", "Legend",
+        "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P",
+        "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+      ];
+      let answer = await this.select(`The ${Words.humanize(riddle.form)} asks: "${riddle.challenge.question}"`, [
+        ...Sample.shuffle(...[
+          { name: riddle.challenge.answer, value: "correct", short: 'Answer', disabled: false },
+          ...(Sample.count(5, ...wrongAnswerPool).map((w, i) => ({ name: w, value: 'wrong', short: 'Answer', disabled: false })))
+        ]),
+        { name: "Remain silent", value: "silent", short: 'Silent', disabled: false },
+      ]);
+      if (answer === "correct") {
+        await this.emit({ type: "riddle", subject: check.actor, challenge: riddle.challenge.question, reward: riddle.reward, solution: riddle.challenge.answer });
+        this.note(`${check.actor.forename} answered correctly and received ${Words.a_an(riddle.reward)}!`);
+        // give reward
+        let isConsumable = await Deem.evaluate(`hasEntry(consumables, '${riddle.reward}')`);
+        if (isConsumable) {
+          this.playerTeam.inventory.push(await Inventory.item(riddle.reward));
+        } else {
+          check.actor.gear = check.actor.gear || [];
+          check.actor.gear.push(riddle.reward);
+        }
+      } else {
+        this.note(`${check.actor.forename} answered incorrectly.`);
+      }
+    } else {
+      this.note(`${check.actor.forename} could not make sense of the ${Words.humanize(riddle.form)}.`);
+    }
+
+  }
+
+  private async interactWithFeature(featureName: string): Promise<{
+    leaving: boolean,
+    newLocation?: string,
+    newPlane?: string
+  }> {
+    // console.log(`Interacting with feature: ${featureName}`);
     let check = await this.skillCheck("examine", `to inspect ${Words.a_an(Words.humanize(featureName))}`, "int", 10);
     await this.emit({ type: "investigate", subject: check.actor, clue: `the ${Words.humanize(featureName)}`, discovery: check.success ? `an interesting feature` : `nothing of interest` });
     if (check.success) {
       let interaction = null;
       if (featureName === 'shrine' && this.currentRoom?.shrine) {
         interaction = this.currentRoom.shrine;
+      } else if (featureName === 'wonder' && this.currentRoom?.wonder) {
+        interaction = this.currentRoom.wonder;
       } else {
         interaction = await Deem.evaluate(`=lookup(roomFeature, ${featureName})`) as Ability;
       }
@@ -604,6 +613,7 @@ export default class Dungeoneer {
       if (interaction.offer) {
         let gpCost = await Deem.evaluate(interaction.offer.toString());
         let totalGp = this.playerTeam.combatants.reduce((sum, c) => sum + (c.gp || 0), 0);
+        // console.log(`Total party gp: ${totalGp}, cost: ${gpCost}`);
 
         let proceed = await this.select(`The ${Words.humanize(featureName)} offers ${Words.a_an(interaction.name)} for ${gpCost} gold. Purchase?`, [
           { name: "Yes", value: "yes", short: 'Y', disabled: gpCost > totalGp },
@@ -620,13 +630,21 @@ export default class Dungeoneer {
               if (gpCost <= 0) break;
             }
             this.note(`Purchased ${interaction.name} from ${Words.humanize(featureName)}.`);
-            let nullCombatContext: CombatContext = { subject: check.actor, allies: [], enemies: [] };
+            let nullCombatContext: CombatContext = {
+              subject: check.actor, allies: [
+                ...this.playerTeam.combatants.filter(c => c !== check.actor)
+              ], enemies: [] };
             for (let effect of interaction.effects) {
               // this.note(`Applying effect: ${JSON.stringify(effect)}`);
               let { events } = await AbilityHandler.handleEffect(interaction.name, effect, check.actor, check.actor, nullCombatContext, Commands.handlers(this.roller));
               // events.forEach(e => this.emit({ ...e, turn: -1 } as DungeonEvent));
               for (const event of events) {
                 await this.emit(event as DungeonEvent);
+                if (event.type === "teleport") {
+                  return { leaving: false, newLocation: (event as TeleportEvent).location };
+                } else if (event.type === "planeshift") {
+                  return { leaving: true, newPlane: (event as PlaneshiftEvent).plane };
+                }
               }
             }
           }
@@ -637,6 +655,7 @@ export default class Dungeoneer {
     } else {
       this.note(`${check.actor.forename} inspected ${Words.humanize(featureName)}, but could find nothing of interest.`);
     }
+    return { leaving: false };
   }
 
   private async search(room: Room | BossRoom): Promise<void> {
@@ -717,8 +736,8 @@ export default class Dungeoneer {
         }
       }
 
-    // } else {
-    //   this.note(`\n${actor.forename} fails to find anything.`);
+      // } else {
+      //   this.note(`\n${actor.forename} fails to find anything.`);
     }
   }
 
@@ -745,7 +764,7 @@ export default class Dungeoneer {
 
       let healingItems = [];
       let inventoryQuantities = Inventory.quantities(this.playerTeam.inventory);
-        //Combat.inventoryQuantities(this.playerTeam);
+      //Combat.inventoryQuantities(this.playerTeam);
       for (const [item, qty] of Object.entries(inventoryQuantities)) {
         let it = await Deem.evaluate(`=lookup(consumables, "${item}")`);
         if (qty > 0 && it.aspect === "healing") {
@@ -768,7 +787,8 @@ export default class Dungeoneer {
                   let it = await Deem.evaluate(`=lookup(consumables, "${itemName}")`);
                   let effects = it.effects;
                   let nullCombatContext: CombatContext = {
-                    subject: c, allies: this.playerTeam.combatants.filter(ally => ally.name !== c.name && ally.hp > 0), enemies: [] };
+                    subject: c, allies: this.playerTeam.combatants.filter(ally => ally.name !== c.name && ally.hp > 0), enemies: []
+                  };
                   for (let effect of effects) {
                     let { events } = await AbilityHandler.handleEffect(it.name, effect, c, c, nullCombatContext, Commands.handlers(this.roller));
                     // events.forEach(e => this.emit({ ...e, turn: -1 } as DungeonEvent));
@@ -838,7 +858,7 @@ export default class Dungeoneer {
           narrative: "A dimly lit cave with dripping water.",
           room_type: 'cave',
           room_size: 'small',
-          treasure: [ "a bag of gold coins", "a rusty sword" ],
+          treasure: ["a bag of gold coins", "a rusty sword"],
           features: [],
           aura: null,
           decor: "a hidden alcove",
@@ -859,7 +879,7 @@ export default class Dungeoneer {
           narrative: "A grand hall with ancient tapestries.",
           room_type: 'hall',
           room_size: 'large',
-          treasure: [ "a magical amulet", "a potion of healing" ],
+          treasure: ["a magical amulet", "a potion of healing"],
           features: [],
           aura: null,
           decor: "a crumbling statue",

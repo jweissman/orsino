@@ -1255,6 +1255,17 @@
             }
           ]
         }
+      },
+      "ring_of_true_sight": {
+        "name": "Ring of True Sight",
+        "description": "A magical ring that allows the wearer to see through illusions and invisibility.",
+        "type": "equipment",
+        "kind": "ring",
+        "rarity": "legendary",
+        "value": 1500,
+        "effect": {
+          "seeInvisible": true
+        } 
       }
     }
   },

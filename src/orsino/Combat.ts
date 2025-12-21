@@ -156,9 +156,30 @@ export default class Combat {
   }
   static visible(combatants: Combatant[]): Combatant[] {
     return combatants.filter(c => {
-      let invisibleEffect = c.activeEffects?.find(e => e.effect.invisible);
+      let fx = Fighting.effectList(c);
+      let invisibleEffect = fx.find(e => e.effect.invisible);
+        //c.activeEffects?.find(e => e.effect.invisible);
       return !invisibleEffect;
     });
+  }
+
+  static async applyEquipmentEffects(combatant: Combatant): Promise<void> {
+    let equipmentKeys = Object.values(combatant.equipment || []).filter(it => it !== undefined);
+    let equipmentList: StatusEffect[] = [];
+    for (let eq of equipmentKeys) {
+      let eqEffects = await Deem.evaluate(`lookup(equipment, '${eq}')`);
+      if (eqEffects.effect) {
+        equipmentList.push(eqEffects);
+      }
+    }
+
+    combatant.passiveEffects ||= [];
+    combatant.passiveEffects = combatant.passiveEffects.filter(e => !e.equipment);
+    for (let effect of equipmentList) {
+      if (!combatant.passiveEffects.map(e => e.name).includes(effect.name)) {
+        combatant.passiveEffects.push({ ...effect, equipment: true } );
+      }
+    }
   }
 
   static async reifyTraits(combatant: Combatant): Promise<void> {
@@ -187,6 +208,34 @@ export default class Combat {
     });
   }
 
+  static async filterEffects(combatant: Combatant, effectList: StatusEffect[]): Promise<StatusEffect[]> {
+    let filteredEffects: StatusEffect[] = [];
+    for (let it of effectList) {
+      if (it.whileEnvironment) {
+        if (combatant.currentEnvironment !== it.whileEnvironment) {
+          continue;
+        }
+      }
+      if (it.condition) {
+        let meetsCondition = true;
+        if (it.condition.weapon) {
+          if (it.condition.weapon.weight) {
+            let weaponRecord = await Deem.evaluate(`lookup(masterWeapon, '${combatant.weapon}')`);
+            if (weaponRecord.weight !== it.condition.weapon.weight) {
+              meetsCondition = false;
+            }
+          }
+        }
+        if (meetsCondition) {
+          filteredEffects.push(it);
+        }
+      } else {
+        filteredEffects.push(it);
+      }
+    }
+    return filteredEffects;
+  }
+
   async setUp(
     teams = Combat.defaultTeams(),
     environment = 'Dungeon | Room -1',
@@ -203,22 +252,20 @@ export default class Combat {
       c.abilitiesUsed = [];
       c.abilityCooldowns = {};
       c.savedTimes = {};
-      // c.activeEffects = []; // c.activeEffects || [];
-
       c.passiveEffects = [];
       c.traits = c.traits || [];
 
       await Combat.reifyTraits(c);
+      await Combat.applyEquipmentEffects(c);
+
+      c.activeEffects = await Combat.filterEffects(c, c.activeEffects || []);
+      c.passiveEffects = await Combat.filterEffects(c, c.passiveEffects || []);
 
       // apply auras
       c.activeEffects ||= [];
       // remove other auras
       c.activeEffects = c.activeEffects.filter(effect => !effect.aura);
-
       c.activeEffects.push(...auras);
-      // remove duplicates
-      // c.activeEffects = c.activeEffects.filter((effect, index, self) =>
-      //   index === self.findIndex((e) => (e.name === effect.name)));
 
       await this.emit({ type: "engage", subject: c } as Omit<CombatantEngagedEvent, "turn">);
     }
@@ -228,10 +275,8 @@ export default class Combat {
 
     // handle onCombatStart effects from statuses
     for (let combatant of this.allCombatants) {
-      // let allies = this.teams.find(team => team.combatants.includes(combatant))?.combatants || [];
       let allies = this.alliesOf(combatant);
       allies = allies.filter(c => c !== combatant);
-      // let enemies = this.teams.find(team => team.combatants.includes(combatant)) === this.teams[0] ? (this.teams[1].combatants) : (this.teams[0].combatants);
       let enemies = this.enemiesOf(combatant);
       let ctx: CombatContext = { subject: combatant, allies, enemies };
       let events = await AbilityHandler.performHooks("onCombatStart", combatant, ctx, Commands.handlers(this.roller), "combat start effects");
@@ -661,20 +706,27 @@ export default class Combat {
     }
 
     let attacksPerTurn = combatant.attacksPerTurn || 1;
+    
     // gather effects to see if we have extra attacks
     let activeFx = await Fighting.gatherEffects(combatant);
     if (activeFx.extraAttacksPerTurn) {
       attacksPerTurn += activeFx.extraAttacksPerTurn as number;
       attacksPerTurn = Math.max(1, attacksPerTurn);
     }
-    for (let i = 0; i < attacksPerTurn; i++) {
-      if (combatant.playerControlled && !allegianceEffect) {
-        let result = await this.pcTurn(combatant, livingEnemies, allies);
-        if (result.haltRound) {
-          return { haltRound: true };
+    let turns = 1;
+    if (activeFx.extraTurns) {
+      turns += activeFx.extraTurns as number;
+    }
+    for (let j = 0; j < turns; j++) {
+      for (let i = 0; i < attacksPerTurn; i++) {
+        if (combatant.playerControlled && !allegianceEffect) {
+          let result = await this.pcTurn(combatant, livingEnemies, allies);
+          if (result.haltRound) {
+            return { haltRound: true };
+          }
+        } else {
+          await this.npcTurn(combatant, livingEnemies, allies);
         }
-      } else {
-        await this.npcTurn(combatant, livingEnemies, allies);
       }
     }
 

@@ -26,7 +26,26 @@ export type TargetKind
   | "all";
 
 export type AbilityType
-    ="attack" | "damage" | "heal" | "buff" | "debuff" | "flee" | "drain" | "summon" | "removeStatus" | "upgrade" | "gold" | "xp" | "resurrect" | "kill" | "randomEffect" | "cycleEffects"
+  = "attack"
+  | "damage"
+  | "heal"
+  | "buff"
+  | "debuff"
+  | "flee"
+  | "drain"
+  | "summon"
+  | "removeStatus"
+  | "upgrade"
+  | "gold"
+  | "xp"
+  | "resurrect"
+  | "kill"
+  | "randomEffect"
+  | "cycleEffects"
+  | "learn"
+  | "grantPassive"
+  | "teleport"
+  | "planeshift";
 
 export interface AbilityEffect {
   description?: string;
@@ -72,6 +91,12 @@ export interface AbilityEffect {
   randomEffects?: AbilityEffect[];
   cycledEffects: AbilityEffect[];
   lastCycledEffect?: AbilityEffect;
+
+  // for learn/grantPassive effects
+  abilityName?: string;
+  traitName?: string;
+
+  location?: any;
 }
 
 export interface Ability {
@@ -229,7 +254,16 @@ export default class AbilityHandler {
           }
           break;
         case "deadAlly": targets.push(...(allies.filter(a => a.hp <= 0))); break;
-        case "enemy": targets.push(...Combat.visible(enemies)); break;
+        case "enemy":
+          // n.b. really need to make all this async so we can gather effects properly?
+          // can't make a ring of true seeing work this way otherwise
+          // or we could pre-process equipment to active effects (would be nicer overall and could make some other things _not_ async)
+          if ([...(user.activeEffects || []), ...(user.passiveEffects || []) ].some(e => e.effect.seeInvisible)) {
+            targets.push(...enemies);
+          } else {
+            targets.push(...Combat.visible(enemies));
+          }
+          break;
         case "allies":
           if (healing) {
             targets.push(Combat.wounded(allies));
@@ -354,21 +388,10 @@ export default class AbilityHandler {
 
     let userFx = await Fighting.gatherEffects(user);
 
-    // switch (effect.type) {
     if (effect.type === "attack") {
-      // let success = false;
-
-      let onAttackEvents = await this.performHooks(
-        'onAttack', user, context, handlers, "on ability " + name
-      )
+      let onAttackEvents = await this.performHooks('onAttack', user, context, handlers, "on ability " + name)
       events.push(...onAttackEvents);
-      // if (userFx.onAttack) {
-      //   for (const attackFx of userFx.onAttack as Array<AbilityEffect>) {
-      //     console.log("Processing onAttack effect:", attackFx);
-      //     let { success: _onAttackHookSuccess, events: onAttackEvents } = await this.handleEffect(name, attackFx, user, targetCombatant, context, handlers);
-      //     events.push(...onAttackEvents);
-      //   }
-      // }
+      
 
       let result = await attack(user, targetCombatant, context, effect.spillover || false, handlers.roll);
       success = result.success;
@@ -378,12 +401,10 @@ export default class AbilityHandler {
       } else {
         if (userFx.onAttackHit) {
           for (const attackFx of userFx.onAttackHit as Array<AbilityEffect>) {
-            // let fxTarget = attackFx.target === "self" ? user : targetCombatant;
             let fxTarget: Combatant | Combatant[] = targetCombatant;
             if (attackFx.target) {
               fxTarget = this.validTargets({ target: [attackFx.target] } as Ability, user, [], [targetCombatant])[0];
             }
-            // it is possible that the target is specified in the effect, so we need to check for that
             let effectResult = await this.handleEffect(name, attackFx, user, fxTarget, context, handlers);
             events.push(...effectResult.events);
             if (!effectResult.success) {
@@ -392,7 +413,6 @@ export default class AbilityHandler {
           }
         }
       }
-      // return { success, events };
     } else if (effect.type === "damage") {
       let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
       if (targetCombatant._savedVersusSpell) {
@@ -402,7 +422,6 @@ export default class AbilityHandler {
           amount = 0;
         }
       }
-      // console.log("Effect damage amount:", amount, "kind:", effect.kind, "cascade:", effect.cascade);
       let hitEvents = await hit(
         user, targetCombatant, amount, false, name, true, effect.kind || "true",
         effect.cascade || null,
@@ -410,18 +429,6 @@ export default class AbilityHandler {
       );
       events.push(...hitEvents);
       success = hitEvents.some(e => e.type === "hit" && (e as any).amount > 0);
-
-      // chance to cause status effect based on damage type
-      //StatusHandler.instance.triggersForDamageType(effect.kind || "true").forEach(async (statusName) => {
-      //  let statusEffect = StatusHandler.instance.getStatus(statusName);
-      //  if (statusEffect) {
-      //    let statusEvents = await status(
-      //      user, targetCombatant,
-      //      statusEffect.name, { ...statusEffect.effect }, statusEffect.duration || 3
-      //    );
-      //    events.push(...statusEvents);
-      //  }
-      //});
 
     } else if (effect.type === "heal") {
       let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
@@ -453,16 +460,6 @@ export default class AbilityHandler {
       if (!statusEffect) {
         throw new Error(`Buff effect has unknown status: ${JSON.stringify(effect.status)}`);
       }
-      // let statusName = "";
-      // let statusEffect: StatusModifications | undefined;
-      // let statusDuration: number | undefined = effect.duration;
-      // if (typeof effect.status === "string") {
-      //   statusName = effect.status;
-      //   statusEffect = StatusHandler.instance.getStatus(statusName)?.effect;
-      // } else {
-      //   statusName = effect.status.name;
-      //   statusEffect = effect.status.effect;
-      // }
 
       let statusEvents = await status(
         user, targetCombatant,
@@ -478,12 +475,12 @@ export default class AbilityHandler {
           throw new Error(`Buff effect has unknown status: ${JSON.stringify(effect.status)}`);
         }
         if (!targetCombatant._savedVersusSpell) {
-          let dc = (effect.saveDC || 15) + (userFx.bonusSpellDC as number || 0) + (user.level || 0); // note: we don't subtract (targetCombatant.level || 0) here
+          let dc = (effect.saveDC || 15) + (userFx.bonusSpellDC as number || 0) + (user.level || 0);
+
           let { success: saved, events: saveEvents } = await save(targetCombatant, effect.saveKind || statusEffect.saveKind || "magic", dc, handlers.roll);
           events.push(...saveEvents);
           if (!saved) {
             let statusEvents = await status(user, targetCombatant,
-              // effect.status.name, { ...effect.status.effect }, effect.status.duration
               statusEffect.name, { ...statusEffect.effect }, effect.duration || 3
             );
             events.push(...statusEvents);
@@ -511,14 +508,6 @@ export default class AbilityHandler {
       } else {
         console.log(`${targetCombatant.name} wanted to flee but resisted!`);
       }
-      // }
-      // } else if (effect.type === "removeItem") {
-      //   if (!effect.item) {
-      //     throw new Error(`removeItem effect must specify an item`);
-      //   }
-      //   let itemEvents = await removeItem(targetCombatant, effect.item as keyof Team);
-      //   events.push(...itemEvents);
-      //   success = true;
     } else if (effect.type === "removeStatus") {
       if (!effect.statusName) {
         throw new Error(`removeStatus effect must specify a statusName`);
@@ -531,8 +520,11 @@ export default class AbilityHandler {
       if (!stat) {
         throw new Error(`upgrade effect must specify a stat`);
       }
-      let amount = await Deem.evaluate(effect.amount || "1", { subject: user, ...user, description: name });
-      // console.log(`${user.name} upgrades ${stat} by ${amount}!`);
+
+      console.log("Upgrading stat", stat, "for", user.name, "with effect:", JSON.stringify(effect));
+
+      let amount = await Deem.evaluate(effect.amount?.toString() || "1", { subject: user, ...user, description: name });
+      console.log(`${user.name} upgrades ${stat} by ${amount}!`);
       user[stat] = (user[stat] || 0) + amount;
       let upgradeEvent = { type: "upgrade", subject: user, stat, amount, newValue: user[stat] } as UpgradeEvent;
       events.push(upgradeEvent);
@@ -635,7 +627,47 @@ export default class AbilityHandler {
       let result = await this.handleEffect(name, nextEffect, user, targetCombatant, context, handlers);
       success = result.success;
       events.push(...result.events);
+    } else if (effect.type === "learn") {
+      // add ability to user's known abilities
+      if (!user.abilities) {
+        user.abilities = [];
+      }
+      let abilityName = effect.abilityName;
+      if (!abilityName) {
+        throw new Error(`learn effect must specify an abilityName`);
+      }
+      if (!user.abilities.includes(abilityName)) {
+        user.abilities.push(abilityName);
+        console.log(`${user.name} learns ability ${abilityName}!`);
+        events.push({ type: "learnAbility", subject: user, abilityName } as Omit<GameEvent, "turn">);
+      }
+      success = true;
+    } else if (effect.type === "grantPassive") {
+      if (!user.traits) {
+        user.traits = [];
+      }
+      let traitName = effect.traitName;
+      if (!traitName) {
+        throw new Error(`grantPassive effect must specify a traitName`);
+      }
+      if (!user.traits.includes(traitName)) {
+        user.traits.push(traitName);
+        console.log(`${user.name} gains passive trait ${traitName}!`);
+        events.push({ type: "gainTrait", subject: user, traitName } as Omit<GameEvent, "turn">);
+      }
+      success = true;
+    } else if (effect.type === "planeshift") {
+      let location = await Deem.evaluate(effect.location, { subject: user, ...user, description: name });
+      console.warn("You are being plane shifted to", location);
+      events.push({ type: "planeshift", subject: user, plane: location } as Omit<GameEvent, "turn">);
+      success = true;
+    } else if (effect.type === "teleport") {
+      let location = await Deem.evaluate(effect.location, { subject: user, ...user, description: name });
+      console.warn("You are being teleported to", location);
+      events.push({ type: "teleport", subject: user, location } as Omit<GameEvent, "turn">);
+      success = true;
     }
+
     else {
       // throw new Error(`Unknown effect type: ${effect.type}`);
       console.warn(`Unknown effect type: ${effect.type} in ability ${name}`);
@@ -817,7 +849,14 @@ export default class AbilityHandler {
     handlers: CommandHandlers,
     label: string
   ): Promise<Omit<GameEvent, "turn">[]> {
+    // if the user has 'triggerReactions' false, skip
+    let userFx = await Fighting.gatherEffects(user);
+    if (userFx.triggerReactions === false) {
+      return [];
+    }
+
     let events: Omit<GameEvent, "turn">[] = [];
+
     const actorSide = [user, ...(context.allies ?? [])];
     const opponentSide = [...(context.enemies ?? [])];
 

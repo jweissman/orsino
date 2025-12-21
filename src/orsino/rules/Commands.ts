@@ -522,8 +522,8 @@ export class Commands {
 
     const userFx = await Fighting.gatherEffects(user);
     // Apply status duration bonus
-    if (duration && userFx.statusDuration) {
-      duration += (userFx.statusDuration as number);
+    if (duration && userFx.spellDurationBonus) {
+      duration += (userFx.spellDurationBonus as number);
     }
 
     target.activeEffects = target.activeEffects || [];
