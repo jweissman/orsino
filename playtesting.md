@@ -1,17 +1,12 @@
 # Notes from Playtesting
 
 ## Bugs
-- [ ] Hidden seems to be removed whenever the hiding creature _gets_ attacked (should be removed whenever the hiding creature itself _attacks_)
-- [ ] Zero handling
-  - [ ] Was seeing 0-damage attacks on elite units (maybe something to do with DR but a 0-damage attack is a miss, although we could gloss as 'graze' or something?)
-  - [ ] Healing for 0 HP should be presented as a failure (not "heals for 0 damage" but "tried to heal but fails") -- thought we had repaired this but still seeing 0-amount heals -- we'd need to elide these events (for turn-end regen effects I think but maybe other places)
-  - [ ] Magic missile that does 0 damage should be glossed as a miss I think? (even though they're supposed to have 'perfect' targeting!)
+- [ ] Bomb shouldn't be able to reset ticking status
 
 ## Features
 - [ ] Rest could reset status effects? (would be nice to do this _before_ persisting PCs?)
 - [ ] Healing potion could cure poison status too? [maybe better to have a dedicated consumable for it though]
 - [ ] Poisoned blade still has weird expiration message actually? ("X is no longer poisoned blade"; a bit awkward to fix since a standard message would be ideal here)
-- [ ] Might be good/wise/prudent to gather status effects into constants so we're not subject to (as many) typo bugs! (more generally it would be nice to have a statuses.json for defining common effects like poisoning uniformly...)
 - [ ] Unify search/examine (should both have chance to find potions and both grant XP on success)
 - [ ] A cage could have a chance to have a prisoner (who could become ally); incidentally would be nice for it to be more likely within a 'cell' room
 - ---
@@ -46,7 +41,6 @@
 - ---
 - [ ] Player party _must_ be able to attempt to flee intentionally (could be a dex skill check?)
 - [ ] They should also have a chance to flee 'involuntarily' if they fail a save vs fear? (don't necessarily want to model 'splitting the party' but ... they could find individually-flown characters in previous rooms of the dungeon?)
-- [ ] Why is save vs Bleed a will check? Seems weird?
 - [ ] Some statuses still sound weird ("[defender] is Chaos by [inflicter]" - odd)
 - ---
 - [ ] AI should not use buffs that only target allies if all allies are dead
@@ -64,7 +58,6 @@
 - ---
 - [ ] Dirty trick should not give a save vs magic? (maybe vs will or even specifically vs blinding?)
 - [ ] Show current gold before purchasing potions (make sure we're handling gold transition between town hub/dungeon correctly)
-- [ ] Why is a wolf casting earthquake??? (presumably it was 'Giant' wolf but maybe just give a 'stomp' AoE ability?)
 - [ ] Should say 'leave the dungeon' instead of 'move to next room' for last room
 - [ ] There should be a shop to sell treasure (maybe also buy other kinds of consumables?)
 - ---
@@ -75,7 +68,6 @@
 - [ ] Armorer should only let you give weapons for humanoids to wield
 - [ ] Weapon proficiencies should matter for equipping PCs (ie not letting mage have huge battleaxes)
 - ---
-- [ ] Template overlay for dungeon types (could express '30% undead' outside of deem template...)
 - [ ] Magic weapons/armor (ie unify equipment w/ armor/weapons)
 - [ ] Offer to equip wearables if you find them in loot (give wearables/consumables in room treasure -- may need some tracking for 'unworn wearables'... -- don't think we give them out yet but a lot of the loot items are _suggestive_ of wearables or magic weapons/armor) 
 - [ ] Animals should not have _blur_ spell
@@ -104,14 +96,10 @@
 - [ ] Make _heavy handed_ feat actually improve proficiency with heavy weapons _only_
 - [ ] Morale/loyalty for hirelings?
 ---
-- [ ] Spell reflection/turning
-- [ ] Caster enemies should be limited to spell pools appropriate to their level
 - [ ] Better verbs for wand/stave actions (not 'performs', maybe 'use')
 ---
-- [ ] Smokescreen should hide the caster too! (Maybe we need a 'party' target?)
-- [ ] mapLookup (to reify more things at gen time)
 - [ ] Arbitrary scrolls/wands for every effect
-- [ ] Elemental template (iterate through each element for MM)
+- [ ] mapLookup (to reify more things at gen time)
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing
@@ -213,6 +201,19 @@
 - [x] Some kind of temp hp/buffer for glass cannons
 - [x] Are we adding stat bonuses to save checks? (Probably not but maybe we should in at least some cases?) -- yes!
 - [x] Adventuring kit could be a consumable that is needed to give first aid? - just 'first aid kit' but this exists now!
+- [x] Might be good/wise/prudent to gather status effects into constants so we're not subject to (as many) typo bugs! (more generally it would be nice to have a statuses.json for defining common effects like poisoning uniformly...)
+- [x] Hidden seems to be removed whenever the hiding creature _gets_ attacked (should be removed whenever the hiding creature itself _attacks_)
+- [x] Zero handling
+  - [x] Was seeing 0-damage attacks on elite units (maybe something to do with DR but a 0-damage attack is a miss, although we could gloss as 'graze' or something?)
+  - [x] Healing for 0 HP should be presented as a failure (not "heals for 0 damage" but "tried to heal but fails") -- thought we had repaired this but still seeing 0-amount heals -- we'd need to elide these events (for turn-end regen effects I think but maybe other places)
+  - [x] Magic missile that does 0 damage should be glossed as a miss I think? (even though they're supposed to have 'perfect' targeting!)
+- [x] Spell reflection/turning
+- [x] Caster enemies should be limited to spell pools appropriate to their level
+- [x] Smokescreen should hide the caster too! (Maybe we need a 'party' target?)
+- [x] Elemental template (iterate through each element for MM)
+- [x] Template overlay for dungeon types (could express '30% undead' outside of deem template...)
+- [x] Why is save vs Bleed a will check? Seems weird? -- added save vs bleed (though it could just be fort check)
+- [x] Why is a wolf casting earthquake??? (presumably it was 'Giant' wolf but maybe just give a 'stomp' AoE ability?) -- think this should be resolved by having adjusted ability lists
 
 ## Not really issues atm
 - "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]

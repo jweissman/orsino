@@ -775,7 +775,7 @@
       "level": 3,
       "class": "warrior"
     },
-    "abilities": [ "rage", "whirlwind", "reckless_attack" ]
+    "abilities": [ "enrage", "whirlwind", "reckless_attack" ]
   },
 
   "knight": {

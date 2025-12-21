@@ -301,6 +301,12 @@
     "description": "=\"#_appearance #_shrine_type dedicated to #_deityName\"",
     "offer": "=1d4 + 1"
   },
+  "riddle": {
+    "difficulty": "=oneOf(easy, medium, hard, deadly)",
+    "form": "=oneOf(tablet, inscription, mural, glyphs, puzzle_box)",
+    "challenge": "=lookup(riddles, #difficulty)",
+    "reward": "=pick(lookup(treasure, #difficulty == easy ? negligible : oneOf(negligible, minor, major)))"
+  },
   "room": {
     "_targetCr": 1,
     "_index": 0,
@@ -310,12 +316,14 @@
     "room_type": "=pick(#_roomBias)",
     "narrative": "=lookup(roomNarrative, #room_type)",
     "room_size": "=oneOf(tiny, small, medium, large, enormous)",
-    "_encounterChance": 1,
+    "_encounterChance": 0.7,
+    "_puzzleChance": 0.15,
     "_treasureChance": "=if(#room_type == \"treasury\", 1.0, oneOf(0.5, 0.8))",
     "targetCr": "=#_targetCr + max(0,round(#_index/3)-1)",
     "challenging": false,
     "*specialRoomModifiers": "=hasEntry(specialRooms, #room_type) ? lookup(specialRooms, #room_type) : nihil",
     "encounter": "=if(rand() < #_encounterChance, gen(encounter), nihil)",
+    "riddle": "=if(rand() < #_puzzleChance, gen(riddle), nihil)",
     "_treasureItems": "=lookup(treasure, rand() < 0.8 ? oneOf(negligible, minor) : oneOf(minor, major))",
     "treasure": "=if(rand() < #_treasureChance, sample(#_treasureItems, 1d2), nihil)",
     "decor": "=lookup(roomDecoration, 1d100)",

@@ -543,8 +543,13 @@ export class Commands {
   }
 
   static async handleRemoveStatusEffect(target: Combatant, name: string): Promise<TimelessEvent[]> {
-    if (target.activeEffects) {
-      let existingEffectIndex = target.activeEffects.findIndex(e => e.name === name);
+    let existingEffectIndex = -1;
+    while (target.activeEffects && (existingEffectIndex = target.activeEffects.findIndex(
+      e => e.name.match(new RegExp(`^${name}$`, 'i'))
+    )) !== -1) {
+      // let existingEffectIndex = target.activeEffects.findIndex(
+      //   e => e.name.match(new RegExp(`^${name}$`, 'i'))
+      // );
       let effect = target.activeEffects[existingEffectIndex]?.effect;
       if (effect?.tempHp) {
         // console.warn(`${Presenter.combatant(target)} loses ${effect.tempHp} temporary HP from removal of status effect ${name}.`);
@@ -559,9 +564,10 @@ export class Commands {
           type: "statusExpire", subject: target, effectName: name
         } as Omit<StatusExpireEvent, "turn">];
       }
-    } else {
-      console.warn(`Tried to remove status effect ${name} from ${target.forename} but they have no active effects.`);
     }
+    // else {
+    //   console.warn(`Tried to remove status effect ${name} from ${target.forename} but they have no active effects.`);
+    // }
     return [];
   }
 }

@@ -23,7 +23,7 @@
         "gp": 30,
         "gear": ["torch", "pole"],
         "weaponProficiencies": { "all": true },
-        "itemProficiencies": { "kind": ["kit", "potion"] }
+        "itemProficiencies": { "kind": ["kit", "potion", "flask"] }
       },
       "mage": {
         "int": 3,
@@ -41,7 +41,7 @@
         "gp": 20,
         "gear": ["thieves_tools"],
         "weaponProficiencies": { "kind": ["blade", "bow", "crossbow", "dart", "sling"], "weight": ["light", "medium"] },
-        "itemProficiencies": { "kind": ["kit", "potion"] }
+        "itemProficiencies": { "kind": ["kit", "potion", "flask"] }
       },
       "cleric": {
         "wis": 2,
@@ -50,7 +50,7 @@
         "gp": 15,
         "gear": ["holy_symbol"],
         "weaponProficiencies": { "kind": ["flail", "mace", "warhammer", "staff", "club"], "weight": ["light", "medium", "heavy"] },
-        "itemProficiencies": { "kind": ["kit", "potion", "wand", "scroll"], "withoutAspect": "arcane" }
+        "itemProficiencies": { "kind": ["kit", "potion", "flask", "wand", "scroll"], "withoutAspect": "arcane" }
       },
       "bard": {
         "cha": 3,
@@ -58,7 +58,7 @@
         "gp": 25,
         "gear": ["musical_instrument"],
         "weaponProficiencies": { "kind": ["blade", "bow", "crossbow", "staff", "light_mace"], "weight": ["light"] },
-        "itemProficiencies": { "kind": ["kit", "potion", "scroll"] }
+        "itemProficiencies": { "kind": ["kit", "potion", "flask", "scroll"] }
       },
       "ranger": {
         "dex": 2,
@@ -67,7 +67,7 @@
         "gp": 30,
         "gear": ["rations", "bedroll", "firewood", "flask"],
         "weaponProficiencies": { "kind": ["blade", "bow", "crossbow", "polearm"], "weight": ["light", "medium"] },
-        "itemProficiencies": { "kind": ["kit", "potion", "scroll"] }
+        "itemProficiencies": { "kind": ["kit", "potion", "flask", "scroll"] }
       }
     }
   },
@@ -339,36 +339,36 @@
   "npcTypeModifier": {
     "discriminator": "type",
     "groups": {
-      "Novice":       { "str": -1, "con": 0, "dex": -2, "int": 1, "wis": 1, "cha": -1, "abilities": ["rapid_strike", "paralyzing_touch", "life_drain" ] },
+      "Novice":       { "str": -1, "con": 0, "dex": -2, "int": 1, "wis": 1, "cha": -1, "abilities": ["rapid_strike", "paralyzing_touch", "life_drain", "ghost_touch" ] },
       "Gravedigger":  { "str": 0,  "con": 2, "dex": 2, "abilities": [ "rapid_strike", "hide", "dig_in" ] },
       "Bandit":       { "str": 2,  "con": 3, "dex": 2, "abilities": [ "prepare_charge", "charge", "hide", "backstab", "rapid_strike" ], "traits": ["stealthy"] },
       "Tombrobber":   { "str": 2,  "con": 3, "dex": 1, "int": -1, "wis": -1, "cha": 2, "abilities": ["rapid_strike", "hide"] },
-      "Necromancer":  { "str": 3,  "con": 4, "dex": 2, "int": 8, "abilities": [ "life_drain", "curse", "terror", "poison_cloud", "deathtouch", "summon_undead", "resurrect", "animate_dead" ], "traits": ["fiendish"] },
-      "Cult Master": { "str": 4,  "con": 5, "dex": 2, "int": 6, "wis": 4, "cha": 4, "abilities": [ "life_drain",  "terror", "poison_cloud", "mass_curse", "deathtouch" ], "traits": ["fiendish"] },
-      "Wizard":      { "str": -1, "dex": -1, "int": 3, "con": 1, "abilities": [ "missile", "shocking_grasp", "sleep", "lightning_strike", "slow", "armor", "acid_arrow" ] },
+      "Necromancer":  { "str": 3,  "con": 4, "dex": 2, "int": 8, "abilities": [ "minor_ward", "life_drain", "curse", "terror", "poison_cloud", "deathtouch", "summon_undead", "resurrect", "animate_dead" ], "traits": ["fiendish"] },
+      "Cult Master": { "str": 4,  "con": 5, "dex": 2, "int": 6, "wis": 4, "cha": 4, "abilities": [ "ghost_touch", "life_drain",  "terror", "poison_cloud", "mass_curse", "deathtouch" ], "traits": ["fiendish"] },
+      "Wizard":      { "str": -1, "dex": -1, "int": 3, "con": 1, "abilities": [ "dancing_lights", "minor_ward", "shock_pulse", "frostbite", "spark", "firebolt", "missile", "shocking_grasp", "sleep", "lightning_strike", "slow", "armor", "acid_arrow" ] },
       "Poxmonger":   { "str": -2, "dex": -2, "con": -1, "int": 2, "wis": 1, "cha": 2, "abilities": [ "terror", "poison_cloud", "inflict_disease", "deathtouch" ] },
 
       "Mendicant":    { "str": -2, "dex": -2, "con": -2, "int": 1, "wis": 2, "cha": 2, "abilities": [
-        "cure", "bless", "meditate", "chant"
+        "cure_minor", "cure", "bless", "meditate", "chant"
       ] },
       "Herald":       { "str": -1, "dex": -1, "int": 1, "wis": -1, "cha": 2, "abilities": ["inspire"] },
-      "Benefactor":   { "str": -1, "dex": -1, "int": 2, "wis": -1, "cha": 2, "abilities": ["cure"] },
-      "Devotee":      { "str": -1, "dex": -1, "int": 1, "wis": 2, "cha": 1, "abilities": ["cure"] },
-      "Preacher":     { "str": -1, "dex": -1, "int": 2, "wis": 2, "cha": 2, "abilities": ["rally", "inspire", "bless", "remove_fear"] },
-      "Adept":       { "str": 1,  "con": 2, "wis": 3, "int": 2, "abilities": [ "cure_moderate", "bless", "shocking_grasp", "paralyzing_touch", "raise_dead", "resist_fire" ], "traits": ["piety"] },
+      "Benefactor":   { "str": -1, "dex": -1, "int": 2, "wis": -1, "cha": 2, "abilities": ["cure_minor", "cure"] },
+      "Devotee":      { "str": -1, "dex": -1, "int": 1, "wis": 2, "cha": 1, "abilities": ["cure_minor", "cure"] },
+      "Preacher":     { "str": -1, "dex": -1, "int": 2, "wis": 2, "cha": 2, "abilities": ["sunmark", "rally", "inspire", "bless", "remove_fear"] },
+      "Adept":       { "str": 1,  "con": 2, "wis": 3, "int": 2, "abilities": [ "cure_minor", "cure", "cure_moderate", "bless", "shocking_grasp", "paralyzing_touch", "raise_dead", "resist_fire" ], "traits": ["piety"] },
       "Acolyte":      { "str": 0,  "con": 1, "wis": 2, "int": 1, "abilities": [ "heal", "bless", "paralyzing_touch" ], "traits": ["piety"] },
-      "Cultist":      { "str": 1,  "con": 2, "int": 2, "abilities": [ "heal", "curse", "terror", "paralyzing_touch", "silence", "animate_dead" ], "traits": ["piety", "radiant"] },
-      "Cleric":       { "wis": 3, "con": 2, "abilities": [ "smite", "cure", "bless", "resist_fire", "hold_person" ] },
-      "Sage":         { "int": 4, "abilities": [ "curse", "terror", "blade_barrier", "command" ] },
+      "Cultist":      { "str": 1,  "con": 2, "int": 2, "abilities": [ "heal", "cure_minor", "ghost_touch", "curse", "terror", "paralyzing_touch", "silence", "animate_dead" ], "traits": ["piety", "radiant"] },
+      "Cleric":       { "wis": 3, "con": 2, "abilities": [ "cure_minor", "minor_ward", "smite", "cure", "bless", "resist_fire", "hold_person" ] },
+      "Sage":         { "int": 4, "abilities": [ "dancing_lights", "cure_minor", "cure", "curse", "terror", "blade_barrier", "command" ] },
       "Guardian":     { "con": 4, "abilities": [ "second_wind", "taunt", "shield", "prepare_charge", "charge", "remove_fear", "cure_disease", "chant" ] },
-      "Elder":        { "int": 6, "con": 4, "abilities": [ "cure", "curse", "terror", "life_drain", "silence", "judgment", "command", "blade_barrier" ] },
-      "Priest":        { "str": -1, "con": 1, "int": 2, "wis": 3, "cha": 2, "abilities": [ "cure_moderate", "bless", "paralyzing_touch", "holy", "judgment", "curse", "chant", "prayer" ], "traits": ["piety"] },
-      "Death Priest": { "str": 3, "con": 4, "int": 4, "dex": 2, "wis": 6, "abilities": [ "cure_moderate", "curse", "terror", "life_drain", "burning_hands", "chant" ], "traits": ["fiendish", "piety"] },
+      "Elder":        { "int": 6, "con": 4, "abilities": [ "cure_minor", "cure", "curse", "terror", "life_drain", "silence", "judgment", "command", "blade_barrier" ] },
+      "Priest":        { "str": -1, "con": 1, "int": 2, "wis": 3, "cha": 2, "abilities": [ "cure_minor", "cure", "cure_moderate", "bless", "paralyzing_touch", "holy", "judgment", "curse", "chant", "prayer" ], "traits": ["piety"] },
+      "Death Priest": { "str": 3, "con": 4, "int": 4, "dex": 2, "wis": 6, "abilities": [ "cure_moderate", "curse", "terror", "life_drain",  "firebolt", "burning_hands", "chant" ], "traits": ["fiendish", "piety"] },
       "High Priest":  { "str": -2, "con": 4, "int": 6, "dex": 2, "wis": 8, "cha": 8, "abilities": [ "smite", "bless", "curse", "inspire", "cure_serious", "holy", "prayer" ] },
-      "Primate":      { "str": 4, "con": 4, "int": 6, "dex": 2, "wis": 8, "cha": 6, "abilities": [ "smite", "bless", "curse", "inspire", "cure_serious", "judgment", "holy", "mass_curse", "prayer" ] },
-      "Hierophant":   { "str": 2, "con": 4, "int": 3, "dex": 2, "wis": 5, "cha": 5, "abilities": [ "prepare_charge", "charge", "sleep", "curse", "fear", "life_drain", "poison_cloud", "resist_fire", "cure_serious", "blade_barrier" ] },
+      "Primate":      { "str": 4, "con": 4, "int": 6, "dex": 2, "wis": 8, "cha": 6, "abilities": [ "cure_minor", "cure", "minor_ward", "smite", "bless", "curse", "inspire", "cure_serious", "judgment", "holy", "mass_curse", "prayer" ] },
+      "Hierophant":   { "str": 2, "con": 4, "int": 3, "dex": 2, "wis": 5, "cha": 5, "abilities": [ "prepare_charge", "charge", "minor_ward", "sleep", "curse", "fear", "life_drain", "poison_cloud", "resist_fire", "cure", "cure_serious", "blade_barrier" ] },
 
-      "Apprentice":   { "str": -1, "dex": -1, "int": 2, "wis": 1, "cha": -1, "abilities": [ "missile" ] },
+      "Apprentice":   { "str": -1, "dex": -1, "int": 2, "wis": 1, "cha": -1, "abilities": [ "spark", "firebolt", "missile" ] },
       "Whelp":        { "str": -1, "dex": -1, "abilities": [] },
       "Runt":         { "str": -2, "abilities": ["hide"] },
       "Creep":        { "str": -1, "dex": 1, "abilities": ["hide"] },
@@ -2054,6 +2054,62 @@
       "celestial": 2,
       "fey": 1,
       "beast": 2
+    }
+  },
+
+  "riddles": {
+    "discriminator": "riddle_type",
+    "groups": {
+      "easy": [
+        { "question": "What has keys but can't open locks?", "answer": "Piano" },
+        { "question": "What has a heart that doesn't beat?", "answer": "Artichoke" },
+        { "question": "I am not alive, but I grow; I don't have lungs, but I need air; I don't have a mouth, but water kills me. What am I?", "answer": "Fire" },
+        { "question": "I am always hungry, I must always be fed. The finger I touch will soon turn red. What am I?", "answer": "Fire" },
+        { "question": "The person who makes it, sells it. The person who buys it never uses it. The person who uses it never knows they're using it. What is it?", "answer": "Coffin" },
+        { "question": "What has to be broken before you can use it?", "answer": "Egg" },
+        { "question": "What begins with T, ends with T, and has T in it?", "answer": "Teapot" }
+      ],
+      "medium": [
+        { "question": "I speak without a mouth and hear without ears. I have nobody, but I come alive with wind. What am I?", "answer": "Echo" },
+        { "question": "The more of this there is, the less you see. What is it?", "answer": "Darkness" },
+        { "question": "I have cities, but no houses; forests, but no trees; and rivers, but no water. What am I?", "answer": "Map" },
+        { "question": "What can run but never walks, has a mouth but never talks, has a head but never weeps, has a bed but never sleeps?", "answer": "River" },
+        { "question": "What comes once in a minute, twice in a moment, but never in a thousand years?", "answer": "M" },
+        { "question": "What can bring back the dead; make us cry, make us laugh, make us young; is born in an instant, yet lasts a lifetime?", "answer": "Memory" },
+        { "question": "What goes up but never comes down?", "answer": "Age" },
+        { "question": "What begins without ending and is the ending of all beginnings?", "answer": "Death" },
+        { "question": "What is easy to lift but hard to throw?", "answer": "Feather" }
+      ],
+      "hard": [
+        { "question": "I turn once, what is out will not get in. I turn again, what is in will not get out. What am I?", "answer": "Key" },
+        { "question": "What can fill a room but takes up no space?", "answer": "Light" },
+        { "question": "What is seen in the middle of March and April that can't be seen at the beginning or end of either month?", "answer": "R" },
+        { "question": "What flies without wings and cries without eyes?", "answer": "Cloud" },
+        { "question": "The more you take, the more you leave behind. What am I?", "answer": "Footsteps" },
+        { "question": "What has roots as nobody sees, Is taller than trees, Up, up it goes, And yet it never grows?", "answer": "Mountain" },
+        { "question": "Voiceless it cries, Wingless flutters, Toothless bites, Mouthless mutters.", "answer": "Wind" },
+        { "question": "What has a bottom at the top?", "answer": "Legs" },
+        { "question": "I'm quick when I'm thin and slow when I'm fat. The wind is my enemy.", "answer": "Candle" },
+        { "question": "I disappear when you say my name.", "answer": "Silence" },
+        { "question": "I lie behind the stars and underneath the ancient hills. I always come first and yet follow after, end every life and silence laughter.", "answer": "Darkness" },
+        { "question": "What has four fingers and a thumb but is not alive?", "answer": "Glove" },
+        { "question": "You can keep me only once you give me away.", "answer": "Word" }
+      ],
+      "deadly": [
+        { "question": "What has a head, a tail, is brown, and has no legs?", "answer": "Coin" },
+        { "question": "I am taken from a mine and shut up in a wooden case, from which I am never released, and yet I am used by almost every person. What am I?", "answer": "Lead" },
+        { "question": "What can travel around the world while staying in the same spot?", "answer": "Stamp" },
+        { "question": "What has one eye but can't see?", "answer": "Needle" },
+        { "question": "What has many teeth but can't bite?", "answer": "Comb" },
+        { "question": "What has hands but can't clap?", "answer": "Clock" },
+        { "question": "What has a neck but no head?", "answer": "Bottle" },
+        { "question": "What has an eye but cannot see?", "answer": "Hurricane" },
+        { "question": "What can you catch but not throw?", "answer": "Cold" },
+        { "question": "What breaks but never falls?", "answer": "Day" },
+        { "question": "What goes through cities and fields, but never moves?", "answer": "Road" },
+        { "question": "I always was, yet never will be.", "answer": "Tomorrow" },
+        { "question": "I travel the world, yet stay in a corner.", "answer": "Stamp" }
+      ]
     }
   }
 

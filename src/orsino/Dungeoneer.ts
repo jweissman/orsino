@@ -15,6 +15,7 @@ import AbilityHandler, { Ability, AbilityEffect } from "./Ability";
 import { Inventory } from "./Inventory";
 import Orsino from "../orsino";
 import { StatusEffect, StatusModifications } from "./Status";
+import Sample from "./util/Sample";
 
 type SkillType = "search" | "examine"; // | "disarm" | "pickLock" | "climb" | "swim" | "jump" | "listen" | "spot";
 
@@ -54,6 +55,12 @@ interface RoomBase {
   features: string[] | null;
   aura: StatusEffect | null;
   shrine: RoomFeature | null;
+  riddle?: {
+    difficulty: "easy" | "medium" | "hard" | "deadly";
+    form: string;
+    challenge: { question: string; answer: string; };
+    reward: string;
+  }
 }
 
 export interface Room extends RoomBase {
@@ -462,12 +469,13 @@ export default class Dungeoneer {
           }
         });
       }
-      if (room.shrine && !inspectedFeatures.includes('shrine')) {
-        options.push({ name: `Pay respects to the shrine of ${Words.humanize(room.shrine.deity?.forename ?? 'a forgotten deity')}`, value: `feature:shrine`, short: 'Visit Shrine', disabled: false });
+      if (room.shrine) {
+        options.push({ name: `Pay respects to the shrine of ${Words.humanize(room.shrine.deity?.forename ?? 'a forgotten deity')}`, value: `feature:shrine`, short: 'Visit Shrine', disabled: inspectedFeatures.includes('shrine') });
       }
-      if (!this.dry) {
-        options.push({ name: "Leave the dungeon", value: "leave", short: 'Leave', disabled: false });
+      if (room.riddle) {
+        options.push({ name: `Inspect the curious ${Words.humanize(room.riddle.form)}`, value: "riddle", short: 'Solve Riddle', disabled: inspectedFeatures.includes('riddle') || this.dry });
       }
+        options.push({ name: "Leave the dungeon", value: "leave", short: 'Leave', disabled: this.dry });
 
       let choice = await this.select("What would you like to do?", options);
       if (choice === "status") {
@@ -514,6 +522,56 @@ export default class Dungeoneer {
         const featureName = choice.split(":")[1];
         await this.interactWithFeature(featureName);
         inspectedFeatures.push(featureName);
+      } else if (choice === "riddle") {
+        const riddle = room.riddle!;
+        let check = await this.skillCheck("examine", `to understand the ${Words.humanize(riddle.form)}`, "int", (riddle.difficulty === "easy") ? 10 : (riddle.difficulty === "medium") ? 15 : (riddle.difficulty === "hard") ? 20 : 25);
+        if (check.success) {
+          let wrongAnswerPool = [
+            "River", "Mountain", "Shadow", "Fire", "Wind", "Stone", "Tree", "Cave",
+            "Dream", "Star", "Cloud", "Leaf", "Rain", "Sun", "Wave", "Forest", "Love",
+            "Firefly", "Shadow", "Whisper", "Flame", "Frost", "Storm", "Ember", "Glade",
+            "Blade", "Crown", "Throne", "Sword", "Shield", "Spear", "Bow", "Dagger",
+            "Wolf", "Lion", "Eagle", "Bear", "Fox", "Hawk", "Stag", "Serpent",
+            "Star", "Moon", "Sun", "Comet", "Planet", "Galaxy", "Universe", "Nebula",
+            "Map", "Time", "Echo", "Silence", "Light", "Darkness", "Sky",
+            "Lead", "Gold", "Silver", "Bronze", "Iron", "Copper", "Steel",
+            "Memory", "Thought", "Breath", "Heart", "Soul", "Path", "Journey", "Destiny",
+            "Needle", "Thread", "Fabric", "Comb", "Button", "Cloth", "Rope", "Chain",
+            "Pocket", "Box", "Chest", "Bag", "Jar", "Vase", "Cup", "Bowl",
+            "Clock", "Bell", "Lantern", "Candle", "Torch", "Mirror", "Window",
+            "Glove", "Boot", "Hat", "Cloak", "Belt", "Ring", "Amulet", "Bracelet",
+            "Hurricane", "Tornado", "Earthquake", "Volcano", "Avalanche", "Flood",
+            "Day", "Night", "Dawn", "Dusk", "Twilight", "Midnight",
+            "Today", "Tomorrow", "Yesterday", "Forever", "Always", "Never",
+            "Word", "Song", "Dance", "Story", "Poem", "Tale", "Legend",
+            "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P",
+            "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+          ];
+          let answer = await this.select(`The ${Words.humanize(riddle.form)} asks: "${riddle.challenge.question}"`, [
+            ...Sample.shuffle(...[
+              { name: riddle.challenge.answer, value: "correct", short: 'Answer', disabled: false },
+              ...(Sample.count(5, ...wrongAnswerPool).map((w, i) => ({ name: w, value: 'wrong', short: 'Answer', disabled: false })))
+            ]),
+            { name: "Remain silent", value: "silent", short: 'Silent', disabled: false },
+          ]);
+          if (answer === "correct") {
+            await this.emit({ type: "riddle", subject: check.actor, challenge: riddle.challenge.question, reward: riddle.reward, solution: riddle.challenge.answer });
+            this.note(`${check.actor.forename} answered correctly and received ${Words.a_an(riddle.reward)}!`);
+            // give reward
+            let isConsumable = await Deem.evaluate(`hasEntry(consumables, '${riddle.reward}')`);
+            if (isConsumable) {
+              this.playerTeam.inventory.push(await Inventory.item(riddle.reward));
+            } else {
+              check.actor.gear = check.actor.gear || [];
+              check.actor.gear.push(riddle.reward);
+            }
+          } else {
+            this.note(`${check.actor.forename} answered incorrectly.`);
+          }
+        } else {
+          this.note(`${check.actor.forename} could not make sense of the ${Words.humanize(riddle.form)}.`);
+        }
+        inspectedFeatures.push('riddle');
       }
 
       else if (choice === "leave") {

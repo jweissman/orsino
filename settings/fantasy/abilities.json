@@ -4,7 +4,9 @@
     "type": "skill",
     "aspect": "physical",
     "description": "Wait and do nothing this turn.",
-    "target": [ "self" ],
+    "target": [
+      "self"
+    ],
     "effects": []
   },
   "flee": {
@@ -12,7 +14,9 @@
     "type": "skill",
     "aspect": "physical",
     "description": "Run away!",
-    "target": [ "self" ],
+    "target": [
+      "self"
+    ],
     "effects": [
       {
         "type": "flee",
@@ -118,13 +122,7 @@
       },
       {
         "type": "debuff",
-        "status": {
-          "name": "Prone",
-          "duration": 2,
-          "effect": {
-            "noActions": true
-          }
-        },
+        "status": "prone",
         "saveKind": "reflex",
         "saveDC": 14
       }
@@ -150,37 +148,22 @@
       {
         "type": "debuff",
         "target": "self",
-        "status": {
-          "name": "Reckless",
-          "duration": 2,
-          "effect": {
-            "toHit": -2,
-            "ac": 2
-          }
-        }
+        "status": "reckless"
       }
     ]
   },
-  "rage": {
+  "enrage": {
     "name": "Rage",
     "type": "skill",
-    "aspect": "physical",
-    "description": "Enter a furious rage, gaining +2 to damage and +2 to hit for 5 rounds. You take -1 AC while raging.",
+    "aspect": "feral",
+    "description": "Enter a frenzied state.",
     "target": [
       "self"
     ],
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Raging",
-          "effect": {
-            "bonusDamage": 2,
-            "toHit": 2,
-            "ac": 1
-          },
-          "duration": 5
-        }
+        "status": "rage"
       }
     ]
   },
@@ -241,20 +224,14 @@
       {
         "type": "damage",
         "amount": "=1d6",
-        "kind": "bludgeoning"
+        "kind": "bludgeoning",
+        "saveForHalf": true
       },
       {
         "type": "debuff",
-        "status": {
-          "name": "Stunned",
-          "duration": 1,
-          "effect": {
-            "noActions": true
-          }
-        },
+        "status": "stun",
         "saveNegates": true,
-        "saveDC": 15,
-        "saveKind": "fortitude"
+        "saveDC": 20
       }
     ]
   },
@@ -264,7 +241,7 @@
     "level": 3,
     "aspect": "divine",
     "domain": "light",
-    "description": "Create a sphere of bright light that deals 1d4 radiant damage to all enemies, reveals Hidden creatures and blinds enemies for 2 rounds.",
+    "description": "Create a sphere of bright light.",
     "target": [
       "enemies"
     ],
@@ -278,18 +255,6 @@
       {
         "type": "removeStatus",
         "statusName": "Hidden"
-      },
-      {
-        "type": "debuff",
-        "status": {
-          "name": "Blinded",
-          "duration": 2,
-          "effect": {
-            "toHit": -4
-          }
-        },
-        "saveKind": "will",
-        "saveDC": 18
       }
     ]
   },
@@ -318,20 +283,14 @@
     "level": 2,
     "aspect": "divine",
     "domain": "nature",
-    "description": "Gain 3 AC for 5 rounds.",
+    "description": "Your skin stiffens into tree-bark.",
     "target": [
       "self"
     ],
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Barkskinned",
-          "effect": {
-            "ac": -3
-          },
-          "duration": 5
-        }
+        "status": "barkskin"
       }
     ]
   },
@@ -341,20 +300,65 @@
     "level": 3,
     "aspect": "divine",
     "domain": "nature",
-    "description": "Gain 5 AC for 4 rounds.",
+    "description": "Your skin hardens like stone.",
     "target": [
       "self"
     ],
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Stoneskinned",
-          "effect": {
-            "ac": -5
-          },
-          "duration": 4
-        }
+        "status": "stoneskin"
+      }
+    ]
+  },
+  "ironskin": {
+    "name": "Ironskin",
+    "type": "spell",
+    "level": 4,
+    "aspect": "divine",
+    "domain": "nature",
+    "description": "Your skin becomes as hard as iron.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "ironskin"
+      }
+    ]
+  },
+  "scaleskin": {
+    "name": "Scaleskin",
+    "type": "spell",
+    "level": 5,
+    "aspect": "divine",
+    "domain": "nature",
+    "description": "Your skin takes on the qualities of dragon scales.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "scaleskin"
+      }
+    ]
+  },
+  "steelskin": {
+    "name": "Steelskin",
+    "type": "spell",
+    "level": 9,
+    "aspect": "divine",
+    "domain": "nature",
+    "description": "Your skin becomes as tough as steel.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "steelskin"
       }
     ]
   },
@@ -364,21 +368,15 @@
     "level": 1,
     "aspect": "divine",
     "domain": "life",
-    "description": "Grant all allies +2 to hit and saves for 5 rounds.",
+    "description": "You mark your allies with a holy symbol, granting them protection.",
     "target": [
       "allies"
     ],
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Anointed",
-          "duration": 5,
-          "effect": {
-            "toHit": 2,
-            "allSaves": 2
-          }
-        }
+        "status": "anointed",
+        "duration": 5
       }
     ]
   },
@@ -388,7 +386,7 @@
     "type": "spell",
     "aspect": "divine",
     "domain": "law",
-    "description": "Faith protects.",
+    "description": "Divine power protects you or an ally with a shimmering shield.",
     "target": [
       "self",
       "ally"
@@ -396,13 +394,8 @@
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Shielded",
-          "effect": {
-            "ac": -2
-          },
-          "duration": 10
-        }
+        "status": "shielded",
+        "duration": 10
       }
     ]
   },
@@ -412,21 +405,15 @@
     "level": 1,
     "aspect": "arcane",
     "school": "abjuration",
-    "description": "Arcane force protects you.",
+    "description": "Arcane force wraps around you, providing magical protection.",
     "target": [
       "self"
     ],
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Mage-Armored",
-          "effect": {
-            "ac": -4,
-            "tempHp": 20
-          },
-          "duration": 25
-        }
+        "status": "mage_armored",
+        "duration": 20
       }
     ]
   },
@@ -444,17 +431,8 @@
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Warded",
-          "effect": {
-            "saveVersusMagic": 2,
-            "resistFire": 0.5,
-            "resistCold": 0.5,
-            "resistLightning": 0.5,
-            "tempHp": "=14 + 2 * #level"
-          },
-          "duration": 20
-        }
+        "status": "warded",
+        "duration": 20
       }
     ]
   },
@@ -547,28 +525,11 @@
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Overwatching",
-          "duration": 2,
-          "effect": {
-            "bonusDamage": 2,
-            "onEnemyMelee": [
-              {
-                "type": "attack",
-                "target": "attacker",
-                "description": "overwatch attack"
-              },
-              {
-                "type": "removeStatus",
-                "statusName": "Overwatching"
-              }
-            ]
-          }
-        }
+        "status": "overwatch",
+        "duration": 1
       }
     ]
   },
-  
   "missile": {
     "name": "Magic Missile",
     "type": "spell",
@@ -603,22 +564,6 @@
         "type": "damage",
         "amount": "=1d6",
         "kind": "fire"
-      },
-      {
-        "type": "debuff",
-        "status": {
-          "name": "Burning",
-          "duration": 3,
-          "effect": {
-            "onTurnEnd": [
-              {
-                "type": "damage",
-                "amount": "=1d4",
-                "kind": "fire"
-              }
-            ]
-          }
-        }
       }
     ]
   },
@@ -628,27 +573,15 @@
     "level": 1,
     "aspect": "arcane",
     "school": "evocation",
-    "description": "Deliver a jolt of electricity, dealing 1d4 damage and stunning the target for 2 rounds.",
+    "description": "Deliver a jolt of electricity.",
     "target": [
       "enemy"
     ],
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d4",
+        "amount": "=1d6",
         "kind": "lightning"
-      },
-      {
-        "type": "debuff",
-        "status": {
-          "name": "Stunned",
-          "duration": 2,
-          "effect": {
-            "noActions": true
-          }
-        },
-        "saveKind": "will",
-        "saveDC": 10
       }
     ]
   },
@@ -658,14 +591,14 @@
     "level": 4,
     "aspect": "arcane",
     "school": "evocation",
-    "description": "Strike multiple enemies with lightning, dealing 1d6 damage to each.",
+    "description": "Strike multiple enemies with lightning.",
     "target": [
       "enemy"
     ],
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d6+#level",
+        "amount": "=2d6+#level",
         "kind": "lightning",
         "cascade": {
           "count": "=3+floor(#level/2)",
@@ -679,7 +612,7 @@
     "type": "spell",
     "level": 1,
     "aspect": "social",
-    "description": "Attempt to charm an enemy, making them friendly towards you for 3 rounds.",
+    "description": "Charm an enemy, making them friendly towards you.",
     "target": [
       "enemy"
     ],
@@ -689,21 +622,14 @@
         "condition": {
           "trait": "humanoid"
         },
-        "status": {
-          "name": "Charmed",
-          "duration": 3,
-          "effect": {
-            "changeAllegiance": true
-          }
-        },
-        "saveKind": "charm",
-        "saveDC": 16
+        "status": "charmed",
+        "saveDC": 18
       }
     ]
   },
   "riposte": {
     "name": "Riposte",
-    "description": "Next attack that misses you triggers a punishing counterattack. Grants +3 evasion and +1 AC for the next round.",
+    "description": "Next attack that misses you triggers a punishing counterattack.",
     "target": [
       "self"
     ],
@@ -711,21 +637,7 @@
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Riposting",
-          "duration": 3,
-          "effect": {
-            "evasion": 3,
-            "ac": 1,
-            "onMissReceived": [
-              {
-                "type": "attack",
-                "target": "attacker",
-                "description": "riposte"
-              }
-            ]
-          }
-        }
+        "status": "riposte"
       }
     ]
   },
@@ -740,14 +652,7 @@
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Dodging",
-          "effect": {
-            "ac": -2,
-            "evasion": 5
-          },
-          "duration": 2
-        }
+        "status": "dodge"
       }
     ]
   },
@@ -757,20 +662,14 @@
     "level": 1,
     "aspect": "arcane",
     "school": "illusion",
-    "description": "Become blurred, granting you a 50% chance to avoid attacks for 3 rounds.",
+    "description": "You are out of focus, making it harder for enemies to hit you.",
     "target": [
       "self"
     ],
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Blurred",
-          "duration": 3,
-          "effect": {
-            "evasion": 10
-          }
-        }
+        "status": "blurred"
       }
     ]
   },
@@ -787,13 +686,7 @@
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Mirror Images",
-          "duration": 5,
-          "effect": {
-            "evasion": 15
-          }
-        }
+        "status": "mirror_images"
       }
     ]
   },
@@ -810,15 +703,9 @@
     "effects": [
       {
         "type": "debuff",
-        "status": {
-          "name": "Asleep",
-          "duration": 3,
-          "effect": {
-            "noActions": true
-          }
-        },
+        "status": "asleep",
         "saveKind": "sleep",
-        "saveDC": 12
+        "saveDC": 16
       }
     ]
   },
@@ -835,16 +722,7 @@
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Hasted",
-          "duration": 5,
-          "effect": {
-            "dex": 4,
-            "initiative": 10,
-            "extraAttacksPerTurn": 1,
-            "ac": -2
-          }
-        }
+        "status": "haste"
       }
     ]
   },
@@ -854,7 +732,7 @@
     "level": 3,
     "aspect": "arcane",
     "school": "evocation",
-    "description": "Hurl a fiery ball that explodes, dealing 6d6 fire damage to all enemies in the area.",
+    "description": "Hurl a destructive ball of energy that explodes in a fiery blast.",
     "target": [
       "enemies"
     ],
@@ -864,26 +742,9 @@
         "amount": "=6d6",
         "kind": "fire",
         "saveForHalf": true
-      },
-      {
-        "type": "debuff",
-        "status": {
-          "name": "Burning",
-          "duration": 3,
-          "effect": {
-            "onTurnEnd": [
-              {
-                "type": "damage",
-                "amount": "=1d4",
-                "kind": "fire"
-              }
-            ]
-          }
-        }
       }
     ]
   },
-  
   "vicious_mockery": {
     "name": "Vicious Mockery",
     "type": "spell",
@@ -902,13 +763,7 @@
       },
       {
         "type": "debuff",
-        "status": {
-          "name": "Mocked",
-          "duration": 2,
-          "effect": {
-            "toHit": -1
-          }
-        },
+        "status": "mocked",
         "saveKind": "will",
         "saveDC": 10
       }
@@ -926,14 +781,7 @@
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Inspired",
-          "effect": {
-            "toHit": 2,
-            "tempHp": 5
-          },
-          "duration": 3
-        }
+        "status": "inspired"
       }
     ]
   },
@@ -956,21 +804,7 @@
             "onAttackHit": [
               {
                 "type": "debuff",
-                "saveKind": "poison",
-                "saveDC": 12,
-                "status": {
-                  "name": "Poison",
-                  "duration": 3,
-                  "effect": {
-                    "onTurnEnd": [
-                      {
-                        "type": "damage",
-                        "amount": "=1d4",
-                        "kind": "poison"
-                      }
-                    ]
-                  }
-                }
+                "status": "poison"
               }
             ]
           }
@@ -1004,13 +838,7 @@
     "effects": [
       {
         "type": "debuff",
-        "status": {
-          "name": "taunted",
-          "duration": 4,
-          "effect": {
-            "forceTarget": "you"
-          }
-        },
+        "status": "taunted",
         "saveKind": "will",
         "saveDC": 18
       }
@@ -1045,15 +873,7 @@
     "effects": [
       {
         "type": "debuff",
-        "status": {
-          "name": "Frightened",
-          "duration": 3,
-          "effect": {
-            "toHit": -2,
-            "initiative": -5,
-            "allRolls": -1
-          }
-        },
+        "status": "frightened",
         "saveKind": "fear",
         "saveDC": 12
       }
@@ -1074,18 +894,7 @@
         "type": "debuff",
         "saveKind": "will",
         "saveDC": 10,
-        "status": {
-          "name": "Cursed",
-          "duration": 4,
-          "effect": {
-            "str": -1,
-            "dex": -1,
-            "int": -1,
-            "wis": -1,
-            "cha": -1,
-            "con": -1
-          }
-        }
+        "status": "cursed"
       }
     ]
   },
@@ -1104,18 +913,7 @@
         "type": "debuff",
         "saveKind": "will",
         "saveDC": 15,
-        "status": {
-          "name": "Cursed",
-          "duration": 4,
-          "effect": {
-            "str": -1,
-            "dex": -1,
-            "int": -1,
-            "wis": -1,
-            "cha": -1,
-            "con": -1
-          }
-        }
+        "status": "cursed"
       }
     ]
   },
@@ -1138,21 +936,11 @@
       },
       {
         "type": "debuff",
-        "status": {
-          "name": "Bleeding",
-          "duration": 3,
-          "effect": {
-            "onTurnEnd": [
-              {
-                "type": "damage",
-                "amount": "=1d4",
-                "kind": "bleed"
-              }
-            ]
-          }
-        },
-        "saveKind": "death",
-        "saveDC": 10
+        "status": "bleed"
+      },
+      {
+        "type": "debuff",
+        "status": "slow"
       }
     ]
   },
@@ -1167,20 +955,7 @@
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Hidden",
-          "duration": 5,
-          "effect": {
-            "ac": -4,
-            "evasion": 10,
-            "onAttack": [
-              {
-                "type": "removeStatus",
-                "statusName": "Hidden"
-              }
-            ]
-          }
-        }
+        "status": "hidden"
       }
     ]
   },
@@ -1298,27 +1073,13 @@
       },
       {
         "type": "debuff",
-        "status": {
-          "name": "Stunned",
-          "duration": 2,
-          "effect": {
-            "noActions": true
-          }
-        },
-        "saveKind": "stun",
-        "saveDC": 15
+        "status": "stun",
+        "saveDC": 20
       },
       {
         "type": "debuff",
-        "status": {
-          "name": "Charmed",
-          "duration": 2,
-          "effect": {
-            "changeAllegiance": true
-          }
-        },
-        "saveKind": "insanity",
-        "saveDC": 12
+        "status": "charmed",
+        "saveDC": 15
       }
     ]
   },
@@ -1362,15 +1123,7 @@
       },
       {
         "type": "debuff",
-        "status": {
-          "name": "Paralyzed",
-          "duration": 2,
-          "effect": {
-            "noActions": true
-          }
-        },
-        "saveKind": "will",
-        "saveDC": 12
+        "status": "paralyzed"
       }
     ]
   },
@@ -1393,13 +1146,7 @@
       },
       {
         "type": "debuff",
-        "status": {
-          "name": "Prone",
-          "duration": 2,
-          "effect": {
-            "noActions": true
-          }
-        },
+        "status": "prone",
         "saveKind": "stun",
         "saveDC": 12
       }
@@ -1418,38 +1165,9 @@
     "effects": [
       {
         "type": "debuff",
-        "status": {
-          "name": "Drenched",
-          "duration": 3,
-          "effect": {
-            "toHit": -2
-          }
-        },
+        "status": "drench",
         "saveKind": "reflex",
         "saveDC": 10
-      }
-    ]
-  },
-  "enrage": {
-    "name": "Rage",
-    "type": "skill",
-    "aspect": "feral",
-    "description": "Enter a frenzied state, gaining +2 to damage rolls and +1 toHit but degrading AC for by 3.",
-    "target": [
-      "self"
-    ],
-    "effects": [
-      {
-        "type": "buff",
-        "status": {
-          "name": "Enraged",
-          "duration": 4,
-          "effect": {
-            "toHit": 1,
-            "bonusDamage": 2,
-            "ac": 3
-          }
-        }
       }
     ]
   },
@@ -1503,22 +1221,6 @@
         "amount": "=2d6",
         "kind": "acid",
         "saveForHalf": true
-      },
-      {
-        "type": "debuff",
-        "status": {
-          "name": "Acid Burn",
-          "duration": 3,
-          "effect": {
-            "onTurnEnd": [
-              {
-                "type": "damage",
-                "amount": "=1d3",
-                "kind": "acid"
-              }
-            ]
-          }
-        }
       }
     ]
   },
@@ -1537,18 +1239,6 @@
         "type": "damage",
         "amount": "=1d4",
         "kind": "cold"
-      },
-      {
-        "type": "debuff",
-        "status": {
-          "name": "Frozen",
-          "duration": 3,
-          "effect": {
-            "noActions": true,
-            "dex": -5
-          }
-        },
-        "saveDC": 10
       }
     ]
   },
@@ -1719,13 +1409,7 @@
     "effects": [
       {
         "type": "debuff",
-        "status": {
-          "name": "Paralyzed",
-          "duration": 2,
-          "effect": {
-            "noActions": true
-          }
-        },
+        "status": "paralyzed",
         "saveKind": "paralyze",
         "saveDC": 14
       }
@@ -1801,7 +1485,7 @@
     "aspect": "arcane",
     "school": "abjuration",
     "level": 2,
-    "description": "Remove charm, cursed, paralyzed and magical stun effects from a target; also removes positive arcane buffs.",
+    "description": "Remove all effects.",
     "target": [
       "self",
       "ally",
@@ -1810,35 +1494,7 @@
     "effects": [
       {
         "type": "removeStatus",
-        "statusName": "Paralyzed"
-      },
-      {
-        "type": "removeStatus",
-        "statusName": "Cursed"
-      },
-      {
-        "type": "removeStatus",
-        "statusName": "Charmed"
-      },
-      {
-        "type": "removeStatus",
-        "statusName": "Stunned"
-      },
-      {
-        "type": "removeStatus",
-        "statusName": "Protected"
-      },
-      {
-        "type": "removeStatus",
-        "statusName": "Hasted"
-      },
-      {
-        "type": "removeStatus",
-        "statusName": "Shielded"
-      },
-      {
-        "type": "removeStatus",
-        "statusName": "Mage-Armored"
+        "statusName": ".*"
       }
     ]
   },
@@ -1847,7 +1503,9 @@
     "type": "skill",
     "aspect": "stealth",
     "description": "Create a smoke screen that grants all allies within it evasion and 4 AC for 3 rounds.",
-    "target": [ "party" ],
+    "target": [
+      "party"
+    ],
     "effects": [
       {
         "type": "buff",
@@ -1867,13 +1525,7 @@
     "effects": [
       {
         "type": "debuff",
-        "status": {
-          "name": "Blinded",
-          "duration": 2,
-          "effect": {
-            "toHit": -4
-          }
-        },
+        "status": "blinded",
         "saveKind": "magic",
         "saveDC": 14
       }
@@ -1890,22 +1542,7 @@
     "effects": [
       {
         "type": "debuff",
-        "status": {
-          "name": "Hunting Prey",
-          "duration": 5,
-          "effect": {
-            "ac": 2,
-            "onAttacked": [
-              {
-                "type": "damage",
-                "description": "being a marked target",
-                "target": "self",
-                "amount": "=1d4",
-                "kind": "true"
-              }
-            ]
-          }
-        }
+        "status": "prey"
       }
     ]
   },
@@ -1920,16 +1557,7 @@
     "effects": [
       {
         "type": "debuff",
-        "status": {
-          "name": "Entangled",
-          "duration": 3,
-          "effect": {
-            "dex": -5,
-            "toHit": -2,
-            "evasion": -5,
-            "initiative": -5
-          }
-        },
+        "status": "entangled",
         "saveKind": "reflex",
         "saveDC": 12
       }
@@ -1948,13 +1576,7 @@
     "effects": [
       {
         "type": "debuff",
-        "status": {
-          "name": "Silenced",
-          "duration": 3,
-          "effect": {
-            "noSpellcasting": true
-          }
-        }
+        "status": "silence"
       }
     ]
   },
@@ -1964,20 +1586,15 @@
     "level": 2,
     "aspect": "arcane",
     "school": "transmutation",
-    "description": "Reduce dexterity of all enemies by 5 for 4 rounds.",
+    "description": "Reduce the speed of your foes.",
     "target": [
       "enemies"
     ],
     "effects": [
       {
         "type": "debuff",
-        "status": {
-          "name": "Slowed",
-          "duration": 4,
-          "effect": {
-            "dex": -5
-          }
-        },
+        "status": "slow",
+        "duration": 4,
         "saveKind": "reflex",
         "saveDC": 14
       }
@@ -2213,8 +1830,8 @@
     "aspect": "divine",
     "domain": "death",
     "alignment": "evil",
-    "level": 5,
-    "description": "A profane ritual summons an undead creature to serve you.",
+    "level": 0,
+    "description": "A profane ritual summons a monstrous undead creature to serve you.",
     "target": [
       "self"
     ],
@@ -2430,7 +2047,9 @@
     "aspect": "divine",
     "domain": "law",
     "description": "Create a wall of spinning blades that damages enemies passing through it.",
-    "target": [ "self" ],
+    "target": [
+      "self"
+    ],
     "effects": [
       {
         "type": "buff",
@@ -2475,15 +2094,8 @@
       },
       {
         "type": "debuff",
-        "status": {
-          "name": "Blinded",
-          "duration": 2,
-          "effect": {
-            "toHit": -4
-          }
-        },
-        "saveKind": "fortitude",
-        "saveDC": 16
+        "status": "blinded",
+        "saveNegates": true
       },
       {
         "type": "debuff",
@@ -2514,21 +2126,14 @@
     "aspect": "divine",
     "domain": "chaos",
     "description": "Drive an enemy insane.",
-    "target": [ "enemy" ],
+    "target": [
+      "enemy"
+    ],
     "effects": [
       {
         "type": "debuff",
-        "status": {
-          "name": "Insane",
-          "duration": 5,
-          "effect": {
-            "randomActions": true,
-            "allRolls": -1,
-            "saveVersusWill": -2
-          }
-        },
-        "saveKind": "insanity",
-        "saveDC": 15
+        "status": "insane",
+        "saveDC": 20
       }
     ]
   },
@@ -2539,7 +2144,9 @@
     "aspect": "divine",
     "domain": "law",
     "description": "Smite your foes with holy energy.",
-    "target": [ "enemies" ],
+    "target": [
+      "enemies"
+    ],
     "effects": [
       {
         "type": "damage",
@@ -2548,23 +2155,12 @@
       },
       {
         "type": "debuff",
-        "status": {
-          "name": "Deafened",
-          "duration": 4,
-          "effect": {
-            "resistSonic": 0.5,
-            "bonusDamage": -2,
-            "ac": 2,
-            "toHit": -2,
-            "allSaves": -1
-          }
-        },
+        "status": "deafened",
         "saveKind": "fortitude",
         "saveDC": 18
       }
     ]
   },
-
   "chant": {
     "name": "Chant",
     "type": "skill",
@@ -2572,7 +2168,9 @@
     "domain": "light",
     "level": 1,
     "description": "Bolster yourself with a holy chant.",
-    "target": [ "self" ],
+    "target": [
+      "self"
+    ],
     "effects": [
       {
         "type": "buff",
@@ -2587,7 +2185,6 @@
       }
     ]
   },
-
   "meditate": {
     "name": "Meditate",
     "type": "skill",
@@ -2595,7 +2192,9 @@
     "domain": "light",
     "level": 1,
     "description": "Enter a meditative state.",
-    "target": [ "self" ],
+    "target": [
+      "self"
+    ],
     "effects": [
       {
         "type": "buff",
@@ -2615,7 +2214,6 @@
       }
     ]
   },
-
   "bless": {
     "name": "Bless",
     "level": 1,
@@ -2648,7 +2246,9 @@
     "aspect": "divine",
     "domain": "life",
     "description": "Bolster allies and weaken enemies.",
-    "target": [ "allies" ],
+    "target": [
+      "allies"
+    ],
     "effects": [
       {
         "type": "buff",
@@ -2755,7 +2355,10 @@
     "aspect": "divine",
     "domain": "life",
     "description": "Bind moderate injuries.",
-    "target": [ "self", "ally" ],
+    "target": [
+      "self",
+      "ally"
+    ],
     "effects": [
       {
         "type": "heal",
@@ -2763,7 +2366,6 @@
       }
     ]
   },
-
   "cure_moderate": {
     "name": "Cure Moderate Wounds",
     "type": "spell",
@@ -2771,7 +2373,10 @@
     "aspect": "divine",
     "domain": "life",
     "description": "Bind moderate injuries.",
-    "target": [ "self", "ally" ],
+    "target": [
+      "self",
+      "ally"
+    ],
     "effects": [
       {
         "type": "heal",
@@ -2779,7 +2384,6 @@
       }
     ]
   },
-
   "cure_serious": {
     "name": "Cure Serious Wounds",
     "type": "spell",
@@ -2787,7 +2391,10 @@
     "aspect": "divine",
     "domain": "life",
     "description": "Bind serious injuries.",
-    "target": [ "self", "ally" ],
+    "target": [
+      "self",
+      "ally"
+    ],
     "effects": [
       {
         "type": "heal",
@@ -2795,7 +2402,6 @@
       }
     ]
   },
-
   "cure_critical": {
     "name": "Cure Critical Wounds",
     "type": "spell",
@@ -2803,7 +2409,10 @@
     "aspect": "divine",
     "domain": "life",
     "description": "Bind critical injuries.",
-    "target": [ "self", "ally" ],
+    "target": [
+      "self",
+      "ally"
+    ],
     "effects": [
       {
         "type": "heal",
@@ -2811,7 +2420,6 @@
       }
     ]
   },
-
   "remove_fear": {
     "name": "Remove Fear",
     "type": "spell",
@@ -2819,7 +2427,9 @@
     "aspect": "divine",
     "domain": "life",
     "description": "Calm a frightened ally.",
-    "target": [ "ally" ],
+    "target": [
+      "ally"
+    ],
     "effects": [
       {
         "type": "removeStatus",
@@ -2827,7 +2437,6 @@
       }
     ]
   },
-
   "resist_fire": {
     "name": "Resist Fire",
     "type": "spell",
@@ -2835,7 +2444,9 @@
     "aspect": "divine",
     "domain": "life",
     "description": "Grant an ally resistance to fire damage for 5 rounds.",
-    "target": [ "ally" ],
+    "target": [
+      "ally"
+    ],
     "effects": [
       {
         "type": "buff",
@@ -2849,7 +2460,6 @@
       }
     ]
   },
-
   "cure_disease": {
     "name": "Cure Disease",
     "type": "spell",
@@ -2857,7 +2467,9 @@
     "aspect": "divine",
     "domain": "life",
     "description": "Cure an ally of disease.",
-    "target": [ "ally" ],
+    "target": [
+      "ally"
+    ],
     "effects": [
       {
         "type": "removeStatus",
@@ -2865,7 +2477,6 @@
       }
     ]
   },
-
   "aegis": {
     "name": "Aegis of Faith",
     "type": "spell",
@@ -2873,7 +2484,9 @@
     "aspect": "divine",
     "domain": "life",
     "description": "Ward against all effects for 4 rounds.",
-    "target": [ "self" ],
+    "target": [
+      "self"
+    ],
     "effects": [
       {
         "type": "buff",
@@ -2887,7 +2500,6 @@
       }
     ]
   },
-
   "consecrated_ground": {
     "name": "Consecrated Ground",
     "type": "spell",
@@ -2895,7 +2507,9 @@
     "aspect": "divine",
     "domain": "life",
     "description": "Consecrate the ground, damaging enemies who attack or cast spells near you.",
-    "target": [ "self" ],
+    "target": [
+      "self"
+    ],
     "effects": [
       {
         "type": "buff",
@@ -2904,30 +2518,29 @@
           "duration": 5,
           "effect": {
             "onEnemyOffensiveCasting": [
-
+              {
+                "type": "removeStatus",
+                "statusName": "Consecrated",
+                "target": "self"
+              },
               {
                 "type": "damage",
                 "amount": "=2d6",
                 "kind": "radiant",
                 "target": "caster"
-              },
+              }
+            ],
+            "onEnemyAttack": [
               {
                 "type": "removeStatus",
                 "statusName": "Consecrated",
                 "target": "self"
-              }
-            ],
-            "onEnemyAttack": [
+              },
               {
                 "type": "damage",
                 "amount": "=2d6",
                 "kind": "radiant",
                 "target": "attacker"
-              },
-              {
-                "type": "removeStatus",
-                "statusName": "Consecrated",
-                "target": "self"
               }
             ]
           }
@@ -2935,7 +2548,6 @@
       }
     ]
   },
-
   "sandstorm": {
     "name": "Sandstorm",
     "type": "spell",
@@ -2943,7 +2555,9 @@
     "aspect": "arcane",
     "school": "evocation",
     "description": "Create a swirling sandstorm that damages and blinds enemies within it for 3 rounds.",
-    "target": [ "enemies" ],
+    "target": [
+      "enemies"
+    ],
     "effects": [
       {
         "type": "damage",
@@ -2964,15 +2578,16 @@
       }
     ]
   },
-
   "scald": {
     "name": "Scald",
     "type": "spell",
-    "level": 2,
+    "level": 4,
     "aspect": "arcane",
     "school": "evocation",
     "description": "Blast an enemy with superheated steam.",
-    "target": [ "enemy" ],
+    "target": [
+      "enemy"
+    ],
     "effects": [
       {
         "type": "damage",
@@ -2982,20 +2597,12 @@
       },
       {
         "type": "debuff",
-        "status": {
-          "name": "Scalded",
-          "duration": 2,
-          "effect": {
-            "toHit": -1,
-            "allRolls": -2
-          }
-        },
+        "status": "scalded",
         "saveKind": "fortitude",
         "saveDC": 14
       }
     ]
   },
-
   "prismatic_spray": {
     "name": "Prismatic Spray",
     "type": "spell",
@@ -3003,11 +2610,14 @@
     "aspect": "arcane",
     "school": "evocation",
     "description": "A dazzling array of multicolored beams springs from your hand.",
-    "target": [ "randomEnemies", 5 ],
+    "target": [
+      "randomEnemies",
+      "=5 + round(#level / 2)"
+    ],
     "effects": [
       {
-        "type": "randomEffect",
-        "randomEffects": [
+        "type": "cycleEffects",
+        "cycledEffects": [
           {
             "type": "damage",
             "amount": "=1d3+1",
@@ -3067,7 +2677,6 @@
       }
     ]
   },
-
   "sound_lance": {
     "name": "Sound Lance",
     "type": "spell",
@@ -3075,7 +2684,9 @@
     "aspect": "arcane",
     "school": "evocation",
     "description": "A concentrated blast of noise explodes from your hand.",
-    "target": [ "enemy" ],
+    "target": [
+      "enemy"
+    ],
     "effects": [
       {
         "type": "damage",
@@ -3092,15 +2703,239 @@
   "invisibility": {
     "name": "Invisibility",
     "type": "spell",
-    "level": 1,
+    "level": 3,
     "aspect": "arcane",
     "school": "illusion",
     "description": "Turn invisible for 5 rounds or until you attack or cast a spell.",
-    "target": [ "self", "ally" ],
+    "target": [
+      "self",
+      "ally"
+    ],
     "effects": [
       {
         "type": "buff",
         "status": "invisible"
+      }
+    ]
+  },
+
+  "spark": {
+    "name": "Spark",
+    "type": "spell",
+    "level": 0,
+    "aspect": "arcane",
+    "school": "evocation",
+    "description": "A small jolt of electricity.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d3",
+        "kind": "lightning",
+        "saveForHalf": true
+      }
+    ]
+  },
+  "frostbite": {
+    "name": "Frostbite",
+    "type": "spell",
+    "level": 0,
+    "aspect": "arcane",
+    "school": "evocation",
+    "description": "A chilling blast of cold air.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d4",
+        "kind": "cold",
+        "saveForHalf": true
+      }
+    ]
+  },
+  "shock_pulse": {
+    "name": "Shock Pulse",
+    "type": "spell",
+    "level": 0,
+    "aspect": "arcane",
+    "school": "evocation",
+    "description": "Release a pulse of electrical energy that arcs to additional targets.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d4",
+        "kind": "lightning",
+        "saveForHalf": true,
+        "cascade": {
+          "count": "=1+floor(#level/2)",
+          "damageRatio": 0.5
+        }
+      }
+    ]
+  },
+  "firebolt": {
+    "name": "Firebolt",
+    "type": "spell",
+    "level": 0,
+    "aspect": "arcane",
+    "school": "evocation",
+    "description": "A small bolt of fire shoots from your fingertips.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d3",
+        "kind": "fire",
+        "saveForHalf": true
+      }
+    ]
+  },
+
+  "minor_ward": {
+    "name": "Minor Ward",
+    "type": "spell",
+    "level": 0,
+    "aspect": "arcane",
+    "school": "abjuration",
+    "description": "Create a magical ward that absorbs damage.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Minor Ward",
+          "duration": 5,
+          "effect": {
+            "tempHp": "=4 + #level * 2"
+          }
+        }
+      }
+    ]
+  },
+  "dancing_lights": {
+    "name": "Dancing Lights",
+    "type": "spell",
+    "level": 0,
+    "aspect": "arcane",
+    "school": "illusion",
+    "description": "Create small lights that hover and move.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": "distracted"
+      },
+      {
+        "type": "debuff",
+        "status": "blinded",
+        "saveKind": "magic",
+        "saveDC": 10
+      }
+    ]
+  },
+  "soot_cloud": {
+    "name": "Soot Cloud",
+    "type": "spell",
+    "level": 0,
+    "aspect": "arcane",
+    "school": "conjuration",
+    "description": "Create a cloud of soot that reveals hidden enemies.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "removeStatus",
+        "statusName": "hidden"
+      }
+    ]
+  },
+  "sunmark": {
+    "name": "Sunmark",
+    "type": "spell",
+    "level": 0,
+    "aspect": "arcane",
+    "school": "evocation",
+    "description": "Light up an enemy with a radiant mark.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d3",
+        "kind": "radiant"
+      },
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Sunmarked",
+          "duration": 3,
+          "effect": {
+            "saveVersusMagic": -1,
+            "resistFire": -0.25
+          }
+        }
+      }
+    ]
+  },
+  "ghost_touch": {
+    "name": "Ghost Touch",
+    "type": "spell",
+    "level": 0,
+    "aspect": "arcane",
+    "school": "transmutation",
+    "description": "Induce necrosis with your touch.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Ghost Touch",
+          "duration": 5,
+          "effect": {
+            "onAttackHit": [
+              {
+                "type": "damage",
+                "amount": "=1d3",
+                "kind": "necrotic"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "cure_minor": {
+    "name": "Cure Minor Wounds",
+    "type": "spell",
+    "level": 0,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Bind minor injuries.",
+    "target": [
+      "self",
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "heal",
+        "amount": "=1d4"
       }
     ]
   }
