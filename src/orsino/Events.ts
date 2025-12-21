@@ -115,6 +115,11 @@ export type InvestigateEvent  = BaseDungeonEvent & { type: "investigate"; clue: 
 export type RiddleEvent = BaseDungeonEvent & { type: "riddle"; challenge: string; solution: string;  reward: string; };
 
 export type UpgradeEvent = BaseDungeonEvent & { type: "upgrade"; stat: keyof Combatant; amount: number, newValue: number };
+export type LearnedAbilityEvent = BaseDungeonEvent & { type: "learnAbility"; abilityName: string; };
+export type GainedTraitEvent = BaseDungeonEvent & { type: "gainTrait"; traitName: string; };
+
+export type TeleportEvent = BaseDungeonEvent & { type: "teleport"; location: string; };
+export type PlaneshiftEvent = BaseDungeonEvent & { type: "planeshift"; plane: string; };
 
 export type DungeonEvent =
   | EnterDungeon
@@ -130,15 +135,23 @@ export type DungeonEvent =
   | RiddleEvent
   | GoldEvent
   | ExperienceEvent
-  | UpgradeEvent;
+  | UpgradeEvent
+  | LearnedAbilityEvent
+  | TeleportEvent
+  | PlaneshiftEvent
+  | GainedTraitEvent;
 
 type Timestamp = string;
 
 type BaseModuleEvent = Omit<BaseEvent, "turn"> & { day: number; };
 
-export type CampaignStartEvent = BaseModuleEvent & { type: "campaignStart"; moduleName: string; pcs: Combatant[]; at: Timestamp };
+export type CampaignStartEvent = BaseModuleEvent & { type: "campaignStart"; pcs: Combatant[]; at: Timestamp };
+export type ModuleStartEvent = BaseModuleEvent & { type: "moduleStart"; moduleName: string; pcs: Combatant[]; at: Timestamp };
 export type TownVisitedEvent = BaseModuleEvent & {
-  type: "townVisited"; townName: string; race: string; size: string; population: number;  adjective: string; season: "spring" | "summer" | "autumn" | "winter";
+  type: "townVisited";
+  plane: string;
+  weather: string;
+  townName: string; race: string; size: string; population: number; adjective: string; season: "spring" | "summer" | "autumn" | "winter";
 };
 export type ShopEnteredEvent   = BaseModuleEvent & { type: "shopEntered"; shopName: string; };
 export type PurchaseEvent      = BaseModuleEvent & { type: "purchase"; itemName: string; cost: number; buyer: Combatant; };
@@ -150,6 +163,7 @@ export type HirelingOfferedEvent = BaseModuleEvent & { type: "hirelingOffered"; 
 export type HirelingHiredEvent = BaseModuleEvent & { type: "hirelingHired"; hireling: Combatant; cost: number; };
 
 export type ModuleEvent =
+  | ModuleStartEvent
   | CampaignStartEvent
   | TownVisitedEvent
   | ShopEnteredEvent
@@ -254,19 +268,16 @@ export default class Events {
 
         return `${hr}\n${roundLabel}\n${hr}\n${parties}${auras}`;
       case "turnStart":
-        // let heading = `It's ${subject}'s turn!`;
-        // let combatants = event.combatants.map(c => `\n- ${Presenter.combatant(c)}`).join("");
-        // let currentState = Presenter.combatants(event.combatants, false, (c) => c === event.subject);
-
-        // return event.subject?.playerControlled ?
-        //   `--- ${subjectName}'s turn ---${currentState}\n` : `${Presenter.minimalCombatant(event.subject!)}'s turn.`;
-
-        // return `It is now ${subjectName}'s turn.`;
         return '';
-      case "combatEnd": return '';  //`Combat ends. ${event.winner} victorious.`;
+      case "combatEnd": return '';
 
       case "upgrade":
         return `${subjectName} upgrades ${event.stat} by ${event.amount} (now ${event.newValue}).`;
+
+      case "learnAbility":
+        return `${subjectName} learns the ability ${Words.a_an(event.abilityName)}.`;
+      case "gainTrait":
+        return `${subjectName} gains the trait ${Words.a_an(event.traitName)}.`;
 
       case "hit":
         let message = `${targetName} takes ${event.damage.toString()} ${event.damageKind} damage from ${event.by}.`;
@@ -352,13 +363,17 @@ export default class Events {
         return `${subjectName} has solved the riddle: "${event.challenge}" (answer: ${event.solution}) and receives ${Words.a_an(event.reward)}.`;
 
       case "campaignStart":
-        return Stylist.bold(`You embark on the campaign '${event.moduleName}'\nParty Members: ${
+        return Stylist.bold(`You embark on a new campaign!\nParty Members: ${
           event.pcs.map(pc => Presenter.combatant(pc)).join("\n")
+        }`);
+      case "moduleStart":
+        return Stylist.bold(`You embark on the module '${event.moduleName}' with ${
+          Words.humanizeList(event.pcs.map(pc => pc.forename))
         }`);
       case "shopEntered":
         return Stylist.bold(`Entered ${event.shopName}'s shop.`);
       case "townVisited":
-        return (`It is the ${Words.ordinal(1+(event.day%90))} day of ${event.season} in the ${event.adjective} ${Words.capitalize(event.race)} ${event.size} of ${Stylist.bold(event.townName)} (Population: ${Words.humanizeNumber(event.population)})`);
+        return (`It is the ${Words.ordinal(1+(event.day%90))} day of ${event.season} in the ${event.adjective} ${Words.capitalize(event.race)} ${event.size} of ${Stylist.bold(event.townName)} on the plane of ${Words.capitalize(event.plane)} (Population: ${Words.humanizeNumber(event.population)}). The weather is currently ${event.weather}.`);
       case "purchase":
         return `${event.buyer.forename} purchased ${Words.a_an(event.itemName)} for ${event.cost} gold.`;
       case "rumorHeard":
@@ -393,6 +408,13 @@ export default class Events {
         return `${event.hireling.forename} has joined your party as a hireling for ${event.cost} gold per month.`;
       case "campaignStop":
         return Stylist.bold(`Campaign ended: ${event.reason || `at ${event.at}`}`);
+
+      case "teleport":
+        return `${subjectName} is teleported to ${event.location}.`;
+
+      case "planeshift":
+        return `${subjectName} plane shifts to ${event.plane}.`;
+
       default:
         return never(event);
     }

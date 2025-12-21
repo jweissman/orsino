@@ -38,9 +38,12 @@ export interface Town {
 
 export interface CampaignModule {
   name: string;
+  plane: string;
   terrain: string;
+  weather: string;
   town: Town;
   dungeons: Dungeon[];
+  globalEffects?: StatusModifications;
 }
 
 interface GameState {
@@ -56,7 +59,9 @@ export class ModuleRunner {
   // private prompt: (message: string) => string;
 
   private _outputSink: (message: string) => void;
-  private moduleGen: () => Promise<CampaignModule>;
+  private moduleGen: (
+    options?: Record<string, any>
+  ) => Promise<CampaignModule>;
   private state: GameState = {
     party: [],
     sharedGold: 10000,
@@ -72,7 +77,6 @@ export class ModuleRunner {
   constructor(options: Record<string, any> = {}) {
     this.roller = options.roller || Commands.roll;
     this.select = options.select || Combat.samplingSelect;
-    // this.prompt = options.prompt || ModuleRunner.randomInt;
     this._outputSink = options.outputSink || console.log;
     this.moduleGen = options.moduleGen || this.defaultModuleGen;
     this.gen = options.gen || (() => { throw new Error("No gen function provided") });
@@ -82,7 +86,6 @@ export class ModuleRunner {
 
   get pcs() { return this.state.party; }
   get sharedGold() { return this.state.sharedGold; }
-  // get sharedPotions() { return this.state.sharedPotions; }
   get mod() { return this.activeModule!; }
 
   private note(message: string): void {
@@ -116,46 +119,77 @@ export class ModuleRunner {
     // give initial gold to party
     this.state.sharedGold += this.pcs.reduce((sum, pc) => sum + (pc.gp || 0), 0);
     this.pcs.forEach(pc => pc.gp = 0);
+    console.log(`Starting module with party of ${this.pcs.length} adventurers and ${this.state.sharedGold}g shared gold.`);
 
-    // this.outputSink("Generating module, please wait...");
-    this.activeModule = await this.moduleGen();
-    // this.outputSink(`Module "${this.activeModule.name}" generated: ${this.activeModule.terrain} terrain, ${this.activeModule.town.name} town, ${this.activeModule.dungeons.length} dungeons
-    // }`);
-    // clear screen
-    // this.outputSink("\x1Bc");
-    // this.outputSink(`Welcome to ${Stylist.bold(this.mod.name)}!`);
     await this.emit({
       type: "campaignStart",
-      moduleName: this.mod.name,
+      // moduleName: this.mod.name,
       pcs: this.pcs,
       at: new Date().toISOString(),
       day: 0
     });
 
-    await this.enter(dry);
+
+    let playing = true;
+    let moduleOptions = {};
+    while (playing) {
+      let { newModuleOptions } = await this.runModule(dry, moduleOptions);
+      if (newModuleOptions !== null) {
+        moduleOptions = newModuleOptions;
+      } else {
+        playing = false;
+      }
+    }
+  }
+
+  private async runModule(dry = false, moduleOptions: Record<string, any> = {}): Promise<{ newModuleOptions: Record<string, any> | null }> {
+    // this.outputSink("Generating module, please wait...");
+    this.activeModule = await this.moduleGen(
+      moduleOptions
+    );
+
+    // clear out any existing globals
+    this.pcs.forEach(pc => {
+      pc.passiveEffects = pc.passiveEffects || [];
+      pc.passiveEffects = pc.passiveEffects?.filter(e => !e.planar);
+      if (this.activeModule!.globalEffects) {
+        pc.passiveEffects.push({
+          name: this.activeModule!.plane + " Residency",
+          description: `Effects granted by residing on the plane of ${this.activeModule!.plane}`,
+          effect: this.activeModule!.globalEffects || {},
+          planar: true
+        });
+      }
+    });
+
+    await this.emit({
+      type: "moduleStart",
+      moduleName: this.mod.name,
+      pcs: this.pcs,
+      at: new Date().toISOString(),
+      day: 0
+    });
+    // this.outputSink(`Module "${this.activeModule.name}" generated: ${this.activeModule.terrain} terrain, ${this.activeModule.town.name} town, ${this.activeModule.dungeons.length} dungeons
+    // }`);
+    // clear screen
+    // this.outputSink("\x1Bc");
+    // this.outputSink(`Welcome to ${Stylist.bold(this.mod.name)}!`);
+    return await this.enter(dry);
 
     // this.outputSink("\nThank you for playing!");
   }
 
-  private async defaultModuleGen(): Promise<CampaignModule> {
-    const module = {
-      name: "The Lost City of Eldoria",
-      terrain: "Jungle",
-      town: {
-        name: "Port Vesper",
-        population: 5000,
-        deity: { name: "The Serpent Queen" }
-      },
-      dungeons: [Dungeoneer.defaultGen()]
-    }
-    return module as CampaignModule;
-  }
 
   days = 0;
-  async enter(dry = false, mod: CampaignModule = this.mod): Promise<void> {
+  async enter(dry = false, mod: CampaignModule = this.mod): Promise<{
+    newModuleOptions: Record<string, any> | null
+  }> {
     // this.outputSink(`You arrive at the ${mod.town.adjective} ${Words.capitalize(mod.town.race)} ${mod.town.size} of ${Stylist.bold(mod.town.name)}.`);
     await this.emit({
-      type: "townVisited", townName: mod.town.name, day: 0,
+      type: "townVisited",
+      townName: mod.town.name, day: 0,
+      plane: mod.plane,
+      weather: mod.weather,
       race: mod.town.race, size: mod.town.size,
       population: mod.town.population,
       adjective: mod.town.adjective,
@@ -169,6 +203,11 @@ export class ModuleRunner {
       // this.outputSink(`You chose to ${action}.`);
 
       if (action === "embark") {
+        // don't we need to distribute gold to PCs? is this already done somehow
+        // let share = Math.floor(this.state.sharedGold / this.pcs.length);
+        // this.pcs.forEach(pc => pc.gp = (pc.gp || 0) + share);
+        // this.state.sharedGold -= share * this.pcs.length;
+
         const dungeon = await this.selectDungeon();
         if (dungeon) {
           // this.outputSink(`You embark on a Quest to the ${Stylist.bold(dungeon.dungeon_name)}...`);
@@ -185,7 +224,11 @@ export class ModuleRunner {
               inventory: this.state.inventory,
             },
           });
-          await dungeoneer.run();  //dungeon, this.pcs);
+          let { newPlane } = await dungeoneer.run();  //dungeon, this.pcs);
+          if (newPlane !== null && newPlane !== undefined && newPlane !== mod.plane) {
+            console.log(`The party has shifted to a new plane: ${newPlane}`);
+            return { newModuleOptions: { _plane_name: newPlane } };
+          }
 
           if (dungeoneer.winner === "Player") {
             // console.log(Stylist.bold("\n🎉 Congratulations! You have cleared the dungeon " +
@@ -310,6 +353,8 @@ export class ModuleRunner {
       at: new Date().toISOString(),
       day: this.days,
     });
+
+    return { newModuleOptions: null };
   }
 
   static townIcons = {
@@ -329,7 +374,9 @@ export class ModuleRunner {
   async status(mod: CampaignModule = this.mod) {
     await this.emit({
       type: "townVisited",
+      plane: mod.plane,
       townName: mod.town.name,
+      weather: mod.weather,
       race: mod.town.race,
       size: mod.town.size,
       population: mod.town.population,
@@ -337,15 +384,6 @@ export class ModuleRunner {
       day: this.days,
       season: this.season,
     })
-    // let status = "";
-    // this.outputSink(`\nThe ${mod.town.adjective} ${Words.capitalize(mod.town.race)} ${mod.town.size} of ${ModuleRunner.townIcons[mod.town.size]}  ${Stylist.bold(mod.town.name)}`);
-    // this.outputSink(`(Pop.: ${mod.town.population.toLocaleString()})`);
-    // this.outputSink(`\n🧙‍ Your Party:`);
-    // this.pcs.forEach(pc => {
-    //   this.outputSink(`  - ${Presenter.combatant(pc)} (${pc.gender} ${pc.background}, ${pc.age})`);
-    // });
-    // this.outputSink(`💰 Gold: ${this.sharedGold}g`);
-    // this.outputSink(`🧪 Potions: ${this.sharedPotions}`);
   }
 
   private async menu(dry = false): Promise<string> {
@@ -390,7 +428,7 @@ export class ModuleRunner {
     if (category === 'equipment') {
       // console.log("\nWelcome to the Magic Shop! Here are the available items:");
       await this.emit({ type: "shopEntered", shopName: "Magician", day: this.days });
-      
+
       const magicItemNames = await Deem.evaluate(`gather(equipment)`);
       while (true) {
         // pick wielder
@@ -427,7 +465,7 @@ export class ModuleRunner {
         // console.log("Chosen equipment:", item);
 
         if (this.sharedGold >= item.value) {
-          let {oldItemKey: maybeOldItem} = await Inventory.equip(item.key, wielder);
+          let { oldItemKey: maybeOldItem } = await Inventory.equip(item.key, wielder);
           if (maybeOldItem) {
             let oldItem = await Deem.evaluate(`lookup(equipment, "${maybeOldItem}")`);
             this.state.sharedGold += oldItem.value || 0;
@@ -442,7 +480,7 @@ export class ModuleRunner {
           // this.state.sharedGold -= item.value;
           // wielder.equipment = wielder.equipment || {};
           // wielder.equipment[item.kind as EquipmentSlot] = item.key;
-          
+
           // this.outputSink(`Purchased ${Words.humanize(item.name)} for ${item.value}g, equipped to ${wielder.name}`);
           await this.emit({
             type: "purchase",
@@ -511,7 +549,7 @@ export class ModuleRunner {
       weaponItemNames.sort();
 
       while (true) {
-        
+
         // pick wielder
         const pcOptions: Choice<any>[] = this.pcs.map(pc => ({
           short: pc.name,
@@ -559,7 +597,7 @@ export class ModuleRunner {
           wielder.abilities = (wielder.abilities || []).filter((abil: any) => abil.match(/melee|ranged/i) === null);
           // add new ability (keep primary at front)
           wielder.abilities.unshift(primaryAttack);
-          
+
           // this.outputSink(`✅ Purchased 1x ${Words.humanize(item.key)} for ${item.value}g, equipped to ${wielder.name}`);
           await this.emit({
             type: "purchase",
@@ -651,7 +689,21 @@ export class ModuleRunner {
     return available[choice];
   }
 
-  static async randomInt(_message: string): Promise<string> {
-    return String(Math.floor(Math.random() * 100) + 1);
+  // static async randomInt(_message: string): Promise<string> {
+  //   return String(Math.floor(Math.random() * 100) + 1);
+  // }
+
+  private async defaultModuleGen(): Promise<CampaignModule> {
+    const module = {
+      name: "The Lost City of Eldoria",
+      terrain: "Jungle",
+      town: {
+        name: "Port Vesper",
+        population: 5000,
+        deity: { name: "The Serpent Queen" }
+      },
+      dungeons: [Dungeoneer.defaultGen()]
+    }
+    return module as CampaignModule;
   }
 }

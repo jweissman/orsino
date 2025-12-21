@@ -1448,7 +1448,7 @@
           "duration": 4,
           "effect": {
             "ac": -2,
-            "allSaves": 2
+            "saveVersusAll": 2
           }
         }
       }
@@ -2178,7 +2178,7 @@
           "name": "Chanting",
           "duration": 5,
           "effect": {
-            "allSaves": 1,
+            "saveVersusAll": 1,
             "toHit": 1
           }
         }
@@ -2257,7 +2257,7 @@
           "duration": 5,
           "effect": {
             "toHit": 1,
-            "allSaves": 1
+            "saveVersusAll": 1
           }
         }
       }
@@ -2936,6 +2936,91 @@
       {
         "type": "heal",
         "amount": "=1d4"
+      }
+    ]
+  },
+
+  "true_sight": {
+    "name": "True Sight",
+    "type": "spell",
+    "level": 6,
+    "aspect": "arcane",
+    "school": "divination",
+    "description": "See through illusions, invisibility, and magical darkness for 10 minutes.",
+    "target": [
+      "self",
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "truesight"
+      }
+    ]
+  },
+
+  "maze": {
+    "name": "Maze",
+    "type": "spell",
+    "level": 8,
+    "aspect": "arcane",
+    "school": "conjuration",
+    "description": "Banish an enemy to a labyrinthine demiplane for up to 10 minutes.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": {
+          "name": "In Maze",
+          "duration": 100,
+          "effect": {
+            "noActions": true,
+            "untargetable": true
+          }
+        },
+        "saveKind": "will",
+        "saveDC": 18
+      }
+    ]
+  },
+
+  "time_stop": {
+    "name": "Time Stop",
+    "type": "spell",
+    "level": 9,
+    "aspect": "arcane",
+    "school": "transmutation",
+    "description": "Stop time for everyone but yourself.",
+    "target": [ "self" ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Time Stopped",
+          "effect": {
+            "extraTurns": 3,
+            "triggerReactions": false
+          }
+        },
+        "duration": 1
+      }
+    ]
+  },
+
+  "plane_shift": {
+    "name": "Plane Shift",
+    "type": "spell",
+    "level": 7,
+    "aspect": "arcane",
+    "school": "conjuration",
+    "description": "Transport yourself and your party to another plane of existence.",
+    "target": [ "self" ],
+    "effects": [
+      {
+        "type": "planeshift",
+        "location": "=oneOf(Arcadia, Cthelll, Gehenna, Hades, Limbo, Mechanus, Pandemonium, Ysgard, Zephyrus)"
       }
     ]
   }

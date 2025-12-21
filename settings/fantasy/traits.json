@@ -203,7 +203,7 @@
         "name": "Faerie Charm",
         "description": "Status effects last 1 extra turn.",
         "effect": {
-          "statusDuration": 1
+          "spellDurationBonus": 1
         }
       }
     ]
@@ -553,7 +553,7 @@
         "name": "Resonant Harmony",
         "description": "All status effects you apply last 1 additional turn.",
         "effect": {
-          "statusDuration": 1
+          "spellDurationBonus": 1
         }
       }
     ]
@@ -762,7 +762,7 @@
         "name": "Rousing Performance",
         "description": "All status effects you apply last 2 additional turns.",
         "effect": {
-          "statusDuration": 2
+          "spellDurationBonus": 2
         }
       }
     ]
@@ -1121,6 +1121,20 @@
         "resistFire": -1,
         "resistLightning": -1,
         "immuneWill": true
+      }
+    }]
+  },
+
+  "firekissed": {
+    "name": "Firekissed",
+    "type": "trait",
+    "description": "Firekissed",
+    "statuses": [{
+      "name": "Firekissed",
+      "description": "This creature is imbued with the essence of fire.",
+      "effect": {
+        "resistFire": 0.4,
+        "saveVersusFear": 2
       }
     }]
   }

@@ -70,7 +70,7 @@ export default class Orsino {
         select: Interactive.selection,
         prompt: Interactive.prompt,
         outputSink: console.log,
-        moduleGen: () => Generator.gen("module", { setting: 'fantasy', ...options }),
+        moduleGen: (opts: Record<string, any>) => Generator.gen("module", { setting: 'fantasy', ...options, ...opts }),
         gen: Generator.gen, //.bind(this),
         pcs: pcs.map(pc => ({ ...pc, playerControlled: true })),
       });

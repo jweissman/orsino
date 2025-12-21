@@ -26,8 +26,6 @@ export interface StatusModifications {
 
   bonusHealing?: number;
 
-  allSaves?: number;
-
   resistBleed?: number;
   resistPoison?: number;
   resistPsychic?: number;
@@ -61,6 +59,8 @@ export interface StatusModifications {
   saveVersusSleep?: number;
   saveVersusReflex?: number;
   saveVersusFortitude?: number;
+
+  // allSaves?: number; -- use saveVersusAll instead
   saveVersusAll?: number;
 
   immunePoison?: boolean;
@@ -137,7 +137,10 @@ export interface StatusModifications {
   bonusSpellSlots?: number;
   bonusSpellDC?: number;
   summonAnimalBonus?: number;
-  statusDuration?: number;
+
+  spellDurationBonus?: number;
+  spellDurationMultiplier?: number;
+
   backstabMultiplier?: number;
   // [key: `${string}Multiplier`]: number | undefined;
 
@@ -151,7 +154,12 @@ export interface StatusModifications {
   reflectSpellChance?: number;
 
   invisible?: boolean;
+  seeInvisible?: boolean;
+  // todo recognizeIllusions?: boolean;
+  extraTurns?: number;
+
   untargetable?: boolean;
+  triggerReactions?: boolean;
 
   // noncombat
   examineBonus?: number;
@@ -175,6 +183,7 @@ export interface StatusEffect {
   by?: Combatant;
   whileEnvironment?: string;
   aura?: boolean;
+  planar?: boolean;
 
   condition?: {
     weapon?: { weight?: 'light' | 'medium' | 'heavy' };

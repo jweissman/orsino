@@ -228,6 +228,46 @@ export default class Books {
       row += Presenter.describeStatus(status).replace(/\n/g, " ") + " |";
       console.log(row);
     });
-    
+  }
+
+  static async wonderbook(_options: Record<string, any> = {}) {
+    await Books.bootstrap();
+
+    console.log(`## Wonders\n`);
+
+    let wonderNames = await Deem.evaluate("gather(wonderDescriptions)");
+    wonderNames.sort((a: string, b: string) => a.localeCompare(b));
+    for (const wonderName of wonderNames) {
+      console.log(`\n### ${Words.humanize(wonderName)}\n`);
+      let description = await Deem.evaluate('lookup(wonderDescriptions, "' + wonderName + '")');
+      console.log("_" + Words.capitalize(description) + "_\n");
+      let effects = await Deem.evaluate('lookup(wonderEffects, "' + wonderName + '")');
+      console.log(
+        Presenter.describeEffects(effects, 'user')
+      )
+    }
+  }
+
+  static async planebook(_options: Record<string, any> = {}) {
+    await this.bootstrap();
+
+    console.log(`## Planes\n`);
+    let planeNames = await Deem.evaluate("gather(planeModifiers)");
+    planeNames.sort((a: string, b: string) => a.localeCompare(b));
+    for (const planeName of planeNames) {
+      console.log(`\n### ${Words.humanize(planeName)}\n`);
+      let plane = await Deem.evaluate('lookup(planeModifiers, "' + planeName + '")');
+      let description = await Deem.evaluate('lookup(planeDescriptions, "' + planeName + '")');
+      console.log("_" + planeName + " is " + description + "_\n");
+      // console.log("**Alignment:** " + (plane.order || "Neutral") + " " + (plane.alignment || "Neutral") + "\n");
+      // console.log("**Terrain:** " + (plane.terrain || "Varied") + "\n");
+      // console.log("**Domain:** " + (plane.domain || "None") + "\n");
+      // console.log("**Climate:** " + (plane.weather || "Varied") + "\n");
+      console.log("| Alignment | Terrain | Domain | Climate | Race Association |");
+      console.log("|-----------|---------|--------|---------|------------------|");
+      console.log(`| ${Words.capitalize(plane.order || "--")} ${Words.capitalize(plane.alignment || "--")} | ${Words.capitalize(plane.terrain || "Varied")} | ${Words.capitalize(plane.domain || "None")} | ${Words.capitalize(plane.weather || "Varied")} | ${Words.capitalize(plane.race || "--")} |\n`);
+
+      console.log("**Global Effects:** " + Presenter.describeModifications(plane.globalEffects) + "\n");
+    }
   }
 }

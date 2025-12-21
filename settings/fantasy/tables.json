@@ -1155,6 +1155,197 @@
     }
   },
 
+  "roomSequences": {
+    "discriminator": "flavor",
+    "groups": {
+      "standard": [
+        [ "entrance", "empty", "trap", "mob", "special", "treasure", "elite" ],
+        [ "entrance", "mob", "empty", "treasure", "trap", "mob", "elite" ]
+      ],
+      "dangerous": [
+        [ "entrance", "trap", "mob", "trap", "elite", "treasure", "mob", "special" ],
+        [ "entrance", "special", "mob", "trap", "mob", "treasure", "elite", "trap" ]
+      ],
+      "lucrative": [
+        [ "entrance", "mob", "treasure", "trap", "mob", "elite", "treasure" ],
+        [ "entrance", "treasure", "mob", "trap", "treasure", "mob", "elite" ]
+      ],
+      "balanced": [
+        [ "entrance", "mob", "trap", "treasure", "special", "elite", "treasure" ],
+        [ "entrance", "trap", "treasure", "mob", "special", "mob", "treasure" ]
+      ]
+    }
+  },
+
+  "roomOverlays": {
+    "discriminator": "guide_type",
+    "groups": {
+      "entrance": { "_encounterChance": 0.3, "_puzzleChance": 0, "_trapChance": 0.2, "_treasureChance": 0.1 },
+      "empty": { "_encounterChance": 0, "_puzzleChance": 0.05, "_trapChance": 0, "_treasureChance": 0, "_wonderChance": 0.1 },
+      "trap": { "_encounterChance": 0.2, "_puzzleChance": 0.1, "_trapChance": 0.5, "_treasureChance": 0.1 },
+      "mob": { "_encounterChance": 1, "_puzzleChance": 0, "_trapChance": 0.1, "_treasureChance": 0.2 },
+      "elite": { "_encounterChance": 1, "_puzzleChance": 0, "_trapChance": 0.05, "_treasureChance": 0.3, "challenging": true },
+      "special": { "_encounterChance": 0.1, "_puzzleChance": 0.1, "_trapChance": 0.1, "_treasureChance": 0.4, "_wonderChance": 0.2 },
+      "treasure": { "_encounterChance": 0.2, "_puzzleChance": 0.2, "_trapChance": 0.2, "_treasureChance": 0.8 }
+    }
+  },
+
+  "wonderTypes": {
+    "discriminator": "d20",
+    "groups": {
+      "1": "glowing_runes", "2": "levitating_objects", "3": "ethereal_music",
+      "4": "shifting_walls", "5": "enchanted_statues", "6": "ancient_trees",
+      "7": "time_dilation", "8": "illusory_visions", "9": "enchanted_aura",
+      "10": "whispering_voices", "11": "spectral_figures", "12": "magical_weather",
+      "13": "floating_lights", "14": "color_shifts", "15": "unearthly_silence",
+      "16": "glowing_crystals", "17": "mysterious_portal", "18": "arcane_symbols",
+      "19": "mystical_fog", "20": "celestial_glow"
+    }
+  },
+
+  "legendaryWonderTypes": {
+    "discriminator": "d20",
+    "groups": {
+      "1": "seeing_stone", "2": "time_stop_aura", "3": "phoenix_heart",
+      "4": "void_singularity", "5": "dragon_statue", "6": "celestial_fountain",
+      "7": "eternal_flame", "8": "shadow_portal", "9": "storm_core",
+      "10": "life_tree", "11": "arcane_lantern", "12": "soul_mirror",
+      "13": "mythic_portal", "14": "divine_aegis", "15": "enchanted_labyrinth",
+      "16": "titan_golem", "17": "starfall_crystal", "18": "ancient_obelisk",
+      "19": "mystic_conduit", "20": "eternal_garden"
+    }
+  },
+
+  "wonderDescriptions": {
+    "discriminator": "wonder_type",
+    "groups": {
+      "glowing_runes": "runes that glow with an inner light, pulsing softly.",
+      "levitating_objects": "various objects levitating gently in the air, defying gravity.",
+      "ethereal_music": "a haunting melody that seems to come from nowhere, filling the air.",
+      "shifting_walls": "walls that subtly shift and change position when not being observed.",
+      "enchanted_statues": "a statue that appears to move slightly when not directly looked at.",
+      "ancient_trees": "a massive tree with gnarled roots and a trunk that seems to pulse with life.",
+      "time_dilation": "an area where time seems to pass differently",
+      "illusory_visions": "visions that appear and disappear at the edge of your sight.",
+      "enchanted_aura": "a shimmering aura that seems to protect the area from harm.",
+      "whispering_voices": "soft whispers that seem to come from the walls themselves.",
+      "spectral_figures": "ghostly figures that move silently through the area.",
+      "magical_weather": "weather phenomena that seem to be controlled by magic.",
+      "floating_lights": "small lights that float in the air, moving in intricate patterns.",
+      "color_shifts": "colors that shift and change in a mesmerizing way.",
+      "unearthly_silence": "a profound silence that seems to absorb all sound.",
+      "glowing_crystals": "a crystal that emits a soft, radiant glow.",
+      "mysterious_portal": "a swirling portal that seems to lead to another place.",
+      "arcane_symbols": "symbols that glow with magical energy, pulsing rhythmically.",
+      "mystical_fog": "a thick fog that seems to have a life of its own.",
+      "celestial_glow": "a soft glow that seems to come from the heavens themselves.",
+
+      "seeing_stone": "a polished stone that allows one to see distant places or events.",
+      "time_stop_aura": "an aura that can temporarily halt the flow of time within its vicinity.",
+      "phoenix_heart": "a radiant heart that pulses with fiery energy, symbolizing rebirth and immortality.",
+      "void_singularity": "a swirling vortex of darkness that seems to absorb all light and matter around it.",
+      "dragon_statue": "a majestic statue of a dragon that seems almost alive, its eyes gleaming with intelligence.",
+      "celestial_fountain": "a fountain that flows with water imbued with celestial energy, healing those who drink from it.",
+      "eternal_flame": "a flame that burns without fuel, its light never fading.",
+      "shadow_portal": "a dark portal that seems to lead to a shadowy realm.",
+      "storm_core": "a swirling core of storm energy, crackling with lightning.",
+      "life_tree": "a magnificent tree that radiates life energy, its leaves shimmering with vitality.",
+      "arcane_lantern": "a lantern that emits a magical light, illuminating hidden truths.",
+      "soul_mirror": "a mirror that reflects not just physical appearances, but the true nature of one's soul.",
+      "mythic_portal": "a portal that connects to legendary realms and mythical places.",
+      "divine_aegis": "an invulnerable sphere of light imbued with divine protection.",
+      "enchanted_labyrinth": "an intelligent painting of a labyrinth that shifts and changes, confounding those who enter.",
+      "titan_golem": "a colossal golem imbued with the strength of titans.",
+      "starfall_crystal": "a crystal formed from fallen stars, radiating cosmic energy.",
+      "ancient_obelisk": "a towering obelisk inscribed with ancient runes of power.",
+      "mystic_conduit": "a conduit that channels mystical energies from other planes of existence.",
+      "eternal_garden": "a garden that blooms eternally, filled with plants of otherworldly beauty."
+    }
+  },
+
+  "wonderEffects": {
+    "discriminator": "wonder_type",
+    "groups": {
+      "glowing_runes": [[{ "type": "buff", "status": "insight", "duration": 10 }]],
+      "levitating_objects": [[{ "type": "buff", "status": "grace", "duration": 10 }]],
+      "ethereal_music": [[{ "type": "buff", "status": "inspired", "duration": 10 }, { "type": "buff", "status": "courage", "duration": 10 }]],
+      "shifting_walls": [[{ "type": "buff", "status": "steelskin", "duration": 10 }]],
+      "enchanted_statues": [[{ "type": "buff", "status": "shielded", "duration": 10 }, { "type": "buff", "status": "warded", "duration": 10 }]],
+      "ancient_trees": [[{ "type": "heal", "amount": "2d8" }]],
+      "time_dilation": [[{ "type": "buff", "status": "haste", "duration": 10 }]],
+      "illusory_visions": [[{ "type": "buff", "status": "clarity", "duration": 10 }, { "type": "buff", "status": "wisdom", "duration": 10 }]],
+      "enchanted_aura": [[{ "type": "buff", "status": "protected", "duration": 10 }, { "type": "buff", "status": "mageproof", "duration": 10 }]],
+      "whispering_voices": [[{ "type": "buff", "status": "wisdom", "duration": 10 }]],
+      "spectral_figures": [[{ "type": "buff", "status": "splendor", "duration": 10 }]],
+      "magical_weather": [[{ "type": "buff", "status": "fireproof", "duration": 10 }, { "type": "buff", "status": "waterproof", "duration": 10 }, { "type": "buff", "status": "stormproof", "duration": 10 }]],
+      "floating_lights": [[{ "type": "buff", "status": "mind_blank", "duration": 10 }]],
+      "color_shifts": [[{ "type": "buff", "status": "acidproof", "duration": 10 }, { "type": "buff", "status": "lightproof", "duration": 10 }, { "type": "buff", "status": "soundproof", "duration": 10 }]],
+      "unearthly_silence": [[{ "type": "buff", "status": "focus", "duration": 10 }]],
+      "glowing_crystals": [[{ "type": "buff", "status": "cunning", "duration": 10 }]],
+      "mysterious_portal": [[{ "type": "teleport", "location": "=oneOf(firstRoom, lastRoom, randomRoom)" }]],
+      "arcane_symbols": [[{ "type": "buff", "status": "focus", "duration": 10 }]],
+      "mystical_fog": [[{ "type": "buff", "status": "splendor", "duration": 10 }]],
+      "celestial_glow": [[{ "type": "buff", "status": "scaleskin", "duration": 10 }]],
+
+      "seeing_stone": [[{ "type": "upgrade", "stat": "wis", "amount": 1 }]],
+      "time_stop_aura": [[{ "type": "learn", "abilityName": "time_stop" }]],
+      "phoenix_heart": [[{ "type": "upgrade", "stat": "maxHp", "amount": 5 }]],
+      "void_singularity": [[{ "type": "upgrade", "stat": "int", "amount": 1 }, { "type": "upgrade", "stat": "wis", "amount": 1 }, { "type": "upgrade", "stat": "cha", "amount": 1 }]],
+      "dragon_statue": [[{ "type": "upgrade", "stat": "str", "amount": 1 }]],
+      "celestial_fountain": [[
+        { "type": "heal", "amount": "3d6" },
+        { "type": "upgrade", "stat": "con", "amount": 1 },
+        { "type": "buff", "status": "protected", "duration": 50 }
+      ]],
+      "eternal_flame": [[{ "type": "grantPassive", "traitName": "firekissed" }]],
+      "shadow_portal": [[{ "type": "planeshift", "location": "Cthelll" }]],
+      "storm_core": [[{ "type": "upgrade", "stat": "dex", "amount": 1 }]],
+      "life_tree": [[{ "type": "upgrade", "stat": "con", "amount": 1 }]],
+      "arcane_lantern": [[{ "type": "learn", "abilityName": "true_sight" }]],
+      "soul_mirror": [[{ "type": "upgrade", "stat": "cha", "amount": 1 }]],
+      "mythic_portal": [[{ "type": "planeshift", "location": "=oneOf(Arcadia, Cthelll, Gehenna, Hades, Limbo, Mechanus, Pandemonium, Ysgard, Zephyrus)" }]],
+      "divine_aegis": [[{ "type": "grantPassive", "traitName": "favored" }]],
+      "enchanted_labyrinth": [[{ "type": "learn", "abilityName": "maze" }]],
+      "titan_golem": [[{ "type": "upgrade", "stat": "str", "amount": 2 }]],
+      "starfall_crystal": [[{ "type": "upgrade", "stat": "int", "amount": 2 }]],
+      "ancient_obelisk": [[{ "type": "upgrade", "stat": "wis", "amount": 2 }]],
+      "mystic_conduit": [[{ "type": "learn", "abilityName": "plane_shift" }]],
+      "eternal_garden": [[{ "type": "upgrade", "stat": "con", "amount": 2 }]]
+    }
+  },
+
+  "planeModifiers": {
+    "discriminator": "plane",
+    "groups": {
+      "Prime Material": { "globalEffects": { "bonusSpellDC": 0, "spellDurationMultiplier": 1.0, "bonusSpellSlots": 0, "resurrectable": true }},
+      "Arcadia":  { "globalEffects": { "bonusSpellDC": 1, "spellDurationMultiplier": 1.2, "bonusSpellSlots": 1 }, "terrain": "forest", "order": "neutral", "alignment": "good", "domain": "life", "weather": "pleasant", "race": "fae" },
+      "Cthelll": { "globalEffects": { "bonusSpellDC": 1 }, "terrain": "swamp", "order": "neutral", "alignment": "evil", "domain": "death", "weather": "foggy" },
+      "Gehenna": { "globalEffects": { "bonusSpellDC": -1 }, "terrain": "mountain", "alignment": "evil", "order": "lawful", "domain": "war", "weather": "sulfurous clouds and ash" },
+      "Hades": { "globalEffects": { "bonusSpellDC": -1, "spellDurationMultiplier": 0.8 }, "terrain": "cave", "alignment": "evil", "order": "lawful", "domain": "knowledge", "weather": "permanently overcast" },
+      "Limbo": { "globalEffects": { "bonusSpellDC": 1, "spellDurationMultiplier": 1.3 }, "terrain": "desert", "alignment": "neutral", "order": "chaotic", "domain": "chaos", "weather": "windy" },
+      "Mechanus": { "globalEffects": { "bonusSpellDC": 1,  "spellDurationMultiplier": 0.8 }, "terrain": "mountain", "order": "lawful", "alignment": "neutral", "domain": "order", "weather": "clear skies" },
+      "Pandemonium": { "globalEffects": { "bonusSpellDC": -1, "spellDurationMultiplier": 0.9 }, "terrain": "cave", "alignment": "evil", "order": "chaotic", "domain": "trickery", "weather": "howling winds" },
+      "Ysgard": { "globalEffects": { "bonusSpellDC": -1, "spellDurationMultiplier": 1.2 }, "terrain": "snow", "order": "lawful", "alignment": "good", "domain": "war", "weather": "snowstorms", "race": "dwarf" },
+      "Zephyrus": { "globalEffects": { "bonusSpellDC": 1, "spellDurationMultiplier": 1.1, "bonusSpellSlots": 1 }, "terrain": "forest", "alignment": "neutral", "order": "neutral", "domain": "storms", "weather": "thunderstorms", "race": "elf" }
+    }
+  },
+
+  "planeDescriptions": {
+    "discriminator": "plane",
+    "groups": {
+      "Prime Material": "the mundane world of everyday life, where magic is present but not overwhelming.",
+      "Arcadia": "a lush, idyllic realm of eternal spring, where nature thrives and harmony reigns.",
+      "Cthelll": "a dark, swampy plane shrouded in mist and mystery, home to ancient secrets and lurking dangers.",
+      "Gehenna": "a fiery, volcanic landscape filled with treacherous terrain and the echoes of eternal conflict.",
+      "Hades": "a shadowy underworld of gloom and despair, where lost souls wander and forgotten knowledge lies buried.",
+      "Limbo": "a chaotic desert wasteland where the sands shift unpredictably and reality bends to whimsy.",
+      "Mechanus": "a realm of perfect order and precision, where everything operates like clockwork in harmonious balance.",
+      "Pandemonium": "a tumultuous plane of howling winds and swirling chaos, where nothing remains constant for long.",
+      "Ysgard": "a frigid, mountainous realm of valor and heroism, where mighty warriors clash amidst snowstorms.",
+      "Zephyrus": "a vibrant forested plane perpetually stirred by thunderstorms, alive with elemental energy."
+    }
+  },
+
   "terrains": {
     "discriminator": "d6",
     "groups": {

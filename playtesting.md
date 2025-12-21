@@ -1,7 +1,9 @@
 # Notes from Playtesting
 
 ## Bugs
-- [ ] Bomb shouldn't be able to reset ticking status
+- [ ] Bomb shouldn't be able to reset ticking status!
+- [ ] Preprocess equipment at combat start so _ring of true seeing_ can be implemented
+- [ ] Make sure we always go through handleReactions flow so _time stop_ can guarantee `triggerReactions: false` effect works
 
 ## Features
 - [ ] Rest could reset status effects? (would be nice to do this _before_ persisting PCs?)
@@ -100,6 +102,13 @@
 ---
 - [ ] Arbitrary scrolls/wands for every effect
 - [ ] mapLookup (to reify more things at gen time)
+---
+- [ ] Generator/template for gems/high-order treasure
+- [ ] All loot is meaningful (either wearable, consumable or saleable at some general store in town)
+- [ ] Pick a single pantheon for deities?
+- [ ] Maybe deific blessings _don't_ expire but you can only have one?
+---
+- [ ] Maybe fire damage reduces bomb ticking countdown??
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing

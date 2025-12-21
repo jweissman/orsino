@@ -661,20 +661,27 @@ export default class Combat {
     }
 
     let attacksPerTurn = combatant.attacksPerTurn || 1;
+    
     // gather effects to see if we have extra attacks
     let activeFx = await Fighting.gatherEffects(combatant);
     if (activeFx.extraAttacksPerTurn) {
       attacksPerTurn += activeFx.extraAttacksPerTurn as number;
       attacksPerTurn = Math.max(1, attacksPerTurn);
     }
-    for (let i = 0; i < attacksPerTurn; i++) {
-      if (combatant.playerControlled && !allegianceEffect) {
-        let result = await this.pcTurn(combatant, livingEnemies, allies);
-        if (result.haltRound) {
-          return { haltRound: true };
+    let turns = 1;
+    if (activeFx.extraTurns) {
+      turns += activeFx.extraTurns as number;
+    }
+    for (let j = 0; j < turns; j++) {
+      for (let i = 0; i < attacksPerTurn; i++) {
+        if (combatant.playerControlled && !allegianceEffect) {
+          let result = await this.pcTurn(combatant, livingEnemies, allies);
+          if (result.haltRound) {
+            return { haltRound: true };
+          }
+        } else {
+          await this.npcTurn(combatant, livingEnemies, allies);
         }
-      } else {
-        await this.npcTurn(combatant, livingEnemies, allies);
       }
     }
 

@@ -87,6 +87,13 @@ export default class Presenter {
             record += `${this.describeStatus(status)}\n`;
           });
           record += "\n";
+          // note: should already be included above??
+          trait.abilities?.forEach(abilityName => {
+            let ability = abilityHandler.getAbility(abilityName);
+            if (ability) {
+              record += `  - **${ability.name}**: ${ability.description + ' ' || ''}${this.describeAbility(ability)}\n`;
+            }
+          });
         }
       }
     }
@@ -199,11 +206,11 @@ export default class Presenter {
     const otherPassives = combatant.passiveEffects?.filter(effect => !passiveEffectsFromTraits.includes(effect.name)) || [];
     if (otherPassives.length > 0) {
       record += Stylist.bold("\nPassive Effects\n");
-      otherPassives.forEach(effect => {
-        if (passiveEffectsFromTraits.includes(effect.name)) {
+      otherPassives.forEach(status => {
+        if (passiveEffectsFromTraits.includes(status.name)) {
           return; // already listed above
         }
-        record += `  ${Stylist.colorize(effect.name, 'cyan')} (${effect.description})\n`;
+        record += `  ${Stylist.colorize(status.name, 'cyan')} (${this.analyzeStatus(status)})\n`;
       });
     }
 
@@ -533,9 +540,9 @@ export default class Presenter {
         case "bonusHealing":
           parts.push(this.increaseDecrease('bonus healing', value));
           break;
-        case "allSaves":
-          parts.push(this.increaseDecrease('all saves', value));
-          break;
+        // case "allSaves":
+        //   parts.push(this.increaseDecrease('all saves', value));
+        //   break;
         case "resistBleed":
         case "resistPoison":
         case "resistPsychic":
@@ -571,11 +578,13 @@ export default class Presenter {
         case "saveVersusParalyze":
         case "saveVersusSleep":
         case "saveVersusBleed":
-        case "saveVersusAll":
         case "saveVersusReflex":
         case "saveVersusFortitude":
           let save = `Save versus ${Words.humanize(k.replace("saveVersus", ""))}`;
           parts.push(this.increaseDecrease(save, value));
+          break;
+        case "saveVersusAll":
+          parts.push(this.increaseDecrease('all saves', value));
           break;
 
         case "immunePoison":
@@ -674,8 +683,11 @@ export default class Presenter {
         case "bonusSpellDC":
           parts.push(this.increaseDecrease('bonus spell DC', value));
           break;
-        case "statusDuration":
+        case "spellDurationBonus":
           parts.push(this.increaseDecrease('status duration', value));
+          break;
+        case "spellDurationMultiplier":
+          parts.push(this.multipliedBy('status duration', value as number));
           break;
         case "backstabMultiplier":
           // parts.push(`Backstab damage multiplied by ${value}x`);
@@ -771,6 +783,22 @@ export default class Presenter {
           }
           break;
 
+        case "seeInvisible":
+          if (value) {
+            parts.push(`Can perceive invisible entities`);
+          }
+          break;
+        
+        case "extraTurns":
+          parts.push(this.increaseDecrease('extra turns', value));
+          break;
+        
+        case "triggerReactions":
+          if (!value) {
+            parts.push(`Does not trigger reactions`);
+          }
+          break;
+
         default:
           // @ts-ignore
           if (k.startsWith("onEnemy")) {
@@ -861,7 +889,7 @@ export default class Presenter {
         description = (`Purge ${targetDescription} of ${effect.statusName}`); break;
       case "upgrade":
         if (effect.stat) {
-          description = (`Increase ${Words.statName(effect.stat)} by ${effect.amount || "1"}`);
+          description = (`Permanently increase ${targetDescription} ${Words.statName(effect.stat)} by ${effect.amount || "1"}`);
         } else {
           throw new Error(`Upgrade effect must specify a stat`);
         }
@@ -885,6 +913,32 @@ export default class Presenter {
         description = (`Cycle through the following effects on ${targetDescription}: ${
           (effect.cycledEffects || []).map((opt: AbilityEffect) => this.describeEffect(opt, targetDescription)).join('; ')
         }`); break;
+      case "learn":
+        description = (`Learn ability ${Words.humanize(effect.abilityName!)} (${
+          this.describeAbility(AbilityHandler.instance.getAbility(effect.abilityName!)!)
+        })`); break;
+      case "grantPassive":
+        // lookup status by name
+        if (!effect.traitName) {
+          throw new Error(`grantPassive effect must have a traitName`);
+        }
+        let trait = TraitHandler.instance.getTrait(effect.traitName);
+        let statuses = trait?.statuses && trait.statuses.length > 0 ?
+          trait.statuses.map(s => this.describeStatusWithName(s)).join(' and ')
+          : '';
+        let abilities = trait?.abilities && trait.abilities.length > 0 ?
+          trait.abilities.map(a => this.describeAbility(
+            AbilityHandler.instance.getAbility(a)!
+          )).join(' and ')
+          : '';
+        let conferParts = [];
+        if (statuses) { conferParts.push(`statuses: ${statuses}`); }
+        if (abilities) { conferParts.push(`abilities: ${abilities}`); }
+        description = (`Grant passive trait ${effect.traitName} conferring ${conferParts.join(' and ')} to ${targetDescription}`); break;
+      case "teleport":
+        description = (`Teleport ${targetDescription} to ${effect.location} `); break;
+      case "planeshift":
+        description = (`Planeshift ${targetDescription} to ${effect.location}`); break;
       default:
         console.warn(`Unknown effect type: ${effect.type} for effect ${JSON.stringify(effect)}`);
         return never(effect.type);
@@ -905,10 +959,12 @@ export default class Presenter {
     }
     description += condition;
 
-    return description;
+    return description
+    // strip extra spaces
+       .replace(/\s+/g, ' ');
   }
 
-  static describeEffects(effects: AbilityEffect[], targetDescription: string): string {
+  static describeEffects(effects: AbilityEffect[], targetDescription: string = ""): string {
     let parts: string[] = [];
     if (effects.every(e => e.type === 'removeStatus') && effects.length > 0) {
       const statuses = effects.map(e => e.statusName).join(', ');
