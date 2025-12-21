@@ -184,6 +184,7 @@ export interface StatusEffect {
   whileEnvironment?: string;
   aura?: boolean;
   planar?: boolean;
+  equipment?: boolean;
 
   condition?: {
     weapon?: { weight?: 'light' | 'medium' | 'heavy' };

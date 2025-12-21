@@ -2,8 +2,9 @@
 
 ## Bugs
 - [ ] Bomb shouldn't be able to reset ticking status!
-- [ ] Preprocess equipment at combat start so _ring of true seeing_ can be implemented
 - [ ] Make sure we always go through handleReactions flow so _time stop_ can guarantee `triggerReactions: false` effect works
+- [ ] _plane shift_ should work from within combat
+- [ ] Something weird with gold -- they have it in town but don't in the dungeon???
 
 ## Features
 - [ ] Rest could reset status effects? (would be nice to do this _before_ persisting PCs?)
@@ -223,6 +224,7 @@
 - [x] Template overlay for dungeon types (could express '30% undead' outside of deem template...)
 - [x] Why is save vs Bleed a will check? Seems weird? -- added save vs bleed (though it could just be fort check)
 - [x] Why is a wolf casting earthquake??? (presumably it was 'Giant' wolf but maybe just give a 'stomp' AoE ability?) -- think this should be resolved by having adjusted ability lists
+- [x] Preprocess equipment at combat start so _ring of true seeing_ can be implemented -- done I think!
 
 ## Not really issues atm
 - "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]

@@ -54,6 +54,7 @@ interface GameState {
 }
 
 export class ModuleRunner {
+
   private roller: Roll; // (subject: Combatant, description: string, sides: number, dice: number) => Promise<RollResult>;
   private select: Select<any>;
   // private prompt: (message: string) => string;
@@ -204,9 +205,9 @@ export class ModuleRunner {
 
       if (action === "embark") {
         // don't we need to distribute gold to PCs? is this already done somehow
-        // let share = Math.floor(this.state.sharedGold / this.pcs.length);
-        // this.pcs.forEach(pc => pc.gp = (pc.gp || 0) + share);
-        // this.state.sharedGold -= share * this.pcs.length;
+        let share = Math.floor(this.state.sharedGold / this.pcs.length);
+        this.pcs.forEach(pc => pc.gp = (pc.gp || 0) + share);
+        this.state.sharedGold -= share * this.pcs.length;
 
         const dungeon = await this.selectDungeon();
         if (dungeon) {

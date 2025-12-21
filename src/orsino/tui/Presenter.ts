@@ -189,6 +189,10 @@ export default class Presenter {
             // record += `  ${Stylist.colorize(status.name, 'cyan')} (${status.description})\n`;
             record += `  ${this.describeStatusWithName(status)}\n`;
           });
+
+          if ((trait.abilities||[]).length > 0) {
+            record += Stylist.italic("  Grants abilities: " + trait.abilities?.map(a => Stylist.colorize(a, 'magenta')).join(', '));
+          }
           record += "\n";
         }
       }

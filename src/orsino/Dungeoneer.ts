@@ -464,7 +464,7 @@ export default class Dungeoneer {
         options.push({ name: `Inspect the curious ${Words.humanize(room.riddle.form)}`, value: "riddle", short: 'Solve Riddle', disabled: inspectedFeatures.includes('riddle') || this.dry });
       }
       if (room.wonder) {
-        options.push({ name: `Behold wondrous ${Words.humanize(room.wonder.appearance)}`, value: `feature:wonder`, short: 'Behold Wonder', disabled: inspectedFeatures.includes('feature:wonder') });
+        options.push({ name: `Behold wondrous ${Words.humanize(room.wonder.appearance)}`, value: `feature:wonder`, short: 'Behold Wonder', disabled: inspectedFeatures.includes('wonder') });
       }
 
       options.push({ name: "Leave the dungeon", value: "leave", short: 'Leave', disabled: this.dry });

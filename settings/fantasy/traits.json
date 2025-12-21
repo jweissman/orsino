@@ -852,6 +852,19 @@
       }
     }]
   },
+
+  "imperceptible": {
+    "type": "template",
+    "description": "Invisible",
+    "statuses": [{
+      "name": "Hidden Presence",
+      "description": "Difficult to detect and hit.",
+      "effect": {
+        "invisible": true
+      }
+    }]
+  },
+
   "fiendish": {
     "type": "template",
     "description": "Demonic",
