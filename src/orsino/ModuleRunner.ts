@@ -198,16 +198,16 @@ export class ModuleRunner {
     });
     let maxDays = 360;
     while (this.days++ < maxDays && this.pcs.some(pc => pc.hp > 0)) {
-      this.status(mod);
+      await this.status(mod);
       // this.outputSink(`\n--- Day ${days}/${maxDays} ---`);
       const action = await this.menu(dry);
       // this.outputSink(`You chose to ${action}.`);
 
       if (action === "embark") {
         // don't we need to distribute gold to PCs? is this already done somehow
-        let share = Math.floor(this.state.sharedGold / this.pcs.length);
-        this.pcs.forEach(pc => pc.gp = (pc.gp || 0) + share);
-        this.state.sharedGold -= share * this.pcs.length;
+        // let share = Math.floor(this.state.sharedGold / this.pcs.length);
+        // this.pcs.forEach(pc => pc.gp = (pc.gp || 0) + share);
+        // this.state.sharedGold -= share * this.pcs.length;
 
         const dungeon = await this.selectDungeon();
         if (dungeon) {
@@ -317,37 +317,15 @@ export class ModuleRunner {
             .map(i => i.name),
         });
       } else if (action === "show") {
-        // this.outputSink("\n📜 Party Records:")
-        // for (const pc of this.pcs) {
-        //   // this.outputSink(`\n${Stylist.bold(pc.name)} -- ${Presenter.combatant(pc)}`);
-        //   Presenter.printCharacterRecord(pc);
-        // }
-
         await this.emit({
           type: "partyOverview",
           pcs: this.pcs,
           day: this.days,
           itemQuantities: Inventory.quantities(this.state.inventory),
         });
-
-        // if (this.state.inventory.length > 0) {
-        //   // this.outputSink("\n🎒 Inventory:");
-        //   let quantities = Inventory.quantities(this.state.inventory);
-        //   for (const [itemName, qty] of Object.entries(quantities)) {
-        //     this.outputSink(` - ${Words.humanize(itemName)} x${qty}`);
-        //   }
-        // } else {
-        //   this.outputSink("\n🎒 Inventory is empty.");
-        // }
       }
     }
 
-    // if (this.pcs.every(pc => pc.hp <= 0)) {
-    //   this.outputSink("Game over... but thanks for playing " + mod.name + "!");
-    // } else {
-    //   this.outputSink("Congratulations! You've completed the module: " + mod.name);
-    // }
-    // this.outputSink(`\nGame over! You survived ${days} days in ${mod.name}.`);
     await this.emit({
       type: "campaignStop",
       reason: this.pcs.every(pc => pc.hp <= 0) ? "Party defeated" : "Module completed",
@@ -413,6 +391,7 @@ export class ModuleRunner {
     }
     // console.log("Options:", options);
 
+    this.note("You have " + Stylist.bold(this.sharedGold + "g") + " available.");
     return await this.select("What would you like to do?", options);
   }
 

@@ -220,8 +220,16 @@ export default class Dungeoneer {
       let combat = undefined;
       if (this.currentEncounter && Combat.living(this.playerTeam.combatants).length > 0) {
         let survived = false;
-        ({ playerWon: survived, combat } = await this.runCombat());
+        // ({ playerWon: survived, combat, newPlane } = await this.runCombat());
+        let result = await this.runCombat();
+        combat = result.combat;
+        survived = result.playerWon;
+
         if (!survived) break;
+        if (result.newPlane) {
+          console.warn("Exiting dungeon due to planeshift...");
+          return { newPlane: result.newPlane };
+        }
       }
 
       await this.emit({ type: "roomCleared", room, combat });
@@ -279,7 +287,7 @@ export default class Dungeoneer {
       disabled: c.hp <= 0
     })));
 
-    let actorFx = await Fighting.gatherEffects(actor);
+    let actorFx = Fighting.gatherEffects(actor);
     let skillBonusName = `${type}Bonus` as keyof StatusModifications;
     let skillBonus = actorFx[skillBonusName] as number || 0;
     let skillMod = Fighting.statMod(actor[stat] as number);
@@ -330,7 +338,7 @@ export default class Dungeoneer {
     await this.emit({ type: "enterRoom", roomDescription });
   }
 
-  private async runCombat(): Promise<{ playerWon: boolean, combat: Combat }> {
+  private async runCombat(): Promise<{ playerWon: boolean, combat: Combat, newPlane?: string }> {
     if (Combat.living(this.currentMonsterTeam.combatants).length === 0) {
       return { playerWon: true, combat: null as any };
     }
@@ -349,7 +357,7 @@ export default class Dungeoneer {
       this.dry
     );
     while (!combat.isOver()) {
-      await combat.round(
+      let result = await combat.round(
         // flee callback
         async (combatant: Combatant) => {
           // find another room for them
@@ -364,6 +372,10 @@ export default class Dungeoneer {
           }
         }
       );
+      if (result.haltCombat) {
+        console.warn("Combat halted; new plane? ", result.newPlane);
+        return { playerWon: true, combat, newPlane: result.newPlane };
+      }
     }
 
     combat.tearDown();
@@ -415,7 +427,7 @@ export default class Dungeoneer {
     let perCapitaXp = Math.floor(xp / standing.length);
     let perCapitaGold = Math.floor(gold / standing.length);
     for (const c of standing) {
-      let fx = await Fighting.gatherEffects(c);
+      let fx = Fighting.gatherEffects(c);
       let xpMultiplier = fx.xpMultiplier as number || 1;
       let gpMultiplier = fx.goldMultiplier as number || 1;
 
@@ -474,22 +486,27 @@ export default class Dungeoneer {
         for (const c of this.playerTeam.combatants) {
           await Presenter.printCharacterRecord(c);
         }
-        this.outputSink(`Inventory:`);
-        for (const [itemName, qty] of Object.entries(Inventory.quantities(this.playerTeam.inventory))) {
-          if (qty > 1) {
-            this.outputSink(` - ${Words.humanize(itemName)} x${qty}`);
-          } else {
-            this.outputSink(` - ${Words.humanize(itemName)}`);
+        if (Object.keys(Inventory.quantities(this.playerTeam.inventory)).length > 0) {
+          this.outputSink(`Inventory:`);
+          for (const [itemName, qty] of Object.entries(Inventory.quantities(this.playerTeam.inventory))) {
+            if (qty > 1) {
+              this.outputSink(` - ${Words.humanize(itemName)} x${qty}`);
+            } else {
+              this.outputSink(` - ${Words.humanize(itemName)}`);
+            }
           }
         }
+        this.outputSink("Gold: " + this.playerTeam.combatants.reduce((sum, c) => sum + (c.gp || 0), 0) + " gp");
       } else if (choice === "search") {
         await this.search(room);
         searched = true;
       } else if (choice === "rest") {
-        const survivedNap = await this.rest(room);
-        if (!survivedNap) {
+        const result = await this.rest(room);
+        if (!result.survived) {
           console.warn("The party was ambushed during their rest and defeated...");
           return { leaving: true };
+        } else if (result.newPlane) {
+          return { leaving: true, newPlane: result.newPlane };
         }
       } else if (choice === "examine") {
         let check = await this.skillCheck("examine", `to examine ${room.decor}`, "int", 15);
@@ -719,7 +736,7 @@ export default class Dungeoneer {
       }
 
       let lootBonus = 0;
-      let fx = await Fighting.gatherEffects(actor);
+      let fx = Fighting.gatherEffects(actor);
       lootBonus += fx.lootBonus as number || 0;
       if (lootBonus > 0) {
         this.note(`${actor.forename} has a loot bonus of +${lootBonus}.`);
@@ -741,7 +758,10 @@ export default class Dungeoneer {
     }
   }
 
-  private async rest(_room: Room | BossRoom): Promise<boolean> {
+  private async rest(_room: Room | BossRoom): Promise<{
+    survived: boolean,
+    newPlane?: string
+  }> {
     const choice = await this.select("Are you sure you want to rest in this room? (stabilize unconscious party members to 1HP, 30% encounter)", [
       { disabled: false, short: 'Y', name: "Yes", value: "yes" },
       { disabled: false, short: 'N', name: "No", value: "no" }
@@ -813,10 +833,15 @@ export default class Dungeoneer {
         let room = this.currentRoom as Room;
         room.encounter = await this.encounterGen(room.targetCr || 1);
         this.note(`\n👹 Wandering monsters interrupt your rest: ${Words.humanizeList(room.encounter.creatures.map(m => m.name))} [CR ${room.encounter.cr}]`);
-        return (await this.runCombat()).playerWon;
+        let result = (await this.runCombat()); //.playerWon;
+        if (!result.playerWon) {
+          return { survived: false };
+        } else if (result.newPlane) {
+          return { survived: true, newPlane: result.newPlane };
+        }
       }
     }
-    return true;
+    return { survived: true };
   }
 
   static defaultGen(): Dungeon {

@@ -915,7 +915,7 @@ export default class Presenter {
         }`); break;
       case "cycleEffects":
         description = (`Cycle through the following effects on ${targetDescription}: ${
-          (effect.cycledEffects || []).map((opt: AbilityEffect) => this.describeEffect(opt, targetDescription)).join('; ')
+          (effect.cycledEffects || []).map((opt: AbilityEffect) => this.describeEffect(opt, opt.target || targetDescription)).join('; ')
         }`); break;
       case "learn":
         description = (`Learn ability ${Words.humanize(effect.abilityName!)} (${

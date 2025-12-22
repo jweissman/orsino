@@ -92,7 +92,11 @@ export default class CharacterRecord {
         // console.log(`Picked name for a ${raceSelect} ${occupationSelect}: ${(pc.name)}`);
         let spellbook: string[] = [];
         if (occupationSelect === 'mage') {
-          let availableSpells = AbilityHandler.instance.allSpellNames('arcane', 1);
+          let cantrips = AbilityHandler.instance.allSpellNames('arcane', 0);
+          // give all cantrips
+          spellbook.push(...cantrips);
+
+          let availableSpells = AbilityHandler.instance.allSpellNames('arcane', 1).filter(spellName => cantrips.indexOf(spellName) === -1);
           for (let i = 0; i < 3; i++) {
             let spell = await selectionMethod(
               `Select spell ${i + 1} for this PC: ` + prompt,
@@ -102,6 +106,10 @@ export default class CharacterRecord {
             availableSpells = availableSpells.filter(s => s !== spell);
           }
         } else if (occupationSelect === 'cleric') {
+          // give all cantrips
+          let cantrips = AbilityHandler.instance.allSpellNames('divine', 0);
+          spellbook.push(...cantrips);
+
           // clerics select a 'domain' (life, death, war, knowledge, etc.) which influences their spell selection
           let domainSelect = await selectionMethod(
             'Select a divine domain for this PC: ' + prompt,
@@ -112,7 +120,7 @@ export default class CharacterRecord {
 
           let domainSpells = AbilityHandler.instance.allSpellNames('divine', 1).filter(spellName => {
             let spell = AbilityHandler.instance.getAbility(spellName);
-            return spell.domain === domainSelect;
+            return spell.domain === domainSelect && cantrips.indexOf(spellName) === -1;
           });
 
           // give all domain spells for now
@@ -157,15 +165,25 @@ export default class CharacterRecord {
           race,
           class: occupation
 
-         }) as Combatant;
+        }) as Combatant;
         if (pc.class === 'mage') {
-          const spells = Sample.count(3, ...AbilityHandler.instance.allSpellNames('arcane', 1))
+          // give all cantrips
+          const cantrips = AbilityHandler.instance.allSpellNames('arcane', 0);
+          pc.abilities.push(...cantrips);
+          // then select 3 first-level spells
+          const spells = Sample.count(3, ...AbilityHandler.instance.allSpellNames('arcane', 1).filter(spellName => {
+            return cantrips.indexOf(spellName) === -1;
+          }));
           console.log("Adding to " + pc.name + "'s spellbook: " + spells.join(", ") + " (already has " + pc.abilities.join(", ") + ")");
           pc.abilities.push(...spells);
         } else if (pc.class === 'cleric') {
+          // give all cantrips
+          const cantrips = AbilityHandler.instance.allSpellNames('divine', 0);
+          pc.abilities.push(...cantrips);
+          // give all life domain spells
           const domainSpells = AbilityHandler.instance.allSpellNames('divine', 1).filter(spellName => {
             let spell = AbilityHandler.instance.getAbility(spellName);
-            return spell.domain === 'life'; // default to life domain for random clerics
+            return spell.domain === 'life' && cantrips.indexOf(spellName) === -1;
           });
           pc.abilities.push(...domainSpells);
           const additionalSpells = Sample.count(2, ...AbilityHandler.instance.allSpellNames('divine', 1).filter(spellName => {
@@ -230,7 +248,7 @@ export default class CharacterRecord {
         //   ['Yes', 'No']
         // );
         // if (confirm === 'Yes') {
-          party.push(pc);
+        party.push(pc);
         // }
       }
     };
@@ -302,19 +320,27 @@ export default class CharacterRecord {
       pc[stat] += 1;
       // this.note(`${c.name}'s ${stat.toUpperCase()} increased to ${c[stat as keyof Combatant]}!`);
 
-      let fx = await Fighting.gatherEffects(pc);
-      if (fx.onLevelUp) {
-        for (const effect of fx.onLevelUp as AbilityEffect[]) {
-          // execute the effect
-          console.log(`Applying level-up effect to ${pc.name}...`);
-          let pseudocontext = { subject: pc, allies: team.combatants.filter(c => c !== pc), enemies: [] };
-          let { events: levelUpEvents } = await AbilityHandler.handleEffect(
-            'onLevelUp', effect, pc, pc, pseudocontext, Commands.handlers(roller) // this.roller, this.playerTeam)
-          );
-          // events.forEach(e => this.emit({ ...e, turn: 0 } as DungeonEvent));
-          events.push(...levelUpEvents as DungeonEvent[]);
-        }
-      }
+      // let fx = await Fighting.gatherEffects(pc);
+      // if (fx.onLevelUp) {
+      let pseudocontext = { subject: pc, allies: team.combatants.filter(c => c !== pc), enemies: [] };
+      events.push(...(await AbilityHandler.performHooks(
+        'onLevelUp',
+        pc,
+        pseudocontext,
+        Commands.handlers(roller),
+        "level up",
+      )) as DungeonEvent[]);
+      //   for (const effect of fx.onLevelUp as AbilityEffect[]) {
+      //     // execute the effect
+      //     console.log(`Applying level-up effect to ${pc.name}...`);
+      //     let { events: levelUpEvents } = await AbilityHandler.handleEffect(
+      //       'onLevelUp', effect, pc, pc, pseudocontext, Commands.handlers(roller) // this.roller, this.playerTeam)
+      //     );
+      //     // events.forEach(e => this.emit({ ...e, turn: 0 } as DungeonEvent));
+      //     events.push(...levelUpEvents as DungeonEvent[]);
+      //   }
+
+      // }
 
       if (pc.class === "mage") {
         // gain spells

@@ -2671,7 +2671,8 @@
             "type": "damage",
             "amount": "=1d2",
             "kind": "necrotic",
-            "saveForHalf": true
+            "saveForHalf": true,
+            "target": "enemy"
           }
         ]
       }
@@ -2852,14 +2853,12 @@
     "level": 0,
     "aspect": "arcane",
     "school": "conjuration",
-    "description": "Create a cloud of soot that reveals hidden enemies.",
-    "target": [
-      "enemies"
-    ],
+    "description": "Create a cloud of soot that reveals hidden or invisible creatures.",
+    "target": [ "enemies" ],
     "effects": [
       {
         "type": "removeStatus",
-        "statusName": "hidden"
+        "statusName": "hidden|invisible"
       }
     ]
   },

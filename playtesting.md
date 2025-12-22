@@ -3,7 +3,6 @@
 ## Bugs
 - [ ] Bomb shouldn't be able to reset ticking status!
 - [ ] Make sure we always go through handleReactions flow so _time stop_ can guarantee `triggerReactions: false` effect works
-- [ ] _plane shift_ should work from within combat
 - [ ] Something weird with gold -- they have it in town but don't in the dungeon???
 
 ## Features
@@ -110,6 +109,11 @@
 - [ ] Maybe deific blessings _don't_ expire but you can only have one?
 ---
 - [ ] Maybe fire damage reduces bomb ticking countdown??
+- [ ] More terrains (island, jungle, volcano...)
+- [ ] Set environment to urban when in town hub (and have some investigate/examine/search opps somehow?)
+- [ ] Make shrine feature blessings into real shrine blessings and give more distinctive room features? (ie not pseudo-'shrines')
+- [ ] Maybe restrict to one divine blessing at a time (and have them not timeout/tickdown ie a divine passive?)
+
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing
@@ -225,6 +229,7 @@
 - [x] Why is save vs Bleed a will check? Seems weird? -- added save vs bleed (though it could just be fort check)
 - [x] Why is a wolf casting earthquake??? (presumably it was 'Giant' wolf but maybe just give a 'stomp' AoE ability?) -- think this should be resolved by having adjusted ability lists
 - [x] Preprocess equipment at combat start so _ring of true seeing_ can be implemented -- done I think!
+- [x] _plane shift_ should work from within combat
 
 ## Not really issues atm
 - "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]
