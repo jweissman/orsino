@@ -113,6 +113,20 @@
 - [ ] Set environment to urban when in town hub (and have some investigate/examine/search opps somehow?)
 - [ ] Make shrine feature blessings into real shrine blessings and give more distinctive room features? (ie not pseudo-'shrines')
 - [ ] Maybe restrict to one divine blessing at a time (and have them not timeout/tickdown ie a divine passive?)
+---
+- [ ] Tiny game db with towns you've visited so you can travel back
+---
+- [ ] Cast effect type (for metamagic + spell-like abilities, but should also enable fully general scrolls/wands/potions)
+- [ ] Describe colors of prismatic spray
+- [ ] Racial magic weapon/armor traits (sword of goblinkind with abilities we can lookup)
+- [ ] Dual terrain types
+- [ ] Model PC classes as a table; race job restrictions as data
+- [ ] Climate as list of weather types (randomized each day)
+---
+- [ ] Calendar with special month names? (Presumably there's no roman calendar in the prime material plane of a fantasy world?)
+- [ ] Would be intersting to somehow model 'caster' as a trait ('casts:divine', 'casts:arcane', maybe 'casts:shadow' for evil-aligned spells? ie just throw the book at them and let them work out what makes sense to use. ideally there's symmetry with the pcs though)
+---
+- [ ] Could call victory if all enemies petrified/asleep/mazed?
 
 
 ## Fixed

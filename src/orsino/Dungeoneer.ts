@@ -73,6 +73,7 @@ interface RoomBase {
   shrine: RoomFeature | null;
   riddle?: Riddle;
   wonder?: Wonder;
+  gems?: Gemstone[];
 }
 
 export interface Room extends RoomBase {
@@ -81,6 +82,11 @@ export interface Room extends RoomBase {
 
 export interface BossRoom extends RoomBase {
   boss_encounter: Encounter | null;
+}
+
+interface Gemstone {
+  name: string;
+  value: number;
 }
 
 export interface Dungeon {
@@ -732,6 +738,14 @@ export default class Dungeoneer {
           await this.emit({ type: "itemFound", itemName: Words.humanize(item), quantity: 1, where: "in the hidden stash" });
           actor.gear = actor.gear || [];
           actor.gear.push(item);
+        }
+      }
+
+      if (room.gems) {
+        for (const gem of room.gems) {
+          await this.emit({ type: "itemFound", itemName: Words.humanize(gem.name), quantity: 1, where: "in the hidden stash" });
+          actor.loot = actor.loot || [];
+          actor.loot.push(gem.name);
         }
       }
 

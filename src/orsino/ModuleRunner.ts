@@ -51,6 +51,7 @@ interface GameState {
   sharedGold: number;
   inventory: Array<ItemInstance>;
   completedDungeons: number[];
+  discoveredDungeons: number[];
 }
 
 export class ModuleRunner {
@@ -67,7 +68,8 @@ export class ModuleRunner {
     party: [],
     sharedGold: 10000,
     inventory: [],
-    completedDungeons: []
+    completedDungeons: [],
+    discoveredDungeons: [],
   };
 
   private gen: (type: GenerationTemplateType, options?: Record<string, any>) => any;
@@ -120,6 +122,7 @@ export class ModuleRunner {
     // give initial gold to party
     this.state.sharedGold += this.pcs.reduce((sum, pc) => sum + (pc.gp || 0), 0);
     this.pcs.forEach(pc => pc.gp = 0);
+    this.logGold("start");
     console.log(`Starting module with party of ${this.pcs.length} adventurers and ${this.state.sharedGold}g shared gold.`);
 
     await this.emit({
@@ -170,6 +173,7 @@ export class ModuleRunner {
       at: new Date().toISOString(),
       day: 0
     });
+
     // this.outputSink(`Module "${this.activeModule.name}" generated: ${this.activeModule.terrain} terrain, ${this.activeModule.town.name} town, ${this.activeModule.dungeons.length} dungeons
     // }`);
     // clear screen
@@ -211,6 +215,7 @@ export class ModuleRunner {
 
         const dungeon = await this.selectDungeon();
         if (dungeon) {
+          this.logGold("before dungeoneer");
           // this.outputSink(`You embark on a Quest to the ${Stylist.bold(dungeon.dungeon_name)}...`);
           let dungeoneer = new Dungeoneer({
             dry,
@@ -240,6 +245,8 @@ export class ModuleRunner {
 
           this.state.sharedGold += dungeoneer.playerTeam.combatants
             .reduce((sum, pc) => sum + (pc.gp || 0), 0);
+          this.pcs.forEach(pc => pc.gp = 0);
+          this.logGold("after dungeoneer");
 
           // stabilize unconscious PC to 1 HP
           this.pcs.forEach(pc => {
@@ -363,12 +370,15 @@ export class ModuleRunner {
       day: this.days,
       season: this.season,
     })
+
+    this.logGold("status");
   }
 
   private async menu(dry = false): Promise<string> {
     const available = this.availableDungeons;
     const options: Choice<any>[] = [
       { short: "Rest", value: "rest", name: "Visit the Inn (restore HP/slots)", disabled: this.pcs.every(pc => pc.hp === pc.maxHp) },
+          { short: "Chat", value: "rumors", name: "Visit the Tavern (gather hirelings, hear rumors about the region)", disabled: available.length === 0 },
     ];
 
     if (!dry) {
@@ -377,7 +387,6 @@ export class ModuleRunner {
           { short: "Arms", value: "armory", name: "Visit the Armorer (buy weapons)", disabled: false },
           { short: "Equip", value: "magicShop", name: "Visit the Magic Shop (buy equipment)", disabled: false },
           { short: "Items", value: "itemShop", name: "Visit the Alchemist (buy consumables)", disabled: false },
-          { short: "Chat", value: "rumors", name: "Visit the Tavern (gather hirelings, hear rumors about the region)", disabled: available.length === 0 },
           { short: "Pray", value: "pray", name: `Visit the Temple to ${Words.capitalize(this.mod.town.deity.name)}`, disabled: this.sharedGold < 10 },
           { short: "Show", value: "show", name: `Show Party Inventory/Character Records`, disabled: false },
         ]
@@ -599,20 +608,29 @@ export class ModuleRunner {
       return;
     }
 
-    // this.outputSink("\n📰 The tavern buzzes with rumors:");
-    // available.forEach(d => {
-    //   this.outputSink(`  • ${d.rumor}`);
-    // });
-
-    const rumor = available[Math.floor(Math.random() * available.length)].rumor;
+    let index = Math.floor(Math.random() * available.length);
+    const rumor = available[index].rumor;
     await this.emit({
       type: "rumorHeard",
       rumor,
       day: this.days,
     });
+
+    this.state.discoveredDungeons = this.state.discoveredDungeons.concat(
+      available.filter(d => d.dungeonIndex === available[index].dungeonIndex).map(d => d.dungeonIndex!)
+    );
   }
 
   private async presentHireling() {
+    const wouldLikeHireling = await this.select("A hireling is available to join your party. Would you like to consider their merits?", [
+      { short: "Yes", value: true, name: "Hire a hireling", disabled: false },
+      { short: "No", value: false, name: "Decline", disabled: false },
+    ]);
+
+    if (!wouldLikeHireling) {
+      return;
+    }
+
     // gen a level 1 PC as hireling
     const hireling = await this.gen("pc", { level: 1, background: "hireling", setting: "fantasy" }) as Combatant;
     const cost = 100;
@@ -647,8 +665,8 @@ export class ModuleRunner {
   }
 
   private async selectDungeon(): Promise<Dungeon | null> {
-    const available = this.availableDungeons;
-    if (available.length === 0) return null;
+    const dungeonChoices = this.availableDungeons.filter(d => this.state.discoveredDungeons.includes(d.dungeonIndex!));
+    if (dungeonChoices.length === 0) return null;
 
     let reasonableCr = Math.round(1.5 * this.pcs.map(pc => pc.level).reduce((a, b) => a + b, 0) / this.pcs.length) + 2;
     // console.log(`(Reasonable CR for party level ${this.pcs.map(pc => pc.level).join(", ")} is approx. ${reasonableCr})`);
@@ -657,21 +675,23 @@ export class ModuleRunner {
     //   console.log(` - ${d.dungeon_name} (CR ${d.intendedCr}): ${d.intendedCr > reasonableCr ? Stylist.colorize("⚠️ Too difficult!", 'red') : '✓ Reasonable'}`);
     // });
 
-    let options = available.map(d => ({
+    let options = dungeonChoices.map(d => ({
       short: d.dungeon_name,
-      value: available.indexOf(d),
+      value: dungeonChoices.indexOf(d),
       name: `${d.dungeon_name} (${d.direction}, CR ${d.intendedCr})`,
       disabled: d.intendedCr > reasonableCr, // Disable if CR is too high
     }))
     const choice = await this.select("Which dungeon?", options);
     // console.log("Chosen dungeon index:", choice, available[choice].dungeon_name);
 
-    return available[choice];
+    return dungeonChoices[choice];
   }
 
-  // static async randomInt(_message: string): Promise<string> {
-  //   return String(Math.floor(Math.random() * 100) + 1);
-  // }
+  private logGold(tag: string) {
+    // const pcs = this.pcs.map(p => `${p.forename}:${p.gp||0}`).join(", ");
+    // console.log(`🪙 [gold] ${tag} shared=${this.state.sharedGold} pcs=[${pcs}]`);
+  }
+
 
   private async defaultModuleGen(): Promise<CampaignModule> {
     const module = {

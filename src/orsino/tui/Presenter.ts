@@ -858,6 +858,11 @@ export default class Presenter {
       case "damage":
         description = (`Deal ${amount} ${effect.kind || "true"} damage to ${targetDescription}`);
         break;
+      case "cast":
+        description = (`Cast ability ${Words.humanize(effect.spellName!)} (${
+          this.describeAbility(AbilityHandler.instance.getAbility(effect.spellName!)!)
+          }) on ${targetDescription}`);
+        break;
       case "heal": description = (`Heal ${targetDescription} ${amount} HP`); break;
       case "drain": description = (`Drain ${targetDescription} ${amount} HP`); break;
       case "buff":

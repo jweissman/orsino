@@ -420,13 +420,7 @@
           "onKill": [
             {
               "type": "buff",
-              "status": {
-                "name": "Blood Frenzy",
-                "duration": 2,
-                "effect": {
-                  "bonusDamage": "1d4"
-                }
-              }
+              "status": "bloodfrenzy"
             }
           ]
         }
@@ -663,13 +657,7 @@
           "onKill": [
             {
               "type": "buff",
-              "status": {
-                "name": "Hollering",
-                "duration": 2,
-                "effect": {
-                  "bonusDamage": "=1d3"
-                }
-              }
+              "status": "battlecry"
             }
           ]
         }

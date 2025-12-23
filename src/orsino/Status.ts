@@ -231,6 +231,7 @@ export default class StatusHandler {
 
   dereference(statusNameOrObject: string | StatusEffect): StatusEffect | null {
     if (typeof statusNameOrObject === "string") {
+
       const status = this.getStatus(statusNameOrObject);
       if (!status) {
         console.warn(`Status "${statusNameOrObject}" not found in status dictionary.`);
