@@ -33,7 +33,7 @@ export type CritEvent = BaseEvent & { type: "crit"; damage: number; by: string; 
 export type MissEvent = BaseEvent & { type: "miss"; };
 export type KillEvent = BaseEvent & { type: "kill"; };
 export type FallenEvent = BaseEvent & { type: "fall" };
-export type FleeEvent   = BaseEvent & { type: "flee" };
+export type FleeEvent = BaseEvent & { type: "flee" };
 
 export type ActedRandomly = BaseEvent & { type: "actedRandomly" };
 export type HealEvent = BaseEvent & { type: "heal"; amount: number };
@@ -102,17 +102,17 @@ export type CombatEvent =
 type BaseDungeonEvent = Omit<BaseEvent, "turn">;
 export type EnterDungeon = BaseDungeonEvent & { type: "enterDungeon"; dungeonName: string; dungeonIcon: string; dungeonType: string, depth: number, goal: string };
 export type LeaveDungeon = BaseDungeonEvent & { type: "leaveDungeon"; };
-export type EnterRoom  = BaseDungeonEvent & { type: "enterRoom"; roomDescription: string; };
-export type RoomCleared  = BaseDungeonEvent & { type: "roomCleared"; room: Room | BossRoom; combat?: Combat };
-export type DungeonCleared  = BaseDungeonEvent & { type: "dungeonCleared"; macguffin?: string; };
-export type DungeonFailed  = BaseDungeonEvent & { type: "dungeonFailed"; dungeonName: string; reason: string; };
+export type EnterRoom = BaseDungeonEvent & { type: "enterRoom"; roomDescription: string; };
+export type RoomCleared = BaseDungeonEvent & { type: "roomCleared"; room: Room | BossRoom; combat?: Combat };
+export type DungeonCleared = BaseDungeonEvent & { type: "dungeonCleared"; macguffin?: string; };
+export type DungeonFailed = BaseDungeonEvent & { type: "dungeonFailed"; dungeonName: string; reason: string; };
 export type ItemFoundEvent = BaseDungeonEvent & { type: "itemFound"; itemName: string; quantity: number; where: string; };
 export type EquipmentWornEvent = BaseDungeonEvent & { type: "equipmentWorn"; itemName: string; slot: EquipmentSlot; };
 export type RestEvent = BaseDungeonEvent & { type: "rest"; stabilizedCombatants: string[]; };
-export type GoldEvent  = BaseDungeonEvent & { type: "gold"; amount: number };
-export type ExperienceEvent  = BaseDungeonEvent & { type: "xp"; amount: number };
-export type InvestigateEvent  = BaseDungeonEvent & { type: "investigate"; clue: string; discovery: string; };
-export type RiddleEvent = BaseDungeonEvent & { type: "riddle"; challenge: string; solution: string;  reward: string; };
+export type GoldEvent = BaseDungeonEvent & { type: "gold"; amount: number };
+export type ExperienceEvent = BaseDungeonEvent & { type: "xp"; amount: number };
+export type InvestigateEvent = BaseDungeonEvent & { type: "investigate"; clue: string; discovery: string; };
+export type RiddleEvent = BaseDungeonEvent & { type: "riddle"; challenge: string; solution: string; reward: string; };
 
 export type UpgradeEvent = BaseDungeonEvent & { type: "upgrade"; stat: keyof Combatant; amount: number, newValue: number };
 export type LearnedAbilityEvent = BaseDungeonEvent & { type: "learnAbility"; abilityName: string; };
@@ -153,12 +153,12 @@ export type TownVisitedEvent = BaseModuleEvent & {
   weather: string;
   townName: string; race: string; size: string; population: number; adjective: string; season: "spring" | "summer" | "autumn" | "winter";
 };
-export type ShopEnteredEvent   = BaseModuleEvent & { type: "shopEntered"; shopName: string; };
-export type PurchaseEvent      = BaseModuleEvent & { type: "purchase"; itemName: string; cost: number; buyer: Combatant; };
-export type RumorHeardEvent    = BaseModuleEvent & { type: "rumorHeard"; rumor: string; };
+export type ShopEnteredEvent = BaseModuleEvent & { type: "shopEntered"; shopName: string; };
+export type PurchaseEvent = BaseModuleEvent & { type: "purchase"; itemName: string; cost: number; buyer: Combatant; };
+export type RumorHeardEvent = BaseModuleEvent & { type: "rumorHeard"; rumor: string; };
 export type TempleVisitedEvent = BaseModuleEvent & { type: "templeVisited"; templeName: string; blessingsGranted: string[]; itemsRecharged: string[]; };
-export type CampaignStopEvent  = BaseModuleEvent & { type: "campaignStop"; reason: string; at: Timestamp; };
-export type PartyOverviewEvent = BaseModuleEvent & { type: "partyOverview"; pcs: Combatant[];  itemQuantities: { [itemName: string]: number }; };
+export type CampaignStopEvent = BaseModuleEvent & { type: "campaignStop"; reason: string; at: Timestamp; };
+export type PartyOverviewEvent = BaseModuleEvent & { type: "partyOverview"; pcs: Combatant[]; itemQuantities: { [itemName: string]: number }; };
 export type HirelingOfferedEvent = BaseModuleEvent & { type: "hirelingOffered"; hireling: Combatant; cost: number; };
 export type HirelingHiredEvent = BaseModuleEvent & { type: "hirelingHired"; hireling: Combatant; cost: number; };
 
@@ -183,9 +183,8 @@ export default class Events {
     let targetName = event.target ? event.target.forename : null;
     switch (event.type) {
       case "engage":
-        return '';  //`${subjectName} enters the fray!`;
+        return '';
       case "enterDungeon":
-        // return `${"=====".repeat(8)}\n${event.dungeonIcon} ${event.dungeonName.toUpperCase()}\n\n  * ${event.depth}-room ${event.dungeonType}\n${"=====".repeat(8)}`;
         return `
         ${"=".repeat(80)}
         ${event.dungeonIcon}  ${Stylist.colorize(event.dungeonName.toUpperCase(), 'yellow')} (${event.depth} rooms)
@@ -196,7 +195,7 @@ export default class Events {
       case "leaveDungeon":
         return `You leave the dungeon.`;
       case "enterRoom":
-        return Stylist.italic(event.roomDescription); 
+        return Stylist.italic(event.roomDescription);
 
       case "roomCleared":
         if (event.combat) {
@@ -239,33 +238,18 @@ export default class Events {
       case "flee": return `${subjectName} flees from combat.`;
       case "statusEffect":
         let effectName = Stylist.colorize(event.effectName, 'magenta');
-        // if (event.by && event.by.forename !== subjectName) {
-        //   return `${subjectName} is ${effectName} by ${event.effect.by.forename} for ${event.duration} turns.`;
-        // }
         return `${subjectName} is ${effectName} (${Presenter.describeModifications(event.effect)}).`
       case "statusExpire":
-        // if (event.effectName === "Poisoned Blade") {
-        //   return `${subjectName}'s blade is no longer coated in poison.`;
-        // }
         return `${subjectName} is no longer ${event.effectName}.`;
       case "statusExpiryPrevented":
         return `${subjectName}'s status effects do not expire (${event.reason}).`;
       case "initiate":
-        return '';  //`Turn order: ${event.order.map((o, i) => `${i + 1}. ${o.combatant.forename}`).join(" | ")}`;
+        return '';
       case "roundStart":
-        // clear screen
-
-        // let heading = `\n=== Round ${event.turn} ===`;
-        // let combatants = event.combatants.map(c => `\n- ${Presenter.combatant(c)}`).join("");
-        // return `${heading}${combatants}`;
-        // return `\n=== Round ${event.turn} ===\n${Presenter.combatants(event.combatants)}`;
-        // return `It is round ${event.turn}.${combatants}`;
         let roundLabel = ("Round " + event.turn.toString()).padEnd(20) + Stylist.colorize(event.environment?.padStart(60) || "Unknown Location", 'cyan');
         let parties = Presenter.parties(event.parties || []);
         let hr = "=".repeat(80);
-        let auras = event.auras?.length > 0 ? "\n\nAuras:\n" + event.auras.map(aura => `- ${Stylist.colorize(aura.name, 'magenta')} (${Presenter.analyzeStatus(aura)
-          })`).join("\n") : "";  //No active auras.";
-
+        let auras = event.auras?.length > 0 ? "\n\nAuras:\n" + event.auras.map(aura => `- ${Stylist.colorize(aura.name, 'magenta')} (${Presenter.analyzeStatus(aura)})`).join("\n") : ""; 
         return `${hr}\n${roundLabel}\n${hr}\n${parties}${auras}`;
       case "turnStart":
         return '';
@@ -288,7 +272,7 @@ export default class Events {
           message = Stylist.colorize(message, 'green');
         }
         return message;
-      
+
       case "damageBonus":
         return `${targetName} takes an additional ${event.amount} damage from ${subjectName} due to ${event.reason}.`;
 
@@ -363,17 +347,15 @@ export default class Events {
         return `${subjectName} has solved the riddle: "${event.challenge}" (answer: ${event.solution}) and receives ${Words.a_an(event.reward)}.`;
 
       case "campaignStart":
-        return Stylist.bold(`You embark on a new campaign!\nParty Members: ${
-          event.pcs.map(pc => Presenter.combatant(pc)).join("\n")
-        }`);
+        return Stylist.bold(`You embark on a new campaign!\nParty Members: ${event.pcs.map(pc => Presenter.combatant(pc)).join("\n")
+          }`);
       case "moduleStart":
-        return Stylist.bold(`You embark on the module '${event.moduleName}' with ${
-          Words.humanizeList(event.pcs.map(pc => pc.forename))
-        }`);
+        return Stylist.bold(`You embark on the module '${event.moduleName}' with ${Words.humanizeList(event.pcs.map(pc => pc.forename))
+          }`);
       case "shopEntered":
         return Stylist.bold(`Entered ${event.shopName}'s shop.`);
       case "townVisited":
-        return (`It is the ${Words.ordinal(1+(event.day%90))} day of ${event.season} in the ${event.adjective} ${Words.capitalize(event.race)} ${event.size} of ${Stylist.bold(event.townName)} on the plane of ${Words.capitalize(event.plane)} (Population: ${Words.humanizeNumber(event.population)}). The weather is currently ${event.weather}.`);
+        return (`It is the ${Words.ordinal(1 + (event.day % 90))} day of ${event.season} in the ${event.adjective} ${Words.capitalize(event.race)} ${event.size} of ${Stylist.bold(event.townName)} on the plane of ${Words.capitalize(event.plane)} (Population: ${Words.humanizeNumber(event.population)}). The weather is currently ${event.weather}.`);
       case "purchase":
         return `${event.buyer.forename} purchased ${Words.a_an(event.itemName)} for ${event.cost} gold.`;
       case "rumorHeard":
@@ -383,7 +365,6 @@ export default class Events {
           return `You pray at ${event.templeName}, but receive no blessings or item recharges.`;
         }
         let templeMessage = "You pray at " + event.templeName + ". ";
-        // return `You pray at ${event.templeName}. Blessings granted: ${event.blessingsGranted.join(", ")}. Items recharged: ${event.itemsRecharged.join(", ")}.`;
         if (event.blessingsGranted.length > 0) {
           templeMessage += `Blessings granted: ${event.blessingsGranted.join(", ")}. `;
         }
@@ -396,13 +377,14 @@ export default class Events {
         for (let pc of event.pcs) {
           records.push(await Presenter.characterRecord(pc));
         }
-        return Stylist.bold(`Party Overview:\n${
-          // event.pcs.map(pc => Presenter.characterRecord(pc)).join("\n\n")
-          records.join("\n\n")
-        }\n\nInventory:\n${
-          Object.entries(event.itemQuantities).map(([itemName, qty]) => `- ${qty} x ${Words.humanize(itemName)}`).join("\n")
-        }`);
+        let overview = Stylist.bold(`Party Overview:\n${records.join("\n\n")}\n\n`);
+        if (event.itemQuantities && Object.keys(event.itemQuantities).length > 0) {
+          overview += `Inventory:\n${Object.entries(event.itemQuantities).map(([itemName, qty]) => `- ${qty} x ${Words.humanize(itemName)}`).join("\n")
+            }`
+        }
+        return overview;
       case "hirelingOffered":
+
         return `A hireling is available: ${await Presenter.characterRecord(event.hireling)} for ${event.cost} gold per month.`;
       case "hirelingHired":
         return `${event.hireling.forename} has joined your party as a hireling for ${event.cost} gold per month.`;

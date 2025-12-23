@@ -1,0 +1,27 @@
+/* Automatic dark mode when the OS/browser prefers it */
+@media (prefers-color-scheme: dark) {
+  body { background: #0f1115; color: #e6e6e6; }
+
+  /* Links */
+  a, a:hover { color: #8ab4f8; }
+
+  /* Navbar / header (Bootstrap-ish selectors used by Cinder) */
+  .navbar, .navbar-default { background: #121621; border-color: #232a3a; }
+  .navbar a { color: #e6e6e6 !important; }
+
+  /* Main containers */
+  .container, .bs-sidebar, .well { background: transparent; }
+
+  /* Sidebar / TOC */
+  .bs-sidebar { border-color: #232a3a; }
+  .bs-sidebar .nav > li > a { color: #cfcfcf; }
+  .bs-sidebar .nav > li > a:hover { background: #1a2030; }
+
+  /* Code blocks */
+  pre, code { background: #151a24; color: #e6e6e6; }
+  pre { border-color: #232a3a; }
+
+  /* Tables */
+  .table > thead > tr > th,
+  .table > tbody > tr > td { border-color: #232a3a; }
+}

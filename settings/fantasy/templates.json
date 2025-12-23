@@ -1,4 +1,15 @@
 {
+  "gemstone": {
+    "rank": "=(1d20 < 19) ? oneOf(common, uncommon) : oneOf(rare, very_rare, legendary)",
+    "type": "=lookup(gems, #rank)",
+    "quality": "=oneOf(poor, fair, good, fine, flawless)",
+    "cut": "=oneOf(rough, cabochon, brilliant, princess, cushion, oval, marquise, pear, heart)",
+    "size": "=oneOf(tiny, small, medium, large, huge)",
+    "name": "=capitalize(#size) + ' ' + capitalize(#cut) + ' ' + humanize(#type)",
+    "_baseValue": "=#rank == 'common' ? 50 : (#rank == 'uncommon' ? 200 : (#rank == 'rare' ? 1000 : (#rank == 'very_rare' ? 5000 : 20000)))",
+    "_sizeModifier": "=#size == 'tiny' ? 0.5 : (#size == 'small' ? 0.75 : (#size == 'medium' ? 1 : (#size == 'large' ? 1.5 : 2)))",
+    "value": "=round(#_baseValue * #_sizeModifier)"
+  },
   "deity": {
     "domain": "=oneOf(light, darkness, nature, war, knowledge, trickery, life, death, magic, order, chaos, oceans, love, storms)",
     "alignment": "=(#domain == light || #domain == life || #domain == order || #domain == knowledge) ? good : ((#domain == darkness || #domain == death || #domain == chaos || #domain == trickery) ? evil : neutral)",
@@ -346,6 +357,7 @@
     "features": "=uniq(gather(roomFeature, if(rand() < 0.3, 2, 1)))",
     "aura": "=lookup(roomAuras, hasEntry(specialRoomAuras, #room_type) ? lookup(specialRoomAuras, #room_type) : oneOf(calm, energizing))",
     "shrine": "=gen(shrine)",
+    "gems": "=if(rand() < 0.05, genList(gemstone, 1d2), nihil)",
     "wonder": "=if(rand() < #_wonderChance, gen(wonder), nihil)"
   },
   "boss_room": {
@@ -367,7 +379,8 @@
     "boss_encounter": "=gen(encounter)",
     "decor": "=lookup(roomDecoration, 1d100)",
     "gear": "=gather(masterGear, 1d3 + 2)",
-    "features": "=gather(roomFeature, if(rand() < 0.3, 2, 1))"
+    "features": "=gather(roomFeature, if(rand() < 0.3, 2, 1))",
+    "gems": "=if(rand() < 0.25, genList(gemstone, 1d3), nihil)"
   },
   "dungeon": {
     "terrain": "=oneOf(forest, cave, swamp, mountain, snow, desert)",
@@ -389,6 +402,7 @@
     "^dungeonOverlay": "=lookup(dungeonOverlay, #building_type)",
     "roomSequence": "=pick(lookup(roomSequences, oneOf(standard, dangerous, lucrative, balanced)))",
     "rooms": "=mapGenList(room, #roomSequence, '_room_guide')",
+    "depth": "=count(#rooms) - 1",
     "bossRoom": "=gen(boss_room)",
     "direction": "=oneOf(north, south, east, west)",
     "bossName": "=dig(#bossRoom, 'boss_encounter', 'bossName')",
@@ -410,7 +424,7 @@
     "*planeModifier": "=lookup(planeModifiers, #_plane_name)",
     "town": "=gen(town)",
     "_townName": "=dig(#town, 'name')",
-    "dungeons": "=genList(dungeon, 8)",
+    "dungeons": "=genList(dungeon, 3)",
     "_moduleLevel": 0,
     "name": "=oneOf('Adventure', 'Saga', 'Reckoning', 'Quest', 'Expedition') + ' ' + oneOf('in the ' + capitalize(#terrain), 'at ' + capitalize(#_townName), 'for the ' + capitalize(#terrain))"
   }

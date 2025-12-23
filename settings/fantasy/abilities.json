@@ -460,7 +460,7 @@
               }
             ]
           },
-          "duration": 2
+          "duration": 1
         }
       }
     ]
@@ -999,24 +999,6 @@
         "type": "damage",
         "amount": "=1d4",
         "kind": "poison"
-      },
-      {
-        "type": "debuff",
-        "status": {
-          "name": "Poison",
-          "duration": 3,
-          "effect": {
-            "onTurnEnd": [
-              {
-                "type": "damage",
-                "amount": "=1d3",
-                "kind": "poison"
-              }
-            ]
-          }
-        },
-        "saveKind": "poison",
-        "saveDC": 10
       }
     ]
   },
@@ -1035,24 +1017,6 @@
         "type": "damage",
         "amount": "=1d4",
         "kind": "poison"
-      },
-      {
-        "type": "debuff",
-        "status": {
-          "name": "Poison",
-          "duration": 3,
-          "effect": {
-            "onTurnEnd": [
-              {
-                "type": "damage",
-                "amount": "=1d3",
-                "kind": "poison"
-              }
-            ]
-          }
-        },
-        "saveKind": "poison",
-        "saveDC": 10
       }
     ]
   },
@@ -1165,7 +1129,7 @@
     "effects": [
       {
         "type": "debuff",
-        "status": "drench",
+        "status": "drenched",
         "saveKind": "reflex",
         "saveDC": 10
       }
@@ -1186,22 +1150,6 @@
         "type": "damage",
         "amount": "=1d4",
         "kind": "acid"
-      },
-      {
-        "type": "debuff",
-        "status": {
-          "name": "Acid Burn",
-          "duration": 3,
-          "effect": {
-            "onTurnEnd": [
-              {
-                "type": "damage",
-                "amount": "=1d3",
-                "kind": "acid"
-              }
-            ]
-          }
-        }
       }
     ]
   },
@@ -1443,14 +1391,7 @@
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Digging In",
-          "duration": 4,
-          "effect": {
-            "ac": -2,
-            "saveVersusAll": 2
-          }
-        }
+        "status": "dug_in"
       }
     ]
   },
@@ -1467,15 +1408,11 @@
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Protected",
-          "duration": 6,
-          "effect": {
-            "resistNecrotic": 0.5,
-            "immuneCharm": true,
-            "immuneFear": true
-          }
-        }
+        "status": "protected"
+      },
+      {
+        "type": "buff",
+        "status": "courage"
       }
     ]
   },
@@ -1631,20 +1568,7 @@
     "effects": [
       {
         "type": "debuff",
-        "status": {
-          "name": "Engulfed",
-          "duration": 3,
-          "effect": {
-            "onTurnEnd": [
-              {
-                "type": "damage",
-                "amount": "=2d6",
-                "kind": "acid"
-              }
-            ],
-            "noActions": true
-          }
-        },
+        "status": "engulfed",
         "saveKind": "fortitude",
         "saveDC": 16
       }
@@ -1656,20 +1580,14 @@
     "level": 3,
     "aspect": "arcane",
     "school": "illusion",
-    "description": "Confuse an enemy, causing them to act randomly for 3 rounds.",
+    "description": "Confuse an enemy, causing them to act randomly.",
     "target": [
       "enemy"
     ],
     "effects": [
       {
         "type": "debuff",
-        "status": {
-          "name": "Confused",
-          "duration": 3,
-          "effect": {
-            "randomActions": true
-          }
-        },
+        "status": "confused",
         "saveKind": "will",
         "saveDC": 15
       }
@@ -1688,19 +1606,8 @@
     "effects": [
       {
         "type": "debuff",
-        "status": {
-          "name": "Petrified",
-          "effect": {
-            "noActions": true,
-            "immuneFear": true,
-            "immuneCharm": true,
-            "immuneStun": true,
-            "immuneSleep": true,
-            "immunePoison": true,
-            "immuneDisease": true
-          },
-          "duration": 10
-        },
+        "status": "petrified",
+        "duration": 10,
         "saveKind": "fortitude",
         "saveDC": 18
       }
@@ -1770,19 +1677,7 @@
     "effects": [
       {
         "type": "debuff",
-        "status": {
-          "name": "Diseased",
-          "effect": {
-            "con": -2,
-            "onTurnEnd": [
-              {
-                "type": "damage",
-                "amount": "=1d4",
-                "kind": "necrotic"
-              }
-            ]
-          }
-        },
+        "status": "disease",
         "saveKind": "fortitude",
         "saveDC": 16
       }
@@ -1806,19 +1701,7 @@
       },
       {
         "type": "debuff",
-        "status": {
-          "name": "Diseased",
-          "effect": {
-            "con": -2,
-            "onTurnEnd": [
-              {
-                "type": "damage",
-                "amount": "=1d4",
-                "kind": "necrotic"
-              }
-            ]
-          }
-        },
+        "status": "disease",
         "saveKind": "fortitude",
         "saveDC": 16
       }
@@ -1891,13 +1774,7 @@
         "condition": {
           "trait": "inanimate"
         },
-        "status": {
-          "name": "Disabled",
-          "effect": {
-            "noActions": true,
-            "noStatusExpiry": true
-          }
-        }
+        "status": "disabled"
       }
     ]
   },
@@ -1914,13 +1791,7 @@
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "False Life",
-          "duration": 10,
-          "effect": {
-            "tempHp": "=4d4 + #level * 2"
-          }
-        }
+        "status": "false_life"
       }
     ]
   },
@@ -1931,19 +1802,11 @@
     "aspect": "arcane",
     "school": "abjuration",
     "description": "Create a magical shield that reflects some incoming damage.",
-    "target": [
-      "self"
-    ],
+    "target": [ "self" ],
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Reflect",
-          "duration": 4,
-          "effect": {
-            "reflectDamagePercent": 0.5
-          }
-        }
+        "status": "reflect"
       }
     ]
   },
@@ -1960,13 +1823,7 @@
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Spellturn",
-          "duration": 4,
-          "effect": {
-            "reflectSpellChance": 0.5
-          }
-        }
+        "status": "spellturn"
       }
     ]
   },
@@ -1984,15 +1841,7 @@
     "effects": [
       {
         "type": "debuff",
-        "status": {
-          "name": "Frightened",
-          "duration": 3,
-          "effect": {
-            "toHit": -2,
-            "initiative": -5,
-            "allRolls": -1
-          }
-        },
+        "status": "frightened",
         "saveKind": "fear",
         "saveDC": 15
       }
@@ -2025,18 +1874,7 @@
         "type": "debuff",
         "saveKind": "will",
         "saveDC": 15,
-        "status": {
-          "name": "Cursed",
-          "duration": 4,
-          "effect": {
-            "str": -1,
-            "dex": -1,
-            "int": -1,
-            "wis": -1,
-            "cha": -1,
-            "con": -1
-          }
-        }
+        "status": "cursed"
       }
     ]
   },
@@ -2174,14 +2012,7 @@
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Chanting",
-          "duration": 5,
-          "effect": {
-            "saveVersusAll": 1,
-            "toHit": 1
-          }
-        }
+        "status": "chanting"
       }
     ]
   },
@@ -2198,19 +2029,7 @@
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Meditating",
-          "duration": 5,
-          "effect": {
-            "onTurnEnd": [
-              {
-                "type": "heal",
-                "amount": "=1d8"
-              }
-            ],
-            "noActions": true
-          }
-        }
+        "status": "meditating"
       }
     ]
   },
@@ -2220,7 +2039,7 @@
     "type": "spell",
     "aspect": "divine",
     "domain": "life",
-    "description": "Divine favor!",
+    "description": "Bless an ally, granting them a divine boon.",
     "target": [
       "self",
       "ally"
@@ -2228,14 +2047,7 @@
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Blessed",
-          "duration": 6,
-          "effect": {
-            "toHit": 1,
-            "bonusDamage": 1
-          }
-        }
+        "status": "blessed"
       }
     ]
   },
@@ -2245,21 +2057,12 @@
     "type": "spell",
     "aspect": "divine",
     "domain": "life",
-    "description": "Bolster allies and weaken enemies.",
-    "target": [
-      "allies"
-    ],
+    "description": "Bolster your team with a prayer.",
+    "target": [ "party" ],
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Prayer",
-          "duration": 5,
-          "effect": {
-            "toHit": 1,
-            "saveVersusAll": 1
-          }
-        }
+        "status": "praying"
       }
     ]
   },
@@ -2315,13 +2118,7 @@
         "condition": {
           "trait": "humanoid"
         },
-        "status": {
-          "name": "Paralyzed",
-          "duration": 4,
-          "effect": {
-            "noActions": true
-          }
-        },
+        "status": "paralyzed",
         "saveKind": "paralyze",
         "saveDC": 20
       }
@@ -2450,13 +2247,7 @@
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Fire Resistance",
-          "duration": 5,
-          "effect": {
-            "resistFire": 0.5
-          }
-        }
+        "status": "fireproof"
       }
     ]
   },
@@ -2480,30 +2271,24 @@
   "aegis": {
     "name": "Aegis of Faith",
     "type": "spell",
-    "level": 1,
+    "level": 5,
     "aspect": "divine",
     "domain": "life",
-    "description": "Ward against all effects for 4 rounds.",
+    "description": "Ward against all effects.",
     "target": [
       "self"
     ],
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Aegis",
-          "duration": 4,
-          "effect": {
-            "untargetable": true
-          }
-        }
+        "status": "invulnerable"
       }
     ]
   },
   "consecrated_ground": {
     "name": "Consecrated Ground",
     "type": "spell",
-    "level": 1,
+    "level": 3,
     "aspect": "divine",
     "domain": "life",
     "description": "Consecrate the ground, damaging enemies who attack or cast spells near you.",
@@ -2566,13 +2351,7 @@
       },
       {
         "type": "debuff",
-        "status": {
-          "name": "Blinded",
-          "duration": 3,
-          "effect": {
-            "toHit": -4
-          }
-        },
+        "status": "blinded",
         "saveKind": "fortitude",
         "saveDC": 15
       }
@@ -2671,7 +2450,8 @@
             "type": "damage",
             "amount": "=1d2",
             "kind": "necrotic",
-            "saveForHalf": true
+            "saveForHalf": true,
+            "target": "enemy"
           }
         ]
       }
@@ -2718,7 +2498,6 @@
       }
     ]
   },
-
   "spark": {
     "name": "Spark",
     "type": "spell",
@@ -2799,7 +2578,6 @@
       }
     ]
   },
-
   "minor_ward": {
     "name": "Minor Ward",
     "type": "spell",
@@ -2813,13 +2591,7 @@
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Minor Ward",
-          "duration": 5,
-          "effect": {
-            "tempHp": "=4 + #level * 2"
-          }
-        }
+        "status": "minor_warded"
       }
     ]
   },
@@ -2852,14 +2624,14 @@
     "level": 0,
     "aspect": "arcane",
     "school": "conjuration",
-    "description": "Create a cloud of soot that reveals hidden enemies.",
+    "description": "Create a cloud of soot that reveals hidden or invisible creatures.",
     "target": [
       "enemies"
     ],
     "effects": [
       {
         "type": "removeStatus",
-        "statusName": "hidden"
+        "statusName": "hidden|invisible"
       }
     ]
   },
@@ -2881,14 +2653,7 @@
       },
       {
         "type": "debuff",
-        "status": {
-          "name": "Sunmarked",
-          "duration": 3,
-          "effect": {
-            "saveVersusMagic": -1,
-            "resistFire": -0.25
-          }
-        }
+        "status": "sunmarked"
       }
     ]
   },
@@ -2905,19 +2670,7 @@
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Ghost Touch",
-          "duration": 5,
-          "effect": {
-            "onAttackHit": [
-              {
-                "type": "damage",
-                "amount": "=1d3",
-                "kind": "necrotic"
-              }
-            ]
-          }
-        }
+        "status": "ghost_touch"
       }
     ]
   },
@@ -2939,7 +2692,6 @@
       }
     ]
   },
-
   "true_sight": {
     "name": "True Sight",
     "type": "spell",
@@ -2958,7 +2710,6 @@
       }
     ]
   },
-
   "maze": {
     "name": "Maze",
     "type": "spell",
@@ -2972,20 +2723,13 @@
     "effects": [
       {
         "type": "debuff",
-        "status": {
-          "name": "In Maze",
-          "duration": 100,
-          "effect": {
-            "noActions": true,
-            "untargetable": true
-          }
-        },
+        "duration": 100,
+        "status": "mazed",
         "saveKind": "will",
         "saveDC": 18
       }
     ]
   },
-
   "time_stop": {
     "name": "Time Stop",
     "type": "spell",
@@ -2993,22 +2737,17 @@
     "aspect": "arcane",
     "school": "transmutation",
     "description": "Stop time for everyone but yourself.",
-    "target": [ "self" ],
+    "target": [
+      "self"
+    ],
     "effects": [
       {
         "type": "buff",
-        "status": {
-          "name": "Time Stopped",
-          "effect": {
-            "extraTurns": 3,
-            "triggerReactions": false
-          }
-        },
+        "status": "timestopped",
         "duration": 1
       }
     ]
   },
-
   "plane_shift": {
     "name": "Plane Shift",
     "type": "spell",
@@ -3016,11 +2755,48 @@
     "aspect": "arcane",
     "school": "conjuration",
     "description": "Transport yourself and your party to another plane of existence.",
-    "target": [ "self" ],
+    "target": [
+      "self"
+    ],
     "effects": [
       {
         "type": "planeshift",
         "location": "=oneOf(Arcadia, Cthelll, Gehenna, Hades, Limbo, Mechanus, Pandemonium, Ysgard, Zephyrus)"
+      }
+    ]
+  },
+  "apocalypse": {
+    "name": "Apocalypse",
+    "type": "spell",
+    "level": 9,
+    "aspect": "arcane",
+    "school": "evocation",
+    "description": "Unleash a cataclysmic storm of elemental fury upon all enemies.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=6d6",
+        "kind": "fire",
+        "saveForHalf": true
+      },
+      {
+        "type": "damage",
+        "amount": "=6d6",
+        "kind": "cold",
+        "saveForHalf": true
+      },
+      {
+        "type": "damage",
+        "amount": "=6d6",
+        "kind": "lightning",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "doom"
       }
     ]
   }

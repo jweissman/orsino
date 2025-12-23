@@ -8,6 +8,22 @@
       "ac": 3
     }
   },
+  "battlecry": {
+    "name": "Battlecry",
+    "description": "Letting out a fierce battlecry to intimidate foes.",
+    "effect": {
+      "bonusDamage": "=1d3"
+    }
+  },
+  "bloodfrenzy": {
+    "name": "Blood Frenzy",
+    "description": "Entering a frenzied state after slaying an enemy.",
+    "effect": {
+      "toHit": 2,
+      "bonusDamage": 2,
+      "ac": 2
+    }
+  },
   "defending": {
     "name": "Defending",
     "description": "Adapting a defensive stance.",
@@ -28,7 +44,7 @@
     "description": "Taking a fortified position.",
     "effect": {
       "ac": -2,
-      "saveVersusAll": 2,
+      "saveVersusAll": 3,
       "toHit": -2
     }
   },
@@ -89,28 +105,39 @@
       "ac": -2
     }
   },
-
   "barkskin": {
     "name": "Barkskin",
-    "effect": { "ac": -2 }
+    "effect": {
+      "ac": -2
+    }
   },
   "stoneskin": {
     "name": "Stoneskin",
-    "effect": { "ac": -3 }
+    "effect": {
+      "ac": -3
+    }
   },
   "ironskin": {
     "name": "Ironskin",
-    "effect": { "ac": -5 }
+    "effect": {
+      "ac": -5
+    }
   },
   "scaleskin": {
     "name": "Scaleskin",
-    "effect": { "ac": -8, "resistFire": 0.25 }
+    "effect": {
+      "ac": -8,
+      "resistFire": 0.25
+    }
   },
   "steelskin": {
     "name": "Steelskin",
-    "effect": { "ac": -10, "resistPiercing": 0.5, "resistSlashing": 0.5 }
+    "effect": {
+      "ac": -10,
+      "resistPiercing": 0.5,
+      "resistSlashing": 0.5
+    }
   },
-
   "wisdom": {
     "name": "Owl's Wisdom",
     "effect": {
@@ -122,7 +149,14 @@
     "name": "Bull's Strength",
     "effect": {
       "str": 2,
-      "bonusDamage": 2
+      "bonusDamage": 1
+    }
+  },
+  "major_strength": {
+    "name": "Giant's Strength",
+    "effect": {
+      "str": 6,
+      "bonusDamage": "=1d3"
     }
   },
   "grace": {
@@ -153,7 +187,6 @@
       "toHit": 1
     }
   },
-
   "courage": {
     "name": "Courage",
     "effect": {
@@ -172,17 +205,18 @@
     "name": "Focus",
     "effect": {
       "toHit": 2,
-      "saveVersusMagic": 2,
-      "bonusSpellDC": 2
+      "saveVersusMagic": 3,
+      "bonusSpellDC": 2,
+      "bonusSpellSlots": 1
     }
   },
   "insight": {
     "name": "Insight",
     "effect": {
-      "saveVersusAll": 2
+      "saveVersusAll": 2,
+      "bonusSpellDC": 1
     }
   },
-
   "mage_armored": {
     "name": "Mage-Armored",
     "effect": {
@@ -195,6 +229,15 @@
     "effect": {
       "toHit": 2,
       "tempHp": 5,
+      "saveVersusAll": 1
+    }
+  },
+  "naturality": {
+    "name": "Naturality",
+    "effect": {
+      "resistPoison": 0.5,
+      "resistAcid": 0.25,
+      "immuneDisease": true,
       "saveVersusAll": 1
     }
   },
@@ -215,16 +258,87 @@
       "saveVersusMagic": 1
     }
   },
-
-  "fireproof": { "name": "Fireproof", "effect": { "resistFire": 0.5 } },
-  "waterproof": { "name": "Waterproof", "effect": { "resistCold": 0.5 } },
-  "stormproof": { "name": "Stormproof", "effect": { "resistLightning": 0.5 } },
-  "acidproof": { "name": "Acidproof", "effect": { "resistAcid": 0.5 } },
-  "soundproof": { "name": "Soundproof", "effect": { "resistSonic": 0.5 } },
-  "lightproof": { "name": "Lightproof", "effect": { "resistRadiant": 0.5 } },
-
-  "mageproof": { "name": "Mageproof", "effect": { "resistForce": 0.5, "saveVersusMagic": 2 } },
-
+  "fireproof": {
+    "name": "Fireproof",
+    "effect": {
+      "resistFire": 0.5
+    }
+  },
+  "waterproof": {
+    "name": "Waterproof",
+    "effect": {
+      "resistCold": 0.5
+    }
+  },
+  "stormproof": {
+    "name": "Stormproof",
+    "effect": {
+      "resistLightning": 0.5
+    }
+  },
+  "acidproof": {
+    "name": "Acidproof",
+    "effect": {
+      "resistAcid": 0.5
+    }
+  },
+  "soundproof": {
+    "name": "Soundproof",
+    "effect": {
+      "resistSonic": 0.5
+    }
+  },
+  "lightproof": {
+    "name": "Lightproof",
+    "effect": {
+      "resistRadiant": 0.5
+    }
+  },
+  "mageproof": {
+    "name": "Mageproof",
+    "effect": {
+      "resistForce": 0.5,
+      "saveVersusMagic": 2
+    }
+  },
+  "oiled": {
+    "name": "Oiled",
+    "effect": {
+      "resistFire": -2
+    }
+  },
+  "slimed": {
+    "name": "Slimed",
+    "effect": {
+      "resistAcid": -2
+    }
+  },
+  "drenched": {
+    "name": "Drenched",
+    "effect": {
+      "toHit": -2,
+      "resistLightning": -1,
+      "resistCold": -2
+    }
+  },
+  "migraine": {
+    "name": "Migraine",
+    "effect": {
+      "resistRadiant": -2,
+      "resistSonic": -2
+    },
+    "trigger": {
+      "damage": "sonic"
+    }
+  },
+  "thirst": {
+    "name": "Thirst",
+    "effect": {
+      "con": -2,
+      "saveVersusAll": -1,
+      "resistFire": -1
+    }
+  },
   "mind_blank": {
     "name": "Mind Blank",
     "effect": {
@@ -236,7 +350,6 @@
       "immuneSleep": true
     }
   },
-
   "keensense": {
     "name": "Keen Senses",
     "effect": {
@@ -246,13 +359,51 @@
       "saveVersusAll": 1
     }
   },
-
   "protected": {
     "name": "Protected",
     "effect": {
       "resistNecrotic": 0.5,
-      "immuneCharm": true,
-      "immuneFear": true
+      "immuneCharm": true
+    }
+  },
+  "praying": {
+    "name": "Praying",
+    "effect": {
+      "toHit": 1,
+      "saveVersusAll": 2,
+      "bonusHealing": 2,
+      "tempHp": 10
+    }
+  },
+  "meditating": {
+    "name": "Meditating",
+    "effect": {
+      "noActions": true,
+      "saveVersusMagic": 2,
+      "resistForce": 0.25,
+      "onTurnEnd": [
+        {
+          "type": "heal",
+          "amount": "=1d2 + #level",
+          "target": "self"
+        }
+      ]
+    }
+  },
+  "chanting": {
+    "name": "Chanting",
+    "effect": {
+      "saveVersusAll": 1,
+      "bonusSpellDC": 1,
+      "bonusSpellSlots": 1,
+      "toHit": 2,
+      "onTurnEnd": [
+        {
+          "type": "heal",
+          "amount": "=1d3 + #level",
+          "target": "allies"
+        }
+      ]
     }
   },
   "blessed": {
@@ -260,6 +411,14 @@
     "effect": {
       "toHit": 1,
       "bonusDamage": 1
+    }
+  },
+  "minor_warded": {
+    "name": "Minor Warded",
+    "effect": {
+      "saveVersusMagic": 1,
+      "resistForce": 0.25,
+      "tempHp": "=7 + #level"
     }
   },
   "warded": {
@@ -372,7 +531,8 @@
     "effect": {
       "toHit": -2,
       "initiative": -5,
-      "allRolls": -1
+      "allRolls": -1,
+      "saveVersusAll": -2
     },
     "saveKind": "fear"
   },
@@ -388,6 +548,18 @@
       "con": -1
     },
     "saveKind": "will"
+  },
+  "doom": {
+    "name": "Doomed",
+    "duration": 3,
+    "effect": {
+      "str": -4,
+      "dex": -4,
+      "con": -4,
+      "int": -4,
+      "wis": -4,
+      "cha": -4
+    }
   },
   "prey": {
     "name": "Hunting Prey",
@@ -413,14 +585,6 @@
       "initiative": -5
     },
     "saveKind": "reflex"
-  },
-  "drench": {
-    "name": "Drench",
-    "effect": {
-      "toHit": -2,
-      "resistLightning": -1,
-      "saveVersusAll": -1
-    }
   },
   "silence": {
     "name": "Silence",
@@ -666,6 +830,18 @@
     },
     "saveKind": "fortitude"
   },
+  "ghost_touch": {
+    "name": "Ghost Touch",
+    "effect": {
+      "onAttackHit": [
+        {
+          "type": "damage",
+          "amount": "=1d3",
+          "kind": "necrotic"
+        }
+      ]
+    }
+  },
   "invisible": {
     "name": "Invisible",
     "description": "Unable to be seen by enemies.",
@@ -688,6 +864,69 @@
   "truesight": {
     "name": "True Sight",
     "description": "Seeing through illusions and invisibility.",
-    "effect": { "seeInvisible": true }
+    "effect": {
+      "seeInvisible": true
+    }
+  },
+  "timewalk": {
+    "name": "Time Walk",
+    "description": "Temporarily stepping outside the flow of time.",
+    "effect": {
+      "untargetable": true,
+      "ac": -5,
+      "evasion": 20,
+      "extraAttacksPerTurn": 4
+    }
+  },
+  "timestopped": {
+    "name": "Time Stopped",
+    "description": "Completely outside the flow of time.",
+    "effect": {
+      "extraTurns": 3,
+      "triggerReactions": false
+    }
+  },
+  "mazed": {
+    "name": "In Maze",
+    "effect": {
+      "noActions": true,
+      "untargetable": true
+    }
+  },
+  "sunmarked": {
+    "name": "Sunmarked",
+    "effect": {
+      "saveVersusMagic": -1,
+      "resistFire": -0.25,
+      "resistRadiant": -0.25,
+      "onAttacked": [
+        {
+          "type": "damage",
+          "description": "being sunmarked",
+          "target": "self",
+          "amount": "=1d4",
+          "kind": "radiant"
+        }
+      ]
+    }
+  },
+  "engulfed": {
+    "name": "Engulfed",
+    "effect": {
+      "onTurnEnd": [
+        {
+          "type": "damage",
+          "amount": "=2d6",
+          "kind": "acid"
+        }
+      ],
+      "noActions": true
+    }
+  },
+  "false_life": {
+    "name": "False Life",
+    "effect": {
+      "tempHp": "=10d6 + 2 * #level"
+    }
   }
 }

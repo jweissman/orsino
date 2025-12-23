@@ -920,82 +920,56 @@
   "roomFeature": {
     "discriminator": "kind",
     "groups": {
-      "death_shrine": {
-        "name": "dark favor",
-        "description": "A dark altar dedicated to a forgotten death god. Candles flicker with cold flames. A sense of eerie calm fills the area.",
-        "offer": 10,
-        "effects": [{
-          "type": "buff",
-          "status": { 
-            "name": "Death's Favor", 
-            "description": "You feel a dark power coursing through you, enhancing your combat abilities.",
-            "duration": 15, 
-            "effect": { "toHit": 1, "bonusDamage": "1d4" } 
-          }
-        }]
-      },
-    
-      "memorial_shrine": {
+      "memorial_altar": {
         "name": "healing memory",
         "description": "A shrine to the honored dead. Fresh flowers somehow still bloom here. You feel a soothing warmth in the air.",
         "offer": 5,
-        "effects": [{
-          "type": "heal",
-          "amount": "2d6"
-        }]
+        "effects": [{ "type": "heal", "amount": "2d6" }]
       },
-
       "sealed_sarcophagus": {
         "name": "ancient treasure",
         "description": "An ornate sarcophagus sealed with wax and ancient binding runes. There is a faint aura of necrotic energy surrounding it.",
         "offer": 1,
         "effects": [
-          { "type": "damage", "kind": "necrotic", "amount": "1d6" },
+          { "type": "damage", "kind": "necrotic", "amount": "1d2" },
           { "type": "gold", "amount": "10+3d10" }
         ]
       },
-
       "pure_fountain": {
         "name": "font blessing",
         "description": "A pristine fountain bubbles in the center of the room. The water looks crystal clear.",
         "offer": "=1d4",
-        "effects": [
-          {
-            "type": "heal",
-            "amount": "=2d4+2"
-          },
-          {
-            "type": "buff",
-            "status": {
-              "name": "Blessing of Vaire",
-              "duration": 5,
-              "effect": {
-                "dex": "=1d6"
-              }
-            }
-          }
-        ]
+        "effects": [ { "type": "heal", "amount": "=2d4+2" }, { "type": "buff", "status": "blessed" } ]
       },
       "polluted_fountain": {
         "name": "font blessing",
         "description": "A fountain graces the center of the room. The water looks murky.",
         "offer": "=1d4",
-        "effects": [
-          {
-            "type": "damage",
-            "amount": "=2d4"
-          },
-          {
-            "type": "debuff",
-            "status": {
-              "name": "Curse of Thirst",
-              "duration": 5,
-              "effect": {
-                "con": "=-1*1d6"
-              }
-            }
-          }
-        ]
+        "effects": [ { "type": "damage", "amount": "=2d4" }, { "type": "debuff", "status": "thirst" } ]
+      },
+      "arcane_circle": {
+        "name": "mana surge",
+        "description": "An arcane circle is inscribed on the floor, glowing faintly with magical energy.",
+        "offer": "=1d4",
+        "effects": [ { "type": "buff", "status": "focus" } ]
+      },
+      "deepwood_table": {
+        "name": "nature's boon",
+        "description": "A table carved from an ancient tree stands in the center of the room, adorned with leaves and flowers.",
+        "offer": "=1d4",
+        "effects": [ { "type": "heal", "amount": "=1d6" }, { "type": "buff", "status": "naturality" } ]
+      },
+      "cold_iron_altar": {
+        "name": "iron ward",
+        "description": "An altar forged from cold iron stands in the center of the room, radiating a protective aura.",
+        "offer": "=1d4",
+        "effects": [ { "type": "buff", "status": "protected" } ]
+      },
+      "deepwater_well": {
+        "name": "well of fate",
+        "description": "An ancient well filled with dark, still water. The air around it feels heavy with destiny.",
+        "offer": "=1d4",
+        "effects": [ { "type": "buff", "status": "=(dig(#subject, race) == elf) ? oneOf('spellturn', 'invulnerable', 'truesight', 'invisible', 'mageproof', 'haste', 'timewalk') : oneOf('protected', 'blessed', 'warded', 'keensense', 'fireproof', 'inspired', 'clarity', 'focus')" } ]
       }
     }
   },
@@ -1426,14 +1400,14 @@
       "life": { "bonusHealing": 3, "resistPoison": 2, "immuneDisease": true, "onTurnEnd": [
         {
           "type": "heal",
-          "amount": "1d3"
+          "amount": "1d2-1"
         }
       ] },
       "light": { "toHit": 1, "bonusHealing": 2 },
       "darkness": { "searchBonus": 2, "resistNecrotic": 0.2 },
       "war": { "bonusDamage": 2, "str": 1 },
       "nature": { "dex": 1, "con": 1 },
-      "death": { "bonusDamage": "=1d4", "resistNecrotic": 0.2 },
+      "death": { "bonusDamage": "=1d4", "resistNecrotic": 0.2, "toHit": 1 },
       "knowledge": { "int": 2, "wis": 1, "examineBonus": 2 },
       "trickery": { "dex": 2, "cha": 1, "disarmTrapBonus": 2 },
       "magic": { "int": 1, "wis": 1, "bonusSpellDC": 1 },

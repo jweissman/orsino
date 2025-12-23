@@ -1,10 +1,10 @@
 phb:
-  echo "# Player's Handbook" > phb.md; orsino book traits >> phb.md; orsino book skills >> phb.md; orsino book spells >> phb.md
+  echo "# Player's Handbook" > docs/phb.md; orsino book traits >> docs/phb.md; orsino book skills >> docs/phb.md; orsino book spells >> docs/phb.md
 
 mm:
-	echo "# Monster Manual" > mm.md; orsino book monsters >> mm.md
+	echo "# Monster Manual" > docs/mm.md; orsino book monsters >> docs/mm.md
 
 dmg:
-	echo "# Dungeon Master's Guide" > dmg.md; orsino book items >> dmg.md; orsino book statuses >> dmg.md; orsino book wonders >> dmg.md; orsino book planes >> dmg.md
+	echo "# Dungeon Master's Guide" > docs/dmg.md; orsino book items >> docs/dmg.md; orsino book statuses >> docs/dmg.md; orsino book wonders >> docs/dmg.md; orsino book planes >> docs/dmg.md
 
 books: phb mm dmg

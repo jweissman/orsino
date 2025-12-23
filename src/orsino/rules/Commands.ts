@@ -99,7 +99,7 @@ export class Commands {
     let prettyResult = Stylist.colorize(result.toString(), result === sides ? 'green' : result === 1 ? 'red' : 'yellow');
     let rollDescription = Stylist.italic(`${subject.name} rolled d${sides} ${description} and got a ${prettyResult}.`);
 
-    let effectStack = await Fighting.gatherEffects(subject);
+    let effectStack = Fighting.gatherEffects(subject);
     if (effectStack.rerollNaturalOnes && result === 1) {
       rollDescription += ` ${subject.name} has an effect that allows re-rolling natural 1s, so they get to re-roll!`;
       let { amount: newAmount, description: newDescription } = await Commands.roll(subject, description + " (re-roll)", sides);
@@ -125,7 +125,7 @@ export class Commands {
     //   amount += wisBonus;
     //   // console.log(`Healing increased by ${wisBonus} for WIS ${healer.wis}`);
     // }
-    let healerFx = await Fighting.gatherEffects(healer);
+    let healerFx = Fighting.gatherEffects(healer);
     if (healerFx.bonusHealing) {
       amount += await Deem.evaluate(healerFx.bonusHealing.toString()) as number || 0;
       // console.log(`Healing increased by ${healerFx.bonusHealing} due to effects on ${healer.name}`);
@@ -137,25 +137,22 @@ export class Commands {
 
     // check for onHeal effects
     let events: TimelessEvent[] = [{ type: "heal", subject: healer, target, amount } as Omit<HealEvent, "turn">];
-    const targetFx = await Fighting.gatherEffects(target);
-    let onHealFx = targetFx.onHeal as AbilityEffect[] || [];
-    // let combatContext: CombatContext = {
-    //   subject: healer,
-    //   allies: [],
-    //   enemies: []
-    // } as CombatContext;
-    for (let fx of onHealFx) {
-      let { events: healFxEvents } = await AbilityHandler.handleEffect(
-        fx.description || "healing effect", fx, healer, target, combatContext, Commands.handlers(Commands.roll)
-      );
-      events.push(...healFxEvents);
-    }
+    // const targetFx = await Fighting.gatherEffects(target);
+    // let onHealFx = targetFx.onHeal as AbilityEffect[] || [];
+    // for (let fx of onHealFx) {
+    //   let { events: healFxEvents } = await AbilityHandler.handleEffect(
+    //     fx.description || "healing effect", fx, healer, target, combatContext, Commands.handlers(Commands.roll)
+    //   );
+    //   events.push(...healFxEvents);
+    // }
+    events.push(...await AbilityHandler.performHooks("onHeal", healer, combatContext, Commands.handlers(Commands.roll), "healing effect"));
+    // events.push(...await AbilityHandler.performHooks("onHealed", target, combatContext, Commands.handlers(Commands.roll), "healing effect"));
 
     return events;
   }
 
   static async handleSave(target: Combatant, saveKind: SaveKind, dc: number = 15, roll: Roll): Promise<{ success: boolean, events: TimelessEvent[] }> {
-    let targetFx = await Fighting.gatherEffects(target);
+    let targetFx = Fighting.gatherEffects(target);
     let saveKindName = saveKind.charAt(0).toUpperCase() + saveKind.slice(1);
 
     if (SAVE_KINDS.indexOf(saveKind) === -1) {
@@ -238,22 +235,27 @@ export class Commands {
   ): Promise<TimelessEvent[]> {
     let events: TimelessEvent[] = [];
 
-    let defenderEffects = await Fighting.gatherEffects(defender);
-    let defenderFxWithNames = await Fighting.gatherEffectsWithNames(defender);
-    let attackerEffects = await Fighting.gatherEffects(attacker);
-    let attackerFxWithNames = await Fighting.gatherEffectsWithNames(attacker);
+    let defenderEffects = Fighting.gatherEffects(defender);
+    let defenderFxWithNames = Fighting.gatherEffectsWithNames(defender);
+    let attackerEffects = Fighting.gatherEffects(attacker);
+    let attackerFxWithNames = Fighting.gatherEffectsWithNames(attacker);
 
     if (!success) {
       // are there onMissReceived effects to process?
-      let onMissReceivedFx = defenderEffects.onMissReceived as AbilityEffect[] || [];
-      for (let fx of onMissReceivedFx) {
-        let target = defender;
-        if (fx.target === "attacker") {
-          target = attacker;
-        }
-        let { events: onMissReceivedEvents } = await AbilityHandler.handleEffect(fx.description || "an effect", fx, defender, target, combatContext, Commands.handlers(roll));
-        events.push(...onMissReceivedEvents);
-      }
+      // was:
+      // let onMissReceivedFx = defenderEffects.onMissReceived as AbilityEffect[] || [];
+      // for (let fx of onMissReceivedFx) {
+      //   let target = defender;
+      //   if (fx.target === "attacker") {
+      //     target = attacker;
+      //   }
+      //   let { events: onMissReceivedEvents } = await AbilityHandler.handleEffect(fx.description || "an effect", fx, defender, target, combatContext, Commands.handlers(roll));
+      //   events.push(...onMissReceivedEvents);
+      // }
+      // now:
+      events.push(...await AbilityHandler.performHooks(
+        "onMissReceived", defender, combatContext, Commands.handlers(roll), "miss received"
+      ));
       return [{ type: "miss", subject: attacker, target: defender } as Omit<MissEvent, "turn">, ...events];
     }
 
@@ -283,7 +285,7 @@ export class Commands {
 
     // Apply resistances FIRST
     if (damageKind) {
-      const defEffects = await Fighting.gatherEffectsWithNames(defender);
+      const defEffects = Fighting.gatherEffectsWithNames(defender);
       let resistanceName = `resist${damageKind.charAt(0).toUpperCase() + damageKind.slice(1)}`;
       const resistance: number = (((defEffects.resistAll?.value) ?? 0) as number)
         + ((defEffects[resistanceName]?.value as number) ?? 0 as number);
@@ -520,7 +522,7 @@ export class Commands {
       }
     }
 
-    const userFx = await Fighting.gatherEffects(user);
+    const userFx = Fighting.gatherEffects(user);
     // Apply status duration bonus
     if (duration && userFx.spellDurationBonus) {
       duration += (userFx.spellDurationBonus as number);

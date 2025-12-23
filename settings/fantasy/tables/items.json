@@ -767,6 +767,25 @@
           }
         ]
       },
+      "potion_of_barkskin": {
+        "name": "Potion of Barkskin",
+        "description": "A vial of thick, green liquid that hardens the drinker's skin, providing additional protection.",
+        "type": "consumable",
+        "kind": "potion",
+        "aspect": "defense",
+        "rarity": "uncommon",
+        "value": 120,
+        "target": [
+          "self",
+          "ally"
+        ],
+        "effects": [
+          {
+            "type": "cast",
+            "spellName": "Barkskin"
+          }
+        ]
+      },
       "minor_healing_potion": {
         "name": "Minor Potion of Healing",
         "description": "A vial of glittering red liquid that restores health when consumed.",
@@ -820,13 +839,7 @@
         "effects": [
           {
             "type": "buff",
-            "status": {
-              "name": "Enhanced Strength",
-              "duration": 5,
-              "effect": {
-                "str": 4
-              }
-            }
+            "status": "strength"
           }
         ]
       },
@@ -846,23 +859,6 @@
             "type": "damage",
             "amount": "1d6",
             "kind": "fire"
-          },
-          {
-            "type": "debuff",
-            "status": {
-              "name": "Burning",
-              "duration": 3,
-              "effect": {
-                "onTurnEnd": [
-                  {
-                    "type": "damage",
-                    "amount": "=1d4",
-                    "kind": "fire"
-                  }
-                ]
-              }
-            },
-            "saveDC": 15
           }
         ]
       },
@@ -881,8 +877,8 @@
         ],
         "effects": [
           {
-            "type": "heal",
-            "amount": "1d4+1"
+            "type": "cast",
+            "spellName": "Cure Minor Wounds"
           }
         ]
       },
@@ -900,20 +896,13 @@
         ],
         "effects": [
           {
-            "type": "debuff",
-            "status": {
-              "name": "Paralyzed",
-              "duration": 2,
-              "effect": {
-                "noActions": true
-              }
-            },
-            "saveDC": 20
+            "type": "cast",
+            "spellName": "Paralyzing Touch"
           }
         ]
       },
-      "wand_of_magic_missiles": {
-        "name": "Wand of Magic Missiles",
+      "wand_of_magic_missile": {
+        "name": "Wand of Magic Missile",
         "description": "A slender wand that can fire magical darts of force energy at a target.",
         "type": "consumable",
         "charges": 20,
@@ -921,15 +910,11 @@
         "aspect": "arcane",
         "rarity": "rare",
         "value": 250,
-        "target": [
-          "randomEnemies",
-          3
-        ],
+        "target": [ "randomEnemies", 3 ],
         "effects": [
           {
-            "type": "damage",
-            "amount": "=1d3",
-            "kind": "force"
+            "type": "cast",
+            "spellName": "Magic Missile"
           }
         ]
       },
@@ -947,13 +932,7 @@
         "effects": [
           {
             "type": "debuff",
-            "status": {
-              "name": "Oiled",
-              "duration": 3,
-              "effect": {
-                "resistFire": -2
-              }
-            },
+            "status": "oiled",
             "saveDC": 25
           }
         ]
@@ -970,9 +949,8 @@
         ],
         "effects": [
           {
-            "type": "damage",
-            "amount": "6d6",
-            "kind": "fire"
+            "type": "cast",
+            "spellName": "Fireball"
           }
         ]
       },
@@ -1006,25 +984,8 @@
         ],
         "effects": [
           {
-            "type": "damage",
-            "amount": "10d6",
-            "kind": "arcane"
-          },
-          {
-            "type": "debuff",
-            "status": {
-              "name": "Doomed",
-              "duration": 3,
-              "effect": {
-                "str": -4,
-                "dex": -4,
-                "con": -4,
-                "int": -4,
-                "wis": -4,
-                "cha": -4
-              }
-            },
-            "saveDC": 25
+            "type": "cast",
+            "spellName": "Apocalypse"
           }
         ]
       }
@@ -1122,11 +1083,9 @@
         "description": "A sturdy belt that enhances the wearer's physical strength.",
         "type": "equipment",
         "kind": "belt",
-        "rarity": "uncommon",
-        "value": 250,
-        "effect": {
-          "str": 3
-        }
+        "rarity": "rare",
+        "value": 2500,
+        "effect": { "str": 6 }
       },
       "boots_of_swiftness": {
         "name": "Boots of Swiftness",
@@ -1245,13 +1204,7 @@
           "onCombatStart": [
             {
               "type": "buff",
-              "status": {
-                "name": "Wardstone",
-                "duration": 10,
-                "effect": {
-                  "tempHp": 15
-                }
-              }
+              "status": "warded"
             }
           ]
         }
@@ -1334,6 +1287,28 @@
           "a fabled sword of legends",
           "a wondrous amulet of protection"
         ]
+      ]
+    }
+  },
+  "gems": {
+    "discriminator": "tier",
+    "groups": {
+      "common": [
+        "agate", "carnelian", "jasper", "moonstone", "onyx", "quartz", "tiger_eye", "turquoise",
+        "chrysoberyl", "citrine", "fluorite", "hematite", "iolite", "jade", "lapis_lazuli",
+        "malachite", "obsidian", "pyrite", "rose_quartz", "smoky_quartz"
+      ],
+      "uncommon": [
+        "amethyst", "garnet", "peridot", "topaz", "zircon", "spinel", "tourmaline", "alexandrite"
+      ],
+      "rare": [
+        "aquamarine", "emerald", "ruby", "sapphire", "tanzanite", "spinel_red"
+      ],
+      "very_rare": [
+        "black_diamond", "red_diamond", "musgravite", "painite", "grandidierite"
+      ],
+      "legendary": [
+        "diamond", "black_opal", "star_ruby", "blue_diamond", "fire_opal"
       ]
     }
   }
