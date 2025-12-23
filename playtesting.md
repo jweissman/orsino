@@ -3,7 +3,6 @@
 ## Bugs
 - [ ] Bomb shouldn't be able to reset ticking status!
 - [ ] Make sure we always go through handleReactions flow so _time stop_ can guarantee `triggerReactions: false` effect works
-- [ ] Something weird with gold -- they have it in town but don't in the dungeon???
 
 ## Features
 - [ ] Rest could reset status effects? (would be nice to do this _before_ persisting PCs?)
@@ -22,12 +21,11 @@
 - [ ] We don't seem to redisplay room details if you've levelled up?
 - [ ] Maybe taking damage makes enemies more likely to defend?
 - [ ] Examining maps/atlases could have a chance to give dungeon clues?
-- [ ] Maybe you need a clue to travel to a dungeon??
 - [ ] Should at least be a _chance_ for AI to pick on someone other than weakest enemy
 - ---
 - [ ] Better adventure module names (not just quest/saga/adventure of the $terrain...)
 - [ ] Should only be able to visit temple _once_ per long rest/visit in town
-- [ ] Found "letter" and "wanted poster" items could have clues about the dungeon boss (if not other bosses etc)
+- [ ] Found "letter" and "wanted poster" items could have clues about the dungeon boss (if not other bosses etc) [wanted poster could have pictures of your party!]
 - ---
 - [ ] Poison damage should indicate who _inflicted_ it (this is sort of tracked but not surfaced...)
 - ---
@@ -116,7 +114,6 @@
 ---
 - [ ] Tiny game db with towns you've visited so you can travel back
 ---
-- [ ] Cast effect type (for metamagic + spell-like abilities, but should also enable fully general scrolls/wands/potions)
 - [ ] Describe colors of prismatic spray
 - [ ] Racial magic weapon/armor traits (sword of goblinkind with abilities we can lookup)
 - [ ] Dual terrain types
@@ -127,7 +124,6 @@
 - [ ] Would be intersting to somehow model 'caster' as a trait ('casts:divine', 'casts:arcane', maybe 'casts:shadow' for evil-aligned spells? ie just throw the book at them and let them work out what makes sense to use. ideally there's symmetry with the pcs though)
 ---
 - [ ] Could call victory if all enemies petrified/asleep/mazed?
-
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing
@@ -244,6 +240,9 @@
 - [x] Why is a wolf casting earthquake??? (presumably it was 'Giant' wolf but maybe just give a 'stomp' AoE ability?) -- think this should be resolved by having adjusted ability lists
 - [x] Preprocess equipment at combat start so _ring of true seeing_ can be implemented -- done I think!
 - [x] _plane shift_ should work from within combat
+- [x] Cast effect type (for metamagic + spell-like abilities, but should also enable fully general scrolls/wands/potions)
+- [x] Maybe you need a clue to travel to a dungeon?? -- have to at least hear rumor now
+- [x] Something weird with gold -- they have it in town but don't in the dungeon??? -- think this _should_ be fixed but need to validate!
 
 ## Not really issues atm
 - "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]

@@ -39,7 +39,7 @@ export default class Presenter {
     statNames.forEach(stat => {
       const value = (effective as any)[stat];
       const mod = Fighting.statMod(value);
-      const sign = mod >= 0 ? '+' : '';
+      // const sign = mod >= 0 ? '+' : '';
       record += (`| ${value}`); // (${sign}${mod}) `);
     })
     record += "|\n";
@@ -52,7 +52,7 @@ export default class Presenter {
       gp: combatant.gp,
     }
     for (let [key, value] of Object.entries(basics)) {
-      record += (`**${Words.capitalize(key)}:** ${Words.humanize(value.toString())}   `);
+      record += (`**${Words.capitalize(key)}:** ${Words.humanize(value.toString())}<br/>\n`);
     }
 
     let core = {
@@ -61,37 +61,37 @@ export default class Presenter {
       "Spell Slots": ["mage", "bard", "cleric"].includes(combatant.class || '') ? Combat.maxSpellSlotsForCombatant(combatant) : "none"
     }
     for (let [key, value] of Object.entries(core)) {
-      record += (`**${Words.capitalize(key)}:** ${Words.humanize(value.toString())}   `);
+      record += (`**${Words.capitalize(key)}:** ${Words.humanize(value.toString())}\n`);
     }
 
     // spells + skills
-    record += ("\n\n##### Abilities\n");
+    record += ("\n\n_Abilities_<br/>\n");
     let abilityHandler = AbilityHandler.instance;
     for (let abilityName of combatant.abilities || []) {
       let ability = abilityHandler.getAbility(abilityName)!;
-      record += `  - **${ability.name}**: ${ability.description + ' ' || ''}${this.describeAbility(ability)}\n`;
+      record += `- **${ability.name}**: ${ability.description + ' ' || ''}${this.describeAbility(ability)}<br/>\n`;
     }
 
     // traits
     let passiveEffectsFromTraits: string[] = [];
     if (combatant.traits && combatant.traits.length > 0) {
       let traitHandler = TraitHandler.instance;
-      record += ("\n##### Traits\n");
+      record += ("\n_Traits_<br/>\n\n");
       for (let traitName of combatant.traits || []) {
         let trait = traitHandler.getTrait(traitName);
         if (trait) {
-          record += `###### ${(trait.description)}\n`;
+          record += `**${(trait.description)}**<br/>\n`;
           trait.statuses?.forEach(status => {
             passiveEffectsFromTraits.push(status.name);
-            record += `- **${status.name}** (${status.description})\n`;
-            record += `${this.describeStatus(status)}\n`;
+            record += `- **${status.name}** (${status.description})<br/>`;
+            record += `${this.describeStatus(status)}<br/>`;
           });
           record += "\n";
           // note: should already be included above??
           trait.abilities?.forEach(abilityName => {
             let ability = abilityHandler.getAbility(abilityName);
             if (ability) {
-              record += `  - **${ability.name}**: ${ability.description + ' ' || ''}${this.describeAbility(ability)}\n`;
+              record += `- **${ability.name}**: ${ability.description + ' ' || ''}${this.describeAbility(ability)}<br/>\n`;
             }
           });
         }

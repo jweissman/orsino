@@ -466,7 +466,7 @@ export default class AbilityHandler {
         statusEffect = StatusHandler.instance.dereference(effect.status);
       }
       if (!statusEffect) {
-        throw new Error(`Buff effect has unknown status: ${JSON.stringify(effect.status)}`);
+        throw new Error(`Buff effect has unknown status: ${JSON.stringify(statusEffect)}`);
       }
 
       let statusEvents = await status(

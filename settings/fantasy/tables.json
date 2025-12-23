@@ -969,7 +969,7 @@
         "name": "well of fate",
         "description": "An ancient well filled with dark, still water. The air around it feels heavy with destiny.",
         "offer": "=1d4",
-        "effects": [ { "type": "buff", "status": "=dig(#subject, race) == elf ? oneOf(spellturn, invulnerable, truesight, invisible, mageproof, haste, timewalk) : oneOf(protected, blessed, warded, keensesnse, fireproof, inspired, clarity, focus)" } ]
+        "effects": [ { "type": "buff", "status": "=(dig(#subject, race) == elf) ? oneOf('spellturn', 'invulnerable', 'truesight', 'invisible', 'mageproof', 'haste', 'timewalk') : oneOf('protected', 'blessed', 'warded', 'keensense', 'fireproof', 'inspired', 'clarity', 'focus')" } ]
       }
     }
   },
