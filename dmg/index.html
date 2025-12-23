@@ -1,0 +1,1954 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://jweissman.github.io/orsino/dmg/">
+      
+      
+      
+        <link rel="next" href="../phb/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>DMG - Orsino</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#dungeon-masters-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Orsino" class="md-header__button md-logo" aria-label="Orsino" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Orsino
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              DMG
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Orsino" class="md-nav__button md-logo" aria-label="Orsino" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Orsino
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DMG
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DMG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#items" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Items
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Items">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#magic-items" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Magic Items
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#consumables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consumables
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#status-effects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status Effects
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wonders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wonders
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#planes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Planes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Planes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#arcadia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arcadia
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cthelll" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cthelll
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gehenna" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gehenna
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hades" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hades
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#limbo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limbo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mechanus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mechanus
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pandemonium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pandemonium
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prime-material" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prime Material
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ysgard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ysgard
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zephyrus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zephyrus
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PHB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#items" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Items
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Items">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#magic-items" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Magic Items
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#consumables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consumables
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#status-effects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status Effects
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wonders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wonders
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#planes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Planes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Planes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#arcadia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arcadia
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cthelll" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cthelll
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gehenna" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gehenna
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hades" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hades
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#limbo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limbo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mechanus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mechanus
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pandemonium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pandemonium
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prime-material" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prime Material
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ysgard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ysgard
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zephyrus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zephyrus
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="dungeon-masters-guide">Dungeon Master's Guide</h1>
+<h2 id="items">Items</h2>
+<h3 id="magic-items">Magic Items</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Description</th>
+<th>Effects</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Amulet of Health</td>
+<td><em>A mystical amulet that bolsters the wearer's vitality.</em></td>
+<td>improve Constitution by 2</td>
+</tr>
+<tr>
+<td>Amulet of Vitality</td>
+<td><em>A minor health charm</em></td>
+<td>improve Constitution by 1</td>
+</tr>
+<tr>
+<td>Belt of Giant Strength</td>
+<td><em>A sturdy belt that enhances the wearer's physical strength.</em></td>
+<td>improve Strength by 6</td>
+</tr>
+<tr>
+<td>Boots of Swiftness</td>
+<td><em>Lightweight boots that increase the wearer's agility.</em></td>
+<td>improve Dexterity by 2</td>
+</tr>
+<tr>
+<td>Crown of Insight</td>
+<td><em>An ornate crown that enhances the wearer's wisdom.</em></td>
+<td>improve Wisdom by 4</td>
+</tr>
+<tr>
+<td>Gloves of Dexterity</td>
+<td><em>Fine gloves that enhance the wearer's dexterity.</em></td>
+<td>improve Dexterity by 1</td>
+</tr>
+<tr>
+<td>Helm of Intellect</td>
+<td><em>A finely crafted helm that sharpens the wearer's mind.</em></td>
+<td>improve Intelligence by 2</td>
+</tr>
+<tr>
+<td>Helm of the Stars</td>
+<td><em>A mystical helm that enhances all senses of the wearer.</em></td>
+<td>improve all stats by 1</td>
+</tr>
+<tr>
+<td>Mantle of Charisma</td>
+<td><em>An elegant mantle that enhances the wearer's charisma.</em></td>
+<td>improve Charisma by 4</td>
+</tr>
+<tr>
+<td>Ring of Minor Protection</td>
+<td><em>A simple enchanted ring providing slight protection</em></td>
+<td>improve AC by 1</td>
+</tr>
+<tr>
+<td>Ring of Perfect Turning</td>
+<td><em>Grants high resistance to all damage types, and good chance to reflect spells back to caster.</em></td>
+<td>50% resistance to All, add 75% to spell reflection chance</td>
+</tr>
+<tr>
+<td>Ring of Protection</td>
+<td><em>A magical ring that grants the wearer enhanced protection.</em></td>
+<td>improve AC by 2</td>
+</tr>
+<tr>
+<td>Ring of Regeneration</td>
+<td><em>A mystical ring that slowly heals the wearer over time.</em></td>
+<td>On turn end, Heal self 1d2-1 HP</td>
+</tr>
+<tr>
+<td>Ring of Spell Turning</td>
+<td><em>Improve all resistances and inflict damage back to caster on spell saves.</em></td>
+<td>add 50% to spell reflection chance, 20% resistance to All, improve Save versus Magic by 4, On save versus magic, Deal 1d6 true damage to attacker</td>
+</tr>
+<tr>
+<td>Ring of the Firmament</td>
+<td><em>A celestial ring that grants the wearer resistance to elemental damage.</em></td>
+<td>50% resistance to Fire, 50% resistance to Cold, 50% resistance to Lightning</td>
+</tr>
+<tr>
+<td>Ring of Thorns</td>
+<td><em>A magical ring that grants the wearer the ability to counterattack.</em></td>
+<td>On attacked, Attack attacker</td>
+</tr>
+<tr>
+<td>Ring of True Sight</td>
+<td><em>A magical ring that allows the wearer to see through illusions and invisibility.</em></td>
+<td>Can perceive invisible entities</td>
+</tr>
+<tr>
+<td>Wardstone</td>
+<td><em>A mystical stone that provides a protective barrier to the bearer.</em></td>
+<td>On combat start, Grant self Warded (Improve Save versus Magic by 1, 15% resistance to Fire, 15% resistance to Cold, 15% resistance to Lightning, 50% resistance to Force, Gain =14 + 2 * #level temporary HP)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="consumables">Consumables</h3>
+<table>
+<thead>
+<tr>
+<th>Consumable</th>
+<th>Description</th>
+<th>Effects</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Alchemist's Fire</td>
+<td><em>A sticky, flammable substance that ignites when exposed to air.</em></td>
+<td>Deal 1d6 fire damage to an enemy.</td>
+</tr>
+<tr>
+<td>Antidote</td>
+<td><em>A small vial of clear liquid that neutralizes poison when consumed.</em></td>
+<td>Remove Poison from yourself or an ally.</td>
+</tr>
+<tr>
+<td>Elixir of Strength</td>
+<td><em>A potent brew that temporarily enhances the drinker's physical strength.</em></td>
+<td>Grant yourself or an ally Bull's Strength (Improve Strength by 2, improve bonus damage by 1).</td>
+</tr>
+<tr>
+<td>First Aid Kit</td>
+<td><em>A small kit containing bandages and salves for treating minor wounds.</em></td>
+<td>Heal yourself or an ally 1d4+1 HP; Purge yourself or an ally of Bleeding.</td>
+</tr>
+<tr>
+<td>Major Potion of Healing</td>
+<td><em>A vial of glowing red liquid that restores a significant amount of health when consumed.</em></td>
+<td>Heal yourself or an ally 4d4+4 HP.</td>
+</tr>
+<tr>
+<td>Minor Potion of Healing</td>
+<td><em>A vial of glittering red liquid that restores health when consumed.</em></td>
+<td>Heal yourself or an ally 2d4+2 HP.</td>
+</tr>
+<tr>
+<td>Flask of Oil</td>
+<td><em>A flask of slippery oil that can be thrown onto a surface or creature to make it more vulnerable to fire.</em></td>
+<td>An enemy suffers Oiled (200% vulnerability to Fire).</td>
+</tr>
+<tr>
+<td>Potion of Barkskin</td>
+<td><em>A vial of thick, green liquid that hardens the drinker's skin, providing additional protection.</em></td>
+<td>Cast ability Barkskin (Grant yourself Barkskin (Improve AC by 2).) on yourself or an ally.</td>
+</tr>
+<tr>
+<td>Scroll of Apocalypse</td>
+<td><em>An ancient scroll that unleashes catastrophic energy upon all enemies in the area.</em></td>
+<td>Cast ability Apocalypse (Deal 6d6 fire damage to all enemies; Deal 6d6 cold damage to all enemies; Deal 6d6 lightning damage to all enemies; All enemies suffer Doomed (Degrade all stats by 4 for 3 turns).) on all enemies.</td>
+</tr>
+<tr>
+<td>Scroll of Cure Disease</td>
+<td><em>A magical scroll that can cure a target of any disease afflicting them.</em></td>
+<td>Remove Disease from yourself or an ally.</td>
+</tr>
+<tr>
+<td>Scroll of Fireball</td>
+<td><em>A magical scroll that allows the caster to unleash a fiery explosion at a target location.</em></td>
+<td>Cast ability Fireball (Deal 6d6 fire damage to all enemies.) on all enemies.</td>
+</tr>
+<tr>
+<td>Wand of Cure Minor Wounds</td>
+<td><em>A slender wand that can channel healing energy to mend minor wounds.</em></td>
+<td>Cast ability Cure Minor Wounds (Heal yourself or an ally 1d4 HP.) on yourself or an ally.</td>
+</tr>
+<tr>
+<td>Wand of Magic Missile</td>
+<td><em>A slender wand that can fire magical darts of force energy at a target.</em></td>
+<td>Cast ability Magic Missile (Deal 1d3 + floor(#level/3) force damage to 2 + round(#level/2) random enemies.) on 3 random enemies.</td>
+</tr>
+<tr>
+<td>Wand of Paralyzing Touch</td>
+<td><em>A slender wand that can deliver a paralyzing touch to a target.</em></td>
+<td>Cast ability Paralyzing Touch (An enemy suffers Paralyzed (Cannot take actions, degrade Strength by 5, degrade Dexterity by 5).) on an enemy.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="status-effects">Status Effects</h2>
+<table>
+<thead>
+<tr>
+<th>Status Effect</th>
+<th>Description</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Acid Burn</td>
+<td></td>
+<td>On turn end, Deal 1d6 acid damage to self</td>
+</tr>
+<tr>
+<td>Acidproof</td>
+<td></td>
+<td>50% resistance to Acid</td>
+</tr>
+<tr>
+<td>Anointed</td>
+<td></td>
+<td>50% resistance to Radiant, improve bonus damage by 1, improve to hit by 1, improve all saves by 2</td>
+</tr>
+<tr>
+<td>Armor Shred</td>
+<td></td>
+<td>Degrade AC by 2</td>
+</tr>
+<tr>
+<td>Asleep</td>
+<td><em>In a deep slumber, unaware of surroundings.</em></td>
+<td>Cannot take actions</td>
+</tr>
+<tr>
+<td>Barkskin</td>
+<td></td>
+<td>Improve AC by 2</td>
+</tr>
+<tr>
+<td>Battlecry</td>
+<td><em>Letting out a fierce battlecry to intimidate foes.</em></td>
+<td>Add =1d3 to bonus damage</td>
+</tr>
+<tr>
+<td>Bear's Endurance</td>
+<td></td>
+<td>Improve Constitution by 2, Gain 15 temporary HP</td>
+</tr>
+<tr>
+<td>Bleeding</td>
+<td></td>
+<td>On turn end, Deal 1d2 bleed damage to self</td>
+</tr>
+<tr>
+<td>Blessed</td>
+<td></td>
+<td>Improve to hit by 1, improve bonus damage by 1</td>
+</tr>
+<tr>
+<td>Blinded</td>
+<td></td>
+<td>Degrade to hit by 4, degrade evasion by 10, degrade all rolls by 2</td>
+</tr>
+<tr>
+<td>Blood Frenzy</td>
+<td><em>Entering a frenzied state after slaying an enemy.</em></td>
+<td>Improve to hit by 2, improve bonus damage by 2, degrade AC by 2</td>
+</tr>
+<tr>
+<td>Blurred</td>
+<td></td>
+<td>Improve Save versus Magic by 2, improve AC by 1, improve evasion by 10</td>
+</tr>
+<tr>
+<td>Bull's Strength</td>
+<td></td>
+<td>Improve Strength by 2, improve bonus damage by 1</td>
+</tr>
+<tr>
+<td>Burning</td>
+<td></td>
+<td>On turn end, Deal 1d3 fire damage to self</td>
+</tr>
+<tr>
+<td>Cat's Grace</td>
+<td></td>
+<td>Improve Dexterity by 2, improve evasion by 5</td>
+</tr>
+<tr>
+<td>Chanting</td>
+<td></td>
+<td>Improve all saves by 1, improve bonus spell DC by 1, improve bonus spell slots by 1, improve to hit by 2, On turn end, Heal allies 1d3 + #level HP</td>
+</tr>
+<tr>
+<td>Charmed</td>
+<td><em>Exuding an aura of helpfulness.</em></td>
+<td>Allegiance changed</td>
+</tr>
+<tr>
+<td>Clarity</td>
+<td></td>
+<td>Improve all rolls by 2, Immunity to Charm</td>
+</tr>
+<tr>
+<td>Confused</td>
+<td></td>
+<td>Actions are random</td>
+</tr>
+<tr>
+<td>Courage</td>
+<td></td>
+<td>Improve all saves by 2, Immunity to Fear</td>
+</tr>
+<tr>
+<td>Cursed</td>
+<td><em>Afflicted by a malevolent doom.</em></td>
+<td>Degrade all stats by 1</td>
+</tr>
+<tr>
+<td>Deafened</td>
+<td></td>
+<td>50% resistance to Sonic, degrade bonus damage by 2, degrade AC by 2, degrade to hit by 2, degrade all saves by 1</td>
+</tr>
+<tr>
+<td>Defending</td>
+<td><em>Adapting a defensive stance.</em></td>
+<td>Improve AC by 2</td>
+</tr>
+<tr>
+<td>Disabled</td>
+<td></td>
+<td>Cannot take actions, Status effects do not expire</td>
+</tr>
+<tr>
+<td>Diseased</td>
+<td></td>
+<td>Degrade Constitution by 2, degrade all saves by 2, On turn end, Deal 1d4 necrotic damage to self</td>
+</tr>
+<tr>
+<td>Distracted</td>
+<td></td>
+<td>Degrade to hit by 1, degrade bonus damage by 1, degrade evasion by 5</td>
+</tr>
+<tr>
+<td>Dodging</td>
+<td><em>Focusing on avoiding attacks.</em></td>
+<td>Improve AC by 2, improve evasion by 5</td>
+</tr>
+<tr>
+<td>Doomed</td>
+<td></td>
+<td>Degrade all stats by 4 for 3 turns</td>
+</tr>
+<tr>
+<td>Drenched</td>
+<td></td>
+<td>Degrade to hit by 2, 100% vulnerability to Lightning, 200% vulnerability to Cold</td>
+</tr>
+<tr>
+<td>Dug In</td>
+<td><em>Taking a fortified position.</em></td>
+<td>Improve AC by 2, improve all saves by 3, degrade to hit by 2</td>
+</tr>
+<tr>
+<td>Eagle's Splendor</td>
+<td></td>
+<td>Improve Charisma by 2, improve to hit by 1</td>
+</tr>
+<tr>
+<td>Engulfed</td>
+<td></td>
+<td>On turn end, Deal 2d6 acid damage to self, Cannot take actions</td>
+</tr>
+<tr>
+<td>Entangled</td>
+<td></td>
+<td>Degrade Dexterity by 5, degrade to hit by 2, degrade evasion by 5, degrade initiative by 5</td>
+</tr>
+<tr>
+<td>False Life</td>
+<td></td>
+<td>Gain =10d6 + 2 * #level temporary HP</td>
+</tr>
+<tr>
+<td>Fatigued</td>
+<td></td>
+<td>Degrade Strength by 1, degrade Dexterity by 1, degrade Constitution by 1, degrade all rolls by 1</td>
+</tr>
+<tr>
+<td>Fireproof</td>
+<td></td>
+<td>50% resistance to Fire</td>
+</tr>
+<tr>
+<td>Focus</td>
+<td></td>
+<td>Improve to hit by 2, improve Save versus Magic by 3, improve bonus spell DC by 2, improve bonus spell slots by 1</td>
+</tr>
+<tr>
+<td>Fox's Cunning</td>
+<td></td>
+<td>Improve Intelligence by 2, improve all rolls by 1</td>
+</tr>
+<tr>
+<td>Frightened</td>
+<td><em>Overcome with fear and hesitation.</em></td>
+<td>Degrade to hit by 2, degrade initiative by 5, degrade all rolls by 1, degrade all saves by 2</td>
+</tr>
+<tr>
+<td>Frozen</td>
+<td></td>
+<td>Cannot take actions, degrade Dexterity by 5</td>
+</tr>
+<tr>
+<td>Ghost Touch</td>
+<td></td>
+<td>On attack hit, Deal 1d3 necrotic damage to self</td>
+</tr>
+<tr>
+<td>Giant's Strength</td>
+<td></td>
+<td>Improve Strength by 6, add =1d3 to bonus damage</td>
+</tr>
+<tr>
+<td>Haste</td>
+<td><em>Moving with supernatural speed.</em></td>
+<td>Improve Dexterity by 4, improve initiative by 10, improve attacks per turn by 1, improve AC by 2</td>
+</tr>
+<tr>
+<td>Hidden</td>
+<td><em>Concealed from enemies.</em></td>
+<td>Improve AC by 4, improve evasion by 10, On attack, Remove Hidden from self</td>
+</tr>
+<tr>
+<td>Hunting Prey</td>
+<td></td>
+<td>Degrade AC by 2, On attacked, Deal 1d8 true damage to self</td>
+</tr>
+<tr>
+<td>In Maze</td>
+<td></td>
+<td>Cannot take actions, Untargetable</td>
+</tr>
+<tr>
+<td>Infected</td>
+<td></td>
+<td>Degrade Constitution by 1, degrade all saves by 2, degrade to hit by 1, degrade bonus damage by 1</td>
+</tr>
+<tr>
+<td>Insane</td>
+<td></td>
+<td>Actions are random, degrade all rolls by 1, degrade Save versus Will by 2</td>
+</tr>
+<tr>
+<td>Insight</td>
+<td></td>
+<td>Improve all saves by 2, improve bonus spell DC by 1</td>
+</tr>
+<tr>
+<td>Inspired</td>
+<td></td>
+<td>Improve to hit by 2, Gain 5 temporary HP, improve all saves by 1</td>
+</tr>
+<tr>
+<td>Invisible</td>
+<td><em>Unable to be seen by enemies.</em></td>
+<td>Invisible, On attack, Remove Invisible from self, On offensive casting, Remove Invisible from self</td>
+</tr>
+<tr>
+<td>Invulnerable</td>
+<td><em>Temporarily immune to harm.</em></td>
+<td>Untargetable</td>
+</tr>
+<tr>
+<td>Ironskin</td>
+<td></td>
+<td>Improve AC by 5</td>
+</tr>
+<tr>
+<td>Keen Senses</td>
+<td></td>
+<td>Improve to hit by 2, improve evasion by 5, improve bonus damage by 1, improve all saves by 1</td>
+</tr>
+<tr>
+<td>Lightproof</td>
+<td></td>
+<td>50% resistance to Radiant</td>
+</tr>
+<tr>
+<td>Mage-Armored</td>
+<td></td>
+<td>Improve AC by 4, Gain 20 temporary HP</td>
+</tr>
+<tr>
+<td>Mageproof</td>
+<td></td>
+<td>50% resistance to Force, improve Save versus Magic by 2</td>
+</tr>
+<tr>
+<td>Meditating</td>
+<td></td>
+<td>Cannot take actions, improve Save versus Magic by 2, 25% resistance to Force, On turn end, Heal self 1d2 + #level HP</td>
+</tr>
+<tr>
+<td>Migraine</td>
+<td></td>
+<td>200% vulnerability to Radiant, 200% vulnerability to Sonic</td>
+</tr>
+<tr>
+<td>Mind Blank</td>
+<td></td>
+<td>50% resistance to Psychic, improve Save versus Will by 2, Immunity to Charm, Immunity to Insanity, Immunity to Fear, Immunity to Sleep</td>
+</tr>
+<tr>
+<td>Minor Warded</td>
+<td></td>
+<td>Improve Save versus Magic by 1, 25% resistance to Force, Gain =7 + #level temporary HP</td>
+</tr>
+<tr>
+<td>Mirror Images</td>
+<td></td>
+<td>Improve AC by 2, improve all saves by 2, improve evasion by 15</td>
+</tr>
+<tr>
+<td>Mocked</td>
+<td><em>Distracted by jeers and taunts.</em></td>
+<td>Degrade to hit by 1, degrade bonus damage by 1, degrade all saves by 1</td>
+</tr>
+<tr>
+<td>Naturality</td>
+<td></td>
+<td>50% resistance to Poison, 25% resistance to Acid, Immunity to Disease, improve all saves by 1</td>
+</tr>
+<tr>
+<td>Oiled</td>
+<td></td>
+<td>200% vulnerability to Fire</td>
+</tr>
+<tr>
+<td>Overwatching</td>
+<td><em>Ready to strike at any enemy that comes close.</em></td>
+<td>Improve bonus damage by 2, On enemy melee, Attack attacker; Purge self of Overwatching</td>
+</tr>
+<tr>
+<td>Owl's Wisdom</td>
+<td></td>
+<td>Improve Wisdom by 2, improve all saves by 1</td>
+</tr>
+<tr>
+<td>Paralyzed</td>
+<td></td>
+<td>Cannot take actions, degrade Strength by 5, degrade Dexterity by 5</td>
+</tr>
+<tr>
+<td>Petrified</td>
+<td></td>
+<td>Cannot take actions, Immunity to Fear, Immunity to Charm, Immunity to Stun, Immunity to Sleep, Immunity to Poison, Immunity to Disease</td>
+</tr>
+<tr>
+<td>Poison</td>
+<td></td>
+<td>On turn end, Deal 1d4 true damage to self</td>
+</tr>
+<tr>
+<td>Praying</td>
+<td></td>
+<td>Improve to hit by 1, improve all saves by 2, improve bonus healing by 2, Gain 10 temporary HP</td>
+</tr>
+<tr>
+<td>Prone</td>
+<td><em>Lying on the ground, vulnerable to attacks.</em></td>
+<td>Cannot take actions, degrade Dexterity by 2</td>
+</tr>
+<tr>
+<td>Protected</td>
+<td></td>
+<td>50% resistance to Necrotic, Immunity to Charm</td>
+</tr>
+<tr>
+<td>Raging</td>
+<td><em>Utterly overcome with fury.</em></td>
+<td>Improve to hit by 1, improve bonus damage by 2, degrade AC by 3</td>
+</tr>
+<tr>
+<td>Reckless</td>
+<td><em>Throwing caution to the wind.</em></td>
+<td>Degrade to hit by 2, degrade AC by 2</td>
+</tr>
+<tr>
+<td>Reflect</td>
+<td></td>
+<td>Add 50% to damage reflection percent</td>
+</tr>
+<tr>
+<td>Riposting</td>
+<td><em>Punishing missed attacks.</em></td>
+<td>Improve evasion by 3, degrade AC by 1, On miss received, Attack attacker</td>
+</tr>
+<tr>
+<td>Scalded</td>
+<td></td>
+<td>Degrade all rolls by 1</td>
+</tr>
+<tr>
+<td>Scaleskin</td>
+<td></td>
+<td>Improve AC by 8, 25% resistance to Fire</td>
+</tr>
+<tr>
+<td>Shielded</td>
+<td></td>
+<td>Improve AC by 1, Gain 10 temporary HP, improve Save versus Magic by 1</td>
+</tr>
+<tr>
+<td>Silence</td>
+<td></td>
+<td>Cannot cast spells</td>
+</tr>
+<tr>
+<td>Slimed</td>
+<td></td>
+<td>200% vulnerability to Acid</td>
+</tr>
+<tr>
+<td>Slow</td>
+<td></td>
+<td>Degrade Dexterity by 5, degrade initiative by 10, degrade attacks per turn by 1</td>
+</tr>
+<tr>
+<td>Soundproof</td>
+<td></td>
+<td>50% resistance to Sonic</td>
+</tr>
+<tr>
+<td>Spellturn</td>
+<td><em>Reflecting spells back at their casters.</em></td>
+<td>Add 50% to spell reflection chance</td>
+</tr>
+<tr>
+<td>Steelskin</td>
+<td></td>
+<td>Improve AC by 10, 50% resistance to Piercing, 50% resistance to Slashing</td>
+</tr>
+<tr>
+<td>Stoneskin</td>
+<td></td>
+<td>Improve AC by 3</td>
+</tr>
+<tr>
+<td>Stormproof</td>
+<td></td>
+<td>50% resistance to Lightning</td>
+</tr>
+<tr>
+<td>Stunned</td>
+<td></td>
+<td>Cannot take actions, degrade all rolls by 2</td>
+</tr>
+<tr>
+<td>Sunmarked</td>
+<td></td>
+<td>Degrade Save versus Magic by 1, 25% vulnerability to Fire, 25% vulnerability to Radiant, On attacked, Deal 1d4 radiant damage to self</td>
+</tr>
+<tr>
+<td>Taunted</td>
+<td><em>Compelled to attack the taunter if able.</em></td>
+<td>Next target forced to be you</td>
+</tr>
+<tr>
+<td>Thirst</td>
+<td></td>
+<td>Degrade Constitution by 2, degrade all saves by 1, 100% vulnerability to Fire</td>
+</tr>
+<tr>
+<td>Time Stopped</td>
+<td><em>Completely outside the flow of time.</em></td>
+<td>Improve extra turns by 3, Does not trigger reactions</td>
+</tr>
+<tr>
+<td>Time Walk</td>
+<td><em>Temporarily stepping outside the flow of time.</em></td>
+<td>Untargetable, improve AC by 5, improve evasion by 20, improve attacks per turn by 4</td>
+</tr>
+<tr>
+<td>True Sight</td>
+<td><em>Seeing through illusions and invisibility.</em></td>
+<td>Can perceive invisible entities</td>
+</tr>
+<tr>
+<td>Warded</td>
+<td></td>
+<td>Improve Save versus Magic by 1, 15% resistance to Fire, 15% resistance to Cold, 15% resistance to Lightning, 50% resistance to Force, Gain =14 + 2 * #level temporary HP</td>
+</tr>
+<tr>
+<td>Waterproof</td>
+<td></td>
+<td>50% resistance to Cold</td>
+</tr>
+</tbody>
+</table>
+<h2 id="wonders">Wonders</h2>
+<table>
+<thead>
+<tr>
+<th>Wonder</th>
+<th>Description</th>
+<th>Effects</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ancient Obelisk</td>
+<td><em>A towering obelisk inscribed with ancient runes of power.</em></td>
+<td>Permanently increase user Wisdom by 2</td>
+</tr>
+<tr>
+<td>Ancient Trees</td>
+<td><em>A massive tree with gnarled roots and a trunk that seems to pulse with life.</em></td>
+<td>Heal user 2d8 HP</td>
+</tr>
+<tr>
+<td>Arcane Lantern</td>
+<td><em>A lantern that emits a magical light, illuminating hidden truths.</em></td>
+<td>Learn ability True Sight (Grant yourself or an ally True Sight (Can perceive invisible entities).)</td>
+</tr>
+<tr>
+<td>Arcane Symbols</td>
+<td><em>Symbols that glow with magical energy, pulsing rhythmically.</em></td>
+<td>Grant user Focus (Improve to hit by 2, improve Save versus Magic by 3, improve bonus spell DC by 2, improve bonus spell slots by 1)</td>
+</tr>
+<tr>
+<td>Celestial Fountain</td>
+<td><em>A fountain that flows with water imbued with celestial energy, healing those who drink from it.</em></td>
+<td>Heal user 3d6 HP; Permanently increase user Constitution by 1; Grant user Protected (50% resistance to Necrotic, Immunity to Charm)</td>
+</tr>
+<tr>
+<td>Celestial Glow</td>
+<td><em>A soft glow that seems to come from the heavens themselves.</em></td>
+<td>Grant user Scaleskin (Improve AC by 8, 25% resistance to Fire)</td>
+</tr>
+<tr>
+<td>Color Shifts</td>
+<td><em>Colors that shift and change in a mesmerizing way.</em></td>
+<td>Grant user Acidproof (50% resistance to Acid); Grant user Lightproof (50% resistance to Radiant); Grant user Soundproof (50% resistance to Sonic)</td>
+</tr>
+<tr>
+<td>Divine Aegis</td>
+<td><em>An invulnerable sphere of light imbued with divine protection.</em></td>
+<td>Grant passive trait favored conferring statuses: Favored (Improve all rolls by 2, improve evasion by 3, 10% resistance to All, improve Save versus Death by 2) to user</td>
+</tr>
+<tr>
+<td>Dragon Statue</td>
+<td><em>A majestic statue of a dragon that seems almost alive, its eyes gleaming with intelligence.</em></td>
+<td>Permanently increase user Strength by 1</td>
+</tr>
+<tr>
+<td>Enchanted Aura</td>
+<td><em>A shimmering aura that seems to protect the area from harm.</em></td>
+<td>Grant user Protected (50% resistance to Necrotic, Immunity to Charm); Grant user Mageproof (50% resistance to Force, improve Save versus Magic by 2)</td>
+</tr>
+<tr>
+<td>Enchanted Labyrinth</td>
+<td><em>An intelligent painting of a labyrinth that shifts and changes, confounding those who enter.</em></td>
+<td>Learn ability Maze (An enemy suffers In Maze (Cannot take actions, Untargetable).)</td>
+</tr>
+<tr>
+<td>Enchanted Statues</td>
+<td><em>A statue that appears to move slightly when not directly looked at.</em></td>
+<td>Grant user Shielded (Improve AC by 1, Gain 10 temporary HP, improve Save versus Magic by 1); Grant user Warded (Improve Save versus Magic by 1, 15% resistance to Fire, 15% resistance to Cold, 15% resistance to Lightning, 50% resistance to Force, Gain =14 + 2 * #level temporary HP)</td>
+</tr>
+<tr>
+<td>Eternal Flame</td>
+<td><em>A flame that burns without fuel, its light never fading.</em></td>
+<td>Grant passive trait firekissed conferring statuses: Firekissed (40% resistance to Fire, improve Save versus Fear by 2) to user</td>
+</tr>
+<tr>
+<td>Eternal Garden</td>
+<td><em>A garden that blooms eternally, filled with plants of otherworldly beauty.</em></td>
+<td>Permanently increase user Constitution by 2</td>
+</tr>
+<tr>
+<td>Ethereal Music</td>
+<td><em>A haunting melody that seems to come from nowhere, filling the air.</em></td>
+<td>Grant user Inspired (Improve to hit by 2, Gain 5 temporary HP, improve all saves by 1); Grant user Courage (Improve all saves by 2, Immunity to Fear)</td>
+</tr>
+<tr>
+<td>Floating Lights</td>
+<td><em>Small lights that float in the air, moving in intricate patterns.</em></td>
+<td>Grant user Mind Blank (50% resistance to Psychic, improve Save versus Will by 2, Immunity to Charm, Immunity to Insanity, Immunity to Fear, Immunity to Sleep)</td>
+</tr>
+<tr>
+<td>Glowing Crystals</td>
+<td><em>A crystal that emits a soft, radiant glow.</em></td>
+<td>Grant user Fox's Cunning (Improve Intelligence by 2, improve all rolls by 1)</td>
+</tr>
+<tr>
+<td>Glowing Runes</td>
+<td><em>Runes that glow with an inner light, pulsing softly.</em></td>
+<td>Grant user Insight (Improve all saves by 2, improve bonus spell DC by 1)</td>
+</tr>
+<tr>
+<td>Illusory Visions</td>
+<td><em>Visions that appear and disappear at the edge of your sight.</em></td>
+<td>Grant user Clarity (Improve all rolls by 2, Immunity to Charm); Grant user Owl's Wisdom (Improve Wisdom by 2, improve all saves by 1)</td>
+</tr>
+<tr>
+<td>Levitating Objects</td>
+<td><em>Various objects levitating gently in the air, defying gravity.</em></td>
+<td>Grant user Cat's Grace (Improve Dexterity by 2, improve evasion by 5)</td>
+</tr>
+<tr>
+<td>Life Tree</td>
+<td><em>A magnificent tree that radiates life energy, its leaves shimmering with vitality.</em></td>
+<td>Permanently increase user Constitution by 1</td>
+</tr>
+<tr>
+<td>Magical Weather</td>
+<td><em>Weather phenomena that seem to be controlled by magic.</em></td>
+<td>Grant user Fireproof (50% resistance to Fire); Grant user Waterproof (50% resistance to Cold); Grant user Stormproof (50% resistance to Lightning)</td>
+</tr>
+<tr>
+<td>Mysterious Portal</td>
+<td><em>A swirling portal that seems to lead to another place.</em></td>
+<td>Teleport user to =oneOf(firstRoom, lastRoom, randomRoom)</td>
+</tr>
+<tr>
+<td>Mystic Conduit</td>
+<td><em>A conduit that channels mystical energies from other planes of existence.</em></td>
+<td>Learn ability Plane Shift (Planeshift yourself to =oneOf(Arcadia, Cthelll, Gehenna, Hades, Limbo, Mechanus, Pandemonium, Ysgard, Zephyrus).)</td>
+</tr>
+<tr>
+<td>Mystical Fog</td>
+<td><em>A thick fog that seems to have a life of its own.</em></td>
+<td>Grant user Eagle's Splendor (Improve Charisma by 2, improve to hit by 1)</td>
+</tr>
+<tr>
+<td>Mythic Portal</td>
+<td><em>A portal that connects to legendary realms and mythical places.</em></td>
+<td>Planeshift user to =oneOf(Arcadia, Cthelll, Gehenna, Hades, Limbo, Mechanus, Pandemonium, Ysgard, Zephyrus)</td>
+</tr>
+<tr>
+<td>Phoenix Heart</td>
+<td><em>A radiant heart that pulses with fiery energy, symbolizing rebirth and immortality.</em></td>
+<td>Permanently increase user Max HP by 5</td>
+</tr>
+<tr>
+<td>Seeing Stone</td>
+<td><em>A polished stone that allows one to see distant places or events.</em></td>
+<td>Permanently increase user Wisdom by 1</td>
+</tr>
+<tr>
+<td>Shadow Portal</td>
+<td><em>A dark portal that seems to lead to a shadowy realm.</em></td>
+<td>Planeshift user to Cthelll</td>
+</tr>
+<tr>
+<td>Shifting Walls</td>
+<td><em>Walls that subtly shift and change position when not being observed.</em></td>
+<td>Grant user Steelskin (Improve AC by 10, 50% resistance to Piercing, 50% resistance to Slashing)</td>
+</tr>
+<tr>
+<td>Soul Mirror</td>
+<td><em>A mirror that reflects not just physical appearances, but the true nature of one's soul.</em></td>
+<td>Permanently increase user Charisma by 1</td>
+</tr>
+<tr>
+<td>Spectral Figures</td>
+<td><em>Ghostly figures that move silently through the area.</em></td>
+<td>Grant user Eagle's Splendor (Improve Charisma by 2, improve to hit by 1)</td>
+</tr>
+<tr>
+<td>Starfall Crystal</td>
+<td><em>A crystal formed from fallen stars, radiating cosmic energy.</em></td>
+<td>Permanently increase user Intelligence by 2</td>
+</tr>
+<tr>
+<td>Storm Core</td>
+<td><em>A swirling core of storm energy, crackling with lightning.</em></td>
+<td>Permanently increase user Dexterity by 1</td>
+</tr>
+<tr>
+<td>Time Dilation</td>
+<td><em>An area where time seems to pass differently</em></td>
+<td>Grant user Haste (Improve Dexterity by 4, improve initiative by 10, improve attacks per turn by 1, improve AC by 2)</td>
+</tr>
+<tr>
+<td>Time Stop Aura</td>
+<td><em>An aura that can temporarily halt the flow of time within its vicinity.</em></td>
+<td>Learn ability Time Stop (Grant yourself Time Stopped (Improve extra turns by 3, Does not trigger reactions).)</td>
+</tr>
+<tr>
+<td>Titan Golem</td>
+<td><em>A colossal golem imbued with the strength of titans.</em></td>
+<td>Permanently increase user Strength by 2</td>
+</tr>
+<tr>
+<td>Unearthly Silence</td>
+<td><em>A profound silence that seems to absorb all sound.</em></td>
+<td>Grant user Focus (Improve to hit by 2, improve Save versus Magic by 3, improve bonus spell DC by 2, improve bonus spell slots by 1)</td>
+</tr>
+<tr>
+<td>Void Singularity</td>
+<td><em>A swirling vortex of darkness that seems to absorb all light and matter around it.</em></td>
+<td>Permanently increase user Intelligence by 1; Permanently increase user Wisdom by 1; Permanently increase user Charisma by 1</td>
+</tr>
+<tr>
+<td>Whispering Voices</td>
+<td><em>Soft whispers that seem to come from the walls themselves.</em></td>
+<td>Grant user Owl's Wisdom (Improve Wisdom by 2, improve all saves by 1)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="planes">Planes</h2>
+<h3 id="arcadia">Arcadia</h3>
+<p><em>Arcadia is a lush, idyllic realm of eternal spring, where nature thrives and harmony reigns.</em></p>
+<table>
+<thead>
+<tr>
+<th>Alignment</th>
+<th>Terrain</th>
+<th>Domain</th>
+<th>Climate</th>
+<th>Race Association</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Neutral Good</td>
+<td>Forest</td>
+<td>Life</td>
+<td>Pleasant</td>
+<td>Fae</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Global Effects:</strong> improve bonus spell DC by 1, +20% status duration, improve bonus spell slots by 1</p>
+<h3 id="cthelll">Cthelll</h3>
+<p><em>Cthelll is a dark, swampy plane shrouded in mist and mystery, home to ancient secrets and lurking dangers.</em></p>
+<table>
+<thead>
+<tr>
+<th>Alignment</th>
+<th>Terrain</th>
+<th>Domain</th>
+<th>Climate</th>
+<th>Race Association</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Neutral Evil</td>
+<td>Swamp</td>
+<td>Death</td>
+<td>Foggy</td>
+<td>--</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Global Effects:</strong> improve bonus spell DC by 1</p>
+<h3 id="gehenna">Gehenna</h3>
+<p><em>Gehenna is a fiery, volcanic landscape filled with treacherous terrain and the echoes of eternal conflict.</em></p>
+<table>
+<thead>
+<tr>
+<th>Alignment</th>
+<th>Terrain</th>
+<th>Domain</th>
+<th>Climate</th>
+<th>Race Association</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lawful Evil</td>
+<td>Mountain</td>
+<td>War</td>
+<td>Sulfurous clouds and ash</td>
+<td>--</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Global Effects:</strong> degrade bonus spell DC by 1</p>
+<h3 id="hades">Hades</h3>
+<p><em>Hades is a shadowy underworld of gloom and despair, where lost souls wander and forgotten knowledge lies buried.</em></p>
+<table>
+<thead>
+<tr>
+<th>Alignment</th>
+<th>Terrain</th>
+<th>Domain</th>
+<th>Climate</th>
+<th>Race Association</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lawful Evil</td>
+<td>Cave</td>
+<td>Knowledge</td>
+<td>Permanently overcast</td>
+<td>--</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Global Effects:</strong> degrade bonus spell DC by 1, -20% status duration</p>
+<h3 id="limbo">Limbo</h3>
+<p><em>Limbo is a chaotic desert wasteland where the sands shift unpredictably and reality bends to whimsy.</em></p>
+<table>
+<thead>
+<tr>
+<th>Alignment</th>
+<th>Terrain</th>
+<th>Domain</th>
+<th>Climate</th>
+<th>Race Association</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Chaotic Neutral</td>
+<td>Desert</td>
+<td>Chaos</td>
+<td>Windy</td>
+<td>--</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Global Effects:</strong> improve bonus spell DC by 1, +30% status duration</p>
+<h3 id="mechanus">Mechanus</h3>
+<p><em>Mechanus is a realm of perfect order and precision, where everything operates like clockwork in harmonious balance.</em></p>
+<table>
+<thead>
+<tr>
+<th>Alignment</th>
+<th>Terrain</th>
+<th>Domain</th>
+<th>Climate</th>
+<th>Race Association</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lawful Neutral</td>
+<td>Mountain</td>
+<td>Order</td>
+<td>Clear skies</td>
+<td>--</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Global Effects:</strong> improve bonus spell DC by 1, -20% status duration</p>
+<h3 id="pandemonium">Pandemonium</h3>
+<p><em>Pandemonium is a tumultuous plane of howling winds and swirling chaos, where nothing remains constant for long.</em></p>
+<table>
+<thead>
+<tr>
+<th>Alignment</th>
+<th>Terrain</th>
+<th>Domain</th>
+<th>Climate</th>
+<th>Race Association</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Chaotic Evil</td>
+<td>Cave</td>
+<td>Trickery</td>
+<td>Howling winds</td>
+<td>--</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Global Effects:</strong> degrade bonus spell DC by 1, -10% status duration</p>
+<h3 id="prime-material">Prime Material</h3>
+<p><em>Prime Material is the mundane world of everyday life, where magic is present but not overwhelming.</em></p>
+<table>
+<thead>
+<tr>
+<th>Alignment</th>
+<th>Terrain</th>
+<th>Domain</th>
+<th>Climate</th>
+<th>Race Association</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-- --</td>
+<td>Varied</td>
+<td>None</td>
+<td>Varied</td>
+<td>--</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Global Effects:</strong> improve bonus spell DC by 0, +0% status duration, improve bonus spell slots by 0, Resurrectable</p>
+<h3 id="ysgard">Ysgard</h3>
+<p><em>Ysgard is a frigid, mountainous realm of valor and heroism, where mighty warriors clash amidst snowstorms.</em></p>
+<table>
+<thead>
+<tr>
+<th>Alignment</th>
+<th>Terrain</th>
+<th>Domain</th>
+<th>Climate</th>
+<th>Race Association</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lawful Good</td>
+<td>Snow</td>
+<td>War</td>
+<td>Snowstorms</td>
+<td>Dwarf</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Global Effects:</strong> degrade bonus spell DC by 1, +20% status duration</p>
+<h3 id="zephyrus">Zephyrus</h3>
+<p><em>Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, alive with elemental energy.</em></p>
+<table>
+<thead>
+<tr>
+<th>Alignment</th>
+<th>Terrain</th>
+<th>Domain</th>
+<th>Climate</th>
+<th>Race Association</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Neutral Neutral</td>
+<td>Forest</td>
+<td>Storms</td>
+<td>Thunderstorms</td>
+<td>Elf</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Global Effects:</strong> improve bonus spell DC by 1, +10% status duration, improve bonus spell slots by 1</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
