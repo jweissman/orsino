@@ -226,6 +226,33 @@
   
   
     <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../dmg/" class="md-nav__link">
         
   
@@ -921,6 +948,11 @@
 <td>An enemy suffers Hunting Prey (Degrade AC by 2, On attacked, Deal 1d8 true damage to self).</td>
 </tr>
 <tr>
+<td>Infect</td>
+<td><em>Infect an enemy with a virulent disease.</em></td>
+<td>Cast ability Inflict Disease (An enemy suffers Diseased (Degrade Constitution by 2, degrade all saves by 2, On turn end, Deal 1d4 necrotic damage to self).) on an enemy.</td>
+</tr>
+<tr>
 <td>Inspire</td>
 <td><em>Inspire your allies, granting them a +2 bonus to attack rolls for the next 3 rounds.</em></td>
 <td>Grant all allies Inspired (Improve to hit by 2, Gain 5 temporary HP, improve all saves by 1).</td>
@@ -1016,6 +1048,11 @@
 <td>An enemy suffers Taunted (Next target forced to be you).</td>
 </tr>
 <tr>
+<td>Trickfire</td>
+<td><em>Toss a firebomb that damages and confuses enemies.</em></td>
+<td>Deal 1d4 fire damage to all enemies; All enemies suffer Confused (Actions are random).</td>
+</tr>
+<tr>
 <td>Wait</td>
 <td><em>Wait and do nothing this turn.</em></td>
 <td>Does nothing.</td>
@@ -1032,374 +1069,117 @@
 <table>
 <thead>
 <tr>
-<th>Name</th>
-<th>Level</th>
-<th>School/Domain</th>
-<th>Description</th>
-<th>Details</th>
+<th>Cantrip</th>
+<th>Level 1</th>
+<th>Level 2</th>
+<th>Level 3</th>
+<th>Level 4</th>
+<th>Level 5</th>
+<th>Level 6</th>
+<th>Level 7</th>
+<th>Level 8</th>
+<th>Level 9</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Acid Arrow</td>
-<td>1</td>
-<td>conjuration school</td>
-<td><em>Fire an arrow of acid, dealing 1d4 damage and applying Acid Burn.</em></td>
-<td>Deal 1d4 acid damage to an enemy.</td>
+<td><a href="#Dancing Lights">Dancing Lights</a></td>
+<td><a href="#Acid Arrow">Acid Arrow</a></td>
+<td><a href="#Acid Spray">Acid Spray</a></td>
+<td><a href="#Chaos Bolt">Chaos Bolt</a></td>
+<td><a href="#Chain Lightning">Chain Lightning</a></td>
+<td><a href="#Disintegrate">Disintegrate</a></td>
+<td><a href="#Fireball">Fireball</a></td>
+<td><a href="#Plane Shift">Plane Shift</a></td>
+<td><a href="#Implosion">Implosion</a></td>
+<td><a href="#Apocalypse">Apocalypse</a></td>
 </tr>
 <tr>
-<td>Acid Spray</td>
-<td>2</td>
-<td>conjuration school</td>
-<td><em>Spray a cone of acid, dealing 2d6 damage to all enemies in the area and applying Acid Burn.</em></td>
-<td>Deal 2d6 acid damage to all enemies.</td>
+<td><a href="#Firebolt">Firebolt</a></td>
+<td><a href="#Mage Armor">Mage Armor</a></td>
+<td><a href="#Blur">Blur</a></td>
+<td><a href="#Confuse">Confuse</a></td>
+<td><a href="#Disruption">Disruption</a></td>
+<td><a href="#Earthquake">Earthquake</a></td>
+<td><a href="#Flesh to Stone">Flesh to Stone</a></td>
+<td><a href="#Spellturning">Spellturning</a></td>
+<td><a href="#Maze">Maze</a></td>
+<td></td>
 </tr>
 <tr>
-<td>Apocalypse</td>
-<td>9</td>
-<td>evocation school</td>
-<td><em>Unleash a cataclysmic storm of elemental fury upon all enemies.</em></td>
-<td>Deal 6d6 fire damage to all enemies; Deal 6d6 cold damage to all enemies; Deal 6d6 lightning damage to all enemies; All enemies suffer Doomed (Degrade all stats by 4 for 3 turns).</td>
+<td><a href="#Frostbite">Frostbite</a></td>
+<td><a href="#Burning Hands">Burning Hands</a></td>
+<td><a href="#Dispel Magic">Dispel Magic</a></td>
+<td><a href="#Drench">Drench</a></td>
+<td><a href="#False Life">False Life</a></td>
+<td><a href="#Haste">Haste</a></td>
+<td><a href="#Invisibility">Invisibility</a></td>
+<td><a href="#Warp Enemy">Warp Enemy</a></td>
+<td><a href="#Time Stop">Time Stop</a></td>
+<td></td>
 </tr>
 <tr>
-<td>Mage Armor</td>
-<td>1</td>
-<td>abjuration school</td>
-<td><em>Arcane force wraps around you, providing magical protection.</em></td>
-<td>Grant yourself Mage-Armored (Improve AC by 4, Gain 20 temporary HP).</td>
+<td><a href="#Ghost Touch">Ghost Touch</a></td>
+<td><a href="#Magic Missile">Magic Missile</a></td>
+<td><a href="#Magebane">Magebane</a></td>
+<td><a href="#Obscuring Mist">Obscuring Mist</a></td>
+<td><a href="#Lightning Strike">Lightning Strike</a></td>
+<td><a href="#Poison Cloud">Poison Cloud</a></td>
+<td><a href="#Stone to Flesh">Stone to Flesh</a></td>
+<td></td>
+<td></td>
+<td></td>
 </tr>
 <tr>
-<td>Blur</td>
-<td>1</td>
-<td>illusion school</td>
-<td><em>You are out of focus, making it harder for enemies to hit you.</em></td>
-<td>Grant yourself Blurred (Improve Save versus Magic by 2, improve AC by 1, improve evasion by 10).</td>
+<td><a href="#Minor Ward">Minor Ward</a></td>
+<td><a href="#Prismatic Spray">Prismatic Spray</a></td>
+<td><a href="#Mirror Image">Mirror Image</a></td>
+<td><a href="#Silence">Silence</a></td>
+<td><a href="#Polar Ray">Polar Ray</a></td>
+<td><a href="#Reflection">Reflection</a></td>
+<td><a href="#True Sight">True Sight</a></td>
+<td></td>
+<td></td>
+<td></td>
 </tr>
 <tr>
-<td>Burning Hands</td>
-<td>1</td>
-<td>evocation school</td>
-<td><em>Unleash a cone of fire, dealing 1d6 damage to all enemies in the area.</em></td>
-<td>Deal 1d6 fire damage to all enemies.</td>
+<td><a href="#Shock Pulse">Shock Pulse</a></td>
+<td><a href="#Shocking Grasp">Shocking Grasp</a></td>
+<td><a href="#Ray of Frost">Ray of Frost</a></td>
+<td><a href="#Slow">Slow</a></td>
+<td><a href="#Sandstorm">Sandstorm</a></td>
+<td><a href="#Sound Lance">Sound Lance</a></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
 </tr>
 <tr>
-<td>Chain Lightning</td>
-<td>4</td>
-<td>evocation school</td>
-<td><em>Strike multiple enemies with lightning.</em></td>
-<td>Deal 2d6+#level lightning damage to an enemy cascading =3+floor(#level/2) times.</td>
+<td><a href="#Soot Cloud">Soot Cloud</a></td>
+<td><a href="#Sleep">Sleep</a></td>
+<td><a href="#Scald">Scald</a></td>
+<td><a href="#Summon Monster I">Summon Monster I</a></td>
+<td><a href="#Summon Elemental">Summon Elemental</a></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
 </tr>
 <tr>
-<td>Confuse</td>
-<td>3</td>
-<td>illusion school</td>
-<td><em>Confuse an enemy, causing them to act randomly.</em></td>
-<td>An enemy suffers Confused (Actions are random).</td>
-</tr>
-<tr>
-<td>Dancing Lights</td>
-<td>??</td>
-<td>illusion school</td>
-<td><em>Create small lights that hover and move.</em></td>
-<td>All enemies suffer Distracted (Degrade to hit by 1, degrade bonus damage by 1, degrade evasion by 5); All enemies suffer Blinded (Degrade to hit by 4, degrade evasion by 10, degrade all rolls by 2).</td>
-</tr>
-<tr>
-<td>Detonation</td>
-<td>??</td>
-<td>evocation school</td>
-<td><em>Countdown to a fiery explosion.</em></td>
-<td>Grant yourself Ticking (On expire, Deal 2d6 fire damage to enemies; Instantly kill self for 4 turns).</td>
-</tr>
-<tr>
-<td>Disintegrate</td>
-<td>5</td>
-<td>evocation school</td>
-<td><em>A green ray that dematerializes living forms leaps from your fingertips.</em></td>
-<td>Deal 10d6 force damage to an enemy.</td>
-</tr>
-<tr>
-<td>Dispel Magic</td>
-<td>2</td>
-<td>abjuration school</td>
-<td><em>Remove all effects.</em></td>
-<td>Remove .* from yourself or an ally or an enemy.</td>
-</tr>
-<tr>
-<td>Drench</td>
-<td>3</td>
-<td>transmutation school</td>
-<td><em>Drench an enemy, reducing their attack rolls by 2 for 3 rounds.</em></td>
-<td>An enemy suffers Drenched (Degrade to hit by 2, 100% vulnerability to Lightning, 200% vulnerability to Cold).</td>
-</tr>
-<tr>
-<td>Earthquake</td>
-<td>2</td>
-<td>evocation school</td>
-<td><em>Cause the ground to shake.</em></td>
-<td>Deal 2d6 bludgeoning damage to all enemies; All enemies suffer Prone (Cannot take actions, degrade Dexterity by 2).</td>
-</tr>
-<tr>
-<td>False Life</td>
-<td>1</td>
-<td>necromancy school</td>
-<td><em>Grant yourself temporary hit points.</em></td>
-<td>Grant yourself False Life (Gain =10d6 + 2 * #level temporary HP).</td>
-</tr>
-<tr>
-<td>Fireball</td>
-<td>3</td>
-<td>evocation school</td>
-<td><em>Hurl a destructive ball of energy that explodes in a fiery blast.</em></td>
-<td>Deal 6d6 fire damage to all enemies.</td>
-</tr>
-<tr>
-<td>Firebolt</td>
-<td>??</td>
-<td>evocation school</td>
-<td><em>A small bolt of fire shoots from your fingertips.</em></td>
-<td>Deal 1d3 fire damage to an enemy.</td>
-</tr>
-<tr>
-<td>Flesh to Stone</td>
-<td>4</td>
-<td>transmutation school</td>
-<td><em>Turn an enemy to stone.</em></td>
-<td>An enemy suffers Petrified (Cannot take actions, Immunity to Fear, Immunity to Charm, Immunity to Stun, Immunity to Sleep, Immunity to Poison, Immunity to Disease).</td>
-</tr>
-<tr>
-<td>Frostbite</td>
-<td>??</td>
-<td>evocation school</td>
-<td><em>A chilling blast of cold air.</em></td>
-<td>Deal 1d4 cold damage to an enemy.</td>
-</tr>
-<tr>
-<td>Ghost Touch</td>
-<td>??</td>
-<td>transmutation school</td>
-<td><em>Induce necrosis with your touch.</em></td>
-<td>Grant yourself Ghost Touch (On attack hit, Deal 1d3 necrotic damage to self).</td>
-</tr>
-<tr>
-<td>Haste</td>
-<td>3</td>
-<td>transmutation school</td>
-<td><em>Increase an ally's speed.</em></td>
-<td>Grant an ally Haste (Improve Dexterity by 4, improve initiative by 10, improve attacks per turn by 1, improve AC by 2).</td>
-</tr>
-<tr>
-<td>Invisibility</td>
-<td>3</td>
-<td>illusion school</td>
-<td><em>Turn invisible for 5 rounds or until you attack or cast a spell.</em></td>
-<td>Grant yourself or an ally Invisible (Invisible, On attack, Remove Invisible from self, On offensive casting, Remove Invisible from self).</td>
-</tr>
-<tr>
-<td>Lightning Strike</td>
-<td>2</td>
-<td>evocation school</td>
-<td><em>Strike random enemies with lightning, dealing 1d8 damage and paralyzing them for 1 round.</em></td>
-<td>Deal 1d8 electric damage to 2 random enemies; 2 random enemies suffer Paralyzed (Cannot take actions, degrade Strength by 5, degrade Dexterity by 5).</td>
-</tr>
-<tr>
-<td>Maze</td>
-<td>8</td>
-<td>conjuration school</td>
-<td><em>Banish an enemy to a labyrinthine demiplane for up to 10 minutes.</em></td>
-<td>An enemy suffers In Maze (Cannot take actions, Untargetable).</td>
-</tr>
-<tr>
-<td>Minor Ward</td>
-<td>??</td>
-<td>abjuration school</td>
-<td><em>Create a magical ward that absorbs damage.</em></td>
-<td>Grant yourself Minor Warded (Improve Save versus Magic by 1, 25% resistance to Force, Gain =7 + #level temporary HP).</td>
-</tr>
-<tr>
-<td>Mirror Image</td>
-<td>2</td>
-<td>illusion school</td>
-<td><em>Illusory duplicates confound attackers</em></td>
-<td>Grant yourself Mirror Images (Improve AC by 2, improve all saves by 2, improve evasion by 15).</td>
-</tr>
-<tr>
-<td>Magic Missile</td>
-<td>1</td>
-<td>evocation school</td>
-<td><em>Fire three magical bolts that automatically hit and deal 1d3 damage each (more bolts and damage at higher levels).</em></td>
-<td>Deal 1d3 + floor(#level/3) force damage to 2 + round(#level/2) random enemies.</td>
-</tr>
-<tr>
-<td>Paralyzing Touch</td>
-<td>2</td>
-<td>necromancy school</td>
-<td><em>Touch an enemy to paralyze them for 2 rounds.</em></td>
-<td>An enemy suffers Paralyzed (Cannot take actions, degrade Strength by 5, degrade Dexterity by 5).</td>
-</tr>
-<tr>
-<td>Plane Shift</td>
-<td>7</td>
-<td>conjuration school</td>
-<td><em>Transport yourself and your party to another plane of existence.</em></td>
-<td>Planeshift yourself to =oneOf(Arcadia, Cthelll, Gehenna, Hades, Limbo, Mechanus, Pandemonium, Ysgard, Zephyrus).</td>
-</tr>
-<tr>
-<td>Poison Cloud</td>
-<td>2</td>
-<td>conjuration school</td>
-<td><em>Release a cloud of toxic gas.</em></td>
-<td>Deal 1d4 poison damage to all enemies.</td>
-</tr>
-<tr>
-<td>Prismatic Spray</td>
-<td>1</td>
-<td>evocation school</td>
-<td><em>A dazzling array of multicolored beams springs from your hand.</em></td>
-<td>Cycle through the following effects on =5 + round(#level / 2) random enemies: Deal 1d3+1 fire damage to enemy; Deal 1d4 cold damage to enemy; Deal 1d2 acid damage to enemy; Deal 1d3 lightning damage to enemy; Deal 1d3 poison damage to enemy; Deal 1d4 psychic damage to enemy; Deal 1d2+1 radiant damage to enemy; Deal 1d2 necrotic damage to enemy.</td>
-</tr>
-<tr>
-<td>Ray of Frost</td>
-<td>2</td>
-<td>evocation school</td>
-<td><em>Fire a ray of frost, dealing 1d4 damage and reducing the target's speed by 10 feet for 3 rounds.</em></td>
-<td>Deal 1d4 cold damage to an enemy.</td>
-</tr>
-<tr>
-<td>Reflection</td>
-<td>2</td>
-<td>abjuration school</td>
-<td><em>Create a magical shield that reflects some incoming damage.</em></td>
-<td>Grant yourself Reflect (Add 50% to damage reflection percent).</td>
-</tr>
-<tr>
-<td>Sandstorm</td>
-<td>4</td>
-<td>evocation school</td>
-<td><em>Create a swirling sandstorm that damages and blinds enemies within it for 3 rounds.</em></td>
-<td>Deal 2d6 bludgeoning damage to all enemies; All enemies suffer Blinded (Degrade to hit by 4, degrade evasion by 10, degrade all rolls by 2).</td>
-</tr>
-<tr>
-<td>Scald</td>
-<td>4</td>
-<td>evocation school</td>
-<td><em>Blast an enemy with superheated steam.</em></td>
-<td>Deal 3d6 fire damage to an enemy; An enemy suffers Scalded (Degrade all rolls by 1).</td>
-</tr>
-<tr>
-<td>Shock Pulse</td>
-<td>??</td>
-<td>evocation school</td>
-<td><em>Release a pulse of electrical energy that arcs to additional targets.</em></td>
-<td>Deal 1d4 lightning damage to an enemy cascading =1+floor(#level/2) times.</td>
-</tr>
-<tr>
-<td>Shocking Grasp</td>
-<td>1</td>
-<td>evocation school</td>
-<td><em>Deliver a jolt of electricity.</em></td>
-<td>Deal 1d6 lightning damage to an enemy.</td>
-</tr>
-<tr>
-<td>Silence</td>
-<td>3</td>
-<td>illusion school</td>
-<td><em>Create an area of silence, preventing spellcasting for 3 rounds.</em></td>
-<td>All enemies suffer Silence (Cannot cast spells).</td>
-</tr>
-<tr>
-<td>Sleep</td>
-<td>1</td>
-<td>enchantment school</td>
-<td><em>Lull enemies into a magical slumber.</em></td>
-<td>All enemies suffer Asleep (Cannot take actions).</td>
-</tr>
-<tr>
-<td>Slow</td>
-<td>2</td>
-<td>transmutation school</td>
-<td><em>Reduce the speed of your foes.</em></td>
-<td>All enemies suffer Slow (Degrade Dexterity by 5, degrade initiative by 10, degrade attacks per turn by 1).</td>
-</tr>
-<tr>
-<td>Soot Cloud</td>
-<td>??</td>
-<td>conjuration school</td>
-<td><em>Create a cloud of soot that reveals hidden or invisible creatures.</em></td>
-<td>Remove hidden</td>
-</tr>
-<tr>
-<td>Sound Lance</td>
-<td>2</td>
-<td>evocation school</td>
-<td><em>A concentrated blast of noise explodes from your hand.</em></td>
-<td>Deal 4d6 sonic damage to an enemy; An enemy suffers Deafened (50% resistance to Sonic, degrade bonus damage by 2, degrade AC by 2, degrade to hit by 2, degrade all saves by 1).</td>
-</tr>
-<tr>
-<td>Spark</td>
-<td>??</td>
-<td>evocation school</td>
-<td><em>A small jolt of electricity.</em></td>
-<td>Deal 1d3 lightning damage to an enemy.</td>
-</tr>
-<tr>
-<td>Spellturning</td>
-<td>4</td>
-<td>abjuration school</td>
-<td><em>Create a magical barrier may reflect spells back to their caster.</em></td>
-<td>Grant yourself Spellturn (Add 50% to spell reflection chance).</td>
-</tr>
-<tr>
-<td>Summon Elemental</td>
-<td>4</td>
-<td>conjuration school</td>
-<td><em>Summon a random elemental to fight for you.</em></td>
-<td>Summon of class Elemental monster.</td>
-</tr>
-<tr>
-<td>Summon Monster</td>
-<td>3</td>
-<td>conjuration school</td>
-<td><em>Summon a random monster (beast or fey type) to fight for you.</em></td>
-<td>Summon of class =oneOf(beast, fey) monster.</td>
-</tr>
-<tr>
-<td>Summon Undead</td>
-<td>2</td>
-<td>conjuration school</td>
-<td><em>Summon a random undead creature to fight for you.</em></td>
-<td>Summon npc.</td>
-</tr>
-<tr>
-<td>Sunmark</td>
-<td>??</td>
-<td>evocation school</td>
-<td><em>Light up an enemy with a radiant mark.</em></td>
-<td>Deal 1d3 radiant damage to an enemy; An enemy suffers Sunmarked (Degrade Save versus Magic by 1, 25% vulnerability to Fire, 25% vulnerability to Radiant, On attacked, Deal 1d4 radiant damage to self).</td>
-</tr>
-<tr>
-<td>Time Stop</td>
-<td>9</td>
-<td>transmutation school</td>
-<td><em>Stop time for everyone but yourself.</em></td>
-<td>Grant yourself Time Stopped (Improve extra turns by 3, Does not trigger reactions).</td>
-</tr>
-<tr>
-<td>True Sight</td>
-<td>6</td>
-<td>divination school</td>
-<td><em>See through illusions, invisibility, and magical darkness for 10 minutes.</em></td>
-<td>Grant yourself or an ally True Sight (Can perceive invisible entities).</td>
-</tr>
-<tr>
-<td>Arcane Ward</td>
-<td>1</td>
-<td>abjuration school</td>
-<td><em>Conjure a magical absorption ward.</em></td>
-<td>Grant yourself or an ally Warded (Improve Save versus Magic by 1, 15% resistance to Fire, 15% resistance to Cold, 15% resistance to Lightning, 50% resistance to Force, Gain =14 + 2 * #level temporary HP).</td>
+<td><a href="#Spark">Spark</a></td>
+<td><a href="#Arcane Ward">Arcane Ward</a></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
 </tr>
 </tbody>
 </table>
-<h3 id="divine-spells">Divine Spells</h3>
 <table>
 <thead>
 <tr>
@@ -1412,302 +1192,838 @@
 </thead>
 <tbody>
 <tr>
-<td>Aegis of Faith</td>
+<td><p id="Acid Arrow">Acid Arrow</p></td>
+<td>1</td>
+<td>School of Conjuration</td>
+<td><em>Fire an arrow of acid, dealing 1d4 damage and applying Acid Burn.</em></td>
+<td>Deal 1d4 acid damage to an enemy.</td>
+</tr>
+<tr>
+<td><p id="Acid Spray">Acid Spray</p></td>
+<td>2</td>
+<td>School of Conjuration</td>
+<td><em>Spray a cone of acid, dealing 2d6 damage to all enemies in the area and applying Acid Burn.</em></td>
+<td>Deal 2d6 acid damage to all enemies.</td>
+</tr>
+<tr>
+<td><p id="Apocalypse">Apocalypse</p></td>
+<td>9</td>
+<td>School of Evocation</td>
+<td><em>Unleash a cataclysmic storm of elemental fury upon all enemies.</em></td>
+<td>Deal 6d6 fire damage to all enemies; Deal 6d6 cold damage to all enemies; Deal 6d6 lightning damage to all enemies; All enemies suffer Doomed (Degrade all stats by 4 for 3 turns).</td>
+</tr>
+<tr>
+<td><p id="Mage Armor">Mage Armor</p></td>
+<td>1</td>
+<td>School of Abjuration</td>
+<td><em>Arcane force wraps around you, providing magical protection.</em></td>
+<td>Grant yourself Mage-Armored (Improve AC by 4, Gain 20 temporary HP).</td>
+</tr>
+<tr>
+<td><p id="Blur">Blur</p></td>
+<td>2</td>
+<td>School of Illusion</td>
+<td><em>You are out of focus, making it harder for enemies to hit you.</em></td>
+<td>Grant yourself Blurred (Improve Save versus Magic by 2, improve AC by 1, improve evasion by 10).</td>
+</tr>
+<tr>
+<td><p id="Burning Hands">Burning Hands</p></td>
+<td>1</td>
+<td>School of Evocation</td>
+<td><em>Unleash a cone of fire, dealing 1d6 damage to all enemies in the area.</em></td>
+<td>Deal 1d6 fire damage to all enemies.</td>
+</tr>
+<tr>
+<td><p id="Chain Lightning">Chain Lightning</p></td>
+<td>4</td>
+<td>School of Evocation</td>
+<td><em>Strike multiple enemies with lightning.</em></td>
+<td>Deal 2d6+#level lightning damage to an enemy cascading =3+floor(#level/2) times.</td>
+</tr>
+<tr>
+<td><p id="Chaos Bolt">Chaos Bolt</p></td>
+<td>3</td>
+<td>School of Evocation</td>
+<td><em>Hurl a bolt of chaotic energy that deals random types of damage.</em></td>
+<td>Apply one of the following random effects to an enemy: Deal 2d6 fire damage to an enemy; Deal 2d6 cold damage to an enemy; Deal 2d6 acid damage to an enemy; Deal 2d6 poison damage to an enemy.</td>
+</tr>
+<tr>
+<td><p id="Confuse">Confuse</p></td>
+<td>3</td>
+<td>School of Illusion</td>
+<td><em>Confuse an enemy, causing them to act randomly.</em></td>
+<td>An enemy suffers Confused (Actions are random).</td>
+</tr>
+<tr>
+<td><p id="Dancing Lights">Dancing Lights</p></td>
+<td>??</td>
+<td>School of Illusion</td>
+<td><em>Create small lights that hover and move.</em></td>
+<td>All enemies suffer Distracted (Degrade to hit by 1, degrade bonus damage by 1, degrade evasion by 5); All enemies suffer Blinded (Degrade to hit by 4, degrade evasion by 10, degrade all rolls by 2).</td>
+</tr>
+<tr>
+<td><p id="Detonation">Detonation</p></td>
+<td>??</td>
+<td>School of Evocation</td>
+<td><em>Countdown to a fiery explosion.</em></td>
+<td>Grant yourself Ticking (On expire, Deal 2d6 fire damage to enemies; Instantly kill self for 3 turns).</td>
+</tr>
+<tr>
+<td><p id="Disintegrate">Disintegrate</p></td>
+<td>5</td>
+<td>School of Evocation</td>
+<td><em>A green ray that dematerializes living forms leaps from your fingertips.</em></td>
+<td>Deal 10d6 force damage to an enemy.</td>
+</tr>
+<tr>
+<td><p id="Dispel Magic">Dispel Magic</p></td>
+<td>2</td>
+<td>School of Abjuration</td>
+<td><em>Remove all effects.</em></td>
+<td>Remove .* from yourself or an ally or an enemy.</td>
+</tr>
+<tr>
+<td><p id="Disruption">Disruption</p></td>
+<td>4</td>
+<td>School of Abjuration</td>
+<td><em>Imbue a weapon with disruptive energy especially harmful to undead and constructs.</em></td>
+<td>Grant yourself or an ally Disrupting (On attack, Deal 2d6 true damage to target; Deal 3d6 radiant damage to target if undead</td>
+</tr>
+<tr>
+<td><p id="Drench">Drench</p></td>
+<td>3</td>
+<td>School of Transmutation</td>
+<td><em>Drench an enemy, reducing their attack rolls by 2 for 3 rounds.</em></td>
+<td>An enemy suffers Drenched (Degrade to hit by 2, 100% vulnerability to Lightning, 200% vulnerability to Cold).</td>
+</tr>
+<tr>
+<td><p id="Earthquake">Earthquake</p></td>
+<td>5</td>
+<td>School of Evocation</td>
+<td><em>Cause the ground to shake.</em></td>
+<td>Deal 2d6 bludgeoning damage to all enemies; All enemies suffer Prone (Cannot take actions, degrade Dexterity by 2).</td>
+</tr>
+<tr>
+<td><p id="False Life">False Life</p></td>
+<td>4</td>
+<td>School of Necromancy</td>
+<td><em>Grant yourself temporary hit points.</em></td>
+<td>Grant yourself False Life (Gain =10d6 + 2 * #level temporary HP).</td>
+</tr>
+<tr>
+<td><p id="Fireball">Fireball</p></td>
+<td>6</td>
+<td>School of Evocation</td>
+<td><em>Hurl a destructive ball of energy that explodes in a fiery blast.</em></td>
+<td>Deal 6d6 fire damage to all enemies.</td>
+</tr>
+<tr>
+<td><p id="Firebolt">Firebolt</p></td>
+<td>??</td>
+<td>School of Evocation</td>
+<td><em>A small bolt of fire shoots from your fingertips.</em></td>
+<td>Deal 1d3 fire damage to an enemy.</td>
+</tr>
+<tr>
+<td><p id="Flesh to Stone">Flesh to Stone</p></td>
+<td>6</td>
+<td>School of Transmutation</td>
+<td><em>Turn an enemy to stone.</em></td>
+<td>An enemy suffers Petrified (Cannot take actions, Immunity to Fear, Immunity to Charm, Immunity to Stun, Immunity to Sleep, Immunity to Poison, Immunity to Disease).</td>
+</tr>
+<tr>
+<td><p id="Frostbite">Frostbite</p></td>
+<td>??</td>
+<td>School of Evocation</td>
+<td><em>A chilling blast of cold air.</em></td>
+<td>Deal 1d4 cold damage to an enemy.</td>
+</tr>
+<tr>
+<td><p id="Ghost Touch">Ghost Touch</p></td>
+<td>??</td>
+<td>School of Transmutation</td>
+<td><em>Induce necrosis with your touch.</em></td>
+<td>Grant yourself Ghost Touch (On attack hit, Deal 1d3 necrotic damage to target).</td>
+</tr>
+<tr>
+<td><p id="Haste">Haste</p></td>
+<td>5</td>
+<td>School of Transmutation</td>
+<td><em>Increase an ally's speed.</em></td>
+<td>Grant an ally Haste (Improve Dexterity by 4, improve initiative by 10, improve attacks per turn by 1, improve AC by 2).</td>
+</tr>
+<tr>
+<td><p id="Implosion">Implosion</p></td>
+<td>8</td>
+<td>School of Evocation</td>
+<td><em>Create a powerful gravitational collapse at a target location, damaging all enemies within the area.</em></td>
+<td>Deal 10d6 force damage to all enemies.</td>
+</tr>
+<tr>
+<td><p id="Invisibility">Invisibility</p></td>
+<td>6</td>
+<td>School of Illusion</td>
+<td><em>Turn invisible for 5 rounds or until you attack or cast a spell.</em></td>
+<td>Grant yourself or an ally Invisible (Invisible, On attack, Remove Invisible from self, On offensive casting, Remove Invisible from self).</td>
+</tr>
+<tr>
+<td><p id="Lightning Strike">Lightning Strike</p></td>
+<td>4</td>
+<td>School of Evocation</td>
+<td><em>Strike random enemies with lightning, dealing 1d8 damage and paralyzing them for 1 round.</em></td>
+<td>Deal 1d8 electric damage to 2 random enemies; 2 random enemies suffer Paralyzed (Cannot take actions, degrade Strength by 5, degrade Dexterity by 5).</td>
+</tr>
+<tr>
+<td><p id="Magebane">Magebane</p></td>
+<td>2</td>
+<td>School of Abjuration</td>
+<td><em>Create an aura that harms enemy spellcasters when they cast spells.</em></td>
+<td>Grant an enemy Magebane (On enemy casting, Deal 2d6 true damage to caster for 3 turns).</td>
+</tr>
+<tr>
+<td><p id="Maze">Maze</p></td>
+<td>8</td>
+<td>School of Conjuration</td>
+<td><em>Banish an enemy to a labyrinthine demiplane for up to 10 minutes.</em></td>
+<td>An enemy suffers In Maze (Cannot take actions, Untargetable).</td>
+</tr>
+<tr>
+<td><p id="Minor Ward">Minor Ward</p></td>
+<td>??</td>
+<td>School of Abjuration</td>
+<td><em>Create a magical ward that absorbs damage.</em></td>
+<td>Grant yourself Minor Warded (Improve Save versus Magic by 1, 25% resistance to Force, Gain =7 + #level temporary HP).</td>
+</tr>
+<tr>
+<td><p id="Mirror Image">Mirror Image</p></td>
+<td>2</td>
+<td>School of Illusion</td>
+<td><em>Illusory duplicates confound attackers</em></td>
+<td>Grant yourself Mirror Images (Improve AC by 2, improve all saves by 2, improve evasion by 15).</td>
+</tr>
+<tr>
+<td><p id="Magic Missile">Magic Missile</p></td>
+<td>1</td>
+<td>School of Evocation</td>
+<td><em>Fire three magical bolts that automatically hit and deal 1d3 damage each (more bolts and damage at higher levels).</em></td>
+<td>Deal 1d3 + floor(#level/3) force damage to 2 + round(#level/2) random enemies.</td>
+</tr>
+<tr>
+<td><p id="Obscuring Mist">Obscuring Mist</p></td>
+<td>3</td>
+<td>School of Conjuration</td>
+<td><em>Create a mist that obscures vision.</em></td>
+<td>Grant yourself Hidden (Improve AC by 4, improve evasion by 10, On attack, Remove Hidden from self).</td>
+</tr>
+<tr>
+<td><p id="Paralyzing Touch">Paralyzing Touch</p></td>
+<td>2</td>
+<td>School of Necromancy</td>
+<td><em>Touch an enemy to paralyze them for 2 rounds.</em></td>
+<td>An enemy suffers Paralyzed (Cannot take actions, degrade Strength by 5, degrade Dexterity by 5).</td>
+</tr>
+<tr>
+<td><p id="Plane Shift">Plane Shift</p></td>
+<td>7</td>
+<td>School of Conjuration</td>
+<td><em>Transport yourself and your party to another plane of existence.</em></td>
+<td>Planeshift yourself to =oneOf(Arcadia, Cthelll, Gehenna, Hades, Limbo, Mechanus, Pandemonium, Ysgard, Zephyrus).</td>
+</tr>
+<tr>
+<td><p id="Poison Cloud">Poison Cloud</p></td>
+<td>5</td>
+<td>School of Conjuration</td>
+<td><em>Release a cloud of toxic gas.</em></td>
+<td>Deal 3d4+#level poison damage to all enemies.</td>
+</tr>
+<tr>
+<td><p id="Polar Ray">Polar Ray</p></td>
+<td>4</td>
+<td>School of Evocation</td>
+<td><em>Fire a beam of intense cold that can freeze enemies in place.</em></td>
+<td>Deal 5d6 cold damage to an enemy.</td>
+</tr>
+<tr>
+<td><p id="Prismatic Spray">Prismatic Spray</p></td>
+<td>1</td>
+<td>School of Evocation</td>
+<td><em>A dazzling array of multicolored beams springs from your hand.</em></td>
+<td>Cycle through the following effects on =5 + round(#level / 2) random enemies: Deal 1d3+1 fire damage to enemy; Deal 1d4 cold damage to enemy; Deal 1d2 acid damage to enemy; Deal 1d3 lightning damage to enemy; Deal 1d3 poison damage to enemy; Deal 1d4 psychic damage to enemy; Deal 1d2+1 radiant damage to enemy; Deal 1d2 necrotic damage to enemy.</td>
+</tr>
+<tr>
+<td><p id="Ray of Frost">Ray of Frost</p></td>
+<td>2</td>
+<td>School of Evocation</td>
+<td><em>Fire a ray of frost, dealing 1d4 damage and reducing the target's speed by 10 feet for 3 rounds.</em></td>
+<td>Deal 1d4 cold damage to an enemy.</td>
+</tr>
+<tr>
+<td><p id="Reflection">Reflection</p></td>
+<td>5</td>
+<td>School of Abjuration</td>
+<td><em>Create a magical shield that reflects some incoming damage.</em></td>
+<td>Grant yourself Reflect (Add 50% to damage reflection percent).</td>
+</tr>
+<tr>
+<td><p id="Sandstorm">Sandstorm</p></td>
+<td>4</td>
+<td>School of Evocation</td>
+<td><em>Create a swirling sandstorm that damages and blinds enemies within it for 3 rounds.</em></td>
+<td>Deal 2d6 bludgeoning damage to all enemies; All enemies suffer Blinded (Degrade to hit by 4, degrade evasion by 10, degrade all rolls by 2).</td>
+</tr>
+<tr>
+<td><p id="Scald">Scald</p></td>
+<td>2</td>
+<td>School of Evocation</td>
+<td><em>Blast an enemy with superheated steam.</em></td>
+<td>Deal 3d6 fire damage to an enemy; An enemy suffers Scalded (Degrade all rolls by 1).</td>
+</tr>
+<tr>
+<td><p id="Shock Pulse">Shock Pulse</p></td>
+<td>??</td>
+<td>School of Evocation</td>
+<td><em>Release a pulse of electrical energy that arcs to additional targets.</em></td>
+<td>Deal 1d4 lightning damage to an enemy cascading =1+floor(#level/2) times.</td>
+</tr>
+<tr>
+<td><p id="Shocking Grasp">Shocking Grasp</p></td>
+<td>1</td>
+<td>School of Evocation</td>
+<td><em>Deliver a jolt of electricity.</em></td>
+<td>Deal 1d6 lightning damage to an enemy.</td>
+</tr>
+<tr>
+<td><p id="Silence">Silence</p></td>
+<td>3</td>
+<td>School of Illusion</td>
+<td><em>Create an area of silence, preventing spellcasting for 3 rounds.</em></td>
+<td>All enemies suffer Silence (Cannot cast spells).</td>
+</tr>
+<tr>
+<td><p id="Sleep">Sleep</p></td>
+<td>1</td>
+<td>School of Enchantment</td>
+<td><em>Lull enemies into a magical slumber.</em></td>
+<td>All enemies suffer Asleep (Cannot take actions).</td>
+</tr>
+<tr>
+<td><p id="Slow">Slow</p></td>
+<td>3</td>
+<td>School of Transmutation</td>
+<td><em>Reduce the speed of your foes.</em></td>
+<td>All enemies suffer Slow (Degrade Dexterity by 5, degrade initiative by 10, degrade attacks per turn by 1).</td>
+</tr>
+<tr>
+<td><p id="Soot Cloud">Soot Cloud</p></td>
+<td>??</td>
+<td>School of Conjuration</td>
+<td><em>Create a cloud of soot that reveals hidden or invisible creatures.</em></td>
+<td>Remove hidden</td>
+</tr>
+<tr>
+<td><p id="Sound Lance">Sound Lance</p></td>
+<td>5</td>
+<td>School of Evocation</td>
+<td><em>A concentrated blast of noise explodes from your hand.</em></td>
+<td>Deal 4d6 sonic damage to an enemy.</td>
+</tr>
+<tr>
+<td><p id="Spark">Spark</p></td>
+<td>??</td>
+<td>School of Evocation</td>
+<td><em>A small jolt of electricity.</em></td>
+<td>Deal 1d3 lightning damage to an enemy.</td>
+</tr>
+<tr>
+<td><p id="Spellturning">Spellturning</p></td>
+<td>7</td>
+<td>School of Abjuration</td>
+<td><em>Create a magical barrier may reflect spells back to their caster.</em></td>
+<td>Grant yourself Spellturn (Add 50% to spell reflection chance).</td>
+</tr>
+<tr>
+<td><p id="Stone to Flesh">Stone to Flesh</p></td>
+<td>6</td>
+<td>School of Transmutation</td>
+<td><em>Restore a petrified creature to flesh.</em></td>
+<td>Remove Petrified from an ally.</td>
+</tr>
+<tr>
+<td><p id="Summon Elemental">Summon Elemental</p></td>
+<td>4</td>
+<td>School of Conjuration</td>
+<td><em>Summon a random elemental to fight for you.</em></td>
+<td>Summon of class Elemental monster.</td>
+</tr>
+<tr>
+<td><p id="Summon Monster I">Summon Monster I</p></td>
+<td>3</td>
+<td>School of Conjuration</td>
+<td><em>Summon a random monster (beast or fey type) to fight for you.</em></td>
+<td>Summon of class =oneOf(beast, fey) monster.</td>
+</tr>
+<tr>
+<td><p id="Summon Undead">Summon Undead</p></td>
+<td>3</td>
+<td>School of Conjuration</td>
+<td><em>Summon a random undead creature to fight for you.</em></td>
+<td>Summon npc.</td>
+</tr>
+<tr>
+<td><p id="Time Stop">Time Stop</p></td>
+<td>8</td>
+<td>School of Transmutation</td>
+<td><em>Stop time for everyone but yourself.</em></td>
+<td>Grant yourself Time Stopped (Improve extra turns by 3, Does not trigger reactions).</td>
+</tr>
+<tr>
+<td><p id="True Sight">True Sight</p></td>
+<td>6</td>
+<td>School of Divination</td>
+<td><em>See through illusions, invisibility, and magical darkness for 10 minutes.</em></td>
+<td>Grant yourself or an ally True Sight (Can perceive invisible entities).</td>
+</tr>
+<tr>
+<td><p id="Arcane Ward">Arcane Ward</p></td>
+<td>1</td>
+<td>School of Abjuration</td>
+<td><em>Conjure a magical absorption ward.</em></td>
+<td>Grant yourself or an ally Warded (Improve Save versus Magic by 1, 15% resistance to Fire, 15% resistance to Cold, 15% resistance to Lightning, 50% resistance to Force, Gain =14 + 2 * #level temporary HP).</td>
+</tr>
+<tr>
+<td><p id="Warp Enemy">Warp Enemy</p></td>
+<td>7</td>
+<td>School of Transmutation</td>
+<td><em>Distort the fabric of reality around an enemy, causing unpredictable effects.</em></td>
+<td>Apply one of the following random effects to an enemy: An enemy suffers Stunned (Cannot take actions, degrade all rolls by 2); An enemy suffers Slow (Degrade Dexterity by 5, degrade initiative by 10, degrade attacks per turn by 1); An enemy suffers Weakened (Degrade Strength by 2, degrade bonus damage by 2); An enemy suffers Distracted (Degrade to hit by 1, degrade bonus damage by 1, degrade evasion by 5); Apply one of the following random effects to an enemy: An enemy suffers Cursed (Degrade all stats by 1); An enemy suffers Insane (Actions are random, degrade all rolls by 1, degrade Save versus Will by 2); An enemy suffers Charmed (Allegiance changed); An enemy suffers Frightened (Degrade to hit by 2, degrade initiative by 5, degrade all rolls by 1, degrade all saves by 2).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="divine-spells">Divine Spells</h3>
+<table>
+<thead>
+<tr>
+<th>Cantrip</th>
+<th>Level 1</th>
+<th>Level 2</th>
+<th>Level 3</th>
+<th>Level 4</th>
+<th>Level 5</th>
+<th>Level 6</th>
+<th>Level 7</th>
+<th>Level 8</th>
+<th>Level 9</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#Cure Minor Wounds">Cure Minor Wounds</a></td>
+<td><a href="#Anoint">Anoint</a></td>
+<td><a href="#Barkskin">Barkskin</a></td>
+<td><a href="#Consecrated Ground">Consecrated Ground</a></td>
+<td><a href="#Command">Command</a></td>
+<td><a href="#Aegis of Faith">Aegis of Faith</a></td>
+<td><a href="#Cure Critical Wounds">Cure Critical Wounds</a></td>
+<td><a href="#Madness">Madness</a></td>
+<td><a href="#Scaleskin">Scaleskin</a></td>
+<td><a href="#Steelskin">Steelskin</a></td>
+</tr>
+<tr>
+<td><a href="#Sunmark">Sunmark</a></td>
+<td><a href="#Bless">Bless</a></td>
+<td><a href="#Hold Person">Hold Person</a></td>
+<td><a href="#Cure Disease">Cure Disease</a></td>
+<td><a href="#Cure Serious Wounds">Cure Serious Wounds</a></td>
+<td><a href="#Blade Barrier">Blade Barrier</a></td>
+<td><a href="#Holy">Holy</a></td>
+<td><a href="#Resurrection">Resurrection</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><a href="#Cure Light Wounds">Cure Light Wounds</a></td>
+<td><a href="#Prayer">Prayer</a></td>
+<td><a href="#Cure Moderate Wounds">Cure Moderate Wounds</a></td>
+<td><a href="#Daylight">Daylight</a></td>
+<td><a href="#Judgment">Judgment</a></td>
+<td><a href="#Ironskin">Ironskin</a></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><a href="#Heal Ally">Heal Ally</a></td>
+<td><a href="#Resist Fire">Resist Fire</a></td>
+<td><a href="#Rally">Rally</a></td>
+<td><a href="#Raise Dead">Raise Dead</a></td>
+<td><a href="#Sunburst">Sunburst</a></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><a href="#Protection from Evil">Protection from Evil</a></td>
+<td><a href="#Shield of Faith">Shield of Faith</a></td>
+<td><a href="#Stoneskin">Stoneskin</a></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><a href="#Remove Fear">Remove Fear</a></td>
+<td><a href="#Turn Undead">Turn Undead</a></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><a href="#Smite Evil">Smite Evil</a></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Level</th>
+<th>School/Domain</th>
+<th>Description</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p id="Aegis of Faith">Aegis of Faith</p></td>
 <td>5</td>
 <td>life domain</td>
 <td><em>Ward against all effects.</em></td>
 <td>Grant yourself Invulnerable (Untargetable).</td>
 </tr>
 <tr>
-<td>Animate Dead</td>
+<td><p id="Animate Dead">Animate Dead</p></td>
 <td>??</td>
 <td>death domain</td>
 <td><em>Bind souls to your service.</em></td>
 <td>Restore a fallen ally to life with 40% health.</td>
 </tr>
 <tr>
-<td>Anoint</td>
+<td><p id="Anoint">Anoint</p></td>
 <td>1</td>
 <td>life domain</td>
 <td><em>You mark your allies with a holy symbol, granting them protection.</em></td>
 <td>Grant all allies Anointed (50% resistance to Radiant, improve bonus damage by 1, improve to hit by 1, improve all saves by 2).</td>
 </tr>
 <tr>
-<td>Barkskin</td>
+<td><p id="Barkskin">Barkskin</p></td>
 <td>2</td>
 <td>nature domain</td>
 <td><em>Your skin stiffens into tree-bark.</em></td>
 <td>Grant yourself Barkskin (Improve AC by 2).</td>
 </tr>
 <tr>
-<td>Black Ritual</td>
+<td><p id="Black Ritual">Black Ritual</p></td>
 <td>??</td>
 <td>death domain</td>
 <td><em>A profane ritual summons a monstrous undead creature to serve you.</em></td>
 <td>Grant yourself Summoning (On expire, Summon level 10 monster for 3 turns).</td>
 </tr>
 <tr>
-<td>Blade Barrier</td>
+<td><p id="Blade Barrier">Blade Barrier</p></td>
 <td>5</td>
 <td>law domain</td>
 <td><em>Create a wall of spinning blades that damages enemies passing through it.</em></td>
 <td>Grant yourself Blade Barrier (On enemy melee, Deal 3d6 slashing damage to attacker; Purge self of Blade Barrier for 5 turns).</td>
 </tr>
 <tr>
-<td>Bless</td>
+<td><p id="Bless">Bless</p></td>
 <td>1</td>
 <td>life domain</td>
 <td><em>Bless an ally, granting them a divine boon.</em></td>
 <td>Grant yourself or an ally Blessed (Improve to hit by 1, improve bonus damage by 1).</td>
 </tr>
 <tr>
-<td>Command</td>
-<td>1</td>
+<td><p id="Command">Command</p></td>
+<td>4</td>
 <td>law domain</td>
 <td><em>Give an instruction.</em></td>
 <td>Force an enemy to flee.</td>
 </tr>
 <tr>
-<td>Consecrated Ground</td>
+<td><p id="Consecrated Ground">Consecrated Ground</p></td>
 <td>3</td>
 <td>life domain</td>
 <td><em>Consecrate the ground, damaging enemies who attack or cast spells near you.</em></td>
 <td>Grant yourself Consecrated (On enemy offensive casting, Purge self of Consecrated; Deal 2d6 radiant damage to caster, On enemy attack, Purge self of Consecrated; Deal 2d6 radiant damage to attacker for 5 turns).</td>
 </tr>
 <tr>
-<td>Cure Light Wounds</td>
+<td><p id="Cure Light Wounds">Cure Light Wounds</p></td>
 <td>1</td>
 <td>life domain</td>
 <td><em>Bind moderate injuries.</em></td>
 <td>Heal yourself or an ally 1d8 HP.</td>
 </tr>
 <tr>
-<td>Cure Critical Wounds</td>
-<td>5</td>
+<td><p id="Cure Critical Wounds">Cure Critical Wounds</p></td>
+<td>6</td>
 <td>life domain</td>
 <td><em>Bind critical injuries.</em></td>
 <td>Heal yourself or an ally 4d8 HP.</td>
 </tr>
 <tr>
-<td>Cure Disease</td>
+<td><p id="Cure Disease">Cure Disease</p></td>
 <td>3</td>
 <td>life domain</td>
 <td><em>Cure an ally of disease.</em></td>
 <td>Remove Diseased from an ally.</td>
 </tr>
 <tr>
-<td>Cure Minor Wounds</td>
+<td><p id="Cure Minor Wounds">Cure Minor Wounds</p></td>
 <td>??</td>
 <td>life domain</td>
 <td><em>Bind minor injuries.</em></td>
 <td>Heal yourself or an ally 1d4 HP.</td>
 </tr>
 <tr>
-<td>Cure Moderate Wounds</td>
+<td><p id="Cure Moderate Wounds">Cure Moderate Wounds</p></td>
 <td>3</td>
 <td>life domain</td>
 <td><em>Bind moderate injuries.</em></td>
 <td>Heal yourself or an ally 2d8 HP.</td>
 </tr>
 <tr>
-<td>Cure Serious Wounds</td>
+<td><p id="Cure Serious Wounds">Cure Serious Wounds</p></td>
 <td>4</td>
 <td>life domain</td>
 <td><em>Bind serious injuries.</em></td>
 <td>Heal yourself or an ally 3d8 HP.</td>
 </tr>
 <tr>
-<td>Curse</td>
+<td><p id="Curse">Curse</p></td>
 <td>??</td>
 <td>death domain</td>
 <td><em>Curse an enemy.</em></td>
 <td>An enemy suffers Cursed (Degrade all stats by 1).</td>
 </tr>
 <tr>
-<td>Daylight</td>
-<td>3</td>
+<td><p id="Daylight">Daylight</p></td>
+<td>4</td>
 <td>light domain</td>
 <td><em>Create a sphere of bright light.</em></td>
 <td>Deal 1d4 radiant damage to all enemies; Purge all enemies of Hidden.</td>
 </tr>
 <tr>
-<td>Death</td>
+<td><p id="Death">Death</p></td>
 <td>9</td>
 <td>death domain</td>
 <td><em>Utter a power word in the blackest of tongues.</em></td>
 <td>Instantly kill an enemy.</td>
 </tr>
 <tr>
-<td>Death Touch</td>
+<td><p id="Death Touch">Death Touch</p></td>
 <td>4</td>
 <td>death domain</td>
-<td><em>Touch an enemy to attempt to kill or curse them.</em></td>
-<td>Deal 3d6 necrotic damage to an enemy; Instantly kill an enemy; An enemy suffers Cursed (Degrade all stats by 1).</td>
+<td><em>Touch an enemy to curse them.</em></td>
+<td>Deal 3d6 necrotic damage to an enemy; An enemy suffers Cursed (Degrade all stats by 1).</td>
 </tr>
 <tr>
-<td>Heal Ally</td>
+<td><p id="Harm">Harm</p></td>
+<td>6</td>
+<td>death domain</td>
+<td><em>Inflict severe necrotic damage on an enemy.</em></td>
+<td>Deal 6d6 + #level * 2 necrotic damage to an enemy.</td>
+</tr>
+<tr>
+<td><p id="Heal Ally">Heal Ally</p></td>
 <td>1</td>
 <td>life domain</td>
 <td><em>Offer restoration.</em></td>
 <td>Heal an ally 1d4 HP.</td>
 </tr>
 <tr>
-<td>Hold Person</td>
+<td><p id="Hold Person">Hold Person</p></td>
 <td>2</td>
 <td>law domain</td>
 <td><em>Paralyze an enemy for 4 rounds.</em></td>
 <td>An enemy suffers Paralyzed (Cannot take actions, degrade Strength by 5, degrade Dexterity by 5) if humanoid.</td>
 </tr>
 <tr>
-<td>Holy</td>
+<td><p id="Holy">Holy</p></td>
 <td>6</td>
 <td>law domain</td>
 <td><em>Smite your foes with holy energy.</em></td>
 <td>Deal 3d6 + #wis radiant damage to all enemies; All enemies suffer Deafened (50% resistance to Sonic, degrade bonus damage by 2, degrade AC by 2, degrade to hit by 2, degrade all saves by 1).</td>
 </tr>
 <tr>
-<td>Ironskin</td>
-<td>4</td>
+<td><p id="Ironskin">Ironskin</p></td>
+<td>6</td>
 <td>nature domain</td>
 <td><em>Your skin becomes as hard as iron.</em></td>
 <td>Grant yourself Ironskin (Improve AC by 5).</td>
 </tr>
 <tr>
-<td>Judgment</td>
+<td><p id="Judgment">Judgment</p></td>
 <td>5</td>
 <td>law domain</td>
 <td><em>Call down divine judgment on an enemy.</em></td>
 <td>Deal 6d6 radiant damage to an enemy; An enemy suffers Blinded (Degrade to hit by 4, degrade evasion by 10, degrade all rolls by 2); An enemy suffers Marked for Judgment (On heal, Deal 1d6 radiant damage to self for 5 turns).</td>
 </tr>
 <tr>
-<td>Life Drain</td>
+<td><p id="Life Drain">Life Drain</p></td>
 <td>1</td>
 <td>death domain</td>
 <td><em>Drain life from an enemy, healing yourself for damage dealt.</em></td>
 <td>Drain an enemy 1d6 HP.</td>
 </tr>
 <tr>
-<td>Madness</td>
-<td>3</td>
+<td><p id="Madness">Madness</p></td>
+<td>7</td>
 <td>chaos domain</td>
 <td><em>Drive an enemy insane.</em></td>
 <td>An enemy suffers Insane (Actions are random, degrade all rolls by 1, degrade Save versus Will by 2).</td>
 </tr>
 <tr>
-<td>Mass Curse</td>
+<td><p id="Mass Curse">Mass Curse</p></td>
 <td>??</td>
 <td>death domain</td>
 <td><em>Your venomous words fill your enemies with a sense of doom.</em></td>
 <td>All enemies suffer Cursed (Degrade all stats by 1).</td>
 </tr>
 <tr>
-<td>Prayer</td>
+<td><p id="Prayer">Prayer</p></td>
 <td>2</td>
 <td>life domain</td>
 <td><em>Bolster your team with a prayer.</em></td>
 <td>Grant your party Praying (Improve to hit by 1, improve all saves by 2, improve bonus healing by 2, Gain 10 temporary HP).</td>
 </tr>
 <tr>
-<td>Protection from Evil</td>
+<td><p id="Protection from Evil">Protection from Evil</p></td>
 <td>1</td>
 <td>law domain</td>
 <td><em>Grant immunity to charm and fear for 6 rounds.</em></td>
 <td>Grant an ally Protected (50% resistance to Necrotic, Immunity to Charm); Grant an ally Courage (Improve all saves by 2, Immunity to Fear).</td>
 </tr>
 <tr>
-<td>Raise Dead</td>
-<td>3</td>
+<td><p id="Raise Dead">Raise Dead</p></td>
+<td>4</td>
 <td>life domain</td>
 <td><em>Restore life to the dead.</em></td>
 <td>Restore a fallen ally to life with 50% health.</td>
 </tr>
 <tr>
-<td>Rally</td>
+<td><p id="Rally">Rally</p></td>
 <td>3</td>
 <td>life domain</td>
 <td><em>Restore your team's spirit.</em></td>
 <td>Heal all allies 1d6 HP.</td>
 </tr>
 <tr>
-<td>Remove Fear</td>
+<td><p id="Remove Fear">Remove Fear</p></td>
 <td>1</td>
 <td>life domain</td>
 <td><em>Calm a frightened ally.</em></td>
 <td>Remove Frightened from an ally.</td>
 </tr>
 <tr>
-<td>Resist Fire</td>
+<td><p id="Resist Fire">Resist Fire</p></td>
 <td>2</td>
 <td>life domain</td>
 <td><em>Grant an ally resistance to fire damage for 5 rounds.</em></td>
 <td>Grant an ally Fireproof (50% resistance to Fire).</td>
 </tr>
 <tr>
-<td>Resurrection</td>
-<td>5</td>
+<td><p id="Resurrection">Resurrection</p></td>
+<td>7</td>
 <td>life domain</td>
 <td><em>It's alive!</em></td>
 <td>Restore a fallen ally to life with full health.</td>
 </tr>
 <tr>
-<td>Scaleskin</td>
-<td>5</td>
+<td><p id="Scaleskin">Scaleskin</p></td>
+<td>8</td>
 <td>nature domain</td>
 <td><em>Your skin takes on the qualities of dragon scales.</em></td>
 <td>Grant yourself Scaleskin (Improve AC by 8, 25% resistance to Fire).</td>
 </tr>
 <tr>
-<td>Shield of Faith</td>
-<td>1</td>
+<td><p id="Shield of Faith">Shield of Faith</p></td>
+<td>2</td>
 <td>law domain</td>
 <td><em>Divine power protects you or an ally with a shimmering shield.</em></td>
 <td>Grant yourself or an ally Shielded (Improve AC by 1, Gain 10 temporary HP, improve Save versus Magic by 1).</td>
 </tr>
 <tr>
-<td>Smite Evil</td>
+<td><p id="Smite Evil">Smite Evil</p></td>
 <td>1</td>
 <td>war domain</td>
 <td><em>Smite an enemy.</em></td>
 <td>Deal #level + 1d8 radiant damage to an enemy.</td>
 </tr>
 <tr>
-<td>Steelskin</td>
+<td><p id="Steelskin">Steelskin</p></td>
 <td>9</td>
 <td>nature domain</td>
 <td><em>Your skin becomes as tough as steel.</em></td>
 <td>Grant yourself Steelskin (Improve AC by 10, 50% resistance to Piercing, 50% resistance to Slashing).</td>
 </tr>
 <tr>
-<td>Stoneskin</td>
+<td><p id="Stoneskin">Stoneskin</p></td>
 <td>3</td>
 <td>nature domain</td>
 <td><em>Your skin hardens like stone.</em></td>
 <td>Grant yourself Stoneskin (Improve AC by 3).</td>
 </tr>
 <tr>
-<td>Summon Lich</td>
+<td><p id="Summon Lich">Summon Lich</p></td>
 <td>5</td>
 <td>death domain</td>
 <td><em>Summon a powerful lich to fight for you.</em></td>
 <td>Summon level 10 monster.</td>
 </tr>
 <tr>
-<td>Sunburst</td>
+<td><p id="Sunburst">Sunburst</p></td>
 <td>5</td>
 <td>light domain</td>
 <td><em>A brilliant burst of solar energy injures your foes.</em></td>
 <td>Deal 4d6 radiant damage to all enemies.</td>
 </tr>
 <tr>
-<td>Terror</td>
+<td><p id="Sunmark">Sunmark</p></td>
+<td>??</td>
+<td>light domain</td>
+<td><em>Light up an enemy with a radiant mark.</em></td>
+<td>Deal 1d3 radiant damage to an enemy; An enemy suffers Sunmarked (Degrade Save versus Magic by 1, 25% vulnerability to Fire, 25% vulnerability to Radiant, On attacked, Deal 1d4 radiant damage to self).</td>
+</tr>
+<tr>
+<td><p id="Terror">Terror</p></td>
 <td>2</td>
 <td>death domain</td>
 <td><em>Frighten an enemy.</em></td>
 <td>An enemy suffers Frightened (Degrade to hit by 2, degrade initiative by 5, degrade all rolls by 1, degrade all saves by 2).</td>
 </tr>
 <tr>
-<td>Turn Undead</td>
-<td>3</td>
+<td><p id="Turn Undead">Turn Undead</p></td>
+<td>2</td>
 <td>light domain</td>
 <td><em>The dead recoil from your holy presence.</em></td>
 <td>Force all enemies to flee if undead.</td>
