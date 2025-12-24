@@ -11,38 +11,16 @@ export default class Generator {
   static async genList(
     type: GenerationTemplateType,
     options: Record<string, any> = {},
-    count: number = 1,
-    condition?: string,
+    count: number = 1
   ): Promise<Record<string, any>[]> {
     if (count === 0) {
       return [];
     }
-    // accumulate items gradually and put them in __items so that conditions can refer to them
     const items: Record<string, any>[] = [];
-    let attempts = 0;
-    while (items.length < count && attempts++ < count * 10) {
+    while (items.length < count) {
       const i = items.length;
-      // console.log(`Generating ${type} ${i + 1}/${count}...`);
       const item = await this.gen(type, deepCopy({ ...options, _index: i }));
       items.push(item);
-      if (!condition) { continue }
-      Deem.magicVars = { __items: [...items] };
-      const conditionResult = await Template.evaluatePropertyExpression(condition, deepCopy({ ...options }));
-      if (!conditionResult) {
-        items.pop();
-        // console.warn(`Item ${i} did not meet condition: ${condition}`);
-        // process.stdout.write(`.`);
-        // are we 1-2 away from the count?
-        if (count - items.length <= 2) {
-          break;
-        }
-      }
-    }
-    if (items.length === 0) {
-      // console.warn(`No items generated for type ${type} meeting condition: ${condition}, generating one anyway`);
-      // generate one anyway
-      items.push(await this.gen(type, options));
-      // process.stdout.write(`!`);
     }
 
     return items;
@@ -53,15 +31,6 @@ export default class Generator {
     options: Record<string, any> = {}
   ): Promise<Record<string, any>> {
     Generator.setting = Generator.setting || (options.setting ? loadSetting(options.setting) : Generator.defaultSetting);
-    // console.log(`Gen ${Stylist.format(type, 'bold')} with options`);
-    // let nonNestedOptions: Record<string, any> = {};
-    // Object.entries(options).forEach(([key, value]) => {
-    //   if (typeof value !== 'object' || value === null) {
-    //     nonNestedOptions[key] = value;
-    //   }
-    // });
-    // // print options as nice table
-    // console.table(nonNestedOptions);
 
     const templ = Generator.generationSource(type);
     if (!templ) {

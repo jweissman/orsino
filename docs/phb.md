@@ -88,6 +88,7 @@
 | Escape | _Run away!_ | Force yourself to flee. |
 | Hide | _Attempt to hide from enemies._ | Grant yourself Hidden (Improve AC by 4, improve evasion by 10, On attack, Remove Hidden from self). |
 | Hunter's Mark | _Mark an enemy, giving them -2 AC and +1d4 damage from all attacks for 5 rounds._ | An enemy suffers Hunting Prey (Degrade AC by 2, On attacked, Deal 1d8 true damage to self). |
+| Infect | _Infect an enemy with a virulent disease._ | Cast ability Inflict Disease (An enemy suffers Diseased (Degrade Constitution by 2, degrade all saves by 2, On turn end, Deal 1d4 necrotic damage to self).) on an enemy. |
 | Inspire | _Inspire your allies, granting them a +2 bonus to attack rolls for the next 3 rounds._ | Grant all allies Inspired (Improve to hit by 2, Gain 5 temporary HP, improve all saves by 1). |
 | Maul | _Make a powerful attack that deals 1d6 + strength modifier extra damage and inflicts Bleed on a successful hit._ | Attack an enemy; Deal 1d6 + statMod(#str) bludgeoning damage to an enemy; An enemy suffers Bleeding (On turn end, Deal 1d2 bleed damage to self); An enemy suffers Slow (Degrade Dexterity by 5, degrade initiative by 10, degrade attacks per turn by 1). |
 | Meditate | _Enter a meditative state._ | Grant yourself Meditating (Cannot take actions, improve Save versus Magic by 2, 25% resistance to Force, On turn end, Heal self 1d2 + #level HP). |
@@ -107,6 +108,7 @@
 | Stomp | _Stomp the ground, dealing 1d6 bludgeoning damage to all adjacent enemies and knocking them prone._ | Deal 1d6 bludgeoning damage to all enemies; All enemies suffer Prone (Cannot take actions, degrade Dexterity by 2). |
 | Call Animal Companion | _A friendly animal comes to your aid in battle._ | Summon animal. |
 | Taunt | _Taunt an enemy, forcing them to target you on their next turn._ | An enemy suffers Taunted (Next target forced to be you). |
+| Trickfire | _Toss a firebomb that damages and confuses enemies._ | Deal 1d4 fire damage to all enemies; All enemies suffer Confused (Actions are random). |
 | Wait | _Wait and do nothing this turn._ | Does nothing. |
 | Whirlwind Attack | _Swing your weapon in a wide arc, attacking all enemies within reach._ | Attack all enemies. |
 
@@ -117,105 +119,135 @@
 ### Arcane Spells
 
 
+| Cantrip | Level 1 | Level 2 | Level 3 | Level 4 | Level 5 | Level 6 | Level 7 | Level 8 | Level 9 |
+  |---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
+| [Dancing Lights](#Dancing Lights) | [Acid Arrow](#Acid Arrow) | [Acid Spray](#Acid Spray) | [Chaos Bolt](#Chaos Bolt) | [Chain Lightning](#Chain Lightning) | [Disintegrate](#Disintegrate) | [Fireball](#Fireball) | [Plane Shift](#Plane Shift) | [Implosion](#Implosion) | [Apocalypse](#Apocalypse) | 
+| [Firebolt](#Firebolt) | [Mage Armor](#Mage Armor) | [Blur](#Blur) | [Confuse](#Confuse) | [Disruption](#Disruption) | [Earthquake](#Earthquake) | [Flesh to Stone](#Flesh to Stone) | [Spellturning](#Spellturning) | [Maze](#Maze) |  | 
+| [Frostbite](#Frostbite) | [Burning Hands](#Burning Hands) | [Dispel Magic](#Dispel Magic) | [Drench](#Drench) | [False Life](#False Life) | [Haste](#Haste) | [Invisibility](#Invisibility) | [Warp Enemy](#Warp Enemy) | [Time Stop](#Time Stop) |  | 
+| [Ghost Touch](#Ghost Touch) | [Magic Missile](#Magic Missile) | [Magebane](#Magebane) | [Obscuring Mist](#Obscuring Mist) | [Lightning Strike](#Lightning Strike) | [Poison Cloud](#Poison Cloud) | [Stone to Flesh](#Stone to Flesh) |  |  |  | 
+| [Minor Ward](#Minor Ward) | [Prismatic Spray](#Prismatic Spray) | [Mirror Image](#Mirror Image) | [Silence](#Silence) | [Polar Ray](#Polar Ray) | [Reflection](#Reflection) | [True Sight](#True Sight) |  |  |  | 
+| [Shock Pulse](#Shock Pulse) | [Shocking Grasp](#Shocking Grasp) | [Ray of Frost](#Ray of Frost) | [Slow](#Slow) | [Sandstorm](#Sandstorm) | [Sound Lance](#Sound Lance) |  |  |  |  | 
+| [Soot Cloud](#Soot Cloud) | [Sleep](#Sleep) | [Scald](#Scald) | [Summon Monster I](#Summon Monster I) | [Summon Elemental](#Summon Elemental) |  |  |  |  |  | 
+| [Spark](#Spark) | [Arcane Ward](#Arcane Ward) |  |  |  |  |  |  |  |  | 
+
 | Name | Level | School/Domain | Description | Details |
 |---|---|---|---|-----|
-| Acid Arrow | 1 | conjuration school | _Fire an arrow of acid, dealing 1d4 damage and applying Acid Burn._ | Deal 1d4 acid damage to an enemy. |
-| Acid Spray | 2 | conjuration school | _Spray a cone of acid, dealing 2d6 damage to all enemies in the area and applying Acid Burn._ | Deal 2d6 acid damage to all enemies. |
-| Apocalypse | 9 | evocation school | _Unleash a cataclysmic storm of elemental fury upon all enemies._ | Deal 6d6 fire damage to all enemies; Deal 6d6 cold damage to all enemies; Deal 6d6 lightning damage to all enemies; All enemies suffer Doomed (Degrade all stats by 4 for 3 turns). |
-| Mage Armor | 1 | abjuration school | _Arcane force wraps around you, providing magical protection._ | Grant yourself Mage-Armored (Improve AC by 4, Gain 20 temporary HP). |
-| Blur | 1 | illusion school | _You are out of focus, making it harder for enemies to hit you._ | Grant yourself Blurred (Improve Save versus Magic by 2, improve AC by 1, improve evasion by 10). |
-| Burning Hands | 1 | evocation school | _Unleash a cone of fire, dealing 1d6 damage to all enemies in the area._ | Deal 1d6 fire damage to all enemies. |
-| Chain Lightning | 4 | evocation school | _Strike multiple enemies with lightning._ | Deal 2d6+#level lightning damage to an enemy cascading =3+floor(#level/2) times. |
-| Confuse | 3 | illusion school | _Confuse an enemy, causing them to act randomly._ | An enemy suffers Confused (Actions are random). |
-| Dancing Lights | ?? | illusion school | _Create small lights that hover and move._ | All enemies suffer Distracted (Degrade to hit by 1, degrade bonus damage by 1, degrade evasion by 5); All enemies suffer Blinded (Degrade to hit by 4, degrade evasion by 10, degrade all rolls by 2). |
-| Detonation | ?? | evocation school | _Countdown to a fiery explosion._ | Grant yourself Ticking (On expire, Deal 2d6 fire damage to enemies; Instantly kill self for 4 turns). |
-| Disintegrate | 5 | evocation school | _A green ray that dematerializes living forms leaps from your fingertips._ | Deal 10d6 force damage to an enemy. |
-| Dispel Magic | 2 | abjuration school | _Remove all effects._ | Remove .* from yourself or an ally or an enemy. |
-| Drench | 3 | transmutation school | _Drench an enemy, reducing their attack rolls by 2 for 3 rounds._ | An enemy suffers Drenched (Degrade to hit by 2, 100% vulnerability to Lightning, 200% vulnerability to Cold). |
-| Earthquake | 2 | evocation school | _Cause the ground to shake._ | Deal 2d6 bludgeoning damage to all enemies; All enemies suffer Prone (Cannot take actions, degrade Dexterity by 2). |
-| False Life | 1 | necromancy school | _Grant yourself temporary hit points._ | Grant yourself False Life (Gain =10d6 + 2 * #level temporary HP). |
-| Fireball | 3 | evocation school | _Hurl a destructive ball of energy that explodes in a fiery blast._ | Deal 6d6 fire damage to all enemies. |
-| Firebolt | ?? | evocation school | _A small bolt of fire shoots from your fingertips._ | Deal 1d3 fire damage to an enemy. |
-| Flesh to Stone | 4 | transmutation school | _Turn an enemy to stone._ | An enemy suffers Petrified (Cannot take actions, Immunity to Fear, Immunity to Charm, Immunity to Stun, Immunity to Sleep, Immunity to Poison, Immunity to Disease). |
-| Frostbite | ?? | evocation school | _A chilling blast of cold air._ | Deal 1d4 cold damage to an enemy. |
-| Ghost Touch | ?? | transmutation school | _Induce necrosis with your touch._ | Grant yourself Ghost Touch (On attack hit, Deal 1d3 necrotic damage to self). |
-| Haste | 3 | transmutation school | _Increase an ally's speed._ | Grant an ally Haste (Improve Dexterity by 4, improve initiative by 10, improve attacks per turn by 1, improve AC by 2). |
-| Invisibility | 3 | illusion school | _Turn invisible for 5 rounds or until you attack or cast a spell._ | Grant yourself or an ally Invisible (Invisible, On attack, Remove Invisible from self, On offensive casting, Remove Invisible from self). |
-| Lightning Strike | 2 | evocation school | _Strike random enemies with lightning, dealing 1d8 damage and paralyzing them for 1 round._ | Deal 1d8 electric damage to 2 random enemies; 2 random enemies suffer Paralyzed (Cannot take actions, degrade Strength by 5, degrade Dexterity by 5). |
-| Maze | 8 | conjuration school | _Banish an enemy to a labyrinthine demiplane for up to 10 minutes._ | An enemy suffers In Maze (Cannot take actions, Untargetable). |
-| Minor Ward | ?? | abjuration school | _Create a magical ward that absorbs damage._ | Grant yourself Minor Warded (Improve Save versus Magic by 1, 25% resistance to Force, Gain =7 + #level temporary HP). |
-| Mirror Image | 2 | illusion school | _Illusory duplicates confound attackers_ | Grant yourself Mirror Images (Improve AC by 2, improve all saves by 2, improve evasion by 15). |
-| Magic Missile | 1 | evocation school | _Fire three magical bolts that automatically hit and deal 1d3 damage each (more bolts and damage at higher levels)._ | Deal 1d3 + floor(#level/3) force damage to 2 + round(#level/2) random enemies. |
-| Paralyzing Touch | 2 | necromancy school | _Touch an enemy to paralyze them for 2 rounds._ | An enemy suffers Paralyzed (Cannot take actions, degrade Strength by 5, degrade Dexterity by 5). |
-| Plane Shift | 7 | conjuration school | _Transport yourself and your party to another plane of existence._ | Planeshift yourself to =oneOf(Arcadia, Cthelll, Gehenna, Hades, Limbo, Mechanus, Pandemonium, Ysgard, Zephyrus). |
-| Poison Cloud | 2 | conjuration school | _Release a cloud of toxic gas._ | Deal 1d4 poison damage to all enemies. |
-| Prismatic Spray | 1 | evocation school | _A dazzling array of multicolored beams springs from your hand._ | Cycle through the following effects on =5 + round(#level / 2) random enemies: Deal 1d3+1 fire damage to enemy; Deal 1d4 cold damage to enemy; Deal 1d2 acid damage to enemy; Deal 1d3 lightning damage to enemy; Deal 1d3 poison damage to enemy; Deal 1d4 psychic damage to enemy; Deal 1d2+1 radiant damage to enemy; Deal 1d2 necrotic damage to enemy. |
-| Ray of Frost | 2 | evocation school | _Fire a ray of frost, dealing 1d4 damage and reducing the target's speed by 10 feet for 3 rounds._ | Deal 1d4 cold damage to an enemy. |
-| Reflection | 2 | abjuration school | _Create a magical shield that reflects some incoming damage._ | Grant yourself Reflect (Add 50% to damage reflection percent). |
-| Sandstorm | 4 | evocation school | _Create a swirling sandstorm that damages and blinds enemies within it for 3 rounds._ | Deal 2d6 bludgeoning damage to all enemies; All enemies suffer Blinded (Degrade to hit by 4, degrade evasion by 10, degrade all rolls by 2). |
-| Scald | 4 | evocation school | _Blast an enemy with superheated steam._ | Deal 3d6 fire damage to an enemy; An enemy suffers Scalded (Degrade all rolls by 1). |
-| Shock Pulse | ?? | evocation school | _Release a pulse of electrical energy that arcs to additional targets._ | Deal 1d4 lightning damage to an enemy cascading =1+floor(#level/2) times. |
-| Shocking Grasp | 1 | evocation school | _Deliver a jolt of electricity._ | Deal 1d6 lightning damage to an enemy. |
-| Silence | 3 | illusion school | _Create an area of silence, preventing spellcasting for 3 rounds._ | All enemies suffer Silence (Cannot cast spells). |
-| Sleep | 1 | enchantment school | _Lull enemies into a magical slumber._ | All enemies suffer Asleep (Cannot take actions). |
-| Slow | 2 | transmutation school | _Reduce the speed of your foes._ | All enemies suffer Slow (Degrade Dexterity by 5, degrade initiative by 10, degrade attacks per turn by 1). |
-| Soot Cloud | ?? | conjuration school | _Create a cloud of soot that reveals hidden or invisible creatures._ | Remove hidden|invisible from all enemies. |
-| Sound Lance | 2 | evocation school | _A concentrated blast of noise explodes from your hand._ | Deal 4d6 sonic damage to an enemy; An enemy suffers Deafened (50% resistance to Sonic, degrade bonus damage by 2, degrade AC by 2, degrade to hit by 2, degrade all saves by 1). |
-| Spark | ?? | evocation school | _A small jolt of electricity._ | Deal 1d3 lightning damage to an enemy. |
-| Spellturning | 4 | abjuration school | _Create a magical barrier may reflect spells back to their caster._ | Grant yourself Spellturn (Add 50% to spell reflection chance). |
-| Summon Elemental | 4 | conjuration school | _Summon a random elemental to fight for you._ | Summon of class Elemental monster. |
-| Summon Monster | 3 | conjuration school | _Summon a random monster (beast or fey type) to fight for you._ | Summon of class =oneOf(beast, fey) monster. |
-| Summon Undead | 2 | conjuration school | _Summon a random undead creature to fight for you._ | Summon npc. |
-| Sunmark | ?? | evocation school | _Light up an enemy with a radiant mark._ | Deal 1d3 radiant damage to an enemy; An enemy suffers Sunmarked (Degrade Save versus Magic by 1, 25% vulnerability to Fire, 25% vulnerability to Radiant, On attacked, Deal 1d4 radiant damage to self). |
-| Time Stop | 9 | transmutation school | _Stop time for everyone but yourself._ | Grant yourself Time Stopped (Improve extra turns by 3, Does not trigger reactions). |
-| True Sight | 6 | divination school | _See through illusions, invisibility, and magical darkness for 10 minutes._ | Grant yourself or an ally True Sight (Can perceive invisible entities). |
-| Arcane Ward | 1 | abjuration school | _Conjure a magical absorption ward._ | Grant yourself or an ally Warded (Improve Save versus Magic by 1, 15% resistance to Fire, 15% resistance to Cold, 15% resistance to Lightning, 50% resistance to Force, Gain =14 + 2 * #level temporary HP). |
+| <p id="Acid Arrow">Acid Arrow</p> | 1 | School of Conjuration| _Fire an arrow of acid, dealing 1d4 damage and applying Acid Burn._ | Deal 1d4 acid damage to an enemy. |
+| <p id="Acid Spray">Acid Spray</p> | 2 | School of Conjuration| _Spray a cone of acid, dealing 2d6 damage to all enemies in the area and applying Acid Burn._ | Deal 2d6 acid damage to all enemies. |
+| <p id="Apocalypse">Apocalypse</p> | 9 | School of Evocation| _Unleash a cataclysmic storm of elemental fury upon all enemies._ | Deal 6d6 fire damage to all enemies; Deal 6d6 cold damage to all enemies; Deal 6d6 lightning damage to all enemies; All enemies suffer Doomed (Degrade all stats by 4 for 3 turns). |
+| <p id="Mage Armor">Mage Armor</p> | 1 | School of Abjuration| _Arcane force wraps around you, providing magical protection._ | Grant yourself Mage-Armored (Improve AC by 4, Gain 20 temporary HP). |
+| <p id="Blur">Blur</p> | 2 | School of Illusion| _You are out of focus, making it harder for enemies to hit you._ | Grant yourself Blurred (Improve Save versus Magic by 2, improve AC by 1, improve evasion by 10). |
+| <p id="Burning Hands">Burning Hands</p> | 1 | School of Evocation| _Unleash a cone of fire, dealing 1d6 damage to all enemies in the area._ | Deal 1d6 fire damage to all enemies. |
+| <p id="Chain Lightning">Chain Lightning</p> | 4 | School of Evocation| _Strike multiple enemies with lightning._ | Deal 2d6+#level lightning damage to an enemy cascading =3+floor(#level/2) times. |
+| <p id="Chaos Bolt">Chaos Bolt</p> | 3 | School of Evocation| _Hurl a bolt of chaotic energy that deals random types of damage._ | Apply one of the following random effects to an enemy: Deal 2d6 fire damage to an enemy; Deal 2d6 cold damage to an enemy; Deal 2d6 acid damage to an enemy; Deal 2d6 poison damage to an enemy. |
+| <p id="Confuse">Confuse</p> | 3 | School of Illusion| _Confuse an enemy, causing them to act randomly._ | An enemy suffers Confused (Actions are random). |
+| <p id="Dancing Lights">Dancing Lights</p> | ?? | School of Illusion| _Create small lights that hover and move._ | All enemies suffer Distracted (Degrade to hit by 1, degrade bonus damage by 1, degrade evasion by 5); All enemies suffer Blinded (Degrade to hit by 4, degrade evasion by 10, degrade all rolls by 2). |
+| <p id="Detonation">Detonation</p> | ?? | School of Evocation| _Countdown to a fiery explosion._ | Grant yourself Ticking (On expire, Deal 2d6 fire damage to enemies; Instantly kill self for 3 turns). |
+| <p id="Disintegrate">Disintegrate</p> | 5 | School of Evocation| _A green ray that dematerializes living forms leaps from your fingertips._ | Deal 10d6 force damage to an enemy. |
+| <p id="Dispel Magic">Dispel Magic</p> | 2 | School of Abjuration| _Remove all effects._ | Remove .* from yourself or an ally or an enemy. |
+| <p id="Disruption">Disruption</p> | 4 | School of Abjuration| _Imbue a weapon with disruptive energy especially harmful to undead and constructs._ | Grant yourself or an ally Disrupting (On attack, Deal 2d6 true damage to target; Deal 3d6 radiant damage to target if undead|construct for 5 turns). |
+| <p id="Drench">Drench</p> | 3 | School of Transmutation| _Drench an enemy, reducing their attack rolls by 2 for 3 rounds._ | An enemy suffers Drenched (Degrade to hit by 2, 100% vulnerability to Lightning, 200% vulnerability to Cold). |
+| <p id="Earthquake">Earthquake</p> | 5 | School of Evocation| _Cause the ground to shake._ | Deal 2d6 bludgeoning damage to all enemies; All enemies suffer Prone (Cannot take actions, degrade Dexterity by 2). |
+| <p id="False Life">False Life</p> | 4 | School of Necromancy| _Grant yourself temporary hit points._ | Grant yourself False Life (Gain =10d6 + 2 * #level temporary HP). |
+| <p id="Fireball">Fireball</p> | 6 | School of Evocation| _Hurl a destructive ball of energy that explodes in a fiery blast._ | Deal 6d6 fire damage to all enemies. |
+| <p id="Firebolt">Firebolt</p> | ?? | School of Evocation| _A small bolt of fire shoots from your fingertips._ | Deal 1d3 fire damage to an enemy. |
+| <p id="Flesh to Stone">Flesh to Stone</p> | 6 | School of Transmutation| _Turn an enemy to stone._ | An enemy suffers Petrified (Cannot take actions, Immunity to Fear, Immunity to Charm, Immunity to Stun, Immunity to Sleep, Immunity to Poison, Immunity to Disease). |
+| <p id="Frostbite">Frostbite</p> | ?? | School of Evocation| _A chilling blast of cold air._ | Deal 1d4 cold damage to an enemy. |
+| <p id="Ghost Touch">Ghost Touch</p> | ?? | School of Transmutation| _Induce necrosis with your touch._ | Grant yourself Ghost Touch (On attack hit, Deal 1d3 necrotic damage to target). |
+| <p id="Haste">Haste</p> | 5 | School of Transmutation| _Increase an ally's speed._ | Grant an ally Haste (Improve Dexterity by 4, improve initiative by 10, improve attacks per turn by 1, improve AC by 2). |
+| <p id="Implosion">Implosion</p> | 8 | School of Evocation| _Create a powerful gravitational collapse at a target location, damaging all enemies within the area._ | Deal 10d6 force damage to all enemies. |
+| <p id="Invisibility">Invisibility</p> | 6 | School of Illusion| _Turn invisible for 5 rounds or until you attack or cast a spell._ | Grant yourself or an ally Invisible (Invisible, On attack, Remove Invisible from self, On offensive casting, Remove Invisible from self). |
+| <p id="Lightning Strike">Lightning Strike</p> | 4 | School of Evocation| _Strike random enemies with lightning, dealing 1d8 damage and paralyzing them for 1 round._ | Deal 1d8 electric damage to 2 random enemies; 2 random enemies suffer Paralyzed (Cannot take actions, degrade Strength by 5, degrade Dexterity by 5). |
+| <p id="Magebane">Magebane</p> | 2 | School of Abjuration| _Create an aura that harms enemy spellcasters when they cast spells._ | Grant an enemy Magebane (On enemy casting, Deal 2d6 true damage to caster for 3 turns). |
+| <p id="Maze">Maze</p> | 8 | School of Conjuration| _Banish an enemy to a labyrinthine demiplane for up to 10 minutes._ | An enemy suffers In Maze (Cannot take actions, Untargetable). |
+| <p id="Minor Ward">Minor Ward</p> | ?? | School of Abjuration| _Create a magical ward that absorbs damage._ | Grant yourself Minor Warded (Improve Save versus Magic by 1, 25% resistance to Force, Gain =7 + #level temporary HP). |
+| <p id="Mirror Image">Mirror Image</p> | 2 | School of Illusion| _Illusory duplicates confound attackers_ | Grant yourself Mirror Images (Improve AC by 2, improve all saves by 2, improve evasion by 15). |
+| <p id="Magic Missile">Magic Missile</p> | 1 | School of Evocation| _Fire three magical bolts that automatically hit and deal 1d3 damage each (more bolts and damage at higher levels)._ | Deal 1d3 + floor(#level/3) force damage to 2 + round(#level/2) random enemies. |
+| <p id="Obscuring Mist">Obscuring Mist</p> | 3 | School of Conjuration| _Create a mist that obscures vision._ | Grant yourself Hidden (Improve AC by 4, improve evasion by 10, On attack, Remove Hidden from self). |
+| <p id="Paralyzing Touch">Paralyzing Touch</p> | 2 | School of Necromancy| _Touch an enemy to paralyze them for 2 rounds._ | An enemy suffers Paralyzed (Cannot take actions, degrade Strength by 5, degrade Dexterity by 5). |
+| <p id="Plane Shift">Plane Shift</p> | 7 | School of Conjuration| _Transport yourself and your party to another plane of existence._ | Planeshift yourself to =oneOf(Arcadia, Cthelll, Gehenna, Hades, Limbo, Mechanus, Pandemonium, Ysgard, Zephyrus). |
+| <p id="Poison Cloud">Poison Cloud</p> | 5 | School of Conjuration| _Release a cloud of toxic gas._ | Deal 3d4+#level poison damage to all enemies. |
+| <p id="Polar Ray">Polar Ray</p> | 4 | School of Evocation| _Fire a beam of intense cold that can freeze enemies in place._ | Deal 5d6 cold damage to an enemy. |
+| <p id="Prismatic Spray">Prismatic Spray</p> | 1 | School of Evocation| _A dazzling array of multicolored beams springs from your hand._ | Cycle through the following effects on =5 + round(#level / 2) random enemies: Deal 1d3+1 fire damage to enemy; Deal 1d4 cold damage to enemy; Deal 1d2 acid damage to enemy; Deal 1d3 lightning damage to enemy; Deal 1d3 poison damage to enemy; Deal 1d4 psychic damage to enemy; Deal 1d2+1 radiant damage to enemy; Deal 1d2 necrotic damage to enemy. |
+| <p id="Ray of Frost">Ray of Frost</p> | 2 | School of Evocation| _Fire a ray of frost, dealing 1d4 damage and reducing the target's speed by 10 feet for 3 rounds._ | Deal 1d4 cold damage to an enemy. |
+| <p id="Reflection">Reflection</p> | 5 | School of Abjuration| _Create a magical shield that reflects some incoming damage._ | Grant yourself Reflect (Add 50% to damage reflection percent). |
+| <p id="Sandstorm">Sandstorm</p> | 4 | School of Evocation| _Create a swirling sandstorm that damages and blinds enemies within it for 3 rounds._ | Deal 2d6 bludgeoning damage to all enemies; All enemies suffer Blinded (Degrade to hit by 4, degrade evasion by 10, degrade all rolls by 2). |
+| <p id="Scald">Scald</p> | 2 | School of Evocation| _Blast an enemy with superheated steam._ | Deal 3d6 fire damage to an enemy; An enemy suffers Scalded (Degrade all rolls by 1). |
+| <p id="Shock Pulse">Shock Pulse</p> | ?? | School of Evocation| _Release a pulse of electrical energy that arcs to additional targets._ | Deal 1d4 lightning damage to an enemy cascading =1+floor(#level/2) times. |
+| <p id="Shocking Grasp">Shocking Grasp</p> | 1 | School of Evocation| _Deliver a jolt of electricity._ | Deal 1d6 lightning damage to an enemy. |
+| <p id="Silence">Silence</p> | 3 | School of Illusion| _Create an area of silence, preventing spellcasting for 3 rounds._ | All enemies suffer Silence (Cannot cast spells). |
+| <p id="Sleep">Sleep</p> | 1 | School of Enchantment| _Lull enemies into a magical slumber._ | All enemies suffer Asleep (Cannot take actions). |
+| <p id="Slow">Slow</p> | 3 | School of Transmutation| _Reduce the speed of your foes._ | All enemies suffer Slow (Degrade Dexterity by 5, degrade initiative by 10, degrade attacks per turn by 1). |
+| <p id="Soot Cloud">Soot Cloud</p> | ?? | School of Conjuration| _Create a cloud of soot that reveals hidden or invisible creatures._ | Remove hidden|invisible from all enemies. |
+| <p id="Sound Lance">Sound Lance</p> | 5 | School of Evocation| _A concentrated blast of noise explodes from your hand._ | Deal 4d6 sonic damage to an enemy. |
+| <p id="Spark">Spark</p> | ?? | School of Evocation| _A small jolt of electricity._ | Deal 1d3 lightning damage to an enemy. |
+| <p id="Spellturning">Spellturning</p> | 7 | School of Abjuration| _Create a magical barrier may reflect spells back to their caster._ | Grant yourself Spellturn (Add 50% to spell reflection chance). |
+| <p id="Stone to Flesh">Stone to Flesh</p> | 6 | School of Transmutation| _Restore a petrified creature to flesh._ | Remove Petrified from an ally. |
+| <p id="Summon Elemental">Summon Elemental</p> | 4 | School of Conjuration| _Summon a random elemental to fight for you._ | Summon of class Elemental monster. |
+| <p id="Summon Monster I">Summon Monster I</p> | 3 | School of Conjuration| _Summon a random monster (beast or fey type) to fight for you._ | Summon of class =oneOf(beast, fey) monster. |
+| <p id="Summon Undead">Summon Undead</p> | 3 | School of Conjuration| _Summon a random undead creature to fight for you._ | Summon npc. |
+| <p id="Time Stop">Time Stop</p> | 8 | School of Transmutation| _Stop time for everyone but yourself._ | Grant yourself Time Stopped (Improve extra turns by 3, Does not trigger reactions). |
+| <p id="True Sight">True Sight</p> | 6 | School of Divination| _See through illusions, invisibility, and magical darkness for 10 minutes._ | Grant yourself or an ally True Sight (Can perceive invisible entities). |
+| <p id="Arcane Ward">Arcane Ward</p> | 1 | School of Abjuration| _Conjure a magical absorption ward._ | Grant yourself or an ally Warded (Improve Save versus Magic by 1, 15% resistance to Fire, 15% resistance to Cold, 15% resistance to Lightning, 50% resistance to Force, Gain =14 + 2 * #level temporary HP). |
+| <p id="Warp Enemy">Warp Enemy</p> | 7 | School of Transmutation| _Distort the fabric of reality around an enemy, causing unpredictable effects._ | Apply one of the following random effects to an enemy: An enemy suffers Stunned (Cannot take actions, degrade all rolls by 2); An enemy suffers Slow (Degrade Dexterity by 5, degrade initiative by 10, degrade attacks per turn by 1); An enemy suffers Weakened (Degrade Strength by 2, degrade bonus damage by 2); An enemy suffers Distracted (Degrade to hit by 1, degrade bonus damage by 1, degrade evasion by 5); Apply one of the following random effects to an enemy: An enemy suffers Cursed (Degrade all stats by 1); An enemy suffers Insane (Actions are random, degrade all rolls by 1, degrade Save versus Will by 2); An enemy suffers Charmed (Allegiance changed); An enemy suffers Frightened (Degrade to hit by 2, degrade initiative by 5, degrade all rolls by 1, degrade all saves by 2). |
 
 ### Divine Spells
 
 
+| Cantrip | Level 1 | Level 2 | Level 3 | Level 4 | Level 5 | Level 6 | Level 7 | Level 8 | Level 9 |
+  |---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
+| [Cure Minor Wounds](#Cure Minor Wounds) | [Anoint](#Anoint) | [Barkskin](#Barkskin) | [Consecrated Ground](#Consecrated Ground) | [Command](#Command) | [Aegis of Faith](#Aegis of Faith) | [Cure Critical Wounds](#Cure Critical Wounds) | [Madness](#Madness) | [Scaleskin](#Scaleskin) | [Steelskin](#Steelskin) | 
+| [Sunmark](#Sunmark) | [Bless](#Bless) | [Hold Person](#Hold Person) | [Cure Disease](#Cure Disease) | [Cure Serious Wounds](#Cure Serious Wounds) | [Blade Barrier](#Blade Barrier) | [Holy](#Holy) | [Resurrection](#Resurrection) |  |  | 
+|  | [Cure Light Wounds](#Cure Light Wounds) | [Prayer](#Prayer) | [Cure Moderate Wounds](#Cure Moderate Wounds) | [Daylight](#Daylight) | [Judgment](#Judgment) | [Ironskin](#Ironskin) |  |  |  | 
+|  | [Heal Ally](#Heal Ally) | [Resist Fire](#Resist Fire) | [Rally](#Rally) | [Raise Dead](#Raise Dead) | [Sunburst](#Sunburst) |  |  |  |  | 
+|  | [Protection from Evil](#Protection from Evil) | [Shield of Faith](#Shield of Faith) | [Stoneskin](#Stoneskin) |  |  |  |  |  |  | 
+|  | [Remove Fear](#Remove Fear) | [Turn Undead](#Turn Undead) |  |  |  |  |  |  |  | 
+|  | [Smite Evil](#Smite Evil) |  |  |  |  |  |  |  |  | 
+
 | Name | Level | School/Domain | Description | Details |
 |---|---|---|---|-----|
-| Aegis of Faith | 5 | life domain | _Ward against all effects._ | Grant yourself Invulnerable (Untargetable). |
-| Animate Dead | ?? | death domain | _Bind souls to your service._ | Restore a fallen ally to life with 40% health. |
-| Anoint | 1 | life domain | _You mark your allies with a holy symbol, granting them protection._ | Grant all allies Anointed (50% resistance to Radiant, improve bonus damage by 1, improve to hit by 1, improve all saves by 2). |
-| Barkskin | 2 | nature domain | _Your skin stiffens into tree-bark._ | Grant yourself Barkskin (Improve AC by 2). |
-| Black Ritual | ?? | death domain | _A profane ritual summons a monstrous undead creature to serve you._ | Grant yourself Summoning (On expire, Summon level 10 monster for 3 turns). |
-| Blade Barrier | 5 | law domain | _Create a wall of spinning blades that damages enemies passing through it._ | Grant yourself Blade Barrier (On enemy melee, Deal 3d6 slashing damage to attacker; Purge self of Blade Barrier for 5 turns). |
-| Bless | 1 | life domain | _Bless an ally, granting them a divine boon._ | Grant yourself or an ally Blessed (Improve to hit by 1, improve bonus damage by 1). |
-| Command | 1 | law domain | _Give an instruction._ | Force an enemy to flee. |
-| Consecrated Ground | 3 | life domain | _Consecrate the ground, damaging enemies who attack or cast spells near you._ | Grant yourself Consecrated (On enemy offensive casting, Purge self of Consecrated; Deal 2d6 radiant damage to caster, On enemy attack, Purge self of Consecrated; Deal 2d6 radiant damage to attacker for 5 turns). |
-| Cure Light Wounds | 1 | life domain | _Bind moderate injuries._ | Heal yourself or an ally 1d8 HP. |
-| Cure Critical Wounds | 5 | life domain | _Bind critical injuries._ | Heal yourself or an ally 4d8 HP. |
-| Cure Disease | 3 | life domain | _Cure an ally of disease._ | Remove Diseased from an ally. |
-| Cure Minor Wounds | ?? | life domain | _Bind minor injuries._ | Heal yourself or an ally 1d4 HP. |
-| Cure Moderate Wounds | 3 | life domain | _Bind moderate injuries._ | Heal yourself or an ally 2d8 HP. |
-| Cure Serious Wounds | 4 | life domain | _Bind serious injuries._ | Heal yourself or an ally 3d8 HP. |
-| Curse | ?? | death domain | _Curse an enemy._ | An enemy suffers Cursed (Degrade all stats by 1). |
-| Daylight | 3 | light domain | _Create a sphere of bright light._ | Deal 1d4 radiant damage to all enemies; Purge all enemies of Hidden. |
-| Death | 9 | death domain | _Utter a power word in the blackest of tongues._ | Instantly kill an enemy. |
-| Death Touch | 4 | death domain | _Touch an enemy to attempt to kill or curse them._ | Deal 3d6 necrotic damage to an enemy; Instantly kill an enemy; An enemy suffers Cursed (Degrade all stats by 1). |
-| Heal Ally | 1 | life domain | _Offer restoration._ | Heal an ally 1d4 HP. |
-| Hold Person | 2 | law domain | _Paralyze an enemy for 4 rounds._ | An enemy suffers Paralyzed (Cannot take actions, degrade Strength by 5, degrade Dexterity by 5) if humanoid. |
-| Holy | 6 | law domain | _Smite your foes with holy energy._ | Deal 3d6 + #wis radiant damage to all enemies; All enemies suffer Deafened (50% resistance to Sonic, degrade bonus damage by 2, degrade AC by 2, degrade to hit by 2, degrade all saves by 1). |
-| Ironskin | 4 | nature domain | _Your skin becomes as hard as iron._ | Grant yourself Ironskin (Improve AC by 5). |
-| Judgment | 5 | law domain | _Call down divine judgment on an enemy._ | Deal 6d6 radiant damage to an enemy; An enemy suffers Blinded (Degrade to hit by 4, degrade evasion by 10, degrade all rolls by 2); An enemy suffers Marked for Judgment (On heal, Deal 1d6 radiant damage to self for 5 turns). |
-| Life Drain | 1 | death domain | _Drain life from an enemy, healing yourself for damage dealt._ | Drain an enemy 1d6 HP. |
-| Madness | 3 | chaos domain | _Drive an enemy insane._ | An enemy suffers Insane (Actions are random, degrade all rolls by 1, degrade Save versus Will by 2). |
-| Mass Curse | ?? | death domain | _Your venomous words fill your enemies with a sense of doom._ | All enemies suffer Cursed (Degrade all stats by 1). |
-| Prayer | 2 | life domain | _Bolster your team with a prayer._ | Grant your party Praying (Improve to hit by 1, improve all saves by 2, improve bonus healing by 2, Gain 10 temporary HP). |
-| Protection from Evil | 1 | law domain | _Grant immunity to charm and fear for 6 rounds._ | Grant an ally Protected (50% resistance to Necrotic, Immunity to Charm); Grant an ally Courage (Improve all saves by 2, Immunity to Fear). |
-| Raise Dead | 3 | life domain | _Restore life to the dead._ | Restore a fallen ally to life with 50% health. |
-| Rally | 3 | life domain | _Restore your team's spirit._ | Heal all allies 1d6 HP. |
-| Remove Fear | 1 | life domain | _Calm a frightened ally._ | Remove Frightened from an ally. |
-| Resist Fire | 2 | life domain | _Grant an ally resistance to fire damage for 5 rounds._ | Grant an ally Fireproof (50% resistance to Fire). |
-| Resurrection | 5 | life domain | _It's alive!_ | Restore a fallen ally to life with full health. |
-| Scaleskin | 5 | nature domain | _Your skin takes on the qualities of dragon scales._ | Grant yourself Scaleskin (Improve AC by 8, 25% resistance to Fire). |
-| Shield of Faith | 1 | law domain | _Divine power protects you or an ally with a shimmering shield._ | Grant yourself or an ally Shielded (Improve AC by 1, Gain 10 temporary HP, improve Save versus Magic by 1). |
-| Smite Evil | 1 | war domain | _Smite an enemy._ | Deal #level + 1d8 radiant damage to an enemy. |
-| Steelskin | 9 | nature domain | _Your skin becomes as tough as steel._ | Grant yourself Steelskin (Improve AC by 10, 50% resistance to Piercing, 50% resistance to Slashing). |
-| Stoneskin | 3 | nature domain | _Your skin hardens like stone._ | Grant yourself Stoneskin (Improve AC by 3). |
-| Summon Lich | 5 | death domain | _Summon a powerful lich to fight for you._ | Summon level 10 monster. |
-| Sunburst | 5 | light domain | _A brilliant burst of solar energy injures your foes._ | Deal 4d6 radiant damage to all enemies. |
-| Terror | 2 | death domain | _Frighten an enemy._ | An enemy suffers Frightened (Degrade to hit by 2, degrade initiative by 5, degrade all rolls by 1, degrade all saves by 2). |
-| Turn Undead | 3 | light domain | _The dead recoil from your holy presence._ | Force all enemies to flee if undead. |
+| <p id="Aegis of Faith">Aegis of Faith</p> | 5 | life domain | _Ward against all effects._ | Grant yourself Invulnerable (Untargetable). |
+| <p id="Animate Dead">Animate Dead</p> | ?? | death domain | _Bind souls to your service._ | Restore a fallen ally to life with 40% health. |
+| <p id="Anoint">Anoint</p> | 1 | life domain | _You mark your allies with a holy symbol, granting them protection._ | Grant all allies Anointed (50% resistance to Radiant, improve bonus damage by 1, improve to hit by 1, improve all saves by 2). |
+| <p id="Barkskin">Barkskin</p> | 2 | nature domain | _Your skin stiffens into tree-bark._ | Grant yourself Barkskin (Improve AC by 2). |
+| <p id="Black Ritual">Black Ritual</p> | ?? | death domain | _A profane ritual summons a monstrous undead creature to serve you._ | Grant yourself Summoning (On expire, Summon level 10 monster for 3 turns). |
+| <p id="Blade Barrier">Blade Barrier</p> | 5 | law domain | _Create a wall of spinning blades that damages enemies passing through it._ | Grant yourself Blade Barrier (On enemy melee, Deal 3d6 slashing damage to attacker; Purge self of Blade Barrier for 5 turns). |
+| <p id="Bless">Bless</p> | 1 | life domain | _Bless an ally, granting them a divine boon._ | Grant yourself or an ally Blessed (Improve to hit by 1, improve bonus damage by 1). |
+| <p id="Command">Command</p> | 4 | law domain | _Give an instruction._ | Force an enemy to flee. |
+| <p id="Consecrated Ground">Consecrated Ground</p> | 3 | life domain | _Consecrate the ground, damaging enemies who attack or cast spells near you._ | Grant yourself Consecrated (On enemy offensive casting, Purge self of Consecrated; Deal 2d6 radiant damage to caster, On enemy attack, Purge self of Consecrated; Deal 2d6 radiant damage to attacker for 5 turns). |
+| <p id="Cure Light Wounds">Cure Light Wounds</p> | 1 | life domain | _Bind moderate injuries._ | Heal yourself or an ally 1d8 HP. |
+| <p id="Cure Critical Wounds">Cure Critical Wounds</p> | 6 | life domain | _Bind critical injuries._ | Heal yourself or an ally 4d8 HP. |
+| <p id="Cure Disease">Cure Disease</p> | 3 | life domain | _Cure an ally of disease._ | Remove Diseased from an ally. |
+| <p id="Cure Minor Wounds">Cure Minor Wounds</p> | ?? | life domain | _Bind minor injuries._ | Heal yourself or an ally 1d4 HP. |
+| <p id="Cure Moderate Wounds">Cure Moderate Wounds</p> | 3 | life domain | _Bind moderate injuries._ | Heal yourself or an ally 2d8 HP. |
+| <p id="Cure Serious Wounds">Cure Serious Wounds</p> | 4 | life domain | _Bind serious injuries._ | Heal yourself or an ally 3d8 HP. |
+| <p id="Curse">Curse</p> | ?? | death domain | _Curse an enemy._ | An enemy suffers Cursed (Degrade all stats by 1). |
+| <p id="Daylight">Daylight</p> | 4 | light domain | _Create a sphere of bright light._ | Deal 1d4 radiant damage to all enemies; Purge all enemies of Hidden. |
+| <p id="Death">Death</p> | 9 | death domain | _Utter a power word in the blackest of tongues._ | Instantly kill an enemy. |
+| <p id="Death Touch">Death Touch</p> | 4 | death domain | _Touch an enemy to curse them._ | Deal 3d6 necrotic damage to an enemy; An enemy suffers Cursed (Degrade all stats by 1). |
+| <p id="Harm">Harm</p> | 6 | death domain | _Inflict severe necrotic damage on an enemy._ | Deal 6d6 + #level * 2 necrotic damage to an enemy. |
+| <p id="Heal Ally">Heal Ally</p> | 1 | life domain | _Offer restoration._ | Heal an ally 1d4 HP. |
+| <p id="Hold Person">Hold Person</p> | 2 | law domain | _Paralyze an enemy for 4 rounds._ | An enemy suffers Paralyzed (Cannot take actions, degrade Strength by 5, degrade Dexterity by 5) if humanoid. |
+| <p id="Holy">Holy</p> | 6 | law domain | _Smite your foes with holy energy._ | Deal 3d6 + #wis radiant damage to all enemies; All enemies suffer Deafened (50% resistance to Sonic, degrade bonus damage by 2, degrade AC by 2, degrade to hit by 2, degrade all saves by 1). |
+| <p id="Ironskin">Ironskin</p> | 6 | nature domain | _Your skin becomes as hard as iron._ | Grant yourself Ironskin (Improve AC by 5). |
+| <p id="Judgment">Judgment</p> | 5 | law domain | _Call down divine judgment on an enemy._ | Deal 6d6 radiant damage to an enemy; An enemy suffers Blinded (Degrade to hit by 4, degrade evasion by 10, degrade all rolls by 2); An enemy suffers Marked for Judgment (On heal, Deal 1d6 radiant damage to self for 5 turns). |
+| <p id="Life Drain">Life Drain</p> | 1 | death domain | _Drain life from an enemy, healing yourself for damage dealt._ | Drain an enemy 1d6 HP. |
+| <p id="Madness">Madness</p> | 7 | chaos domain | _Drive an enemy insane._ | An enemy suffers Insane (Actions are random, degrade all rolls by 1, degrade Save versus Will by 2). |
+| <p id="Mass Curse">Mass Curse</p> | ?? | death domain | _Your venomous words fill your enemies with a sense of doom._ | All enemies suffer Cursed (Degrade all stats by 1). |
+| <p id="Prayer">Prayer</p> | 2 | life domain | _Bolster your team with a prayer._ | Grant your party Praying (Improve to hit by 1, improve all saves by 2, improve bonus healing by 2, Gain 10 temporary HP). |
+| <p id="Protection from Evil">Protection from Evil</p> | 1 | law domain | _Grant immunity to charm and fear for 6 rounds._ | Grant an ally Protected (50% resistance to Necrotic, Immunity to Charm); Grant an ally Courage (Improve all saves by 2, Immunity to Fear). |
+| <p id="Raise Dead">Raise Dead</p> | 4 | life domain | _Restore life to the dead._ | Restore a fallen ally to life with 50% health. |
+| <p id="Rally">Rally</p> | 3 | life domain | _Restore your team's spirit._ | Heal all allies 1d6 HP. |
+| <p id="Remove Fear">Remove Fear</p> | 1 | life domain | _Calm a frightened ally._ | Remove Frightened from an ally. |
+| <p id="Resist Fire">Resist Fire</p> | 2 | life domain | _Grant an ally resistance to fire damage for 5 rounds._ | Grant an ally Fireproof (50% resistance to Fire). |
+| <p id="Resurrection">Resurrection</p> | 7 | life domain | _It's alive!_ | Restore a fallen ally to life with full health. |
+| <p id="Scaleskin">Scaleskin</p> | 8 | nature domain | _Your skin takes on the qualities of dragon scales._ | Grant yourself Scaleskin (Improve AC by 8, 25% resistance to Fire). |
+| <p id="Shield of Faith">Shield of Faith</p> | 2 | law domain | _Divine power protects you or an ally with a shimmering shield._ | Grant yourself or an ally Shielded (Improve AC by 1, Gain 10 temporary HP, improve Save versus Magic by 1). |
+| <p id="Smite Evil">Smite Evil</p> | 1 | war domain | _Smite an enemy._ | Deal #level + 1d8 radiant damage to an enemy. |
+| <p id="Steelskin">Steelskin</p> | 9 | nature domain | _Your skin becomes as tough as steel._ | Grant yourself Steelskin (Improve AC by 10, 50% resistance to Piercing, 50% resistance to Slashing). |
+| <p id="Stoneskin">Stoneskin</p> | 3 | nature domain | _Your skin hardens like stone._ | Grant yourself Stoneskin (Improve AC by 3). |
+| <p id="Summon Lich">Summon Lich</p> | 5 | death domain | _Summon a powerful lich to fight for you._ | Summon level 10 monster. |
+| <p id="Sunburst">Sunburst</p> | 5 | light domain | _A brilliant burst of solar energy injures your foes._ | Deal 4d6 radiant damage to all enemies. |
+| <p id="Sunmark">Sunmark</p> | ?? | light domain | _Light up an enemy with a radiant mark._ | Deal 1d3 radiant damage to an enemy; An enemy suffers Sunmarked (Degrade Save versus Magic by 1, 25% vulnerability to Fire, 25% vulnerability to Radiant, On attacked, Deal 1d4 radiant damage to self). |
+| <p id="Terror">Terror</p> | 2 | death domain | _Frighten an enemy._ | An enemy suffers Frightened (Degrade to hit by 2, degrade initiative by 5, degrade all rolls by 1, degrade all saves by 2). |
+| <p id="Turn Undead">Turn Undead</p> | 2 | light domain | _The dead recoil from your holy presence._ | Force all enemies to flee if undead. |

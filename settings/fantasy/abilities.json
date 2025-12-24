@@ -238,7 +238,7 @@
   "daylight": {
     "name": "Daylight",
     "type": "spell",
-    "level": 3,
+    "level": 4,
     "aspect": "divine",
     "domain": "light",
     "description": "Create a sphere of bright light.",
@@ -314,7 +314,7 @@
   "ironskin": {
     "name": "Ironskin",
     "type": "spell",
-    "level": 4,
+    "level": 6,
     "aspect": "divine",
     "domain": "nature",
     "description": "Your skin becomes as hard as iron.",
@@ -331,7 +331,7 @@
   "scaleskin": {
     "name": "Scaleskin",
     "type": "spell",
-    "level": 5,
+    "level": 8,
     "aspect": "divine",
     "domain": "nature",
     "description": "Your skin takes on the qualities of dragon scales.",
@@ -382,7 +382,7 @@
   },
   "shield": {
     "name": "Shield of Faith",
-    "level": 1,
+    "level": 2,
     "type": "spell",
     "aspect": "divine",
     "domain": "law",
@@ -659,7 +659,7 @@
   "blur": {
     "name": "Blur",
     "type": "spell",
-    "level": 1,
+    "level": 2,
     "aspect": "arcane",
     "school": "illusion",
     "description": "You are out of focus, making it harder for enemies to hit you.",
@@ -713,7 +713,7 @@
     "name": "Haste",
     "type": "spell",
     "description": "Increase an ally's speed.",
-    "level": 3,
+    "level": 5,
     "aspect": "arcane",
     "school": "transmutation",
     "target": [
@@ -729,7 +729,7 @@
   "fireball": {
     "name": "Fireball",
     "type": "spell",
-    "level": 3,
+    "level": 6,
     "aspect": "arcane",
     "school": "evocation",
     "description": "Hurl a destructive ball of energy that explodes in a fiery blast.",
@@ -1005,7 +1005,7 @@
   "poison_cloud": {
     "name": "Poison Cloud",
     "type": "spell",
-    "level": 2,
+    "level": 5,
     "aspect": "arcane",
     "school": "conjuration",
     "description": "Release a cloud of toxic gas.",
@@ -1015,7 +1015,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d4",
+        "amount": "=3d4+#level",
         "kind": "poison"
       }
     ]
@@ -1070,7 +1070,7 @@
   "lightning_strike": {
     "name": "Lightning Strike",
     "type": "spell",
-    "level": 2,
+    "level": 4,
     "aspect": "arcane",
     "school": "evocation",
     "description": "Strike random enemies with lightning, dealing 1d8 damage and paralyzing them for 1 round.",
@@ -1094,7 +1094,7 @@
   "earthquake": {
     "name": "Earthquake",
     "type": "spell",
-    "level": 2,
+    "level": 5,
     "aspect": "arcane",
     "school": "evocation",
     "description": "Cause the ground to shake.",
@@ -1227,7 +1227,7 @@
     ]
   },
   "summon_monster": {
-    "name": "Summon Monster",
+    "name": "Summon Monster I",
     "type": "spell",
     "aspect": "arcane",
     "school": "conjuration",
@@ -1252,7 +1252,7 @@
     "aspect": "arcane",
     "school": "conjuration",
     "alignment": "evil",
-    "level": 2,
+    "level": 3,
     "description": "Summon a random undead creature to fight for you.",
     "target": [
       "self"
@@ -1311,7 +1311,7 @@
   },
   "raise_dead": {
     "name": "Raise Dead",
-    "level": 3,
+    "level": 4,
     "type": "spell",
     "aspect": "divine",
     "domain": "life",
@@ -1331,7 +1331,7 @@
     "type": "spell",
     "aspect": "divine",
     "domain": "life",
-    "level": 5,
+    "level": 7,
     "description": "It's alive!",
     "target": [
       "deadAlly"
@@ -1520,7 +1520,7 @@
   "slow": {
     "name": "Slow",
     "type": "spell",
-    "level": 2,
+    "level": 3,
     "aspect": "arcane",
     "school": "transmutation",
     "description": "Reduce the speed of your foes.",
@@ -1596,7 +1596,7 @@
   "flesh_to_stone": {
     "name": "Flesh to Stone",
     "type": "spell",
-    "level": 4,
+    "level": 6,
     "aspect": "arcane",
     "school": "transmutation",
     "description": "Turn an enemy to stone.",
@@ -1621,15 +1621,16 @@
     "aspect": "arcane",
     "school": "evocation",
     "description": "Countdown to a fiery explosion.",
-    "target": [
-      "self"
-    ],
+    "target": [ "self" ],
+    "condition": {
+      "notStatus": "ticking"
+    },
     "effects": [
       {
         "type": "buff",
         "status": {
           "name": "Ticking",
-          "duration": 4,
+          "duration": 3,
           "effect": {
             "onExpire": [
               {
@@ -1715,9 +1716,10 @@
     "alignment": "evil",
     "level": 0,
     "description": "A profane ritual summons a monstrous undead creature to serve you.",
-    "target": [
-      "self"
-    ],
+    "target": [ "self" ],
+    "condition": {
+      "notStatus": "Summoning"
+    },
     "effects": [
       {
         "type": "buff",
@@ -1781,7 +1783,7 @@
   "false_life": {
     "name": "False Life",
     "type": "spell",
-    "level": 1,
+    "level": 4,
     "aspect": "arcane",
     "school": "necromancy",
     "description": "Grant yourself temporary hit points.",
@@ -1798,7 +1800,7 @@
   "reflection": {
     "name": "Reflection",
     "type": "spell",
-    "level": 2,
+    "level": 5,
     "aspect": "arcane",
     "school": "abjuration",
     "description": "Create a magical shield that reflects some incoming damage.",
@@ -1813,7 +1815,7 @@
   "spellturning": {
     "name": "Spellturning",
     "type": "spell",
-    "level": 4,
+    "level": 7,
     "aspect": "arcane",
     "school": "abjuration",
     "description": "Create a magical barrier may reflect spells back to their caster.",
@@ -1849,7 +1851,7 @@
   },
   "deathtouch": {
     "name": "Death Touch",
-    "description": "Touch an enemy to attempt to kill or curse them.",
+    "description": "Touch an enemy to curse them.",
     "type": "spell",
     "aspect": "divine",
     "level": 4,
@@ -1864,11 +1866,6 @@
         "amount": "=3d6",
         "kind": "necrotic",
         "saveForHalf": true
-      },
-      {
-        "type": "kill",
-        "saveKind": "fortitude",
-        "saveDC": 10
       },
       {
         "type": "debuff",
@@ -1960,7 +1957,7 @@
   "madness": {
     "name": "Madness",
     "type": "spell",
-    "level": 3,
+    "level": 7,
     "aspect": "divine",
     "domain": "chaos",
     "description": "Drive an enemy insane.",
@@ -1971,7 +1968,7 @@
       {
         "type": "debuff",
         "status": "insane",
-        "saveDC": 20
+        "saveDC": 25
       }
     ]
   },
@@ -2086,7 +2083,7 @@
   },
   "command": {
     "name": "Command",
-    "level": 1,
+    "level": 4,
     "type": "spell",
     "aspect": "divine",
     "domain": "law",
@@ -2126,7 +2123,7 @@
   },
   "turn_undead": {
     "name": "Turn Undead",
-    "level": 3,
+    "level": 2,
     "type": "spell",
     "aspect": "divine",
     "domain": "light",
@@ -2202,7 +2199,7 @@
   "cure_critical": {
     "name": "Cure Critical Wounds",
     "type": "spell",
-    "level": 5,
+    "level": 6,
     "aspect": "divine",
     "domain": "life",
     "description": "Bind critical injuries.",
@@ -2360,7 +2357,7 @@
   "scald": {
     "name": "Scald",
     "type": "spell",
-    "level": 4,
+    "level": 2,
     "aspect": "arcane",
     "school": "evocation",
     "description": "Blast an enemy with superheated steam.",
@@ -2460,7 +2457,7 @@
   "sound_lance": {
     "name": "Sound Lance",
     "type": "spell",
-    "level": 2,
+    "level": 5,
     "aspect": "arcane",
     "school": "evocation",
     "description": "A concentrated blast of noise explodes from your hand.",
@@ -2473,17 +2470,13 @@
         "amount": "=4d6",
         "kind": "sonic",
         "saveForHalf": true
-      },
-      {
-        "type": "debuff",
-        "status": "deafened"
       }
     ]
   },
   "invisibility": {
     "name": "Invisibility",
     "type": "spell",
-    "level": 3,
+    "level": 6,
     "aspect": "arcane",
     "school": "illusion",
     "description": "Turn invisible for 5 rounds or until you attack or cast a spell.",
@@ -2639,8 +2632,8 @@
     "name": "Sunmark",
     "type": "spell",
     "level": 0,
-    "aspect": "arcane",
-    "school": "evocation",
+    "aspect": "divine",
+    "domain": "light",
     "description": "Light up an enemy with a radiant mark.",
     "target": [
       "enemy"
@@ -2733,7 +2726,7 @@
   "time_stop": {
     "name": "Time Stop",
     "type": "spell",
-    "level": 9,
+    "level": 8,
     "aspect": "arcane",
     "school": "transmutation",
     "description": "Stop time for everyone but yourself.",
@@ -2797,6 +2790,419 @@
       {
         "type": "debuff",
         "status": "doom"
+      }
+    ]
+  },
+  "obscuring_mist": {
+    "name": "Obscuring Mist",
+    "type": "spell",
+    "level": 3,
+    "aspect": "arcane",
+    "school": "conjuration",
+    "description": "Create a mist that obscures vision.",
+    "target": [ "self" ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "hidden",
+        "duration": 5
+      }
+    ]
+  },
+  "pain": {
+    "name": "Pain",
+    "type": "spell",
+    "level": 3,
+    "school": "necromancy",
+    "alignment": "evil",
+    "description": "Inflict intense pain on an enemy, causing ongoing damage.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=2d6",
+        "kind": "psychic",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "agony",
+        "duration": 3,
+        "saveKind": "will",
+        "saveDC": 15
+      }
+    ]
+  },
+  "insanity": {
+    "name": "Insanity",
+    "type": "spell",
+    "level": 5,
+    "school": "necromancy",
+    "alignment": "evil",
+    "description": "Drive an enemy mad, causing them to act unpredictably.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": "insane",
+        "saveKind": "will",
+        "saveDC": 18
+      }
+    ]
+  },
+  "stone_to_flesh": {
+    "name": "Stone to Flesh",
+    "type": "spell",
+    "level": 6,
+    "aspect": "arcane",
+    "school": "transmutation",
+    "description": "Restore a petrified creature to flesh.",
+    "target": [ "ally" ],
+    "effects": [
+      {
+        "type": "removeStatus",
+        "statusName": "Petrified"
+      }
+    ]
+  },
+  "control_undead": {
+    "name": "Control Undead",
+    "type": "spell",
+    "level": 7,
+    "school": "necromancy",
+    "alignment": "evil",
+    "description": "Take control of an undead creature.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "charmed",
+        "saveKind": "will",
+        "saveDC": 19,
+        "condition": {
+          "trait": "undead"
+        }
+      }
+    ]
+  },
+  "dominate_person": {
+    "name": "Dominate Person",
+    "type": "spell",
+    "level": 5,
+    "school": "necromancy",
+    "alignment": "evil",
+    "description": "Control the actions of a humanoid enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "dominated",
+        "saveKind": "will",
+        "saveDC": 17,
+        "duration": 10,
+        "condition": {
+          "trait": "humanoid"
+        }
+      }
+    ]
+  },
+  "infect": {
+    "name": "Infect",
+    "type": "skill",
+    "alignment": "evil",
+    "description": "Infect an enemy with a virulent disease.",
+    "target": [ "enemy" ],
+    "effects": [
+      {
+        "type": "cast",
+        "spellName": "inflict_disease"
+      }
+    ]
+  },
+  "hex": {
+    "name": "Hex",
+    "type": "spell",
+    "level": 1,
+    "school": "necromancy",
+    "alignment": "evil",
+    "description": "Curse an enemy, causing misfortune.",
+    "target": [ "enemy" ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": "hexed",
+        "saveKind": "will",
+        "saveDC": 13
+      }
+    ]
+  },
+  "weakness": {
+    "name": "Weakness",
+    "type": "spell",
+    "level": 2,
+    "school": "necromancy",
+    "alignment": "evil",
+    "description": "Sap the strength of an enemy, reducing their damage output.",
+    "target": [ "enemy" ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": "weakened",
+        "saveKind": "fortitude",
+        "saveDC": 14
+      }
+    ]
+  },
+  "trickfire": {
+    "name": "Trickfire",
+    "type": "skill",
+    "description": "Toss a firebomb that damages and confuses enemies.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d4",
+        "kind": "fire",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "confused",
+        "saveKind": "will",
+        "saveDC": 15
+      }
+    ]
+  },
+  "scourge": {
+    "name": "Scourge",
+    "type": "spell",
+    "level": 5,
+    "school": "necromancy",
+    "alignment": "evil",
+    "description": "Inflict necrotic damage and disease upon an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=4d6",
+        "kind": "necrotic",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "diseased",
+        "saveKind": "fortitude",
+        "saveDC": 16
+      }
+    ]
+  },
+  "chaos_bolt": {
+    "name": "Chaos Bolt",
+    "type": "spell",
+    "level": 3,
+    "aspect": "arcane",
+    "school": "evocation",
+    "description": "Hurl a bolt of chaotic energy that deals random types of damage.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "randomEffect",
+        "randomEffects": [
+          {
+            "type": "damage",
+            "amount": "=2d6",
+            "kind": "fire",
+            "saveForHalf": true
+          },
+          {
+            "type": "damage",
+            "amount": "=2d6",
+            "kind": "cold",
+            "saveForHalf": true
+          },
+          {
+            "type": "damage",
+            "amount": "=2d6",
+            "kind": "acid",
+            "saveForHalf": true
+          },
+          {
+            "type": "damage",
+            "amount": "=2d6",
+            "kind": "poison",
+            "saveForHalf": true
+          }
+        ]
+      }
+    ]
+  },
+  "harm": {
+    "name": "Harm",
+    "type": "spell",
+    "level": 6,
+    "aspect": "divine",
+    "domain": "death",
+    "alignment": "evil",
+    "description": "Inflict severe necrotic damage on an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=6d6 + #level * 2",
+        "kind": "necrotic",
+        "saveForHalf": true
+      }
+    ]
+  },
+  "warp": {
+    "name": "Warp Enemy",
+    "type": "spell",
+    "level": 7,
+    "aspect": "arcane",
+    "school": "transmutation",
+    "description": "Distort the fabric of reality around an enemy, causing unpredictable effects.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "randomEffect",
+        "randomEffects": [
+          { "type": "debuff", "status": "stun" },
+          { "type": "debuff", "status": "slow" },
+          { "type": "debuff", "status": "weakened" },
+          { "type": "debuff", "status": "distracted" }
+        ]
+      },
+      {
+        "type": "randomEffect",
+        "randomEffects": [
+          { "type": "debuff", "status": "cursed" },
+          { "type": "debuff", "status": "insane" },
+          { "type": "debuff", "status": "charmed" },
+          { "type": "debuff", "status": "frightened" }
+        ]
+      }
+    ]
+  },
+  "magebane": {
+    "name": "Magebane",
+    "type": "spell",
+    "level": 2,
+    "aspect": "arcane",
+    "school": "abjuration",
+    "description": "Create an aura that harms enemy spellcasters when they cast spells.",
+    "target": [ "enemy" ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Magebane",
+          "duration": 3,
+          "effect": {
+            "onEnemyCasting": [
+              {
+                "type": "damage",
+                "amount": "=2d6",
+                "kind": "true",
+                "target": "caster"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "disruption": {
+    "name": "Disruption",
+    "type": "spell",
+    "level": 4,
+    "aspect": "arcane",
+    "school": "abjuration",
+    "description": "Imbue a weapon with disruptive energy especially harmful to undead and constructs.",
+    "target": [
+      "self", "ally"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Disrupting",
+          "duration": 5,
+          "effect": {
+            "onAttack": [
+              {
+                "type": "damage",
+                "amount": "=2d6",
+                "kind": "true",
+                "target": "target"
+              },
+              {
+                "type": "damage",
+                "amount": "=3d6",
+                "kind": "radiant",
+                "target": "target",
+                "condition": {
+                  "trait": "undead|construct"
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "implosion": {
+    "name": "Implosion",
+    "type": "spell",
+    "level": 8,
+    "aspect": "arcane",
+    "school": "evocation",
+    "description": "Create a powerful gravitational collapse at a target location, damaging all enemies within the area.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=10d6",
+        "kind": "force",
+        "saveForHalf": true
+      }
+    ]
+  },
+  "polar_ray": {
+    "name": "Polar Ray",
+    "type": "spell",
+    "level": 4,
+    "aspect": "arcane",
+    "school": "evocation",
+    "description": "Fire a beam of intense cold that can freeze enemies in place.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=5d6",
+        "kind": "cold",
+        "saveForHalf": true
       }
     ]
   }

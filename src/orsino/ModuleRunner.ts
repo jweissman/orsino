@@ -55,6 +55,7 @@ interface GameState {
 }
 
 export class ModuleRunner {
+  static configuration = { startingGold: 100 }
 
   private roller: Roll; // (subject: Combatant, description: string, sides: number, dice: number) => Promise<RollResult>;
   private select: Select<any>;
@@ -66,7 +67,7 @@ export class ModuleRunner {
   ) => Promise<CampaignModule>;
   private state: GameState = {
     party: [],
-    sharedGold: 10000,
+    sharedGold: ModuleRunner.configuration.startingGold,
     inventory: [],
     completedDungeons: [],
     discoveredDungeons: [],
@@ -394,7 +395,7 @@ export class ModuleRunner {
     }
 
     if (available.length > 0) {
-      options.push({ short: "Seek", value: "embark", name: "⚔️ Embark on a Quest", disabled: available.length === 0 });
+      options.push({ short: "Seek", value: "embark", name: "⚔️ Embark on a Quest", disabled: this.state.discoveredDungeons.length === 0 || this.availableDungeons.length === 0 });
     } else {
       // options.push({ short: "Journey", value: "embark", name: "⚔️ Journey to the next region", disabled: false });
     }

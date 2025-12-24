@@ -344,7 +344,14 @@ export default class Combat {
         if (!combatant.activeEffects?.map(e => e.name).includes(condition.status)) {
           disabled = true;
         }
-      } else if (condition.dead) {
+      }
+      if (condition.notStatus) {
+        if (combatant.activeEffects?.map(e => e.name).includes(condition.notStatus)) {
+          disabled = true;
+        }
+      }
+
+      if (condition.dead) {
         if (ability.target.includes("ally") || ability.target.includes("allies")) {
           let targetAllies = allies.filter(a => a.hp <= 0);
           if (targetAllies.length === 0) {
@@ -476,12 +483,12 @@ export default class Combat {
       disabled: false
     })
 
-    // choices.push({
-    //   value: { name: "Flee", type: "skill", description: "Attempt to flee from combat.", aspect: "physical", target: ["self"], effects: [{ type: "flee" }] },
-    //   name: "Flee (Attempt to escape combat)",
-    //   short: "Flee",
-    //   disabled: false
-    // })
+    choices.push({
+      value: { name: "Flee", type: "skill", description: "Attempt to flee from combat.", aspect: "physical", target: ["self"], effects: [{ type: "flee" }] },
+      name: "Flee (Attempt to escape combat)",
+      short: "Flee",
+      disabled: this.dry // can't flee in dry mode
+    })
 
     let action: Ability = waitAction;
     let fx = Fighting.gatherEffects(combatant);
@@ -819,9 +826,9 @@ export default class Combat {
         const expired = activeFx.filter(s => s.duration === 0);
 
         for (const status of expired) {
-          expiryEvents.push(...(await Commands.handleRemoveStatusEffect(combatant, status.name)));
           let expiryHookEvents = await AbilityHandler.performHooks("onExpire", combatant, { subject: combatant, allies: this.alliesOf(combatant), enemies: this.enemiesOf(combatant) }, Commands.handlers(this.roller), "status expire hook");
           expiryEvents.push(...expiryHookEvents);
+          expiryEvents.push(...(await Commands.handleRemoveStatusEffect(combatant, status.name)));
         }
       }
 
