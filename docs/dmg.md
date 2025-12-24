@@ -53,6 +53,7 @@
 |---------------|-------------|---------|
 | Acid Burn |  | On turn end, Deal 1d6 acid damage to self |
 | Acidproof |  | 50% resistance to Acid |
+| Agony |  | Degrade Intelligence by 1, degrade Wisdom by 1, On turn end, Deal 2d4 necrotic damage to self |
 | Anointed |  | 50% resistance to Radiant, improve bonus damage by 1, improve to hit by 1, improve all saves by 2 |
 | Armor Shred |  | Degrade AC by 2 |
 | Asleep | _In a deep slumber, unaware of surroundings._ | Cannot take actions |
@@ -79,6 +80,7 @@
 | Diseased |  | Degrade Constitution by 2, degrade all saves by 2, On turn end, Deal 1d4 necrotic damage to self |
 | Distracted |  | Degrade to hit by 1, degrade bonus damage by 1, degrade evasion by 5 |
 | Dodging | _Focusing on avoiding attacks._ | Improve AC by 2, improve evasion by 5 |
+| Dominated | _Completely under another's control._ | Allegiance changed |
 | Doomed |  | Degrade all stats by 4 for 3 turns |
 | Drenched |  | Degrade to hit by 2, 100% vulnerability to Lightning, 200% vulnerability to Cold |
 | Dug In | _Taking a fortified position._ | Improve AC by 2, improve all saves by 3, degrade to hit by 2 |
@@ -92,9 +94,10 @@
 | Fox's Cunning |  | Improve Intelligence by 2, improve all rolls by 1 |
 | Frightened | _Overcome with fear and hesitation._ | Degrade to hit by 2, degrade initiative by 5, degrade all rolls by 1, degrade all saves by 2 |
 | Frozen |  | Cannot take actions, degrade Dexterity by 5 |
-| Ghost Touch |  | On attack hit, Deal 1d3 necrotic damage to self |
+| Ghost Touch |  | On attack hit, Deal 1d3 necrotic damage to target |
 | Giant's Strength |  | Improve Strength by 6, add =1d3 to bonus damage |
 | Haste | _Moving with supernatural speed._ | Improve Dexterity by 4, improve initiative by 10, improve attacks per turn by 1, improve AC by 2 |
+| Hexed | _Cursed with misfortune._ | Degrade all rolls by 2, degrade all saves by 2 |
 | Hidden | _Concealed from enemies._ | Improve AC by 4, improve evasion by 10, On attack, Remove Hidden from self |
 | Hunting Prey |  | Degrade AC by 2, On attacked, Deal 1d8 true damage to self |
 | In Maze |  | Cannot take actions, Untargetable |
@@ -149,6 +152,7 @@
 | True Sight | _Seeing through illusions and invisibility._ | Can perceive invisible entities |
 | Warded |  | Improve Save versus Magic by 1, 15% resistance to Fire, 15% resistance to Cold, 15% resistance to Lightning, 50% resistance to Force, Gain =14 + 2 * #level temporary HP |
 | Waterproof |  | 50% resistance to Cold |
+| Weakened |  | Degrade Strength by 2, degrade bonus damage by 2 |
 
 
 ## Wonders

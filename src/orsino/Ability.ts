@@ -119,6 +119,7 @@ export interface Ability {
   condition?: {
     hasInterceptWeapon?: boolean;
     status?: string;
+    notStatus?: string;
     dead?: boolean;
   };
   cooldown?: number;
@@ -356,9 +357,17 @@ export default class AbilityHandler {
 
     // does the target meet all conditions?
     if (effect.condition) {
-      if (effect.condition.trait && !(targetCombatant.traits || []).includes(effect.condition.trait)) {
-        console.warn(`${targetCombatant.name} does not have required trait ${effect.condition.trait} for effect ${effect.type} of ability ${name}, skipping effect.`);
-        return { success, events };
+      if (effect.condition.trait) {
+        // let traitMatch = !(targetCombatant.traits || []).includes(effect.condition.trait))
+        // using regexp
+        let traitMatch = (targetCombatant.traits || []).some(t => {
+          let re = new RegExp(`^${effect.condition!.trait}$`, 'i');
+          return re.test(t);
+        });
+        if (!traitMatch) {
+          console.warn(`${targetCombatant.name} does not have required trait ${effect.condition.trait} for effect ${effect.type} of ability ${name}, skipping effect.`);
+          return { success, events };
+        }
       }
     }
 
@@ -830,14 +839,24 @@ export default class AbilityHandler {
     if (hookFx[hookKey]) {
       let hookEffects = hookFx[hookKey] as Array<AbilityEffect>;
       for (const hookEffect of hookEffects) {
+        // console.log("Handling hook effect", hookKey, "for", user.name, ": ", JSON.stringify(hookEffect));
+        let target: Combatant | Combatant[] = user;
+        if (hookEffect.target && hookEffect.target !== "self") {
+          let newTarget = this.resolveTarget(hookEffect.target as TargetKind, user, context.allies || [], context.enemies || []);
+          if (newTarget !== undefined) {
+            target = newTarget;
+          }
+        }
         let { success, events: hookEvents } = await this.handleEffect(
-          (hookEffect.status?.name || label) + " due to " + Words.humanizeList(hookFxWithNames[hookKey].sources),
-          hookEffect, user, user, context, handlers
+          // (hookEffect.status?.name || label) + " due to " + Words.humanizeList(hookFxWithNames[hookKey].sources),
+          (label) + " due to " + Words.humanizeList(hookFxWithNames[hookKey].sources),
+          hookEffect, user, target, context, handlers
         );
         events.push(...hookEvents);
-        if (!success) {
-          break;
-        }
+        // console.log("hook effect events:", hookEvents, "success:", success);
+        // if (!success) {
+        //   break;
+        // }
       }
     }
 
@@ -892,7 +911,7 @@ export default class AbilityHandler {
             }
           }
           let { success, events: reactionEvents } = await this.handleEffect(
-            reactor.forename + "'s " + (reactionEffect.status?.name || label).toLocaleLowerCase() + " reaction from " + sources,
+            reactor.forename + "'s " + (label).toLocaleLowerCase() + " reaction from " + sources,
             reactionEffect, reactor, target, reactorContext, handlers
           );
           if (reactionEvents.length > 0) {

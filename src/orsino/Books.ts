@@ -139,6 +139,8 @@ export default class Books {
     })
   }
 
+  // static async spells()
+
   static async spellbook(_options: Record<string, any> = {}) {
     await this.bootstrap();
 
@@ -164,16 +166,54 @@ export default class Books {
         }
       )
 
-          console.log("\n| Name | Level | School/Domain | Description | Details |");
-          console.log("|---|---|---|---|-----|");
+      let schoolIcons = {
+        "abjuration": "🛡️",
+        "conjuration": "✨",
+        "divination": "🔮",
+        "enchantment": "💫",
+        "evocation": "🔥",
+        "necromancy": "💀",
+        "transmutation": "🔄",
+        "illusion": "🎭",
+      }
+
+      console.log("\n| Cantrip | Level 1 | Level 2 | Level 3 | Level 4 | Level 5 | Level 6 | Level 7 | Level 8 | Level 9 |");
+      console.log("  |---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|");
+      let spellLevels: Record<number, string[]> = {};
+      spells.forEach(spellName => {
+        const ability = AbilityHandler.instance.getAbility(spellName);
+        if (ability && ability.type === "spell" && ability.alignment !== "evil") {
+          const level = ability.level || 0;
+          if (!spellLevels[level]) {
+            spellLevels[level] = [];
+          }
+          spellLevels[level].push(ability.name); // + (ability.school ? ` ${schoolIcons[ability.school] || ""}` : ""));
+        }
+      });
+      const maxSpellsPerLevel = Math.max(...Object.values(spellLevels).map(arr => arr.length));
+      for (let i = 0; i < maxSpellsPerLevel; i++) {
+        let row = "| ";
+        for (let level = 0; level <= 9; level++) {
+          if (spellLevels[level] && spellLevels[level][i]) {
+            row += `[${Words.capitalize(spellLevels[level][i])}](#${spellLevels[level][i]}) | `;
+          } else {
+            row += " | ";
+          }
+        }
+        console.log(row);
+      }
+
+      
+
+      console.log("\n| Name | Level | School/Domain | Description | Details |");
+      console.log("|---|---|---|---|-----|");
       spells.forEach(spellName => {
         const ability = AbilityHandler.instance.getAbility(spellName);
         if (ability && ability.type === "spell") {
-          // let row = `| ${Words.capitalize(ability.name)} | Level: ${ability.level || "??"} ${ability.school ? `| School: ${ability.school}` : ''}${ability.domain ? `| Domain: ${ability.domain}` : ''} | _${ability.description}_ | ${Presenter.describeAbility(ability).replace(/\n/g, " ")} |`;
-          let row = `| ${Words.capitalize(ability.name)} | `;
+          let row = `| <p id="${ability.name}">${Words.capitalize(ability.name)}</p> | `;
           row += `${ability.level || "??"} `;
           if (ability.school) {
-            row += `| ${ability.school} school `;
+            row += `| School of ${Words.capitalize(ability.school)}`;
           } else if (ability.domain) {
             row += `| ${ability.domain} domain `;
           } else {

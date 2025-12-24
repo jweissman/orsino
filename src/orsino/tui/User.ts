@@ -1,13 +1,16 @@
 import { select } from "@inquirer/prompts";
 import { Separator } from "@inquirer/select";
-import inquirer from "inquirer";
 import Choice from "inquirer/lib/objects/choice";
 import Combat from "../Combat";
 import { RollResult } from "../types/RollResult";
 import { Combatant } from "../types/Combatant";
-import Spinner from "./Spinner";
 import { Commands } from "../rules/Commands";
-
+export type SelectionMethod = (
+      prompt: string,
+      choices: (
+        readonly (string)[] | Choice<any>[]
+      )
+    ) => Promise<string | Choice<any>>;
 export default class User {
   // print the message and return the user's input
   static async prompt(message: string): Promise<any> {
@@ -20,29 +23,29 @@ export default class User {
     });
   }
 
-  static async multiSelect(
-    message: string,
-    choices: string[], //(readonly (string | Separator)[] | Choice<any>[]),
-    count: number = 3
-  ): Promise<any[]> {
-    if (choices.length === 0) {
-      throw new Error("No choices provided for selection");
-    }
+  // static async multiSelect(
+  //   message: string,
+  //   choices: string[], //(readonly (string | Separator)[] | Choice<any>[]),
+  //   count: number = 3
+  // ): Promise<any[]> {
+  //   if (choices.length === 0) {
+  //     throw new Error("No choices provided for selection");
+  //   }
 
-    // return await inquirer.prompt(message, { choices, type: 'checkbox'});
-    let selections: string[] = [];
-    while (selections.length < count) {
-      const answer = await select<string>({
-        message: `${message} (${selections.length + 1}/${count})`,
-        choices: choices.filter(c => !selections.includes(c))
-      });
-      if (!selections.includes(answer)) {
-        selections.push(answer);
-      }
-    }
-    console.log(`You selected: ${selections.join(", ")}`);
-    return selections;
-  }
+  //   // return await inquirer.prompt(message, { choices, type: 'checkbox'});
+  //   let selections: string[] = [];
+  //   while (selections.length < count) {
+  //     const answer = await select<string>({
+  //       message: `${message} (${selections.length + 1}/${count})`,
+  //       choices: choices.filter(c => !selections.includes(c))
+  //     });
+  //     if (!selections.includes(answer)) {
+  //       selections.push(answer);
+  //     }
+  //   }
+  //   console.log(`You selected: ${selections.join(", ")}`);
+  //   return selections;
+  // }
 
   static async selection(
     message: string,

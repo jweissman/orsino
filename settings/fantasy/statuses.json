@@ -507,6 +507,14 @@
     },
     "saveKind": "charm"
   },
+  "dominated": {
+    "name": "Dominated",
+    "description": "Completely under another's control.",
+    "effect": {
+      "changeAllegiance": true
+    },
+    "saveKind": "charm"
+  },
   "mocked": {
     "name": "Mocked",
     "description": "Distracted by jeers and taunts.",
@@ -535,6 +543,14 @@
       "saveVersusAll": -2
     },
     "saveKind": "fear"
+  },
+  "hexed": {
+    "name": "Hexed",
+    "description": "Cursed with misfortune.",
+    "effect": {
+      "allRolls": -2,
+      "saveVersusAll": -2
+    }
   },
   "cursed": {
     "name": "Cursed",
@@ -837,7 +853,8 @@
         {
           "type": "damage",
           "amount": "=1d3",
-          "kind": "necrotic"
+          "kind": "necrotic",
+          "target": "target"
         }
       ]
     }
@@ -921,12 +938,36 @@
         }
       ],
       "noActions": true
-    }
+    },
+    "saveKind": "reflex"
   },
   "false_life": {
     "name": "False Life",
     "effect": {
       "tempHp": "=10d6 + 2 * #level"
     }
+  },
+  "agony": {
+    "name": "Agony",
+    "effect": {
+      "int": -1,
+      "wis": -1,
+      "onTurnEnd": [
+        {
+          "type": "damage",
+          "amount": "=2d4",
+          "kind": "necrotic"
+        }
+      ]
+    },
+    "saveKind": "will"
+  },
+  "weakened": {
+    "name": "Weakened",
+    "effect": {
+      "str": -2,
+      "bonusDamage": -2
+    },
+    "saveKind": "fortitude"
   }
 }

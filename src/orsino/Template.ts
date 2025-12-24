@@ -54,7 +54,7 @@ export class Template {
 
     Deem.stdlib.fxHeal = (amount: number | string) => ({ type: 'heal', amount });
     Deem.stdlib.fxDamage = (amount: number | string, damageType?: string) => ({ type: 'damage', amount, kind: damageType });
-    Deem.stdlib.fxBuff = (name: string, effect: StatusModifications, duration: number | string = 10) => ({ type: 'buff', status: { effect, name, duration } });
+    Deem.stdlib.fxBuff = (name: string, effect: StatusModifications, duration: number | string = 10) => ({ type: 'buff', status: { effect, name }, duration });
   }
 
   async assembleProperties(

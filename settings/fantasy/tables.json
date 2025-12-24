@@ -314,13 +314,18 @@
     "discriminator": "dungeonType",
     "groups": {
       "temple": [[
+        "Factotum", "Amanuensis",
         "Priest", "Herald", "Devotee", "Mendicant", "Benefactor", "Preacher",
         "Acolyte", "Adept", "Cleric", "Cultist", "Sage", "Elder", "Guardian",
         "High Priest", "Primate", "Death Priest", "Hierophant"
       ]],
       "mine": [[ "Miner", "Dweller", "Brute", "Thug", "Lurker" ]],
       "fortress": [[ "Soldier", "Mercenary", "Warrior", "Chieftain" ]],
-      "tomb": [[ "Novice", "Acolyte", "Gravedigger", "Cultist", "Bandit", "Tombrobber", "Wizard" ]],
+      "tomb": [[
+        "Novice", "Acolyte", "Gravedigger", "Cultist", "Bandit", "Tombrobber", "Wizard",
+        "Archaeologist", "Adventurer", "Blackguard", "Chirurgeon", "Doomsman",
+        "Funerarian"
+      ]],
       "library": [[ "Scholar", "Sage", "Mage", "Apprentice" ]]
     }
   },
@@ -339,24 +344,34 @@
   "npcTypeModifier": {
     "discriminator": "type",
     "groups": {
-      "Novice":       { "str": -1, "con": 0, "dex": -2, "int": 1, "wis": 1, "cha": -1, "abilities": ["rapid_strike", "paralyzing_touch", "life_drain", "ghost_touch" ] },
+      "Adventurer":  { "str": 2,  "con": 2, "dex": 2, "int": 2, "wis": 2, "cha": 2, "abilities": [ "prepare_charge", "charge", "second_wind", "heal", "cure_minor", "cure", "missile", "shocking_grasp" ] },
+      "Blackguard": { "str": 4,  "con": 4, "dex": 2, "int": 2, "wis": 2, "cha": 2, "abilities": [ "smite", "prepare_charge", "charge", "second_wind", "curse", "life_drain", "paralyzing_touch" ], "traits": ["fiendish"] },
+      "Chirurgeon": { "str": 1,  "con": 2, "dex": 2, "int": 3, "wis": 4, "cha": 1, "abilities": [ "cure_minor", "cure", "cure_moderate", "heal", "remove_fear", "resist_fire", "infect", "weakness" ] },
+      "Doomsman":  { "str": 3,  "con": 4, "dex": 2, "int": 4, "wis": 3, "cha": 2, "abilities": [ "curse", "terror", "life_drain", "firebolt", "burning_hands", "summon_undead", "animate_dead", "insanity" ], "traits": ["fiendish"] },
+      "Funerarian": { "str": 2,  "con": 3, "dex": 2, "int": 3, "wis": 4, "cha": 2, "abilities": [ "cure_minor", "cure", "curse", "terror", "life_drain", "resurrect", "raise_dead", "animate_dead" ] },
+
+      "Novice":       { "str": -1, "con": 0, "dex": -2, "int": 1, "wis": 1, "cha": -1, "abilities": ["rapid_strike", "trickfire", "pain", "paralyzing_touch", "life_drain", "ghost_touch" ] },
       "Gravedigger":  { "str": 0,  "con": 2, "dex": 2, "abilities": [ "rapid_strike", "hide", "dig_in" ] },
-      "Bandit":       { "str": 2,  "con": 3, "dex": 2, "abilities": [ "prepare_charge", "charge", "hide", "backstab", "rapid_strike" ], "traits": ["imperceptible"] },
+      "Bandit":       { "str": 2,  "con": 3, "dex": 2, "abilities": [ "prepare_charge", "charge", "hide", "backstab", "rapid_strike", "trickfire", "dirty_trick" ], "traits": ["imperceptible"] },
       "Tombrobber":   { "str": 2,  "con": 3, "dex": 1, "int": -1, "wis": -1, "cha": 2, "abilities": ["rapid_strike", "hide"] },
-      "Necromancer":  { "str": 3,  "con": 4, "dex": 2, "int": 8, "abilities": [ "minor_ward", "life_drain", "curse", "terror", "poison_cloud", "deathtouch", "summon_undead", "resurrect", "animate_dead" ], "traits": ["fiendish"] },
-      "Cult Master": { "str": 4,  "con": 5, "dex": 2, "int": 6, "wis": 4, "cha": 4, "abilities": [ "ghost_touch", "life_drain",  "terror", "poison_cloud", "mass_curse", "deathtouch" ], "traits": ["fiendish"] },
-      "Wizard":      { "str": -1, "dex": -1, "int": 3, "con": 1, "abilities": [ "dancing_lights", "minor_ward", "shock_pulse", "frostbite", "spark", "firebolt", "missile", "shocking_grasp", "sleep", "lightning_strike", "slow", "armor", "acid_arrow" ] },
-      "Poxmonger":   { "str": -2, "dex": -2, "con": -1, "int": 2, "wis": 1, "cha": 2, "abilities": [ "terror", "poison_cloud", "inflict_disease", "deathtouch" ] },
+      "Cult Master": { "str": 4,  "con": 5, "dex": 2, "int": 6, "wis": 4, "cha": 4, "abilities": [ "hex", "obscuring_mist", "ghost_touch", "life_drain",  "terror", "poison_cloud", "mass_curse", "deathtouch" ], "traits": ["fiendish"] },
+      "Poxmonger":   { "str": -2, "dex": -2, "con": -1, "int": 2, "wis": 1, "cha": 2, "abilities": [ "hex", "terror", "poison_cloud", "inflict_disease", "deathtouch" ] },
+      "Archaeologist": { "str": 1,  "con": 2, "dex": 2, "int": 3, "wis": 2, "cha": 1, "abilities": [ "prepare_charge", "charge", "hide", "rapid_strike", "cure_minor", "cure" ] },
+      "Wizard":      { "str": -1, "dex": -1, "int": 3, "con": 1, "abilities": [ "dancing_lights", "minor_ward", "shock_pulse", "frostbite", "spark", "firebolt", "missile", "shocking_grasp", "sleep", "lightning_strike", "slow", "armor", "acid_arrow", "chaos_bolt", "warp" ] },
+      "Necromancer":  { "str": 3,  "con": 4, "dex": 2, "int": 8, "abilities": [ "minor_ward", "life_drain", "curse", "scourge", "terror", "weakness", "insanity", "poison_cloud", "deathtouch", "summon_undead", "resurrect", "animate_dead", "harm" ], "traits": ["fiendish"] },
 
       "Mendicant":    { "str": -2, "dex": -2, "con": -2, "int": 1, "wis": 2, "cha": 2, "abilities": [
         "cure_minor", "cure", "bless", "meditate", "chant"
       ] },
+      "Factotum":    { "str": -1, "dex": -1, "int": 1, "wis": 1, "cha": 2, "abilities": ["cure_minor", "inspire"] },
+      "Amanuensis":  { "str": -1, "dex": -1, "int": 2, "wis": 1, "cha": 1, "abilities": ["cure_minor", "cure", "bless", "prayer"] },
       "Herald":       { "str": -1, "dex": -1, "int": 1, "wis": -1, "cha": 2, "abilities": ["inspire"] },
       "Benefactor":   { "str": -1, "dex": -1, "int": 2, "wis": -1, "cha": 2, "abilities": ["cure_minor", "cure"] },
       "Devotee":      { "str": -1, "dex": -1, "int": 1, "wis": 2, "cha": 1, "abilities": ["cure_minor", "cure"] },
       "Preacher":     { "str": -1, "dex": -1, "int": 2, "wis": 2, "cha": 2, "abilities": ["sunmark", "rally", "inspire", "bless", "remove_fear"] },
       "Adept":       { "str": 1,  "con": 2, "wis": 3, "int": 2, "abilities": [ "cure_minor", "cure", "cure_moderate", "bless", "shocking_grasp", "paralyzing_touch", "raise_dead", "resist_fire" ], "traits": ["piety"] },
       "Acolyte":      { "str": 0,  "con": 1, "wis": 2, "int": 1, "abilities": [ "heal", "bless", "paralyzing_touch" ], "traits": ["piety"] },
+      
       "Cultist":      { "str": 1,  "con": 2, "int": 2, "abilities": [ "heal", "cure_minor", "ghost_touch", "curse", "terror", "paralyzing_touch", "silence", "animate_dead" ], "traits": ["piety", "radiant"] },
       "Cleric":       { "wis": 3, "con": 2, "abilities": [ "cure_minor", "minor_ward", "smite", "cure", "bless", "resist_fire", "hold_person" ] },
       "Sage":         { "int": 4, "abilities": [ "dancing_lights", "cure_minor", "cure", "curse", "terror", "blade_barrier", "command" ] },
@@ -369,6 +384,7 @@
       "Hierophant":   { "str": 2, "con": 4, "int": 3, "dex": 2, "wis": 5, "cha": 5, "abilities": [ "prepare_charge", "charge", "minor_ward", "sleep", "curse", "fear", "life_drain", "poison_cloud", "resist_fire", "cure", "cure_serious", "blade_barrier" ] },
 
       "Apprentice":   { "str": -1, "dex": -1, "int": 2, "wis": 1, "cha": -1, "abilities": [ "spark", "firebolt", "missile" ] },
+      "Captain":    { "str": 3,  "con": 3, "dex": 2, "abilities": [ "prepare_charge", "charge", "second_wind", "taunt", "rally" ] },
       "Whelp":        { "str": -1, "dex": -1, "abilities": [] },
       "Runt":         { "str": -2, "abilities": ["hide"] },
       "Creep":        { "str": -1, "dex": 1, "abilities": ["hide"] },
@@ -423,19 +439,18 @@
   "npcStat": {
     "discriminator": "race",
     "groups": {
-      "kobold": { "str": 6,  "dex": 9,  "con": 6,  "int": 6,  "wis": 6,  "cha": 6,  "naturalArmor": -4, "hitDie": 2 },
-      "goblin": { "str": 8,  "dex": 12, "con": 8,  "int": 8,  "wis": 8,  "cha": 8,  "naturalArmor": -3, "hitDie": 3 },
-
-      "human":  { "str": 10, "dex": 10, "con": 10, "int": 10, "wis": 10, "cha": 10, "naturalArmor": -2, "hitDie": 4 },
-      "orc":    { "str": 16, "dex": 12, "con": 16, "int": 8,  "wis": 8,  "cha": 8,  "naturalArmor": -1 , "hitDie": 6 },
-      "ogre":   { "str": 19, "dex": 8,  "con": 19, "int": 5,  "wis": 5,  "cha": 5,  "naturalArmor": 0 , "hitDie": 8 },
-      "troll":  { "str": 18, "dex": 7,  "con": 18, "int": 6,  "wis": 6,  "cha": 6,  "naturalArmor": 1 , "hitDie": 10 },
-      "dragon": { "str": 23, "dex": 16, "con": 23, "int": 18, "wis": 18, "cha": 18, "naturalArmor": 10, "hitDie": 20 },
-      "elf":   { "str": 10, "dex": 14, "con": 10, "int": 12, "wis": 10, "cha": 10, "naturalArmor": -2, "hitDie": 4 },
-      "dwarf": { "str": 14, "dex": 10, "con": 14, "int": 10, "wis": 10, "cha": 8,  "naturalArmor": 0,  "hitDie": 6 },
-      "halfling": { "str": 8, "dex": 14, "con": 10, "int": 10, "wis": 10, "cha": 12, "naturalArmor": -1, "hitDie": 4 },
-      "gnome": { "str": 8, "dex": 12, "con": 10, "int": 14, "wis": 10, "cha": 10, "naturalArmor": -1, "hitDie": 4 },
-      "fae": { "str": 10, "dex": 14, "con": 10, "int": 12, "wis": 14, "cha": 14, "naturalArmor": -2, "hitDie": 3 }
+      "kobold": { "str": 6,  "dex": 9,  "con": 6,  "int": 6,  "wis": 6,  "cha": 6,  "naturalArmor": -2,   "hitDie": 3 },
+      "goblin": { "str": 8,  "dex": 12, "con": 8,  "int": 8,  "wis": 8,  "cha": 8,  "naturalArmor": -2,   "hitDie": 4 },
+      "human":  { "str": 10, "dex": 10, "con": 10, "int": 10, "wis": 10, "cha": 10,  "naturalArmor": -1,  "hitDie": 6 },
+      "orc":    { "str": 16, "dex": 12, "con": 16, "int": 8,  "wis": 8,  "cha": 8,   "naturalArmor": -1 , "hitDie": 6 },
+      "ogre":   { "str": 19, "dex": 8,  "con": 19, "int": 5,  "wis": 5,  "cha": 5,   "naturalArmor": 0 ,  "hitDie": 8 },
+      "troll":  { "str": 18, "dex": 7,  "con": 18, "int": 6,  "wis": 6,  "cha": 6,   "naturalArmor": 1 ,  "hitDie": 10 },
+      "dragon": { "str": 23, "dex": 16, "con": 23, "int": 18, "wis": 18, "cha": 18,  "naturalArmor": 8,   "hitDie": 20 },
+      "elf":   { "str": 10, "dex": 14, "con": 10, "int": 12, "wis": 10, "cha": 10,   "naturalArmor": -1,  "hitDie": 4 },
+      "dwarf": { "str": 14, "dex": 10, "con": 14, "int": 10, "wis": 10, "cha": 8,    "naturalArmor": 0,   "hitDie": 6 },
+      "halfling": { "str": 8, "dex": 14, "con": 10, "int": 10, "wis": 10, "cha": 12, "naturalArmor": -1,  "hitDie": 4 },
+      "gnome": { "str": 8, "dex": 12, "con": 10, "int": 14, "wis": 10, "cha": 10,    "naturalArmor": -1,  "hitDie": 3 },
+      "fae": { "str": 10, "dex": 14, "con": 10, "int": 12, "wis": 14, "cha": 14,     "naturalArmor": -2,  "hitDie": 2 }
     }
   },
  
@@ -588,7 +603,7 @@
   "combatEntityAbilities": {
     "discriminator": "entity_type",
     "groups": {
-      "antimagic_ward": [["silence", "dispel_magic"]],
+      "antimagic_ward": [["silence", "dispel_magic", "magebane"]],
       "barrier": [[]],
       "turret": [["arrow_volley"]],
       "bomb": [["detonation"]],
@@ -969,7 +984,7 @@
         "name": "well of fate",
         "description": "An ancient well filled with dark, still water. The air around it feels heavy with destiny.",
         "offer": "=1d4",
-        "effects": [ { "type": "buff", "status": "=(dig(#subject, race) == elf) ? oneOf('spellturn', 'invulnerable', 'truesight', 'invisible', 'mageproof', 'haste', 'timewalk') : oneOf('protected', 'blessed', 'warded', 'keensense', 'fireproof', 'inspired', 'clarity', 'focus')" } ]
+        "effects": [ { "type": "buff", "status": "=(dig(#subject, race) == elf) ? oneOf('spellturn',  'truesight', 'invisible', 'mageproof', 'haste') : oneOf('protected', 'blessed', 'warded', 'keensense', 'fireproof', 'inspired', 'clarity', 'focus')" } ]
       }
     }
   },
@@ -1154,13 +1169,59 @@
   "roomOverlays": {
     "discriminator": "guide_type",
     "groups": {
-      "entrance": { "_encounterChance": 0.3, "_puzzleChance": 0, "_trapChance": 0.2, "_treasureChance": 0.1 },
+      "entrance": { "_encounterChance": 0.1, "_puzzleChance": 0, "_trapChance": 0.5, "_treasureChance": 0.2 },
       "empty": { "_encounterChance": 0, "_puzzleChance": 0.05, "_trapChance": 0, "_treasureChance": 0, "_wonderChance": 0.1 },
       "trap": { "_encounterChance": 0.2, "_puzzleChance": 0.1, "_trapChance": 0.5, "_treasureChance": 0.1 },
       "mob": { "_encounterChance": 1, "_puzzleChance": 0, "_trapChance": 0.1, "_treasureChance": 0.2 },
       "elite": { "_encounterChance": 1, "_puzzleChance": 0, "_trapChance": 0.05, "_treasureChance": 0.3, "challenging": true },
       "special": { "_encounterChance": 0.1, "_puzzleChance": 0.1, "_trapChance": 0.1, "_treasureChance": 0.4, "_wonderChance": 0.2 },
       "treasure": { "_encounterChance": 0.2, "_puzzleChance": 0.2, "_trapChance": 0.2, "_treasureChance": 0.8 }
+    }
+  },
+
+  "trapEffects": {
+    "discriminator": "trap_type",
+    "groups": {
+      "mechanical": [
+        { "type": "damage", "kind": "=oneOf(piercing, slashing, bludgeoning)", "amount": "=2d6" },
+        { "type": "damage", "kind": "=oneOf(fire, cold, poison, acid, lightning)", "amount": "=1d4" },
+        { "type": "debuff", "status": "=oneOf(fear, stun)" }
+      ],
+      "magical": [
+        { "type": "damage", "kind": "=oneOf(fire, cold, acid, lightning)", "amount": "=2d6" },
+        { "type": "damage", "kind": "=oneOf(psychic, necrotic, radiant)", "amount": "=1d8" },
+        { "type": "debuff", "status": "=oneOf(maze, paralyzed, cursed, slow)" }
+      ]
+    }
+  },
+
+  "trapTriggers": {
+    "discriminator": "trigger_type",
+    "groups": {
+      "mechanical": [ "pressure_plate", "tripwire", "hidden_switch" ],
+      "magical": [ "magical_rune", "arcane_glyph", "enchanted_object" ]
+    }
+  },
+
+  "trapDescriptions": {
+    "discriminator": "trigger",
+    "groups": {
+      "pressure_plate": "\"a barely visible pressure plate embedded in the floor.\"",
+      "tripwire": "\"a thin wire stretched across the passageway at ankle height.\"",
+      "hidden_switch": "\"a concealed switch hidden among the wall carvings.\"",
+      "magical_rune": "\"a glowing rune inscribed on the floor that pulses with arcane energy.\"",
+      "arcane_glyph": "\"an intricate glyph etched into the wall, shimmering faintly.\"",
+      "enchanted_object": "\"an ordinary-looking object that hums with magical power.\""
+    }
+  },
+
+  "trapDc": {
+    "discriminator": "trap_level",
+    "groups": {
+      "easy": { "alert": 12, "disable": 10 },
+      "medium": { "alert": 15, "disable": 13 },
+      "hard": { "alert": 18, "disable": 16 },
+      "deadly": { "alert": 20, "disable": 18 }
     }
   },
 
@@ -1641,6 +1702,9 @@
         "wis": -2,
         "traits": [
           "undead"
+        ],
+        "abilities": [
+          "infect"
         ]
       },
       "spectral": {
@@ -1661,7 +1725,8 @@
         ],
         "abilities": [
           "life_drain",
-          "charm"
+          "charm",
+          "dominate_person"
         ]
       }
     }
@@ -1780,8 +1845,8 @@
       "dauntless": ["second_wind", "rally"],
       "primal": ["maul", "enrage"],
       "apex": ["prepare_charge", "charge", "maul"],
-      "sovereign": ["inspire", "fear"],
-      "ancient": ["second_wind", "inspire"],
+      "sovereign": ["inspire", "fear", "confuse"],
+      "ancient": ["second_wind", "inspire", "ward"],
       "warped": ["charm", "enrage", "maul", "fear", "poison_bite"],
       "giant": ["maul"]
     }

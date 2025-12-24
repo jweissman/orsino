@@ -2,19 +2,22 @@
 
 ## Bugs
 - [ ] Bomb shouldn't be able to reset ticking status!
-- [ ] Make sure we always go through handleReactions flow so _time stop_ can guarantee `triggerReactions: false` effect works
 
 ## Features
+- [ ] Found treasure should be redeemable for gold
+- [ ] Show current gold before purchasing potions (make sure we're handling gold transition between town hub/dungeon correctly)
+- [ ] Remind players to rest if they're not at full health going into boss battle
+- [ ] Unify search/examine (should both have chance to find potions and both grant XP on success)
+- [ ] Bring back status displays on the per turn overview... (we have per-round overview)
+- [ ] Player party _must_ be able to attempt to flee a battle intentionally (could be a dex skill check?)
+
+## Ideas
 - [ ] Rest could reset status effects? (would be nice to do this _before_ persisting PCs?)
 - [ ] Healing potion could cure poison status too? [maybe better to have a dedicated consumable for it though]
 - [ ] Poisoned blade still has weird expiration message actually? ("X is no longer poisoned blade"; a bit awkward to fix since a standard message would be ideal here)
-- [ ] Unify search/examine (should both have chance to find potions and both grant XP on success)
 - [ ] A cage could have a chance to have a prisoner (who could become ally); incidentally would be nice for it to be more likely within a 'cell' room
 - ---
 - [ ] Larger rooms could give more search opps?
-- [ ] Found treasure should be redeemable for gold
-- ---
-- [ ] Remind players to rest if they're not at full health going into boss battle
 - ---
 - [ ] Temple blessing should _recharge_ duration if already present (ie just having the blessing should not necessarily disable prayer)
 - [ ] Would be interesting to distinguish between positive/negative effects (maybe rest should cure only bad things?)
@@ -36,10 +39,8 @@
 - [ ] You should be able to visit the Inn even if at full HP?
 - ---
 - ---
-- [ ] Bring back status displays on the per turn overview... (we have per-round overview)
 - [ ] Show full enemy name more often (we often default to just the forename ie 'minimal' combatant view with forename + HP but this is ... not very much information)
 - ---
-- [ ] Player party _must_ be able to attempt to flee intentionally (could be a dex skill check?)
 - [ ] They should also have a chance to flee 'involuntarily' if they fail a save vs fear? (don't necessarily want to model 'splitting the party' but ... they could find individually-flown characters in previous rooms of the dungeon?)
 - [ ] Some statuses still sound weird ("[defender] is Chaos by [inflicter]" - odd)
 - ---
@@ -57,7 +58,6 @@
 - [ ] Should permit player to _leave_ the dungeon (they _can_ but would have to flee and even that's disabled now, maybe to focus autoplay -- but anyway seems to be entirely disabled in fact rn)
 - ---
 - [ ] Dirty trick should not give a save vs magic? (maybe vs will or even specifically vs blinding?)
-- [ ] Show current gold before purchasing potions (make sure we're handling gold transition between town hub/dungeon correctly)
 - [ ] Should say 'leave the dungeon' instead of 'move to next room' for last room
 - [ ] There should be a shop to sell treasure (maybe also buy other kinds of consumables?)
 - ---
@@ -124,6 +124,12 @@
 - [ ] Would be intersting to somehow model 'caster' as a trait ('casts:divine', 'casts:arcane', maybe 'casts:shadow' for evil-aligned spells? ie just throw the book at them and let them work out what makes sense to use. ideally there's symmetry with the pcs though)
 ---
 - [ ] Could call victory if all enemies petrified/asleep/mazed?
+- [ ] Confirm that room sequences are being adhered to??
+---
+- [ ] Polymorph effect
+---
+- [ ] Handle 'defeated' barks more gracefully ('X has defeated X', and then they have a triumphant bark! [Which is wrong/immersion breaking])
+- [ ] Handle mutual TPK more gracefully (currently displays both "You are victorious!" and "Your party has been defeated")
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing
@@ -243,6 +249,7 @@
 - [x] Cast effect type (for metamagic + spell-like abilities, but should also enable fully general scrolls/wands/potions)
 - [x] Maybe you need a clue to travel to a dungeon?? -- have to at least hear rumor now
 - [x] Something weird with gold -- they have it in town but don't in the dungeon??? -- think this _should_ be fixed but need to validate!
+- [x] Make sure we always go through handleReactions flow so _time stop_ can guarantee `triggerReactions: false` effect works -- think this is the case!
 
 ## Not really issues atm
 - "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]
