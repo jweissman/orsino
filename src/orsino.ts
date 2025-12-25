@@ -11,6 +11,7 @@ import TraitHandler from "./orsino/Trait";
 import Combat from "./orsino/Combat";
 import { Team } from "./orsino/types/Team";
 import Presenter from "./orsino/tui/Presenter";
+import Automatic from "./orsino/tui/System";
 
 export type Prompt = (message: string) => Promise<string>;
 
@@ -93,6 +94,9 @@ export default class Orsino {
       await Generator.gen("pc", { setting: 'fantasy', class: 'ranger', playerControlled: true }) as Combatant,
       await Generator.gen("pc", { setting: 'fantasy', class: 'bard', playerControlled: true }) as Combatant,
     ].map(pc => ({ ...pc, playerControlled: true }))
+    for (let pc of pcs) {
+      await CharacterRecord.pickInitialSpells(pc, Automatic.randomSelect);
+    }
     await CharacterRecord.assignPartyPassives(pcs);
 
     while (true) {

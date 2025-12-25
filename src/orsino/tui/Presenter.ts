@@ -28,7 +28,7 @@ export default class Presenter {
     record += `_${this.describeCharacter(combatant)}_\n`;
 
     let statNames = ['str', 'dex', 'int', 'wis', 'cha', 'con'];
-    let effective = await Fighting.effectiveStats(combatant);
+    let effective = Fighting.effectiveStats(combatant);
     // we want a table like | str | dex | int | wis | cha | con |
     record += "\n|   |   |   |   |   |   |";
     record += "\n|---|---|---|---|---|---|\n";
@@ -44,7 +44,7 @@ export default class Presenter {
     })
     record += "|\n";
 
-    record += `\n\n**Hit Points:** ${combatant.hp}/${combatant.maxHp}\n\n`;
+    record += `\n\n**Hit Points:** ${combatant.hp}/${effective.maxHp}\n\n`;
     let basics = {
       weapon: (combatant.weapon || 'None'),
       armor: combatant.armor || 'None',
@@ -112,7 +112,7 @@ export default class Presenter {
     let descriptor = {
       male: "He is", female: "She is", androgynous: "They are"
     }[(combatant.gender || 'androgynous').toLowerCase()] || "They are";
-    return `${Words.capitalize(combatant.background || 'adventurer')} ${Words.humanize(combatant.archetype || 'neutral')} from the ${combatant.hometown || 'unknown'}, ${combatant.age || 'unknown'} years old. ${descriptor} of ${combatant.body_type || 'average'} build with ${combatant.hair || 'unknown color'} hair, ${combatant.eye_color || 'dark'} eyes and ${Words.a_an(combatant.personality || 'unreadable')} disposition.`
+    return `${Words.capitalize(combatant.referenceName || combatant.forename)} is ${Words.a_an(Words.capitalize(combatant.background || 'adventurer'))} ${Words.humanize(combatant.archetype || 'neutral')} from the ${combatant.hometown || 'unknown'}, ${combatant.age || 'unknown'} years old. ${descriptor} of ${combatant.body_type || 'average'} build with ${combatant.hair || 'unknown color'} hair, ${combatant.eye_color || 'dark'} eyes and ${Words.a_an(combatant.personality || 'unreadable')} disposition.`
   }
 
   static async characterRecord(combatant: Combatant) {
@@ -132,7 +132,7 @@ export default class Presenter {
       ) + "\n\n"
     )
     let statNames = ['str', 'dex', 'int', 'wis', 'cha', 'con'];
-    let effective = await Fighting.effectiveStats(combatant);
+    let effective = Fighting.effectiveStats(combatant);
     let statLine = statNames.map(stat => {
       const value = (effective as any)[stat];
       const mod = Fighting.statMod(value);
@@ -142,7 +142,7 @@ export default class Presenter {
     });
     record += statLine.join(' | ');
 
-    record += "\nHit Points: " + Stylist.colorize(`${combatant.hp}/${combatant.maxHp} \n`, 'green');
+    record += "\nHit Points: " + Stylist.colorize(`${combatant.hp}/${effective.maxHp} \n`, 'green');
     // record += "Armor Class: " + Stylist.colorize(`${combatant.ac} `, 'yellow');
 
     let basics = {
@@ -242,10 +242,19 @@ export default class Presenter {
   }
 
   static minimalCombatant = (combatant: Combatant) => {
-    const hpRatio = combatant.hp / combatant.maxHp;
-    const hpBar = Stylist.prettyValue(combatant.hp, combatant.maxHp);
+    let effective = Fighting.effectiveStats(combatant);
+    const hpRatio = combatant.hp / effective.maxHp;
+    const hpBar = Stylist.prettyValue(combatant.hp, effective.maxHp);
     const color = this.colors[Math.floor(hpRatio * (this.colors.length - 1))] || this.colors[0];
     let name = Stylist.format(combatant.forename, 'bold');
+    let fx = Fighting.effectList(combatant);
+    if (fx.some(e => e.effect?.displayName)) {
+      let firstNameOverride = fx.find(e => e.effect?.displayName)?.effect?.displayName;
+      if (firstNameOverride) {
+        name = Stylist.format(firstNameOverride, 'bold');
+      }
+    }
+
     let combatClass = combatant.class;
     let combatKind = (combatant as any).kind || combatant.race || '';
     let tempHp = 0;
@@ -256,14 +265,15 @@ export default class Presenter {
       Stylist.colorize(name, combatant.playerControlled ? 'cyan' : 'yellow'),
       combatant.hp <= 0 ? Stylist.colorize('X', 'red') : Stylist.colorize(hpBar, color),
       tempHp > 0 ? Stylist.colorize(`(+${tempHp})`, 'blue') : '',
-      combatant.hp > 0 ? `${combatant.hp}/${combatant.maxHp}` : 'KO',
+      combatant.hp > 0 ? `${combatant.hp}/${effective.maxHp}` : 'KO',
       combatClass ? `${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '',
     ].join(' ');
   }
 
   static combatant = (combatant: Combatant) => {
-    const hpRatio = combatant.hp / combatant.maxHp;
-    const hpBar = Stylist.prettyValue(combatant.hp, combatant.maxHp);
+    let effective = Fighting.effectiveStats(combatant);
+    const hpRatio = combatant.hp / effective.maxHp;
+    const hpBar = Stylist.prettyValue(combatant.hp, effective.maxHp);
     const color = this.colors[Math.floor(hpRatio * (this.colors.length - 1))] || this.colors[0];
 
     let combatClass = combatant.class;
@@ -282,6 +292,14 @@ export default class Presenter {
     }
 
     let friendly = ((combatant as any).friendly || false) || combatant.playerControlled;
+    let name = combatant.name;
+    let fx = Fighting.effectList(combatant);
+    if (fx.some(e => e.effect?.displayName)) {
+      let firstNameOverride = fx.find(e => e.effect?.displayName)?.effect?.displayName;
+      if (firstNameOverride) {
+        name = Stylist.format(firstNameOverride, 'bold');
+      }
+    }
     let lhs = `${Stylist.colorize(hpBar, color)} ${Stylist.format(
       Stylist.colorize(combatant.name, friendly ? 'cyan' : 'yellow'),
       'bold'
@@ -471,6 +489,7 @@ export default class Presenter {
   static describeModifications(effect: StatusModifications): string {
     let parts: string[] = [];
 
+    // console.log("Describing modifications:", JSON.stringify(effect));
     // if all effect entries are saves or immunities, summarize differently
     const allSameValue = Object.values(effect).every(value => value === Object.values(effect)[0]);
     const allSavesOrImmunities = Object.keys(effect).every(key => {
@@ -759,9 +778,9 @@ export default class Presenter {
           parts.push(`Gain ${value} temporary HP`);
           break;
 
-        case "maxHp":
-          parts.push(this.increaseDecrease('max HP', value));
-          break;
+        // case "maxHp":
+        //   parts.push(this.increaseDecrease('max HP', value));
+        //   break;
 
         case "damageReduction":
           parts.push(`Reduce all damage by ${value}`);
@@ -802,6 +821,36 @@ export default class Presenter {
             parts.push(`Does not trigger reactions`);
           }
           break;
+
+        case "displayName":
+          if (value) {
+            parts.push(`Displayed name changed to "${value}"`);
+          }
+          break;
+
+        case "effectiveStats":
+          if (value) {
+            const stats = value as Partial<Combatant>;
+            for (let [statKey, statValue] of Object.entries(stats)) {
+              parts.push(`${statKey.toUpperCase()} set to ${statValue}`);
+            }
+          }
+          break;
+        
+        case "maxHp":
+          parts.push("max HP set to " + value);
+          break;
+
+        case "attackDie":
+          parts.push("attack die set to " + value);
+          break;
+
+        case "controlledActions":
+          if (value) {
+            parts.push(`Actions are controlled`);
+          }
+          break;
+
 
         default:
           // @ts-ignore
@@ -948,6 +997,8 @@ export default class Presenter {
         description = (`Teleport ${targetDescription} to ${effect.location} `); break;
       case "planeshift":
         description = (`Planeshift ${targetDescription} to ${effect.location}`); break;
+      case "recalculateHp":
+        description = (`Recalculate HP for ${targetDescription}`); break;
       default:
         console.warn(`Unknown effect type: ${effect.type} for effect ${JSON.stringify(effect)}`);
         return never(effect.type);
@@ -1014,6 +1065,7 @@ export default class Presenter {
     // parts.push("Narrative: " + ability.description);
     // parts.push("Mechanical: " + this.describeEffects(ability.effects, this.describeTarget(ability.target)) + ".");
     // return parts.join("\n");
+    // console.log("Describing ability:", ability.name, ability);
     return this.describeEffects(ability.effects, this.describeTarget(ability.target)) + ".";
   }
 }

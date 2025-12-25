@@ -843,6 +843,25 @@
           }
         ]
       },
+      "oil_flask": {
+        "name": "Flask of Oil",
+        "description": "A flask of slippery oil that can be thrown onto a surface or creature to make it more vulnerable to fire.",
+        "type": "consumable",
+        "kind": "flask",
+        "aspect": "fire",
+        "rarity": "common",
+        "value": 20,
+        "target": [
+          "enemy"
+        ],
+        "effects": [
+          {
+            "type": "debuff",
+            "status": "oiled",
+            "saveDC": 25
+          }
+        ]
+      },
       "alchemist_fire": {
         "name": "Alchemist's Fire",
         "description": "A sticky, flammable substance that ignites when exposed to air.",
@@ -918,22 +937,39 @@
           }
         ]
       },
-      "oil_flask": {
-        "name": "Flask of Oil",
-        "description": "A flask of slippery oil that can be thrown onto a surface or creature to make it more vulnerable to fire.",
+      "wand_of_polymorph": {
+        "name": "Wand of Polymorph",
+        "description": "A slender wand that can transform a target into a different creature.",
         "type": "consumable",
-        "kind": "flask",
-        "aspect": "fire",
-        "rarity": "common",
-        "value": 20,
+        "charges": 5,
+        "kind": "wand",
+        "aspect": "arcane",
+        "rarity": "legendary",
+        "value": 250,
         "target": [
           "enemy"
         ],
         "effects": [
           {
-            "type": "debuff",
-            "status": "oiled",
-            "saveDC": 25
+            "type": "cast",
+            "spellName": "Polymorph Other"
+          }
+        ]
+      },
+      "scroll_of_domination": {
+        "name": "Scroll of Domination",
+        "description": "A magical scroll that allows the caster to control the mind of a target creature.",
+        "type": "consumable",
+        "kind": "scroll",
+        "rarity": "rare",
+        "value": 100,
+        "target": [
+          "enemy"
+        ],
+        "effects": [
+          {
+            "type": "cast",
+            "spellName": "dominate_person"
           }
         ]
       },

@@ -121,14 +121,14 @@
 
 | Cantrip | Level 1 | Level 2 | Level 3 | Level 4 | Level 5 | Level 6 | Level 7 | Level 8 | Level 9 |
   |---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
-| [Dancing Lights](#Dancing Lights) | [Acid Arrow](#Acid Arrow) | [Acid Spray](#Acid Spray) | [Chaos Bolt](#Chaos Bolt) | [Chain Lightning](#Chain Lightning) | [Disintegrate](#Disintegrate) | [Fireball](#Fireball) | [Plane Shift](#Plane Shift) | [Implosion](#Implosion) | [Apocalypse](#Apocalypse) | 
-| [Firebolt](#Firebolt) | [Mage Armor](#Mage Armor) | [Blur](#Blur) | [Confuse](#Confuse) | [Disruption](#Disruption) | [Earthquake](#Earthquake) | [Flesh to Stone](#Flesh to Stone) | [Spellturning](#Spellturning) | [Maze](#Maze) |  | 
-| [Frostbite](#Frostbite) | [Burning Hands](#Burning Hands) | [Dispel Magic](#Dispel Magic) | [Drench](#Drench) | [False Life](#False Life) | [Haste](#Haste) | [Invisibility](#Invisibility) | [Warp Enemy](#Warp Enemy) | [Time Stop](#Time Stop) |  | 
-| [Ghost Touch](#Ghost Touch) | [Magic Missile](#Magic Missile) | [Magebane](#Magebane) | [Obscuring Mist](#Obscuring Mist) | [Lightning Strike](#Lightning Strike) | [Poison Cloud](#Poison Cloud) | [Stone to Flesh](#Stone to Flesh) |  |  |  | 
-| [Minor Ward](#Minor Ward) | [Prismatic Spray](#Prismatic Spray) | [Mirror Image](#Mirror Image) | [Silence](#Silence) | [Polar Ray](#Polar Ray) | [Reflection](#Reflection) | [True Sight](#True Sight) |  |  |  | 
-| [Shock Pulse](#Shock Pulse) | [Shocking Grasp](#Shocking Grasp) | [Ray of Frost](#Ray of Frost) | [Slow](#Slow) | [Sandstorm](#Sandstorm) | [Sound Lance](#Sound Lance) |  |  |  |  | 
-| [Soot Cloud](#Soot Cloud) | [Sleep](#Sleep) | [Scald](#Scald) | [Summon Monster I](#Summon Monster I) | [Summon Elemental](#Summon Elemental) |  |  |  |  |  | 
-| [Spark](#Spark) | [Arcane Ward](#Arcane Ward) |  |  |  |  |  |  |  |  | 
+| [<small> 🎭 Dancing Lights</small>](#Dancing Lights) | [<small> ✨ Acid Arrow</small>](#Acid Arrow) | [<small> ✨ Acid Spray</small>](#Acid Spray) | [<small> 🔥 Chaos Bolt</small>](#Chaos Bolt) | [<small> 🔥 Chain Lightning</small>](#Chain Lightning) | [<small> 🔥 Disintegrate</small>](#Disintegrate) | [<small> 🔥 Fireball</small>](#Fireball) | [<small> ✨ Plane Shift</small>](#Plane Shift) | [<small> 🔥 Implosion</small>](#Implosion) | [<small> 🔥 Apocalypse</small>](#Apocalypse) | 
+| [<small> 🔥 Firebolt</small>](#Firebolt) | [<small> 🛡️ Mage Armor</small>](#Mage Armor) | [<small> 🎭 Blur</small>](#Blur) | [<small> 🎭 Confuse</small>](#Confuse) | [<small> 🛡️ Disruption</small>](#Disruption) | [<small> 🔥 Earthquake</small>](#Earthquake) | [<small> 🔄 Flesh to Stone</small>](#Flesh to Stone) | [<small> 🛡️ Spellturning</small>](#Spellturning) | [<small> ✨ Maze</small>](#Maze) |  | 
+| [<small> 🔥 Frostbite</small>](#Frostbite) | [<small> 🔥 Burning Hands</small>](#Burning Hands) | [<small> 🛡️ Dispel Magic</small>](#Dispel Magic) | [<small> 🔄 Drench</small>](#Drench) | [<small> 💀 False Life</small>](#False Life) | [<small> 🔄 Haste</small>](#Haste) | [<small> 🎭 Invisibility</small>](#Invisibility) | [<small> 🔄 Warp Enemy</small>](#Warp Enemy) | [<small> 🔄 Time Stop</small>](#Time Stop) |  | 
+| [<small> 🔄 Ghost Touch</small>](#Ghost Touch) | [<small> 🔥 Magic Missile</small>](#Magic Missile) | [<small> 🛡️ Magebane</small>](#Magebane) | [<small> ✨ Obscuring Mist</small>](#Obscuring Mist) | [<small> 🔥 Lightning Strike</small>](#Lightning Strike) | [<small> ✨ Poison Cloud</small>](#Poison Cloud) | [<small> 🔄 Stone to Flesh</small>](#Stone to Flesh) |  |  |  | 
+| [<small> 🛡️ Minor Ward</small>](#Minor Ward) | [<small> 🔥 Prismatic Spray</small>](#Prismatic Spray) | [<small> 🎭 Mirror Image</small>](#Mirror Image) | [<small> 🎭 Silence</small>](#Silence) | [<small> 🔥 Polar Ray</small>](#Polar Ray) | [<small> 🔄 Polymorph Other</small>](#Polymorph Other) | [<small> 🔮 True Sight</small>](#True Sight) |  |  |  | 
+| [<small> 🔥 Shock Pulse</small>](#Shock Pulse) | [<small> 🔥 Shocking Grasp</small>](#Shocking Grasp) | [<small> 🔥 Ray of Frost</small>](#Ray of Frost) | [<small> 🔄 Slow</small>](#Slow) | [<small> 🔥 Sandstorm</small>](#Sandstorm) | [<small> 🛡️ Reflection</small>](#Reflection) |  |  |  |  | 
+| [<small> ✨ Soot Cloud</small>](#Soot Cloud) | [<small> 💫 Sleep</small>](#Sleep) | [<small> 🔥 Scald</small>](#Scald) | [<small> ✨ Summon Monster I</small>](#Summon Monster I) | [<small> ✨ Summon Elemental</small>](#Summon Elemental) | [<small> 🔥 Sound Lance</small>](#Sound Lance) |  |  |  |  | 
+| [<small> 🔥 Spark</small>](#Spark) | [<small> 🛡️ Arcane Ward</small>](#Arcane Ward) |  |  |  |  |  |  |  |  | 
 
 | Name | Level | School/Domain | Description | Details |
 |---|---|---|---|-----|
@@ -168,6 +168,7 @@
 | <p id="Plane Shift">Plane Shift</p> | 7 | School of Conjuration| _Transport yourself and your party to another plane of existence._ | Planeshift yourself to =oneOf(Arcadia, Cthelll, Gehenna, Hades, Limbo, Mechanus, Pandemonium, Ysgard, Zephyrus). |
 | <p id="Poison Cloud">Poison Cloud</p> | 5 | School of Conjuration| _Release a cloud of toxic gas._ | Deal 3d4+#level poison damage to all enemies. |
 | <p id="Polar Ray">Polar Ray</p> | 4 | School of Evocation| _Fire a beam of intense cold that can freeze enemies in place._ | Deal 5d6 cold damage to an enemy. |
+| <p id="Polymorph Other">Polymorph Other</p> | 5 | School of Transmutation| _Transform an enemy into a harmless creature for a short duration._ | An enemy suffers Polymorphed (Displayed name changed to "Sheep", attack die set to 1d2, MAXHP set to 5, AC set to 10, STR set to 2, CON set to 2, DEX set to 2, INT set to 2, WIS set to 2, CHA set to 2); Recalculate HP for target. |
 | <p id="Prismatic Spray">Prismatic Spray</p> | 1 | School of Evocation| _A dazzling array of multicolored beams springs from your hand._ | Cycle through the following effects on =5 + round(#level / 2) random enemies: Deal 1d3+1 fire damage to enemy; Deal 1d4 cold damage to enemy; Deal 1d2 acid damage to enemy; Deal 1d3 lightning damage to enemy; Deal 1d3 poison damage to enemy; Deal 1d4 psychic damage to enemy; Deal 1d2+1 radiant damage to enemy; Deal 1d2 necrotic damage to enemy. |
 | <p id="Ray of Frost">Ray of Frost</p> | 2 | School of Evocation| _Fire a ray of frost, dealing 1d4 damage and reducing the target's speed by 10 feet for 3 rounds._ | Deal 1d4 cold damage to an enemy. |
 | <p id="Reflection">Reflection</p> | 5 | School of Abjuration| _Create a magical shield that reflects some incoming damage._ | Grant yourself Reflect (Add 50% to damage reflection percent). |
@@ -196,13 +197,13 @@
 
 | Cantrip | Level 1 | Level 2 | Level 3 | Level 4 | Level 5 | Level 6 | Level 7 | Level 8 | Level 9 |
   |---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
-| [Cure Minor Wounds](#Cure Minor Wounds) | [Anoint](#Anoint) | [Barkskin](#Barkskin) | [Consecrated Ground](#Consecrated Ground) | [Command](#Command) | [Aegis of Faith](#Aegis of Faith) | [Cure Critical Wounds](#Cure Critical Wounds) | [Madness](#Madness) | [Scaleskin](#Scaleskin) | [Steelskin](#Steelskin) | 
-| [Sunmark](#Sunmark) | [Bless](#Bless) | [Hold Person](#Hold Person) | [Cure Disease](#Cure Disease) | [Cure Serious Wounds](#Cure Serious Wounds) | [Blade Barrier](#Blade Barrier) | [Holy](#Holy) | [Resurrection](#Resurrection) |  |  | 
-|  | [Cure Light Wounds](#Cure Light Wounds) | [Prayer](#Prayer) | [Cure Moderate Wounds](#Cure Moderate Wounds) | [Daylight](#Daylight) | [Judgment](#Judgment) | [Ironskin](#Ironskin) |  |  |  | 
-|  | [Heal Ally](#Heal Ally) | [Resist Fire](#Resist Fire) | [Rally](#Rally) | [Raise Dead](#Raise Dead) | [Sunburst](#Sunburst) |  |  |  |  | 
-|  | [Protection from Evil](#Protection from Evil) | [Shield of Faith](#Shield of Faith) | [Stoneskin](#Stoneskin) |  |  |  |  |  |  | 
-|  | [Remove Fear](#Remove Fear) | [Turn Undead](#Turn Undead) |  |  |  |  |  |  |  | 
-|  | [Smite Evil](#Smite Evil) |  |  |  |  |  |  |  |  | 
+| [<small> 🌿 Cure Minor Wounds</small>](#Cure Minor Wounds) | [<small> 🌿 Anoint</small>](#Anoint) | [<small> 🍃 Barkskin</small>](#Barkskin) | [<small> 🌿 Consecrated Ground</small>](#Consecrated Ground) | [<small> ⚖️ Command</small>](#Command) | [<small> 🌿 Aegis of Faith</small>](#Aegis of Faith) | [<small> 🌿 Cure Critical Wounds</small>](#Cure Critical Wounds) | [<small> 🎲 Madness</small>](#Madness) | [<small> 🍃 Scaleskin</small>](#Scaleskin) | [<small> 🍃 Steelskin</small>](#Steelskin) | 
+| [<small> 🌞 Sunmark</small>](#Sunmark) | [<small> 🌿 Bless</small>](#Bless) | [<small> ⚖️ Hold Person</small>](#Hold Person) | [<small> 🌿 Cure Disease</small>](#Cure Disease) | [<small> 🌿 Cure Serious Wounds</small>](#Cure Serious Wounds) | [<small> ⚖️ Blade Barrier</small>](#Blade Barrier) | [<small> ⚖️ Holy</small>](#Holy) | [<small> 🌿 Resurrection</small>](#Resurrection) |  |  | 
+|  | [<small> 🌿 Cure Light Wounds</small>](#Cure Light Wounds) | [<small> 🌿 Prayer</small>](#Prayer) | [<small> 🌿 Cure Moderate Wounds</small>](#Cure Moderate Wounds) | [<small> 🌞 Daylight</small>](#Daylight) | [<small> ⚖️ Judgment</small>](#Judgment) | [<small> 🍃 Ironskin</small>](#Ironskin) |  |  |  | 
+|  | [<small> 🌿 Heal Ally</small>](#Heal Ally) | [<small> 🌿 Resist Fire</small>](#Resist Fire) | [<small> 🌿 Rally</small>](#Rally) | [<small> 🌿 Raise Dead</small>](#Raise Dead) | [<small> 🌞 Sunburst</small>](#Sunburst) |  |  |  |  | 
+|  | [<small> ⚖️ Protection from Evil</small>](#Protection from Evil) | [<small> ⚖️ Shield of Faith</small>](#Shield of Faith) | [<small> 🍃 Stoneskin</small>](#Stoneskin) |  |  |  |  |  |  | 
+|  | [<small> 🌿 Remove Fear</small>](#Remove Fear) | [<small> 🌞 Turn Undead</small>](#Turn Undead) |  |  |  |  |  |  |  | 
+|  | [<small> ⚔️ Smite Evil</small>](#Smite Evil) |  |  |  |  |  |  |  |  | 
 
 | Name | Level | School/Domain | Description | Details |
 |---|---|---|---|-----|

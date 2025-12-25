@@ -60,6 +60,16 @@ interface Wonder {
   offer: number | string;
 }
 
+interface Trap {
+  name: string;
+  effects: AbilityEffect[];
+  trigger: string;
+  lure: string;
+  description: string;
+  disarm_dc: number;
+  detect_dc: number;
+}
+
 interface RoomBase {
   room_type: string;
   narrative: string;
@@ -74,6 +84,7 @@ interface RoomBase {
   riddle?: Riddle;
   wonder?: Wonder;
   gems?: Gemstone[];
+  trap?: Trap;
 }
 
 export interface Room extends RoomBase {
@@ -117,7 +128,7 @@ export default class Dungeoneer {
         forename: "Hero",
         name: "Hero",
         alignment: 'good',
-        hp: 14, maxHp: 14, level: 1, ac: 10,
+        hp: 14, maximumHitPoints: 14, level: 1, ac: 10,
         dex: 11, str: 12, int: 10, wis: 10, cha: 10, con: 12,
         weapon: "Short Sword",
         hitDie: 8, attackDie: "1d20",
@@ -169,7 +180,7 @@ export default class Dungeoneer {
       } else {
         return {
           creatures: [
-            { forename: "Goblin", name: "Goblin", hp: 7, maxHp: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, attackDie: '1d6', damageKind: 'slashing', abilities: [], playerControlled: false, xp: 50, gp: 10, attackRolls: 1, weapon: "Dagger", alignment: 'evil', traits: [] } as Combatant
+            { forename: "Goblin", name: "Goblin", hp: 7, maximumHitPoints: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, attackDie: '1d6', damageKind: 'slashing', abilities: [], playerControlled: false, xp: 50, gp: 10, attackRolls: 1, weapon: "Dagger", alignment: 'evil', traits: [] } as Combatant
           ]
         }
       }
@@ -437,8 +448,13 @@ export default class Dungeoneer {
       let xpMultiplier = fx.xpMultiplier as number || 1;
       let gpMultiplier = fx.goldMultiplier as number || 1;
 
-      c.xp = Math.round((c.xp || 0) + perCapitaXp * xpMultiplier);
-      c.gp = Math.round((c.gp || 0) + perCapitaGold * gpMultiplier);
+      let xpGain = Math.round(perCapitaXp * xpMultiplier);
+      c.xp = Math.round((c.xp || 0) + xpGain);
+      await this.emit({ type: "xp", subject: c, amount: xpGain });
+
+      let goldGain = Math.round(perCapitaGold * gpMultiplier);
+      c.gp = Math.round((c.gp || 0) + goldGain);
+      await this.emit({ type: "gold", subject: c, amount: goldGain });
 
       if (xp > 0) {
         let events = await CharacterRecord.levelUp(c, this.playerTeam, this.roller, this.select);
@@ -468,6 +484,9 @@ export default class Dungeoneer {
       if (room.decor && room.decor !== "nothing") {
         options.push({ name: `Examine ${Words.remove_article(room.decor!)}`, value: "examine", short: 'Examine', disabled: examinedDecor });
       }
+      if (room.trap) {
+        options.push({ name: `Examine ${Words.remove_article(room.trap.lure)}`, value: `trap`, short: 'Examine', disabled: inspectedFeatures.includes('trap') });
+      }
       if (room.features && room.features.length > 0) {
         room.features.forEach(feature => {
           // if (!inspectedFeatures.includes(feature)) {
@@ -475,6 +494,7 @@ export default class Dungeoneer {
           // }
         });
       }
+
       if (room.shrine) {
         options.push({ name: `Pay respects to the shrine of ${Words.humanize(room.shrine.deity?.forename ?? 'a forgotten deity')}`, value: `feature:shrine`, short: 'Visit Shrine', disabled: inspectedFeatures.includes('shrine') });
       }
@@ -544,6 +564,10 @@ export default class Dungeoneer {
         const riddle = room.riddle!;
         await this.solveRiddle(riddle);
         inspectedFeatures.push('riddle');
+      } else if (choice === "trap") {
+        const trap = room.trap!;
+        await this.handleTrap(trap);
+        inspectedFeatures.push('trap');
       }
 
       else if (choice === "leave") {
@@ -562,6 +586,44 @@ export default class Dungeoneer {
       }
     }
     return { leaving: Combat.living(this.playerTeam.combatants).length === 0 };
+  }
+
+
+  private async handleTrap(trap: Trap): Promise<void> {
+    let activated = false;
+    let alertCheck = await this.skillCheck("examine", `to examine ${trap.lure}`, "int", trap.detect_dc);
+    if (alertCheck.success) {
+      await this.emit({ type: "trapDetected", trapDescription: trap.description, subject: alertCheck.actor });
+      let disarmCheck = await this.skillCheck("search", `to disarm the trap`, "dex", trap.disarm_dc);
+      activated = !disarmCheck.success;
+      await this.emit({ type: "trapDisarmed", trapDescription: trap.description, success: disarmCheck.success, subject: disarmCheck.actor });
+
+      if (disarmCheck.success) {
+        await this.reward(250, 0);
+      } else {
+        activated = true;
+      }
+    } else {
+      activated = true;
+      await this.emit({ type: "trapTriggered", trigger: trap.trigger, trapDescription: trap.description, subject: alertCheck.actor });
+    }
+
+    if (activated) {
+      // apply trap effects
+      let fx = trap.effects;
+      let context: CombatContext = {
+        subject: alertCheck.actor,
+        allies: [...this.playerTeam.combatants],
+        enemies: [],
+      };
+      let source = Words.a_an(trap.name) + " trap";
+      for (let effect of fx) {
+        let { events } = await AbilityHandler.handleEffect(source, effect, alertCheck.actor, alertCheck.actor, context, Commands.handlers(this.roller));
+        for (const event of events) {
+          await this.emit({ ...event, source: trap.name } as DungeonEvent);
+        }
+      }
+    }
   }
 
   private async solveRiddle(riddle: Riddle) {
@@ -794,7 +856,10 @@ export default class Dungeoneer {
       await this.emit({ type: "rest", stabilizedCombatants: stabilizedCombatants.map(c => c.name) });
 
       // ask if they want to use consumables/healing spells?
-      let someoneWounded = this.playerTeam.combatants.some(c => c.hp < c.maxHp);
+      let someoneWounded = this.playerTeam.combatants.some(c => {
+        let effective = Fighting.effectiveStats(c);
+        return c.hp < effective.maxHp;
+      });
 
       let healingItems = [];
       let inventoryQuantities = Inventory.quantities(this.playerTeam.inventory);
@@ -813,11 +878,12 @@ export default class Dungeoneer {
         ]);
         if (useItems === "yes") {
           for (const c of this.playerTeam.combatants) {
-            if (c.hp < c.maxHp) {
+            let effective = Fighting.effectiveStats(c);
+            if (c.hp < effective.maxHp) {
               for (const itemName of healingItems) {
                 // let qty = this.playerTeam.inventory[itemName] || 0;
                 let qty = this.playerTeam.inventory.filter(i => i.name === itemName).length;
-                if (qty > 0 && c.hp < c.maxHp) {
+                if (qty > 0 && c.hp < effective.maxHp) {
                   let it = await Deem.evaluate(`=lookup(consumables, "${itemName}")`);
                   let effects = it.effects;
                   let nullCombatContext: CombatContext = {
@@ -879,7 +945,7 @@ export default class Dungeoneer {
           cr: 5,
           creatures: [
             {
-              forename: "Shadow Dragon", name: "Shadow Dragon", hp: 50, maxHp: 50, level: 5, ac: 18, dex: 14, str: 20, con: 16, int: 12, wis: 10, cha: 14,
+              forename: "Shadow Dragon", name: "Shadow Dragon", hp: 50, maximumHitPoints: 50, level: 5, ac: 18, dex: 14, str: 20, con: 16, int: 12, wis: 10, cha: 14,
               attackDie: "1d20", hitDie: 12, hasMissileWeapon: false,
               playerControlled: false, xp: 500, gp: 1000, weapon: "Bite", damageKind: "piercing", abilities: ["melee"], traits: [], alignment: 'evil'
             }
@@ -906,7 +972,7 @@ export default class Dungeoneer {
             cr: 1,
             creatures: [
               {
-                forename: "Goblin", name: "Goblin", hp: 7, maxHp: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, alignment: "evil",
+                forename: "Goblin", name: "Goblin", hp: 7, maximumHitPoints: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, alignment: "evil",
                 attackDie: "1d20", hitDie: 6, hasMissileWeapon: false,
                 playerControlled: false, xp: 50, gp: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: []
               }
@@ -927,7 +993,7 @@ export default class Dungeoneer {
             cr: 2,
             creatures: [
               {
-                forename: "Orc", name: "Orc", hp: 15, maxHp: 15, level: 2, ac: 13, dex: 12, str: 16, con: 14, int: 8, wis: 10, cha: 8, alignment: "evil",
+                forename: "Orc", name: "Orc", hp: 15, maximumHitPoints: 15, level: 2, ac: 13, dex: 12, str: 16, con: 14, int: 8, wis: 10, cha: 8, alignment: "evil",
                 attackDie: "1d20", hitDie: 8, hasMissileWeapon: false,
                 playerControlled: false, xp: 100, gp: 20, weapon: "Axe", damageKind: "slashing", abilities: ["melee"], traits: []
               },

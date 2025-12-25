@@ -32,8 +32,8 @@ export class Template {
     Deem.stdlib.gen = async (type: GenerationTemplateType) => {
       return await Generator.gen(type, { ...context })
     };
-    Deem.stdlib.genList = async (type: GenerationTemplateType, count: number = 1, condition?: string) => {
-      return await Generator.genList(type, { ...context }, count, condition);
+    Deem.stdlib.genList = async (type: GenerationTemplateType, count: number = 1) => {
+      return await Generator.genList(type, { ...context }, count);
     }
 
     Deem.stdlib.mapGenList = async (type: GenerationTemplateType, items: any[], property: string) => {

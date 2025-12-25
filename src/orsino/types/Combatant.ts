@@ -32,7 +32,8 @@ export interface Combatant {
   forename: string;
 
   hp: number;
-  maxHp: number;
+  // maxHp: number;
+  maximumHitPoints: number;
   // tempHp?: number;
   tempHpPools?: { [source: string]: number };
 
@@ -86,23 +87,6 @@ export interface Combatant {
   hasInterceptWeapon?: boolean;
 
   equipment?: { [slot in EquipmentSlot]?: string };
-  // {
-  //   ring1?: string;
-  //   ring2?: string;
-  //   amulet?: string;
-  //   cloak?: string;
-  //   boots?: string;
-  //   // gloves?: string;
-  //   // belt?: string;
-  //   // helmet?: string;
-  //   // wrist?: string;
-  //   // ankle?: string;
-  //   // orbital?: string;
-
-  //   // note: these are tracked separately for now just on the combatant for simplicity
-  //   // weapon?: string;
-  //   // armor?: string;
-  // }
 
   // temporary flag to indicate if the combatant saved versus the last spell cast on them
   _savedVersusSpell?: boolean;

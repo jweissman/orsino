@@ -166,7 +166,7 @@ export default class Books {
         }
       )
 
-      let schoolIcons = {
+      let categoryIcons: { [key: string]: string } = {
         "abjuration": "🛡️",
         "conjuration": "✨",
         "divination": "🔮",
@@ -175,6 +175,15 @@ export default class Books {
         "necromancy": "💀",
         "transmutation": "🔄",
         "illusion": "🎭",
+
+        "life": "🌿",
+        "death": "☠️",
+        "light": "🌞",
+        "darkness": "🌑",
+        "law": "⚖️",
+        "chaos": "🎲",
+        "nature": "🍃",
+        "war": "⚔️",
       }
 
       console.log("\n| Cantrip | Level 1 | Level 2 | Level 3 | Level 4 | Level 5 | Level 6 | Level 7 | Level 8 | Level 9 |");
@@ -187,7 +196,13 @@ export default class Books {
           if (!spellLevels[level]) {
             spellLevels[level] = [];
           }
-          spellLevels[level].push(ability.name); // + (ability.school ? ` ${schoolIcons[ability.school] || ""}` : ""));
+          // let category = ability.school || ability.domain || "";
+          spellLevels[level].push(
+            // "<small>" +
+            // (category ? ` ${categoryIcons[category] || category}` : "")
+            Words.capitalize(ability.name)
+            // + "</small>"
+          );
         }
       });
       const maxSpellsPerLevel = Math.max(...Object.values(spellLevels).map(arr => arr.length));
@@ -195,7 +210,10 @@ export default class Books {
         let row = "| ";
         for (let level = 0; level <= 9; level++) {
           if (spellLevels[level] && spellLevels[level][i]) {
-            row += `[${Words.capitalize(spellLevels[level][i])}](#${spellLevels[level][i]}) | `;
+            const ability = AbilityHandler.instance.getAbility(spellLevels[level][i]);
+            let category = ability?.school || ability?.domain || "";
+            let icon = category ? ` ${categoryIcons[category] || category}` : "";
+            row += `[<small>${icon} ${Words.capitalize(spellLevels[level][i])}</small>](#${spellLevels[level][i]}) | `;
           } else {
             row += " | ";
           }

@@ -41,10 +41,12 @@
 | Potion of Barkskin | _A vial of thick, green liquid that hardens the drinker's skin, providing additional protection._ | Cast ability Barkskin (Grant yourself Barkskin (Improve AC by 2).) on yourself or an ally. |
 | Scroll of Apocalypse | _An ancient scroll that unleashes catastrophic energy upon all enemies in the area._ | Cast ability Apocalypse (Deal 6d6 fire damage to all enemies; Deal 6d6 cold damage to all enemies; Deal 6d6 lightning damage to all enemies; All enemies suffer Doomed (Degrade all stats by 4 for 3 turns).) on all enemies. |
 | Scroll of Cure Disease | _A magical scroll that can cure a target of any disease afflicting them._ | Remove Disease from yourself or an ally. |
+| Scroll of Domination | _A magical scroll that allows the caster to control the mind of a target creature._ | Cast ability Dominate Person (Grant an enemy Dominated (Allegiance changed, Actions are controlled) if humanoid.) on an enemy. |
 | Scroll of Fireball | _A magical scroll that allows the caster to unleash a fiery explosion at a target location._ | Cast ability Fireball (Deal 6d6 fire damage to all enemies.) on all enemies. |
 | Wand of Cure Minor Wounds | _A slender wand that can channel healing energy to mend minor wounds._ | Cast ability Cure Minor Wounds (Heal yourself or an ally 1d4 HP.) on yourself or an ally. |
 | Wand of Magic Missile | _A slender wand that can fire magical darts of force energy at a target._ | Cast ability Magic Missile (Deal 1d3 + floor(#level/3) force damage to 2 + round(#level/2) random enemies.) on 3 random enemies. |
 | Wand of Paralyzing Touch | _A slender wand that can deliver a paralyzing touch to a target._ | Cast ability Paralyzing Touch (An enemy suffers Paralyzed (Cannot take actions, degrade Strength by 5, degrade Dexterity by 5).) on an enemy. |
+| Wand of Polymorph | _A slender wand that can transform a target into a different creature._ | Cast ability Polymorph Other (An enemy suffers Polymorphed (Displayed name changed to "Sheep", attack die set to 1d2, MAXHP set to 5, AC set to 10, STR set to 2, CON set to 2, DEX set to 2, INT set to 2, WIS set to 2, CHA set to 2); Recalculate HP for target.) on an enemy. |
 
 
 ## Status Effects
@@ -80,7 +82,7 @@
 | Diseased |  | Degrade Constitution by 2, degrade all saves by 2, On turn end, Deal 1d4 necrotic damage to self |
 | Distracted |  | Degrade to hit by 1, degrade bonus damage by 1, degrade evasion by 5 |
 | Dodging | _Focusing on avoiding attacks._ | Improve AC by 2, improve evasion by 5 |
-| Dominated | _Completely under another's control._ | Allegiance changed |
+| Dominated | _Completely under another's control._ | Allegiance changed, Actions are controlled |
 | Doomed |  | Degrade all stats by 4 for 3 turns |
 | Drenched |  | Degrade to hit by 2, 100% vulnerability to Lightning, 200% vulnerability to Cold |
 | Dug In | _Taking a fortified position._ | Improve AC by 2, improve all saves by 3, degrade to hit by 2 |

@@ -51,12 +51,13 @@
     "gender": "=oneOf(male, female, androgynous)",
     "body_type": "=gender == 'female' ? oneOf(petite, slim, average, athletic, svelte, curvy, robust) : oneOf(slim, average, athletic, stocky, burly, outsized)",
     "race": "=oneOf(human, orc, elf, dwarf, halfling, gnome, fae)",
+    "_subtype": "=oneOf(high, wood, dark, sea, deep)",
     "class": "=oneOf(warrior, mage, thief, cleric, bard, ranger)",
     "age": "=16 + 2d20 + if(#race == \"elf\", 100, if(#race == \"dwarf\", 50, 0))",
     "_surname": "=lookup(surname, #class)",
     "forename": "=lookupUnique(name, #gender)",
     "name": "=#forename + \" \" + #_surname",
-    "referenceName": "='the ' + #race + ' ' + #class + oneOf(' named ', ' known as ') + #forename",
+    "referenceName": "=\"the #_subtype #race #class named #forename\"",
     "str": "=3d6",
     "dex": "=3d6",
     "int": "=3d6",
@@ -64,7 +65,7 @@
     "cha": "=3d6",
     "con": "=3d6",
     "hitDie": "=lookup(hitDie, #class)",
-    "maxHp": "=#hitDie + max(0,statMod(#con))",
+    "maximumHitPoints": "=#hitDie + max(0,statMod(#con))",
     "level": 1,
     "xp": 0,
     "weapon": "=oneOf(lookup(weapon, #class))",
@@ -84,7 +85,7 @@
     "*classModifier": "=lookup(classModifier, #class)",
     "*backgroundModifier": "=lookup(backgroundModifier, #background)",
     "*racialModifier": "=lookup(racialModifier, #race)",
-    "hp": "=#maxHp"
+    "hp": "=#maximumHitPoints"
   },
   "animal": {
     "alignment": "animal",
@@ -113,7 +114,7 @@
     "int": "=dig(#_statLine, 'int')+#_statBase+round(#level/8)",
     "wis": "=dig(#_statLine, 'wis')+#_statBase+round(#level/8)",
     "cha": "=dig(#_statLine, 'cha')+#_statBase+round(#level/8)",
-    "maxHp": "=max(1,2+dig(#_statLine, 'hp') + max(0,statMod(#con)) + round(#level/4))",
+    "maximumHitPoints": "=max(1,2+dig(#_statLine, 'hp') + max(0,statMod(#con)) + round(#level/4))",
     "weapon": "=lookup(animalWeapon, #animal_type)",
     "hasMissileWeapon": false,
     "_weaponStat": "=lookup(masterWeapon, #weapon)",
@@ -130,7 +131,7 @@
     "gp": 0,
     "*terrainModifier": "=lookup(terrainModifier, #terrain)",
     "*aspectModifier": "=lookup(creatureAspects, #animal_aspect)",
-    "hp": "=#maxHp",
+    "hp": "=#maximumHitPoints",
     "traits": []
   },
   "monster": {
@@ -184,12 +185,12 @@
     "*typeModifier": "=lookup(monsterTypeModifier, #monster_type)",
     "*substanceModifier": "=if(#substance, lookup(golemSubstances, #substance), nihil)",
     "*elementModifier": "=if(#element, lookup(elementalModifiers, #element), nihil)",
-    "maxHp": "=max(1,dig(#statLine, 'hp') + statMod(#con) + #level * 3)",
+    "maximumHitPoints": "=max(1,dig(#statLine, 'hp') + statMod(#con) + #level * 3)",
     "*rankModifier": "=lookup(monsterRank, #rank)",
     "archetype": "=#class",
     "_name": "=(#kind != '' ? capitalize(#kind) + ' ' : '') + (#rank != 'standard' ? capitalize(#rank) + ' ' : '') + (#substance ? capitalize(#substance) + ' ' : '') + capitalize(#monster_type)",
     "name": "=if(#class == 'elemental', capitalize(#kind) + ' ' + (#rank != 'standard' ? capitalize(#rank) + ' ' : '') + capitalize(#element) + ' ' + capitalize(#monster_type), #_name)",
-    "hp": "=#maxHp"
+    "hp": "=#maximumHitPoints"
   },
   "npc": {
     "_targetCr": 1,
@@ -234,8 +235,8 @@
     "*aspectModifier": "=lookup(creatureAspects, #npc_aspect)",
     "*template": "=#npc_template != nihil ? lookup(creatureTemplateModifiers, #npc_template) : nihil",
     "hitDie": "=dig(#_statLine, 'hitDie')",
-    "_maxHp": "=max(2, round(#hitDie + ((#level-1) * #hitDie/2) + statMod(#con)))",
-    "maxHp": "=#challenging ? max(30, #_maxHp) : #_maxHp",
+    "_maximumHitPoints": "=max(2, round(#hitDie + ((#level-1) * #hitDie/2) + statMod(#con)))",
+    "maximumHitPoints": "=#challenging ? max(30, #_maximumHitPoints) : #_maximumHitPoints",
     "_naturalArmor": "=dig(#_statLine, 'naturalArmor')",
     "armor": "=lookup(npcArmor, #race)",
     "_armorBonus": "=lookup(masterArmor, #armor)",
@@ -245,7 +246,7 @@
     "xp": "=lookup(npcXp, #race) + 25*#level",
     "gp": "=lookup(npcGold, #race)",
     "*rankModifier": "=lookup(npcRank, #rank)",
-    "hp": "=#maxHp"
+    "hp": "=#maximumHitPoints"
   },
   "combatEntity": {
     "entity_type": "=oneOf(turret, antimagic_ward, barrier, bomb)",
@@ -260,7 +261,7 @@
     "int": 3,
     "wis": 3,
     "cha": 3,
-    "maxHp": 14,
+    "maximumHitPoints": 14,
     "ac": 10,
     "traits": ["inanimate"],
     "_abilities": ["wait"],
@@ -269,7 +270,7 @@
     "attackDie": "1d2",
     "xp": 0,
     "gp": 0,
-    "hp": "=#maxHp"
+    "hp": "=#maximumHitPoints"
   },
   "encounter": {
     "_targetCr": 1,
@@ -325,6 +326,7 @@
     "trigger": "=lookup(trapTriggers, #trap_type)",
     "_appearance": "=oneOf(hidden, obvious, intricate, crude, ancient, 'well-maintained')",
     "name": "=humanize(#trigger)",
+    "lure": "=lookup(roomDecoration, 1d100)",
     "description": "=\"#_appearance trap that appears to be #{eval(lookup(trapDescriptions, #trigger))}\"",
     "_dc": "=lookup(trapDc, #difficulty)",
     "disarm_dc": "=dig(#_dc, 'disable')",
@@ -355,6 +357,7 @@
     "_wonderChance": 0,
     "_treasureChance": 0,
     "_trapChance": 0,
+    "_shrineChance": 0,
     "room_guide": null,
     "*roomOverlay": "=hasEntry(roomOverlays, #room_guide) ? lookup(roomOverlays, #room_guide) : nihil", 
     "targetCr": "=#_targetCr + max(0,round(#_index/3)-1)",
@@ -364,11 +367,13 @@
     "riddle": "=if(rand() < #_puzzleChance, gen(riddle), nihil)",
     "_treasureItems": "=lookup(treasure, rand() < 0.8 ? oneOf(negligible, minor) : oneOf(minor, major))",
     "treasure": "=if(rand() < #_treasureChance, sample(#_treasureItems, 1d2), nihil)",
-    "decor": "=lookup(roomDecoration, 1d100)",
+    "_has_trap": "=rand() < #_trapChance",
+    "trap": "=if(#_has_trap, gen(trap), nihil)",
+    "decor": "=if(!#_has_trap, lookup(roomDecoration, 1d100), 'nothing')",
     "gear": "=gather(masterGear, 1)",
     "features": "=uniq(gather(roomFeature, if(rand() < 0.3, 2, 1)))",
     "aura": "=lookup(roomAuras, hasEntry(specialRoomAuras, #room_type) ? lookup(specialRoomAuras, #room_type) : oneOf(calm, energizing))",
-    "shrine": "=gen(shrine)",
+    "shrine": "=if(rand() < #_shrineChance, gen(shrine), nihil)",
     "gems": "=if(rand() < 0.05, genList(gemstone, 1d2), nihil)",
     "wonder": "=if(rand() < #_wonderChance, gen(wonder), nihil)"
   },
@@ -429,7 +434,6 @@
     "order": "neutral",
     "alignment": "neutral",
     "_domain": "=oneOf(light, darkness, nature, war, knowledge, trickery, life, death, magic, order, chaos, oceans, love, storms)",
-    "domain": null,
     "weather": "fair",
     "terrain": "=lookup(terrains, 1d6)",
     "plane": "=#_plane_name",

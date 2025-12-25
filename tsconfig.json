@@ -1,0 +1,24 @@
+// tsconfig.json
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "allowJs": false,
+    "types": ["bun-types"] // if you're using Bun globals in code
+  },
+  "include": [
+    "src/**/*",
+    "test/**/*"
+  ],
+  "exclude": [
+    "dist",
+    "build",
+    "coverage",
+    "node_modules",
+    "site"
+  ]
+}
