@@ -161,6 +161,22 @@ export interface StatusModifications {
   untargetable?: boolean;
   triggerReactions?: boolean;
 
+  // polymorph
+  displayName?: string;
+  effectiveStats?: {
+    str?: number;
+    dex?: number;
+    con?: number;
+    int?: number;
+    wis?: number;
+    cha?: number;
+    ac?: number;
+    // damage?: string;
+    // attackDie?: number;
+    // maxHp?: number;
+  };
+  // effectiveAbilities?: string[];
+
   // noncombat
   examineBonus?: number;
   searchBonus?: number;
@@ -172,7 +188,11 @@ export interface StatusModifications {
   goldMultiplier?: number;
   consumableMultiplier?: number;
 
+  controlledActions?: boolean;
+
+  // do we actually use this anywhere??? we need it for poly now though
   maxHp?: number;
+  attackDie?: string;
 }
 
 export interface StatusEffect {

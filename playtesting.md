@@ -1,15 +1,15 @@
 # Notes from Playtesting
 
 ## Bugs
-- [ ] Bomb shouldn't be able to reset ticking status!
+- [ ] Gold still getting zeroed out at dungeon entry/not distributed somehow? (maybe fixed??)
+- [ ] Bombs should not be heal-able (maybe there is some 'repair/mending' skill for inanimate objects though)
 
 ## Features
-- [ ] Found treasure should be redeemable for gold
+- [ ] Found treasure/gems should be redeemable for gold
 - [ ] Show current gold before purchasing potions (make sure we're handling gold transition between town hub/dungeon correctly)
 - [ ] Remind players to rest if they're not at full health going into boss battle
 - [ ] Unify search/examine (should both have chance to find potions and both grant XP on success)
 - [ ] Bring back status displays on the per turn overview... (we have per-round overview)
-- [ ] Player party _must_ be able to attempt to flee a battle intentionally (could be a dex skill check?)
 
 ## Ideas
 - [ ] Rest could reset status effects? (would be nice to do this _before_ persisting PCs?)
@@ -130,6 +130,9 @@
 ---
 - [ ] Handle 'defeated' barks more gracefully ('X has defeated X', and then they have a triumphant bark! [Which is wrong/immersion breaking])
 - [ ] Handle mutual TPK more gracefully (currently displays both "You are victorious!" and "Your party has been defeated")
+---
+- [ ] "General store" to purchase gear, jeweler to purchase gems
+- [ ] Should display _what_ healing items were used on rest
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing
@@ -250,6 +253,8 @@
 - [x] Maybe you need a clue to travel to a dungeon?? -- have to at least hear rumor now
 - [x] Something weird with gold -- they have it in town but don't in the dungeon??? -- think this _should_ be fixed but need to validate!
 - [x] Make sure we always go through handleReactions flow so _time stop_ can guarantee `triggerReactions: false` effect works -- think this is the case!
+- [x] Player party _must_ be able to attempt to flee a battle intentionally (could be a dex skill check?)
+- [x] Bomb shouldn't be able to reset ticking status! [tried to adjust this]
 
 ## Not really issues atm
 - "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]

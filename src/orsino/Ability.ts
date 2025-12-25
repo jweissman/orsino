@@ -46,7 +46,8 @@ export type AbilityType
   | "learn"
   | "grantPassive"
   | "teleport"
-  | "planeshift";
+  | "planeshift"
+  | "recalculateHp";
 
 export interface AbilityEffect {
   description?: string;
@@ -241,11 +242,12 @@ export default class AbilityHandler {
   static validTargets(ability: Ability, user: Combatant, allies: Combatant[], enemies: Combatant[]): (Combatant | Combatant[])[] {
     let healing = ability.effects.every(fx => fx.type === "heal") && ability.effects.length > 0;
     let targets: (Combatant | Combatant[])[] = [];
+    let effectiveUser = Fighting.effectiveStats(user);
     for (const t of [...ability.target]) {
       switch (t) {
         case "self":
           if (healing) {
-            if (user.hp < user.maxHp) {
+            if (user.hp < effectiveUser.maxHp) {
               targets.push(user);
             }
           } else {
@@ -420,8 +422,12 @@ export default class AbilityHandler {
           amount = 0;
         }
       }
+      let damageKind = effect.kind || "true";
+      if (damageKind.startsWith("=")) {
+        damageKind = await Deem.evaluate(damageKind.slice(1), { subject: user });
+      }
       let hitEvents = await hit(
-        user, targetCombatant, amount, false, name, true, effect.kind || "true",
+        user, targetCombatant, amount, false, name, true, damageKind as DamageKind,
         effect.cascade || null,
         context, handlers.roll
       );
@@ -465,18 +471,7 @@ export default class AbilityHandler {
       if (!effect.status) {
         throw new Error(`Buff effect must have a status defined`);
       }
-
-      let statusEffect = undefined;
-      if (typeof effect.status === "string" && effect.status.startsWith("=")) {
-        // deem-eval status name
-        let statusName = await Deem.evaluate(effect.status.slice(1), { subject: user });
-        statusEffect = StatusHandler.instance.dereference(statusName);
-      } else {
-        statusEffect = StatusHandler.instance.dereference(effect.status);
-      }
-      if (!statusEffect) {
-        throw new Error(`Buff effect has unknown status: ${JSON.stringify(statusEffect)}`);
-      }
+      let statusEffect = await this.reifyStatus(effect.status, targetCombatant);
 
       let statusEvents = await status(
         user, targetCombatant,
@@ -487,10 +482,11 @@ export default class AbilityHandler {
     } else if (effect.type === "debuff") {
       // same as buff with a save
       if (effect.status) {
-        let statusEffect = StatusHandler.instance.dereference(effect.status);
-        if (!statusEffect) {
-          throw new Error(`Buff effect has unknown status: ${JSON.stringify(effect.status)}`);
-        }
+        let statusEffect = await this.reifyStatus(effect.status, targetCombatant);
+        // let statusEffect = StatusHandler.instance.dereference(effect.status);
+        // if (!statusEffect) {
+        //   throw new Error(`Buff effect has unknown status: ${JSON.stringify(effect.status)}`);
+        // }
         if (!targetCombatant._savedVersusSpell) {
           let dc = (effect.saveDC || 15) + (userFx.bonusSpellDC as number || 0) + (user.level || 0);
 
@@ -597,8 +593,8 @@ export default class AbilityHandler {
       } else if (targetFx.resurrectable === false) {
         console.warn(`${targetCombatant.name} cannot be resurrected.`);
       } else {
-        // let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
-        let amount = effect.hpPercent ? Math.floor((effect.hpPercent / 100) * (targetCombatant.maxHp || 10)) : 1;
+        let effectiveTarget = Fighting.effectiveStats(targetCombatant);
+        let amount = effect.hpPercent ? Math.floor((effect.hpPercent / 100) * (effectiveTarget.maxHp || 10)) : 1;
         targetCombatant.hp = Math.max(1, amount);
         // todo handle applied traits + reify (and maybe update type???)
         if (effect.applyTraits) {
@@ -683,6 +679,10 @@ export default class AbilityHandler {
       console.warn("You are being teleported to", location);
       events.push({ type: "teleport", subject: user, location } as Omit<GameEvent, "turn">);
       success = true;
+    } else if (effect.type === "recalculateHp") {
+      let effectiveTarget = Fighting.effectiveStats(targetCombatant);
+      targetCombatant.hp = Math.min(targetCombatant.hp, effectiveTarget.maxHp || targetCombatant.hp);
+      success = true;
     }
 
     else {
@@ -692,6 +692,26 @@ export default class AbilityHandler {
     }
 
     return { success, events };
+  }
+
+  static async reifyStatus(statusExpression: string | StatusEffect, target: Combatant): Promise<StatusEffect> {
+    let statusEffect = undefined;
+    if (typeof statusExpression === "string") {
+      if (statusExpression.startsWith("=")) {
+        // deem-eval status name
+        let statusName = await Deem.evaluate(statusExpression.slice(1), { subject: target });
+        statusEffect = StatusHandler.instance.dereference(statusName);
+      } else {
+        statusEffect = StatusHandler.instance.dereference(statusExpression);
+      }
+    } else {
+      // assume literal effect
+      statusEffect = statusExpression;
+    }
+    if (!statusEffect) {
+      throw new Error(`Buff effect has unknown status: ${JSON.stringify(statusEffect)}`);
+    }
+    return statusEffect;
   }
 
   static async perform(

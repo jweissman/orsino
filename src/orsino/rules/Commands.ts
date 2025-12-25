@@ -132,8 +132,9 @@ export class Commands {
     }
 
     amount = Math.max(1, amount);
-    amount = Math.min(amount, target.maxHp - target.hp);
-    target.hp = Math.min(target.maxHp, target.hp + amount);
+    let effectiveTarget = Fighting.effectiveStats(target);
+    amount = Math.min(amount, effectiveTarget.maxHp - target.hp);
+    target.hp = Math.min(effectiveTarget.maxHp, target.hp + amount);
 
     // check for onHeal effects
     let events: TimelessEvent[] = [{ type: "heal", subject: healer, target, amount } as Omit<HealEvent, "turn">];
@@ -266,7 +267,7 @@ export class Commands {
     if (attackerEffects.bonusDamage && attacker != defender) {
       let sources = attackerFxWithNames.bonusDamage?.sources || [];
       let bonusDamage = await Deem.evaluate(attackerEffects.bonusDamage.toString()) as number || 0;
-      damage += bonusDamage;
+      damage = Math.max(0, damage + bonusDamage);
       if (bonusDamage != 0) {
         events.push({ type: "damageBonus", subject: attacker, target: defender, amount: bonusDamage, damageKind, reason: Words.humanizeList(sources) } as Omit<DamageBonus, "turn">);
       }
@@ -275,10 +276,11 @@ export class Commands {
     let multiplierKey = `${by}Multiplier` as keyof StatusModifications;
     if (attackerEffects[multiplierKey]) {
       let multiplier = attackerEffects[multiplierKey] as number || 1;
-      damage = Math.floor(damage * multiplier);
-      let delta = damage - Math.floor(damage / multiplier);
+      let extra  = Math.max(0, Math.floor(damage * (multiplier - 1)));
+      damage = Math.max(0, damage + extra);
+      // let delta = damage - Math.floor(damage / multiplier);
       let sources = attackerFxWithNames[multiplierKey]?.sources || [];
-      events.push({ type: "damageBonus", subject: attacker, target: defender, amount: delta, damageKind, reason: `a ${multiplier}x multiplier from ${Words.humanizeList(sources)}` } as Omit<DamageBonus, "turn">);
+      events.push({ type: "damageBonus", subject: attacker, target: defender, amount: extra, damageKind, reason: `a ${multiplier}x multiplier from ${Words.humanizeList(sources)}` } as Omit<DamageBonus, "turn">);
     }
 
     // what if they're immune to this damage kind? isn't that different from resistance?

@@ -5,6 +5,7 @@ import Combat from "../Combat";
 import { RollResult } from "../types/RollResult";
 import { Combatant } from "../types/Combatant";
 import { Commands } from "../rules/Commands";
+import { Fighting } from "../rules/Fighting";
 export type SelectionMethod = (
       prompt: string,
       choices: (
@@ -58,7 +59,8 @@ export default class User {
       throw new Error("No choices provided for selection");
     }
 
-    if (subject && !subject.playerControlled) {
+    let effectivelyPlayerControlled = subject ? Fighting.effectivelyPlayerControlled(subject) : true;
+    if (subject && !effectivelyPlayerControlled) {
       return Combat.samplingSelect(message, choices as any);
     }
 

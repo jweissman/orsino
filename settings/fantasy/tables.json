@@ -271,18 +271,18 @@
   "npcRank": {
     "discriminator": "rank",
     "groups": {
-      "peasant":   { "maxHp": 2,    "ac": 3 },
-      "grunt":     { "maxHp": 3,    "ac": 2 },
-      "untested":  { "maxHp": 4,    "ac": 2 },
-      "rookie":    { "maxHp": 5,    "ac": 1 },
-      "seargeant": { "maxHp": 8,    "ac": 1 },
-      "captain":   { "maxHp": 13,   "ac": 0 },
-      "veteran":   { "maxHp": 21,   "ac": 0 },
-      "champion":  { "maxHp": 34,   "ac": -1, "traits": ["fierce"] },
-      "elite":     { "maxHp": 55,   "ac": -1, "traits": ["fierce", "formidable"] },
-      "paragon":   { "maxHp": 89,   "ac": -2, "traits": ["fierce", "formidable", "disciplined"] },
-      "epic":      { "maxHp": 144,  "ac": -2, "traits": ["fierce", "formidable", "disciplined", "resilient"] },
-      "legendary": { "maxHp": 233,  "ac": -3, "traits": ["fierce", "formidable", "disciplined", "resilient", "favored"] }
+      "peasant":   { "maximumHitPoints": 2,    "ac": 3 },
+      "grunt":     { "maximumHitPoints": 3,    "ac": 2 },
+      "untested":  { "maximumHitPoints": 4,    "ac": 2 },
+      "rookie":    { "maximumHitPoints": 5,    "ac": 1 },
+      "seargeant": { "maximumHitPoints": 8,    "ac": 1 },
+      "captain":   { "maximumHitPoints": 13,   "ac": 0 },
+      "veteran":   { "maximumHitPoints": 21,   "ac": 0 },
+      "champion":  { "maximumHitPoints": 34,   "ac": -1, "traits": ["fierce"] },
+      "elite":     { "maximumHitPoints": 55,   "ac": -1, "traits": ["fierce", "formidable"] },
+      "paragon":   { "maximumHitPoints": 89,   "ac": -2, "traits": ["fierce", "formidable", "disciplined"] },
+      "epic":      { "maximumHitPoints": 144,  "ac": -2, "traits": ["fierce", "formidable", "disciplined", "resilient"] },
+      "legendary": { "maximumHitPoints": 233,  "ac": -3, "traits": ["fierce", "formidable", "disciplined", "resilient", "favored"] }
     }
   },
   "npcType": {
@@ -991,106 +991,31 @@
   "roomDecoration": {
     "discriminator": "d100",
     "groups": {
-      "1": "a torch",
-      "2": "a brazier",
-      "3": "a statue",
-      "4": "an altar",
-      "5": "a fountain",
-      "6": "a chandelier",
-      "7": "a tapestry",
-      "8": "a mosaic",
-      "9": "a painting",
-      "10": "a carpet",
-      "11": "a bookshelf",
-      "12": "a desk",
-      "13": "a bed",
-      "14": "a table",
-      "15": "a chair",
-      "16": "a chest",
-      "17": "a shelf",
-      "18": "a cabinet",
-      "19": "a rack",
-      "20": "a pillar",
-      "21": "a lockbox",
-      "22": "an inkbottle",
-      "23": "a quill",
-      "24": "a skull",
-      "25": "a desk",
-      "26": "a sarcophagus",
-      "27": "a coffin",
-      "28": "an armamentarium",
-      "29": "an astrolabe",
-      "30": "a tomb",
-      "31": "a decanter",
-      "32": "a goblet",
-      "33": "a chalice",
-      "34": "a candelabra",
-      "35": "a mirror",
-      "36": "a window",
-      "37": "a rug",
-      "38": "a curtain",
-      "39": "a banner",
-      "40": "a flag",
-      "41": "a book",
-      "42": "a letter",
-      "43": "a weapon rack",
-      "44": "a trophy",
-      "45": "a wardrobe",
-      "46": "a pedestal",
-      "47": "a sconce",
-      "48": "a lantern",
-      "49": "a torchiere",
-      "50": "a cage",
-      "51": "a blood stain",
-      "52": "a rune",
-      "53": "a glyph",
-      "54": "a sigil",
-      "55": "a symbol",
-      "56": "an inscription",
-      "57": "a carving",
-      "58": "a graffiti",
-      "59": "a mural",
-      "60": "a fresco",
-      "61": "bones",
-      "62": "remains",
-      "63": "a corpse",
-      "64": "a skeleton",
-      "65": "a hipbone",
-      "66": "wanted poster",
-      "67": "a map",
-      "68": "an atlas",
-      "69": "a trinket",
-      "70": "trash",
-      "71": "rubble",
-      "72": "dust",
-      "73": "cobwebs",
-      "74": "mold",
-      "75": "fungus",
-      "76": "moss",
-      "77": "lichen",
-      "78": "slime",
-      "79": "ooze",
-      "80": "muck",
-      "81": "debris",
-      "82": "debris",
-      "83": "debris",
-      "84": "debris",
-      "85": "debris",
-      "86": "debris",
-      "87": "debris",
-      "88": "debris",
-      "89": "debris",
-      "90": "debris",
-      "91": "nothing",
-      "92": "nothing",
-      "93": "nothing",
-      "94": "nothing",
-      "95": "nothing",
-      "96": "nothing",
-      "97": "nothing",
-      "98": "nothing",
-      "99": "nothing",
-      "100": "nothing"
+      "1": "a torch", "2": "a brazier", "3": "a statue", "4": "an altar", "5": "a fountain",
+      "6": "a chandelier", "7": "a tapestry", "8": "a mosaic", "9": "a painting", "10": "a carpet",
+      "11": "a bookshelf", "12": "a desk", "13": "a bed", "14": "a table", "15": "a chair",
+      "16": "a chest", "17": "a shelf", "18": "a cabinet", "19": "a rack", "20": "a pillar",
+
+      "21": "a lockbox", "22": "an inkbottle", "23": "a quill", "24": "a skull", "25": "a desk",
+      "26": "a sarcophagus", "27": "a coffin", "28": "an armamentarium", "29": "an astrolabe", "30": "a tomb",
+      "31": "a decanter", "32": "a goblet", "33": "a chalice", "34": "a candelabra", "35": "a mirror",
+      "36": "a window", "37": "a rug", "38": "a curtain", "39": "a banner", "40": "a flag",
+
+      "41": "a book", "42": "a letter", "43": "a weapon rack", "44": "a trophy", "45": "a wardrobe",
+      "46": "a pedestal", "47": "a sconce", "48": "a lantern", "49": "a torchiere", "50": "a cage",
+      "51": "a blood stain", "52": "a rune", "53": "a glyph", "54": "a sigil", "55": "a symbol",
+      "56": "an inscription", "57": "a carving", "58": "a graffiti", "59": "a mural", "60": "a fresco",
+
+      "61": "bones", "62": "remains", "63": "a corpse", "64": "a skeleton", "65": "a hipbone",
+      "66": "wanted poster", "67": "a map", "68": "an atlas", "69": "a trinket", "70": "a bauble",
+      "71": "rubble", "72": "dust", "73": "cobwebs", "74": "mold", "75": "fungus",
+      "76": "moss", "77": "lichen", "78": "slime", "79": "ooze", "80": "muck",
+
+      "81": "debris", "82": "debris", "83": "debris", "84": "debris", "85": "debris",
+      "86": "debris", "87": "debris", "88": "debris", "89": "debris", "90": "debris",
+
+      "91": "food scraps", "92": "metal shaving", "93": "wood splinters", "94": "footprints", "95": "bloody handprints",
+      "96": "broken glass", "97": "earthenware shards", "98": "pebble", "99": "trash", "100": "waste"
     }
   },
   "dungeonRumor": {
@@ -1148,20 +1073,20 @@
     "discriminator": "flavor",
     "groups": {
       "standard": [
-        [ "entrance", "empty", "trap", "mob", "special", "treasure", "elite" ],
-        [ "entrance", "mob", "empty", "treasure", "trap", "mob", "elite" ]
+        [ "entrance", "empty", "trap", "mob", "special", "treasure", "elite", "puzzle" ],
+        [ "entrance", "mob", "empty", "treasure", "trap", "mob", "elite", "special" ]
       ],
       "dangerous": [
-        [ "entrance", "trap", "mob", "trap", "elite", "treasure", "mob", "special" ],
-        [ "entrance", "special", "mob", "trap", "mob", "treasure", "elite", "trap" ]
+        [ "entrance", "trap", "mob", "trap", "elite", "treasure", "mob", "special", "wonder", "trap" ],
+        [ "entrance", "special", "mob", "trap", "mob", "treasure", "elite", "trap", "puzzle" ]
       ],
       "lucrative": [
-        [ "entrance", "mob", "treasure", "trap", "mob", "elite", "treasure" ],
-        [ "entrance", "treasure", "mob", "trap", "treasure", "mob", "elite" ]
+        [ "entrance", "puzzle", "mob", "treasure", "trap", "mob", "elite", "treasure" ],
+        [ "entrance", "treasure", "mob", "trap", "treasure", "mob", "elite", "wonder" ]
       ],
       "balanced": [
-        [ "entrance", "mob", "trap", "treasure", "special", "elite", "treasure" ],
-        [ "entrance", "trap", "treasure", "mob", "special", "mob", "treasure" ]
+        [ "entrance", "mob", "trap", "treasure", "special", "elite", "treasure", "puzzle" ],
+        [ "entrance", "trap", "treasure", "mob", "special", "mob", "treasure", "puzzle" ]
       ]
     }
   },
@@ -1169,13 +1094,15 @@
   "roomOverlays": {
     "discriminator": "guide_type",
     "groups": {
-      "entrance": { "_encounterChance": 0.1, "_puzzleChance": 0, "_trapChance": 0.5, "_treasureChance": 0.2 },
-      "empty": { "_encounterChance": 0, "_puzzleChance": 0.05, "_trapChance": 0, "_treasureChance": 0, "_wonderChance": 0.1 },
-      "trap": { "_encounterChance": 0.2, "_puzzleChance": 0.1, "_trapChance": 0.5, "_treasureChance": 0.1 },
-      "mob": { "_encounterChance": 1, "_puzzleChance": 0, "_trapChance": 0.1, "_treasureChance": 0.2 },
-      "elite": { "_encounterChance": 1, "_puzzleChance": 0, "_trapChance": 0.05, "_treasureChance": 0.3, "challenging": true },
-      "special": { "_encounterChance": 0.1, "_puzzleChance": 0.1, "_trapChance": 0.1, "_treasureChance": 0.4, "_wonderChance": 0.2 },
-      "treasure": { "_encounterChance": 0.2, "_puzzleChance": 0.2, "_trapChance": 0.2, "_treasureChance": 0.8 }
+      "entrance": { "_encounterChance": 0.1, "_puzzleChance": 0,    "_trapChance": 0.8,  "_treasureChance": 0.2 },
+      "empty":    { "_encounterChance": 0,   "_puzzleChance": 0.05, "_trapChance": 0,    "_treasureChance": 0, "_wonderChance": 0.1 },
+      "trap":     { "_encounterChance": 0.2, "_puzzleChance": 0.1,  "_trapChance": 1,    "_treasureChance": 0.1 },
+      "mob":      { "_encounterChance": 1,   "_puzzleChance": 0,    "_trapChance": 0.1,  "_treasureChance": 0.2 },
+      "elite":    { "_encounterChance": 1,   "_puzzleChance": 0,    "_trapChance": 0.05, "_treasureChance": 0.3, "challenging": true },
+      "special":  { "_encounterChance": 0,   "_puzzleChance": 0.1,  "_trapChance": 0.1,  "_treasureChance": 0.4, "_wonderChance": 0.2 },
+      "treasure": { "_encounterChance": 0.2, "_puzzleChance": 0.2,  "_trapChance": 0.2,  "_treasureChance": 0.8 },
+      "wonder":   { "_encounterChance": 0,   "_puzzleChance": 0.1,  "_trapChance": 0,    "_treasureChance": 0, "_wonderChance": 1 },
+      "puzzle":   { "_encounterChance": 0,   "_puzzleChance": 1,    "_trapChance": 0.1,  "_treasureChance": 0.2 }
     }
   },
 
@@ -1190,7 +1117,7 @@
       "magical": [
         { "type": "damage", "kind": "=oneOf(fire, cold, acid, lightning)", "amount": "=2d6" },
         { "type": "damage", "kind": "=oneOf(psychic, necrotic, radiant)", "amount": "=1d8" },
-        { "type": "debuff", "status": "=oneOf(maze, paralyzed, cursed, slow)" }
+        { "type": "debuff", "status": "=oneOf(mazed, paralyzed, cursed, slow)" }
       ]
     }
   },
@@ -1206,12 +1133,12 @@
   "trapDescriptions": {
     "discriminator": "trigger",
     "groups": {
-      "pressure_plate": "\"a barely visible pressure plate embedded in the floor.\"",
-      "tripwire": "\"a thin wire stretched across the passageway at ankle height.\"",
-      "hidden_switch": "\"a concealed switch hidden among the wall carvings.\"",
-      "magical_rune": "\"a glowing rune inscribed on the floor that pulses with arcane energy.\"",
-      "arcane_glyph": "\"an intricate glyph etched into the wall, shimmering faintly.\"",
-      "enchanted_object": "\"an ordinary-looking object that hums with magical power.\""
+      "pressure_plate": "\"a barely visible pressure plate embedded in the floor\"",
+      "tripwire": "\"a thin wire stretched across the passageway at ankle height\"",
+      "hidden_switch": "\"a concealed switch hidden among the wall carvings\"",
+      "magical_rune": "\"a glowing rune inscribed on the floor that pulses with arcane energy\"",
+      "arcane_glyph": "\"an intricate glyph etched into the wall, shimmering faintly\"",
+      "enchanted_object": "\"an ordinary-looking object that hums with magical power\""
     }
   },
 

@@ -873,7 +873,7 @@
     "effects": [
       {
         "type": "debuff",
-        "status": "frightened",
+        "status": "fear",
         "saveKind": "fear",
         "saveDC": 12
       }
@@ -1843,7 +1843,7 @@
     "effects": [
       {
         "type": "debuff",
-        "status": "frightened",
+        "status": "fear",
         "saveKind": "fear",
         "saveDC": 15
       }
@@ -3096,7 +3096,7 @@
           { "type": "debuff", "status": "cursed" },
           { "type": "debuff", "status": "insane" },
           { "type": "debuff", "status": "charmed" },
-          { "type": "debuff", "status": "frightened" }
+          { "type": "debuff", "status": "fear" }
         ]
       }
     ]
@@ -3203,6 +3203,44 @@
         "amount": "=5d6",
         "kind": "cold",
         "saveForHalf": true
+      }
+    ]
+  },
+  "polymorph": {
+    "name": "Polymorph Other",
+    "type": "spell",
+    "level": 5,
+    "aspect": "arcane",
+    "school": "transmutation",
+    "description": "Transform an enemy into a harmless creature for a short duration.",
+    "target": [ "enemy" ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Polymorphed",
+          "effect": {
+            "displayName": "Sheep",
+            "attackDie": "1d2",
+            "effectiveStats": {
+              "maxHp": 5,
+              "ac": 10,
+              "str": 2,
+              "con": 2,
+              "dex": 2,
+              "int": 2,
+              "wis": 2,
+              "cha": 2
+            }
+          }
+        },
+        "duration": 5,
+        "saveKind": "will",
+        "saveDC": 16
+      },
+      {
+        "type": "recalculateHp",
+        "target": "target"
       }
     ]
   }

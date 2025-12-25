@@ -1,6 +1,5 @@
 import * as ohm from 'ohm-js';
 import source from './deem.ohm.txt';
-import { count } from 'console';
 import { Fighting } from './orsino/rules/Fighting';
 import Words from './orsino/tui/Words';
 

@@ -13,6 +13,7 @@ import { loadSetting } from '../src/orsino/loader';
 import Events from '../src/orsino/Events';
 import { Team } from '../src/orsino/types/Team';
 import Orsino from '../src/orsino';
+import Automatic from '../src/orsino/tui/System';
 
 describe('Orsino', () => {
   // before(async () => {
@@ -64,7 +65,7 @@ describe('Orsino', () => {
     expect(pc).toHaveProperty('wis');
     expect(pc).toHaveProperty('cha');
     expect(pc).toHaveProperty('hp');
-    expect(pc).toHaveProperty('maxHp');
+    expect(pc).toHaveProperty('maximumHitPoints');
     expect(pc).toHaveProperty('level');
     expect(pc).toHaveProperty('ac');
     expect(pc).toHaveProperty('weapon');
@@ -82,11 +83,11 @@ describe('Orsino', () => {
     expect(combat._teams[1].combatants[0].hp).toBeGreaterThan(0);
 
     // await combat.setUp();
-    let turn = await combat.round();
+    let _turn = await combat.round();
     // expect(turn).toHaveProperty('number');
     // expect(turn).toHaveProperty('description');
     while (!combat.isOver()) {
-      turn = await combat.round();
+      _turn = await combat.round();
       // expect(turn).toHaveProperty('number');
       // expect(turn).toHaveProperty('description');
     }
@@ -166,15 +167,7 @@ describe('Orsino', () => {
     let party = await CharacterRecord.chooseParty(
       async (options?: any) => (await Generator.gen("pc", { setting: "fantasy", ...options }) as Combatant),
       3,
-      // Combat.samplingSelect
-      async (_prompt: string, options: string[]) => {
-        let pick = options[
-          Math.floor(Math.random() * options.length)
-          // 0
-        ];
-        // console.log(`Auto-selecting option for test: ${pick}`);
-        return pick;
-      }
+      Automatic.randomSelect
     );
 
     console.log("Generated party:", party.map(p => p.name));
@@ -209,36 +202,22 @@ describe('Orsino', () => {
     let party = await CharacterRecord.chooseParty(
       async (options?: any) => (await Generator.gen("pc", { setting: "fantasy",  ...options }) as Combatant),
       3,
-      // Combat.samplingSelect
-      async (_prompt: string, options: string[]) => {
-        let pick = options[
-          Math.floor(Math.random() * options.length)
-          // 0
-        ];
-        // console.log(`Auto-selecting option for test: ${pick}`);
-        return pick;
-      }
+      Automatic.randomSelect
     );
+    for (let pc of party) {
+      await CharacterRecord.pickInitialSpells(pc, Automatic.randomSelect);
+    }
+    await CharacterRecord.assignPartyPassives(party);
 
     console.log("Generated party:", party.map(p => p.name));
 
     let explorer = new ModuleRunner({
       gen: Generator.gen,
-      //   async (type: GenerationTemplateType, options: Record<string, any>) => {
-      //   return await Generator.gen(type, options);
-      // },
       moduleGen: () => mod,
-      pcs: party,
-      // pcs: [
-      //   { ...await Generator.gen("pc", { setting: "fantasy", class: "warrior" }), playerControlled: true },
-      //   { ...await Generator.gen("pc", { setting: "fantasy", class: "warrior" }), playerControlled: true },
-      //   { ...await Generator.gen("pc", { setting: "fantasy", class: "warrior" }), playerControlled: true }
-      // ]
+      pcs: party
     });
 
     await explorer.run(true);
-
-    // console.log("Active module after run:", explorer.activeModule);
 
     expect(explorer.activeModule).toBeDefined();
     expect(explorer.activeModule!.name).toBe(mod.name);

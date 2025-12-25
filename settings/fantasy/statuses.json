@@ -511,7 +511,8 @@
     "name": "Dominated",
     "description": "Completely under another's control.",
     "effect": {
-      "changeAllegiance": true
+      "changeAllegiance": true,
+      "controlledActions": true
     },
     "saveKind": "charm"
   },
@@ -533,7 +534,7 @@
     },
     "saveKind": "will"
   },
-  "frightened": {
+  "fear": {
     "name": "Frightened",
     "description": "Overcome with fear and hesitation.",
     "effect": {

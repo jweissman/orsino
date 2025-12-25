@@ -14,6 +14,9 @@ import { Inventory } from "./Inventory";
 import Events, { ModuleEvent } from "./Events";
 import { StatusEffect, StatusModifications } from "./Status";
 import Presenter from "./tui/Presenter";
+import CharacterRecord from "./rules/CharacterRecord";
+import Automatic from "./tui/System";
+import { Fighting } from "./rules/Fighting";
 
 type TownSize = 'hamlet' | 'village' | 'town' | 'city' | 'metropolis' | 'capital';
 type Race = 'human' | 'elf' | 'dwarf' | 'halfling' | 'gnome' | 'orc' | 'fae';
@@ -210,12 +213,13 @@ export class ModuleRunner {
 
       if (action === "embark") {
         // don't we need to distribute gold to PCs? is this already done somehow
-        // let share = Math.floor(this.state.sharedGold / this.pcs.length);
-        // this.pcs.forEach(pc => pc.gp = (pc.gp || 0) + share);
-        // this.state.sharedGold -= share * this.pcs.length;
-
         const dungeon = await this.selectDungeon();
         if (dungeon) {
+
+        let share = Math.floor(this.state.sharedGold / this.pcs.length);
+        this.pcs.forEach(pc => pc.gp = (pc.gp || 0) + share);
+        this.state.sharedGold -= share * this.pcs.length;
+
           this.logGold("before dungeoneer");
           // this.outputSink(`You embark on a Quest to the ${Stylist.bold(dungeon.dungeon_name)}...`);
           let dungeoneer = new Dungeoneer({
@@ -255,8 +259,9 @@ export class ModuleRunner {
               pc.hp = 1;
               // this.outputSink(`⚠️ ${pc.name} was stabilized to 1 HP!`);
             }
-            const healAmount = Math.floor(pc.maxHp * 0.5);
-            pc.hp = Math.max(1, Math.min(pc.maxHp, pc.hp + healAmount));
+            let effective = Fighting.effectiveStats(pc);
+            const healAmount = Math.floor(effective.maxHp * 0.5);
+            pc.hp = Math.max(1, Math.min(effective.maxHp, pc.hp + healAmount));
             // this.outputSink(`💖 ${pc.name} recovers ${healAmount} HP after the adventure.`);
             pc.spellSlotsUsed = 0;
             pc.activeEffects = [];
@@ -378,8 +383,8 @@ export class ModuleRunner {
   private async menu(dry = false): Promise<string> {
     const available = this.availableDungeons;
     const options: Choice<any>[] = [
-      { short: "Rest", value: "rest", name: "Visit the Inn (restore HP/slots)", disabled: this.pcs.every(pc => pc.hp === pc.maxHp) },
-          { short: "Chat", value: "rumors", name: "Visit the Tavern (gather hirelings, hear rumors about the region)", disabled: available.length === 0 },
+      { short: "Rest", value: "rest", name: "Visit the Inn (restore HP/slots)", disabled: false },
+      { short: "Chat", value: "rumors", name: "Visit the Tavern (gather hirelings, hear rumors about the region)", disabled: available.length === 0 },
     ];
 
     if (!dry) {
@@ -407,7 +412,8 @@ export class ModuleRunner {
 
   private rest(party: Combatant[]) {
     party.forEach(pc => {
-      pc.hp = pc.maxHp;
+      let effective = Fighting.effectiveStats(pc);
+      pc.hp = effective.maxHp;
       pc.spellSlotsUsed = 0;
       pc.activeEffects = []; // Clear status effects!
     });
@@ -623,8 +629,14 @@ export class ModuleRunner {
   }
 
   private async presentHireling() {
-    const wouldLikeHireling = await this.select("A hireling is available to join your party. Would you like to consider their merits?", [
-      { short: "Yes", value: true, name: "Hire a hireling", disabled: false },
+    // gen a level 1 PC as hireling
+    const hireling = await this.gen("pc", { background: "hireling", setting: "fantasy" }) as Combatant;
+    await CharacterRecord.pickInitialSpells(hireling, Automatic.randomSelect);
+    const wouldLikeHireling = await this.select(
+      // "A hireling is available to join your party. Would you like to consider their merits?",
+      `A ${hireling.class} named ${hireling.name} is looking for work. Would you like to interview them?`,
+      [
+      { short: "Yes", value: true, name: `Interview ${hireling.forename}`, disabled: false },
       { short: "No", value: false, name: "Decline", disabled: false },
     ]);
 
@@ -632,11 +644,7 @@ export class ModuleRunner {
       return;
     }
 
-    // gen a level 1 PC as hireling
-    const hireling = await this.gen("pc", { level: 1, background: "hireling", setting: "fantasy" }) as Combatant;
     const cost = 100;
-    // this.outputSink(`\n🍻 At the tavern, you meet a potential hireling:\n`);
-    // await Presenter.printCharacterRecord(hireling);
 
     await this.emit({
       type: "hirelingOffered",
@@ -646,7 +654,7 @@ export class ModuleRunner {
     });
 
     const choice = await this.select(`Would you like to hire ${hireling.name} for ${cost}?`, [
-      { short: "Yes", value: true, name: "Hire the hireling", disabled: this.sharedGold < cost },
+      { short: "Yes", value: true, name: `Hire ${hireling.forename}`, disabled: this.sharedGold < cost },
       { short: "No", value: false, name: "Decline the offer", disabled: false },
     ]);
 
@@ -682,6 +690,9 @@ export class ModuleRunner {
       name: `${d.dungeon_name} (${d.direction}, CR ${d.intendedCr})`,
       disabled: d.intendedCr > reasonableCr, // Disable if CR is too high
     }))
+
+    options.push({ short: "Cancel", value: null as any, name: "Cancel and return to town", disabled: false });
+
     const choice = await this.select("Which dungeon?", options);
     // console.log("Chosen dungeon index:", choice, available[choice].dungeon_name);
 
@@ -689,8 +700,8 @@ export class ModuleRunner {
   }
 
   private logGold(tag: string) {
-    // const pcs = this.pcs.map(p => `${p.forename}:${p.gp||0}`).join(", ");
-    // console.log(`🪙 [gold] ${tag} shared=${this.state.sharedGold} pcs=[${pcs}]`);
+    const pcGold = this.pcs.map(p => `${p.forename}:${p.gp||0}`).join(", ");
+    console.log(`🪙 [gold] ${tag} shared=${this.state.sharedGold} pcs=[${pcGold}]`);
   }
 
 

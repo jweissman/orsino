@@ -148,7 +148,13 @@ export default class Combat {
   }
 
   static living(combatants: Combatant[]): Combatant[] { return combatants.filter(c => c.hp > 0); }
-  static wounded(combatants: Combatant[]): Combatant[] { return combatants.filter(c => c.hp > 0 && c.hp < c.maxHp); }
+  static wounded(combatants: Combatant[]): Combatant[] {
+    return combatants
+      .filter(c => {
+        let effective = Fighting.effectiveStats(c);
+        return c.hp > 0 && c.hp < effective.maxHp
+      });
+  }
   static weakest(combatants: Combatant[]): Combatant {
     return this.living(combatants).reduce((weakest, current) => {
       return current.hp < weakest.hp ? current : weakest;
@@ -323,10 +329,11 @@ export default class Combat {
     }
 
     // if _only_ a healing effect and target is ally/self/allies and NO wounded allies, disable
+    let effectiveCombatant = Fighting.effectiveStats(combatant);
     if (!disabled && ability.effects.every(e => e.type === "heal") && ability.effects.length > 0) {
       if (Combat.wounded([...allies, combatant]).length === 0) {
         disabled = true;
-      } else if (ability.target.includes("self") && combatant.hp === combatant.maxHp) {
+      } else if (ability.target.includes("self") && combatant.hp === effectiveCombatant.maxHp) {
         disabled = ability.target.length === 1; // if only self-targeting, disable; if also allies, allow
       } else if ((ability.target.includes("allies") || ability.target.includes("ally")) && Combat.wounded(allies).length === 0) {
         disabled = ability.target.length === 1; // if only allies-targeting, disable; if also self, allow
@@ -709,11 +716,18 @@ export default class Combat {
 
     // do we have an effect changing our allegiance? in which case -- flip our allies/enemies
     let allegianceEffect = combatant.activeEffects?.find(e => e.effect.changeAllegiance);
+    let playerControlled = Fighting.effectivelyPlayerControlled(combatant);
+    // let controlEffect = combatant.activeEffects?.find(e => e.effect.controlledActions);
     if (allegianceEffect) {
       this.emit({ type: "allegianceChange", subject: combatant, statusName: allegianceEffect.name } as Omit<AllegianceChangeEvent, "turn">);
       
       [allies, livingEnemies] = [enemies, livingAllies];
+
+      // if (controlEffect) {
+      //   playerControlled = !playerControlled;
+      // }
     }
+    // console.log("allegiance check:", { playerControlled, allegianceEffect: allegianceEffect?.name, controlEffect: controlEffect?.name });
 
     let attacksPerTurn = combatant.attacksPerTurn || 1;
     
@@ -729,7 +743,7 @@ export default class Combat {
     }
     for (let j = 0; j < turns; j++) {
       for (let i = 0; i < attacksPerTurn; i++) {
-        if (combatant.playerControlled && !allegianceEffect) {
+        if (playerControlled) {
           let result = await this.pcTurn(combatant, livingEnemies, allies);
           if (result.haltRound) {
             return result;
@@ -894,7 +908,7 @@ export default class Combat {
       {
         name: "Player", combatants: [{
           forename: "Hero", name: "Hero", alignment: "neutral",
-          hp: 14, maxHp: 14, level: 1, ac: 10,
+          hp: 14, maximumHitPoints: 14, level: 1, ac: 10,
           dex: 11, str: 12, int: 10, wis: 10, cha: 10, con: 12,
           attackDie: "1d8",
           playerControlled: true, xp: 0, gp: 0,
@@ -906,12 +920,12 @@ export default class Combat {
       {
         name: "Enemy", combatants: [
           {
-            forename: "Zok", name: "Goblin A", alignment: "neutral", hp: 4, maxHp: 4, level: 1, ac: 17,
+            forename: "Zok", name: "Goblin A", alignment: "neutral", hp: 4, maximumHitPoints: 4, level: 1, ac: 17,
             attackDie: "1d3",
             str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: [], hasMissileWeapon: false, xp: 0, gp: 0
           },
           {
-            forename: "Mog", name: "Goblin B", alignment: "neutral", hp: 4, maxHp: 4, level: 1, ac: 17,
+            forename: "Mog", name: "Goblin B", alignment: "neutral", hp: 4, maximumHitPoints: 4, level: 1, ac: 17,
             attackDie: "1d3",
             str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: [], hasMissileWeapon: false, xp: 0, gp: 0
           }

@@ -113,6 +113,9 @@ export type GoldEvent = BaseDungeonEvent & { type: "gold"; amount: number };
 export type ExperienceEvent = BaseDungeonEvent & { type: "xp"; amount: number };
 export type InvestigateEvent = BaseDungeonEvent & { type: "investigate"; clue: string; discovery: string; };
 export type RiddleEvent = BaseDungeonEvent & { type: "riddle"; challenge: string; solution: string; reward: string; };
+export type TrapDetectedEvent = BaseDungeonEvent & { type: "trapDetected"; trapDescription: string; };
+export type TrapTriggeredEvent = BaseDungeonEvent & { type: "trapTriggered"; trigger: string; trapDescription: string };
+export type TrapDisarmedEvent = BaseDungeonEvent & { type: "trapDisarmed"; trapDescription: string; success: boolean; };
 
 export type UpgradeEvent = BaseDungeonEvent & { type: "upgrade"; stat: keyof Combatant; amount: number, newValue: number };
 export type LearnedAbilityEvent = BaseDungeonEvent & { type: "learnAbility"; abilityName: string; };
@@ -133,6 +136,9 @@ export type DungeonEvent =
   | EquipmentWornEvent
   | InvestigateEvent
   | RiddleEvent
+  | TrapDetectedEvent
+  | TrapTriggeredEvent
+  | TrapDisarmedEvent
   | GoldEvent
   | ExperienceEvent
   | UpgradeEvent
@@ -303,11 +309,24 @@ export default class Events {
         return `${subjectName} is resurrected with ${event.amount} HP.`;
 
       case "gold":
-        return `${subjectName} acquires ${event.amount} gold pieces.`;
+        if (event.amount === 0) {
+          return '';
+        } else {
+          if (event.amount === 1) {
+            return `${subjectName} acquires 1 gold piece.`;
+          }
+          return `${subjectName} acquires ${event.amount} gold pieces.`;
+        }
 
       case "xp":
+        if (event.amount === 0) {
+          return '';
+        }
         return `${subjectName} gains ${event.amount} experience points.`;
       case "kill":
+        if (subjectName === targetName || !targetName) {
+          return `${subjectName} has been defeated!`;
+        }
         return `${subjectName} has defeated ${targetName}!`;
       case "crit":
         return "";
@@ -345,6 +364,19 @@ export default class Events {
 
       case "riddle":
         return `${subjectName} has solved the riddle: "${event.challenge}" (answer: ${event.solution}) and receives ${Words.a_an(event.reward)}.`;
+
+      case "trapDetected":
+        return `${subjectName} detects ${Words.a_an(event.trapDescription)}.`;
+
+      case "trapTriggered":
+        return `${subjectName} accidentally triggers ${Words.a_an(Words.humanize(event.trigger))}!`;
+        
+      case "trapDisarmed":
+        if (event.success) {
+          return `${subjectName} successfully disarms ${Words.a_an(event.trapDescription)}.`;
+        } else {
+          return `${subjectName} fails to disarm ${Words.a_an(event.trapDescription)}, and it triggers!`;
+        }
 
       case "campaignStart":
         return Stylist.bold(`You embark on a new campaign!\nParty Members: ${event.pcs.map(pc => Presenter.combatant(pc)).join("\n")

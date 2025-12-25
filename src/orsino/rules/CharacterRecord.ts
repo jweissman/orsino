@@ -1,6 +1,5 @@
-import { Separator } from "@inquirer/select";
 import Choice from "inquirer/lib/objects/choice";
-import AbilityHandler, { AbilityEffect } from "../Ability";
+import AbilityHandler from "../Ability";
 import { ChoiceSelector } from "../Combat";
 import { DungeonEvent } from "../Events";
 import TraitHandler, { Trait } from "../Trait";
@@ -12,9 +11,9 @@ import { Combatant } from "../types/Combatant";
 import { Roll } from "../types/Roll";
 import { Team } from "../types/Team";
 import { never } from "../util/never";
-import Sample from "../util/Sample";
 import { Commands } from "./Commands";
 import { Fighting } from "./Fighting";
+import Automatic from "../tui/System";
 
 type PlayerCharacterRace = "human" | "elf" | "dwarf" | "halfling" | "orc" | "fae" | "gnome";
 
@@ -63,14 +62,20 @@ export default class CharacterRecord {
     return occupationOptions;
   }
 
-  static async pickSpell(spellLevel: number, school: 'arcane' | 'divine', selectionMethod: SelectionMethod = User.selection): Promise<string> {
+  static async pickSpell(
+    spellLevel: number, school: 'arcane' | 'divine',
+    alreadyKnown: string[] = [],
+    selectionMethod: SelectionMethod = User.selection
+  ): Promise<string> {
     let abilityHandler = AbilityHandler.instance;
     await abilityHandler.loadAbilities();
-    let spellChoices = abilityHandler.allSpellNames(school, spellLevel).map(spellName => {
+    let spellChoices = abilityHandler.allSpellNames(school, spellLevel);
+    spellChoices = spellChoices.filter(spellName => alreadyKnown.indexOf(spellName) === -1);
+    let spellChoicesDetailed = spellChoices.map(spellName => {
       let spell = abilityHandler.getAbility(spellName);
       return {
         name: Words.capitalize(spell.name.padEnd(20)) + ' | ' +
-            Stylist.colorize(spell.description, 'brightBlack'),
+          Stylist.colorize(spell.description, 'brightBlack'),
         value: spellName,
         short: spell.name,
         disabled: false
@@ -78,28 +83,20 @@ export default class CharacterRecord {
     });
     let chosenSpell: Choice<any> = await selectionMethod(
       `Select a level ${spellLevel} ${school} spell:`,
-      spellChoices
+      spellChoicesDetailed
     ) as Choice<any>;
-    console.log(`Picked spell: ${JSON.stringify(chosenSpell)}`);
-    return chosenSpell as any as string; //.value;
+    return chosenSpell as any as string;
   }
 
   static async chargen(
     prompt: string,
     pcGenerator: (options?: any) => Promise<Combatant>,
     selectionMethod: SelectionMethod = User.selection
-    //  (
-    //   prompt: string,
-    //   choices: (
-    //     readonly (string)[] | Choice<any>[]
-    //   )
-    // ) => Promise<string | Choice<any>> = User.selection
   ): Promise<Combatant> {
 
     let pc: Combatant = await pcGenerator({ setting: 'fantasy' }) as Combatant;
     let accepted = false;
     while (!accepted) {
-      // throw new Error("CharacterRecord.chargen not yet implemented");
       let shouldWizard = await selectionMethod(
         'Would you like to customize this PC? ' + prompt,
         ['Yes', 'No']
@@ -113,78 +110,10 @@ export default class CharacterRecord {
         let occupationSelect = await selectionMethod(
           'Select an occupation for this PC: ' + prompt,
           this.validClassesForRace(raceSelect as PlayerCharacterRace)
-          // ['warrior', 'thief', 'mage', 'cleric', 'ranger', 'bard']
-          // ['ranger']
         );
 
         pc = await pcGenerator({ setting: 'fantasy', race: raceSelect, class: occupationSelect }) as Combatant;
-        // console.log(`Picked name for a ${raceSelect} ${occupationSelect}: ${(pc.name)}`);
-        let spellbook: string[] = [];
-        if (occupationSelect === 'mage') {
-          let cantrips = AbilityHandler.instance.allSpellNames('arcane', 0);
-          // give all cantrips
-          spellbook.push(...cantrips);
-
-          let availableSpells = AbilityHandler.instance.allSpellNames('arcane', 1).filter(spellName => cantrips.indexOf(spellName) === -1);
-          for (let i = 0; i < 3; i++) {
-            let spell = await this.pickSpell(1, 'arcane', selectionMethod);
-            // let spell = await selectionMethod(
-            //   `Select spell ${i + 1} for this PC: ` + prompt,
-            //   availableSpells.sort().map(spellName => {
-            //     let spell = AbilityHandler.instance.getAbility(spellName);
-            //     return {
-            //       name: Words.capitalize(spell.name) + ': ' + spell.description,
-            //       value: spellName,
-            //       short: spell.name,
-            //       disabled: false
-            //     };
-            //   })
-            // ) as Choice<any>;
-            console.log(`Adding to ${pc.name}'s spellbook: ${spell} (already has ${spellbook.join(", ")})`);
-            spellbook.push(spell);
-            availableSpells = availableSpells.filter(s => s !== spell);
-          }
-        } else if (occupationSelect === 'cleric') {
-          // give all cantrips
-          let cantrips = AbilityHandler.instance.allSpellNames('divine', 0);
-          spellbook.push(...cantrips);
-
-          // clerics select a 'domain' (life, death, war, knowledge, etc.) which influences their spell selection
-          let domainSelect = await selectionMethod(
-            'Select a divine domain for this PC: ' + prompt,
-            ['life', 'law']
-          ) as string;
-
-          pc.domain = domainSelect;
-
-          let domainSpells = AbilityHandler.instance.allSpellNames('divine', 1).filter(spellName => {
-            let spell = AbilityHandler.instance.getAbility(spellName);
-            return spell.domain === domainSelect && cantrips.indexOf(spellName) === -1;
-          });
-
-          // give all domain spells for now
-          spellbook.push(...domainSpells);
-
-          // then select additional spells
-          let availableSpells = AbilityHandler.instance.allSpellNames('divine', 1).filter(spellName => {
-            let spell = AbilityHandler.instance.getAbility(spellName);
-            return spell.domain !== domainSelect;
-          });
-
-          for (let i = 0; i < 2; i++) {
-            // let spell = await selectionMethod(
-            //   `Select additional spell ${i + 1} for this PC: ` + prompt,
-            //   availableSpells.sort()
-            // );
-            let spell = await this.pickSpell(1, 'divine', selectionMethod);
-            console.log(`Adding to ${pc.name}'s spellbook: ${spell} (already has ${spellbook.join(", ")})`);
-            spellbook.push(spell);
-            availableSpells = availableSpells.filter(s => s !== spell);
-          }
-        }
-        // if (pc.class === "mage" || pc.class === "cleric") {
-        pc.abilities.push(...spellbook);
-        // }
+        await this.pickInitialSpells(pc, selectionMethod);
 
         await Presenter.printCharacterRecord(pc);
         let confirm = await selectionMethod(
@@ -192,11 +121,6 @@ export default class CharacterRecord {
           ['Yes', 'No']
         );
         accepted = confirm === 'Yes';
-        // if (confirm === 'No') {
-        //   // party.push(pc);
-        //   // pc = null;
-        //   return this.chargen(prompt, pcGenerator, selectionMethod);
-        // }
       } else {
         let race = this.pcRaces[Math.floor(Math.random() * this.pcRaces.length)];
         let validClasses = this.validClassesForRace(race);
@@ -207,58 +131,78 @@ export default class CharacterRecord {
           class: occupation
 
         }) as Combatant;
-        if (pc.class === 'mage') {
-          // give all cantrips
-          const cantrips = AbilityHandler.instance.allSpellNames('arcane', 0);
-          pc.abilities.push(...cantrips);
-          // then select 3 first-level spells
-          const spells = Sample.count(3, ...AbilityHandler.instance.allSpellNames('arcane', 1).filter(spellName => {
-            return cantrips.indexOf(spellName) === -1;
-          }));
-          console.log("Adding to " + pc.name + "'s spellbook: " + spells.join(", ") + " (already has " + pc.abilities.join(", ") + ")");
-          pc.abilities.push(...spells);
-        } else if (pc.class === 'cleric') {
-          // give all cantrips
-          const cantrips = AbilityHandler.instance.allSpellNames('divine', 0);
-          pc.abilities.push(...cantrips);
-          // give all life domain spells
-          const domainSpells = AbilityHandler.instance.allSpellNames('divine', 1).filter(spellName => {
-            let spell = AbilityHandler.instance.getAbility(spellName);
-            return spell.domain === 'life' && cantrips.indexOf(spellName) === -1;
-          });
-          pc.abilities.push(...domainSpells);
-          const additionalSpells = Sample.count(2, ...AbilityHandler.instance.allSpellNames('divine', 1).filter(spellName => {
-            let spell = AbilityHandler.instance.getAbility(spellName);
-            return spell.domain !== 'life';
-          }));
-          console.log("Adding to " + pc.name + "'s spellbook: " + additionalSpells.join(", ") + " (already has " + pc.abilities.join(", ") + ")");
-          pc.abilities.push(...additionalSpells);
-        }
+        await this.pickInitialSpells(pc, Automatic.randomSelect);
 
         await Presenter.printCharacterRecord(pc);
         accepted = await selectionMethod(
           'Do you want to use this PC? ' + prompt,
           ['Yes', 'No']
         ) === 'Yes';
-        // if (useThisPc === 'No') {
-        //   return this.chargen(prompt, pcGenerator, selectionMethod);
-        // }
 
       }
     }
     return pc;
   }
 
+  static async pickInitialSpells(
+    pc: Combatant,
+    selectionMethod: SelectionMethod = User.selection
+  ) {
+    let job = pc.class;
+    let spellbook: string[] = [];
+    if (job === 'mage') {
+      let cantrips = AbilityHandler.instance.allSpellNames('arcane', 0);
+      // give all cantrips
+      spellbook.push(...cantrips);
+
+      // let availableSpells = AbilityHandler.instance.allSpellNames('arcane', 1).filter(spellName => cantrips.indexOf(spellName) === -1);
+      for (let i = 0; i < 3; i++) {
+        let spell = await this.pickSpell(1, 'arcane', spellbook, selectionMethod);
+        // console.log(`Adding to ${pc.name}'s spellbook: ${spell} (already has ${spellbook.join(", ")})`);
+        spellbook.push(spell);
+        // availableSpells = availableSpells.filter(s => s !== spell);
+      }
+    } else if (job === 'cleric') {
+      // give all cantrips
+      let cantrips = AbilityHandler.instance.allSpellNames('divine', 0);
+      spellbook.push(...cantrips);
+
+      // clerics select a 'domain' (life, death, war, knowledge, etc.) which influences their spell selection
+      let domainSelect = await selectionMethod(
+        'Select a divine domain for this PC: ' + prompt,
+        ['life', 'law']
+      ) as string;
+
+      pc.domain = domainSelect;
+
+      let domainSpells = AbilityHandler.instance.allSpellNames('divine', 1).filter(spellName => {
+        let spell = AbilityHandler.instance.getAbility(spellName);
+        return spell.domain === domainSelect && cantrips.indexOf(spellName) === -1;
+      });
+
+      // give all domain spells for now
+      spellbook.push(...domainSpells);
+
+      // then select additional spells
+      // let availableSpells = AbilityHandler.instance.allSpellNames('divine', 1).filter(spellName => {
+      //   let spell = AbilityHandler.instance.getAbility(spellName);
+      //   return spell.domain !== domainSelect;
+      // });
+
+      for (let i = 0; i < 2; i++) {
+        let spell = await this.pickSpell(1, 'divine', spellbook, selectionMethod);
+        // console.log(`Adding to ${pc.name}'s spellbook: ${spell} (already has ${spellbook.join(", ")})`);
+        spellbook.push(spell);
+        // availableSpells = availableSpells.filter(s => s !== spell);
+      }
+    }
+    pc.abilities.push(...spellbook);
+  }
+
   static async chooseParty(
     pcGenerator: (options?: any) => Promise<Combatant>,
     partySize: number,
-    // selectionMethod: (prompt: string, options: string[]) => Promise<string> = User.selection
-selectionMethod: (
-      prompt: string,
-      choices: (
-        readonly (string)[] | Choice<any>[]
-      )
-    ) => Promise<string | Choice<any>> = User.selection
+    selectionMethod: SelectionMethod = User.selection
   ): Promise<Combatant[]> {
     let abilityHandler = AbilityHandler.instance;
     await abilityHandler.loadAbilities();
@@ -269,16 +213,7 @@ selectionMethod: (
       ['Yes', 'No']
     );
     if (doChoose === 'No') {
-      return this.chooseParty(pcGenerator, partySize, async (_prompt: string, choices: (
-        readonly (string )[] | Choice<any>[]
-      )) => {
-        let chosen = choices[Math.floor(Math.random() * choices.length)];
-        if (typeof chosen === 'string') {
-          return chosen;
-        } else {
-          return chosen.value;
-        }
-      });
+      return this.chooseParty(pcGenerator, partySize, Automatic.randomSelect);
     }
 
     let party: Combatant[] = [];
@@ -295,13 +230,7 @@ selectionMethod: (
           continue;
         }
         await Presenter.printCharacterRecord(pc);
-        // let confirm = await selectionMethod(
-        //   'Are you sure you want to use this PC? ' + whichPc,
-        //   ['Yes', 'No']
-        // );
-        // if (confirm === 'Yes') {
         party.push(pc);
-        // }
       }
     };
     // assign formation bonuses + racial traits
@@ -352,12 +281,12 @@ selectionMethod: (
       let hitPointIncrease = (await roller(pc, "hit point growth", pc.hitDie || 4)).amount;
       hitPointIncrease += Fighting.statMod(pc.con || 10);
       hitPointIncrease = Math.max(1, hitPointIncrease);
-      pc.maxHp += hitPointIncrease;
-      pc.hp = pc.maxHp;
+      pc.maximumHitPoints += hitPointIncrease;
+      pc.hp = pc.maximumHitPoints;
       // console.log(`${Presenter.minimalCombatant(pc)} leveled up to level ${pc.level}!`);
       events.push({ type: "upgrade", stat: "level", subject: pc, amount: 1, newValue: pc.level });
       // console.log(`Hit points increased by ${hitPointIncrease} to ${pc.maxHp}.`);
-      events.push({ type: "upgrade", stat: "maxHp", subject: pc, amount: hitPointIncrease, newValue: pc.maxHp });
+      events.push({ type: "upgrade", stat: "maximumHitPoints", subject: pc, amount: hitPointIncrease, newValue: pc.maximumHitPoints });
       const stat = await select(`Choose a stat to increase:`, [
         { disabled: pc.level <= 20 && pc.str >= 18, name: `Strength (${pc.str})`, value: 'str', short: 'Strength' },
         { disabled: pc.level <= 20 && pc.dex >= 18, name: `Dexterity (${pc.dex})`, value: 'dex', short: 'Dexterity' },
@@ -366,7 +295,7 @@ selectionMethod: (
         { disabled: pc.level <= 20 && pc.cha >= 18, name: `Charisma (${pc.cha})`, value: 'cha', short: 'Charisma' },
         { disabled: pc.level <= 20 && pc.con >= 18, name: `Constitution (${pc.con})`, value: 'con', short: 'Constitution' },
         // just in case they're 18 across!
-        { disabled: false, name: `Max HP (${pc.maxHp})`, value: 'maxHp', short: 'HP' },
+        { disabled: false, name: `Max HP (${pc.maximumHitPoints})`, value: 'maximumHitPoints', short: 'HP' },
       ]);
       // @ts-ignore
       pc[stat] += 1;

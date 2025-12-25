@@ -1,11 +1,21 @@
 import Deem from "../../deem";
 import { StatusEffect, StatusModifications } from "../Status";
-import Presenter from "../tui/Presenter";
 import Words from "../tui/Words";
 import { AttackResult } from "../types/AttackResult";
 import { Combatant } from "../types/Combatant";
 import { Roll } from "../types/Roll";
 
+type EffectiveStats = {
+  str: number;
+  dex: number;
+  int: number;
+  wis: number;
+  cha: number;
+  con: number;
+  ac: number;
+  maxHp: number;
+  // attackDie: string;
+}
 export class Fighting {
   static thac0(level: number): number {
     return 20 - Math.floor(level / 2);
@@ -22,6 +32,21 @@ export class Fighting {
     ];
 
     return effectList;
+  }
+
+  static effectivelyPlayerControlled(combatant: Combatant): boolean {
+    let allegianceEffect = combatant.activeEffects?.find(e => e.effect.changeAllegiance);
+    let controlEffect = combatant.activeEffects?.find(e => e.effect.controlledActions);
+    let playerControlled = combatant.playerControlled && !allegianceEffect;
+
+    // if (allegianceEffect) {
+    //   playerControlled = !playerControlled;
+    // }
+    if (controlEffect) {
+      playerControlled = !playerControlled;
+    }
+
+    return playerControlled || false;
   }
 
   static turnBonus(combatant: Combatant, keys: (string)[] = []): Partial<StatusModifications> {
@@ -49,8 +74,8 @@ export class Fighting {
     return bonuses;
   }
 
-  static effectiveStats(combatant: Combatant): { str: number; dex: number; int: number; wis: number; cha: number; con: number; ac: number } {
-    let stats: { str: number; dex: number; int: number; wis: number; cha: number; con: number; ac: number } = {
+  static effectiveStats(combatant: Combatant): EffectiveStats{
+    let stats: EffectiveStats = {
       str: combatant.str,
       dex: combatant.dex,
       int: combatant.int,
@@ -58,6 +83,7 @@ export class Fighting {
       cha: combatant.cha,
       con: combatant.con,
       ac: combatant.ac,
+      maxHp: combatant.maximumHitPoints,
     };
 
     let effectList = this.effectList(combatant);
@@ -69,9 +95,26 @@ export class Fighting {
               stats[k] = (stats[k] || 0) + value;
             }
           });
+
+          if (it.effect.effectiveStats) {
+            stats = { ...stats, ...it.effect.effectiveStats };
+          }
         }
       });
     return stats;
+  }
+
+  static effectiveAttackDie(combatant: Combatant): string {
+    let baseAttackDie = combatant.attackDie || "1d6";
+    let effectList = this.effectList(combatant);
+    effectList.forEach(it => {
+      if (it.effect) {
+        if (it.effect.attackDie) {
+          baseAttackDie = it.effect.attackDie;
+        }
+      }
+    });
+    return baseAttackDie;
   }
 
   // gather all current passive + active effects and try to calculate any cumulative bonuses
@@ -200,13 +243,15 @@ export class Fighting {
     if (success) {
       let criticalDamage = 0;
 
-      if (!attacker.attackDie) {
-        throw new Error(`Attacker ${attacker.name} does not have an attackDie defined.`);
-      }
+      // if (!attacker.attackDie) {
+      //   throw new Error(`Attacker ${attacker.name} does not have an attackDie defined.`);
+      // }
+
+      let attackDie = this.effectiveAttackDie(attacker);
 
       let weaponVerb =
         attacker.hasMissileWeapon ? "shoot" : (this.weaponDamageKindVerbs[attacker.damageKind || "slashing"] || "strike");
-      damage = await Deem.evaluate(attacker.attackDie, {
+      damage = await Deem.evaluate(attackDie, {
         roll, subject: attacker,
         description: `to ${weaponVerb} ${defender.forename} with ${Words.humanize(attacker.weapon)}`
       });
