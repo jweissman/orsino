@@ -858,13 +858,22 @@ export default class Combat {
       }
     }
 
-    for (const team of this._teams) {
-      if (team.combatants.every((c: any) => c.hp <= 0)) {
-        this.winner = team === this._teams[0] ? this._teams[1].name : this._teams[0].name;
-        await this.emit({ type: "combatEnd", winner: this.winner } as Omit<CombatEndEvent, "turn">);
-        break;
-      }
+    if (this.playerCombatants.every(c => c.hp <= 0)) {
+      this.winner = this.enemyTeam.name;
+      await this.emit({ type: "combatEnd", winner: this.winner } as Omit<CombatEndEvent, "turn">);
+    } else if (this.enemyCombatants.every(c => c.hp <= 0)) {
+      this.winner = "Player";
+      await this.emit({ type: "combatEnd", winner: this.winner } as Omit<CombatEndEvent, "turn">);
     }
+
+    // didn't contemplate summons
+    // for (const team of this._teams) {
+    //   if (team.combatants.every((c: any) => c.hp <= 0)) {
+    //     this.winner = team === this._teams[0] ? this._teams[1].name : this._teams[0].name;
+    //     await this.emit({ type: "combatEnd", winner: this.winner } as Omit<CombatEndEvent, "turn">);
+    //     break;
+    //   }
+    // }
 
     let netHpAfter = this.allCombatants.reduce((sum, c) => sum + c.hp, 0);
     let netHpLoss = netHp - netHpAfter;

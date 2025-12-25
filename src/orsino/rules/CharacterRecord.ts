@@ -169,7 +169,7 @@ export default class CharacterRecord {
 
       // clerics select a 'domain' (life, death, war, knowledge, etc.) which influences their spell selection
       let domainSelect = await selectionMethod(
-        'Select a divine domain for this PC: ' + prompt,
+        'Select a divine domain for this PC: ' + pc.forename,
         ['life', 'law']
       ) as string;
 

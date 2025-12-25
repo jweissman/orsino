@@ -21,16 +21,17 @@ export default class Books {
   static async monsters(options: Record<string, any> = {}) {
     await this.bootstrap();
 
-    // console.log(`## Monsters\n`);
     const monsterKinds = await Deem.evaluate("gather(monsterKind)");
     monsterKinds.sort((a: string, b: string) => a.localeCompare(b));
+
+    const monsterList = [];
+
     for (const monsterKind of monsterKinds) {
-      console.log(`\n## ${Words.capitalize(monsterKind)}s\n`);
+      // console.log(`\n## ${Words.capitalize(monsterKind)}s\n`);
       let monsterNames = await Deem.evaluate("lookup(monsterKind, '" + monsterKind + "')");
       monsterNames.sort((a: string, b: string) => a.localeCompare(b));
 
       if (monsterKind === "elemental") {
-        // loop through known elements
         let elements = await Deem.evaluate("gather(elementalModifiers)");
         for (const element of elements) {
           for (const monsterName of monsterNames) {
@@ -42,9 +43,10 @@ export default class Books {
               element,
               ...options
             });
-            console.log(
-              await Presenter.markdownCharacterRecord(monster as Combatant)
-            )
+            // console.log(
+            //   await Presenter.markdownCharacterRecord(monster as Combatant)
+            // )
+            monsterList.push(monster);
           }
         }
       } else {
@@ -56,12 +58,22 @@ export default class Books {
             rank: 'standard',
             ...options
           });
-          console.log(
-            await Presenter.markdownCharacterRecord(monster as Combatant)
-          )
+          // console.log(
+          //   await Presenter.markdownCharacterRecord(monster as Combatant)
+          // )
+          monsterList.push(monster);
         }
       }
     }
+
+    // sort monsterList by monster name
+    monsterList.sort((a, b) => a.forename.localeCompare(b.forename));
+    for (const monster of monsterList) {
+      console.log(
+        await Presenter.markdownCharacterRecord(monster as Combatant)
+      )
+    }
+
     // const monsterTypes = await Deem.evaluate("gather(monsterTypeModifier)");
     // monsterTypes.sort((a: string, b: string) => a.localeCompare(b));
     // for (const monsterType of monsterTypes) {
@@ -357,10 +369,6 @@ export default class Books {
       let plane = await Deem.evaluate('lookup(planeModifiers, "' + planeName + '")');
       let description = await Deem.evaluate('lookup(planeDescriptions, "' + planeName + '")');
       console.log("_" + planeName + " is " + description + "_\n");
-      // console.log("**Alignment:** " + (plane.order || "Neutral") + " " + (plane.alignment || "Neutral") + "\n");
-      // console.log("**Terrain:** " + (plane.terrain || "Varied") + "\n");
-      // console.log("**Domain:** " + (plane.domain || "None") + "\n");
-      // console.log("**Climate:** " + (plane.weather || "Varied") + "\n");
       console.log("| Alignment | Terrain | Domain | Climate | Race Association |");
       console.log("|-----------|---------|--------|---------|------------------|");
       console.log(`| ${Words.capitalize(plane.order || "--")} ${Words.capitalize(plane.alignment || "--")} | ${Words.capitalize(plane.terrain || "Varied")} | ${Words.capitalize(plane.domain || "None")} | ${Words.capitalize(plane.weather || "Varied")} | ${Words.capitalize(plane.race || "--")} |\n`);
@@ -368,4 +376,23 @@ export default class Books {
       console.log("**Global Effects:** " + Presenter.describeModifications(plane.globalEffects) + "\n");
     }
   }
+
+  static async trapbook(_options: Record<string, any> = {}) {
+    await this.bootstrap();
+
+    console.log(`## Traps\n`);
+
+    let trapNames = await Deem.evaluate("gather(trapPunishmentDescriptions)");
+    trapNames.sort((a: string, b: string) => a.localeCompare(b));
+    console.log("| Trap | Description | Effects |");
+    console.log("|------|-------------|---------|");
+    for (const trapName of trapNames) {
+      let trapDescription = await Deem.evaluate('lookup(trapPunishmentDescriptions, "' + trapName + '")');
+      let trapEffects = await Deem.evaluate('lookup(trapEffects, "' + trapName + '")');
+      let row = `| ${Words.humanize(trapName)} | _${trapDescription}_ | `;
+      row += Presenter.describeEffects(trapEffects, 'target').replace(/\n/g, " ") + " |";
+      console.log(row);
+    }
+  }
+      
 }

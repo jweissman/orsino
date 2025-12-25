@@ -970,5 +970,14 @@
       "bonusDamage": -2
     },
     "saveKind": "fortitude"
+  },
+  "calm": {
+    "name": "Calm",
+    "effect": {
+      "immuneFear": true,
+      "immuneInsanity": true,
+      "toHit": 1,
+      "saveVersusWill": 2
+    }
   }
 }

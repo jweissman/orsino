@@ -322,7 +322,9 @@
   "trap": {
     "trap_type": "=1d10 > 8 ? magical : mechanical",
     "difficulty": "=oneOf(easy, medium, hard, deadly)",
-    "effects": "=concat(lookup(trapEffects, #trap_type), lookup(trapEffects, #trap_type))",
+    "punishment": "=lookup(trapPunishmentTypes, 1d100)",
+    "punishmentDescription": "=lookup(trapPunishmentDescriptions, #punishment)",
+    "effects": "=lookup(trapEffects, #punishment)",
     "trigger": "=lookup(trapTriggers, #trap_type)",
     "_appearance": "=oneOf(hidden, obvious, intricate, crude, ancient, 'well-maintained')",
     "name": "=humanize(#trigger)",

@@ -418,13 +418,15 @@ export class Commands {
 
     if (defender.hp <= 0) {
       events.push({ type: "fall", subject: defender } as Omit<FallenEvent, "turn">);
-      events.push({ type: "kill", subject: attacker, target: defender } as Omit<GameEvent, "turn">);
-      // trigger on kill fx
-      // need to find attacker team...
-      let onKillFx = attackerEffects.onKill as AbilityEffect[] || [];
-      for (let fx of onKillFx) {
-        let { events: onKillEvents } = await AbilityHandler.handleEffect(fx.description || "an effect", fx, attacker, attacker, combatContext, Commands.handlers(roll));
-        events.push(...onKillEvents);
+      if (attacker !== defender) {
+        events.push({ type: "kill", subject: attacker, target: defender } as Omit<GameEvent, "turn">);
+        // trigger on kill fx
+        // need to find attacker team...
+        let onKillFx = attackerEffects.onKill as AbilityEffect[] || [];
+        for (let fx of onKillFx) {
+          let { events: onKillEvents } = await AbilityHandler.handleEffect(fx.description || "an effect", fx, attacker, attacker, combatContext, Commands.handlers(roll));
+          events.push(...onKillEvents);
+        }
       }
     } else {
       // chance to cause status effect based on damage type

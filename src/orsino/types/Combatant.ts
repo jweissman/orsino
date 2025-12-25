@@ -3,6 +3,13 @@ import { StatusEffect } from "../Status";
 import { SaveKind } from "./SaveKind";
 
 export type EquipmentSlot = 'ring1' | 'ring2' | 'amulet' | 'cloak' | 'boots' | 'helm' | 'gloves' | 'belt';
+
+export interface Gem {
+  type: string;
+  name: string;
+  value: number;
+}
+
 export interface Combatant {
   itemProficiencies?: {
     all?: boolean;
@@ -79,6 +86,7 @@ export interface Combatant {
 
   gear?: string[];
   loot?: string[];
+  gems?: Gem[];
 
   // todo count saves and prevent more than 3 saves from death
   savedTimes?: { [key in SaveKind]?: number };

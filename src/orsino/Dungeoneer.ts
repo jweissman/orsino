@@ -1,7 +1,7 @@
 import Combat, { CombatContext } from "./Combat";
 import { Team } from "./types/Team";
 import Presenter from "./tui/Presenter";
-import { Combatant } from "./types/Combatant";
+import { Combatant, Gem } from "./types/Combatant";
 import { Select } from "./types/Select";
 import Words from "./tui/Words";
 import Deem from "../deem";
@@ -17,7 +17,7 @@ import Orsino from "../orsino";
 import { StatusEffect, StatusModifications } from "./Status";
 import Sample from "./util/Sample";
 
-type SkillType = "search" | "examine"; // | "disarm" | "pickLock" | "climb" | "swim" | "jump" | "listen" | "spot";
+type SkillType = "search" | "examine" | "disarm"; // | "pickLock" | "climb" | "swim" | "jump" | "listen" | "spot";
 
 interface Encounter {
   creatures: Combatant[];
@@ -61,6 +61,7 @@ interface Wonder {
 }
 
 interface Trap {
+  difficulty: 'easy' | 'medium' | 'hard' | 'deadly';
   name: string;
   effects: AbilityEffect[];
   trigger: string;
@@ -68,6 +69,8 @@ interface Trap {
   description: string;
   disarm_dc: number;
   detect_dc: number;
+  punishment: string;
+  punishmentDescription: string;
 }
 
 interface RoomBase {
@@ -293,7 +296,7 @@ export default class Dungeoneer {
   }
 
 
-  async skillCheck(type: SkillType, action: string, stat: keyof Combatant, dc: number): Promise<{
+  async skillCheck(type: SkillType, action: string, stat: keyof Combatant, dc: number, valid: (c: Combatant) => boolean = (): boolean => true): Promise<{
     actor: Combatant;
     success: boolean;
   }> {
@@ -301,7 +304,7 @@ export default class Dungeoneer {
       name: `${c.name} ${Presenter.stat(stat, c[stat])} (${Presenter.statMod(c[stat])})`,
       value: c,
       short: c.name,
-      disabled: c.hp <= 0
+      disabled: c.hp <= 0 || !valid(c)
     })));
 
     let actorFx = Fighting.gatherEffects(actor);
@@ -594,33 +597,50 @@ export default class Dungeoneer {
     let alertCheck = await this.skillCheck("examine", `to examine ${trap.lure}`, "int", trap.detect_dc);
     if (alertCheck.success) {
       await this.emit({ type: "trapDetected", trapDescription: trap.description, subject: alertCheck.actor });
-      let disarmCheck = await this.skillCheck("search", `to disarm the trap`, "dex", trap.disarm_dc);
+
+      let hasTools = this.playerTeam.combatants.some(c => c.gear?.includes('thieves_tools'));
+      if (!hasTools) {
+        this.note(`But no one has thieves' tools to disarm it! You carefully avoid the ${trap.trigger} and move on.`);
+        return;
+      }
+
+      let disarmCheck = await this.skillCheck("disarm", `to disarm the trap`, "dex", trap.disarm_dc, (c) => c.gear?.includes('thieves_tools') || false);
       activated = !disarmCheck.success;
-      await this.emit({ type: "trapDisarmed", trapDescription: trap.description, success: disarmCheck.success, subject: disarmCheck.actor });
 
       if (disarmCheck.success) {
-        await this.reward(250, 0);
-      } else {
-        activated = true;
+        await this.emit({ type: "trapDisarmed", trapDescription: trap.description, success: disarmCheck.success, subject: disarmCheck.actor, trigger: trap.trigger });
+        let disarmExperienceReward = { easy: 100, medium: 150, hard: 250, deadly: 400 };
+        await this.reward(disarmExperienceReward[trap.difficulty], 0);
       }
     } else {
       activated = true;
-      await this.emit({ type: "trapTriggered", trigger: trap.trigger, trapDescription: trap.description, subject: alertCheck.actor });
     }
 
     if (activated) {
+      await this.emit({ type: "trapTriggered", trigger: trap.trigger, trapDescription: trap.description, punishmentDescription: trap.punishmentDescription, subject: alertCheck.actor });
       // apply trap effects
       let fx = trap.effects;
-      let context: CombatContext = {
-        subject: alertCheck.actor,
-        allies: [...this.playerTeam.combatants],
-        enemies: [],
+      let trapPseudocombatant: Combatant = {
+        forename: Words.humanize(trap.punishment),
+        name: trap.description,
+        alignment: 'neutral',
+        weapon: '',
+        hp: 1, maximumHitPoints: 1, level: 0, ac: 0,
+        dex: 0, str: 0, int: 0, wis: 0, cha: 0, con: 0,
+        attackDie: '0d0', damageKind: 'true', abilities: [], playerControlled: false, xp: 0, gp: 0, traits: []
       };
-      let source = Words.a_an(trap.name) + " trap";
-      for (let effect of fx) {
-        let { events } = await AbilityHandler.handleEffect(source, effect, alertCheck.actor, alertCheck.actor, context, Commands.handlers(this.roller));
-        for (const event of events) {
-          await this.emit({ ...event, source: trap.name } as DungeonEvent);
+      for (let pc of this.playerTeam.combatants) {
+        let context: CombatContext = {
+          subject: pc, //alertCheck.actor,
+          allies: this.playerTeam.combatants.filter(c => c !== pc),
+          enemies: [],
+        };
+        let source = Words.a_an(trap.name) + " trap";
+        for (let effect of fx) {
+          let { events } = await AbilityHandler.handleEffect(source, effect, trapPseudocombatant, pc, context, Commands.handlers(this.roller));
+          for (const event of events) {
+            await this.emit({ ...event, source: trap.name } as DungeonEvent);
+          }
         }
       }
     }
@@ -806,8 +826,8 @@ export default class Dungeoneer {
       if (room.gems) {
         for (const gem of room.gems) {
           await this.emit({ type: "itemFound", itemName: Words.humanize(gem.name), quantity: 1, where: "in the hidden stash" });
-          actor.loot = actor.loot || [];
-          actor.loot.push(gem.name);
+          actor.gems = actor.gems || [];
+          actor.gems.push(gem as Gem);
         }
       }
 
