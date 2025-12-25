@@ -1,6 +1,6 @@
 import Combat from "./Combat";
 import Dungeoneer, { Dungeon } from "./Dungeoneer";
-import { Combatant } from "./types/Combatant";
+import { Combatant, Gem } from "./types/Combatant";
 import { Roll } from "./types/Roll";
 import { Select } from "./types/Select";
 import Choice from "inquirer/lib/objects/choice";
@@ -216,9 +216,9 @@ export class ModuleRunner {
         const dungeon = await this.selectDungeon();
         if (dungeon) {
 
-        let share = Math.floor(this.state.sharedGold / this.pcs.length);
-        this.pcs.forEach(pc => pc.gp = (pc.gp || 0) + share);
-        this.state.sharedGold -= share * this.pcs.length;
+          let share = Math.floor(this.state.sharedGold / this.pcs.length);
+          this.pcs.forEach(pc => pc.gp = (pc.gp || 0) + share);
+          this.state.sharedGold -= share * this.pcs.length;
 
           this.logGold("before dungeoneer");
           // this.outputSink(`You embark on a Quest to the ${Stylist.bold(dungeon.dungeon_name)}...`);
@@ -242,9 +242,6 @@ export class ModuleRunner {
           }
 
           if (dungeoneer.winner === "Player") {
-            // console.log(Stylist.bold("\n🎉 Congratulations! You have cleared the dungeon " +
-            //   Stylist.underline(dungeon.dungeon_name)
-            //   + "! 🎉\n"));
             this.markDungeonCompleted(dungeon.dungeonIndex || 0);
           }
 
@@ -257,23 +254,17 @@ export class ModuleRunner {
           this.pcs.forEach(pc => {
             if (pc.hp <= 0) {
               pc.hp = 1;
-              // this.outputSink(`⚠️ ${pc.name} was stabilized to 1 HP!`);
             }
             let effective = Fighting.effectiveStats(pc);
             const healAmount = Math.floor(effective.maxHp * 0.5);
             pc.hp = Math.max(1, Math.min(effective.maxHp, pc.hp + healAmount));
-            // this.outputSink(`💖 ${pc.name} recovers ${healAmount} HP after the adventure.`);
             pc.spellSlotsUsed = 0;
             pc.activeEffects = [];
           });
         } else {
           console.warn("No available dungeons!");
-          // this.outputSink("No available dungeons to embark on! (" + this.availableDungeons.length + " still remain)");
-          // for (const dungeon of this.availableDungeons) {
-          //   this.outputSink(` - ${dungeon.dungeon_name} (CR ${dungeon.intendedCr}): ${dungeon.rumor}`);
-          // }
         }
-      } else if (action === "rest") {
+      } else if (action === "inn") {
         this.rest(this.pcs);
       } else if (action === "itemShop") {
         await this.shop('consumables');
@@ -281,13 +272,69 @@ export class ModuleRunner {
         await this.shop('equipment');
       } else if (action === "armory") {
         await this.shop('weapons');
-      } else if (action === "rumors") {
-        await this.showRumors();
-        let partySize = this.pcs.length;
-        if (partySize < 6) {
-          await this.presentHireling();
+      } else if (action === "jeweler") {
+        let gems = this.pcs.flatMap(pc => pc.gems || []);
+        if (gems.length === 0) {
+          console.log("You have no gems to sell.");
+        } else {
+          let totalValue = gems.reduce((sum, gem) => sum + gem.value, 0);
+          for (let gem of gems) {
+            await this.emit({ type: "sale", itemName: `${gem.name} (${gem.type})`, revenue: gem.value, seller: this.pcs.find(pc => (pc.gems || []).includes(gem))!, day: this.days });
+          }
+          console.log(`You sold your gems for a total of ${totalValue}g`);
+          this.state.sharedGold += totalValue;
+          this.pcs.forEach(pc => pc.gems = []);
         }
-      } else if (action === "pray") {
+      } else if (action === "blacksmith") {
+        const improvementCost = 50;
+          const actor = await this.select("Who will improve their weapon?", this.pcs.map(pc => ({
+            short: pc.name, value: pc, name: pc.name, disabled: !pc.weapon
+          }))) as Combatant;
+          // console.log("Current weapon:", actor.weapon, actor.attackDie);
+        if (this.sharedGold > improvementCost) {
+          let originalAttackDie = actor.attackDie;
+          let alreadyImproved = actor.attackDie.includes("+");
+          if (alreadyImproved) {
+            // rewrite to improve further
+            let [baseDie, plusPart] = actor.attackDie.split("+");
+            let plusAmount = parseInt(plusPart);
+            if (plusAmount <= 5) {
+              plusAmount += 1;
+              actor.attackDie = `${baseDie}+${plusAmount}`;
+            } else {
+              // could add a trait instead but for now improve the base die
+              let [dieNumber, dieSides] = baseDie.split("d");
+              let dieClasses = [2, 3, 4, 6, 8, 10, 12, 20, 100];
+              let currentIndex = dieClasses.indexOf(parseInt(dieSides));
+              if (currentIndex < dieClasses.length - 1) {
+                let newDieSides = dieClasses[currentIndex + 1];
+                actor.attackDie = `${dieNumber}d${newDieSides}+${plusAmount}`;
+              } else {
+                let newDieNumber = parseInt(dieNumber) + 1;
+                actor.attackDie = `${newDieNumber}d${dieSides}+${plusAmount}`;
+              }
+            }
+          } else {
+            // improve weapon
+            actor.attackDie += "+1";
+          }
+          // console.log(`🛠️ ${actor.name}'s weapon has been improved to ${actor.attackDie}!`);
+          await this.emit({ type: "purchase", itemName: `${Words.humanize(actor.weapon)} Improvement (${originalAttackDie} -> ${actor.attackDie})`, cost: improvementCost, buyer: actor, day: this.days });
+          this.state.sharedGold -= improvementCost;
+        } else {
+          console.log(`You need at least ${improvementCost}g to improve a weapon.`);
+        }
+      } else if (action === "tavern") {
+        // let spend = 5;
+        // if (this.sharedGold < spend) {
+        //   console.log(`You need at least ${spend}g to gather rumors and hirelings at the tavern.`);
+        //   continue;
+        // }
+        // this.state.sharedGold -= spend;
+        // console.log("You spend time at the tavern gathering rumors...");
+        await this.showRumors();
+        await this.presentHireling();
+      } else if (action === "temple") {
         this.state.sharedGold -= 10;
         let blessingsGranted: string[] = [];
         const effect = mod.town.deity.blessing;
@@ -329,14 +376,17 @@ export class ModuleRunner {
             .filter(i => i.maxCharges !== undefined)
             .map(i => i.name),
         });
-      } else if (action === "show") {
+      } else if (action === "mirror") {
         await this.emit({
           type: "partyOverview",
           pcs: this.pcs,
           day: this.days,
           itemQuantities: Inventory.quantities(this.state.inventory),
         });
+      } else {
+        throw new Error(`Unknown action selected: ${action}`);
       }
+
     }
 
     await this.emit({
@@ -381,30 +431,37 @@ export class ModuleRunner {
   }
 
   private async menu(dry = false): Promise<string> {
-    const available = this.availableDungeons;
-    const options: Choice<any>[] = [
-      { short: "Rest", value: "rest", name: "Visit the Inn (restore HP/slots)", disabled: false },
-      { short: "Chat", value: "rumors", name: "Visit the Tavern (gather hirelings, hear rumors about the region)", disabled: available.length === 0 },
-    ];
-
+    const basicShops = {
+      tavern: "Gather hirelings, hear rumors about the region",
+      inn: "Restore HP/slots"
+    }
+    const advancedShops = {
+      armory: "Buy weapons",
+      blacksmith: "Improve weapons",
+      magicShop: "Buy equipment",
+      itemShop: "Buy consumables",
+      jeweler: "Sell gems and jewelry",
+      temple: `Pray to ${Words.capitalize(this.mod.town.deity.name)}`,
+      mirror: "Show Party Inventory/Character Records",
+    }
+    
+    let shops = { ...basicShops };
     if (!dry) {
-      options.push(
-        ...[
-          { short: "Arms", value: "armory", name: "Visit the Armorer (buy weapons)", disabled: false },
-          { short: "Equip", value: "magicShop", name: "Visit the Magic Shop (buy equipment)", disabled: false },
-          { short: "Items", value: "itemShop", name: "Visit the Alchemist (buy consumables)", disabled: false },
-          { short: "Pray", value: "pray", name: `Visit the Temple to ${Words.capitalize(this.mod.town.deity.name)}`, disabled: this.sharedGold < 10 },
-          { short: "Show", value: "show", name: `Show Party Inventory/Character Records`, disabled: false },
-        ]
-      );
+      shops = { ...shops, ...advancedShops };
     }
 
+    const options: Choice<any>[] =
+      Object.entries(shops).map(([value, desc]) => ({
+        short: Words.capitalize(value),
+        value,
+        name: `Visit the ${Words.humanize(value).padEnd(15)} ${Stylist.colorize(desc, 'blue')}`,
+        disabled: (value === "temple" && this.sharedGold < 10),
+      }));
+
+    const available = this.availableDungeons;
     if (available.length > 0) {
       options.push({ short: "Seek", value: "embark", name: "⚔️ Embark on a Quest", disabled: this.state.discoveredDungeons.length === 0 || this.availableDungeons.length === 0 });
-    } else {
-      // options.push({ short: "Journey", value: "embark", name: "⚔️ Journey to the next region", disabled: false });
     }
-    // console.log("Options:", options);
 
     this.note("You have " + Stylist.bold(this.sharedGold + "g") + " available.");
     return await this.select("What would you like to do?", options);
@@ -629,6 +686,11 @@ export class ModuleRunner {
   }
 
   private async presentHireling() {
+    const cost = 100;
+    let partySize = this.pcs.length;
+    if (partySize >= 6 || this.sharedGold < cost) {
+      return;
+    }
     // gen a level 1 PC as hireling
     const hireling = await this.gen("pc", { background: "hireling", setting: "fantasy" }) as Combatant;
     await CharacterRecord.pickInitialSpells(hireling, Automatic.randomSelect);
@@ -643,8 +705,6 @@ export class ModuleRunner {
     if (!wouldLikeHireling) {
       return;
     }
-
-    const cost = 100;
 
     await this.emit({
       type: "hirelingOffered",

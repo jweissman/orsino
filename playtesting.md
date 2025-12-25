@@ -3,6 +3,7 @@
 ## Bugs
 - [ ] Gold still getting zeroed out at dungeon entry/not distributed somehow? (maybe fixed??)
 - [ ] Bombs should not be heal-able (maybe there is some 'repair/mending' skill for inanimate objects though)
+- [ ] Phylactery summoned a lich but we were able to finish the combat without defeating it???
 
 ## Features
 - [ ] Found treasure/gems should be redeemable for gold
@@ -98,10 +99,10 @@
 ---
 - [ ] Better verbs for wand/stave actions (not 'performs', maybe 'use')
 ---
-- [ ] Arbitrary scrolls/wands for every effect
+- [ ] Arbitrary scrolls/wands for every effect [technically enabled now with 'cast' effect but needs some thinking about how to implement -- I guess we could have a scroll/wand generator?]
 - [ ] mapLookup (to reify more things at gen time)
 ---
-- [ ] Generator/template for gems/high-order treasure
+- [ ] Generator/template for gems/high-order treasure [gem done anyway but treasure could use some love still]
 - [ ] All loot is meaningful (either wearable, consumable or saleable at some general store in town)
 - [ ] Pick a single pantheon for deities?
 - [ ] Maybe deific blessings _don't_ expire but you can only have one?
@@ -124,15 +125,26 @@
 - [ ] Would be intersting to somehow model 'caster' as a trait ('casts:divine', 'casts:arcane', maybe 'casts:shadow' for evil-aligned spells? ie just throw the book at them and let them work out what makes sense to use. ideally there's symmetry with the pcs though)
 ---
 - [ ] Could call victory if all enemies petrified/asleep/mazed?
-- [ ] Confirm that room sequences are being adhered to??
 ---
 - [ ] Polymorph effect
 ---
 - [ ] Handle 'defeated' barks more gracefully ('X has defeated X', and then they have a triumphant bark! [Which is wrong/immersion breaking])
 - [ ] Handle mutual TPK more gracefully (currently displays both "You are victorious!" and "Your party has been defeated")
 ---
-- [ ] "General store" to purchase gear, jeweler to purchase gems
+- [ ] "General store" to purchase gear, jeweler to purchase gems [jeweler in place but need to test!]
 - [ ] Should display _what_ healing items were used on rest
+- [ ] Divine blessings should be (specially-marked) passives? Maybe restrict to one at a time?
+- [ ] Staying at the inn should cost gold
+- [ ] Hearing a rumor should cost ~1-2 gp (to buy drinks?)
+- [ ] Maybe simple town quests to generate small gp amounts (go to this building, deliver this message, clear the basement of rats, find a patron at the bar etc?) 
+- [ ] Mages could pick a school?
+- [ ] Riddles should give actual loot/gear and let you equip them??
+- [ ] More puzzle types than just riddles???
+- [ ] Demons/devil split (with home planes of abyss/pandemonium vs cthell/hades)
+- [ ] Could use a planeshift-like in combat to target _enemies_ (ie true removal) but maybe also have lower-order _banishment_ which sends away any enemy creatures with a different home plane?
+- [ ] Generate static list of tavern hirelings each day
+- [ ] Wonders should have _strictly better_ boons than normal room features!
+- [ ] Purge active fx on long rest
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing
@@ -255,6 +267,8 @@
 - [x] Make sure we always go through handleReactions flow so _time stop_ can guarantee `triggerReactions: false` effect works -- think this is the case!
 - [x] Player party _must_ be able to attempt to flee a battle intentionally (could be a dex skill check?)
 - [x] Bomb shouldn't be able to reset ticking status! [tried to adjust this]
+- [x] Confirm that room sequences are being adhered to?? [seems to be the case now]
+- [x] Blacksmith who can give a +1 to weapons?
 
 ## Not really issues atm
 - "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]

@@ -114,8 +114,8 @@ export type ExperienceEvent = BaseDungeonEvent & { type: "xp"; amount: number };
 export type InvestigateEvent = BaseDungeonEvent & { type: "investigate"; clue: string; discovery: string; };
 export type RiddleEvent = BaseDungeonEvent & { type: "riddle"; challenge: string; solution: string; reward: string; };
 export type TrapDetectedEvent = BaseDungeonEvent & { type: "trapDetected"; trapDescription: string; };
-export type TrapTriggeredEvent = BaseDungeonEvent & { type: "trapTriggered"; trigger: string; trapDescription: string };
-export type TrapDisarmedEvent = BaseDungeonEvent & { type: "trapDisarmed"; trapDescription: string; success: boolean; };
+export type TrapTriggeredEvent = BaseDungeonEvent & { type: "trapTriggered"; trigger: string; trapDescription: string; punishmentDescription: string; };
+export type TrapDisarmedEvent = BaseDungeonEvent & { type: "trapDisarmed"; trapDescription: string; success: boolean; trigger: string };
 
 export type UpgradeEvent = BaseDungeonEvent & { type: "upgrade"; stat: keyof Combatant; amount: number, newValue: number };
 export type LearnedAbilityEvent = BaseDungeonEvent & { type: "learnAbility"; abilityName: string; };
@@ -161,6 +161,7 @@ export type TownVisitedEvent = BaseModuleEvent & {
 };
 export type ShopEnteredEvent = BaseModuleEvent & { type: "shopEntered"; shopName: string; };
 export type PurchaseEvent = BaseModuleEvent & { type: "purchase"; itemName: string; cost: number; buyer: Combatant; };
+export type SaleEvent = BaseModuleEvent & { type: "sale"; itemName: string; revenue: number; seller: Combatant; };
 export type RumorHeardEvent = BaseModuleEvent & { type: "rumorHeard"; rumor: string; };
 export type TempleVisitedEvent = BaseModuleEvent & { type: "templeVisited"; templeName: string; blessingsGranted: string[]; itemsRecharged: string[]; };
 export type CampaignStopEvent = BaseModuleEvent & { type: "campaignStop"; reason: string; at: Timestamp; };
@@ -174,6 +175,7 @@ export type ModuleEvent =
   | TownVisitedEvent
   | ShopEnteredEvent
   | PurchaseEvent
+  | SaleEvent
   | RumorHeardEvent
   | TempleVisitedEvent
   | PartyOverviewEvent
@@ -369,13 +371,13 @@ export default class Events {
         return `${subjectName} detects ${Words.a_an(event.trapDescription)}.`;
 
       case "trapTriggered":
-        return `${subjectName} accidentally triggers ${Words.a_an(Words.humanize(event.trigger))}!`;
+        return `${subjectName} accidentally triggers ${Words.a_an(Words.humanize(event.trigger))}! ${event.punishmentDescription}.`;
         
       case "trapDisarmed":
         if (event.success) {
-          return `${subjectName} successfully disarms ${Words.a_an(event.trapDescription)}.`;
+          return `${subjectName} successfully disarms ${Words.a_an(Words.humanize(event.trigger))}.`;
         } else {
-          return `${subjectName} fails to disarm ${Words.a_an(event.trapDescription)}, and it triggers!`;
+          return `${subjectName} fails to disarm ${Words.a_an(Words.humanize(event.trigger))}.`;
         }
 
       case "campaignStart":
@@ -390,6 +392,8 @@ export default class Events {
         return (`It is the ${Words.ordinal(1 + (event.day % 90))} day of ${event.season} in the ${event.adjective} ${Words.capitalize(event.race)} ${event.size} of ${Stylist.bold(event.townName)} on the plane of ${Words.capitalize(event.plane)} (Population: ${Words.humanizeNumber(event.population)}). The weather is currently ${event.weather}.`);
       case "purchase":
         return `${event.buyer.forename} purchased ${Words.a_an(event.itemName)} for ${event.cost} gold.`;
+      case "sale":
+        return `${event.seller.forename} sold ${Words.a_an(event.itemName)} for ${event.revenue} gold.`;
       case "rumorHeard":
         return `The tavern buzzes with news: "${event.rumor}"`;
       case "templeVisited":
