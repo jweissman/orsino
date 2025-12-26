@@ -6,6 +6,8 @@ import { RollResult } from "../types/RollResult";
 import { Combatant } from "../types/Combatant";
 import { Commands } from "../rules/Commands";
 import { Fighting } from "../rules/Fighting";
+import { Answers } from "inquirer";
+import Automatic from "./Automatic";
 export type SelectionMethod = (
       prompt: string,
       choices: (
@@ -48,20 +50,21 @@ export default class User {
   //   return selections;
   // }
 
-  static async selection(
+  static async selection<T extends Answers>(
     message: string,
     choices: (
-      readonly (string | Separator)[] | Choice<any>[]
+      readonly (string | Separator)[] | Choice<T>[]
     ),
     subject?: Combatant,
-  ): Promise<any> {
+  ): Promise<T> {
     if (choices.length === 0) {
       throw new Error("No choices provided for selection");
     }
 
-    let effectivelyPlayerControlled = subject ? Fighting.effectivelyPlayerControlled(subject) : true;
+    const effectivelyPlayerControlled = subject ? Fighting.effectivelyPlayerControlled(subject) : true;
     if (subject && !effectivelyPlayerControlled) {
       return Combat.samplingSelect(message, choices as any);
+      // return Automatic.randomSelect<T>(message, choices); // as ((readonly string[]) | (Choice<T>)[]));
     }
 
     // console.log(`Selecting for ${subject?.name}: ${message}`);
@@ -82,7 +85,7 @@ export default class User {
     //   `${subject.name} rolling d${sides} ${description}`
     // );
     // // Then do the actual roll
-    let result = await Commands.roll(subject, description, sides);
+    const result = await Commands.roll(subject, description, sides);
     // console.log(result.description);
     return result;
   }

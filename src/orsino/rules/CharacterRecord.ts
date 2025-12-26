@@ -13,7 +13,7 @@ import { Team } from "../types/Team";
 import { never } from "../util/never";
 import { Commands } from "./Commands";
 import { Fighting } from "./Fighting";
-import Automatic from "../tui/System";
+import Automatic from "../tui/Automatic";
 
 type PlayerCharacterRace = "human" | "elf" | "dwarf" | "halfling" | "orc" | "fae" | "gnome";
 
@@ -67,12 +67,12 @@ export default class CharacterRecord {
     alreadyKnown: string[] = [],
     selectionMethod: SelectionMethod = User.selection
   ): Promise<string> {
-    let abilityHandler = AbilityHandler.instance;
+    const abilityHandler = AbilityHandler.instance;
     await abilityHandler.loadAbilities();
     let spellChoices = abilityHandler.allSpellNames(school, spellLevel);
     spellChoices = spellChoices.filter(spellName => alreadyKnown.indexOf(spellName) === -1);
-    let spellChoicesDetailed = spellChoices.map(spellName => {
-      let spell = abilityHandler.getAbility(spellName);
+    const spellChoicesDetailed = spellChoices.map(spellName => {
+      const spell = abilityHandler.getAbility(spellName);
       return {
         name: Words.capitalize(spell.name.padEnd(20)) + ' | ' +
           Stylist.colorize(spell.description, 'brightBlack'),
@@ -81,7 +81,7 @@ export default class CharacterRecord {
         disabled: false
       };
     });
-    let chosenSpell: Choice<any> = await selectionMethod(
+    const chosenSpell: Choice<any> = await selectionMethod(
       `Select a level ${spellLevel} ${school} spell:`,
       spellChoicesDetailed
     ) as Choice<any>;
@@ -94,44 +94,44 @@ export default class CharacterRecord {
     selectionMethod: SelectionMethod = User.selection
   ): Promise<Combatant> {
 
-    let pc: Combatant = await pcGenerator({ setting: 'fantasy' }) as Combatant;
+    let pc: Combatant = await pcGenerator({ setting: 'fantasy' });
     let accepted = false;
     while (!accepted) {
-      let shouldWizard = await selectionMethod(
+      const shouldWizard = await selectionMethod(
         'Would you like to customize this PC? ' + prompt,
         ['Yes', 'No']
       );
       if (shouldWizard === 'Yes') {
-        let raceSelect = await selectionMethod(
+        const raceSelect = await selectionMethod(
           'Select a race for this PC: ' + prompt,
           ['human', 'elf', 'dwarf', 'halfling', 'orc', 'fae', 'gnome']
         );
 
-        let occupationSelect = await selectionMethod(
+        const occupationSelect = await selectionMethod(
           'Select an occupation for this PC: ' + prompt,
           this.validClassesForRace(raceSelect as PlayerCharacterRace)
         );
 
-        pc = await pcGenerator({ setting: 'fantasy', race: raceSelect, class: occupationSelect }) as Combatant;
+        pc = await pcGenerator({ setting: 'fantasy', race: raceSelect, class: occupationSelect });
         await this.pickInitialSpells(pc, selectionMethod);
 
         await Presenter.printCharacterRecord(pc);
-        let confirm = await selectionMethod(
+        const confirm = await selectionMethod(
           'Do you want to use this PC? ' + prompt,
           ['Yes', 'No']
         );
         accepted = confirm === 'Yes';
       } else {
-        let race = this.pcRaces[Math.floor(Math.random() * this.pcRaces.length)];
-        let validClasses = this.validClassesForRace(race);
-        let occupation = validClasses[Math.floor(Math.random() * validClasses.length)];
+        const race = this.pcRaces[Math.floor(Math.random() * this.pcRaces.length)];
+        const validClasses = this.validClassesForRace(race);
+        const occupation = validClasses[Math.floor(Math.random() * validClasses.length)];
         pc = await pcGenerator({
           setting: 'fantasy',
           race,
           class: occupation
 
-        }) as Combatant;
-        await this.pickInitialSpells(pc, Automatic.randomSelect);
+        });
+        await this.pickInitialSpells(pc, Automatic.randomSelect.bind(Automatic));
 
         await Presenter.printCharacterRecord(pc);
         accepted = await selectionMethod(
@@ -146,37 +146,37 @@ export default class CharacterRecord {
 
   static async pickInitialSpells(
     pc: Combatant,
-    selectionMethod: SelectionMethod = User.selection
+    selectionMethod: SelectionMethod = User.selection.bind(User)
   ) {
-    let job = pc.class;
-    let spellbook: string[] = [];
+    const job = pc.class;
+    const spellbook: string[] = [];
     if (job === 'mage') {
-      let cantrips = AbilityHandler.instance.allSpellNames('arcane', 0);
+      const cantrips = AbilityHandler.instance.allSpellNames('arcane', 0);
       // give all cantrips
       spellbook.push(...cantrips);
 
       // let availableSpells = AbilityHandler.instance.allSpellNames('arcane', 1).filter(spellName => cantrips.indexOf(spellName) === -1);
       for (let i = 0; i < 3; i++) {
-        let spell = await this.pickSpell(1, 'arcane', spellbook, selectionMethod);
+        const spell = await this.pickSpell(1, 'arcane', spellbook, selectionMethod);
         // console.log(`Adding to ${pc.name}'s spellbook: ${spell} (already has ${spellbook.join(", ")})`);
         spellbook.push(spell);
         // availableSpells = availableSpells.filter(s => s !== spell);
       }
     } else if (job === 'cleric') {
       // give all cantrips
-      let cantrips = AbilityHandler.instance.allSpellNames('divine', 0);
+      const cantrips = AbilityHandler.instance.allSpellNames('divine', 0);
       spellbook.push(...cantrips);
 
       // clerics select a 'domain' (life, death, war, knowledge, etc.) which influences their spell selection
-      let domainSelect = await selectionMethod(
+      const domainSelect = await selectionMethod(
         'Select a divine domain for this PC: ' + pc.forename,
         ['life', 'law']
       ) as string;
 
       pc.domain = domainSelect;
 
-      let domainSpells = AbilityHandler.instance.allSpellNames('divine', 1).filter(spellName => {
-        let spell = AbilityHandler.instance.getAbility(spellName);
+      const domainSpells = AbilityHandler.instance.allSpellNames('divine', 1).filter(spellName => {
+        const spell = AbilityHandler.instance.getAbility(spellName);
         return spell.domain === domainSelect && cantrips.indexOf(spellName) === -1;
       });
 
@@ -190,7 +190,7 @@ export default class CharacterRecord {
       // });
 
       for (let i = 0; i < 2; i++) {
-        let spell = await this.pickSpell(1, 'divine', spellbook, selectionMethod);
+        const spell = await this.pickSpell(1, 'divine', spellbook, selectionMethod);
         // console.log(`Adding to ${pc.name}'s spellbook: ${spell} (already has ${spellbook.join(", ")})`);
         spellbook.push(spell);
         // availableSpells = availableSpells.filter(s => s !== spell);
@@ -204,11 +204,11 @@ export default class CharacterRecord {
     partySize: number,
     selectionMethod: SelectionMethod = User.selection
   ): Promise<Combatant[]> {
-    let abilityHandler = AbilityHandler.instance;
+    const abilityHandler = AbilityHandler.instance;
     await abilityHandler.loadAbilities();
     await TraitHandler.instance.loadTraits();
 
-    let doChoose = await selectionMethod(
+    const doChoose = await selectionMethod(
       `Would you like to customize PCs using the wizard?`,
       ['Yes', 'No']
     );
@@ -216,11 +216,11 @@ export default class CharacterRecord {
       return this.chooseParty(pcGenerator, partySize, Automatic.randomSelect);
     }
 
-    let party: Combatant[] = [];
+    const party: Combatant[] = [];
 
     let pc: Combatant | null = null;
     while (party.length < partySize) {
-      let whichPc = '(' + (party.length + 1) + '/' + partySize + ')';
+      const whichPc = '(' + (party.length + 1) + '/' + partySize + ')';
       pc = await this.chargen(whichPc, pcGenerator, selectionMethod);
       // }
 
@@ -240,9 +240,9 @@ export default class CharacterRecord {
   }
 
   static async assignPartyPassives(party: Combatant[]) {
-    let traitHandler = TraitHandler.instance;
+    const traitHandler = TraitHandler.instance;
     await traitHandler.loadTraits();
-    let partyPassives: Trait[] = traitHandler.partyTraits(party);
+    const partyPassives: Trait[] = traitHandler.partyTraits(party);
     if (partyPassives.length > 0) {
       console.log(`Your party forms ${Words.humanizeList(partyPassives.map((t: Trait) => (
         Stylist.bold(
@@ -269,7 +269,7 @@ export default class CharacterRecord {
   }
 
   static async levelUp(pc: Combatant, team: Team, roller: Roll, select: ChoiceSelector<any>): Promise<DungeonEvent[]> {
-    let events: DungeonEvent[] = [];
+    const events: DungeonEvent[] = [];
     let nextLevelXp = CharacterRecord.xpForLevel(pc.level + 1);
 
     if (pc.xp < nextLevelXp) {
@@ -303,7 +303,7 @@ export default class CharacterRecord {
 
       // let fx = await Fighting.gatherEffects(pc);
       // if (fx.onLevelUp) {
-      let pseudocontext = { subject: pc, allies: team.combatants.filter(c => c !== pc), enemies: [] };
+      const pseudocontext = { subject: pc, allies: team.combatants.filter(c => c !== pc), enemies: [] };
       events.push(...(await AbilityHandler.performHooks(
         'onLevelUp',
         pc,
@@ -325,17 +325,17 @@ export default class CharacterRecord {
 
       if (pc.class === "mage") {
         // gain spells
-        let abilityHandler = AbilityHandler.instance;
+        const abilityHandler = AbilityHandler.instance;
         await abilityHandler.loadAbilities();
-        let allSpellKeys = abilityHandler.allSpellNames('arcane', Math.ceil(pc.level / 2));
+        const allSpellKeys = abilityHandler.allSpellNames('arcane', Math.ceil(pc.level / 2));
 
-        let newSpellKeys = allSpellKeys.filter(spellKey => {
+        const newSpellKeys = allSpellKeys.filter(spellKey => {
           return !pc.abilities.includes(spellKey);
         });
 
         if (newSpellKeys.length > 0) {
-          let spellChoices = newSpellKeys.map(spellKey => {
-            let spell = abilityHandler.getAbility(spellKey);
+          const spellChoices = newSpellKeys.map(spellKey => {
+            const spell = abilityHandler.getAbility(spellKey);
             return {
               name: Words.capitalize(spell.name) + ': ' + spell.description,
               value: spellKey,
@@ -343,8 +343,8 @@ export default class CharacterRecord {
               disabled: false
             };
           });
-          let chosenSpellKey = await select(`Select a new spell for ${pc.name}:`, spellChoices);
-          let chosenSpell = abilityHandler.getAbility(chosenSpellKey);
+          const chosenSpellKey = await select(`Select a new spell for ${pc.name}:`, spellChoices);
+          const chosenSpell = abilityHandler.getAbility(chosenSpellKey);
           console.log(`${(pc.forename)} learned the spell: ${chosenSpell.name}`);
           pc.abilities.push(chosenSpellKey);
         } else {
@@ -352,17 +352,17 @@ export default class CharacterRecord {
         }
       } else if (pc.class === "cleric") {
         // gain spells
-        let abilityHandler = AbilityHandler.instance;
+        const abilityHandler = AbilityHandler.instance;
         await abilityHandler.loadAbilities();
-        let allSpellKeys = abilityHandler.allSpellNames('divine', Math.ceil(pc.level / 2));
+        const allSpellKeys = abilityHandler.allSpellNames('divine', Math.ceil(pc.level / 2));
 
-        let newSpellKeys = allSpellKeys.filter(spellKey => {
+        const newSpellKeys = allSpellKeys.filter(spellKey => {
           return !pc.abilities.includes(spellKey);
         });
 
         if (newSpellKeys.length > 0) {
-          let spellChoices = newSpellKeys.map(spellKey => {
-            let spell = abilityHandler.getAbility(spellKey);
+          const spellChoices = newSpellKeys.map(spellKey => {
+            const spell = abilityHandler.getAbility(spellKey);
             return {
               name: Words.capitalize(spell.name) + ': ' + spell.description,
               value: spellKey,
@@ -373,9 +373,9 @@ export default class CharacterRecord {
           if (spellChoices.every(choice => choice.disabled)) {
             console.log(`${pc.name} has learned all available spells for their domain at this time.`);
           } else {
-            let chosenSpellKey = await select(`Select a new spell for ${pc.name}:`, spellChoices);
+            const chosenSpellKey = await select(`Select a new spell for ${pc.name}:`, spellChoices);
             console.log(chosenSpellKey);
-            let chosenSpell = abilityHandler.getAbility(chosenSpellKey);
+            const chosenSpell = abilityHandler.getAbility(chosenSpellKey);
             console.log(`${(pc.forename)} learned the spell: ${chosenSpell.name}`);
             pc.abilities.push(chosenSpellKey);
           }
@@ -387,15 +387,15 @@ export default class CharacterRecord {
       } else if (pc.level % 5 === 0) {
         // feat selection
         console.log(`${Presenter.minimalCombatant(pc)} can select a new feat!`);
-        let traitHandler = TraitHandler.instance;
+        const traitHandler = TraitHandler.instance;
         await traitHandler.loadTraits();
-        let availableFeats = traitHandler.featsForCombatant(pc);
+        const availableFeats = traitHandler.featsForCombatant(pc);
         if (availableFeats.length === 0) {
           console.log(`But there are no available feats for ${Presenter.minimalCombatant(pc)} at this time.`);
           continue;
         }
 
-        let chosenFeat = await select(`Select a feat for ${pc.name}:`, availableFeats.map(trait => ({
+        const chosenFeat = await select(`Select a feat for ${pc.name}:`, availableFeats.map(trait => ({
           name: Words.capitalize(trait.name) + ': ' + trait.description,
           value: trait,
           short: trait.name,

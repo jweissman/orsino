@@ -1,0 +1,185 @@
+import { Fighting } from '../orsino/rules/Fighting';
+import Words from '../orsino/tui/Words';
+
+export type DeemValue = string | number | boolean | null | DeemValue[] | { [key: string]: DeemValue };
+export type DeemFunc = ((...args: DeemValue[]) => DeemValue)
+              | ((arr: DeemValue[], ...args: DeemValue[]) => DeemValue)
+
+
+export default class StandardLibrary {
+  static functions: Record<string, DeemFunc> = {
+    count: (arr: DeemValue[]) => { return arr.length },
+    rand: () => Math.random(),
+    if: (cond: DeemValue, trueVal: DeemValue, falseVal: DeemValue) => (cond ? trueVal : falseVal),
+    oneOf: (...args: DeemValue[]) => args[Math.floor(Math.random() * args.length)],
+    pick: (arr: DeemValue[], index: DeemValue = -1) => {
+      if (!Array.isArray(arr)) {
+        throw new Error(`pick() expects an array, got: ${typeof arr}`);
+      }
+      if (index === -1) {
+        return arr[Math.floor(Math.random() * arr.length)]
+      } else {
+        if (typeof index === 'number') {
+          return arr[index % arr.length];
+        } else {
+          throw new Error(`pick() received invalid index: ${JSON.stringify(index)} (type: ${typeof index})`);
+        }
+      }
+    },
+    sample: (arr: DeemValue[], count: DeemValue) => {
+      if (typeof count !== 'number') {
+        throw new Error(`sample() expects count to be a number, got: ${typeof count}`);
+      }
+
+      const sampled: DeemValue[] = [];
+
+      const arrCopy = [...arr];
+      for (let i = 0; i < count && arrCopy.length > 0; i++) {
+        const index = Math.floor(Math.random() * arrCopy.length);
+        sampled.push(arrCopy.splice(index, 1)[0]);
+      }
+      return sampled;
+    },
+    round: (num: DeemValue) => {
+      if (typeof num !== 'number') {
+        throw new Error(`round() expects a number, got: ${typeof num}`);
+      }
+      return Math.round(num)
+    },
+    floor: (num: DeemValue) => {
+      if (typeof num !== 'number') {
+        throw new Error(`floor() expects a number, got: ${typeof num}`);
+      }
+      return Math.floor(num)
+    },
+    ceil: (num: DeemValue) => {
+      if (typeof num !== 'number') {
+        throw new Error(`ceil() expects a number, got: ${typeof num}`);
+      }
+      return Math.ceil(num)
+    },
+    capitalize: (str: DeemValue) => {
+      if (typeof str !== 'string') {
+        throw new Error(`capitalize() expects a string, got: ${typeof str} (${JSON.stringify(str)})`);
+      }
+      return str && str.charAt(0).toUpperCase() + str.slice(1)
+    },
+    humanize: (str: DeemValue) => {
+      if (typeof str !== 'string') {
+        throw new Error(`humanize() expects a string, got: ${typeof str}`);
+      }
+      return Words.humanize(str)
+    },
+    len: (obj: DeemValue) => {
+      if (Array.isArray(obj) || typeof obj === 'string') {
+        return obj.length;
+      } else if (obj && typeof obj === 'object') {
+        return Object.keys(obj).length;
+      }
+      return 0;
+    },
+    sum: (arr: DeemValue[], prop?: DeemValue) => {
+      if (!Array.isArray(arr)) {
+        throw new Error(`sum() expects an array, got: ${typeof arr}`);
+      }
+      if (arr.length === 0) {
+        return 0;
+      }
+      if (!arr.every(item => typeof item === 'number' || (prop && typeof item === 'object'))) {
+        throw new Error(`sum() expects an array of numbers or objects when property is specified, got: [${arr.map(i => typeof i).join(', ')}]`);
+      }
+
+      if (prop) {
+        if (typeof prop !== 'string') {
+          throw new Error(`sum() expects property name to be a string, got: ${typeof prop}`);
+        }
+        const numbers = arr.map(item => {
+          if (typeof item === 'object' && item !== null && prop in item) {
+            const it = item as { [key: string]: DeemValue };
+            const val = it[prop];
+            if (typeof val === 'number') {
+              return val;
+            } else {
+              throw new Error(`sum() expected property '${prop}' to be a number, got: ${typeof val}`);
+            }
+          } else {
+            return 0;
+          }
+        });
+
+        // return objArray.reduce((acc, item) => acc + (item[prop] || 0), 0);
+        return numbers.reduce((acc, val) => acc + val, 0);
+      }
+      const numArray: number[] = arr as number[];
+
+      return numArray.reduce((acc, val) => acc + val, 0);
+    },
+    min: (...args: DeemValue[]) => {
+      if (!args.every(item => typeof item === 'number')) {
+        throw new Error(`min() expects all arguments to be numbers, got: [${args.map(i => typeof i).join(', ')}]`);
+      }
+
+      return Math.min(...args)
+    },
+    max: (...args: DeemValue[]) => {
+      if (!args.every(item => typeof item === 'number')) {
+        throw new Error(`max() expects all arguments to be numbers, got: [${args.map(i => typeof i).join(', ')}]`);
+      }
+      return Math.max(...args)
+    },
+    concat: (...args: DeemValue[]) => args.flat().filter((x) => x !== null && x !== undefined),
+    roll: (count: DeemValue, sides: DeemValue) => {
+      if (typeof count !== 'number' || typeof sides !== 'number') {
+        throw new Error(`roll() expects count and sides to be numbers, got: ${typeof count} and ${typeof sides}`);
+      }
+      const rolls = Array.from({ length: count }, () => Math.floor(Math.random() * sides) + 1);
+      const sum = rolls.reduce((a, b) => a + b, 0);
+      return sum;
+    },
+    rollWithDrop: (count: DeemValue, sides: DeemValue) => {
+      if (typeof count !== 'number' || typeof sides !== 'number') {
+        throw new Error(`rollWithDrop() expects count and sides to be numbers, got: ${typeof count} and ${typeof sides}`);
+      }
+      const rolls = Array.from({ length: count }, () => Math.floor(Math.random() * sides) + 1);
+      rolls.sort((a, b) => a - b);
+      rolls.shift(); // drop the lowest
+      return rolls.reduce((a, b) => a + b, 0);
+    },
+    statMod: (stat: DeemValue) => {
+      if (typeof stat !== 'number') {
+        throw new Error(`statMod() expects a number, got: ${typeof stat}`);
+      }
+      return Fighting.statMod(stat);
+    },
+    dig: (obj: DeemValue, ...path: DeemValue[]) => {
+      if (typeof obj !== 'object' || obj === null) {
+        return null;
+      }
+      if (!path.every(p => typeof p === 'string' || typeof p === 'number')) {
+        throw new Error(`dig() expects path elements to be strings or numbers, got: [${path.map(p => typeof p).join(', ')}]`);
+      }
+      return path.reduce((acc, key) => {
+        // return (acc && acc[key] !== undefined) ? acc[key] : null
+        if (acc && typeof acc === 'object' && key in acc) {
+          return (acc as Record<string, DeemValue>)[key];
+        } else {
+          return null;
+          // throw new Error(`dig() could not find key '${key}' in object: ${JSON.stringify(acc)}`);
+        }
+      }, obj);
+    },
+    uniq: (arr: DeemValue[]) => Array.from(new Set(arr)),
+    distribute: (total: DeemValue, parts: DeemValue) => {
+      if (typeof total !== 'number' || typeof parts !== 'number') {
+        throw new Error(`distribute() expects total and parts to be numbers, got: ${typeof total} and ${typeof parts}`);
+      }
+      const base = Math.floor(total / parts);
+      const remainder = total % parts;
+      const distribution = Array(parts).fill(base);
+      for (let i = 0; i < remainder; i++) {
+        distribution[i]++;
+      }
+      return distribution.filter(x => x > 0) as DeemValue;
+    },
+  };
+}

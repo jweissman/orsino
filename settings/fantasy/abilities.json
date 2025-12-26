@@ -1067,8 +1067,8 @@
       }
     ]
   },
-  "lightning_strike": {
-    "name": "Lightning Strike",
+  "lightning_bolt": {
+    "name": "Lightning Bolt",
     "type": "spell",
     "level": 4,
     "aspect": "arcane",
@@ -3241,6 +3241,50 @@
       {
         "type": "recalculateHp",
         "target": "target"
+      }
+    ]
+  },
+  "meteor_swarm": {
+    "name": "Meteor Swarm",
+    "type": "spell",
+    "level": 9,
+    "aspect": "arcane",
+    "school": "evocation",
+    "description": "Summon a swarm of meteors that strike multiple enemies, causing massive fire and bludgeoning damage.",
+    "target": [
+      "randomEnemies",
+      "=5 + floor(#level / 2)"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=8d6",
+        "kind": "fire",
+        "saveForHalf": true
+      },
+      {
+        "type": "damage",
+        "amount": "=2d6",
+        "kind": "bludgeoning",
+        "saveForHalf": true
+      }
+    ]
+  },
+  "fly": {
+    "name": "Fly",
+    "type": "spell",
+    "level": 3,
+    "aspect": "arcane",
+    "school": "transmutation",
+    "description": "Grant the ability to fly for a short duration.",
+    "target": [
+      "self",
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "flight"
       }
     ]
   }

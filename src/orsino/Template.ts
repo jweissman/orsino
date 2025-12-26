@@ -38,14 +38,14 @@ export class Template {
 
     Deem.stdlib.mapGenList = async (type: GenerationTemplateType, items: any[], property: string) => {
       // console.log(`mapGenList for type '${type}' over items:`, items);
-      let results = [];
+      const results = [];
       // for (let item of items) {
       //   let index = items.indexOf(item);
       for (let i = 0; i < items.length; i++) {
-        let item = items[i];
-        let index = i;
-        let genOptions = { ...context, [property]: item, _index: index };
-        let genResult = await Generator.gen(type, genOptions);
+        const item = items[i];
+        const index = i;
+        const genOptions = { ...context, [property]: item, _index: index };
+        const genResult = await Generator.gen(type, genOptions);
         results.push(genResult);
       }
       // process.stdout.write(`.`);
@@ -62,7 +62,7 @@ export class Template {
     // _generator: any
   ): Promise<Record<string, any>> {
     const localContext = { ...options };
-    let assembled: Record<string, any> = {};
+    const assembled: Record<string, any> = {};
 
     // Object.entries(this.props).forEach(([key, value]) => {
     for (const [key, value] of Object.entries(this.props)) {
@@ -72,7 +72,7 @@ export class Template {
         ...assembled
       };
       await Template.bootstrapDeem(context);
-      let resolved = localContext[key] !== undefined ? localContext[key] :
+      const resolved = localContext[key] !== undefined ? localContext[key] :
         (await Template.evaluatePropertyExpression(value, context));
 
       // it felt like we needed deep copy here to prevent any mutations from affecting the original template

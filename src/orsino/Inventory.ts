@@ -31,7 +31,7 @@ export class Inventory {
       return true;
     }
     // let itemInfo = Deem.evaluate(`lookup(consumables, "${itemKey}")`) as any;
-    let itemInfo = { kind, aspects: [aspect] }; // mock item info for checking proficiencies
+    const itemInfo = { kind, aspects: [aspect] }; // mock item info for checking proficiencies
     if (itemProficiencies.kind) {
       if (itemInfo && itemInfo.kind && !itemProficiencies.kind.includes(itemInfo.kind)) {
         return false;
@@ -51,9 +51,9 @@ export class Inventory {
   }
 
   static async item(name: string): Promise<ItemInstance> {
-    let isConsumable = await Deem.evaluate(`hasEntry(consumables, '${name}')`);
+    const isConsumable = await Deem.evaluate(`hasEntry(consumables, '${name}')`);
     if (isConsumable) {
-      let itemInfo = await Deem.evaluate(`lookup(consumables, '${name}')`);
+      const itemInfo = await Deem.evaluate(`lookup(consumables, '${name}')`);
       if (itemInfo.charges) {
         return {
           name,
@@ -70,8 +70,8 @@ export class Inventory {
   }
 
   static quantities(items: ItemInstance[]): { [itemName: string]: number; } {
-    let inventoryCounts: { [itemName: string]: number; } = {};
-    for (let itemInstance of items) {
+    const inventoryCounts: { [itemName: string]: number; } = {};
+    for (const itemInstance of items) {
       inventoryCounts[itemInstance.name] = (inventoryCounts[itemInstance.name] || 0) + 1;
     }
     return inventoryCounts;
@@ -82,7 +82,7 @@ export class Inventory {
       wielder.equipment = {};
     }
 
-    let equipment = await Deem.evaluate(`lookup(equipment, "${equipmentKey}")`);
+    const equipment = await Deem.evaluate(`lookup(equipment, "${equipmentKey}")`);
     let slot = equipment.kind as EquipmentSlot;
     if (slot === 'ring' as EquipmentSlot) {
       if (!wielder.equipment['ring1']) {
@@ -95,7 +95,7 @@ export class Inventory {
       }
     }
 
-    let oldItemKey = wielder.equipment ? wielder.equipment[slot] : null;
+    const oldItemKey = wielder.equipment ? wielder.equipment[slot] : null;
     let oldItem = null;
     if (oldItemKey) {
       oldItem = await Deem.evaluate(`lookup(equipment, "${oldItemKey}")`);

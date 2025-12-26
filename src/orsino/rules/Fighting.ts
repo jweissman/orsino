@@ -26,7 +26,7 @@ export class Fighting {
   }
 
   static effectList(combatant: Combatant): StatusEffect[] {
-    let effectList = [
+    const effectList = [
       ...(combatant.passiveEffects || []),
       ...(combatant.activeEffects || []),
     ];
@@ -35,8 +35,8 @@ export class Fighting {
   }
 
   static effectivelyPlayerControlled(combatant: Combatant): boolean {
-    let allegianceEffect = combatant.activeEffects?.find(e => e.effect.changeAllegiance);
-    let controlEffect = combatant.activeEffects?.find(e => e.effect.controlledActions);
+    const allegianceEffect = combatant.activeEffects?.find(e => e.effect.changeAllegiance);
+    const controlEffect = combatant.activeEffects?.find(e => e.effect.controlledActions);
     let playerControlled = combatant.playerControlled && !allegianceEffect;
 
     // if (allegianceEffect) {
@@ -50,8 +50,8 @@ export class Fighting {
   }
 
   static turnBonus(combatant: Combatant, keys: (string)[] = []): Partial<StatusModifications> {
-    let bonuses: Partial<StatusModifications> = {};
-    let fx = this.effectList(combatant);
+    const bonuses: Partial<StatusModifications> = {};
+    const fx = this.effectList(combatant);
 
     fx.forEach(it => {
       if (it.effect) {
@@ -60,7 +60,7 @@ export class Fighting {
             return;
           }
           if (typeof value === "number") {
-            let theKey = key as keyof StatusModifications;
+            const theKey = key as keyof StatusModifications;
             if (keys.length === 0 || keys.includes(key)) {
               if (typeof bonuses[theKey] === "number") {
                 // @ts-ignore
@@ -86,12 +86,12 @@ export class Fighting {
       maxHp: combatant.maximumHitPoints,
     };
 
-    let effectList = this.effectList(combatant);
+    const effectList = this.effectList(combatant);
     effectList.forEach(it => {
         if (it.effect) {
           Object.entries(it.effect).forEach(([key, value]) => {
             if (key in stats && typeof value === "number") {
-              let k = key as keyof typeof stats;
+              const k = key as keyof typeof stats;
               stats[k] = (stats[k] || 0) + value;
             }
           });
@@ -106,7 +106,7 @@ export class Fighting {
 
   static effectiveAttackDie(combatant: Combatant): string {
     let baseAttackDie = combatant.attackDie || "1d6";
-    let effectList = this.effectList(combatant);
+    const effectList = this.effectList(combatant);
     effectList.forEach(it => {
       if (it.effect) {
         if (it.effect.attackDie) {
@@ -119,21 +119,21 @@ export class Fighting {
 
   // gather all current passive + active effects and try to calculate any cumulative bonuses
   static gatherEffects(combatant: Combatant): Partial<StatusModifications> {
-    let effectList = this.effectList(combatant);
-    let resultingEffects: Partial<StatusModifications> = {
+    const effectList = this.effectList(combatant);
+    const resultingEffects: Partial<StatusModifications> = {
     };
-    for (let it of effectList) {
+    for (const it of effectList) {
       if (it.effect) {
-        for (let [key, value] of Object.entries(it.effect)) {
+        for (const [key, value] of Object.entries(it.effect)) {
           if (key === 'by') {
             continue;
           }
 
-          let theKey = key as keyof StatusModifications;
+          const theKey = key as keyof StatusModifications;
 
           if (typeof value === "number" && typeof resultingEffects[theKey] === "number") {
             // @ts-ignore
-            resultingEffects[theKey] = ((resultingEffects[theKey] || 0) + value) as number;
+            resultingEffects[theKey] = ((resultingEffects[theKey] || 0) + value);
           } else if (Array.isArray(value) && Array.isArray(resultingEffects[theKey])) {
             // why do we need to handle array? -- for effect triggers like onEnemyMelee, onResistPoison, etc
             // @ts-ignore
@@ -150,10 +150,10 @@ export class Fighting {
   }
 
   static gatherEffectsWithNames(combatant: Combatant): { [key: string]: { value: number | string | boolean | Array<any>, sources: string[] } } {
-    let resultingEffects: { [key: string]: { value: number | string | boolean | Array<any>, sources: string[] } } = {};
-    let effectList = this.effectList(combatant);
+    const resultingEffects: { [key: string]: { value: number | string | boolean | Array<any>, sources: string[] } } = {};
+    const effectList = this.effectList(combatant);
 
-    for (let it of effectList) {
+    for (const it of effectList) {
       if (it.effect) {
         Object.entries(it.effect).forEach(([key, value]) => {
           if (key === 'by') {
@@ -207,7 +207,7 @@ export class Fighting {
     const strMod = this.statMod(effectiveAttacker.str || 10);
     const dexMod = this.statMod(effectiveAttacker.dex || 10);
 
-    let toHitTurnBonus = (this.turnBonus(attacker, ["toHit"])).toHit || 0;
+    const toHitTurnBonus = (this.turnBonus(attacker, ["toHit"])).toHit || 0;
     const toHitBonus = (isMissile ? dexMod : strMod)  // DEX affects accuracy for missiles
       + toHitTurnBonus;                 // Any temporary bonuses to hits
     const damageBonus = isMissile ? Math.max(0, dexMod) : Math.max(0, strMod);
@@ -220,7 +220,7 @@ export class Fighting {
 
     const attackRoll = await roll(attacker, `to attack ${defender.forename} (must roll ${whatNumberHits} or higher to hit)`, 20);
     description += attackRoll.description;
-    let success = attackRoll.amount >= whatNumberHits;
+    const success = attackRoll.amount >= whatNumberHits;
     let critical = false;
     if (attackRoll.amount <= 1) {
       description += ` ${attacker.name} rolled a natural 1 and misses!`;
@@ -247,9 +247,9 @@ export class Fighting {
       //   throw new Error(`Attacker ${attacker.name} does not have an attackDie defined.`);
       // }
 
-      let attackDie = this.effectiveAttackDie(attacker);
+      const attackDie = this.effectiveAttackDie(attacker);
 
-      let weaponVerb =
+      const weaponVerb =
         attacker.hasMissileWeapon ? "shoot" : (this.weaponDamageKindVerbs[attacker.damageKind || "slashing"] || "strike");
       damage = await Deem.evaluate(attackDie, {
         roll, subject: attacker,
@@ -261,11 +261,11 @@ export class Fighting {
       }
 
       damage = damage + criticalDamage + damageBonus;
-      let defenderEffects = Fighting.gatherEffects(defender);
+      const defenderEffects = Fighting.gatherEffects(defender);
 
       if (defenderEffects.evasion) {
-        let evasionBonus = defenderEffects.evasion as number || 0;
-        let whatNumberEvades = 20 - evasionBonus;
+        const evasionBonus = defenderEffects.evasion || 0;
+        const whatNumberEvades = 20 - evasionBonus;
         const evasionRoll = await roll(defender, `for evasion (must roll ${whatNumberEvades} or higher)`, 20);
         if (evasionRoll.amount >= whatNumberEvades) {
           description += ` ${defender.name} evades the attack!`;

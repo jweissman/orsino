@@ -21,14 +21,14 @@ export function loadSetting(name: string): Record<GenerationTemplateType, Templa
   const basePath = `./settings/${name}`;
   // console.log(`Loading setting: ${name} from ${basePath}`);
 
-  let settingFiles = fs.readdirSync(basePath);
+  const settingFiles = fs.readdirSync(basePath);
   // console.log(`Found setting files: ${settingFiles.join(', ')}`);
   
   // Load tables
-  let tableFiles = fs.readdirSync(basePath)
+  const tableFiles = fs.readdirSync(basePath)
     // files in settings/fantasy/tables/*.json or settings/fantasy/tables.json
     .filter(file => file.endsWith('.json') && (file === 'tables.json'));
-  let tablesPath = `${basePath}/tables`;
+  const tablesPath = `${basePath}/tables`;
   if (fs.existsSync(tablesPath) && fs.lstatSync(tablesPath).isDirectory()) {
     const tableDirFiles = fs.readdirSync(tablesPath)
       .filter(file => file.endsWith('.json'));

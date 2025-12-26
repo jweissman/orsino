@@ -34,7 +34,7 @@ export default class Stylist {
   }
 
   static prettyValue = (value: number, maxValue: number): string => {
-    let counter = ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
+    const counter = ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
     const ratio = value / maxValue;
 
     return counter[Math.floor(ratio * (counter.length - 1))] || counter[0];

@@ -187,8 +187,8 @@ export type GameEvent = CombatEvent | DungeonEvent | ModuleEvent
 
 export default class Events {
   static async present(event: GameEvent): Promise<string> {
-    let subjectName = event.subject ? event.subject.forename : null;
-    let targetName = event.target ? event.target.forename : null;
+    const subjectName = event.subject ? event.subject.forename : null;
+    const targetName = event.target ? event.target.forename : null;
     switch (event.type) {
       case "engage":
         return '';
@@ -245,7 +245,7 @@ export default class Events {
       case "fall": return '';  //`${subjectName} falls.`;
       case "flee": return `${subjectName} flees from combat.`;
       case "statusEffect":
-        let effectName = Stylist.colorize(event.effectName, 'magenta');
+        const effectName = Stylist.colorize(event.effectName, 'magenta');
         return `${subjectName} is ${effectName} (${Presenter.describeModifications(event.effect)}).`
       case "statusExpire":
         return `${subjectName} is no longer ${event.effectName}.`;
@@ -254,10 +254,10 @@ export default class Events {
       case "initiate":
         return '';
       case "roundStart":
-        let roundLabel = ("Round " + event.turn.toString()).padEnd(20) + Stylist.colorize(event.environment?.padStart(60) || "Unknown Location", 'cyan');
-        let parties = Presenter.parties(event.parties || []);
-        let hr = "=".repeat(80);
-        let auras = event.auras?.length > 0 ? "\n\nAuras:\n" + event.auras.map(aura => `- ${Stylist.colorize(aura.name, 'magenta')} (${Presenter.analyzeStatus(aura)})`).join("\n") : ""; 
+        const roundLabel = ("Round " + event.turn.toString()).padEnd(20) + Stylist.colorize(event.environment?.padStart(60) || "Unknown Location", 'cyan');
+        const parties = Presenter.parties(event.parties || []);
+        const hr = "=".repeat(80);
+        const auras = event.auras?.length > 0 ? "\n\nAuras:\n" + event.auras.map(aura => `- ${Stylist.colorize(aura.name, 'magenta')} (${Presenter.analyzeStatus(aura)})`).join("\n") : ""; 
         return `${hr}\n${roundLabel}\n${hr}\n${parties}${auras}`;
       case "turnStart":
         return '';
@@ -409,8 +409,8 @@ export default class Events {
         }
         return templeMessage;
       case "partyOverview":
-        let records = [];
-        for (let pc of event.pcs) {
+        const records = [];
+        for (const pc of event.pcs) {
           records.push(await Presenter.characterRecord(pc));
         }
         let overview = Stylist.bold(`Party Overview:\n${records.join("\n\n")}\n\n`);

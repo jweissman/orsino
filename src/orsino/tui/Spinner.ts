@@ -48,7 +48,7 @@ export default class Spinner {
         const interval = setInterval(() => {
           process.stdout.write(`\r${activity}... ${this.spinnerChars[i++ % this.spinnerChars.length]}`);
         }, 100);
-        let wait = 500 + Math.random() * 1420;
+        const wait = 500 + Math.random() * 1420;
         setTimeout(() => {
           clearInterval(interval);
           process.stdout.write('\r');

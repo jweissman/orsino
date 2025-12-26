@@ -1,29 +1,16 @@
 #!/usr/bin/env bun
 
-import Deem from '../src/deem';
-
-console.log('Deem console');
-// basic
-// while (true) {
-//   const input = prompt('> ');
-//   if (input === null) break; // Exit on Ctrl+D
-//   try {
-//     const result = await Deem.evaluate(input);
-//     console.log(result);
-//   } catch (err) {
-//     console.error('Error:', err);
-//   }
-// }
-
 // with readline (history, editing)
 import readline from 'readline';
+import Deem from '../src/deem';
+
 import { Template } from '../src/orsino/Template';
 import Generator from '../src/orsino/Generator';
 import { loadSetting } from "../src/orsino/loader";
 
 let settingName = "fantasy";
 Generator.setting = settingName ? loadSetting(settingName) : Generator.defaultSetting;
-await Template.bootstrapDeem(Generator, {});
+await Template.bootstrapDeem({});
 
 const rl = readline.createInterface({
   input: process.stdin,

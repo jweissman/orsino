@@ -1,121 +1,139 @@
 import * as ohm from 'ohm-js';
 import source from './deem.ohm.txt';
-import { Fighting } from './orsino/rules/Fighting';
-import Words from './orsino/tui/Words';
+import StandardLibrary, { DeemFunc, DeemValue } from './deem/stdlib';
+import { Roll } from './orsino/types/Roll';
+import { Combatant } from './orsino/types/Combatant';
+
+type EvalContext = {
+  // roll: (
+  //   subject: DeemValue,
+  //   description: DeemValue,
+  //   sides: number
+  // ) => Promise<DeemValue>;
+
+  [key: string]: DeemValue; // | ((subject: DeemValue, description: DeemValue, sides: number) => Promise<DeemValue>);
+}
+type EvalArgs = { context?: EvalContext };
+type EvalSemantics = { eval: (context: EvalContext) => Promise<DeemValue> };
+type EvalNode = ohm.Node & EvalSemantics;
 
 export default class Deem {
-  static magicVars: Record<string, any> = {};
-  // static colors = { black: '30', red: '31', green: '32', yellow: '33', blue: '34', magenta: '35', cyan: '36', white: '37', };
+  static magicVars: Record<string, DeemValue> = {};
   static colorize = (str: string, color: string) => `\x1b[${color}m${str}\x1b[0m`;
-  static stdlib: { [key: string]: (...args: any[]) => any } = {
-    count: (arr: any[]) => arr.length,
-    rand: () => Math.random(),
-    if: (cond: any, trueVal: any, falseVal: any) => (cond ? trueVal : falseVal),
-    oneOf: (...args: any[]) => args[Math.floor(Math.random() * args.length)],
-    pick: (arr: any[], index = -1) => {
-      if (!Array.isArray(arr)) {
-        throw new Error(`pick() expects an array, got: ${typeof arr}`);
-        // console.warn("pick() expects an array, got:", arr);
-        // return arr;
-      }
-      // console.log("PICKING FROM ARRAY:", arr);
-      if (index === -1) {
-        return arr[Math.floor(Math.random() * arr.length)]
-      } else {
-        return arr[index % arr.length];
-      }
-    },
-    sample: (arr: any[], count: number) => {
-      const sampled: any[] = [];
-      const arrCopy = [...arr];
-      for (let i = 0; i < count && arrCopy.length > 0; i++) {
-        const index = Math.floor(Math.random() * arrCopy.length);
-        sampled.push(arrCopy.splice(index, 1)[0]);
-      }
-      return sampled;
-    },
-    round: (num: number) => Math.round(num),
-    floor: (num: number) => Math.floor(num),
-    ceil: (num: number) => Math.ceil(num),
-    capitalize: (str: string) => str && str.charAt(0).toUpperCase() + str.slice(1),
-    humanize: (str: string) => Words.humanize(str),
-    len: (obj: any) => {
-      if (Array.isArray(obj) || typeof obj === 'string') {
-        return obj.length;
-      } else if (obj && typeof obj === 'object') {
-        return Object.keys(obj).length;
-      }
-      return 0;
-    },
-    sum: (arr: any[], prop?: string) => {
-      if (prop) {
-        return arr.reduce((acc, item) => acc + (item[prop] || 0), 0);
-      }
-      return arr.reduce((acc, val) => acc + val, 0);
-    },
-    min: (...args: number[]) => Math.min(...args),
-    max: (...args: number[]) => Math.max(...args),
-    concat: (...args: any[]) => args.flat().filter((x) => x !== null && x !== undefined),
-    roll: (count: number, sides: number) => {
-      const rolls = Array.from({ length: count }, () => Math.floor(Math.random() * sides) + 1);
-      const sum = rolls.reduce((a, b) => a + b, 0);
-      return sum;
-    },
-    rollWithDrop: (count: number, sides: number) => {
-      const rolls = Array.from({ length: count }, () => Math.floor(Math.random() * sides) + 1);
-      rolls.sort((a, b) => a - b);
-      rolls.shift(); // drop the lowest
-      return rolls.reduce((a, b) => a + b, 0);
-    },
-    statMod: (stat: number) => {
-      return Fighting.statMod(stat);
-    },
-    dig: (obj: any, ...path: string[]) => {
-      return path.reduce((acc, key) => (acc && acc[key] !== undefined) ? acc[key] : null, obj);
-    },
-    uniq: (arr: any[]) => Array.from(new Set(arr)),
-    distribute: (total: number, parts: number) => {
-      const base = Math.floor(total / parts);
-      const remainder = total % parts;
-      const distribution = Array(parts).fill(base);
-      for (let i = 0; i < remainder; i++) {
-        distribution[i]++;
-      }
-      return distribution.filter(x => x > 0);
-    },
-  };
+  static stdlib: { [key: string]: DeemFunc } = StandardLibrary.functions;
   static grammar = ohm.grammar(source);
-  static semantics = Deem.grammar.createSemantics().addOperation('eval(context)', {
-    async Exp(exp) { return await exp.eval(this.args.context); },
-    async LogExp_and(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) && (await right.eval(ctx)); },
-    async LogExp_or(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) || (await right.eval(ctx)); },
-    async LogExp_not(_not, exp) { let ctx = this.args.context;  return !(await exp.eval(ctx)); },
-    async TernaryExp(cond, _q, trueExp, _c, falseExp) {
-      let ctx = this.args.context;
-      let condition = await cond.eval(ctx);
-      // console.log(`Ternary condition ${cond.pretty} evaluated to: ${condition}`);
-      return condition ? (await trueExp.eval(ctx)) : (await falseExp.eval(ctx));
+
+  static semantics = Deem.grammar.createSemantics().addOperation<Promise<DeemValue>>('eval(context)', {
+    async Exp(exp) {
+      const ctx = (this.args as EvalArgs).context || {};
+      return await (exp as EvalNode).eval(ctx);
     },
-    async CompExp_lt(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) < (await right.eval(ctx)); },
-    async CompExp_gt(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) > (await right.eval(ctx)); },
-    async CompExp_eq(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) == (await right.eval(ctx)); },
-    async CompExp_neq(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) != (await right.eval(ctx)); },
-    async CompExp_lte(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) <= (await right.eval(ctx)); },
-    async CompExp_gte(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) >= (await right.eval(ctx)); },
-    async AddExp_plus(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) + (await right.eval(ctx)); },
-    async AddExp_minus(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) - (await right.eval(ctx)); },
-    async MulExp_times(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) * (await right.eval(ctx)); },
-    async MulExp_divide(left, _, right) { let ctx = this.args.context;  return (await left.eval(ctx)) / (await right.eval(ctx)); },
-    async ExpExp_power(left, _, right) { let ctx = this.args.context;  return Math.pow(await left.eval(ctx), await right.eval(ctx)); },
-    async PriExp_paren(_open, exp, _close) { let ctx = this.args.context;  return await exp.eval(ctx); },
-    async PriExp_pos(_plus, exp) { let ctx = this.args.context;  return await exp.eval(ctx); },
-    async PriExp_neg(_minus, exp) { let ctx = this.args.context;  return -(await exp.eval(ctx)); },
+    async LogExp_and(left, _, right) {
+      const ctx = (this.args as EvalArgs).context || {};
+      return (await (left as EvalNode).eval(ctx)) && (await (right as EvalNode).eval(ctx));
+    },
+    async LogExp_or(left, _, right) {
+      const ctx = (this.args as EvalArgs).context || {};
+      return (await (left as EvalNode).eval(ctx)) || (await (right as EvalNode).eval(ctx));
+    },
+    async LogExp_not(_not, exp) {
+      const ctx = (this.args as EvalArgs).context || {};
+      return !(await (exp as EvalNode).eval(ctx));
+    },
+    async TernaryExp(cond, _q, trueExp, _c, falseExp) {
+      const ctx = (this.args as EvalArgs).context || {};
+      const condition = await (cond as EvalNode).eval(ctx);
+      // return condition ? (await (trueExp as EvalNode).eval(ctx)) : (await (falseExp as EvalNode).eval(ctx));
+      if (condition) {
+        return await (trueExp as EvalNode).eval(ctx);
+      } else {
+        return await (falseExp as EvalNode).eval(ctx);
+      }
+    },
+    async CompExp_lt(left, _, right) {
+      const ctx = (this.args as EvalArgs).context || {};
+      const lhs = (await (left as EvalNode).eval(ctx)) as number;
+      const rhs = (await (right as EvalNode).eval(ctx)) as number;
+      return lhs < rhs;
+    },
+    async CompExp_gt(left, _, right) {
+      const ctx = (this.args as EvalArgs).context || {};
+      const lhs = (await (left as EvalNode).eval(ctx)) as number;
+      const rhs = (await (right as EvalNode).eval(ctx)) as number;
+      return lhs > rhs;
+    },
+    async CompExp_eq(left, _, right) {
+      const ctx = (this.args as EvalArgs).context || {};
+      const lhs = (await (left as EvalNode).eval(ctx));
+      const rhs = (await (right as EvalNode).eval(ctx));
+      return lhs === rhs;
+    },
+    async CompExp_neq(left, _, right) {
+      const ctx = (this.args as EvalArgs).context || {};
+      const lhs = await (left as EvalNode).eval(ctx);
+      const rhs = await (right as EvalNode).eval(ctx);
+      return lhs !== rhs;
+    },
+    async CompExp_lte(left, _, right) {
+      const ctx = (this.args as EvalArgs).context || {};
+      const lhs = (await (left as EvalNode).eval(ctx)) as number;
+      const rhs = (await (right as EvalNode).eval(ctx)) as number;
+      return lhs <= rhs;
+    },
+    async CompExp_gte(left, _, right) {
+      const ctx = (this.args as EvalArgs).context || {};
+      const lhs = (await (left as EvalNode).eval(ctx)) as number;
+      const rhs = (await (right as EvalNode).eval(ctx)) as number;
+      return lhs >= rhs;
+    },
+    async AddExp_plus(left, _, right) {
+      const ctx = (this.args as EvalArgs).context || {};
+      const lhs = (await (left as EvalNode).eval(ctx)) as number;
+      const rhs = (await (right as EvalNode).eval(ctx)) as number;
+      return lhs + rhs;
+    },
+    async AddExp_minus(left, _, right) {
+      const ctx = (this.args as EvalArgs).context || {};
+      const lhs = (await (left as EvalNode).eval(ctx)) as number;
+      const rhs = (await (right as EvalNode).eval(ctx)) as number;
+      return lhs - rhs;
+    },
+    async MulExp_times(left, _, right) {
+      const ctx = (this.args as EvalArgs).context || {};
+      const lhs = (await (left as EvalNode).eval(ctx)) as number;
+      const rhs = (await (right as EvalNode).eval(ctx)) as number;
+      return lhs * rhs;
+    },
+    async MulExp_divide(left, _, right) {
+      const ctx = (this.args as EvalArgs).context || {};
+      const lhs = (await (left as EvalNode).eval(ctx)) as number;
+      const rhs = (await (right as EvalNode).eval(ctx)) as number;
+      return lhs / rhs;
+    },
+    async ExpExp_power(left, _, right) {
+      const ctx = (this.args as EvalArgs).context || {};
+      const base = await (left as EvalNode).eval(ctx) as number;
+      const power = await (right as EvalNode).eval(ctx) as number;
+      return Math.pow(base, power);
+    },
+    async PriExp_paren(_open, exp, _close) {
+      const ctx = (this.args as EvalArgs).context || {};
+      return await (exp as EvalNode).eval(ctx)
+    },
+    async PriExp_pos(_plus, exp) {
+      const ctx = (this.args as EvalArgs).context || {}; return await (exp as EvalNode).eval(ctx);
+    },
+    async PriExp_neg(_minus, exp) {
+      const ctx = (this.args as EvalArgs).context || {};
+      const val = (await (exp as EvalNode).eval(ctx)) as number;
+      return -val;
+    },
     async FunctionCall(ident, _open, argList, _close) {
-      let ctx = this.args.context || {};
-      const funcName = await ident.eval(ctx);
+      const ctx = (this.args as EvalArgs).context || {};
+      const funcName = await (ident as EvalNode).eval(ctx) as string;
       const args = [];
       for (const arg of argList.children) {
-        const argValue = await arg.eval(ctx);
+        const argValue = await (arg as EvalNode).eval(ctx);
         args.push(argValue);
       }
       const func = Deem.stdlib[funcName];
@@ -123,7 +141,7 @@ export default class Deem {
         throw new Error(`Unknown function: ${funcName}`);
       }
 
-      let isFuncAsync = func.constructor.name === 'AsyncFunction';
+      const isFuncAsync = func.constructor.name === 'AsyncFunction';
       let ret = null;
       if (isFuncAsync) {
         ret = await func(...args.flat());
@@ -133,41 +151,42 @@ export default class Deem {
       return ret;
     },
     async ArgList(first, _comma, rest) {
-      let ctx = this.args.context;
-      const firstValue = await first.eval(ctx);
+      const ctx = (this.args as EvalArgs).context || {};
+      const firstValue = await (first as EvalNode).eval(ctx);
       const restValues = [];
       for (const arg of rest.children) {
-        const argValue = await arg.eval(ctx);
+        const argValue = await (arg as EvalNode).eval(ctx);
         restValues.push(argValue);
       }
       const args = [firstValue, ...restValues];
       return args;
     },
-    async bool(_val) { return this.sourceString === 'true'; },
-    async number(_num) { return parseFloat(this.sourceString); },
-    async nihil(_val) { return null; },
+    async bool(_val) { return Promise.resolve(this.sourceString === 'true'); },
+    async number(_num) { return Promise.resolve(parseFloat(this.sourceString)); },
+    async nihil(_val) { return Promise.resolve(null); },
     async ident(_initial, _rest) {
-      let name = this.sourceString;
+      const name = this.sourceString;
+      const ctx = (this.args as EvalArgs).context || {}
       if (name.startsWith('#')) {
         const key = name.slice(1);
-        const value = this.args.context?.[key] ?? Deem.magicVars[key];
+        const value = (this.args as EvalArgs).context?.[key] ?? Deem.magicVars[key];
         if (value === undefined) {
-          if (Object.keys(this.args.context).includes(key)) {
+          if (Object.keys(ctx).includes(key)) {
             return null;
           }
-          throw new Error(`Undefined variable: ${key} (available: ${Object.keys(this.args.context || {}).join(', ')}); (magic: ${Object.keys(Deem.magicVars).join(', ')})`);
+          throw new Error(`Undefined variable: ${key} (available: ${Object.keys(ctx).join(', ')}); (magic: ${Object.keys(Deem.magicVars).join(', ')})`);
         }
         return value;
       }
-      return this.sourceString;
+      return Promise.resolve(this.sourceString);
     },
     async strlit_single_quote(_open, chars, _close) {
-      return chars.sourceString;
+      return Promise.resolve(chars.sourceString);
     },
     async strlit_double_quote(_open, chars, _close) {
       // return chars.sourceString;
-      let raw = chars.sourceString;
-      let ctx = this.args.context;
+      const raw = chars.sourceString;
+      const ctx = (this.args as EvalArgs).context || {};
       // interpolate #{expressions}
       let result = '';
       let cursor = 0;
@@ -177,32 +196,31 @@ export default class Deem {
         const before = raw.slice(cursor, match.index);
         result += before;
         const expr = match[1];
-        const exprValue = await Deem.evaluate(expr, ctx);
+        const exprValue = await Deem.evaluate(expr, ctx) as string;
         result += exprValue;
         cursor = match.index + match[0].length;
       }
       result += raw.slice(cursor);
       // interpolate #variables
       result = result.replace(/#([a-zA-Z_][a-zA-Z0-9_]*)/g, (_, varName) => {
-        const value = ctx?.[varName] ?? Deem.magicVars[varName];
+        const variable = String(varName);
+        const value = ctx[variable] ?? Deem.magicVars[variable];
         if (value === undefined) {
-          throw new Error(`Undefined variable in string interpolation: ${varName} (available: ${Object.keys(this.args.context || {}).join(', ')}); (magic: ${Object.keys(Deem.magicVars).join(', ')})`);
+          throw new Error(`Undefined variable in string interpolation: ${varName} (available: ${Object.keys((this.args as EvalArgs).context || {}).join(', ')}); (magic: ${Object.keys(Deem.magicVars).join(', ')})`);
         }
-        return value;
+        return value as string;
       });
       return result;
     },
     async dice_multi(count, _d, sides) {
-      // if (isNaN(parseInt(count.sourceString)) || isNaN(parseInt(sides.sourceString))) {
-      //   throw new Error(`Invalid dice expression: ${count.sourceString}d${sides.sourceString}`);
-      // }
-      let ctx = this.args.context;
-      if (ctx.roll !== undefined) {
+      const ctx = (this.args as EvalArgs).context || {};
+      const rollFunc = ctx.roll as unknown as Roll;
+      if (ctx.roll !== undefined && ctx.roll !== null && typeof ctx.roll === 'function') {
         let sum = 0;
         for (let i = 0; i < parseInt(count.sourceString); i++) {
-          const result = await ctx.roll(
-            ctx.subject,
-            ctx.description,
+          const result = await rollFunc(
+            ctx.subject as unknown as Combatant,
+            ctx.description as string,
             parseInt(sides.sourceString)
           );
           sum += result.amount;
@@ -215,19 +233,20 @@ export default class Deem {
       return sum;
     },
     async dice_single(_d, sides) {
-      if (this.args.context.roll) {
-        const rollFunc = this.args.context.roll;
+      const ctx = (this.args as EvalArgs).context || {};
+      if (ctx.roll) {
+        const rollFunc = ctx.roll as unknown as Roll;
         const result = await rollFunc(
-          this.args.context.subject,
-          this.args.context.description,
+          ctx.subject as unknown as Combatant,
+          ctx.description as string,
           parseInt(sides.sourceString)
         );
         return result.amount;
       }
       return Math.floor(Math.random() * parseInt(sides.sourceString)) + 1;
     }
-  }).addAttribute('pretty', {
-    Exp(exp) { return exp.pretty; },
+  }).addAttribute<string>('pretty', {
+    Exp(exp) { return exp.pretty as string; },
     LogExp_and(left, _, right) { return `${left.pretty} && ${right.pretty}`; },
     LogExp_or(left, _, right) { return `${left.pretty} || ${right.pretty}`; },
     LogExp_not(_not, exp) { return `!${exp.pretty}`; },
@@ -247,18 +266,18 @@ export default class Deem {
     PriExp_pos(_plus, exp) { return `+${exp.pretty}`; },
     PriExp_neg(_minus, exp) { return `-${exp.pretty}`; },
     FunctionCall(ident, _open, argList, _close) {
-      const funcName = ident.pretty;
-      const args = argList.children.map(arg => arg.pretty).flat();
+      const funcName = ident.pretty as string;
+      const args = argList.children.map(arg => arg.pretty as string).flat();
       return `${funcName}(${args.join(', ')})`;
     },
     ArgList(first, _comma, rest) {
-      return [first.pretty, ...rest.children.map(arg => arg.pretty)];
+      return [first.pretty as string, ...rest.children.map(arg => arg.pretty as string)].join(', ');
     },
     bool(_val) { return this.sourceString; },
-    number(num) { return this.sourceString; },
+    number(_num) { return this.sourceString; },
     nihil(_val) { return 'nihil'; },
     ident(_initial, _rest) {
-      let name = this.sourceString;
+      const name = this.sourceString;
 
       return name;
     },
@@ -274,30 +293,21 @@ export default class Deem {
 
   static async evaluate(
     expression: string,
-    context: Record<string, any> = {}
-  ): Promise<any> {
+    context: Record<string, DeemValue> = {}
+  ): Promise<DeemValue> {
 
     // if we have a leading =, then we can remove it
     if (expression.startsWith('=')) {
       expression = expression.slice(1);
     }
 
-    // if it _still_ starts with an '=', we could return the value as-is
-    // if (expression.startsWith('=')) {
-    //   return expression;
-    // }
-
     const match = this.grammar.match(expression);
     if (match.succeeded()) {
-      const sem = this.semantics(match);
-      // const prettyExpr = sem.pretty;
-      // You _wish_ this worked => sem.context = context;
-      const ret = await sem.eval(context);
-      // console.debug(
-      //   `${this.colorize(prettyExpr, this.colors.black)} =>`,
-      //   this.colorize(ret, this.colors.yellow),
-      //   context && Object.keys(context).length > 0 ? this.colorize(`(context: ${JSON.stringify(context)})`, this.colors.cyan) : ''
-      // );
+      const sem = this.semantics(match) as {
+        eval: (context: Record<string, DeemValue>) => Promise<DeemValue>
+      };
+      // const prettyExpr: string = sem.pretty as string;
+      const ret: DeemValue = await sem.eval(context);
       return ret;
     } else {
       throw new Error('Failed to parse expression: ' + expression + '\n' + match.message);

@@ -1,6 +1,5 @@
-import Combat from "./Combat";
 import Dungeoneer, { Dungeon } from "./Dungeoneer";
-import { Combatant, Gem } from "./types/Combatant";
+import { Combatant } from "./types/Combatant";
 import { Roll } from "./types/Roll";
 import { Select } from "./types/Select";
 import Choice from "inquirer/lib/objects/choice";
@@ -15,8 +14,11 @@ import Events, { ModuleEvent } from "./Events";
 import { StatusEffect, StatusModifications } from "./Status";
 import Presenter from "./tui/Presenter";
 import CharacterRecord from "./rules/CharacterRecord";
-import Automatic from "./tui/System";
+import Automatic from "./tui/Automatic";
 import { Fighting } from "./rules/Fighting";
+import { Answers } from "inquirer";
+import { GeneratedValue, GeneratorOptions } from "./Generator";
+import Orsino from "../orsino";
 
 type TownSize = 'hamlet' | 'village' | 'town' | 'city' | 'metropolis' | 'capital';
 type Race = 'human' | 'elf' | 'dwarf' | 'halfling' | 'gnome' | 'orc' | 'fae';
@@ -57,16 +59,25 @@ interface GameState {
   discoveredDungeons: number[];
 }
 
+type RunnerOptions = {
+  roller?: Roll;
+  select?: Select<Answers>;
+  outputSink?: (message: string) => void;
+  moduleGen?: (options?: GeneratorOptions) => Promise<CampaignModule>;
+  pcs?: Combatant[];
+  gen?: (type: GenerationTemplateType, options?: GeneratorOptions) => GeneratedValue;
+}
+
 export class ModuleRunner {
   static configuration = { startingGold: 100 }
 
-  private roller: Roll; // (subject: Combatant, description: string, sides: number, dice: number) => Promise<RollResult>;
-  private select: Select<any>;
-  // private prompt: (message: string) => string;
+  private roller: Roll;
+  private select: Select<Answers>;
 
   private _outputSink: (message: string) => void;
   private moduleGen: (
-    options?: Record<string, any>
+    options?: GeneratorOptions
+      //Record<string, any>
   ) => Promise<CampaignModule>;
   private state: GameState = {
     party: [],
@@ -76,16 +87,16 @@ export class ModuleRunner {
     discoveredDungeons: [],
   };
 
-  private gen: (type: GenerationTemplateType, options?: Record<string, any>) => any;
+  private gen: (type: GenerationTemplateType, options?: GeneratorOptions) => GeneratedValue;
 
   activeModule: CampaignModule | null = null;
   journal: ModuleEvent[] = [];
 
-  constructor(options: Record<string, any> = {}) {
-    this.roller = options.roller || Commands.roll;
-    this.select = options.select || Combat.samplingSelect;
-    this._outputSink = options.outputSink || console.log;
-    this.moduleGen = options.moduleGen || this.defaultModuleGen;
+  constructor(options: RunnerOptions = {}) {
+    this.roller = options.roller || Commands.roll.bind(Commands);
+    this.select = options.select || Automatic.randomSelect.bind(Automatic);
+    this._outputSink = options.outputSink || Orsino.outputSink;
+    this.moduleGen = options.moduleGen || this.defaultModuleGen.bind(this);
     this.gen = options.gen || (() => { throw new Error("No gen function provided") });
 
     this.state.party = options.pcs || [];
@@ -93,7 +104,12 @@ export class ModuleRunner {
 
   get pcs() { return this.state.party; }
   get sharedGold() { return this.state.sharedGold; }
-  get mod() { return this.activeModule!; }
+  get mod(): CampaignModule {
+    if (!this.activeModule) {
+      throw new Error("No active module!");
+    }
+    return this.activeModule;
+  }
 
   private note(message: string): void {
     this._outputSink(message);
@@ -114,7 +130,7 @@ export class ModuleRunner {
   }
 
   get availableDungeons(): Dungeon[] {
-    if (!this.activeModule) return [];
+    if (!this.activeModule) {return [];}
     return this.activeModule.dungeons.filter(d => !this.state.completedDungeons.includes(d.dungeonIndex!));
   }
 
@@ -141,7 +157,7 @@ export class ModuleRunner {
     let playing = true;
     let moduleOptions = {};
     while (playing) {
-      let { newModuleOptions } = await this.runModule(dry, moduleOptions);
+      const { newModuleOptions } = await this.runModule(dry, moduleOptions);
       if (newModuleOptions !== null) {
         moduleOptions = newModuleOptions;
       } else {
@@ -204,7 +220,7 @@ export class ModuleRunner {
       adjective: mod.town.adjective,
       season: this.season,
     });
-    let maxDays = 360;
+    const maxDays = 360;
     while (this.days++ < maxDays && this.pcs.some(pc => pc.hp > 0)) {
       await this.status(mod);
       // this.outputSink(`\n--- Day ${days}/${maxDays} ---`);
@@ -216,13 +232,13 @@ export class ModuleRunner {
         const dungeon = await this.selectDungeon();
         if (dungeon) {
 
-          let share = Math.floor(this.state.sharedGold / this.pcs.length);
+          const share = Math.floor(this.state.sharedGold / this.pcs.length);
           this.pcs.forEach(pc => pc.gp = (pc.gp || 0) + share);
           this.state.sharedGold -= share * this.pcs.length;
 
           this.logGold("before dungeoneer");
           // this.outputSink(`You embark on a Quest to the ${Stylist.bold(dungeon.dungeon_name)}...`);
-          let dungeoneer = new Dungeoneer({
+          const dungeoneer = new Dungeoneer({
             dry,
             roller: this.roller,
             select: this.select,
@@ -235,7 +251,7 @@ export class ModuleRunner {
               inventory: this.state.inventory,
             },
           });
-          let { newPlane } = await dungeoneer.run();  //dungeon, this.pcs);
+          const { newPlane } = await dungeoneer.run();  //dungeon, this.pcs);
           if (newPlane !== null && newPlane !== undefined && newPlane !== mod.plane) {
             console.log(`The party has shifted to a new plane: ${newPlane}`);
             return { newModuleOptions: { _plane_name: newPlane } };
@@ -255,7 +271,7 @@ export class ModuleRunner {
             if (pc.hp <= 0) {
               pc.hp = 1;
             }
-            let effective = Fighting.effectiveStats(pc);
+            const effective = Fighting.effectiveStats(pc);
             const healAmount = Math.floor(effective.maxHp * 0.5);
             pc.hp = Math.max(1, Math.min(effective.maxHp, pc.hp + healAmount));
             pc.spellSlotsUsed = 0;
@@ -273,12 +289,12 @@ export class ModuleRunner {
       } else if (action === "armory") {
         await this.shop('weapons');
       } else if (action === "jeweler") {
-        let gems = this.pcs.flatMap(pc => pc.gems || []);
+        const gems = this.pcs.flatMap(pc => pc.gems || []);
         if (gems.length === 0) {
           console.log("You have no gems to sell.");
         } else {
-          let totalValue = gems.reduce((sum, gem) => sum + gem.value, 0);
-          for (let gem of gems) {
+          const totalValue = gems.reduce((sum, gem) => sum + gem.value, 0);
+          for (const gem of gems) {
             await this.emit({ type: "sale", itemName: `${gem.name} (${gem.type})`, revenue: gem.value, seller: this.pcs.find(pc => (pc.gems || []).includes(gem))!, day: this.days });
           }
           console.log(`You sold your gems for a total of ${totalValue}g`);
@@ -292,25 +308,25 @@ export class ModuleRunner {
           }))) as Combatant;
           // console.log("Current weapon:", actor.weapon, actor.attackDie);
         if (this.sharedGold > improvementCost) {
-          let originalAttackDie = actor.attackDie;
-          let alreadyImproved = actor.attackDie.includes("+");
+          const originalAttackDie = actor.attackDie;
+          const alreadyImproved = actor.attackDie.includes("+");
           if (alreadyImproved) {
             // rewrite to improve further
-            let [baseDie, plusPart] = actor.attackDie.split("+");
+            const [baseDie, plusPart] = actor.attackDie.split("+");
             let plusAmount = parseInt(plusPart);
             if (plusAmount <= 5) {
               plusAmount += 1;
               actor.attackDie = `${baseDie}+${plusAmount}`;
             } else {
               // could add a trait instead but for now improve the base die
-              let [dieNumber, dieSides] = baseDie.split("d");
-              let dieClasses = [2, 3, 4, 6, 8, 10, 12, 20, 100];
-              let currentIndex = dieClasses.indexOf(parseInt(dieSides));
+              const [dieNumber, dieSides] = baseDie.split("d");
+              const dieClasses = [2, 3, 4, 6, 8, 10, 12, 20, 100];
+              const currentIndex = dieClasses.indexOf(parseInt(dieSides));
               if (currentIndex < dieClasses.length - 1) {
-                let newDieSides = dieClasses[currentIndex + 1];
+                const newDieSides = dieClasses[currentIndex + 1];
                 actor.attackDie = `${dieNumber}d${newDieSides}+${plusAmount}`;
               } else {
-                let newDieNumber = parseInt(dieNumber) + 1;
+                const newDieNumber = parseInt(dieNumber) + 1;
                 actor.attackDie = `${newDieNumber}d${dieSides}+${plusAmount}`;
               }
             }
@@ -336,12 +352,12 @@ export class ModuleRunner {
         await this.presentHireling();
       } else if (action === "temple") {
         this.state.sharedGold -= 10;
-        let blessingsGranted: string[] = [];
+        const blessingsGranted: string[] = [];
         const effect = mod.town.deity.blessing;
         const duration = 10;
         const deityName = mod.town.deity.name;
         const blessingName = `${mod.town.deity.forename}'s Favor`;
-        let blessing: StatusEffect = {
+        const blessing: StatusEffect = {
           name: blessingName,
           description: "Blessed by " + Words.capitalize(deityName),
           duration, effect, aura: false
@@ -450,7 +466,7 @@ export class ModuleRunner {
       shops = { ...shops, ...advancedShops };
     }
 
-    const options: Choice<any>[] =
+    const options: Choice<Answers>[] =
       Object.entries(shops).map(([value, desc]) => ({
         short: Words.capitalize(value),
         value,
@@ -469,7 +485,7 @@ export class ModuleRunner {
 
   private rest(party: Combatant[]) {
     party.forEach(pc => {
-      let effective = Fighting.effectiveStats(pc);
+      const effective = Fighting.effectiveStats(pc);
       pc.hp = effective.maxHp;
       pc.spellSlotsUsed = 0;
       pc.activeEffects = []; // Clear status effects!
@@ -496,8 +512,8 @@ export class ModuleRunner {
         const options: Choice<any>[] = [];
         // shopItems.map((itemName: string, index: number) => {
         for (let index = 0; index < magicItemNames.length; index++) {
-          let itemName = magicItemNames[index];
-          let item = await Deem.evaluate(`lookup(equipment, "${itemName}")`);
+          const itemName = magicItemNames[index];
+          const item = await Deem.evaluate(`lookup(equipment, "${itemName}")`);
           item.key = itemName;
           options.push({
             short: Words.humanize(itemName) + ` (${item.value}g)`,
@@ -518,9 +534,9 @@ export class ModuleRunner {
         // console.log("Chosen equipment:", item);
 
         if (this.sharedGold >= item.value) {
-          let { oldItemKey: maybeOldItem } = await Inventory.equip(item.key, wielder);
+          const { oldItemKey: maybeOldItem } = await Inventory.equip(item.key, wielder);
           if (maybeOldItem) {
-            let oldItem = await Deem.evaluate(`lookup(equipment, "${maybeOldItem}")`);
+            const oldItem = await Deem.evaluate(`lookup(equipment, "${maybeOldItem}")`);
             this.state.sharedGold += oldItem.value || 0;
             // this.outputSink(`🔄 Replacing ${Words.humanize(oldItem.key)} equipped to ${wielder.name} (sold old item ${oldItem.name} for ${oldItem.value}g).`)
           }
@@ -555,8 +571,8 @@ export class ModuleRunner {
         const options: Choice<any>[] = [];
         // shopItems.map((itemName: string, index: number) => {
         for (let index = 0; index < consumableItemNames.length; index++) {
-          let itemName = consumableItemNames[index];
-          let item = await Deem.evaluate(`lookup(consumables, "${itemName}")`);
+          const itemName = consumableItemNames[index];
+          const item = await Deem.evaluate(`lookup(consumables, "${itemName}")`);
           item.key = itemName;
           options.push({
             short: item.name + ` (${item.value}g)`,
@@ -580,7 +596,7 @@ export class ModuleRunner {
           // this.state.inventory[item.key] = (this.state.inventory[item.key] || 0) + 1;
           this.state.inventory.push(await Inventory.item(item.key));
           // this.outputSink(`✅ Purchased 1x ${item.name} for ${item.value}g`);
-          let firstPc = this.pcs[0];
+          const firstPc = this.pcs[0];
           await this.emit({
             type: "purchase",
             itemName: item.key,
@@ -615,8 +631,8 @@ export class ModuleRunner {
         const options: Choice<any>[] = [];
         // shopItems.map((itemName: string, index: number) => {
         for (let index = 0; index < weaponItemNames.length; index++) {
-          let itemName = weaponItemNames[index];
-          let item = await Deem.evaluate(`lookup(masterWeapon, "${itemName}")`);
+          const itemName = weaponItemNames[index];
+          const item = await Deem.evaluate(`lookup(masterWeapon, "${itemName}")`);
           item.key = itemName;
           options.push({
             short: Words.humanize(itemName) + ` (${item.value}g)`,
@@ -645,7 +661,7 @@ export class ModuleRunner {
           wielder.hasMissileWeapon = item.missile;
           wielder.hasInterceptWeapon = item.intercept;
 
-          let primaryAttack = item.missile ? 'ranged' : 'melee';
+          const primaryAttack = item.missile ? 'ranged' : 'melee';
           // remove ranged/melee ability from ability list
           wielder.abilities = (wielder.abilities || []).filter((abil: any) => abil.match(/melee|ranged/i) === null);
           // add new ability (keep primary at front)
@@ -672,7 +688,7 @@ export class ModuleRunner {
       return;
     }
 
-    let index = Math.floor(Math.random() * available.length);
+    const index = Math.floor(Math.random() * available.length);
     const rumor = available[index].rumor;
     await this.emit({
       type: "rumorHeard",
@@ -687,7 +703,7 @@ export class ModuleRunner {
 
   private async presentHireling() {
     const cost = 100;
-    let partySize = this.pcs.length;
+    const partySize = this.pcs.length;
     if (partySize >= 6 || this.sharedGold < cost) {
       return;
     }
@@ -735,16 +751,16 @@ export class ModuleRunner {
 
   private async selectDungeon(): Promise<Dungeon | null> {
     const dungeonChoices = this.availableDungeons.filter(d => this.state.discoveredDungeons.includes(d.dungeonIndex!));
-    if (dungeonChoices.length === 0) return null;
+    if (dungeonChoices.length === 0) {return null;}
 
-    let reasonableCr = Math.round(1.5 * this.pcs.map(pc => pc.level).reduce((a, b) => a + b, 0) / this.pcs.length) + 2;
+    const reasonableCr = Math.round(1.5 * this.pcs.map(pc => pc.level).reduce((a, b) => a + b, 0) / this.pcs.length) + 2;
     // console.log(`(Reasonable CR for party level ${this.pcs.map(pc => pc.level).join(", ")} is approx. ${reasonableCr})`);
     // console.log("Available dungeons:");
     // available.forEach(d => {
     //   console.log(` - ${d.dungeon_name} (CR ${d.intendedCr}): ${d.intendedCr > reasonableCr ? Stylist.colorize("⚠️ Too difficult!", 'red') : '✓ Reasonable'}`);
     // });
 
-    let options = dungeonChoices.map(d => ({
+    const options = dungeonChoices.map(d => ({
       short: d.dungeon_name,
       value: dungeonChoices.indexOf(d),
       name: `${d.dungeon_name} (${d.direction}, CR ${d.intendedCr})`,

@@ -189,7 +189,7 @@
     "*rankModifier": "=lookup(monsterRank, #rank)",
     "archetype": "=#class",
     "_name": "=(#kind != '' ? capitalize(#kind) + ' ' : '') + (#rank != 'standard' ? capitalize(#rank) + ' ' : '') + (#substance ? capitalize(#substance) + ' ' : '') + capitalize(#monster_type)",
-    "name": "=if(#class == 'elemental', capitalize(#kind) + ' ' + (#rank != 'standard' ? capitalize(#rank) + ' ' : '') + capitalize(#element) + ' ' + capitalize(#monster_type), #_name)",
+    "name": "=#class == 'elemental' ? (capitalize(#kind) + ' ' + (#rank != 'standard' ? capitalize(#rank) + ' ' : '') + capitalize(#element) + ' ' + capitalize(#monster_type)) : #_name",
     "hp": "=#maximumHitPoints"
   },
   "npc": {

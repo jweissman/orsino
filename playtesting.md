@@ -145,6 +145,7 @@
 - [ ] Generate static list of tavern hirelings each day
 - [ ] Wonders should have _strictly better_ boons than normal room features!
 - [ ] Purge active fx on long rest
+- [ ] Flight should make you actually _untargetable_ by melee
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing

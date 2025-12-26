@@ -33,7 +33,7 @@ export default class TraitHandler {
     if (this.loadedTraits) {
       return;
     }
-    let data = await Files.readJSON<TraitDictionary>("./settings/fantasy/traits.json");
+    const data = await Files.readJSON<TraitDictionary>("./settings/fantasy/traits.json");
     this.traits = data;
     Object.entries(this.traits).forEach(([key, trait]) => {
       trait.name = key;
@@ -48,20 +48,20 @@ export default class TraitHandler {
   getTrait(name: string): Trait | null { return this.traits[name] || null; }
 
   partyTraits(combatant: Combatant[]): Trait[] {
-    let synergies: Trait[] = [];
+    const synergies: Trait[] = [];
     // close, but we need to explicitly match _each_ class in the intended formation
     // the above would allow for a party with just 1 warrior to get the "warrior trio" trait, which is not intended
     Object.values(this.traits).forEach(trait => {
       if (trait.type === "party") {
         if (trait.requirements.formation) {
-          let hasRequired = trait.requirements.formation.every(reqClass =>
+          const hasRequired = trait.requirements.formation.every(reqClass =>
             combatant.filter(c => c.class === reqClass).length >= trait.requirements.formation!.filter(r => r === reqClass).length
           );
           if (hasRequired) {
             synergies.push(trait);
           }
         } else if (trait.requirements.races) {
-          let hasRequired = trait.requirements.races.every(reqRace => 
+          const hasRequired = trait.requirements.races.every(reqRace => 
             combatant.filter(c => c.race === reqRace).length >= trait.requirements.races!.filter(r => r === reqRace).length
           );
           if (hasRequired) {
@@ -75,7 +75,7 @@ export default class TraitHandler {
   }
 
   classFeatures(pcClass: string, level: number): Trait[] {
-    let features: Trait[] = [];
+    const features: Trait[] = [];
     Object.values(this.traits).forEach(trait => {
       if (trait.type === "feat" && trait.requirements.class === pcClass && trait.requirements.level !== undefined && trait.requirements.level <= level) {
         features.push(trait);
@@ -91,8 +91,8 @@ export default class TraitHandler {
       return [];
     }
 
-    let feats: Trait[] = [];
-    for (let feat of this.classFeatures(pc.class, pc.level)) {
+    const feats: Trait[] = [];
+    for (const feat of this.classFeatures(pc.class, pc.level)) {
       if (!pc.traits.includes(feat.name)) {
         feats.push(feat);
       }

@@ -357,7 +357,7 @@
       "Cult Master": { "str": 4,  "con": 5, "dex": 2, "int": 6, "wis": 4, "cha": 4, "abilities": [ "hex", "obscuring_mist", "ghost_touch", "life_drain",  "terror", "poison_cloud", "mass_curse", "deathtouch" ], "traits": ["fiendish"] },
       "Poxmonger":   { "str": -2, "dex": -2, "con": -1, "int": 2, "wis": 1, "cha": 2, "abilities": [ "hex", "terror", "poison_cloud", "inflict_disease", "deathtouch" ] },
       "Archaeologist": { "str": 1,  "con": 2, "dex": 2, "int": 3, "wis": 2, "cha": 1, "abilities": [ "prepare_charge", "charge", "hide", "rapid_strike", "cure_minor", "cure" ] },
-      "Wizard":      { "str": -1, "dex": -1, "int": 3, "con": 1, "abilities": [ "dancing_lights", "minor_ward", "shock_pulse", "frostbite", "spark", "firebolt", "missile", "shocking_grasp", "sleep", "lightning_strike", "slow", "armor", "acid_arrow", "chaos_bolt", "warp" ] },
+      "Wizard":      { "str": -1, "dex": -1, "int": 3, "con": 1, "abilities": [ "dancing_lights", "minor_ward", "shock_pulse", "frostbite", "spark", "firebolt", "missile", "shocking_grasp", "sleep", "lightning_bolt", "slow", "armor", "acid_arrow", "chaos_bolt", "warp" ] },
       "Necromancer":  { "str": 3,  "con": 4, "dex": 2, "int": 8, "abilities": [ "minor_ward", "life_drain", "curse", "scourge", "terror", "weakness", "insanity", "poison_cloud", "deathtouch", "summon_undead", "resurrect", "animate_dead", "harm" ], "traits": ["fiendish"] },
 
       "Mendicant":    { "str": -2, "dex": -2, "con": -2, "int": 1, "wis": 2, "cha": 2, "abilities": [
@@ -1317,7 +1317,7 @@
   },
 
   "wonderTypes": {
-    "discriminator": "d20",
+    "discriminator": "d60",
     "groups": {
       "1": "glowing_runes", "2": "levitating_objects", "3": "ethereal_music",
       "4": "shifting_walls", "5": "enchanted_statues", "6": "ancient_trees",
@@ -1325,7 +1325,23 @@
       "10": "whispering_voices", "11": "spectral_figures", "12": "magical_weather",
       "13": "floating_lights", "14": "color_shifts", "15": "unearthly_silence",
       "16": "glowing_crystals", "17": "mysterious_portal", "18": "arcane_symbols",
-      "19": "mystical_fog", "20": "celestial_glow"
+      "19": "mystical_fog", "20": "celestial_glow",
+
+      "21": "intelligent_painting", "22": "living_statue", "23": "enchanted_mirror",
+      "24": "magical_fountain", "25": "eternal_candle", "26": "floating_disk",
+      "27": "mystic_compass", "28": "arcane_clock", "29": "enchanted_tapestry",
+      "30": "magical_lantern", "31": "living_book", "32": "phantom_flame",
+      "33": "singing_crystal", "34": "dancing_lights", "35": "shimmering_veil",
+      "36": "whispering_tree", "37": "phantasmal_orb", "38": "enchanted_grove",
+      "39": "endless_staircase", "40": "mystic_statue",
+
+      "41": "dreamscape_portal", "42": "timeworn_relic", "43": "arcane_sculpture",
+      "44": "celestial_map", "45": "ethereal_fountain", "46": "mystical_jewel",
+      "47": "enchanted_obelisk", "48": "living_mural", "49": "magical_sundial",
+      "50": "phantom_garden", "51": "arcane_well", "52": "enchanted_flute",
+      "53": "eerie_chimes", "54": "mystic_pedestal", "55": "glowing_pool",
+      "56": "oathstone_circle", "57": "arcane_tree", "58": "enchanted_statue_garden",
+      "59": "petrified_forest", "60": "celestial_observatory"
     }
   },
 
@@ -1365,6 +1381,48 @@
       "arcane_symbols": "symbols that glow with magical energy, pulsing rhythmically.",
       "mystical_fog": "a thick fog that seems to have a life of its own.",
       "celestial_glow": "a soft glow that seems to come from the heavens themselves.",
+
+      "intelligent_painting": "a painting that seems to change and shift, depicting different scenes.",
+      "living_statue": "a statue that appears to move and breathe when not being observed.",
+      "enchanted_mirror": "a mirror that shows not just reflections, but glimpses of other places.",
+      "magical_fountain": "a fountain that flows with water imbued with magical properties.",
+      "eternal_candle": "a candle that burns without ever melting, its flame flickering eternally.",
+      "floating_disk": "a disk that hovers in the air, rotating slowly.",
+      "mystic_compass": "a compass that always points toward a place of great magical power.",
+      "arcane_clock": "a clock that seems to measure time in a non-linear fashion.",
+      "enchanted_tapestry": "a tapestry that depicts scenes that seem to move and change.",
+      "magical_lantern": "a lantern that emits a light that reveals hidden truths.",
+      "living_book": "a book that seems to write itself, its pages filled with ever-changing text.",
+      "phantom_flame": "a flame that burns without heat, flickering in the air.",
+      "singing_crystal": "a crystal that emits a melodious sound when touched.",
+      "dancing_lights": "lights that move and dance in intricate patterns.",
+      "shimmering_veil": "a veil of shimmering light that seems to separate two realms.",
+      "whispering_tree": "a tree that seems to whisper secrets to those who listen.",
+      "phantasmal_orb": "an orb that glows with an inner light, showing visions of distant places.",
+      "enchanted_grove": "a grove of trees that seem to radiate magical energy.",
+      "endless_staircase": "a staircase that seems to go on forever, leading to unknown places.",
+      "mystic_statue": "a statue that seems to radiate an aura of ancient power.",
+
+      "dreamscape_portal": "a portal that seems to lead to a realm of dreams and imagination.",
+      "timeworn_relic": "an ancient relic that seems to pulse with the energy of ages past.",
+      "arcane_sculpture": "a sculpture that seems to shift and change form when not being observed.",
+      "celestial_map": "a map that depicts the starfall_crystals and constellations of distant realms.",
+      "ethereal_fountain": "a fountain that flows with water from another plane of existence.",
+      "mystical_jewel": "a jewel that emits a soft, radiant light, pulsing with magical energy.",
+      "enchanted_obelisk": "an obelisk inscribed with runes of great power.",
+      "living_mural": "a mural that seems to depict scenes that change and shift over time.",
+      "magical_sundial": "a sundial that seems to measure time in a mystical way.",
+      "phantom_garden": "a garden that seems to bloom with flowers of ethereal beauty.",
+      "arcane_well": "a well that seems to draw water from other planes of existence.",
+      "enchanted_flute": "a flute that produces haunting melodies when played.",
+      "eerie_chimes": "chimes that produce otherworldly sounds when the wind blows.",
+      "mystic_pedestal": "a pedestal that seems to radiate magical energy.",
+      "glowing_pool": "a pool that glows with a soft, radiant light.",
+      "oathstone_circle": "a circle of stones that seem to bind those who stand within it to their oaths.",
+      "arcane_tree": "a tree that seems to grow magical energy within its branches.",
+      "enchanted_statue_garden": "a garden filled with statues that seem to come to life when not being observed.",
+      "petrified_forest": "a forest of petrified trees that seem to pulse with ancient energy.",
+      "celestial_observatory": "an observatory that seems to connect to the stars and celestial realms.",
 
       "seeing_stone": "a polished stone that allows one to see distant places or events.",
       "time_stop_aura": "an aura that can temporarily halt the flow of time within its vicinity.",
@@ -1412,6 +1470,48 @@
       "arcane_symbols": [[{ "type": "buff", "status": "focus", "duration": 10 }]],
       "mystical_fog": [[{ "type": "buff", "status": "splendor", "duration": 10 }]],
       "celestial_glow": [[{ "type": "buff", "status": "scaleskin", "duration": 10 }]],
+
+      "intelligent_painting": [[{ "type": "learn", "abilityName": "polymorph" }]],
+      "living_statue": [[{ "type": "upgrade", "stat": "str", "amount": 1 }, { "type": "upgrade", "stat": "con", "amount": 1 }]],
+      "enchanted_mirror": [[{ "type": "learn", "abilityName": "reflection" }]],
+      "magical_fountain": [[{ "type": "heal", "amount": "2d10" }]],
+      "eternal_candle": [[{ "type": "buff", "status": "lightproof", "duration": 20 }]],
+      "floating_disk": [[{ "type": "buff", "status": "flight", "duration": 10 }]],
+      "mystic_compass": [[{ "type": "upgrade", "stat": "dex", "amount": 1 }]],
+      "arcane_clock": [[{ "type": "buff", "status": "haste", "duration": 20 }]],
+      "enchanted_tapestry": [[{ "type": "learn", "abilityName": "invisibility" }]],
+      "magical_lantern": [[{ "type": "buff", "status": "warded", "duration": 50 }]],
+      "living_book": [[{ "type": "learn", "abilityName": "lightning_bolt" }]],
+      "phantom_flame": [[{ "type": "buff", "status": "fireproof", "duration": 10 }]],
+      "singing_crystal": [[{ "type": "buff", "status": "inspired", "duration": 20 }]],
+      "dancing_lights": [[{ "type": "buff", "status": "agility", "duration": 10 }]],
+      "shimmering_veil": [[{ "type": "buff", "status": "warded", "duration": 50 }]],
+      "whispering_tree": [[{ "type": "upgrade", "stat": "wis", "amount": 1 }]],
+      "phantasmal_orb": [[{ "type": "teleport", "location": "randomRoom" }]],
+
+      "enchanted_grove": [[{ "type": "heal", "amount": "3d6" }]],
+      "endless_staircase": [[{ "type": "teleport", "location": "lastRoom" }]],
+      "mystic_statue": [[{ "type": "upgrade", "stat": "int", "amount": 1 }]],
+      "dreamscape_portal": [[{ "type": "planeshift", "location": "Arcadia" }]],
+      "timeworn_relic": [[{ "type": "upgrade", "stat": "con", "amount": 1 }]],
+      "arcane_sculpture": [[{ "type": "learn", "abilityName": "dispel_magic" }]],
+      "celestial_map": [[{ "type": "learn", "abilityName": "sunburst" }]],
+      "ethereal_fountain": [[{ "type": "heal", "amount": "4d6" }]],
+      "mystical_jewel": [[{ "type": "upgrade", "stat": "cha", "amount": 1 }]],
+      "enchanted_obelisk": [[{ "type": "upgrade", "stat": "str", "amount": 1 }]],
+      "living_mural": [[{ "type": "learn", "abilityName": "haste" }]],
+      "magical_sundial": [[{ "type": "buff", "status": "haste", "duration": 50 }]],
+      "phantom_garden": [[{ "type": "heal", "amount": "5d6" }]],
+      "arcane_well": [[{ "type": "heal", "amount": "3d8" }]],
+      "enchanted_flute": [[{ "type": "buff", "status": "inspired", "duration": 30 }]],
+      "eerie_chimes": [[{ "type": "buff", "status": "calm", "duration": 30 }]],
+      "mystic_pedestal": [[{ "type": "upgrade", "stat": "dex", "amount": 1 }]],
+      "glowing_pool": [[{ "type": "heal", "amount": "4d8" }]],
+      "oathstone_circle": [[{ "type": "buff", "status": "oathbound", "duration": 100 }]],
+      "arcane_tree": [[{ "type": "upgrade", "stat": "int", "amount": 1 }]],
+      "enchanted_statue_garden": [[{ "type": "learn", "abilityName": "flesh_to_stone" }]],
+      "petrified_forest": [[{ "type": "upgrade", "stat": "con", "amount": 1 }]],
+      "celestial_observatory": [[{ "type": "learn", "abilityName": "meteor_swarm" }]],
 
       "seeing_stone": [[{ "type": "upgrade", "stat": "wis", "amount": 1 }]],
       "time_stop_aura": [[{ "type": "learn", "abilityName": "time_stop" }]],
@@ -2085,7 +2185,7 @@
       "Owlbear": [ "maul", "stomp" ],
       "Nightmare": [ "charge", "maul", "fear" ],
       "Wendigo": [ "maul", "life_drain" ],
-      "Chimera": [ "fireball", "maul", "lightning_strike" ]
+      "Chimera": [ "fireball", "maul", "lightning_bolt" ]
     }
   },
 
@@ -2311,9 +2411,9 @@
   "elementalAbilities": {
     "discriminator": "elemental_type",
     "groups": {
-      "fire": [ "burning_hands" ], "water": [ "drench" ], "earth": [ "earthquake" ], "air": [ "lightning_strike" ],
+      "fire": [ "burning_hands" ], "water": [ "drench" ], "earth": [ "earthquake" ], "air": [ "lightning_bolt" ],
       "smoke": [ "hide" ], "lava": [ "burning_hands" ], "ice": [ "ray_of_frost" ], "mud": [ "slow" ],
-      "storm": [ "lightning_strike" ], "steam": [ "scald" ], "crystal": [ "prismatic_spray" ], "sand": [ "sandstorm" ],
+      "storm": [ "lightning_bolt" ], "steam": [ "scald" ], "crystal": [ "prismatic_spray" ], "sand": [ "sandstorm" ],
       "ash": [ "hide" ], "salt": [ "acid_spray" ], "dust": [ "poison_cloud"], "jewel": [ "prismatic_spray" ],
       "wood": [ "ensnare" ]
     }

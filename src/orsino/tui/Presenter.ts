@@ -13,7 +13,7 @@ export default class Presenter {
   static colors = ['magenta', 'red', 'yellow', 'yellow', 'yellow', 'green', 'green', 'green', 'green'];
 
   static aggregateList = (items: string[]) => {
-    let counts: { [item: string]: number } = {};
+    const counts: { [item: string]: number } = {};
     items.forEach(item => {
       counts[item] = (counts[item] || 0) + 1;
     });
@@ -27,8 +27,8 @@ export default class Presenter {
     record += (`### ${combatant.name}\n`);
     record += `_${this.describeCharacter(combatant)}_\n`;
 
-    let statNames = ['str', 'dex', 'int', 'wis', 'cha', 'con'];
-    let effective = Fighting.effectiveStats(combatant);
+    const statNames = ['str', 'dex', 'int', 'wis', 'cha', 'con'];
+    const effective = Fighting.effectiveStats(combatant);
     // we want a table like | str | dex | int | wis | cha | con |
     record += "\n|   |   |   |   |   |   |";
     record += "\n|---|---|---|---|---|---|\n";
@@ -45,40 +45,40 @@ export default class Presenter {
     record += "|\n";
 
     record += `\n\n**Hit Points:** ${combatant.hp}/${effective.maxHp}\n\n`;
-    let basics = {
+    const basics = {
       weapon: (combatant.weapon || 'None'),
       armor: combatant.armor || 'None',
       xp: combatant.xp,
       gp: combatant.gp,
     }
-    for (let [key, value] of Object.entries(basics)) {
+    for (const [key, value] of Object.entries(basics)) {
       record += (`**${Words.capitalize(key)}:** ${Words.humanize(value.toString())}<br/>\n`);
     }
 
-    let core = {
+    const core = {
       "Attack Die": combatant.attackDie,
       "Armor Class": (effective as any).ac,
       "Spell Slots": ["mage", "bard", "cleric"].includes(combatant.class || '') ? Combat.maxSpellSlotsForCombatant(combatant) : "none"
     }
-    for (let [key, value] of Object.entries(core)) {
+    for (const [key, value] of Object.entries(core)) {
       record += (`**${Words.capitalize(key)}:** ${Words.humanize(value.toString())}\n`);
     }
 
     // spells + skills
     record += ("\n\n_Abilities_<br/>\n");
-    let abilityHandler = AbilityHandler.instance;
-    for (let abilityName of combatant.abilities || []) {
-      let ability = abilityHandler.getAbility(abilityName)!;
+    const abilityHandler = AbilityHandler.instance;
+    for (const abilityName of combatant.abilities || []) {
+      const ability = abilityHandler.getAbility(abilityName);
       record += `- **${ability.name}**: ${ability.description + ' ' || ''}${this.describeAbility(ability)}<br/>\n`;
     }
 
     // traits
-    let passiveEffectsFromTraits: string[] = [];
+    const passiveEffectsFromTraits: string[] = [];
     if (combatant.traits && combatant.traits.length > 0) {
-      let traitHandler = TraitHandler.instance;
+      const traitHandler = TraitHandler.instance;
       record += ("\n_Traits_<br/>\n\n");
-      for (let traitName of combatant.traits || []) {
-        let trait = traitHandler.getTrait(traitName);
+      for (const traitName of combatant.traits || []) {
+        const trait = traitHandler.getTrait(traitName);
         if (trait) {
           record += `**${(trait.description)}**<br/>\n`;
           trait.statuses?.forEach(status => {
@@ -89,7 +89,7 @@ export default class Presenter {
           record += "\n";
           // note: should already be included above??
           trait.abilities?.forEach(abilityName => {
-            let ability = abilityHandler.getAbility(abilityName);
+            const ability = abilityHandler.getAbility(abilityName);
             if (ability) {
               record += `- **${ability.name}**: ${ability.description + ' ' || ''}${this.describeAbility(ability)}<br/>\n`;
             }
@@ -109,7 +109,7 @@ export default class Presenter {
   }
 
   static describeCharacter(combatant: Combatant) {
-    let descriptor = {
+    const descriptor = {
       male: "He is", female: "She is", androgynous: "They are"
     }[(combatant.gender || 'androgynous').toLowerCase()] || "They are";
     return `${Words.capitalize(combatant.referenceName || combatant.forename)} is ${Words.a_an(Words.capitalize(combatant.background || 'adventurer'))} ${Words.humanize(combatant.archetype || 'neutral')} from the ${combatant.hometown || 'unknown'}, ${combatant.age || 'unknown'} years old. ${descriptor} of ${combatant.body_type || 'average'} build with ${combatant.hair || 'unknown color'} hair, ${combatant.eye_color || 'dark'} eyes and ${Words.a_an(combatant.personality || 'unreadable')} disposition.`
@@ -131,9 +131,9 @@ export default class Presenter {
         this.describeCharacter(combatant)
       ) + "\n\n"
     )
-    let statNames = ['str', 'dex', 'int', 'wis', 'cha', 'con'];
-    let effective = Fighting.effectiveStats(combatant);
-    let statLine = statNames.map(stat => {
+    const statNames = ['str', 'dex', 'int', 'wis', 'cha', 'con'];
+    const effective = Fighting.effectiveStats(combatant);
+    const statLine = statNames.map(stat => {
       const value = (effective as any)[stat];
       const mod = Fighting.statMod(value);
       const color = mod > 0 ? 'green' : (mod < 0 ? 'red' : 'white');
@@ -145,7 +145,7 @@ export default class Presenter {
     record += "\nHit Points: " + Stylist.colorize(`${combatant.hp}/${effective.maxHp} \n`, 'green');
     // record += "Armor Class: " + Stylist.colorize(`${combatant.ac} `, 'yellow');
 
-    let basics = {
+    const basics = {
       weapon: (combatant.weapon || 'None'),
       armor: combatant.armor || 'None',
       // background: combatant.background || 'None',
@@ -156,8 +156,8 @@ export default class Presenter {
       return this.padLiteralEnd(`${Stylist.bold(Words.capitalize(key))} ${Words.humanize(value.toString())}`, 25);
     }).join('   ')) + "\n";
 
-    let bolt = Stylist.colorize('⚡', 'yellow');
-    let core = {
+    const bolt = Stylist.colorize('⚡', 'yellow');
+    const core = {
       "Attack Die": Stylist.colorize(combatant.attackDie, 'red'),
       "Armor Class": Stylist.colorize(`${(effective as any).ac}`, 'yellow'),
       "Spell Slots": ["mage", "bard", "cleric"].includes(combatant.class || '') ?
@@ -169,19 +169,19 @@ export default class Presenter {
 
     // ability table
     record += Stylist.bold("\nAbilities\n");
-    let abilityHandler = AbilityHandler.instance;
-    for (let abilityName of combatant.abilities || []) {
-      let ability = abilityHandler.getAbility(abilityName)!;
+    const abilityHandler = AbilityHandler.instance;
+    for (const abilityName of combatant.abilities || []) {
+      const ability = abilityHandler.getAbility(abilityName);
       record += `  ${Stylist.colorize(ability.name, 'magenta').padEnd(28)} ${ability.description + ' ' || ''}${this.describeAbility(ability)}\n`;
     }
 
     // traits
-    let passiveEffectsFromTraits: string[] = [];
+    const passiveEffectsFromTraits: string[] = [];
     if (combatant.traits && combatant.traits.length > 0) {
-      let traitHandler = TraitHandler.instance;
+      const traitHandler = TraitHandler.instance;
       record += Stylist.bold("\nTraits\n");
-      for (let traitName of combatant.traits || []) {
-        let trait = traitHandler.getTrait(traitName);
+      for (const traitName of combatant.traits || []) {
+        const trait = traitHandler.getTrait(traitName);
         if (trait) {
           record += `  ${Stylist.colorize(trait.description, 'blue')}\n`;
           trait.statuses?.forEach(status => {
@@ -221,9 +221,9 @@ export default class Presenter {
     if (combatant.equipment && Object.keys(combatant.equipment).length > 0) {
       record += Stylist.bold("\nEquipped Items: \n");
       // Object.entries(combatant.equipment).forEach(([slot, item]) => {
-      for (let slot of Object.keys(combatant.equipment)) {
-        let itemName = (combatant.equipment as any)[slot];
-        let item = await Deem.evaluate('lookup(equipment, "' + itemName + '")') as { effect: StatusModifications };
+      for (const slot of Object.keys(combatant.equipment)) {
+        const itemName = (combatant.equipment as any)[slot];
+        const item = await Deem.evaluate('lookup(equipment, "' + itemName + '")') as { effect: StatusModifications };
         record += `  ${Stylist.colorize(Words.capitalize(slot), 'yellow')}: ${Words.humanize(itemName)} (${
           this.describeModifications(item.effect)
         })\n`;
@@ -242,23 +242,23 @@ export default class Presenter {
   }
 
   static minimalCombatant = (combatant: Combatant) => {
-    let effective = Fighting.effectiveStats(combatant);
+    const effective = Fighting.effectiveStats(combatant);
     const hpRatio = combatant.hp / effective.maxHp;
     const hpBar = Stylist.prettyValue(combatant.hp, effective.maxHp);
     const color = this.colors[Math.floor(hpRatio * (this.colors.length - 1))] || this.colors[0];
     let name = Stylist.format(combatant.forename, 'bold');
-    let fx = Fighting.effectList(combatant);
+    const fx = Fighting.effectList(combatant);
     if (fx.some(e => e.effect?.displayName)) {
-      let firstNameOverride = fx.find(e => e.effect?.displayName)?.effect?.displayName;
+      const firstNameOverride = fx.find(e => e.effect?.displayName)?.effect?.displayName;
       if (firstNameOverride) {
         name = Stylist.format(firstNameOverride, 'bold');
       }
     }
 
-    let combatClass = combatant.class;
-    let combatKind = (combatant as any).kind || combatant.race || '';
+    const combatClass = combatant.class;
+    const combatKind = (combatant as any).kind || combatant.race || '';
     let tempHp = 0;
-    for (let poolAmount of Object.values(combatant.tempHpPools || {})) {
+    for (const poolAmount of Object.values(combatant.tempHpPools || {})) {
       tempHp += poolAmount;
     }
     return [
@@ -271,13 +271,13 @@ export default class Presenter {
   }
 
   static combatant = (combatant: Combatant) => {
-    let effective = Fighting.effectiveStats(combatant);
+    const effective = Fighting.effectiveStats(combatant);
     const hpRatio = combatant.hp / effective.maxHp;
     const hpBar = Stylist.prettyValue(combatant.hp, effective.maxHp);
     const color = this.colors[Math.floor(hpRatio * (this.colors.length - 1))] || this.colors[0];
 
-    let combatClass = combatant.class;
-    let combatKind = (combatant as any).kind || combatant.race || '';
+    const combatClass = combatant.class;
+    const combatKind = (combatant as any).kind || combatant.race || '';
     let classInfo = combatClass ? `Lvl. ${combatant.level.toString().padEnd(2)} ${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '';
     // const effective = Fighting.effectiveStats(combatant);
     // const stats = { STR: effective.str, DEX: effective.dex, INT: effective.int, WIS: effective.wis, CHA: effective.cha, CON: effective.con };
@@ -291,16 +291,16 @@ export default class Presenter {
       }));
     }
 
-    let friendly = ((combatant as any).friendly || false) || combatant.playerControlled;
+    const friendly = ((combatant as any).friendly || false) || combatant.playerControlled;
     let name = combatant.name;
-    let fx = Fighting.effectList(combatant);
+    const fx = Fighting.effectList(combatant);
     if (fx.some(e => e.effect?.displayName)) {
-      let firstNameOverride = fx.find(e => e.effect?.displayName)?.effect?.displayName;
+      const firstNameOverride = fx.find(e => e.effect?.displayName)?.effect?.displayName;
       if (firstNameOverride) {
         name = Stylist.format(firstNameOverride, 'bold');
       }
     }
-    let lhs = `${Stylist.colorize(hpBar, color)} ${Stylist.format(
+    const lhs = `${Stylist.colorize(hpBar, color)} ${Stylist.format(
       Stylist.colorize(combatant.name, friendly ? 'cyan' : 'yellow'),
       'bold'
     ).padEnd(40)}${classInfo}`;
@@ -360,30 +360,30 @@ export default class Presenter {
   }
 
   static padLiteralEnd = (text: string, length: number, padChar: string = ' ') => {
-    let cleanLength = Stylist.cleanLength(text);
+    const cleanLength = Stylist.cleanLength(text);
     if (cleanLength >= length) { return text; }
-    let padLength = length - cleanLength;
+    const padLength = length - cleanLength;
     return text + padChar.repeat(padLength);
   }
 
   static padLiteralStart = (text: string, length: number, padChar: string = ' ') => {
-    let cleanLength = Stylist.cleanLength(text);
+    const cleanLength = Stylist.cleanLength(text);
     if (cleanLength >= length) { return text; }
-    let padLength = length - cleanLength;
+    const padLength = length - cleanLength;
     return padChar.repeat(padLength) + text;
   }
 
   static parties = (parties: { name: string; combatants: Combatant[] }[]) => {
     let partyDisplay = "";
-    let lines = Math.max(...parties.map(p => p.combatants.length))
+    const lines = Math.max(...parties.map(p => p.combatants.length))
     // sort combatants alphabetically within each party
     parties.forEach(party => {
       party.combatants.sort((a, b) => a.name.localeCompare(b.forename));
     });
     for (let i = 0; i < lines; i++) {
       // names
-      let lhs = parties[0] ? parties[0].combatants[i] : null;
-      let rhs = parties[1] ? parties[1].combatants[i] : null;
+      const lhs = parties[0] ? parties[0].combatants[i] : null;
+      const rhs = parties[1] ? parties[1].combatants[i] : null;
       let line = "";
       if (lhs) {
         line += this.padLiteralEnd(this.minimalCombatant(lhs), 40);
@@ -399,7 +399,7 @@ export default class Presenter {
       partyDisplay += line + '\n';
 
       // traits / statuses
-      let ignoreStatuses = ['humanoid']
+      const ignoreStatuses = ['humanoid']
       let lhsStatuses = lhs?.activeEffects?.map(e => e.duration ? `${e.name}(${e.duration})` : e.name)
         || [];
       // console.log("Rendering statuses for line", i, lhsStatuses);
@@ -412,7 +412,7 @@ export default class Presenter {
         .map(s => s.toLowerCase())
         .filter(s => !ignoreStatuses.includes(s));
 
-      let sep = // dot
+      const sep = // dot
           '·';
       let statusLine = "";
       if (lhsStatuses.length > 0) {
@@ -427,14 +427,14 @@ export default class Presenter {
       }
       partyDisplay += statusLine + '\n';
     }
-    let headers = //parties.map(p => Stylist.format(p.name, 'underline').padEnd(40)).join('   ') + '\n';
+    const headers = //parties.map(p => Stylist.format(p.name, 'underline').padEnd(40)).join('   ') + '\n';
       Stylist.format(parties[0].name.padEnd(40), 'italic') +
       Stylist.format(parties[1]?.name.padStart(40) || '', 'italic') + '\n';
     return headers + partyDisplay;
   }
 
   static describeStatusWithName(status: StatusEffect | string): string {
-    let statusEffect = StatusHandler.instance.dereference(status);
+    const statusEffect = StatusHandler.instance.dereference(status);
         if (!statusEffect) {
           throw new Error(`Buff effect has unknown status: ${JSON.stringify(status)}`);
         }
@@ -454,7 +454,7 @@ export default class Presenter {
   }
 
   static describeStatus(status: StatusEffect | string): string {
-    let statusEffect = StatusHandler.instance.dereference(status);
+    const statusEffect = StatusHandler.instance.dereference(status);
         if (!statusEffect) {
           throw new Error(`Buff effect has unknown status: ${JSON.stringify(status)}`);
         }
@@ -465,8 +465,8 @@ export default class Presenter {
   }
 
   static analyzeStatus(status: StatusEffect): string {
-    let parts: string[] = [];
-    let effect = status.effect;
+    const parts: string[] = [];
+    const effect = status.effect;
 
     if (status.whileEnvironment) {
       parts.push(`While in ${Words.a_an(status.whileEnvironment)} environment`);
@@ -487,7 +487,7 @@ export default class Presenter {
   }
 
   static describeModifications(effect: StatusModifications): string {
-    let parts: string[] = [];
+    const parts: string[] = [];
 
     // console.log("Describing modifications:", JSON.stringify(effect));
     // if all effect entries are saves or immunities, summarize differently
@@ -496,11 +496,11 @@ export default class Presenter {
       return key.startsWith("saveVersus") || key.startsWith("immune");
     });
     if (allSavesOrImmunities && allSameValue) {
-      let saves: string[] = [];
-      let immunities: string[] = [];
-      for (let [key, value] of Object.entries(effect)) {
-        if (value === undefined) continue;
-        let k: keyof StatusModifications = key as keyof StatusModifications;
+      const saves: string[] = [];
+      const immunities: string[] = [];
+      for (const [key, value] of Object.entries(effect)) {
+        if (value === undefined) {continue;}
+        const k: keyof StatusModifications = key as keyof StatusModifications;
         if (key.startsWith("saveVersus") && (value as number) > 0) {
           saves.push(Words.humanize(k.replace("saveVersus", "")));
         } else if (key.startsWith("immune") && (value as boolean)) {
@@ -525,9 +525,9 @@ export default class Presenter {
     }
 
 
-    for (let [key, value] of Object.entries(effect)) {
-      if (value === undefined) continue;
-      let k: keyof StatusModifications = key as keyof StatusModifications;
+    for (const [key, value] of Object.entries(effect)) {
+      if (value === undefined) {continue;}
+      const k: keyof StatusModifications = key as keyof StatusModifications;
       switch (k) {
         case "allRolls":
           parts.push(this.increaseDecrease('all rolls', value as number));
@@ -603,7 +603,7 @@ export default class Presenter {
         case "saveVersusBleed":
         case "saveVersusReflex":
         case "saveVersusFortitude":
-          let save = `Save versus ${Words.humanize(k.replace("saveVersus", ""))}`;
+          const save = `Save versus ${Words.humanize(k.replace("saveVersus", ""))}`;
           parts.push(this.increaseDecrease(save, value));
           break;
         case "saveVersusAll":
@@ -831,7 +831,7 @@ export default class Presenter {
         case "effectiveStats":
           if (value) {
             const stats = value as Partial<Combatant>;
-            for (let [statKey, statValue] of Object.entries(stats)) {
+            for (const [statKey, statValue] of Object.entries(stats)) {
               parts.push(`${statKey.toUpperCase()} set to ${statValue}`);
             }
           }
@@ -861,7 +861,7 @@ export default class Presenter {
           } else if (k.endsWith("Multiplier")) {
             // get just first part
             // @ts-ignore
-            let what = k.replace("Multiplier", "");
+            const what = k.replace("Multiplier", "");
             parts.push(this.multipliedBy(Words.humanize(what), value as number));
             break;
           }
@@ -882,7 +882,7 @@ export default class Presenter {
   }
 
   static multipliedBy(what: string, value: number): string {
-    let percentage = typeof value === 'number' ? Math.round((value - 1) * 100) : null;
+    const percentage = typeof value === 'number' ? Math.round((value - 1) * 100) : null;
     return value >= 1 ? `+${percentage}% ${what}` : `-${Math.abs(percentage || 0)}% ${what}`;
   }
 
@@ -909,7 +909,7 @@ export default class Presenter {
         break;
       case "cast":
         description = (`Cast ability ${Words.humanize(effect.spellName!)} (${
-          this.describeAbility(AbilityHandler.instance.getAbility(effect.spellName!)!)
+          this.describeAbility(AbilityHandler.instance.getAbility(effect.spellName!))
           }) on ${targetDescription}`);
         break;
       case "heal": description = (`Heal ${targetDescription} ${amount} HP`); break;
@@ -955,7 +955,7 @@ export default class Presenter {
       case "flee":
         description = (`Force ${targetDescription} to flee`); break;
       case "resurrect":
-        let hp = effect.hpPercent && effect.hpPercent < 100 ? `${effect.hpPercent}%` : "full";
+        const hp = effect.hpPercent && effect.hpPercent < 100 ? `${effect.hpPercent}%` : "full";
         description = (`Restore ${targetDescription} to life${effect.hpPercent ? ` with ${hp} health` : ""}`); break;
       case "kill":
         description = (`Instantly kill ${targetDescription}`); break;
@@ -973,23 +973,23 @@ export default class Presenter {
         }`); break;
       case "learn":
         description = (`Learn ability ${Words.humanize(effect.abilityName!)} (${
-          this.describeAbility(AbilityHandler.instance.getAbility(effect.abilityName!)!)
+          this.describeAbility(AbilityHandler.instance.getAbility(effect.abilityName!))
         })`); break;
       case "grantPassive":
         // lookup status by name
         if (!effect.traitName) {
           throw new Error(`grantPassive effect must have a traitName`);
         }
-        let trait = TraitHandler.instance.getTrait(effect.traitName);
-        let statuses = trait?.statuses && trait.statuses.length > 0 ?
+        const trait = TraitHandler.instance.getTrait(effect.traitName);
+        const statuses = trait?.statuses && trait.statuses.length > 0 ?
           trait.statuses.map(s => this.describeStatusWithName(s)).join(' and ')
           : '';
-        let abilities = trait?.abilities && trait.abilities.length > 0 ?
+        const abilities = trait?.abilities && trait.abilities.length > 0 ?
           trait.abilities.map(a => this.describeAbility(
-            AbilityHandler.instance.getAbility(a)!
+            AbilityHandler.instance.getAbility(a)
           )).join(' and ')
           : '';
-        let conferParts = [];
+        const conferParts = [];
         if (statuses) { conferParts.push(`statuses: ${statuses}`); }
         if (abilities) { conferParts.push(`abilities: ${abilities}`); }
         description = (`Grant passive trait ${effect.traitName} conferring ${conferParts.join(' and ')} to ${targetDescription}`); break;
@@ -1008,7 +1008,7 @@ export default class Presenter {
       description += ` with spillover to adjacent targets`;
     }
 
-    let cascade = effect.cascade ? ` cascading ${effect.cascade.count} times` : "";
+    const cascade = effect.cascade ? ` cascading ${effect.cascade.count} times` : "";
     description += cascade;
 
 
@@ -1025,7 +1025,7 @@ export default class Presenter {
   }
 
   static describeEffects(effects: AbilityEffect[], targetDescription: string = ""): string {
-    let parts: string[] = [];
+    const parts: string[] = [];
     if (effects.every(e => e.type === 'removeStatus') && effects.length > 0) {
       const statuses = effects.map(e => e.statusName).join(', ');
       return `Remove ${statuses} from ${targetDescription}`;
@@ -1037,7 +1037,7 @@ export default class Presenter {
   }
 
   static describeTarget(target: TargetKind[]): string {
-    let parts: string[] = [];
+    const parts: string[] = [];
     for (const t of target) {
       let desc = "";
       switch (t) {

@@ -1,25 +1,39 @@
 import Deem from "../deem";
+import { DeemValue } from "../deem/stdlib";
 import { loadSetting } from "./loader";
 import { Table } from "./Table";
 import { Template } from "./Template";
 import { GenerationTemplateType } from "./types/GenerationTemplateType";
 import deepCopy from "./util/deepCopy";
 
+export type GeneratorOptions = {
+  setting?: string;
+
+  count?: number;
+  __count?: number;
+
+  group?: string;
+
+  gender?: string;
+  targetCr?: number;
+}
+export type GeneratedValue = Record<string, DeemValue>;
+
 export default class Generator {
   static setting: Record<GenerationTemplateType, Template | Table>;
 
   static async genList(
     type: GenerationTemplateType,
-    options: Record<string, any> = {},
+    options: GeneratorOptions = {},
     count: number = 1
-  ): Promise<Record<string, any>[]> {
+  ): Promise<GeneratedValue[]> {
     if (count === 0) {
       return [];
     }
-    const items: Record<string, any>[] = [];
+    const items: GeneratedValue[] = [];
     while (items.length < count) {
       const i = items.length;
-      const item = await this.gen(type, deepCopy({ ...options, _index: i }));
+      const item: GeneratedValue = await this.gen(type, deepCopy({ ...options, _index: i }) as GeneratorOptions) as GeneratedValue;
       items.push(item);
     }
 
@@ -28,8 +42,8 @@ export default class Generator {
 
   static async gen(
     type: GenerationTemplateType,
-    options: Record<string, any> = {}
-  ): Promise<Record<string, any>> {
+    options: GeneratorOptions = {}
+  ): Promise<GeneratedValue | GeneratedValue[]> {
     Generator.setting = Generator.setting || (options.setting ? loadSetting(options.setting) : Generator.defaultSetting);
 
     const templ = Generator.generationSource(type);
@@ -44,7 +58,7 @@ export default class Generator {
     }
 
     if (templ instanceof Template) {
-      let assembled = await templ.assembleProperties(options); //, this);
+      const assembled = await templ.assembleProperties(options); //, this);
       return assembled;
     } else if (templ instanceof Table) {
       let group = options.group || 'default';
@@ -57,7 +71,7 @@ export default class Generator {
     }
   }
 
-  public static lookupInTable(tableName: GenerationTemplateType, groupName: string, globallyUnique: boolean = false): any {
+  public static lookupInTable(tableName: GenerationTemplateType, groupName: string, globallyUnique: boolean = false): DeemValue {
     const table = Generator.generationSource(tableName);
     if (!table || !(table instanceof Table)) {
       throw new Error(`Table not found: ${tableName}`);
@@ -74,7 +88,7 @@ export default class Generator {
     const ret = table.gatherKeys(count);
 
     if (condition) {
-      for (let key of ret.slice()) {
+      for (const key of ret.slice()) {
         const conditionResult = await Deem.evaluate(condition, { __it: this.lookupInTable(tableName, key) });
         if (!conditionResult) {
           ret.splice(ret.indexOf(key), 1);

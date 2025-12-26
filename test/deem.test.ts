@@ -3,7 +3,7 @@ import Deem from '../src/deem';
 
 const expectDeem = (expression: string, expected: any) => {
   it(`evaluates ${expression} to be ${expected}`, async () => {
-    let ret = await Deem.evaluate(expression)
+    const ret = await Deem.evaluate(expression)
     expect(ret).toBe(expected);
   });
 };

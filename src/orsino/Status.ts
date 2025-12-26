@@ -225,7 +225,7 @@ export default class StatusHandler {
   static instance: StatusHandler = new StatusHandler();
 
   async loadStatuses() {
-    if (this.loaded) return;
+    if (this.loaded) {return;}
     const statuses: StatusDictionary = await Files.readJSON<StatusDictionary>("./settings/fantasy/statuses.json");
     this.statusDictionary = statuses;
     this.loaded = true;

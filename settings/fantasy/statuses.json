@@ -979,5 +979,38 @@
       "toHit": 1,
       "saveVersusWill": 2
     }
+  },
+  "flight": {
+    "name": "Flight",
+    "description": "Soaring through the air with ease.",
+    "effect": {
+      "evasion": 20,
+      "ac": -5
+    }
+  },
+  "agility": {
+    "name": "Agility",
+    "description": "Enhanced reflexes and nimbleness.",
+    "effect": {
+      "dex": 4,
+      "evasion": 10,
+      "initiative": 5
+    }
+  },
+  "oathbound": {
+    "name": "Oathbound",
+    "description": "Bound by a sacred oath to protect allies.",
+    "effect": {
+      "ac": -2,
+      "toHit": 2,
+      "bonusDamage": 2,
+      "onEnemyMelee": [
+        {
+          "type": "attack",
+          "target": "attacker",
+          "description": "oathbound attack"
+        }
+      ]
+    }
   }
 }

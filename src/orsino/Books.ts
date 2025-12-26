@@ -28,14 +28,14 @@ export default class Books {
 
     for (const monsterKind of monsterKinds) {
       // console.log(`\n## ${Words.capitalize(monsterKind)}s\n`);
-      let monsterNames = await Deem.evaluate("lookup(monsterKind, '" + monsterKind + "')");
+      const monsterNames = await Deem.evaluate("lookup(monsterKind, '" + monsterKind + "')");
       monsterNames.sort((a: string, b: string) => a.localeCompare(b));
 
       if (monsterKind === "elemental") {
-        let elements = await Deem.evaluate("gather(elementalModifiers)");
+        const elements = await Deem.evaluate("gather(elementalModifiers)");
         for (const element of elements) {
           for (const monsterName of monsterNames) {
-            let monster = await Generator.gen("monster", {
+            const monster = await Generator.gen("monster", {
               setting: 'fantasy',
               monster_type: monsterName,
               monster_aspect: 'wildtype',
@@ -51,7 +51,7 @@ export default class Books {
         }
       } else {
         for (const monsterName of monsterNames) {
-          let monster = await Generator.gen("monster", {
+          const monster = await Generator.gen("monster", {
             setting: 'fantasy',
             monster_type: monsterName,
             monster_aspect: 'wildtype',
@@ -92,7 +92,7 @@ export default class Books {
 
     console.log(`## Skills\n`);
 
-    let skills = AbilityHandler.instance.allSkillNames()
+    const skills = AbilityHandler.instance.allSkillNames()
     skills.sort((a, b) => a.localeCompare(b));
 
     console.log("| Skill | Description | Details |");
@@ -119,7 +119,7 @@ export default class Books {
     // await TraitHandler.instance.loadTraits();
     // await Template.bootstrapDeem();
 
-    let traits = TraitHandler.instance.allTraitNames()
+    const traits = TraitHandler.instance.allTraitNames()
     traits.sort((a, b) => a.localeCompare(b));
 
     console.log(`## Traits\n`);
@@ -157,12 +157,12 @@ export default class Books {
     await this.bootstrap();
 
     console.log(`## Spells\n`);
-    let aspects = ['arcane', 'divine'];
+    const aspects = ['arcane', 'divine'];
     for (const aspect of aspects) {
       // console.log(`\n=== ${aspect.toUpperCase()} SPELLS ===\n`);
       console.log(`\n### ${Words.capitalize(aspect)} Spells\n`);
 
-      let spells = AbilityHandler.instance.allSpellNames(aspect, Infinity, false)
+      const spells = AbilityHandler.instance.allSpellNames(aspect, Infinity, false)
       spells.sort(
         (a, b) => {
           // const abilityA = AbilityHandler.instance.getAbility(a);
@@ -178,7 +178,7 @@ export default class Books {
         }
       )
 
-      let categoryIcons: { [key: string]: string } = {
+      const categoryIcons: { [key: string]: string } = {
         "abjuration": "🛡️",
         "conjuration": "✨",
         "divination": "🔮",
@@ -200,7 +200,7 @@ export default class Books {
 
       console.log("\n| Cantrip | Level 1 | Level 2 | Level 3 | Level 4 | Level 5 | Level 6 | Level 7 | Level 8 | Level 9 |");
       console.log("  |---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|");
-      let spellLevels: Record<number, string[]> = {};
+      const spellLevels: Record<number, string[]> = {};
       spells.forEach(spellName => {
         const ability = AbilityHandler.instance.getAbility(spellName);
         if (ability && ability.type === "spell" && ability.alignment !== "evil") {
@@ -223,8 +223,8 @@ export default class Books {
         for (let level = 0; level <= 9; level++) {
           if (spellLevels[level] && spellLevels[level][i]) {
             const ability = AbilityHandler.instance.getAbility(spellLevels[level][i]);
-            let category = ability?.school || ability?.domain || "";
-            let icon = category ? ` ${categoryIcons[category] || category}` : "";
+            const category = ability?.school || ability?.domain || "";
+            const icon = category ? ` ${categoryIcons[category] || category}` : "";
             row += `[<small>${icon} ${Words.capitalize(spellLevels[level][i])}</small>](#${spellLevels[level][i]}) | `;
           } else {
             row += " | ";
@@ -280,12 +280,12 @@ export default class Books {
     console.log(`## Items\n`);
     // magic items
     console.log(`\n### Magic Items\n`);
-    let magicItemNames = await Deem.evaluate("gather(equipment)");
+    const magicItemNames = await Deem.evaluate("gather(equipment)");
     magicItemNames.sort((a: string, b: string) => a.localeCompare(b));
     console.log("| Item | Description | Effects |");
     console.log("|------|-------------|---------|");
     for (const magicItemName of magicItemNames) {
-      let magicItem = await Deem.evaluate('lookup(equipment, "' + magicItemName + '")');
+      const magicItem = await Deem.evaluate('lookup(equipment, "' + magicItemName + '")');
       // console.log(`\n#### ${magicItem.name}\n`);
       // console.log("_" + magicItem.description + "_\n");
       // console.log(
@@ -300,10 +300,10 @@ export default class Books {
     console.log(`\n### Consumables\n`);
     console.log("| Consumable | Description | Effects |");
     console.log("|------------|-------------|---------|");
-    let consumableNames = await Deem.evaluate("gather(consumables)");
+    const consumableNames = await Deem.evaluate("gather(consumables)");
     consumableNames.sort((a: string, b: string) => a.localeCompare(b));
     for (const consumableName of consumableNames) {
-      let consumable = await Deem.evaluate('lookup(consumables, "' + consumableName + '")');
+      const consumable = await Deem.evaluate('lookup(consumables, "' + consumableName + '")');
       // console.log(`\n#### ${consumable.name}\n`);
       // console.log("_" + consumable.description + "_\n");
       // console.log(
@@ -320,7 +320,7 @@ export default class Books {
 
     console.log(`## Status Effects\n`);
 
-    let statuses = StatusHandler.instance.statusList;
+    const statuses = StatusHandler.instance.statusList;
     statuses.sort((a, b) => a.name.localeCompare(b.name));
     console.log("| Status Effect | Description | Details |");
     console.log("|---------------|-------------|---------|");
@@ -338,7 +338,7 @@ export default class Books {
 
     console.log(`## Wonders\n`);
 
-    let wonderNames = await Deem.evaluate("gather(wonderDescriptions)");
+    const wonderNames = await Deem.evaluate("gather(wonderDescriptions)");
     wonderNames.sort((a: string, b: string) => a.localeCompare(b));
     console.log("| Wonder | Description | Effects |");
     console.log("|--------|-------------|---------|");
@@ -350,8 +350,8 @@ export default class Books {
       // console.log(
       //   Presenter.describeEffects(effects, 'user')
       // )
-      let description = await Deem.evaluate('lookup(wonderDescriptions, "' + wonderName + '")');
-      let effects = await Deem.evaluate('lookup(wonderEffects, "' + wonderName + '")');
+      const description = await Deem.evaluate('lookup(wonderDescriptions, "' + wonderName + '")');
+      const effects = await Deem.evaluate('lookup(wonderEffects, "' + wonderName + '")');
       let row = `| ${Words.humanize(wonderName)} | _${Words.capitalize(description)}_ | `;
       row += Presenter.describeEffects(effects, 'user').replace(/\n/g, " ") + " |";
       console.log(row);
@@ -362,12 +362,12 @@ export default class Books {
     await this.bootstrap();
 
     console.log(`## Planes\n`);
-    let planeNames = await Deem.evaluate("gather(planeModifiers)");
+    const planeNames = await Deem.evaluate("gather(planeModifiers)");
     planeNames.sort((a: string, b: string) => a.localeCompare(b));
     for (const planeName of planeNames) {
       console.log(`\n### ${Words.humanize(planeName)}\n`);
-      let plane = await Deem.evaluate('lookup(planeModifiers, "' + planeName + '")');
-      let description = await Deem.evaluate('lookup(planeDescriptions, "' + planeName + '")');
+      const plane = await Deem.evaluate('lookup(planeModifiers, "' + planeName + '")');
+      const description = await Deem.evaluate('lookup(planeDescriptions, "' + planeName + '")');
       console.log("_" + planeName + " is " + description + "_\n");
       console.log("| Alignment | Terrain | Domain | Climate | Race Association |");
       console.log("|-----------|---------|--------|---------|------------------|");
@@ -382,13 +382,13 @@ export default class Books {
 
     console.log(`## Traps\n`);
 
-    let trapNames = await Deem.evaluate("gather(trapPunishmentDescriptions)");
+    const trapNames = await Deem.evaluate("gather(trapPunishmentDescriptions)");
     trapNames.sort((a: string, b: string) => a.localeCompare(b));
     console.log("| Trap | Description | Effects |");
     console.log("|------|-------------|---------|");
     for (const trapName of trapNames) {
-      let trapDescription = await Deem.evaluate('lookup(trapPunishmentDescriptions, "' + trapName + '")');
-      let trapEffects = await Deem.evaluate('lookup(trapEffects, "' + trapName + '")');
+      const trapDescription = await Deem.evaluate('lookup(trapPunishmentDescriptions, "' + trapName + '")');
+      const trapEffects = await Deem.evaluate('lookup(trapEffects, "' + trapName + '")');
       let row = `| ${Words.humanize(trapName)} | _${trapDescription}_ | `;
       row += Presenter.describeEffects(trapEffects, 'target').replace(/\n/g, " ") + " |";
       console.log(row);

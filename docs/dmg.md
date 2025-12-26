@@ -121,43 +121,83 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 |--------|-------------|---------|
 | Ancient Obelisk | _A towering obelisk inscribed with ancient runes of power._ | Permanently increase user Wisdom by 2 |
 | Ancient Trees | _A massive tree with gnarled roots and a trunk that seems to pulse with life._ | Heal user 2d8 HP |
+| Arcane Clock | _A clock that seems to measure time in a non-linear fashion._ | Grant user Haste (Improve Dexterity by 4, improve initiative by 10, improve attacks per turn by 1, improve AC by 2) |
 | Arcane Lantern | _A lantern that emits a magical light, illuminating hidden truths._ | Learn ability True Sight (Grant yourself or an ally True Sight (Can perceive invisible entities).) |
+| Arcane Sculpture | _A sculpture that seems to shift and change form when not being observed._ | Learn ability Dispel Magic (Remove .* from yourself or an ally or an enemy.) |
 | Arcane Symbols | _Symbols that glow with magical energy, pulsing rhythmically._ | Grant user Focus (Improve to hit by 2, improve Save versus Magic by 3, improve bonus spell DC by 2, improve bonus spell slots by 1) |
+| Arcane Tree | _A tree that seems to grow magical energy within its branches._ | Permanently increase user Intelligence by 1 |
+| Arcane Well | _A well that seems to draw water from other planes of existence._ | Heal user 3d8 HP |
 | Celestial Fountain | _A fountain that flows with water imbued with celestial energy, healing those who drink from it._ | Heal user 3d6 HP; Permanently increase user Constitution by 1; Grant user Protected (50% resistance to Necrotic, Immunity to Charm) |
 | Celestial Glow | _A soft glow that seems to come from the heavens themselves._ | Grant user Scaleskin (Improve AC by 8, 25% resistance to Fire) |
+| Celestial Map | _A map that depicts the starfall_crystals and constellations of distant realms._ | Learn ability Sunburst (Deal 4d6 radiant damage to all enemies.) |
+| Celestial Observatory | _An observatory that seems to connect to the stars and celestial realms._ | Learn ability Meteor Swarm (Deal 8d6 fire damage to =5 + floor(#level / 2) random enemies; Deal 2d6 bludgeoning damage to =5 + floor(#level / 2) random enemies.) |
 | Color Shifts | _Colors that shift and change in a mesmerizing way._ | Grant user Acidproof (50% resistance to Acid); Grant user Lightproof (50% resistance to Radiant); Grant user Soundproof (50% resistance to Sonic) |
+| Dancing Lights | _Lights that move and dance in intricate patterns._ | Grant user Agility (Improve Dexterity by 4, improve evasion by 10, improve initiative by 5) |
 | Divine Aegis | _An invulnerable sphere of light imbued with divine protection._ | Grant passive trait favored conferring statuses: Favored (Improve all rolls by 2, improve evasion by 3, 10% resistance to All, improve Save versus Death by 2) to user |
 | Dragon Statue | _A majestic statue of a dragon that seems almost alive, its eyes gleaming with intelligence._ | Permanently increase user Strength by 1 |
+| Dreamscape Portal | _A portal that seems to lead to a realm of dreams and imagination._ | Planeshift user to Arcadia |
+| Eerie Chimes | _Chimes that produce otherworldly sounds when the wind blows._ | Grant user Calm (Immunity to Fear, Immunity to Insanity, improve to hit by 1, improve Save versus Will by 2) |
 | Enchanted Aura | _A shimmering aura that seems to protect the area from harm._ | Grant user Protected (50% resistance to Necrotic, Immunity to Charm); Grant user Mageproof (50% resistance to Force, improve Save versus Magic by 2) |
+| Enchanted Flute | _A flute that produces haunting melodies when played._ | Grant user Inspired (Improve to hit by 2, Gain 5 temporary HP, improve all saves by 1) |
+| Enchanted Grove | _A grove of trees that seem to radiate magical energy._ | Heal user 3d6 HP |
 | Enchanted Labyrinth | _An intelligent painting of a labyrinth that shifts and changes, confounding those who enter._ | Learn ability Maze (An enemy suffers In Maze (Cannot take actions, Untargetable).) |
+| Enchanted Mirror | _A mirror that shows not just reflections, but glimpses of other places._ | Learn ability Reflection (Grant yourself Reflect (Add 50% to damage reflection percent).) |
+| Enchanted Obelisk | _An obelisk inscribed with runes of great power._ | Permanently increase user Strength by 1 |
+| Enchanted Statue Garden | _A garden filled with statues that seem to come to life when not being observed._ | Learn ability Flesh To Stone (An enemy suffers Petrified (Cannot take actions, Immunity to Fear, Immunity to Charm, Immunity to Stun, Immunity to Sleep, Immunity to Poison, Immunity to Disease).) |
 | Enchanted Statues | _A statue that appears to move slightly when not directly looked at._ | Grant user Shielded (Improve AC by 1, Gain 10 temporary HP, improve Save versus Magic by 1); Grant user Warded (Improve Save versus Magic by 1, 15% resistance to Fire, 15% resistance to Cold, 15% resistance to Lightning, 50% resistance to Force, Gain =14 + 2 * #level temporary HP) |
+| Enchanted Tapestry | _A tapestry that depicts scenes that seem to move and change._ | Learn ability Invisibility (Grant yourself or an ally Invisible (Invisible, On attack, Remove Invisible from self, On offensive casting, Remove Invisible from self).) |
+| Endless Staircase | _A staircase that seems to go on forever, leading to unknown places._ | Teleport user to lastRoom  |
+| Eternal Candle | _A candle that burns without ever melting, its flame flickering eternally._ | Grant user Lightproof (50% resistance to Radiant) |
 | Eternal Flame | _A flame that burns without fuel, its light never fading._ | Grant passive trait firekissed conferring statuses: Firekissed (40% resistance to Fire, improve Save versus Fear by 2) to user |
 | Eternal Garden | _A garden that blooms eternally, filled with plants of otherworldly beauty._ | Permanently increase user Constitution by 2 |
+| Ethereal Fountain | _A fountain that flows with water from another plane of existence._ | Heal user 4d6 HP |
 | Ethereal Music | _A haunting melody that seems to come from nowhere, filling the air._ | Grant user Inspired (Improve to hit by 2, Gain 5 temporary HP, improve all saves by 1); Grant user Courage (Improve all saves by 2, Immunity to Fear) |
+| Floating Disk | _A disk that hovers in the air, rotating slowly._ | Grant user Flight (Improve evasion by 20, improve AC by 5) |
 | Floating Lights | _Small lights that float in the air, moving in intricate patterns._ | Grant user Mind Blank (50% resistance to Psychic, improve Save versus Will by 2, Immunity to Charm, Immunity to Insanity, Immunity to Fear, Immunity to Sleep) |
 | Glowing Crystals | _A crystal that emits a soft, radiant glow._ | Grant user Fox's Cunning (Improve Intelligence by 2, improve all rolls by 1) |
+| Glowing Pool | _A pool that glows with a soft, radiant light._ | Heal user 4d8 HP |
 | Glowing Runes | _Runes that glow with an inner light, pulsing softly._ | Grant user Insight (Improve all saves by 2, improve bonus spell DC by 1) |
 | Illusory Visions | _Visions that appear and disappear at the edge of your sight._ | Grant user Clarity (Improve all rolls by 2, Immunity to Charm); Grant user Owl's Wisdom (Improve Wisdom by 2, improve all saves by 1) |
+| Intelligent Painting | _A painting that seems to change and shift, depicting different scenes._ | Learn ability Polymorph (An enemy suffers Polymorphed (Displayed name changed to "Sheep", attack die set to 1d2, MAXHP set to 5, AC set to 10, STR set to 2, CON set to 2, DEX set to 2, INT set to 2, WIS set to 2, CHA set to 2); Recalculate HP for target.) |
 | Levitating Objects | _Various objects levitating gently in the air, defying gravity._ | Grant user Cat's Grace (Improve Dexterity by 2, improve evasion by 5) |
 | Life Tree | _A magnificent tree that radiates life energy, its leaves shimmering with vitality._ | Permanently increase user Constitution by 1 |
+| Living Book | _A book that seems to write itself, its pages filled with ever-changing text._ | Learn ability Lightning Bolt (Deal 1d8 electric damage to 2 random enemies; 2 random enemies suffer Paralyzed (Cannot take actions, degrade Strength by 5, degrade Dexterity by 5).) |
+| Living Mural | _A mural that seems to depict scenes that change and shift over time._ | Learn ability Haste (Grant an ally Haste (Improve Dexterity by 4, improve initiative by 10, improve attacks per turn by 1, improve AC by 2).) |
+| Living Statue | _A statue that appears to move and breathe when not being observed._ | Permanently increase user Strength by 1; Permanently increase user Constitution by 1 |
+| Magical Fountain | _A fountain that flows with water imbued with magical properties._ | Heal user 2d10 HP |
+| Magical Lantern | _A lantern that emits a light that reveals hidden truths._ | Grant user Warded (Improve Save versus Magic by 1, 15% resistance to Fire, 15% resistance to Cold, 15% resistance to Lightning, 50% resistance to Force, Gain =14 + 2 * #level temporary HP) |
+| Magical Sundial | _A sundial that seems to measure time in a mystical way._ | Grant user Haste (Improve Dexterity by 4, improve initiative by 10, improve attacks per turn by 1, improve AC by 2) |
 | Magical Weather | _Weather phenomena that seem to be controlled by magic._ | Grant user Fireproof (50% resistance to Fire); Grant user Waterproof (50% resistance to Cold); Grant user Stormproof (50% resistance to Lightning) |
 | Mysterious Portal | _A swirling portal that seems to lead to another place._ | Teleport user to =oneOf(firstRoom, lastRoom, randomRoom)  |
+| Mystic Compass | _A compass that always points toward a place of great magical power._ | Permanently increase user Dexterity by 1 |
 | Mystic Conduit | _A conduit that channels mystical energies from other planes of existence._ | Learn ability Plane Shift (Planeshift yourself to =oneOf(Arcadia, Cthelll, Gehenna, Hades, Limbo, Mechanus, Pandemonium, Ysgard, Zephyrus).) |
+| Mystic Pedestal | _A pedestal that seems to radiate magical energy._ | Permanently increase user Dexterity by 1 |
+| Mystic Statue | _A statue that seems to radiate an aura of ancient power._ | Permanently increase user Intelligence by 1 |
 | Mystical Fog | _A thick fog that seems to have a life of its own._ | Grant user Eagle's Splendor (Improve Charisma by 2, improve to hit by 1) |
+| Mystical Jewel | _A jewel that emits a soft, radiant light, pulsing with magical energy._ | Permanently increase user Charisma by 1 |
 | Mythic Portal | _A portal that connects to legendary realms and mythical places._ | Planeshift user to =oneOf(Arcadia, Cthelll, Gehenna, Hades, Limbo, Mechanus, Pandemonium, Ysgard, Zephyrus) |
+| Oathstone Circle | _A circle of stones that seem to bind those who stand within it to their oaths._ | Grant user Oathbound (Improve AC by 2, improve to hit by 2, improve bonus damage by 2, On enemy melee, Attack attacker) |
+| Petrified Forest | _A forest of petrified trees that seem to pulse with ancient energy._ | Permanently increase user Constitution by 1 |
+| Phantasmal Orb | _An orb that glows with an inner light, showing visions of distant places._ | Teleport user to randomRoom  |
+| Phantom Flame | _A flame that burns without heat, flickering in the air._ | Grant user Fireproof (50% resistance to Fire) |
+| Phantom Garden | _A garden that seems to bloom with flowers of ethereal beauty._ | Heal user 5d6 HP |
 | Phoenix Heart | _A radiant heart that pulses with fiery energy, symbolizing rebirth and immortality._ | Permanently increase user Max HP by 5 |
 | Seeing Stone | _A polished stone that allows one to see distant places or events._ | Permanently increase user Wisdom by 1 |
 | Shadow Portal | _A dark portal that seems to lead to a shadowy realm._ | Planeshift user to Cthelll |
 | Shifting Walls | _Walls that subtly shift and change position when not being observed._ | Grant user Steelskin (Improve AC by 10, 50% resistance to Piercing, 50% resistance to Slashing) |
+| Shimmering Veil | _A veil of shimmering light that seems to separate two realms._ | Grant user Warded (Improve Save versus Magic by 1, 15% resistance to Fire, 15% resistance to Cold, 15% resistance to Lightning, 50% resistance to Force, Gain =14 + 2 * #level temporary HP) |
+| Singing Crystal | _A crystal that emits a melodious sound when touched._ | Grant user Inspired (Improve to hit by 2, Gain 5 temporary HP, improve all saves by 1) |
 | Soul Mirror | _A mirror that reflects not just physical appearances, but the true nature of one's soul._ | Permanently increase user Charisma by 1 |
 | Spectral Figures | _Ghostly figures that move silently through the area._ | Grant user Eagle's Splendor (Improve Charisma by 2, improve to hit by 1) |
 | Starfall Crystal | _A crystal formed from fallen stars, radiating cosmic energy._ | Permanently increase user Intelligence by 2 |
 | Storm Core | _A swirling core of storm energy, crackling with lightning._ | Permanently increase user Dexterity by 1 |
 | Time Dilation | _An area where time seems to pass differently_ | Grant user Haste (Improve Dexterity by 4, improve initiative by 10, improve attacks per turn by 1, improve AC by 2) |
 | Time Stop Aura | _An aura that can temporarily halt the flow of time within its vicinity._ | Learn ability Time Stop (Grant yourself Time Stopped (Improve extra turns by 3, Does not trigger reactions).) |
+| Timeworn Relic | _An ancient relic that seems to pulse with the energy of ages past._ | Permanently increase user Constitution by 1 |
 | Titan Golem | _A colossal golem imbued with the strength of titans._ | Permanently increase user Strength by 2 |
 | Unearthly Silence | _A profound silence that seems to absorb all sound._ | Grant user Focus (Improve to hit by 2, improve Save versus Magic by 3, improve bonus spell DC by 2, improve bonus spell slots by 1); Grant user Calm (Immunity to Fear, Immunity to Insanity, improve to hit by 1, improve Save versus Will by 2) |
 | Void Singularity | _A swirling vortex of darkness that seems to absorb all light and matter around it._ | Permanently increase user Intelligence by 1; Permanently increase user Wisdom by 1; Permanently increase user Charisma by 1 |
+| Whispering Tree | _A tree that seems to whisper secrets to those who listen._ | Permanently increase user Wisdom by 1 |
 | Whispering Voices | _Soft whispers that seem to come from the walls themselves._ | Grant user Owl's Wisdom (Improve Wisdom by 2, improve all saves by 1) |
 
 
@@ -215,6 +255,7 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 |---------------|-------------|---------|
 | Acid Burn |  | On turn end, Deal 1d6 acid damage to self |
 | Acidproof |  | 50% resistance to Acid |
+| Agility | _Enhanced reflexes and nimbleness._ | Improve Dexterity by 4, improve evasion by 10, improve initiative by 5 |
 | Agony |  | Degrade Intelligence by 1, degrade Wisdom by 1, On turn end, Deal 2d4 necrotic damage to self |
 | Anointed |  | 50% resistance to Radiant, improve bonus damage by 1, improve to hit by 1, improve all saves by 2 |
 | Armor Shred |  | Degrade AC by 2 |
@@ -253,6 +294,7 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 | False Life |  | Gain =10d6 + 2 * #level temporary HP |
 | Fatigued |  | Degrade Strength by 1, degrade Dexterity by 1, degrade Constitution by 1, degrade all rolls by 1 |
 | Fireproof |  | 50% resistance to Fire |
+| Flight | _Soaring through the air with ease._ | Improve evasion by 20, improve AC by 5 |
 | Focus |  | Improve to hit by 2, improve Save versus Magic by 3, improve bonus spell DC by 2, improve bonus spell slots by 1 |
 | Fox's Cunning |  | Improve Intelligence by 2, improve all rolls by 1 |
 | Frightened | _Overcome with fear and hesitation._ | Degrade to hit by 2, degrade initiative by 5, degrade all rolls by 1, degrade all saves by 2 |
@@ -282,6 +324,7 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 | Mirror Images |  | Improve AC by 2, improve all saves by 2, improve evasion by 15 |
 | Mocked | _Distracted by jeers and taunts._ | Degrade to hit by 1, degrade bonus damage by 1, degrade all saves by 1 |
 | Naturality |  | 50% resistance to Poison, 25% resistance to Acid, Immunity to Disease, improve all saves by 1 |
+| Oathbound | _Bound by a sacred oath to protect allies._ | Improve AC by 2, improve to hit by 2, improve bonus damage by 2, On enemy melee, Attack attacker |
 | Oiled |  | 200% vulnerability to Fire |
 | Overwatching | _Ready to strike at any enemy that comes close._ | Improve bonus damage by 2, On enemy melee, Attack attacker; Purge self of Overwatching |
 | Owl's Wisdom |  | Improve Wisdom by 2, improve all saves by 1 |

@@ -1,6 +1,6 @@
 export default class Sample {
   static count<T>(n: number, ...items: T[]): T[] {
-    const results: any[] = [];
+    const results: T[] = [];
     const population = [...items];
     for (let i = 0; i < n; i++) {
       const item = population[Math.floor(Math.random() * population.length)];

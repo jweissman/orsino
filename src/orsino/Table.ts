@@ -1,29 +1,31 @@
+import { DeemValue } from "../deem/stdlib";
+
 export class Table {
-  private groups: Record<string, any[]> = {};
+  private groups: Record<string, DeemValue[]> = {};
 
   constructor(public name: string, public discriminator: string) { }
 
-  group(name: string, items: any[]): this {
+  group(name: string, items: DeemValue[]): this {
     this.groups[name] = items;
     return this;
   }
 
-  gatherKeys(count: number): any[] {
-    let allKeys = Object.keys(this.groups);
+  gatherKeys(count: number): string[] {
+    const allKeys = Object.keys(this.groups);
     if (count <= 0) {
       return allKeys;
     }
 
-    let keys: any[] = [];
+    const keys: string[] = [];
     for (let i = 0; i < count; i++) {
-      let key = allKeys[Math.floor(Math.random() * allKeys.length)];
+      const key = allKeys[Math.floor(Math.random() * allKeys.length)];
       keys.push(key);
     }
     return keys;
   }
 
-  pickedOptions: Set<any> = new Set();
-  pick(groupName: string, globallyUnique: boolean = false): any {
+  pickedOptions: Set<DeemValue> = new Set();
+  pick(groupName: string, globallyUnique: boolean = false): DeemValue {
     let options = [];
     if (groupName === 'default') {
       const allItems = Object.values(this.groups).flat();
@@ -66,9 +68,9 @@ export class Table {
     return options[Math.floor(Math.random() * options.length)];
   }
 
-  hasGroup(groupName: string): any {
-    let exists = this.groups.hasOwnProperty(groupName);
-    // console.log(`Checking existence of group '${groupName}' in table '${this.name}': ${exists}`);
+  hasGroup(groupName: string): boolean {
+    // const exists = this.groups.hasOwnProperty(groupName);
+    const exists = groupName in this.groups;
     return exists;
   }
 }

@@ -11,14 +11,28 @@ import TraitHandler from "./orsino/Trait";
 import Combat from "./orsino/Combat";
 import { Team } from "./orsino/types/Team";
 import Presenter from "./orsino/tui/Presenter";
-import Automatic from "./orsino/tui/System";
+import Automatic from "./orsino/tui/Automatic";
+import { never } from "./orsino/util/never";
 
 export type Prompt = (message: string) => Promise<string>;
 
 type PlaygroundType = "combat" | "dungeon" | "module";  // TODO "world";
 
+type CommandLineOptions = {
+  partySize?: number;
+}
+
+// const outputSink = console.log;
+
 export default class Orsino {
   static environment: 'production' | 'development' | 'test' = 'production';
+  static outputSink: (message: string) => void = (message: string) => {
+    if (message) {
+      process.stdout.write(message + "\n");
+    }
+    // const timestamp = new Date().toISOString();
+    // console.warn(`${timestamp} [Orsino] ${message}`);
+  }
   // setting: Record<GenerationTemplateType, Template | Table>;
 
   constructor(public settingName?: string) {
@@ -27,7 +41,7 @@ export default class Orsino {
 
   async play(
     type: PlaygroundType,
-    options: Record<string, any> = {}
+    options: CommandLineOptions = {}
   ) {
     const partySize = options.partySize || 3;
     const pcs = await CharacterRecord.chooseParty(
@@ -35,11 +49,11 @@ export default class Orsino {
       partySize
     );
     if (type === "combat") {
-      let gauntlet = (new Gauntlet({
+      const gauntlet = (new Gauntlet({
         ...options,
-        roller: Interactive.roll,
-        select: Interactive.selection,
-        outputSink: console.log,
+        roller: Interactive.roll.bind(Interactive),
+        select: Interactive.selection.bind(Interactive),
+        outputSink: Orsino.outputSink,
       }))
 
       // const partySize = options.partySize || Math.max(1, Math.floor(Math.random() * 3) + 1);
@@ -51,14 +65,14 @@ export default class Orsino {
     else if (type === "dungeon") {
       const averageLevel = Math.round(pcs.reduce((sum, pc) => sum + pc.level, 0) / pcs.length);
       const targetCr = Math.round(averageLevel * 0.75);
-      console.log(`Selected party of ${pcs.length} PCs (average level ${averageLevel}), targeting CR ${targetCr}`);
+      // console.log(`Selected party of ${pcs.length} PCs (average level ${averageLevel}), targeting CR ${targetCr}`);
       // this.genList("pc", { setting: 'fantasy', ...options }, partySize);
       const dungeoneer = new Dungeoneer({
-        roller: Interactive.roll,
-        select: Interactive.selection,
-        outputSink: console.log,
+        roller: Interactive.roll.bind(Interactive),
+        select: Interactive.selection.bind(Interactive),
+        outputSink: Orsino.outputSink,
         dungeonGen: () => Generator.gen("dungeon", { setting: 'fantasy', ...options, _targetCr: targetCr }),
-        gen: Generator.gen, //.bind(this),
+        gen: Generator.gen.bind(Generator), //.bind(this),
         playerTeam: ({
           name: "Heroes", combatants: pcs.map(pc => ({ ...pc, playerControlled: true }))
         } as Team)
@@ -67,18 +81,19 @@ export default class Orsino {
       await dungeoneer.run();
     } else if (type === "module") {
       const moduleRunner = new ModuleRunner({
-        roller: Interactive.roll,
-        select: Interactive.selection,
-        prompt: Interactive.prompt,
-        outputSink: console.log,
+        roller: Interactive.roll.bind(Interactive),
+        select: Interactive.selection.bind(Interactive),
+        prompt: Interactive.prompt.bind(Interactive),
+        outputSink: Orsino.outputSink,
         moduleGen: (opts: Record<string, any>) => Generator.gen("module", { setting: 'fantasy', ...options, ...opts }),
-        gen: Generator.gen, //.bind(this),
+        gen: Generator.gen.bind(Generator), //.bind(this),
         pcs: pcs.map(pc => ({ ...pc, playerControlled: true })),
       });
       await moduleRunner.run();
     }
     else {
-      throw new Error('Unsupported playground type: ' + type);
+      // throw new Error('Unsupported playground type: ' + type);
+      return never(type);
     }
   }
 
@@ -94,30 +109,32 @@ export default class Orsino {
       await Generator.gen("pc", { setting: 'fantasy', class: 'ranger', playerControlled: true }) as Combatant,
       await Generator.gen("pc", { setting: 'fantasy', class: 'bard', playerControlled: true }) as Combatant,
     ].map(pc => ({ ...pc, playerControlled: true }))
-    for (let pc of pcs) {
-      await CharacterRecord.pickInitialSpells(pc, Automatic.randomSelect);
+    for (const pc of pcs) {
+      await CharacterRecord.pickInitialSpells(pc, Automatic.randomSelect.bind(Automatic));
     }
     await CharacterRecord.assignPartyPassives(pcs);
 
+    const outputSink = Orsino.outputSink;
+
     while (true) {
-      let averagePartyLevel = Math.round(pcs.reduce((sum, pc) => sum + pc.level, 0) / pcs.length);
+      const averagePartyLevel = Math.round(pcs.reduce((sum, pc) => sum + pc.level, 0) / pcs.length);
       try {
       const moduleRunner = new ModuleRunner({
-        outputSink: console.log,
+        outputSink,
         moduleGen: () => Generator.gen("module", { setting: 'fantasy', ...options, _moduleLevel: averagePartyLevel }),
-        gen: Generator.gen, //.bind(this),
-        pcs //: pcs.map(pc => ({ ...pc, playerControlled: true })),
+        gen: Generator.gen.bind(Generator),
+        pcs
       });
       await moduleRunner.run(true);
 
       // show pc records
-      for (let pc of pcs) {
-        console.log(await Presenter.characterRecord(pc as Combatant));
+      for (const pc of pcs) {
+        outputSink(await Presenter.characterRecord(pc as Combatant));
       }
 
-      console.log("\n----\nCombat statistics:", Combat.statistics);
-      console.log("Rounds per combat:", (Combat.statistics.combats > 0) ? (Combat.statistics.totalRounds / Combat.statistics.combats).toFixed(2) : 0);
-      console.log("Victory rate:", Combat.statistics.combats > 0 ? ((Combat.statistics.victories / Combat.statistics.combats) * 100).toFixed(2) + "%" : "N/A");
+      outputSink("\n----\nCombat statistics: " + JSON.stringify(Combat.statistics));
+      outputSink("Rounds per combat:" + String((Combat.statistics.combats > 0) ? (Combat.statistics.totalRounds / Combat.statistics.combats).toFixed(2) : 0));
+      outputSink("Victory rate: " + (Combat.statistics.combats > 0 ? ((Combat.statistics.victories / Combat.statistics.combats) * 100).toFixed(2) + "%" : "N/A"));
 
       } catch (e) {
         console.error("Autoplay encountered an error:", e);

@@ -18,7 +18,7 @@ type AbilityAnalysis = {
 
 export class AbilityScoring {
   static bestAbilityTarget(ability: Ability, user: Combatant, allies: Combatant[], enemies: Combatant[]): Combatant | Combatant[] {
-    let validTargets = AbilityHandler.validTargets(ability, user, allies, enemies);
+    const validTargets = AbilityHandler.validTargets(ability, user, allies, enemies);
     if (validTargets.length === 0 && !ability.target.includes("randomEnemies")) {
       // return null;
       throw new Error(`No valid targets for ${ability.name}`);
@@ -27,11 +27,11 @@ export class AbilityScoring {
     }
 
     // are we being taunted?
-    let tauntEffect = user.activeEffects?.find(e => e.effect.forceTarget);
+    const tauntEffect = user.activeEffects?.find(e => e.effect.forceTarget);
     if (tauntEffect) {
       if (tauntEffect.by && validTargets.some(t => t === tauntEffect.by)) {
         console.warn(`${(user.forename)} is taunted by ${Presenter.combatant(tauntEffect.by)} and must target them!`);
-        return tauntEffect.by as Combatant;
+        return tauntEffect.by;
       // } else {
       //   console.warn(`${(user.forename)} is taunted but the taunter is no longer a valid target (${tauntEffect.by?.name || 'name unknown'})`);
       }
@@ -39,16 +39,16 @@ export class AbilityScoring {
 
     if (ability.target.includes("randomEnemies") && ability.target.length === 2) {
       // pick random enemies
-      let count = ability.target[1] as any as number;
-      let possibleTargets = Combat.living(enemies);
-      let targetOrTargets: Combatant[] = [];
+      const count = ability.target[1] as any as number;
+      const possibleTargets = Combat.living(enemies);
+      const targetOrTargets: Combatant[] = [];
       for (let i = 0; i < count; i++) {
         targetOrTargets.push(possibleTargets[Math.floor(Math.random() * possibleTargets.length)]);
       }
       return targetOrTargets;
     } else if (ability.target.includes("deadAlly") && ability.target.length === 1) {
       // pick a random downed ally
-      let downedAllies = allies.filter(a => a.hp <= 0);
+      const downedAllies = allies.filter(a => a.hp <= 0);
       if (downedAllies.length === 0) {
         throw new Error(`No valid downed allies to target for ${ability.name}`);
       }
@@ -69,7 +69,7 @@ export class AbilityScoring {
 
   static scoreAbility(ability: Ability, user: Combatant, allies: Combatant[], enemies: Combatant[]): number {
     let score = 0;
-    let analysis = this.analyzeAbility(ability);
+    const analysis = this.analyzeAbility(ability);
     if (analysis.attack) {
       // score += 2;
       // for each attack effect add +3
@@ -87,7 +87,7 @@ export class AbilityScoring {
     }
     if (analysis.heal) {
       // if all allies at full hp, don't heal
-      let allAtFullHp = allies.every(ally => ally.hp >= ally.maxHp || ally.hp <= 0);
+      const allAtFullHp = allies.every(ally => ally.hp >= ally.maxHp || ally.hp <= 0);
       if (allAtFullHp) {
         return -10;
       }
@@ -132,7 +132,7 @@ export class AbilityScoring {
       // }
         // NEW: Only buff when HP is high AND no enemies are critical
       if (user.hp / user.maxHp >= 0.8) {
-        let anyCriticalEnemies = enemies.some(e => e.hp > 0 && e.hp / e.maxHp <= 0.3);
+        const anyCriticalEnemies = enemies.some(e => e.hp > 0 && e.hp / e.maxHp <= 0.3);
         if (!anyCriticalEnemies) {
           score += 10;
         }
@@ -173,7 +173,7 @@ export class AbilityScoring {
 
     // if a spell and no spell slots remaining, give -10 penalty
     if (ability.type === "spell") {
-      let spellSlotsRemaining = (Combat.maxSpellSlotsForCombatant(user) || 0) - (user.spellSlotsUsed || 0);
+      const spellSlotsRemaining = (Combat.maxSpellSlotsForCombatant(user) || 0) - (user.spellSlotsUsed || 0);
       if (spellSlotsRemaining <= 0) {
         score -= 100;
       }
@@ -183,17 +183,17 @@ export class AbilityScoring {
   }
 
   static analyzeAbility(ability: Ability): AbilityAnalysis {
-    let attack = ability.effects.some(e => e.type === "attack");
-    let damage = ability.effects.some(e => e.type === "damage" || e.type === "attack");
-    let heal = ability.effects.some(e => e.type === "heal");
-    let aoe = ability.target.includes("enemies");
-    let buff = ability.effects.some(e => e.type === "buff");
-    let debuff = ability.effects.some(e => e.type === "debuff");
+    const attack = ability.effects.some(e => e.type === "attack");
+    const damage = ability.effects.some(e => e.type === "damage" || e.type === "attack");
+    const heal = ability.effects.some(e => e.type === "heal");
+    const aoe = ability.target.includes("enemies");
+    const buff = ability.effects.some(e => e.type === "buff");
+    const debuff = ability.effects.some(e => e.type === "debuff");
     // let defense = ability.effects.some(e => e.type === "buff"
       // && e.status?.effect.ac);
-    let flee = ability.effects.some(e => e.type === "flee");
-    let summon = ability.effects.some(e => e.type === "summon");
-    let rez = ability.effects.some(e => e.type === "resurrect");
+    const flee = ability.effects.some(e => e.type === "flee");
+    const summon = ability.effects.some(e => e.type === "summon");
+    const rez = ability.effects.some(e => e.type === "resurrect");
 
     return { attack, heal, damage, buff, debuff, aoe, flee, summon, rez };
   }
