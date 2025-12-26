@@ -300,12 +300,22 @@ export default class Dungeoneer {
     actor: Combatant;
     success: boolean;
   }> {
-    const actor = await this.select(`Who will attempt ${action}?`, this.playerTeam.combatants.map(c => ({
+    const validCombatants = this.playerTeam.combatants.filter(c => valid(c));
+    if (validCombatants.length === 0) {
+      console.warn(`No valid combatants available for ${action}`);
+      return { actor: this.playerTeam.combatants[0], success: false };
+    }
+    const actor = await this.select(`Who will attempt ${action}?`, validCombatants.map(c => ({
       name: `${c.name} ${Presenter.stat(stat, c[stat])} (${Presenter.statMod(c[stat])})`,
       value: c,
       short: c.name,
-      disabled: c.hp <= 0 || !valid(c)
+      disabled: c.hp <= 0
     })));
+    if (!actor) {
+      // throw new Error(`No valid actor selected for ${action}`);
+      console.warn(`No valid actor selected for ${action}`);
+      return { actor: this.playerTeam.combatants[0], success: false };
+    }
 
     let actorFx = Fighting.gatherEffects(actor);
     let skillBonusName = `${type}Bonus` as keyof StatusModifications;
