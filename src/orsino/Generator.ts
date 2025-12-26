@@ -14,8 +14,12 @@ export type GeneratorOptions = {
 
   group?: string;
 
+  class?: string;
   gender?: string;
   targetCr?: number;
+  _moduleLevel?: number;
+
+  playerControlled?: boolean;
 }
 export type GeneratedValue = Record<string, DeemValue>;
 

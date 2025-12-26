@@ -26,6 +26,10 @@ export class Fighting {
   }
 
   static effectList(combatant: Combatant): StatusEffect[] {
+    if (!combatant) {
+      throw new Error("No combatant provided to Fighting.effectList");
+    }
+
     const effectList = [
       ...(combatant.passiveEffects || []),
       ...(combatant.activeEffects || []),

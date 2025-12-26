@@ -300,7 +300,7 @@ export default class Dungeoneer {
     actor: Combatant;
     success: boolean;
   }> {
-    const validCombatants = this.playerTeam.combatants.filter(c => valid(c));
+    const validCombatants = this.playerTeam.combatants.filter(c => valid(c) && c.hp > 0);
     if (validCombatants.length === 0) {
       console.warn(`No valid combatants available for ${action}`);
       return { actor: this.playerTeam.combatants[0], success: false };

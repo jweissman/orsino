@@ -13,6 +13,7 @@ import { Roll } from "./types/Roll";
 import { SaveKind } from "./types/SaveKind";
 import Files from "./util/Files";
 import { never } from "./util/never";
+import { DeemValue } from "../deem/stdlib";
 
 export type TargetKind
   = "self"
@@ -305,7 +306,7 @@ export default class AbilityHandler {
     if (isNumber) {
       result = parseInt(amount);
     } else if (amount.startsWith("=")) {
-      result = await Deem.evaluate(amount.slice(1), { roll, subject: user, ...user, description: name })
+      result = await Deem.evaluate(amount.slice(1), { roll, subject: user, ...(user as unknown as Record<string, DeemValue>), description: name }) as number;
     }
     return result;
   }

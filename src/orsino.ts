@@ -101,13 +101,12 @@ export default class Orsino {
     await AbilityHandler.instance.loadAbilities();
     await TraitHandler.instance.loadTraits();
     const pcs = [
-
-      await Generator.gen("pc", { setting: 'fantasy', class: 'warrior', playerControlled: true }) as Combatant,
-      await Generator.gen("pc", { setting: 'fantasy', class: 'thief', playerControlled: true }) as Combatant,
-      await Generator.gen("pc", { setting: 'fantasy', class: 'mage', playerControlled: true }) as Combatant,
-      await Generator.gen("pc", { setting: 'fantasy', class: 'cleric', playerControlled: true }) as Combatant,
-      await Generator.gen("pc", { setting: 'fantasy', class: 'ranger', playerControlled: true }) as Combatant,
-      await Generator.gen("pc", { setting: 'fantasy', class: 'bard', playerControlled: true }) as Combatant,
+      await Generator.gen("pc", { setting: 'fantasy', class: 'warrior' }) as unknown as Combatant,
+      await Generator.gen("pc", { setting: 'fantasy', class: 'thief'   }) as unknown as Combatant,
+      await Generator.gen("pc", { setting: 'fantasy', class: 'mage'    }) as unknown as Combatant,
+      await Generator.gen("pc", { setting: 'fantasy', class: 'cleric'  }) as unknown as Combatant,
+      await Generator.gen("pc", { setting: 'fantasy', class: 'ranger'  }) as unknown as Combatant,
+      await Generator.gen("pc", { setting: 'fantasy', class: 'bard'    }) as unknown as Combatant,
     ].map(pc => ({ ...pc, playerControlled: true }))
     for (const pc of pcs) {
       await CharacterRecord.pickInitialSpells(pc, Automatic.randomSelect.bind(Automatic));

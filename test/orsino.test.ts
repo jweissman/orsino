@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'bun:test';
 import Combat from '../src/orsino/Combat';
 import Dungeoneer, { BossRoom, Dungeon, Room } from '../src/orsino/Dungeoneer';
-import { ModuleRunner } from '../src/orsino/ModuleRunner';
+import { CampaignModule, ModuleRunner } from '../src/orsino/ModuleRunner';
 import AbilityHandler from '../src/orsino/Ability';
 import Generator from '../src/orsino/Generator';
 import CharacterRecord from '../src/orsino/rules/CharacterRecord';
@@ -9,7 +9,7 @@ import { Combatant } from '../src/orsino/types/Combatant';
 import Presenter from '../src/orsino/tui/Presenter';
 import TraitHandler from '../src/orsino/Trait';
 import { loadSetting } from '../src/orsino/loader';
-import Events from '../src/orsino/Events';
+import Events, { GameEvent } from '../src/orsino/Events';
 import { Team } from '../src/orsino/types/Team';
 import Orsino from '../src/orsino';
 import Automatic from '../src/orsino/tui/Automatic';
@@ -22,7 +22,7 @@ describe('Orsino', () => {
     const response = await Generator.gen("name", { group: 'male' });
     expect(response).toMatch(/[A-Z][a-z]+/);
   });
-  
+
   it('generate female name', async () => {
     const response = await Generator.gen("name", { gender: 'female' });
     expect(response).toMatch(/[A-Z][a-z]+/);
@@ -109,83 +109,59 @@ describe('Orsino', () => {
       expect(room).toHaveProperty('treasure');
       // expect(room).toHaveProperty('encounter');
       // const _encounter = crawler.currentEncounter;
-      
+
       crawler.currentMonsterTeam.combatants.forEach(monster => {
         monster.hp = 0; // Simulate defeating the monster
       });
       crawler.moveToNextRoom();
-      
+
     }
     expect(crawler.winner).toBeDefined();
     expect(crawler.winner).toMatch(/Player|Enemy/);
   });
 
   it('name presentation', async () => {
-    const pc = await Generator.gen("pc", { setting: "fantasy" });
-    const npc = await Generator.gen("npc", { setting: "fantasy", _targetCr: pc.level });
-    const animal = await Generator.gen("animal", { setting: "fantasy" });
-    const monster = await Generator.gen("monster", { setting: "fantasy" });
+    const pc = await Generator.gen("pc", { setting: "fantasy" }) as unknown as Combatant;
+    const npc = await Generator.gen("npc", { setting: "fantasy", targetCr: pc.level }) as unknown as Combatant;
+    const animal = await Generator.gen("animal", { setting: "fantasy" }) as unknown as Combatant;
+    const monster = await Generator.gen("monster", { setting: "fantasy" }) as unknown as Combatant;
 
     console.log("\n--- Character Presentations (minimal) ---\n");
-    console.log("PC:      ", Presenter.minimalCombatant(pc as Combatant));
-    console.log("NPC:     ", Presenter.minimalCombatant(npc as Combatant));
-    console.log("Animal:  ", Presenter.minimalCombatant(animal as Combatant));
-    console.log("Monster: ", Presenter.minimalCombatant(monster as Combatant));
+    console.log("PC:      ", Presenter.minimalCombatant(pc));
+    console.log("NPC:     ", Presenter.minimalCombatant(npc));
+    console.log("Animal:  ", Presenter.minimalCombatant(animal));
+    console.log("Monster: ", Presenter.minimalCombatant(monster));
 
     console.log("\n--- Character Presentations (full) ---\n");
-    console.log("PC:      ", Presenter.combatant(pc as Combatant));
-    console.log("NPC:     ", Presenter.combatant(npc as Combatant));
-    console.log("Animal:  ", Presenter.combatant(animal as Combatant));
-    console.log("Monster: ", Presenter.combatant(monster as Combatant));
+    console.log("PC:      ", Presenter.combatant(pc));
+    console.log("NPC:     ", Presenter.combatant(npc));
+    console.log("Animal:  ", Presenter.combatant(animal));
+    console.log("Monster: ", Presenter.combatant(monster));
 
     console.log("\n--- Party Presentation ---\n")
     const teams: Team[] = [
-      { name: "Heroes", combatants: [pc as Combatant, npc as Combatant], inventory: [] },
-      { name: "Foes", combatants: [animal as Combatant, monster as Combatant], inventory: [] }
+      { name: "Heroes", combatants: [pc, npc], inventory: [] },
+      { name: "Foes", combatants: [animal, monster], inventory: [] }
     ];
     console.log(Presenter.parties(teams));
 
     console.log("\n--- Round Presentation ---\n")
-    const roundEvent = {
+    const roundEvent: GameEvent = {
       type: "roundStart",
       turn: 1,
       combatants: [pc, npc, animal, monster] as Combatant[],
       parties: teams,
+      auras: [],
       environment: "Dark Cave"
     };
-    console.log(await Events.present(roundEvent as any));
+    console.log(await Events.present(roundEvent));
   });
 
-  it.skip('party generator', async () => {
+  it('simple mod runner', async () => {
+    Combat.statistics = { combats: 0, victories: 0, totalRounds: 0, defeats: 0 };
     await AbilityHandler.instance.loadAbilities();
     await TraitHandler.instance.loadTraits();
-
-    const party = await CharacterRecord.chooseParty(
-      async (options?: any) => (await Generator.gen("pc", { setting: "fantasy", ...options }) as Combatant),
-      3,
-      Automatic.randomSelect
-    );
-
-    console.log("Generated party:", party.map(p => p.name));
-  });
-
-  it.skip('mod gen', async () => {
-
-    await AbilityHandler.instance.loadAbilities();
-    await TraitHandler.instance.loadTraits();
-    const mod = await Generator.gen("module", { setting: "fantasy" });
-
-    // display each dungeon, cr + race
-    mod.dungeons.forEach((dungeon: Dungeon) => {
-      console.log(`${dungeon.dungeon_name} (CR target: ${dungeon.intendedCr})`);
-      console.log(` - Room count: ${dungeon.rooms.length} [CRs: ${dungeon.rooms.map((r: any) => r.targetCr).join(", ")}]`);
-    });
-  })
-
-  it('mod runner', async () => {
-    await AbilityHandler.instance.loadAbilities();
-    await TraitHandler.instance.loadTraits();
-    const mod = await Generator.gen("module", { setting: "fantasy" });
+    const mod = await Generator.gen("module", { setting: "fantasy" }) as unknown as CampaignModule;
     expect(mod).toHaveProperty('name');
     expect(mod).toHaveProperty('terrain');
     expect(mod).toHaveProperty('town');
@@ -196,21 +172,66 @@ describe('Orsino', () => {
     expect(mod.dungeons).toBeInstanceOf(Array);
 
     const party = await CharacterRecord.chooseParty(
-      async (options?: any) => (await Generator.gen("pc", { setting: "fantasy",  ...options }) as Combatant),
+      async (options?: any) => (await Generator.gen("pc", { setting: "fantasy", ...options }) as unknown as Combatant),
       3,
-      Automatic.randomSelect
+      Automatic.randomSelect.bind(Automatic)
     );
     for (const pc of party) {
-      await CharacterRecord.pickInitialSpells(pc, Automatic.randomSelect);
+      await CharacterRecord.pickInitialSpells(pc, Automatic.randomSelect.bind(Automatic));
     }
     await CharacterRecord.assignPartyPassives(party);
 
     console.log("Generated party:", party.map(p => p.name));
 
     const explorer = new ModuleRunner({
-      gen: Generator.gen,
+      gen: Generator.gen.bind(Generator),
       moduleGen: () => mod,
       pcs: party
+    });
+
+    await explorer.run(true);
+
+    expect(explorer.activeModule).toBeDefined();
+    expect(explorer.activeModule!.name).toBe(mod.name);
+    expect(explorer.activeModule!.terrain).toBe(mod.terrain);
+    expect(explorer.activeModule!.town).toEqual(mod.town);
+    expect(explorer.activeModule!.dungeons).toEqual(mod.dungeons);
+
+    // for (const pc in explorer.pcs) {
+    for (let pc = 0; pc < explorer.pcs.length; pc++) {
+      await Presenter.printCharacterRecord(explorer.pcs[pc]);
+    }
+
+    console.log("\n----\nCombat statistics:", Combat.statistics);
+    console.log("Rounds per combat:", (Combat.statistics.combats > 0) ? (Combat.statistics.totalRounds / Combat.statistics.combats).toFixed(2) : 0);
+    console.log("Victory rate:", Combat.statistics.combats > 0 ? ((Combat.statistics.victories / Combat.statistics.combats) * 100).toFixed(2) + "%" : "N/A");
+  });
+
+  it.only('autoplay', async () => {
+    Combat.statistics = { combats: 0, victories: 0, totalRounds: 0, defeats: 0 };
+    const party: Combatant[] = [];
+    await AbilityHandler.instance.loadAbilities();
+    await TraitHandler.instance.loadTraits();
+    const mod = await Generator.gen("module", { setting: "fantasy" });
+    const pcs = [
+      await Generator.gen("pc", { setting: 'fantasy', class: 'warrior', }) as unknown as Combatant,
+      await Generator.gen("pc", { setting: 'fantasy', class: 'thief', }) as unknown as Combatant,
+      await Generator.gen("pc", { setting: 'fantasy', class: 'mage', }) as unknown as Combatant,
+      await Generator.gen("pc", { setting: 'fantasy', class: 'cleric', }) as unknown as Combatant,
+      await Generator.gen("pc", { setting: 'fantasy', class: 'ranger', }) as unknown as Combatant,
+      await Generator.gen("pc", { setting: 'fantasy', class: 'bard', }) as unknown as Combatant,
+    ].map(pc => ({ ...pc, playerControlled: true }))
+    for (const pc of party) {
+      await CharacterRecord.pickInitialSpells(pc, Automatic.randomSelect.bind(this));
+    }
+    await CharacterRecord.assignPartyPassives(party);
+
+    // console.log("Generated party:", party.map(p => p.name));
+
+    const explorer = new ModuleRunner({
+      gen: Generator.gen.bind(Generator),
+      moduleGen: () => mod,
+      pcs
     });
 
     await explorer.run(true);

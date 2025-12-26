@@ -11,7 +11,7 @@ type EvalContext = {
   //   sides: number
   // ) => Promise<DeemValue>;
 
-  [key: string]: DeemValue; // | ((subject: DeemValue, description: DeemValue, sides: number) => Promise<DeemValue>);
+  [key: string]: DeemValue | Roll | Combatant; // | ((subject: DeemValue, description: DeemValue, sides: number) => Promise<DeemValue>);
 }
 type EvalArgs = { context?: EvalContext };
 type EvalSemantics = { eval: (context: EvalContext) => Promise<DeemValue> };
@@ -293,7 +293,7 @@ export default class Deem {
 
   static async evaluate(
     expression: string,
-    context: Record<string, DeemValue> = {}
+    context: Record<string, DeemValue | Roll | Combatant> = {}
   ): Promise<DeemValue> {
 
     // if we have a leading =, then we can remove it
@@ -304,7 +304,7 @@ export default class Deem {
     const match = this.grammar.match(expression);
     if (match.succeeded()) {
       const sem = this.semantics(match) as {
-        eval: (context: Record<string, DeemValue>) => Promise<DeemValue>
+        eval: (context: Record<string, DeemValue | Roll | Combatant>) => Promise<DeemValue>
       };
       // const prettyExpr: string = sem.pretty as string;
       const ret: DeemValue = await sem.eval(context);

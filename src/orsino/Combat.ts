@@ -27,8 +27,15 @@ export interface CombatContext {
   enemies: Combatant[];
 }
 
+type CombatStats = {
+  combats: number;
+  victories: number;
+  defeats: number;
+  totalRounds: number;
+}
+
 export default class Combat {
-  static statistics = {
+  static statistics: CombatStats = {
     combats: 0,
     victories: 0,
     defeats: 0,
@@ -309,7 +316,13 @@ export default class Combat {
     return 1 + Math.floor((combatant.level || 1) / 3);
   }
 
-  async validateAction(ability: Ability, combatant: Combatant, allies: Combatant[], enemies: Combatant[]): Promise<boolean> {
+  validateAction(ability: Ability, combatant: Combatant, allies: Combatant[], enemies: Combatant[]): boolean {
+    const valid = this._actionIsValid(ability, combatant, allies, enemies);
+    // console.warn("Validating action:", ability.name, "for", Presenter.minimalCombatant(combatant), "valid:", valid);
+    return valid;
+  }
+
+  _actionIsValid(ability: Ability, combatant: Combatant, allies: Combatant[], enemies: Combatant[]): boolean {
     const activeFx = Fighting.gatherEffects(combatant);
     if (activeFx.compelNextMove) {
       const compelledAbility = this.abilityHandler.getAbility(activeFx.compelNextMove);
@@ -341,10 +354,6 @@ export default class Combat {
       }
     }
 
-    // if (!disabled && ability.effects.some(e => e.type === "summon")) {
-    //   disabled = allies.length >= 5; // arbitrary cap on total combatants
-    // }
-
     // if there is a conditional status to the ability like backstab requiring Hidden, check for that
     const condition = ability.condition;
     if (condition) {
@@ -374,14 +383,14 @@ export default class Combat {
     }
 
     if (!disabled) {
-      if (ability.type == "spell") {
+      if (ability.type === "spell") {
         let spellSlotsRemaining = (Combat.maxSpellSlotsForCombatant(combatant) || 0) - (combatant.spellSlotsUsed || 0);
         // if we have a noSpellcasting effect, set spellSlotsRemaining to 0
         if (activeFx.noSpellcasting) {
           spellSlotsRemaining = 0;
         }
         disabled = spellSlotsRemaining === 0;
-      } else if (ability.type == "skill") {
+      } else if (ability.type === "skill") {
         if (!ability.name.match(/melee|ranged|wait/i)) {
           const cooldownRemaining = combatant.abilityCooldowns?.[ability.name] || 0;
           if (cooldownRemaining > 0) {
@@ -394,7 +403,7 @@ export default class Combat {
 
   }
 
-  async validActions(combatant: Combatant, allies: Combatant[], enemies: Combatant[]): Promise<Ability[]> {
+  validActions(combatant: Combatant, allies: Combatant[], enemies: Combatant[]): Ability[] {
     const validAbilities: Ability[] = [];
 
     // do we have a 'compelNextMove' effect?
@@ -409,7 +418,7 @@ export default class Combat {
     const uniqAbilities = Array.from(new Set(combatant.abilities));
     const abilities = uniqAbilities.map(a => this.abilityHandler.getAbility(a)); //.filter(a => a);
     for (const ability of abilities) {
-      const disabled = !(await this.validateAction(ability, combatant, allies, enemies));
+      const disabled = !(this.validateAction(ability, combatant, allies, enemies));
       if (!disabled) {
         validAbilities.push(ability);
       }
@@ -427,11 +436,17 @@ export default class Combat {
     haltCombat?: boolean,
     newPlane?: string
   }> {
+    if (!combatant) {
+      throw new Error("No combatant provided to pcTurn");
+    }
+
+    console.warn(`It's ${Presenter.minimalCombatant(combatant)}'s turn.`);
+
     const inventoryItems = this._teams[0].inventory || [];
     const itemQuantities = Inventory.quantities(inventoryItems);
     const itemAbilities = [];
     for (const [itemKey, qty] of Object.entries(itemQuantities)) {
-      const itemAbility = await Deem.evaluate(`lookup(consumables, '${itemKey}')`) as Ability;
+      const itemAbility = await Deem.evaluate(`lookup(consumables, '${itemKey}')`) as unknown as Ability;
       const proficient = Inventory.isItemProficient(itemAbility.kind || 'kit', itemAbility.aspect, combatant.itemProficiencies || {})
       if (!proficient) { continue; }
 
@@ -478,7 +493,7 @@ export default class Combat {
         value: ability,
         name: `${ability.name.padEnd(15)} (${ability.description}/${ability.type === "spell" ? pips : "skill"})`,
         short: ability.name,
-        disabled: !(await this.validateAction(ability, combatant, allies, enemies))
+        disabled: !this.validateAction(ability, combatant, allies, enemies)
       })
       // }
     }
@@ -507,7 +522,7 @@ export default class Combat {
       const randomChoice = enabledChoices[Math.floor(Math.random() * enabledChoices.length)];
       action = randomChoice.value as Ability;
     } else {
-      action = await this.select(`Your turn, ${Presenter.minimalCombatant(combatant)} - what do you do?`, choices, combatant);
+      action = await this.select(`Your turn, ${Presenter.minimalCombatant(combatant)} - what do you do?`, choices, combatant) as Ability;
     }
 
     if (action.name === "Flee") {
@@ -516,7 +531,7 @@ export default class Combat {
         // console.log("You successfully flee from combat!");
         this.winner = "Enemy";
         // this.combatantsByInitiative = [];
-        this.emit({ type: "flee", subject: combatant } as Omit<FleeEvent, "turn">);
+        await this.emit({ type: "flee", subject: combatant } as Omit<FleeEvent, "turn">);
         return { haltRound: true };
       }
       // console.log("You attempt to flee but could not escape!");
@@ -524,7 +539,7 @@ export default class Combat {
 
     } else if (action.name === "Wait") {
       // this.note(`${Presenter.combatant(combatant)} waits and watches.`);
-      this.emit({ type: "wait", subject: combatant } as Omit<WaitEvent, "turn">);
+      await this.emit({ type: "wait", subject: combatant } as Omit<WaitEvent, "turn">);
       return { haltRound: false };
     }
 
@@ -536,7 +551,7 @@ export default class Combat {
         value: t,
         short: Array.isArray(t) ? t.map(c => c.forename).join(", ") : Presenter.minimalCombatant(t),
         disabled: false
-      })), combatant);
+      })), combatant) as Combatant | Combatant[];
     } else if (action.target.includes("randomEnemies") && action.target.length === 2) {
       // pick random enemies
       // if (action.target[1] is a number use that)
@@ -544,11 +559,11 @@ export default class Combat {
       if (typeof action.target[1] === "number") {
         count = action.target[1];
       } else if (typeof action.target[1] === "string") {
-        count = await Deem.evaluate(action.target[1], { ...combatant }); // as any as number;
+        count = await Deem.evaluate(action.target[1], { ...combatant }) as number; // as any as number;
       } else {
         throw new Error(`Invalid target count specification for randomEnemies: ${action.target[1]}`);
       }
-      console.log(`Selecting ${count} random enemy targets for ${action.name}...`);
+      // console.warn(`Selecting ${count} random enemy targets for ${action.name}...`);
       const possibleTargets = Combat.living(enemies);
       targetOrTargets = [];
       for (let i = 0; i < count; i++) {
@@ -556,10 +571,11 @@ export default class Combat {
       }
     }
 
-    if (action.type === "skill" && !action.name.match(/melee|ranged|wait/i)) {
-      // combatant.abilitiesUsed = combatant.abilitiesUsed || [];
-      // combatant.abilitiesUsed.push(action.name);
+    if (!targetOrTargets) {
+      throw new Error(`No valid targets found for ability ${action.name} used by ${Presenter.minimalCombatant(combatant)}.`);
+    }
 
+    if (action.type === "skill" && !action.name.match(/melee|ranged|wait/i)) {
       // set cooldown
       const cooldown = action.cooldown || 3;
       combatant.abilityCooldowns = combatant.abilityCooldowns || {};
@@ -582,7 +598,7 @@ export default class Combat {
           }
           // this.note(`${Presenter.combatant(combatant)} uses ${action.name} (${itemInstance.charges} charges remaining).`);
           const chargesLeft = itemInstance.charges;
-          this.emit({ type: "itemUsed", subject: combatant, itemName: action.name, chargesLeft } as Omit<ItemUsedEvent, "turn">);
+          await this.emit({ type: "itemUsed", subject: combatant, itemName: action.name, chargesLeft } as Omit<ItemUsedEvent, "turn">);
         }
       } else {
         // _remove_ item from inventory
@@ -593,13 +609,15 @@ export default class Combat {
           this._teams[0].inventory = inventory;
         }
         const remaining = inventory.filter(ii => ii.name === action.key).length;
-        this.emit({ type: "itemUsed", subject: combatant, itemName: action.name, countLeft: remaining } as Omit<ItemUsedEvent, "turn">);
+        await this.emit({ type: "itemUsed", subject: combatant, itemName: action.name, countLeft: remaining } as Omit<ItemUsedEvent, "turn">);
       }
 
     }
 
     // let team = this.teams.find(t => t.combatants.includes(combatant));
     const ctx: CombatContext = { subject: combatant, allies, enemies };
+    const numTargets = Array.isArray(targetOrTargets) ? targetOrTargets.length : 1;
+    console.warn(`${combatant.forename} ${Combat.describeAbility(action)} on ${numTargets} target${numTargets > 1 ? "s" : ""}.`);
     const { events } = await AbilityHandler.perform(action, combatant, targetOrTargets, ctx, Commands.handlers(this.roller));
     await this.emitAll(events, Combat.describeAbility(action), combatant);
 
@@ -617,9 +635,9 @@ export default class Combat {
 
 
   async npcTurn(combatant: Combatant, enemies: Combatant[], allies: Combatant[]) {
-    const validAbilities = await this.validActions(combatant, allies, enemies);
+    const validAbilities = this.validActions(combatant, allies, enemies);
     if (validAbilities.length === 0) {
-      this.emit({ type: "wait", subject: combatant } as Omit<WaitEvent, "turn">);
+      await this.emit({ type: "wait", subject: combatant } as Omit<WaitEvent, "turn">);
       return { haltRound: false };
     }
 
@@ -891,12 +909,12 @@ export default class Combat {
     return {};
   }
 
-  tearDown() {
+  async tearDown() {
     // unsummonings for all combatants
     for (const combatant of this.allCombatants) {
       const summoned = combatant.activeSummonings || [];
       for (const summon of summoned) {
-        this.emit({ type: "unsummon", subject: combatant, summonedName: summon.forename } as Omit<UnsummonEvent, "turn">);
+        await this.emit({ type: "unsummon", subject: combatant, summonedName: summon.forename } as Omit<UnsummonEvent, "turn">);
       }
       combatant.activeSummonings = [];
     }
@@ -906,12 +924,6 @@ export default class Combat {
     return this.winner !== null;
   }
 
-  // static async samplingSelect(_prompt: string, options: Choice<any>[]): Promise<any> {
-  //   const enabledOptions = options.filter(
-  //     (option) => !option.disabled
-  //   )
-  //   return enabledOptions[Math.floor(Math.random() * enabledOptions.length)]?.value;
-  // }
 
   static defaultTeams(): Team[] {
     return [

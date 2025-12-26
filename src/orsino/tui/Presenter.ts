@@ -256,7 +256,7 @@ export default class Presenter {
     }
 
     const combatClass = combatant.class;
-    const combatKind = (combatant as any).kind || combatant.race || '';
+    const combatKind = (combatant as unknown as { kind?: string }).kind || combatant.race || '';
     let tempHp = 0;
     for (const poolAmount of Object.values(combatant.tempHpPools || {})) {
       tempHp += poolAmount;
@@ -908,8 +908,11 @@ export default class Presenter {
         description = (`Deal ${amount} ${effect.kind || "true"} damage to ${targetDescription}`);
         break;
       case "cast":
-        description = (`Cast ability ${Words.humanize(effect.spellName!)} (${
-          this.describeAbility(AbilityHandler.instance.getAbility(effect.spellName!))
+        if (!effect.spellName) {
+          throw new Error(`Cast effect must have a spellName`);
+        }
+        description = (`Cast ability ${Words.humanize(effect.spellName)} (${
+          this.describeAbility(AbilityHandler.instance.getAbility(effect.spellName))
           }) on ${targetDescription}`);
         break;
       case "heal": description = (`Heal ${targetDescription} ${amount} HP`); break;
