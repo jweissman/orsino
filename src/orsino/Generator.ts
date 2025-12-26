@@ -19,35 +19,39 @@ export type GeneratorOptions = {
   targetCr?: number;
   _moduleLevel?: number;
 
-  playerControlled?: boolean;
+  // playerControlled?: boolean;
+  monster_type?: string;
+  monster_aspect?: string;
+  element?: string;
+  rank?: string;
 }
 export type GeneratedValue = Record<string, DeemValue>;
 
 export default class Generator {
   static setting: Record<GenerationTemplateType, Template | Table>;
 
-  static async genList(
+  static genList(
     type: GenerationTemplateType,
     options: GeneratorOptions = {},
     count: number = 1
-  ): Promise<GeneratedValue[]> {
+  ): GeneratedValue[] {
     if (count === 0) {
       return [];
     }
     const items: GeneratedValue[] = [];
     while (items.length < count) {
       const i = items.length;
-      const item: GeneratedValue = await this.gen(type, deepCopy({ ...options, _index: i }) as GeneratorOptions) as GeneratedValue;
+      const item: GeneratedValue = this.gen(type, deepCopy({ ...options, _index: i }) as GeneratorOptions) as GeneratedValue;
       items.push(item);
     }
 
     return items;
   }
 
-  static async gen(
+  static gen(
     type: GenerationTemplateType,
     options: GeneratorOptions = {}
-  ): Promise<GeneratedValue | GeneratedValue[]> {
+  ): GeneratedValue | GeneratedValue[] {
     Generator.setting = Generator.setting || (options.setting ? loadSetting(options.setting) : Generator.defaultSetting);
 
     const templ = Generator.generationSource(type);
@@ -56,13 +60,13 @@ export default class Generator {
     }
 
     if (options.__count && options.__count > 1) {
-      return await this.genList(type, { ...options, __count: undefined }, options.__count);
+      return this.genList(type, { ...options, __count: undefined }, options.__count);
     } else if (options.count && options.count > 1) {
-      return await this.genList(type, { ...options, count: undefined }, options.count);
+      return this.genList(type, { ...options, count: undefined }, options.count);
     }
 
     if (templ instanceof Template) {
-      const assembled = await templ.assembleProperties(options); //, this);
+      const assembled = templ.assembleProperties(options); //, this);
       return assembled;
     } else if (templ instanceof Table) {
       let group = options.group || 'default';
@@ -84,7 +88,7 @@ export default class Generator {
     return ret;
   }
 
-  public static async gatherKeysFromTable(tableName: GenerationTemplateType, count: number, condition?: string): Promise<any[]> {
+  public static gatherKeysFromTable(tableName: GenerationTemplateType, count: number, condition?: string): DeemValue[] {
     const table = Generator.generationSource(tableName);
     if (!table || !(table instanceof Table)) {
       throw new Error(`Table not found: ${tableName}`);
@@ -93,7 +97,7 @@ export default class Generator {
 
     if (condition) {
       for (const key of ret.slice()) {
-        const conditionResult = await Deem.evaluate(condition, { __it: this.lookupInTable(tableName, key) });
+        const conditionResult = Deem.evaluate(condition, { __it: this.lookupInTable(tableName, key) });
         if (!conditionResult) {
           ret.splice(ret.indexOf(key), 1);
         }

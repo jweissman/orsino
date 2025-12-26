@@ -5,4 +5,4 @@ export type Roll = (
   subject: Combatant,
   description: string,
   sides: number,
-) => Promise<RollResult>;
+) => RollResult;

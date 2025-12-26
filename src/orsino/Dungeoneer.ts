@@ -16,6 +16,7 @@ import { Inventory } from "./Inventory";
 import Orsino from "../orsino";
 import { StatusEffect, StatusModifications } from "./Status";
 import Sample from "./util/Sample";
+import Automatic from "./tui/Automatic";
 
 type SkillType = "search" | "examine" | "disarm"; // | "pickLock" | "climb" | "swim" | "jump" | "listen" | "spot";
 
@@ -155,8 +156,8 @@ export default class Dungeoneer {
   private currentRoomIndex: number = 0;
   private journal: DungeonEvent[] = [];
 
-  protected dungeonGen: () => Promise<Dungeon>;
-  protected encounterGen: (cr: number) => Promise<Encounter>;
+  protected dungeonGen: () => Dungeon;
+  protected encounterGen: (cr: number) => Encounter;
 
   public playerTeam: Team;
   public dungeon: Dungeon | null = null;
@@ -165,8 +166,8 @@ export default class Dungeoneer {
     options: Record<string, any> = {}
   ) {
     this.dry = options.dry || Orsino.environment === 'test';
-    this.roller = options.roller || Commands.roll;
-    this.select = options.select || Combat.samplingSelect;
+    this.roller = options.roller || Commands.roll.bind(Commands);
+    this.select = options.select || Automatic.randomSelect.bind(Automatic);
     this.outputSink = options.outputSink || console.log;
     this.dungeonGen = options.dungeonGen || Dungeoneer.defaultGen;
     this.playerTeam = options.playerTeam || Dungeoneer.defaultTeam();
@@ -177,9 +178,9 @@ export default class Dungeoneer {
 
     // this.note(`Generated dungeon: ${this.dungeon.dungeon_name} (${this.dungeon.dungeon_type})`);
 
-    this.encounterGen = (async (cr: number) => {
+    this.encounterGen = (cr: number) => {
       if (options.gen) {
-        return await options.gen("encounter", { race: this.dungeon!.race, terrain: this.dungeon!.terrain, targetCr: cr });
+        return options.gen("encounter", { race: this.dungeon!.race, terrain: this.dungeon!.terrain, targetCr: cr }) as Encounter;
       } else {
         return {
           creatures: [
@@ -187,7 +188,7 @@ export default class Dungeoneer {
           ]
         }
       }
-    });
+    }
   }
 
   private note(message: string): void {
@@ -208,8 +209,8 @@ export default class Dungeoneer {
     return Dungeoneer.dungeonIcons[this.dungeon!.dungeon_type as keyof typeof Dungeoneer.dungeonIcons] || "🏰";
   }
 
-  async setUp() {
-    this.dungeon = await this.dungeonGen();
+  setUp() {
+    this.dungeon = this.dungeonGen();
   }
 
   // Main run loop
@@ -217,7 +218,7 @@ export default class Dungeoneer {
     newPlane?: string
   }> {
     if (!this.dungeon) {
-      await this.setUp();
+      this.setUp();
     }
     await this.presentCharacterRecords();
 
@@ -277,7 +278,7 @@ export default class Dungeoneer {
       // this.note("\n🎉 Victory! Dungeon cleared!\n");
       if (this.dungeon!.macguffin) {
         // this.note(`You have secured ${Stylist.bold(this.dungeon!.macguffin)}!\n`);
-        const isConsumable = await Deem.evaluate(`hasEntry(consumables, '${this.dungeon!.macguffin}')`);
+        const isConsumable = Deem.evaluate(`hasEntry(consumables, '${this.dungeon!.macguffin}')`);
         if (isConsumable) {
           // this.playerTeam.inventory[this.dungeon!.macguffin] = (this.playerTeam.inventory[this.dungeon!.macguffin] || 0) + 1;
           this.playerTeam.inventory.push(await Inventory.item(this.dungeon!.macguffin));
@@ -324,7 +325,7 @@ export default class Dungeoneer {
 
     // this.note(`${actor.name} attempts ${action} with modifier ${skillMod}` + (skillBonus > 0 ? ` and +${skillBonus} bonus.` : '.'));
     const mustRollValueOrHigher = dc - skillMod - skillBonus;
-    const roll = await this.roller(actor, action + ` (must roll ${mustRollValueOrHigher} or better)`, 20);
+    const roll = this.roller(actor, action + ` (must roll ${mustRollValueOrHigher} or better)`, 20);
     const total = roll.amount + skillMod + skillBonus;
     return { actor, success: total >= dc };
   }
@@ -419,7 +420,7 @@ export default class Dungeoneer {
       const enemies = combat.enemyCombatants || [];
 
       let xp = 0;
-      let gold = await Deem.evaluate(String(this.currentEncounter?.bonusGold || 0)) || 0;
+      let gold = Deem.evaluate(String(this.currentEncounter?.bonusGold || 0)) || 0;
 
       if (enemies.length > 0) {
         const monsterCount = enemies.length;
@@ -428,7 +429,7 @@ export default class Dungeoneer {
           + 25;
 
         for (const m of enemies) {
-          const monsterGold = (await Deem.evaluate(String(m.gp))) || 0;
+          const monsterGold = (Deem.evaluate(String(m.gp))) || 0;
           gold += monsterGold;
         }
 
@@ -437,7 +438,7 @@ export default class Dungeoneer {
       const consumablesFound = Math.random();
       if (consumablesFound < 0.2) {
         const consumableRarity = (consumablesFound < 0.05) ? 'rare' : (consumablesFound < 0.1) ? 'uncommon' : 'common';
-        const consumable = await Deem.evaluate(`pick(gather(consumables, -1, 'dig(#__it, rarity) == ${consumableRarity}'))`);
+        const consumable = Deem.evaluate(`pick(gather(consumables, -1, 'dig(#__it, rarity) == ${consumableRarity}'))`);
         const consumableName = Words.humanize(consumable);
         await this.emit({ type: "itemFound", itemName: Words.humanize(consumableName), quantity: 1, where: "in the remains of your foes" });
         this.playerTeam.inventory.push(await Inventory.item(consumable));
@@ -483,7 +484,8 @@ export default class Dungeoneer {
   private async roomActions(room: Room | BossRoom): Promise<{
     leaving: boolean, newPlane?: string, newLocation?: string
   }> {
-    let searched = false, examinedDecor = false, inspectedFeatures: string[] = [];
+    let searched = false, examinedDecor = false;
+    const inspectedFeatures: string[] = [];
     let done = false;
 
     while (
@@ -521,7 +523,7 @@ export default class Dungeoneer {
 
       options.push({ name: "Leave the dungeon", value: "leave", short: 'Leave', disabled: this.dry });
 
-      const choice = await this.select("What would you like to do?", options);
+      const choice = await this.select("What would you like to do?", options) as string;
       if (choice === "status") {
         for (const c of this.playerTeam.combatants) {
           await Presenter.printCharacterRecord(c);
@@ -553,8 +555,8 @@ export default class Dungeoneer {
         let gp = 0;
         let items: string[] = [];
         if (check.success) {
-          gp = await Deem.evaluate("1+1d20");
-          items = await Deem.evaluate("sample(gather(consumables, -1, 'dig(#__it, rarity) == common'), 1d2)") as string[];
+          gp = Deem.evaluate("1+1d20");
+          items = Deem.evaluate("sample(gather(consumables, -1, 'dig(#__it, rarity) == common'), 1d2)") as string[];
           // this.note(`${check.actor.forename} found a hidden compartment in ${room.decor} containing ${gp} gold coins!`);
         } else {
           // this.note(`${check.actor.forename} examined ${room.decor} thoroughly, but could find nothing out of the ordinary.`);
@@ -687,12 +689,12 @@ export default class Dungeoneer {
           ...(Sample.count(5, ...wrongAnswerPool).map((w, i) => ({ name: w, value: 'wrong', short: 'Answer', disabled: false })))
         ]),
         { name: "Remain silent", value: "silent", short: 'Silent', disabled: false },
-      ]);
+      ]) as string;
       if (answer === "correct") {
         await this.emit({ type: "riddle", subject: check.actor, challenge: riddle.challenge.question, reward: riddle.reward, solution: riddle.challenge.answer });
         this.note(`${check.actor.forename} answered correctly and received ${Words.a_an(riddle.reward)}!`);
         // give reward
-        const isConsumable = await Deem.evaluate(`hasEntry(consumables, '${riddle.reward}')`);
+        const isConsumable = Deem.evaluate(`hasEntry(consumables, '${riddle.reward}')`);
         if (isConsumable) {
           this.playerTeam.inventory.push(await Inventory.item(riddle.reward));
         } else {
@@ -723,18 +725,18 @@ export default class Dungeoneer {
       } else if (featureName === 'wonder' && this.currentRoom?.wonder) {
         interaction = this.currentRoom.wonder;
       } else {
-        interaction = await Deem.evaluate(`=lookup(roomFeature, ${featureName})`) as Ability;
+        interaction = Deem.evaluate(`=lookup(roomFeature, ${featureName})`) as unknown as Ability;
       }
       this.note(interaction.description);
       if (interaction.offer) {
-        let gpCost = await Deem.evaluate(interaction.offer.toString());
+        let gpCost = Deem.evaluate(interaction.offer.toString()) as number;
         const totalGp = this.playerTeam.combatants.reduce((sum, c) => sum + (c.gp || 0), 0);
         // console.log(`Total party gp: ${totalGp}, cost: ${gpCost}`);
 
         const proceed = await this.select(`The ${Words.humanize(featureName)} offers ${Words.a_an(interaction.name)} for ${gpCost} gold. Purchase?`, [
           { name: "Yes", value: "yes", short: 'Y', disabled: gpCost > totalGp },
           { name: "No", value: "no", short: 'N', disabled: false },
-        ]);
+        ]) as string;
         if (proceed === "yes") {
           if (totalGp >= gpCost) {
             // deduct gp evenly from party members
@@ -783,9 +785,9 @@ export default class Dungeoneer {
         for (const item of room.treasure) {
           // this.note(`You find ${Words.humanize(item)}`);
           await this.emit({ type: "itemFound", itemName: Words.humanize(item), quantity: 1, where: "in the hidden stash" });
-          const isConsumable = await Deem.evaluate(`=hasEntry(consumables, "${item}")`) as boolean;
-          const isGear = await Deem.evaluate(`=hasEntry(masterGear, "${item}")`) as boolean;
-          const isEquipment = await Deem.evaluate(`=hasEntry(equipment, "${item}")`) as boolean;
+          const isConsumable = Deem.evaluate(`=hasEntry(consumables, "${item}")`) as boolean;
+          const isGear = Deem.evaluate(`=hasEntry(masterGear, "${item}")`) as boolean;
+          const isEquipment = Deem.evaluate(`=hasEntry(equipment, "${item}")`) as boolean;
           // let isGear = await Deem.evaluate(`=hasEntry(masterGear, "${item}")`) as boolean;
           if (isConsumable) {
             // this.note(`You add ${Words.a_an(item)} to your inventory.`);
@@ -800,7 +802,7 @@ export default class Dungeoneer {
             const choice = await this.select(`Equip ${Words.humanize(item)} now?`, [
               { name: "Yes", value: "yes", short: 'Y', disabled: false },
               { name: "No", value: "no", short: 'N', disabled: false }
-            ]);
+            ]) as string;
             if (choice === "no") {
               this.note(`${actor.forename} puts ${Words.a_an(item)} in their loot.`);
               actor.loot = actor.loot || [];
@@ -847,7 +849,7 @@ export default class Dungeoneer {
       lootBonus += fx.lootBonus as number || 0;
       if (lootBonus > 0) {
         this.note(`${actor.forename} has a loot bonus of +${lootBonus}.`);
-        const lootItems = await Deem.evaluate(`sample(gather(consumables, -1, 'dig(#__it, rarity) == common'), ${lootBonus})`) as string[];
+        const lootItems = Deem.evaluate(`sample(gather(consumables, -1, 'dig(#__it, rarity) == common'), ${lootBonus})`) as string[];
         for (const item of lootItems) {
           // this.note(`You found ${Words.a_an(Words.humanize(item))}!`);
           // this.playerTeam.inventory[item] = (this.playerTeam.inventory[item] || 0) + 1;
@@ -872,7 +874,7 @@ export default class Dungeoneer {
     const choice = await this.select("Are you sure you want to rest in this room? (stabilize unconscious party members to 1HP, 30% encounter)", [
       { disabled: false, short: 'Y', name: "Yes", value: "yes" },
       { disabled: false, short: 'N', name: "No", value: "no" }
-    ]);
+    ]) as string;
     if (choice === "yes") {
       // Heal party, maybe trigger encounter
       this.note(`\n💤 Resting...`);
@@ -896,7 +898,7 @@ export default class Dungeoneer {
       const inventoryQuantities = Inventory.quantities(this.playerTeam.inventory);
       //Combat.inventoryQuantities(this.playerTeam);
       for (const [item, qty] of Object.entries(inventoryQuantities)) {
-        const it = await Deem.evaluate(`=lookup(consumables, "${item}")`);
+        const it = Deem.evaluate(`=lookup(consumables, "${item}")`);
         if (qty > 0 && it.aspect === "healing") {
           healingItems.push(item);
         }
@@ -906,7 +908,7 @@ export default class Dungeoneer {
         const useItems = await this.select("Use healing items?", [
           { name: "Yes", value: "yes", short: 'Y', disabled: false },
           { name: "No", value: "no", short: 'N', disabled: false }
-        ]);
+        ]) as string;
         if (useItems === "yes") {
           for (const c of this.playerTeam.combatants) {
             const effective = Fighting.effectiveStats(c);
@@ -915,7 +917,7 @@ export default class Dungeoneer {
                 // let qty = this.playerTeam.inventory[itemName] || 0;
                 const qty = this.playerTeam.inventory.filter(i => i.name === itemName).length;
                 if (qty > 0 && c.hp < effective.maxHp) {
-                  const it = await Deem.evaluate(`=lookup(consumables, "${itemName}")`);
+                  const it = Deem.evaluate(`=lookup(consumables, "${itemName}")`);
                   const effects = it.effects;
                   const nullCombatContext: CombatContext = {
                     subject: c, allies: this.playerTeam.combatants.filter(ally => ally.name !== c.name && ally.hp > 0), enemies: []
@@ -942,7 +944,7 @@ export default class Dungeoneer {
       if (Math.random() < 0.3 && this.currentRoomIndex < this.rooms.length) {
         // let encounter = this.encounterGen...
         const room = this.currentRoom as Room;
-        room.encounter = await this.encounterGen(room.targetCr || 1);
+        room.encounter = this.encounterGen(room.targetCr || 1);
         this.note(`\n👹 Wandering monsters interrupt your rest: ${Words.humanizeList(room.encounter.creatures.map(m => m.name))} [CR ${room.encounter.cr}]`);
         const result = (await this.runCombat()); //.playerWon;
         if (!result.playerWon) {

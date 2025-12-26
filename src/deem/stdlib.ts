@@ -11,7 +11,11 @@ export default class StandardLibrary {
     count: (arr: DeemValue[]) => { return arr.length },
     rand: () => Math.random(),
     if: (cond: DeemValue, trueVal: DeemValue, falseVal: DeemValue) => (cond ? trueVal : falseVal),
-    oneOf: (...args: DeemValue[]) => args[Math.floor(Math.random() * args.length)],
+    oneOf: (...args: DeemValue[]) => {
+      const picked = args[Math.floor(Math.random() * args.length)];
+      // console.warn("Deem StandardLibrary.oneOf(): picked=", picked);
+      return picked;
+    },
     pick: (arr: DeemValue[], index: DeemValue = -1) => {
       if (!Array.isArray(arr)) {
         throw new Error(`pick() expects an array, got: ${typeof arr}`);
@@ -168,7 +172,10 @@ export default class StandardLibrary {
         }
       }, obj);
     },
-    uniq: (arr: DeemValue[]) => Array.from(new Set(arr)),
+    uniq: (arr: DeemValue[]) => {
+      // console.warn("Deem StandardLibrary.uniq(): arr=", arr);
+      return Array.from(new Set(arr))
+    },
     distribute: (total: DeemValue, parts: DeemValue) => {
       if (typeof total !== 'number' || typeof parts !== 'number') {
         throw new Error(`distribute() expects total and parts to be numbers, got: ${typeof total} and ${typeof parts}`);

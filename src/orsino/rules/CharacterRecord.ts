@@ -5,7 +5,7 @@ import { DungeonEvent } from "../Events";
 import TraitHandler, { Trait } from "../Trait";
 import Presenter from "../tui/Presenter";
 import Stylist from "../tui/Style";
-import User, { SelectionMethod } from "../tui/User";
+import User from "../tui/User";
 import Words from "../tui/Words";
 import { Combatant } from "../types/Combatant";
 import { Roll } from "../types/Roll";
@@ -14,6 +14,8 @@ import { never } from "../util/never";
 import { Commands } from "./Commands";
 import { Fighting } from "./Fighting";
 import Automatic from "../tui/Automatic";
+import { Select } from "../types/Select";
+import { Answers } from "inquirer";
 
 type PlayerCharacterRace = "human" | "elf" | "dwarf" | "halfling" | "orc" | "fae" | "gnome";
 
@@ -65,7 +67,7 @@ export default class CharacterRecord {
   static async pickSpell(
     spellLevel: number, school: 'arcane' | 'divine',
     alreadyKnown: string[] = [],
-    selectionMethod: SelectionMethod = User.selection
+    selectionMethod: Select<Answers> = User.selection.bind(User)
   ): Promise<string> {
     const abilityHandler = AbilityHandler.instance;
     await abilityHandler.loadAbilities();
@@ -81,20 +83,20 @@ export default class CharacterRecord {
         disabled: false
       };
     });
-    const chosenSpell: Choice<any> = await selectionMethod(
+    const chosenSpell: Choice<Answers> = await selectionMethod(
       `Select a level ${spellLevel} ${school} spell:`,
       spellChoicesDetailed
-    ) as Choice<any>;
+    ) as Choice<Answers>;
     return chosenSpell as any as string;
   }
 
   static async chargen(
     prompt: string,
-    pcGenerator: (options?: any) => Promise<Combatant>,
-    selectionMethod: SelectionMethod = User.selection
+    pcGenerator: (options?: any) => Combatant,
+    selectionMethod: Select<Answers> = User.selection.bind(User)
   ): Promise<Combatant> {
 
-    let pc: Combatant = await pcGenerator({ setting: 'fantasy' });
+    let pc: Combatant = pcGenerator({ setting: 'fantasy' });
     let accepted = false;
     while (!accepted) {
       const shouldWizard = await selectionMethod(
@@ -105,14 +107,14 @@ export default class CharacterRecord {
         const raceSelect = await selectionMethod(
           'Select a race for this PC: ' + prompt,
           ['human', 'elf', 'dwarf', 'halfling', 'orc', 'fae', 'gnome']
-        );
+        ) as PlayerCharacterRace;
 
         const occupationSelect = await selectionMethod(
           'Select an occupation for this PC: ' + prompt,
-          this.validClassesForRace(raceSelect as PlayerCharacterRace)
+          this.validClassesForRace(raceSelect)
         );
 
-        pc = await pcGenerator({ setting: 'fantasy', race: raceSelect, class: occupationSelect });
+        pc = pcGenerator({ setting: 'fantasy', race: raceSelect, class: occupationSelect });
         await this.pickInitialSpells(pc, selectionMethod);
 
         await Presenter.printCharacterRecord(pc);
@@ -125,7 +127,7 @@ export default class CharacterRecord {
         const race = this.pcRaces[Math.floor(Math.random() * this.pcRaces.length)];
         const validClasses = this.validClassesForRace(race);
         const occupation = validClasses[Math.floor(Math.random() * validClasses.length)];
-        pc = await pcGenerator({
+        pc = pcGenerator({
           setting: 'fantasy',
           race,
           class: occupation
@@ -146,7 +148,7 @@ export default class CharacterRecord {
 
   static async pickInitialSpells(
     pc: Combatant,
-    selectionMethod: SelectionMethod = User.selection.bind(User)
+    selectionMethod: Select<Answers> = User.selection.bind(User)
   ) {
     const job = pc.class;
     const spellbook: string[] = [];
@@ -200,9 +202,9 @@ export default class CharacterRecord {
   }
 
   static async chooseParty(
-    pcGenerator: (options?: any) => Promise<Combatant>,
+    pcGenerator: (options?: any) => Combatant,
     partySize: number,
-    selectionMethod: SelectionMethod = User.selection
+    selectionMethod: Select = User.selection.bind(User)
   ): Promise<Combatant[]> {
     const abilityHandler = AbilityHandler.instance;
     await abilityHandler.loadAbilities();
@@ -213,7 +215,7 @@ export default class CharacterRecord {
       ['Yes', 'No']
     );
     if (doChoose === 'No') {
-      return this.chooseParty(pcGenerator, partySize, Automatic.randomSelect);
+      return this.chooseParty(pcGenerator, partySize, Automatic.randomSelect.bind(Automatic));
     }
 
     const party: Combatant[] = [];
@@ -226,7 +228,7 @@ export default class CharacterRecord {
 
       if (pc) {
         if (party.some(p => p.name === pc?.name)) {
-          console.log(Stylist.bold(`A PC named ${(pc.name)} is already in the party. Please choose a different name.`));
+          // console.warn(Stylist.bold(`A PC named ${(pc.name)} is already in the party. Please choose a different name.`));
           continue;
         }
         await Presenter.printCharacterRecord(pc);
@@ -234,7 +236,7 @@ export default class CharacterRecord {
       }
     };
     // assign formation bonuses + racial traits
-    this.assignPartyPassives(party);
+    await this.assignPartyPassives(party);
 
     return party;
   }
@@ -278,7 +280,7 @@ export default class CharacterRecord {
     while (pc.xp >= nextLevelXp) {
       pc.level++;
       nextLevelXp = CharacterRecord.xpForLevel(pc.level + 1);
-      let hitPointIncrease = (await roller(pc, "hit point growth", pc.hitDie || 4)).amount;
+      let hitPointIncrease = (roller(pc, "hit point growth", pc.hitDie || 4)).amount;
       hitPointIncrease += Fighting.statMod(pc.con || 10);
       hitPointIncrease = Math.max(1, hitPointIncrease);
       pc.maximumHitPoints += hitPointIncrease;
@@ -296,8 +298,8 @@ export default class CharacterRecord {
         { disabled: pc.level <= 20 && pc.con >= 18, name: `Constitution (${pc.con})`, value: 'con', short: 'Constitution' },
         // just in case they're 18 across!
         { disabled: false, name: `Max HP (${pc.maximumHitPoints})`, value: 'maximumHitPoints', short: 'HP' },
-      ]);
-      // @ts-ignore
+      ]) as keyof Combatant;
+
       pc[stat] += 1;
       // this.note(`${c.name}'s ${stat.toUpperCase()} increased to ${c[stat as keyof Combatant]}!`);
 

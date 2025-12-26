@@ -3,10 +3,10 @@ import { GameEvent } from "./Events";
 
 export default class Bark {
   static lastBark: string = "";
-  static async lookup(event: Omit<GameEvent, "turn">): Promise<string> {
-    let bark = await this.lookupPlayerBark(event)
-            || await this.lookupNpcBark(event)
-            || await this.lookupHumanoidBark(event);
+  static lookup(event: Omit<GameEvent, "turn">): string {
+    let bark = this.lookupPlayerBark(event)
+            || this.lookupNpcBark(event)
+            || this.lookupHumanoidBark(event);
     if (bark === this.lastBark) {
       // avoid repeating the same bark
       bark = "";
@@ -17,23 +17,23 @@ export default class Bark {
     return bark;
   }
 
-  static async lookupHumanoidBark(event: Omit<GameEvent, "turn">): Promise<string> {
+  static lookupHumanoidBark(event: Omit<GameEvent, "turn">): string {
     let bark = "";
     const onHookName = `on${event.type.charAt(0).toUpperCase()}${event.type.slice(1)}`;
     const onHookTargetName = `${onHookName}Received`;
 
     if (event.subject && event.subject.traits?.includes("humanoid")) {
-      const hasEntry = await Deem.evaluate(`hasEntry(genericBarks, '${onHookName}')`);
+      const hasEntry = Deem.evaluate(`hasEntry(genericBarks, '${onHookName}')`);
       if (hasEntry) {
-        bark = await Deem.evaluate(`lookup(genericBarks, '${onHookName}')`);
+        bark = Deem.evaluate(`lookup(genericBarks, '${onHookName}')`);
         bark = bark.replace(/{(.*?)}/g, (_, key) => {
           return event.subject ? (event.subject as any)[key] || `{${key}}` : `{${key}}`;
         });
       }
     } else if (event.target && event.target.traits?.includes("humanoid")) {
-      const hasEntry = await Deem.evaluate(`hasEntry(genericBarks, '${onHookTargetName}')`);
+      const hasEntry = Deem.evaluate(`hasEntry(genericBarks, '${onHookTargetName}')`);
       if (hasEntry) {
-        bark = await Deem.evaluate(`lookup(genericBarks, '${onHookTargetName}')`);
+        bark = Deem.evaluate(`lookup(genericBarks, '${onHookTargetName}')`);
         bark = bark.replace(/{(.*?)}/g, (_, key) => {
           return event.target ? (event.target as any)[key] || `{${key}}` : `{${key}}`;
         });
@@ -43,15 +43,15 @@ export default class Bark {
     return bark;
   }
 
-  static async lookupPlayerBark(event: Omit<GameEvent, "turn">): Promise<string> {
+  static lookupPlayerBark(event: Omit<GameEvent, "turn">): string {
     let bark = "";
     const onHookName = `on${event.type.charAt(0).toUpperCase()}${event.type.slice(1)}`;
     const onHookTargetName = `${onHookName}Received`;
 
     if (event.subject && event.subject.personality) {
-      const hasEntry = await Deem.evaluate(`hasEntry(pcPersonalityBarks, '${event.subject.personality}')`);
+      const hasEntry = Deem.evaluate(`hasEntry(pcPersonalityBarks, '${event.subject.personality}')`);
       if (hasEntry) {
-        const barks = await Deem.evaluate(`lookup(pcPersonalityBarks, '${event.subject.personality}')`);
+        const barks = Deem.evaluate(`lookup(pcPersonalityBarks, '${event.subject.personality}')`);
         if (barks && barks[onHookName]) {
           let availableBarks = barks[onHookName];
           if (availableBarks.length > 1 && this.lastBark) {
@@ -66,9 +66,9 @@ export default class Bark {
         }
       }
     } else if (event.target && event.target.personality) {
-      const hasEntry = await Deem.evaluate(`hasEntry(pcPersonalityBarks, '${event.target.personality}')`);
+      const hasEntry = Deem.evaluate(`hasEntry(pcPersonalityBarks, '${event.target.personality}')`);
       if (hasEntry) {
-        const barks = await Deem.evaluate(`lookup(pcPersonalityBarks, '${event.target.personality}')`);
+        const barks = Deem.evaluate(`lookup(pcPersonalityBarks, '${event.target.personality}')`);
         if (barks && barks[onHookTargetName]) {
           let availableBarks = barks[onHookTargetName];
           if (availableBarks.length > 1 && this.lastBark) {
@@ -89,14 +89,14 @@ export default class Bark {
   }
 
 
-  static async lookupNpcBark(event: Omit<GameEvent, "turn">, avoidLast = true): Promise<string> {
+  static lookupNpcBark(event: Omit<GameEvent, "turn">, avoidLast = true): string {
     const onHookName = `on${event.type.charAt(0).toUpperCase()}${event.type.slice(1)}`;
     const onHookTargetName = `${onHookName}Received`;
     let npcBark = "";
     if (event.subject && event.subject.npc_type) {
-      const hasEntry = await Deem.evaluate(`hasEntry(npcBarks, '${event.subject.npc_type}')`);
+      const hasEntry = Deem.evaluate(`hasEntry(npcBarks, '${event.subject.npc_type}')`);
       if (hasEntry) {
-        const barks = await Deem.evaluate(`lookup(npcBarks, '${event.subject.npc_type}')`);
+        const barks = Deem.evaluate(`lookup(npcBarks, '${event.subject.npc_type}')`);
         if (barks && barks[onHookName]) {
           let availableBarks = barks[onHookName];
           if (avoidLast && this.lastBark) {
@@ -112,9 +112,9 @@ export default class Bark {
         }
       }
     } else if (event.target && event.target.npc_type) {
-      const hasEntry = await Deem.evaluate(`hasEntry(npcBarks, '${event.target.npc_type}')`);
+      const hasEntry = Deem.evaluate(`hasEntry(npcBarks, '${event.target.npc_type}')`);
       if (hasEntry) {
-        const barks = await Deem.evaluate(`lookup(npcBarks, '${event.target.npc_type}')`);
+        const barks = Deem.evaluate(`lookup(npcBarks, '${event.target.npc_type}')`);
         if (barks && barks[onHookTargetName]) {
           let availableBarks = barks[onHookTargetName];
           if (avoidLast && this.lastBark) {

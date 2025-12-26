@@ -1,5 +1,4 @@
 import { loadSetting } from "./orsino/loader";
-import { Gauntlet } from "./orsino/Gauntlet";
 import { Combatant } from "./orsino/types/Combatant";
 import Dungeoneer from "./orsino/Dungeoneer";
 import { ModuleRunner } from "./orsino/ModuleRunner";
@@ -45,24 +44,24 @@ export default class Orsino {
   ) {
     const partySize = options.partySize || 3;
     const pcs = await CharacterRecord.chooseParty(
-      async (opts: Record<string, any>) => await Generator.gen("pc", { setting: 'fantasy', ...opts }) as Combatant,
+      (opts: Record<string, any>) => Generator.gen("pc", { setting: 'fantasy', ...opts }) as Combatant,
       partySize
     );
-    if (type === "combat") {
-      const gauntlet = (new Gauntlet({
-        ...options,
-        roller: Interactive.roll.bind(Interactive),
-        select: Interactive.selection.bind(Interactive),
-        outputSink: Orsino.outputSink,
-      }))
+    // if (type === "combat") {
+    //   const gauntlet = (new Gauntlet({
+    //     ...options,
+    //     roller: Interactive.roll.bind(Interactive),
+    //     select: Interactive.selection.bind(Interactive),
+    //     outputSink: Orsino.outputSink,
+    //   }))
 
-      // const partySize = options.partySize || Math.max(1, Math.floor(Math.random() * 3) + 1);
-      await gauntlet.run({
-        pcs, //: this.genList("pc", { setting: 'fantasy', ...options }, partySize),
-        encounterGen: (targetCr: number) => Generator.gen("encounter", { setting: 'fantasy', ...options, targetCr }),
-      });
-    }
-    else if (type === "dungeon") {
+    //   // const partySize = options.partySize || Math.max(1, Math.floor(Math.random() * 3) + 1);
+    //   await gauntlet.run({
+    //     pcs, //: this.genList("pc", { setting: 'fantasy', ...options }, partySize),
+    //     encounterGen: (targetCr: number) => Generator.gen("encounter", { setting: 'fantasy', ...options, targetCr }),
+    //   });
+    // }
+    if (type === "dungeon") {
       const averageLevel = Math.round(pcs.reduce((sum, pc) => sum + pc.level, 0) / pcs.length);
       const targetCr = Math.round(averageLevel * 0.75);
       // console.log(`Selected party of ${pcs.length} PCs (average level ${averageLevel}), targeting CR ${targetCr}`);
@@ -101,12 +100,12 @@ export default class Orsino {
     await AbilityHandler.instance.loadAbilities();
     await TraitHandler.instance.loadTraits();
     const pcs = [
-      await Generator.gen("pc", { setting: 'fantasy', class: 'warrior' }) as unknown as Combatant,
-      await Generator.gen("pc", { setting: 'fantasy', class: 'thief'   }) as unknown as Combatant,
-      await Generator.gen("pc", { setting: 'fantasy', class: 'mage'    }) as unknown as Combatant,
-      await Generator.gen("pc", { setting: 'fantasy', class: 'cleric'  }) as unknown as Combatant,
-      await Generator.gen("pc", { setting: 'fantasy', class: 'ranger'  }) as unknown as Combatant,
-      await Generator.gen("pc", { setting: 'fantasy', class: 'bard'    }) as unknown as Combatant,
+      Generator.gen("pc", { setting: 'fantasy', class: 'warrior' }) as unknown as Combatant,
+      Generator.gen("pc", { setting: 'fantasy', class: 'thief'   }) as unknown as Combatant,
+      Generator.gen("pc", { setting: 'fantasy', class: 'mage'    }) as unknown as Combatant,
+      Generator.gen("pc", { setting: 'fantasy', class: 'cleric'  }) as unknown as Combatant,
+      Generator.gen("pc", { setting: 'fantasy', class: 'ranger'  }) as unknown as Combatant,
+      Generator.gen("pc", { setting: 'fantasy', class: 'bard'    }) as unknown as Combatant,
     ].map(pc => ({ ...pc, playerControlled: true }))
     for (const pc of pcs) {
       await CharacterRecord.pickInitialSpells(pc, Automatic.randomSelect.bind(Automatic));

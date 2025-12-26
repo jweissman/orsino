@@ -50,7 +50,7 @@ export class Commands {
     }
   }
 
-  static async roll(subject: Combatant, description: string, sides: number): Promise<RollResult> {
+  static roll(subject: Combatant, description: string, sides: number): RollResult {
     let result = Math.floor(Math.random() * sides) + 1;
     const prettyResult = Stylist.colorize(result.toString(), result === sides ? 'green' : result === 1 ? 'red' : 'yellow');
     let rollDescription = Stylist.italic(`${subject.name} rolled d${sides} ${description} and got a ${prettyResult}.`);
@@ -58,7 +58,7 @@ export class Commands {
     const effectStack = Fighting.gatherEffects(subject);
     if (effectStack.rerollNaturalOnes && result === 1) {
       rollDescription += ` ${subject.name} has an effect that allows re-rolling natural 1s, so they get to re-roll!`;
-      const { amount: newAmount, description: newDescription } = await Commands.roll(subject, description + " (re-roll)", sides);
+      const { amount: newAmount, description: newDescription } = Commands.roll(subject, description + " (re-roll)", sides);
       result = newAmount;
       rollDescription += " " + newDescription;
     }
@@ -77,7 +77,7 @@ export class Commands {
   ): Promise<TimelessEvent[]> {
     const healerFx = Fighting.gatherEffects(healer);
     if (healerFx.bonusHealing) {
-      amount += await Deem.evaluate(healerFx.bonusHealing.toString()) as number || 0;
+      amount += Deem.evaluate(healerFx.bonusHealing.toString()) as number || 0;
     }
 
     amount = Math.max(1, amount);
@@ -184,7 +184,7 @@ export class Commands {
 
     if (attackerEffects.bonusDamage && attacker !== defender) {
       const sources = attackerFxWithNames.bonusDamage?.sources || [];
-      const bonusDamage = await Deem.evaluate(attackerEffects.bonusDamage.toString()) as number || 0;
+      const bonusDamage = Deem.evaluate(attackerEffects.bonusDamage.toString()) as number || 0;
       damage = Math.max(0, damage + bonusDamage);
       if (bonusDamage !== 0) {
         events.push({ type: "damageBonus", subject: attacker, target: defender, amount: bonusDamage, damageKind, reason: Words.humanizeList(sources) } as Omit<DamageBonus, "turn">);
@@ -316,7 +316,7 @@ export class Commands {
     if (cascade) {
       let count = cascade.count;
       if (typeof count === "string") {
-        count = await Deem.evaluate(count, { ...attacker }) as number;
+        count = Deem.evaluate(count, { ...attacker }) as number;
       }
       if (count > 0 && damage > 0) {
         const otherTargets = combatContext.enemies.filter(c => c !== defender && c.hp > 0);
@@ -453,7 +453,7 @@ export class Commands {
     target.activeEffects = target.activeEffects || [];
     target.activeEffects.push({ name, effect, duration, by: user });
     if (effect.tempHp) {
-      const pool = await Deem.evaluate(effect.tempHp.toString(), { ...user }) as number || 0;
+      const pool = Deem.evaluate(effect.tempHp.toString(), { ...user }) as number || 0;
       // console.warn(`${Presenter.combatant(target)} gains ${pool} temporary HP from status effect ${name}.`);
       // target.tempHp = (target.tempHp || 0) + effect.tempHp;
       target.tempHpPools = target.tempHpPools || {};

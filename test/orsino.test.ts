@@ -18,25 +18,25 @@ describe('Orsino', () => {
   Orsino.environment = 'test';
   Generator.setting = loadSetting('fantasy');
 
-  it('generate male name', async () => {
-    const response = await Generator.gen("name", { group: 'male' });
+  it('generate male name', () => {
+    const response = Generator.gen("name", { group: 'male' });
     expect(response).toMatch(/[A-Z][a-z]+/);
   });
 
-  it('generate female name', async () => {
-    const response = await Generator.gen("name", { gender: 'female' });
+  it('generate female name', () => {
+    const response = Generator.gen("name", { gender: 'female' });
     expect(response).toMatch(/[A-Z][a-z]+/);
   });
 
-  it('generate pc', async () => {
-    const response = await Generator.gen("pc", { gender: 'male' }) as unknown as Combatant;
+  it('generate pc', () => {
+    const response = Generator.gen("pc", { gender: 'male' }) as unknown as Combatant;
     expect(response.name).toMatch(/[A-Z][a-z]+/);
     expect(typeof response.age).toBe("number");
     expect(response.age).toBeGreaterThanOrEqual(16);
   });
 
-  it("generate room", async () => {
-    const room = await Generator.gen("room", { setting: "fantasy", targetCr: 12 }) as unknown as Room;
+  it("generate room", () => {
+    const room = Generator.gen("room", { setting: "fantasy", targetCr: 12 }) as unknown as Room;
 
     // console.log("Generated room:", room);
     // console.log(room.narrative);
@@ -44,8 +44,8 @@ describe('Orsino', () => {
     expect(room.room_size).toMatch(/tiny|small|medium|large|enormous/);
   });
 
-  it('pc gen', async () => {
-    const pc = await Generator.gen("pc", { setting: "fantasy" }) as unknown as Combatant;
+  it('pc gen', () => {
+    const pc = Generator.gen("pc", { setting: "fantasy" }) as unknown as Combatant;
     // console.log(pc);
     expect(pc).toHaveProperty('name');
     expect(pc.name).toMatch(/[A-Z][a-z]+/);
@@ -92,8 +92,8 @@ describe('Orsino', () => {
   });
 
   it('dungeon generator', async () => {
-    const crawler = new Dungeoneer({ dungeonGen: async () => await Generator.gen("dungeon") });
-    await crawler.setUp();
+    const crawler = new Dungeoneer({ dungeonGen: () => Generator.gen("dungeon") });
+    crawler.setUp();
     expect(crawler.isOver()).toBe(false);
     expect(crawler.dungeon).toBeDefined();
     expect(crawler.dungeon).toHaveProperty('dungeon_name');
@@ -121,10 +121,10 @@ describe('Orsino', () => {
   });
 
   it('name presentation', async () => {
-    const pc = await Generator.gen("pc", { setting: "fantasy" }) as unknown as Combatant;
-    const npc = await Generator.gen("npc", { setting: "fantasy", targetCr: pc.level }) as unknown as Combatant;
-    const animal = await Generator.gen("animal", { setting: "fantasy" }) as unknown as Combatant;
-    const monster = await Generator.gen("monster", { setting: "fantasy" }) as unknown as Combatant;
+    const pc      = Generator.gen("pc", { setting: "fantasy" }) as unknown as Combatant;
+    const npc     = Generator.gen("npc", { setting: "fantasy", targetCr: pc.level }) as unknown as Combatant;
+    const animal  = Generator.gen("animal", { setting: "fantasy" }) as unknown as Combatant;
+    const monster = Generator.gen("monster", { setting: "fantasy" }) as unknown as Combatant;
 
     console.log("\n--- Character Presentations (minimal) ---\n");
     console.log("PC:      ", Presenter.minimalCombatant(pc));
@@ -161,7 +161,7 @@ describe('Orsino', () => {
     Combat.statistics = { combats: 0, victories: 0, totalRounds: 0, defeats: 0 };
     await AbilityHandler.instance.loadAbilities();
     await TraitHandler.instance.loadTraits();
-    const mod = await Generator.gen("module", { setting: "fantasy" }) as unknown as CampaignModule;
+    const mod = Generator.gen("module", { setting: "fantasy" }) as unknown as CampaignModule;
     expect(mod).toHaveProperty('name');
     expect(mod).toHaveProperty('terrain');
     expect(mod).toHaveProperty('town');
@@ -172,7 +172,7 @@ describe('Orsino', () => {
     expect(mod.dungeons).toBeInstanceOf(Array);
 
     const party = await CharacterRecord.chooseParty(
-      async (options?: any) => (await Generator.gen("pc", { setting: "fantasy", ...options }) as unknown as Combatant),
+      (options?: any) => (Generator.gen("pc", { setting: "fantasy", ...options }) as unknown as Combatant),
       3,
       Automatic.randomSelect.bind(Automatic)
     );
@@ -181,7 +181,7 @@ describe('Orsino', () => {
     }
     await CharacterRecord.assignPartyPassives(party);
 
-    console.log("Generated party:", party.map(p => p.name));
+    // console.log("Generated party:", party.map(p => p.name));
 
     const explorer = new ModuleRunner({
       gen: Generator.gen.bind(Generator),
@@ -207,19 +207,19 @@ describe('Orsino', () => {
     console.log("Victory rate:", Combat.statistics.combats > 0 ? ((Combat.statistics.victories / Combat.statistics.combats) * 100).toFixed(2) + "%" : "N/A");
   });
 
-  it.only('autoplay', async () => {
+  it('autoplay', async () => {
     Combat.statistics = { combats: 0, victories: 0, totalRounds: 0, defeats: 0 };
     const party: Combatant[] = [];
     await AbilityHandler.instance.loadAbilities();
     await TraitHandler.instance.loadTraits();
-    const mod = await Generator.gen("module", { setting: "fantasy" });
+    const mod = Generator.gen("module", { setting: "fantasy" });
     const pcs = [
-      await Generator.gen("pc", { setting: 'fantasy', class: 'warrior', }) as unknown as Combatant,
-      await Generator.gen("pc", { setting: 'fantasy', class: 'thief', }) as unknown as Combatant,
-      await Generator.gen("pc", { setting: 'fantasy', class: 'mage', }) as unknown as Combatant,
-      await Generator.gen("pc", { setting: 'fantasy', class: 'cleric', }) as unknown as Combatant,
-      await Generator.gen("pc", { setting: 'fantasy', class: 'ranger', }) as unknown as Combatant,
-      await Generator.gen("pc", { setting: 'fantasy', class: 'bard', }) as unknown as Combatant,
+      Generator.gen("pc", { setting: 'fantasy', class: 'warrior', }) as unknown as Combatant,
+      Generator.gen("pc", { setting: 'fantasy', class: 'thief', }) as unknown as Combatant,
+      Generator.gen("pc", { setting: 'fantasy', class: 'mage', }) as unknown as Combatant,
+      Generator.gen("pc", { setting: 'fantasy', class: 'cleric', }) as unknown as Combatant,
+      Generator.gen("pc", { setting: 'fantasy', class: 'ranger', }) as unknown as Combatant,
+      Generator.gen("pc", { setting: 'fantasy', class: 'bard', }) as unknown as Combatant,
     ].map(pc => ({ ...pc, playerControlled: true }))
     for (const pc of party) {
       await CharacterRecord.pickInitialSpells(pc, Automatic.randomSelect.bind(this));

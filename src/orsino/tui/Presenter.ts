@@ -22,7 +22,7 @@ export default class Presenter {
     }).join(", ");
   }
 
-  static async markdownCharacterRecord(combatant: Combatant) {
+  static markdownCharacterRecord(combatant: Combatant): string {
     let record = "";
     record += (`### ${combatant.name}\n`);
     record += `_${this.describeCharacter(combatant)}_\n`;
@@ -223,7 +223,7 @@ export default class Presenter {
       // Object.entries(combatant.equipment).forEach(([slot, item]) => {
       for (const slot of Object.keys(combatant.equipment)) {
         const itemName = (combatant.equipment as any)[slot];
-        const item = await Deem.evaluate('lookup(equipment, "' + itemName + '")') as { effect: StatusModifications };
+        const item = Deem.evaluate('lookup(equipment, "' + itemName + '")') as { effect: StatusModifications };
         record += `  ${Stylist.colorize(Words.capitalize(slot), 'yellow')}: ${Words.humanize(itemName)} (${
           this.describeModifications(item.effect)
         })\n`;

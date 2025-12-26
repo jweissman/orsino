@@ -1,7 +1,7 @@
 import Deem from "../deem";
 import Combat, { CombatContext } from "./Combat";
 import { DamageKind } from "./types/DamageKind";
-import { GameEvent, ReactionEvent, ResurrectEvent, UpgradeEvent } from "./Events";
+import { ExperienceEvent, GameEvent, GoldEvent, HitEvent, ReactionEvent, ResurrectEvent, UpgradeEvent } from "./Events";
 import Generator from "./Generator";
 import { CommandHandlers } from "./rules/Commands";
 import { Fighting } from "./rules/Fighting";
@@ -103,7 +103,7 @@ export interface AbilityEffect {
   spellName?: string;
 
   // for teleport/planeshift
-  location?: any;
+  location?: string;
 }
 
 export interface Ability {
@@ -300,13 +300,13 @@ export default class AbilityHandler {
     return targets;
   }
 
-  static async rollAmount(name: string, amount: string, roll: Roll, user: Combatant): Promise<number> {
+  static rollAmount(name: string, amount: string, roll: Roll, user: Combatant): number {
     let result = 0;
     const isNumber = !isNaN(parseInt(amount));
     if (isNumber) {
       result = parseInt(amount);
     } else if (amount.startsWith("=")) {
-      result = await Deem.evaluate(amount.slice(1), { roll, subject: user, ...(user as unknown as Record<string, DeemValue>), description: name }) as number;
+      result = Deem.evaluate(amount.slice(1), { roll, subject: user, ...(user as unknown as Record<string, DeemValue>), description: name }) as number;
     }
     return result;
   }
@@ -415,7 +415,7 @@ export default class AbilityHandler {
         events.push(...hookEvents);
       }
     } else if (effect.type === "damage") {
-      let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
+      let amount = AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
       if (targetCombatant._savedVersusSpell) {
         if (effect.saveForHalf) {
           amount = Math.floor(amount / 2);
@@ -425,7 +425,7 @@ export default class AbilityHandler {
       }
       let damageKind = effect.kind || "true";
       if (damageKind.startsWith("=")) {
-        damageKind = await Deem.evaluate(damageKind.slice(1), { subject: user });
+        damageKind = Deem.evaluate(damageKind.slice(1), { subject: user }) as DamageKind;
       }
       const hitEvents = await hit(
         user, targetCombatant, amount, false, name, true, damageKind,
@@ -433,7 +433,7 @@ export default class AbilityHandler {
         context, handlers.roll
       );
       events.push(...hitEvents);
-      success = hitEvents.some(e => e.type === "hit" && (e as any).amount > 0);
+      success = hitEvents.some(e => e.type === "hit" && (e as HitEvent).damage > 0);
 
     } else if (effect.type === "cast") {
       // lookup spell by name and process its effects
@@ -448,12 +448,12 @@ export default class AbilityHandler {
         }
       }
     } else if (effect.type === "heal") {
-      const amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
+      const amount = AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
       const healEvents = await heal(user, targetCombatant, amount, context);
       events.push(...healEvents);
       success = true;
     } else if (effect.type === "drain") {
-      let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
+      let amount = AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
       if (targetCombatant._savedVersusSpell) {
         if (effect.saveForHalf) {
           amount = Math.floor(amount / 2);
@@ -472,7 +472,7 @@ export default class AbilityHandler {
       if (!effect.status) {
         throw new Error(`Buff effect must have a status defined`);
       }
-      const statusEffect = await this.reifyStatus(effect.status, targetCombatant);
+      const statusEffect = this.reifyStatus(effect.status, targetCombatant);
 
       const statusEvents = await status(
         user, targetCombatant,
@@ -483,7 +483,7 @@ export default class AbilityHandler {
     } else if (effect.type === "debuff") {
       // same as buff with a save
       if (effect.status) {
-        const statusEffect = await this.reifyStatus(effect.status, targetCombatant);
+        const statusEffect = this.reifyStatus(effect.status, targetCombatant);
         // let statusEffect = StatusHandler.instance.dereference(effect.status);
         // if (!statusEffect) {
         //   throw new Error(`Buff effect has unknown status: ${JSON.stringify(effect.status)}`);
@@ -506,12 +506,12 @@ export default class AbilityHandler {
       }
     } else if (effect.type === "flee") {
       // roll save vs fear
-      let { success, events: saveEvents } = await save(targetCombatant, effect.succeedType || "will", effect.succeedDC || 15, handlers.roll);
+      const { success: successful, events: saveEvents } = await save(targetCombatant, effect.succeedType || "will", effect.succeedDC || 15, handlers.roll);
       events.push(...saveEvents);
 
-      const saved = success;
+      const saved = successful;
       if (saved || targetCombatant._savedVersusSpell) {
-        console.log(`${targetCombatant.name} resists the urge to flee!`);
+        // console.log(`${targetCombatant.name} resists the urge to flee!`);
         return { success: false, events };
       }
 
@@ -520,7 +520,7 @@ export default class AbilityHandler {
         events.push(...statusEvents);
         success = true;
       } else {
-        console.log(`${targetCombatant.name} wanted to flee but resisted!`);
+        // console.log(`${targetCombatant.name} wanted to flee but resisted!`);
       }
     } else if (effect.type === "removeStatus") {
       if (!effect.statusName) {
@@ -535,30 +535,30 @@ export default class AbilityHandler {
         throw new Error(`upgrade effect must specify a stat`);
       }
 
-      console.log("Upgrading stat", stat, "for", user.name, "with effect:", JSON.stringify(effect));
+      // console.log("Upgrading stat", stat, "for", user.name, "with effect:", JSON.stringify(effect));
 
-      const amount = await Deem.evaluate(effect.amount?.toString() || "1", { subject: user, ...user, description: name });
-      console.log(`${user.name} upgrades ${stat} by ${amount}!`);
+      const amount = Deem.evaluate(effect.amount?.toString() || "1", { subject: user, ...user, description: name });
+      // console.log(`${user.name} upgrades ${stat} by ${amount}!`);
       user[stat] = (user[stat] || 0) + amount;
       const upgradeEvent = { type: "upgrade", subject: user, stat, amount, newValue: user[stat] } as UpgradeEvent;
       events.push(upgradeEvent);
       success = true;
     }
     else if (effect.type === "gold") {
-      const amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
+      const amount = AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
       user.gp = (user.gp || 0) + amount;
       // console.log(`${user.name} gains ${amount} gold!`);
-      events.push({ type: "gold", subject: user, amount } as any);
+      events.push({ type: "gold", subject: user, amount } as GoldEvent);
       success = true;
     }
     else if (effect.type === "xp") {
-      const amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
+      const amount = AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
       user.xp = (user.xp || 0) + amount;
       // console.log(`${user.name} gains ${amount} XP!`);
-      events.push({ type: "xp", subject: user, amount } as any);
+      events.push({ type: "xp", subject: user, amount } as ExperienceEvent);
       success = true;
     } else if (effect.type === "summon") {
-      let amount = await AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
+      let amount = AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
       const allies = 1 + context.allies.length;
       amount = Math.min(amount, 6 - allies);
       // could add summon ability bonus here
@@ -572,10 +572,10 @@ export default class AbilityHandler {
         for (const key of Object.keys(options)) {
           const val = options[key];
           if (typeof val === "string" && val.startsWith("=")) {
-            options[key] = await Deem.evaluate(val.slice(1), { subject: user });
+            options[key] = Deem.evaluate(val.slice(1), { subject: user });
           }
         }
-        const summon = await Generator.gen((effect.creature || "animal") as GenerationTemplateType, {
+        const summon = Generator.gen((effect.creature || "animal") as GenerationTemplateType, {
           race: user.race,
           _targetCr: Math.max(1, Math.floor((user.level || 1) / 2)),
           ...options
@@ -652,7 +652,7 @@ export default class AbilityHandler {
       }
       if (!user.abilities.includes(abilityName)) {
         user.abilities.push(abilityName);
-        console.log(`${user.name} learns ability ${abilityName}!`);
+        // console.log(`${user.name} learns ability ${abilityName}!`);
         events.push({ type: "learnAbility", subject: user, abilityName } as Omit<GameEvent, "turn">);
       }
       success = true;
@@ -666,18 +666,18 @@ export default class AbilityHandler {
       }
       if (!user.traits.includes(traitName)) {
         user.traits.push(traitName);
-        console.log(`${user.name} gains passive trait ${traitName}!`);
+        // console.log(`${user.name} gains passive trait ${traitName}!`);
         events.push({ type: "gainTrait", subject: user, traitName } as Omit<GameEvent, "turn">);
       }
       success = true;
     } else if (effect.type === "planeshift") {
-      const location = await Deem.evaluate(effect.location, { subject: user, ...user, description: name });
-      console.warn("You are being plane shifted to", location);
+      const location = Deem.evaluate(effect.location || 'Arcadia', { subject: user, ...user, description: name });
+      // console.warn("You are being plane shifted to", location);
       events.push({ type: "planeshift", subject: user, plane: location } as Omit<GameEvent, "turn">);
       success = true;
     } else if (effect.type === "teleport") {
-      const location = await Deem.evaluate(effect.location, { subject: user, ...user, description: name });
-      console.warn("You are being teleported to", location);
+      const location = Deem.evaluate(effect.location || 'firstRoom', { subject: user, ...user, description: name });
+      // console.warn("You are being teleported to", location);
       events.push({ type: "teleport", subject: user, location } as Omit<GameEvent, "turn">);
       success = true;
     } else if (effect.type === "recalculateHp") {
@@ -688,19 +688,19 @@ export default class AbilityHandler {
 
     else {
       // throw new Error(`Unknown effect type: ${effect.type}`);
-      console.warn(`Unknown effect type: ${effect.type} in ability ${name}`);
+      // console.warn(`Unknown effect type: ${effect.type} in ability ${name}`);
       return never(effect.type);
     }
 
     return { success, events };
   }
 
-  static async reifyStatus(statusExpression: string | StatusEffect, target: Combatant): Promise<StatusEffect> {
+  static reifyStatus(statusExpression: string | StatusEffect, target: Combatant): StatusEffect {
     let statusEffect = undefined;
     if (typeof statusExpression === "string") {
       if (statusExpression.startsWith("=")) {
         // deem-eval status name
-        const statusName = await Deem.evaluate(statusExpression.slice(1), { subject: target });
+        const statusName = Deem.evaluate(statusExpression.slice(1), { subject: target });
         statusEffect = StatusHandler.instance.dereference(statusName);
       } else {
         statusEffect = StatusHandler.instance.dereference(statusExpression);

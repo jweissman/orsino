@@ -62,39 +62,6 @@ program.command('book <type>')
   }
 );
 
-// program.command('mm')
-//   .description('Generate a monster manual for all monsters in the setting')
-//   .option('-s, --setting <setting>', 'Specify the setting to use', 'fantasy')
-//   .action(async (options) => {
-//     await Books.monsterManual(options);
-//     process.exit(0);
-//   });
-
-// program.command('spellbook')
-//   .description('Generate a spellbook for the setting')
-//   .option('-s, --setting <setting>', 'Specify the setting to use', 'fantasy')
-//   .action(async (options) => {
-//     await Books.spellbook(options);
-//     process.exit(0);
-//   });
-
-// program.command('traitbook')
-//   .description('Generate a traitbook for the setting')
-//   .option('-s, --setting <setting>', 'Specify the setting to use', 'fantasy')
-//   .action(async (options) => {
-//     // const orsino = new Orsino(options.setting || 'fantasy');
-//     await Books.traitbook(options);
-//     process.exit(0);
-//   });
-
-// program.command('skillbook')
-//   .description('Generate a skillbook for the setting')
-//   .option('-s, --setting <setting>', 'Specify the setting to use', 'fantasy')
-//   .action(async (options) => {
-//     const orsino = new Orsino(options.setting || 'fantasy');
-//     await orsino.skillbook(options);
-//     process.exit(0);
-//   });
 
 program
   .command('gen <type>')
@@ -109,10 +76,6 @@ program
   .option('--tabular', 'Print output in tabular format where applicable')
   .action(async (type, options) => {
     // const orsino = new Orsino(options.setting);
-    // if (options.graph && parseInt(options.count) < 2) {
-    //   console.error('Graph generation requires at least 2 items. Use --count to specify the number of items.');
-    //   process.exit(1);
-    // }
     let tabular = options.tabular || false;
     delete options.tabular;
 
@@ -123,7 +86,8 @@ program
       options._targetCr = cr;
     }
     
-    const response = await Generator.gen(
+    // let t0 = Date.now();
+    const response = Generator.gen(
       type as GenerationTemplateType,
       {
         ...options,
@@ -159,6 +123,8 @@ program
     } else {
       process.stdout.write(JSON.stringify(response, null, 2));
     }
+    let t1 = Date.now();
+    // console.error(`\nGenerated in ${(t1 - t0)} ms.`);
     // Files.write(`data/${type}s/${response['name']}.json`, JSON.stringify(response, null, 2));
   });
 

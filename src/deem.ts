@@ -14,7 +14,7 @@ type EvalContext = {
   [key: string]: DeemValue | Roll | Combatant; // | ((subject: DeemValue, description: DeemValue, sides: number) => Promise<DeemValue>);
 }
 type EvalArgs = { context?: EvalContext };
-type EvalSemantics = { eval: (context: EvalContext) => Promise<DeemValue> };
+type EvalSemantics = { eval: (context: EvalContext) => DeemValue };
 type EvalNode = ohm.Node & EvalSemantics;
 
 export default class Deem {
@@ -23,117 +23,117 @@ export default class Deem {
   static stdlib: { [key: string]: DeemFunc } = StandardLibrary.functions;
   static grammar = ohm.grammar(source);
 
-  static semantics = Deem.grammar.createSemantics().addOperation<Promise<DeemValue>>('eval(context)', {
-    async Exp(exp) {
+  static semantics = Deem.grammar.createSemantics().addOperation<DeemValue>('eval(context)', {
+    Exp(exp) {
       const ctx = (this.args as EvalArgs).context || {};
-      return await (exp as EvalNode).eval(ctx);
+      return (exp as EvalNode).eval(ctx);
     },
-    async LogExp_and(left, _, right) {
+    LogExp_and(left, _, right) {
       const ctx = (this.args as EvalArgs).context || {};
-      return (await (left as EvalNode).eval(ctx)) && (await (right as EvalNode).eval(ctx));
+      return (left as EvalNode).eval(ctx) && (right as EvalNode).eval(ctx);
     },
-    async LogExp_or(left, _, right) {
+    LogExp_or(left, _, right) {
       const ctx = (this.args as EvalArgs).context || {};
-      return (await (left as EvalNode).eval(ctx)) || (await (right as EvalNode).eval(ctx));
+      return (left as EvalNode).eval(ctx) || (right as EvalNode).eval(ctx);
     },
-    async LogExp_not(_not, exp) {
+    LogExp_not(_not, exp) {
       const ctx = (this.args as EvalArgs).context || {};
-      return !(await (exp as EvalNode).eval(ctx));
+      return !(exp as EvalNode).eval(ctx);
     },
-    async TernaryExp(cond, _q, trueExp, _c, falseExp) {
+    TernaryExp(cond, _q, trueExp, _c, falseExp) {
       const ctx = (this.args as EvalArgs).context || {};
-      const condition = await (cond as EvalNode).eval(ctx);
+      const condition = (cond as EvalNode).eval(ctx);
       // return condition ? (await (trueExp as EvalNode).eval(ctx)) : (await (falseExp as EvalNode).eval(ctx));
       if (condition) {
-        return await (trueExp as EvalNode).eval(ctx);
+        return (trueExp as EvalNode).eval(ctx);
       } else {
-        return await (falseExp as EvalNode).eval(ctx);
+        return (falseExp as EvalNode).eval(ctx);
       }
     },
-    async CompExp_lt(left, _, right) {
+    CompExp_lt(left, _, right) {
       const ctx = (this.args as EvalArgs).context || {};
-      const lhs = (await (left as EvalNode).eval(ctx)) as number;
-      const rhs = (await (right as EvalNode).eval(ctx)) as number;
+      const lhs = (left as EvalNode).eval(ctx) as number;
+      const rhs = (right as EvalNode).eval(ctx) as number;
       return lhs < rhs;
     },
-    async CompExp_gt(left, _, right) {
+    CompExp_gt(left, _, right) {
       const ctx = (this.args as EvalArgs).context || {};
-      const lhs = (await (left as EvalNode).eval(ctx)) as number;
-      const rhs = (await (right as EvalNode).eval(ctx)) as number;
+      const lhs = (left as EvalNode).eval(ctx) as number;
+      const rhs = (right as EvalNode).eval(ctx) as number;
       return lhs > rhs;
     },
-    async CompExp_eq(left, _, right) {
+    CompExp_eq(left, _, right) {
       const ctx = (this.args as EvalArgs).context || {};
-      const lhs = (await (left as EvalNode).eval(ctx));
-      const rhs = (await (right as EvalNode).eval(ctx));
+      const lhs = (left as EvalNode).eval(ctx);
+      const rhs = (right as EvalNode).eval(ctx);
       return lhs === rhs;
     },
-    async CompExp_neq(left, _, right) {
+    CompExp_neq(left, _, right) {
       const ctx = (this.args as EvalArgs).context || {};
-      const lhs = await (left as EvalNode).eval(ctx);
-      const rhs = await (right as EvalNode).eval(ctx);
+      const lhs = (left as EvalNode).eval(ctx);
+      const rhs = (right as EvalNode).eval(ctx);
       return lhs !== rhs;
     },
-    async CompExp_lte(left, _, right) {
+    CompExp_lte(left, _, right) {
       const ctx = (this.args as EvalArgs).context || {};
-      const lhs = (await (left as EvalNode).eval(ctx)) as number;
-      const rhs = (await (right as EvalNode).eval(ctx)) as number;
+      const lhs = (left as EvalNode).eval(ctx) as number;
+      const rhs = (right as EvalNode).eval(ctx) as number;
       return lhs <= rhs;
     },
-    async CompExp_gte(left, _, right) {
+    CompExp_gte(left, _, right) {
       const ctx = (this.args as EvalArgs).context || {};
-      const lhs = (await (left as EvalNode).eval(ctx)) as number;
-      const rhs = (await (right as EvalNode).eval(ctx)) as number;
+      const lhs = (left as EvalNode).eval(ctx) as number;
+      const rhs = (right as EvalNode).eval(ctx) as number;
       return lhs >= rhs;
     },
-    async AddExp_plus(left, _, right) {
+    AddExp_plus(left, _, right) {
       const ctx = (this.args as EvalArgs).context || {};
-      const lhs = (await (left as EvalNode).eval(ctx)) as number;
-      const rhs = (await (right as EvalNode).eval(ctx)) as number;
+      const lhs = (left as EvalNode).eval(ctx) as number;
+      const rhs = (right as EvalNode).eval(ctx) as number;
       return lhs + rhs;
     },
-    async AddExp_minus(left, _, right) {
+    AddExp_minus(left, _, right) {
       const ctx = (this.args as EvalArgs).context || {};
-      const lhs = (await (left as EvalNode).eval(ctx)) as number;
-      const rhs = (await (right as EvalNode).eval(ctx)) as number;
+      const lhs = (left as EvalNode).eval(ctx) as number;
+      const rhs = (right as EvalNode).eval(ctx) as number;
       return lhs - rhs;
     },
-    async MulExp_times(left, _, right) {
+    MulExp_times(left, _, right) {
       const ctx = (this.args as EvalArgs).context || {};
-      const lhs = (await (left as EvalNode).eval(ctx)) as number;
-      const rhs = (await (right as EvalNode).eval(ctx)) as number;
+      const lhs = (left as EvalNode).eval(ctx) as number;
+      const rhs = (right as EvalNode).eval(ctx) as number;
       return lhs * rhs;
     },
-    async MulExp_divide(left, _, right) {
+    MulExp_divide(left, _, right) {
       const ctx = (this.args as EvalArgs).context || {};
-      const lhs = (await (left as EvalNode).eval(ctx)) as number;
-      const rhs = (await (right as EvalNode).eval(ctx)) as number;
+      const lhs = (left as EvalNode).eval(ctx) as number;
+      const rhs = (right as EvalNode).eval(ctx) as number;
       return lhs / rhs;
     },
-    async ExpExp_power(left, _, right) {
+    ExpExp_power(left, _, right) {
       const ctx = (this.args as EvalArgs).context || {};
-      const base = await (left as EvalNode).eval(ctx) as number;
-      const power = await (right as EvalNode).eval(ctx) as number;
+      const base = (left as EvalNode).eval(ctx) as number;
+      const power = (right as EvalNode).eval(ctx) as number;
       return Math.pow(base, power);
     },
-    async PriExp_paren(_open, exp, _close) {
+    PriExp_paren(_open, exp, _close) {
       const ctx = (this.args as EvalArgs).context || {};
-      return await (exp as EvalNode).eval(ctx)
+      return (exp as EvalNode).eval(ctx)
     },
-    async PriExp_pos(_plus, exp) {
-      const ctx = (this.args as EvalArgs).context || {}; return await (exp as EvalNode).eval(ctx);
+    PriExp_pos(_plus, exp) {
+      const ctx = (this.args as EvalArgs).context || {}; return (exp as EvalNode).eval(ctx);
     },
-    async PriExp_neg(_minus, exp) {
+    PriExp_neg(_minus, exp) {
       const ctx = (this.args as EvalArgs).context || {};
-      const val = (await (exp as EvalNode).eval(ctx)) as number;
+      const val = (exp as EvalNode).eval(ctx) as number;
       return -val;
     },
-    async FunctionCall(ident, _open, argList, _close) {
+    FunctionCall(ident, _open, argList, _close) {
       const ctx = (this.args as EvalArgs).context || {};
-      const funcName = await (ident as EvalNode).eval(ctx) as string;
+      const funcName = (ident as EvalNode).eval(ctx) as string;
       const args = [];
       for (const arg of argList.children) {
-        const argValue = await (arg as EvalNode).eval(ctx);
+        const argValue = (arg as EvalNode).eval(ctx);
         args.push(argValue);
       }
       const func = Deem.stdlib[funcName];
@@ -141,30 +141,33 @@ export default class Deem {
         throw new Error(`Unknown function: ${funcName}`);
       }
 
-      const isFuncAsync = func.constructor.name === 'AsyncFunction';
+      // const isFuncAsync = func.constructor.name === 'AsyncFunction';
       let ret = null;
-      if (isFuncAsync) {
-        ret = await func(...args.flat());
-      } else {
-        ret = func(...args.flat());
-      }
+      // if (isFuncAsync) {
+      //   ret = await func(...args.flat());
+      // } else {
+      // const flatArgs = args.flat();
+      // @ts-expect-error -- ignore due to dynamic function call and unpredictable tuple type --
+      ret = func(...args.flat());
+      // console.warn(`Deem FunctionCall: func='${funcName}' with args=`, args, ` returned:`, ret);
+      // }
       return ret;
     },
-    async ArgList(first, _comma, rest) {
+    ArgList(first, _comma, rest) {
       const ctx = (this.args as EvalArgs).context || {};
-      const firstValue = await (first as EvalNode).eval(ctx);
+      const firstValue = (first as EvalNode).eval(ctx);
       const restValues = [];
       for (const arg of rest.children) {
-        const argValue = await (arg as EvalNode).eval(ctx);
+        const argValue = (arg as EvalNode).eval(ctx);
         restValues.push(argValue);
       }
       const args = [firstValue, ...restValues];
       return args;
     },
-    async bool(_val) { return Promise.resolve(this.sourceString === 'true'); },
-    async number(_num) { return Promise.resolve(parseFloat(this.sourceString)); },
-    async nihil(_val) { return Promise.resolve(null); },
-    async ident(_initial, _rest) {
+    bool(_val) { return (this.sourceString === 'true'); },
+    number(_num) { return (parseFloat(this.sourceString)); },
+    nihil(_val) { return (null); },
+    ident(_initial, _rest) {
       const name = this.sourceString;
       const ctx = (this.args as EvalArgs).context || {}
       if (name.startsWith('#')) {
@@ -176,14 +179,14 @@ export default class Deem {
           }
           throw new Error(`Undefined variable: ${key} (available: ${Object.keys(ctx).join(', ')}); (magic: ${Object.keys(Deem.magicVars).join(', ')})`);
         }
-        return value;
+        return value as DeemValue;
       }
-      return Promise.resolve(this.sourceString);
+      return (this.sourceString);
     },
-    async strlit_single_quote(_open, chars, _close) {
-      return Promise.resolve(chars.sourceString);
+    strlit_single_quote(_open, chars, _close) {
+      return (chars.sourceString);
     },
-    async strlit_double_quote(_open, chars, _close) {
+    strlit_double_quote(_open, chars, _close) {
       // return chars.sourceString;
       const raw = chars.sourceString;
       const ctx = (this.args as EvalArgs).context || {};
@@ -196,7 +199,7 @@ export default class Deem {
         const before = raw.slice(cursor, match.index);
         result += before;
         const expr = match[1];
-        const exprValue = await Deem.evaluate(expr, ctx) as string;
+        const exprValue = Deem.evaluate(expr, ctx) as string;
         result += exprValue;
         cursor = match.index + match[0].length;
       }
@@ -206,19 +209,20 @@ export default class Deem {
         const variable = String(varName);
         const value = ctx[variable] ?? Deem.magicVars[variable];
         if (value === undefined) {
+          // debugger;
           throw new Error(`Undefined variable in string interpolation: ${varName} (available: ${Object.keys((this.args as EvalArgs).context || {}).join(', ')}); (magic: ${Object.keys(Deem.magicVars).join(', ')})`);
         }
         return value as string;
       });
       return result;
     },
-    async dice_multi(count, _d, sides) {
+    dice_multi(count, _d, sides) {
       const ctx = (this.args as EvalArgs).context || {};
       const rollFunc = ctx.roll as unknown as Roll;
       if (ctx.roll !== undefined && ctx.roll !== null && typeof ctx.roll === 'function') {
         let sum = 0;
         for (let i = 0; i < parseInt(count.sourceString); i++) {
-          const result = await rollFunc(
+          const result = rollFunc(
             ctx.subject as unknown as Combatant,
             ctx.description as string,
             parseInt(sides.sourceString)
@@ -232,11 +236,11 @@ export default class Deem {
       const sum = rolls.reduce((a, b) => a + b, 0);
       return sum;
     },
-    async dice_single(_d, sides) {
+    dice_single(_d, sides) {
       const ctx = (this.args as EvalArgs).context || {};
       if (ctx.roll) {
         const rollFunc = ctx.roll as unknown as Roll;
-        const result = await rollFunc(
+        const result = rollFunc(
           ctx.subject as unknown as Combatant,
           ctx.description as string,
           parseInt(sides.sourceString)
@@ -291,10 +295,13 @@ export default class Deem {
     dice_single(_d, sides) { return `d${sides.sourceString}`; }
   });
 
-  static async evaluate(
+  static evaluate(
     expression: string,
     context: Record<string, DeemValue | Roll | Combatant> = {}
-  ): Promise<DeemValue> {
+  ): DeemValue {
+    if (expression === null || expression === undefined || expression.trim() === '') {
+      throw new Error('Cannot evaluate empty expression');
+    }
 
     // if we have a leading =, then we can remove it
     if (expression.startsWith('=')) {
@@ -304,10 +311,10 @@ export default class Deem {
     const match = this.grammar.match(expression);
     if (match.succeeded()) {
       const sem = this.semantics(match) as {
-        eval: (context: Record<string, DeemValue | Roll | Combatant>) => Promise<DeemValue>
+        eval: (context: Record<string, DeemValue | Roll | Combatant>) => DeemValue
       };
       // const prettyExpr: string = sem.pretty as string;
-      const ret: DeemValue = await sem.eval(context);
+      const ret: DeemValue = sem.eval(context);
       return ret;
     } else {
       throw new Error('Failed to parse expression: ' + expression + '\n' + match.message);

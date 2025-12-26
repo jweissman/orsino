@@ -63,7 +63,7 @@ type RunnerOptions = {
   roller?: Roll;
   select?: Select<Answers>;
   outputSink?: (message: string) => void;
-  moduleGen?: (options?: GeneratorOptions) => Promise<CampaignModule>;
+  moduleGen?: (options?: GeneratorOptions) => CampaignModule;
   pcs?: Combatant[];
   gen?: (type: GenerationTemplateType, options?: GeneratorOptions) => GeneratedValue;
 }
@@ -78,7 +78,7 @@ export class ModuleRunner {
   private moduleGen: (
     options?: GeneratorOptions
       //Record<string, any>
-  ) => Promise<CampaignModule>;
+  ) => CampaignModule;
   private state: GameState = {
     party: [],
     sharedGold: ModuleRunner.configuration.startingGold,
@@ -168,7 +168,7 @@ export class ModuleRunner {
 
   private async runModule(dry = false, moduleOptions: Record<string, any> = {}): Promise<{ newModuleOptions: Record<string, any> | null }> {
     // this.outputSink("Generating module, please wait...");
-    this.activeModule = await this.moduleGen(
+    this.activeModule = this.moduleGen(
       moduleOptions
     );
 
@@ -498,7 +498,7 @@ export class ModuleRunner {
       // console.log("\nWelcome to the Magic Shop! Here are the available items:");
       await this.emit({ type: "shopEntered", shopName: "Magician", day: this.days });
 
-      const magicItemNames = await Deem.evaluate(`gather(equipment)`);
+      const magicItemNames = Deem.evaluate(`gather(equipment)`);
       while (true) {
         // pick wielder
         const pcOptions: Choice<any>[] = this.pcs.map(pc => ({
@@ -513,7 +513,7 @@ export class ModuleRunner {
         // shopItems.map((itemName: string, index: number) => {
         for (let index = 0; index < magicItemNames.length; index++) {
           const itemName = magicItemNames[index];
-          const item = await Deem.evaluate(`lookup(equipment, "${itemName}")`);
+          const item = Deem.evaluate(`lookup(equipment, "${itemName}")`);
           item.key = itemName;
           options.push({
             short: Words.humanize(itemName) + ` (${item.value}g)`,
@@ -536,7 +536,7 @@ export class ModuleRunner {
         if (this.sharedGold >= item.value) {
           const { oldItemKey: maybeOldItem } = await Inventory.equip(item.key, wielder);
           if (maybeOldItem) {
-            const oldItem = await Deem.evaluate(`lookup(equipment, "${maybeOldItem}")`);
+            const oldItem = Deem.evaluate(`lookup(equipment, "${maybeOldItem}")`);
             this.state.sharedGold += oldItem.value || 0;
             // this.outputSink(`🔄 Replacing ${Words.humanize(oldItem.key)} equipped to ${wielder.name} (sold old item ${oldItem.name} for ${oldItem.value}g).`)
           }
@@ -565,14 +565,14 @@ export class ModuleRunner {
       // console.log("\nWelcome to the Alchemist's Shop! Here are the available items:");
       await this.emit({ type: "shopEntered", shopName: "Alchemist", day: this.days });
 
-      const consumableItemNames = await Deem.evaluate(`gather(consumables)`);
+      const consumableItemNames = Deem.evaluate(`gather(consumables)`);
       while (true) {
         // console.log("Shop items:", shopItemNames);
         const options: Choice<any>[] = [];
         // shopItems.map((itemName: string, index: number) => {
         for (let index = 0; index < consumableItemNames.length; index++) {
           const itemName = consumableItemNames[index];
-          const item = await Deem.evaluate(`lookup(consumables, "${itemName}")`);
+          const item = Deem.evaluate(`lookup(consumables, "${itemName}")`);
           item.key = itemName;
           options.push({
             short: item.name + ` (${item.value}g)`,
@@ -613,7 +613,7 @@ export class ModuleRunner {
       // console.log("\nWelcome to the Armorer's Shop! Here are the available weapons:");
       await this.emit({ type: "shopEntered", shopName: "Armorer", day: this.days });
 
-      const weaponItemNames = await Deem.evaluate(`gather(masterWeapon, -1, '!dig(#__it, "natural")')`);
+      const weaponItemNames = Deem.evaluate(`gather(masterWeapon, -1, '!dig(#__it, "natural")')`) as string[];
       // console.log("Weapon items:", weaponItemNames);
       weaponItemNames.sort();
 
@@ -632,7 +632,16 @@ export class ModuleRunner {
         // shopItems.map((itemName: string, index: number) => {
         for (let index = 0; index < weaponItemNames.length; index++) {
           const itemName = weaponItemNames[index];
-          const item = await Deem.evaluate(`lookup(masterWeapon, "${itemName}")`);
+          const item = Deem.evaluate(`lookup(masterWeapon, "${itemName}")`) as unknown as { 
+            key: string;
+            damage: string;
+            type: string;
+            missile: boolean;
+            intercept: boolean;
+            weight: string;
+            kind: string;
+            value: number;
+          };
           item.key = itemName;
           options.push({
             short: Words.humanize(itemName) + ` (${item.value}g)`,
@@ -641,16 +650,16 @@ export class ModuleRunner {
             disabled: this.sharedGold < item.value || (wielder.weaponProficiencies ? !Inventory.isWeaponProficient(item, wielder.weaponProficiencies) : true),
           })
         }
-        options.push({ disabled: false, short: "Done", value: -1, name: "Finish shopping" });
+        options.push({ disabled: false, short: "Done", value: "done", name: "Finish shopping" });
 
-        console.log("You have " + Stylist.bold(this.sharedGold + "g") + " available.");
+        // console.log("You have " + Stylist.bold(this.sharedGold + "g") + " available.");
         const choice = await this.select("Available weapons to purchase:", options);
-        if (choice === -1) {
+        if (choice === "done") {
           // this.outputSink("You finish your shopping.");
           break;
         }
         const item = choice;
-        console.log("Chosen weapon:", item);
+        // console.log("Chosen weapon:", item);
 
         if (this.sharedGold >= item.value) {
           this.state.sharedGold -= item.value;
@@ -708,7 +717,7 @@ export class ModuleRunner {
       return;
     }
     // gen a level 1 PC as hireling
-    const hireling = await this.gen("pc", { background: "hireling", setting: "fantasy" }) as Combatant;
+    const hireling = this.gen("pc", { background: "hireling", setting: "fantasy" }) as Combatant;
     await CharacterRecord.pickInitialSpells(hireling, Automatic.randomSelect);
     const wouldLikeHireling = await this.select(
       // "A hireling is available to join your party. Would you like to consider their merits?",
@@ -781,7 +790,7 @@ export class ModuleRunner {
   }
 
 
-  private async defaultModuleGen(): Promise<CampaignModule> {
+  private defaultModuleGen(): CampaignModule {
     const module = {
       name: "The Lost City of Eldoria",
       terrain: "Jungle",

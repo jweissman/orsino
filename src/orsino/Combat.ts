@@ -5,7 +5,7 @@ import { Team } from "./types/Team";
 import { Roll } from "./types/Roll";
 import { Fighting } from "./rules/Fighting";
 import Events, { CombatEvent, RoundStartEvent, CombatEndEvent, FleeEvent, GameEvent, CombatantEngagedEvent, WaitEvent, NoActionsForCombatant, AllegianceChangeEvent, ItemUsedEvent, ActionEvent, ActedRandomly, StatusExpiryPreventedEvent, HealEvent, HitEvent, UnsummonEvent, PlaneshiftEvent } from "./Events";
-import AbilityHandler, { Ability, AbilityEffect } from "./Ability";
+import AbilityHandler, { Ability } from "./Ability";
 import { Answers } from "inquirer";
 import { AbilityScoring } from "./tactics/AbilityScoring";
 import { Commands } from "./rules/Commands";
@@ -34,6 +34,12 @@ type CombatStats = {
   totalRounds: number;
 }
 
+interface CombatOptions {
+  roller?: Roll;
+  select?: ChoiceSelector<any>;
+  outputSink?: (message: string) => void;
+}
+
 export default class Combat {
   static statistics: CombatStats = {
     combats: 0,
@@ -60,8 +66,8 @@ export default class Combat {
   constructor(
     options: Record<string, any> = {},
   ) {
-    this.roller = options.roller || Commands.roll;
-    this.select = options.select || Automatic.randomSelect;
+    this.roller = options.roller || Commands.roll.bind(Commands);
+    this.select = options.select || Automatic.randomSelect.bind(Automatic);
     this.outputSink = options.outputSink || console.debug;
   }
 
@@ -75,7 +81,7 @@ export default class Combat {
       this._note(prefix + presentedEvent);
     }
 
-    let bark = await Bark.lookup(event);
+    let bark = Bark.lookup(event);
     if (bark) {
       bark = bark.charAt(0).toUpperCase() + bark.slice(1);
       this._note(prefix + Stylist.italic(bark));
@@ -121,12 +127,12 @@ export default class Combat {
     }
   }
 
-  private async determineInitiative(): Promise<{ combatant: any; initiative: number }[]> {
+  private determineInitiative(): { combatant: Combatant; initiative: number }[] {
     const initiativeOrder = [];
     for (const c of this.allCombatants) {
-      const effective = await Fighting.effectiveStats(c);
-      const initBonus = (await Fighting.turnBonus(c, ["initiative"])).initiative || 0;
-      const initiative = (await Commands.roll(c, "for initiative", 20)).amount + Fighting.statMod(effective.dex) + initBonus;
+      const effective = Fighting.effectiveStats(c);
+      const initBonus = (Fighting.turnBonus(c, ["initiative"])).initiative || 0;
+      const initiative = (Commands.roll(c, "for initiative", 20)).amount + Fighting.statMod(effective.dex) + initBonus;
       // (await this.roller(c, "for initiative", 20)).amount + Fighting.statMod(effective.dex) + initBonus;
       initiativeOrder.push({ combatant: c, initiative });
     }
@@ -177,11 +183,11 @@ export default class Combat {
     });
   }
 
-  static async applyEquipmentEffects(combatant: Combatant): Promise<void> {
+  static applyEquipmentEffects(combatant: Combatant): void {
     const equipmentKeys = Object.values(combatant.equipment || []).filter(it => it !== undefined);
     const equipmentList: StatusEffect[] = [];
     for (const eq of equipmentKeys) {
-      const eqEffects = await Deem.evaluate(`lookup(equipment, '${eq}')`);
+      const eqEffects = Deem.evaluate(`lookup(equipment, '${eq}')`) as unknown as StatusEffect;
       if (eqEffects.effect) {
         equipmentList.push(eqEffects);
       }
@@ -223,7 +229,7 @@ export default class Combat {
   }
 
   // note: we could pre-bake the weapon weight into the combatant for efficiency here
-  static async filterEffects(combatant: Combatant, effectList: StatusEffect[]): Promise<StatusEffect[]> {
+  static filterEffects(combatant: Combatant, effectList: StatusEffect[]): StatusEffect[] {
     const filteredEffects: StatusEffect[] = [];
     for (const it of effectList) {
       if (it.whileEnvironment) {
@@ -235,7 +241,7 @@ export default class Combat {
         let meetsCondition = true;
         if (it.condition.weapon) {
           if (it.condition.weapon.weight) {
-            const weaponRecord = await Deem.evaluate(`lookup(masterWeapon, '${combatant.weapon}')`);
+            const weaponRecord = Deem.evaluate(`lookup(masterWeapon, '${combatant.weapon}')`) as unknown as { weight: string };
             if (weaponRecord.weight !== it.condition.weapon.weight) {
               meetsCondition = false;
             }
@@ -273,8 +279,8 @@ export default class Combat {
       await Combat.reifyTraits(c);
       await Combat.applyEquipmentEffects(c);
 
-      c.activeEffects = await Combat.filterEffects(c, c.activeEffects || []);
-      c.passiveEffects = await Combat.filterEffects(c, c.passiveEffects || []);
+      c.activeEffects = Combat.filterEffects(c, c.activeEffects || []);
+      c.passiveEffects = Combat.filterEffects(c, c.passiveEffects || []);
 
       // apply auras
       c.activeEffects ||= [];
@@ -446,7 +452,7 @@ export default class Combat {
     const itemQuantities = Inventory.quantities(inventoryItems);
     const itemAbilities = [];
     for (const [itemKey, qty] of Object.entries(itemQuantities)) {
-      const itemAbility = await Deem.evaluate(`lookup(consumables, '${itemKey}')`) as unknown as Ability;
+      const itemAbility = Deem.evaluate(`lookup(consumables, '${itemKey}')`) as unknown as Ability;
       const proficient = Inventory.isItemProficient(itemAbility.kind || 'kit', itemAbility.aspect, combatant.itemProficiencies || {})
       if (!proficient) { continue; }
 
@@ -559,7 +565,7 @@ export default class Combat {
       if (typeof action.target[1] === "number") {
         count = action.target[1];
       } else if (typeof action.target[1] === "string") {
-        count = await Deem.evaluate(action.target[1], { ...combatant }) as number; // as any as number;
+        count = Deem.evaluate(action.target[1], { ...combatant }) as number; // as any as number;
       } else {
         throw new Error(`Invalid target count specification for randomEnemies: ${action.target[1]}`);
       }

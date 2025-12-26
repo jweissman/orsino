@@ -50,10 +50,10 @@ export class Inventory {
     return true;
   }
 
-  static async item(name: string): Promise<ItemInstance> {
-    const isConsumable = await Deem.evaluate(`hasEntry(consumables, '${name}')`);
+  static item(name: string): ItemInstance {
+    const isConsumable = Deem.evaluate(`hasEntry(consumables, '${name}')`);
     if (isConsumable) {
-      const itemInfo = await Deem.evaluate(`lookup(consumables, '${name}')`);
+      const itemInfo = Deem.evaluate(`lookup(consumables, '${name}')`) as { charges?: number; };
       if (itemInfo.charges) {
         return {
           name,
@@ -64,7 +64,7 @@ export class Inventory {
         return { name };
       }
     } else {
-      console.trace("Error: trying to add non-consumable item as instance:", name);
+      // console.trace("Error: trying to add non-consumable item as instance:", name);
       throw new Error(`Cannot add non-consumable item '${name}' as an instance to inventory.`);
     }
   }
@@ -77,12 +77,12 @@ export class Inventory {
     return inventoryCounts;
   }
 
-  static async equip(equipmentKey: string, wielder: Combatant): Promise<{oldItemKey: string | null, slot: EquipmentSlot}> {
+  static equip(equipmentKey: string, wielder: Combatant): {oldItemKey: string | null, slot: EquipmentSlot} {
     if (!wielder.equipment) {
       wielder.equipment = {};
     }
 
-    const equipment = await Deem.evaluate(`lookup(equipment, "${equipmentKey}")`);
+    const equipment = Deem.evaluate(`lookup(equipment, "${equipmentKey}")`) as unknown as Weapon;
     let slot = equipment.kind as EquipmentSlot;
     if (slot === 'ring' as EquipmentSlot) {
       if (!wielder.equipment['ring1']) {
@@ -98,7 +98,7 @@ export class Inventory {
     const oldItemKey = wielder.equipment ? wielder.equipment[slot] : null;
     let oldItem = null;
     if (oldItemKey) {
-      oldItem = await Deem.evaluate(`lookup(equipment, "${oldItemKey}")`);
+      oldItem = Deem.evaluate(`lookup(equipment, "${oldItemKey}")`);
       // console.log(`Discard equipped ${Words.humanize(oldItemKey)} from ${wielder.name} in favor of ${Words.humanize(equipmentKey)}.`);
       // wielder.gp += oldItem.value || 0;
       // this.state.sharedGold += oldItem.value || 0;

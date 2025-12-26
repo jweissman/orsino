@@ -20,9 +20,9 @@ const rl = readline.createInterface({
 
 rl.prompt();
 
-rl.on('line', async (line) => {
+rl.on('line', (line) => {
   try {
-    const result = await Deem.evaluate(line);
+    const result = Deem.evaluate(line);
     console.log(result);
   } catch (err) {
     console.error('Error:', err);

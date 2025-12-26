@@ -1,22 +1,16 @@
 import { select } from "@inquirer/prompts";
 import { Separator } from "@inquirer/select";
 import Choice from "inquirer/lib/objects/choice";
-import Combat from "../Combat";
 import { RollResult } from "../types/RollResult";
 import { Combatant } from "../types/Combatant";
 import { Commands } from "../rules/Commands";
 import { Fighting } from "../rules/Fighting";
 import { Answers } from "inquirer";
 import Automatic from "./Automatic";
-export type SelectionMethod = (
-      prompt: string,
-      choices: (
-        readonly (string)[] | Choice<any>[]
-      )
-    ) => Promise<string | Choice<any>>;
+
 export default class User {
   // print the message and return the user's input
-  static async prompt(message: string): Promise<any> {
+  static async prompt(message: string): Promise<string> {
     process.stdout.write(message + " ");
     return new Promise((resolve) => {
       process.stdin.resume();
@@ -53,27 +47,29 @@ export default class User {
   static async selection<T extends Answers>(
     message: string,
     choices: (
-      readonly (string | Separator)[] | Choice<T>[]
+      // readonly (string | Separator)[] | Choice<T>[]
+      readonly (Separator | Choice<T>)[]
     ),
     subject?: Combatant,
-  ): Promise<T> {
+  ): Promise<T | string> {
     if (choices.length === 0) {
       throw new Error("No choices provided for selection");
     }
 
     const effectivelyPlayerControlled = subject ? Fighting.effectivelyPlayerControlled(subject) : true;
     if (subject && !effectivelyPlayerControlled) {
-      return Combat.samplingSelect(message, choices as any);
-      // return Automatic.randomSelect<T>(message, choices); // as ((readonly string[]) | (Choice<T>)[]));
+      // return Combat.samplingSelect(message, choices as any);
+      return Automatic.randomSelect<T>(message, choices as Choice<T>[]) as unknown as T; // as ((readonly string[]) | (Choice<T>)[]));
     }
 
     // console.log(`Selecting for ${subject?.name}: ${message}`);
-    return await select({ message, choices: choices as any })
+    const selection = await select({ message, choices }) as T;
+    return selection;
   }
 
-  static async roll(subject: Combatant, description: string, sides: number): Promise<RollResult> {
+  static roll(subject: Combatant, description: string, sides: number): RollResult {
     if (!subject.playerControlled) {
-      const result = await Commands.roll(subject, description, sides);
+      const result = Commands.roll(subject, description, sides);
       // await Spinner.run(`${subject.name} is rolling ${description}`, 20 + Math.random() * 140, result.description);
       // console.log(result.description);
       return result;
@@ -85,7 +81,7 @@ export default class User {
     //   `${subject.name} rolling d${sides} ${description}`
     // );
     // // Then do the actual roll
-    const result = await Commands.roll(subject, description, sides);
+    const result = Commands.roll(subject, description, sides);
     // console.log(result.description);
     return result;
   }

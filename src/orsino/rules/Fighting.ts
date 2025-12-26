@@ -255,10 +255,10 @@ export class Fighting {
 
       const weaponVerb =
         attacker.hasMissileWeapon ? "shoot" : (this.weaponDamageKindVerbs[attacker.damageKind || "slashing"] || "strike");
-      damage = await Deem.evaluate(attackDie, {
+      damage = Deem.evaluate(attackDie, {
         roll, subject: attacker,
         description: `to ${weaponVerb} ${defender.forename} with ${Words.humanize(attacker.weapon)}`
-      });
+      }) as number;
 
       if (critical) {
         criticalDamage = Math.max(1, Math.round(damage * 0.2 * Math.max(1, Math.floor(attacker.level / 5))));

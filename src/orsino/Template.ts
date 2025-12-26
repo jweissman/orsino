@@ -1,21 +1,25 @@
 // src/orsino/Template.ts
 import Deem from "../deem";
+import { DeemValue } from "../deem/stdlib";
 import Generator from "./Generator";
-import { StatusEffect, StatusModifications } from "./Status";
+import { StatusModifications } from "./Status";
 import { Table } from "./Table";
 import { GenerationTemplateType } from "./types/GenerationTemplateType";
 import deepCopy from "./util/deepCopy";
 
+export type TemplateProps = Record<string, string | number | boolean | object>;
 export class Template {
   constructor(
     public type: GenerationTemplateType,
-    public props: Record<string, any> = {}
+    public props: TemplateProps = {}
   ) { }
 
-  static async bootstrapDeem(context: Record<string, any> = {}) {
+  static bootstrapDeem(context: Record<string, DeemValue> = {}) {
     Deem.stdlib = Deem.stdlib || {};
-    Deem.stdlib.eval = async (expr: string) => await Deem.evaluate(expr, context);
-    Deem.stdlib.lookup = (tableName: GenerationTemplateType, groupName: string) => Generator.lookupInTable(tableName, groupName);
+    Deem.stdlib.eval = (expr: string) => Deem.evaluate(expr, context);
+    Deem.stdlib.lookup = (tableName: GenerationTemplateType, groupName: string) => {
+      return Generator.lookupInTable(tableName, groupName);
+    }
     Deem.stdlib.lookupUnique = (tableName: GenerationTemplateType, groupName: string) => Generator.lookupInTable(tableName, groupName, true);
     Deem.stdlib.hasEntry = (tableName: GenerationTemplateType, groupName: string) => {
       // console.log(`Checking hasEntry for table '${tableName}' and group '${groupName}'`);
@@ -26,17 +30,17 @@ export class Template {
       }
       return table.hasGroup(groupName);
     };
-    Deem.stdlib.gather = async (
+    Deem.stdlib.gather = (
       tableName: GenerationTemplateType, count: number = -1, condition?: string
-    ) => await Generator.gatherKeysFromTable(tableName, count, condition);
-    Deem.stdlib.gen = async (type: GenerationTemplateType) => {
-      return await Generator.gen(type, { ...context })
+    ) => Generator.gatherKeysFromTable(tableName, count, condition);
+    Deem.stdlib.gen = (type: GenerationTemplateType) => {
+      return Generator.gen(type, { ...context })
     };
-    Deem.stdlib.genList = async (type: GenerationTemplateType, count: number = 1) => {
-      return await Generator.genList(type, { ...context }, count);
+    Deem.stdlib.genList = (type: GenerationTemplateType, count: number = 1) => {
+      return Generator.genList(type, { ...context }, count);
     }
 
-    Deem.stdlib.mapGenList = async (type: GenerationTemplateType, items: any[], property: string) => {
+    Deem.stdlib.mapGenList = (type: GenerationTemplateType, items: any[], property: string) => {
       // console.log(`mapGenList for type '${type}' over items:`, items);
       const results = [];
       // for (let item of items) {
@@ -45,7 +49,7 @@ export class Template {
         const item = items[i];
         const index = i;
         const genOptions = { ...context, [property]: item, _index: index };
-        const genResult = await Generator.gen(type, genOptions);
+        const genResult = Generator.gen(type, genOptions);
         results.push(genResult);
       }
       // process.stdout.write(`.`);
@@ -57,10 +61,10 @@ export class Template {
     Deem.stdlib.fxBuff = (name: string, effect: StatusModifications, duration: number | string = 10) => ({ type: 'buff', status: { effect, name }, duration });
   }
 
-  async assembleProperties(
-    options: Record<string, any> = {},
+  assembleProperties(
+    options: Record<string, DeemValue> = {},
     // _generator: any
-  ): Promise<Record<string, any>> {
+  ): Record<string, any> {
     const localContext = { ...options };
     const assembled: Record<string, any> = {};
 
@@ -71,14 +75,14 @@ export class Template {
         ...localContext,
         ...assembled
       };
-      await Template.bootstrapDeem(context);
-      const resolved = localContext[key] !== undefined ? localContext[key] :
-        (await Template.evaluatePropertyExpression(value, context));
+      Template.bootstrapDeem(context);
+      const resolved: DeemValue = localContext[key] !== undefined ? localContext[key] :
+        (Template.evaluatePropertyExpression(value, context) as unknown as DeemValue);
 
       // it felt like we needed deep copy here to prevent any mutations from affecting the original template
-      assembled[key] = deepCopy(resolved);
+      assembled[key] = deepCopy(resolved) as DeemValue;
 
-      localContext[key] = assembled[key];
+      localContext[key] = assembled[key] as DeemValue;
 
       if (key.startsWith("*") || key.startsWith("^")) {
         // we have evaluated the value (confirm we have gotten an object) 
@@ -94,7 +98,7 @@ export class Template {
               for (let i = 0; i < v.length; i++) {
                 let el = v[i];
                 if (typeof el === 'string' && el.startsWith("=")) {
-                  el = await Template.evaluatePropertyExpression(el, context);
+                  el = Template.evaluatePropertyExpression(el, context);
                 }
                 v[i] = el;
               }
@@ -108,7 +112,7 @@ export class Template {
             if (key.startsWith("^")) {
               // console.log(`Evaluating overlaid property ${k} with expression: ${v}`);
               // deem evaluate the string before overlaying
-              v = await Template.evaluatePropertyExpression(v, { ...context, ...assembled });
+              v = Template.evaluatePropertyExpression(v, { ...context, ...assembled });
             }
             // console.log(`Adding ${k}=${v} to context (was ${localContext[k]})`);
             // just replace!
@@ -140,14 +144,14 @@ export class Template {
     return assembled;
   }
 
-  static async evaluatePropertyExpression(expr: any, context: Record<string, any>): Promise<any> {
+  static evaluatePropertyExpression(expr: any, context: Record<string, any>): any {
     if (!expr || typeof expr !== 'string') {
       return expr;
     }
 
     if (expr.startsWith("=")) {
       try {
-        return await Deem.evaluate(expr, context);
+        return Deem.evaluate(expr, context);
       } catch (e) {
         console.error(`Error evaluating expression ${expr}`, e);
 
