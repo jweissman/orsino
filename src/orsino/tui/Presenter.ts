@@ -8,7 +8,7 @@ import Combat from "../Combat";
 import StatusHandler, { StatusEffect, StatusModifications } from "../Status";
 import { never } from "../util/never";
 import Deem from "../../deem";
-import { ItemInstance } from "../types/ItemInstance";
+import { ItemInstance, materializeItem } from "../types/ItemInstance";
 
 export default class Presenter {
   static colors = ['magenta', 'red', 'yellow', 'yellow', 'yellow', 'green', 'green', 'green', 'green'];
@@ -47,7 +47,7 @@ export default class Presenter {
 
     record += `\n\n**Hit Points:** ${combatant.hp}/${effective.maxHp}\n\n`;
     const basics = {
-      weapon: (combatant.weapon || 'None'),
+      weapon: (combatant.equipment?.weapon || 'None'),
       armor: combatant.armor || 'None',
       xp: combatant.xp,
       gp: combatant.gp,
@@ -56,8 +56,10 @@ export default class Presenter {
       record += (`**${Words.capitalize(key)}:** ${Words.humanize(value.toString())}<br/>\n`);
     }
 
+    const effectiveWeapon = Fighting.effectiveWeapon(combatant, []);
+
     const core = {
-      "Attack Die": combatant.attackDie,
+      "Attack Die": effectiveWeapon.damage,
       "Armor Class": (effective as any).ac,
       "Spell Slots": ["mage", "bard", "cleric"].includes(combatant.class || '') ? Combat.maxSpellSlotsForCombatant(combatant) : "none"
     }
@@ -116,7 +118,7 @@ export default class Presenter {
     return `${Words.capitalize(combatant.referenceName || combatant.forename)} is ${Words.a_an(Words.capitalize(combatant.background || 'adventurer'))} ${Words.humanize(combatant.archetype || 'neutral')} from the ${combatant.hometown || 'unknown'}, ${combatant.age || 'unknown'} years old. ${descriptor} of ${combatant.body_type || 'average'} build with ${combatant.hair || 'unknown color'} hair, ${combatant.eye_color || 'dark'} eyes and ${Words.a_an(combatant.personality || 'unreadable')} disposition.`
   }
 
-  static async characterRecord(combatant: Combatant, gear: ItemInstance[] = []): Promise<string> {
+  static async characterRecord(combatant: Combatant, inventory: ItemInstance[] = []): Promise<string> {
     await AbilityHandler.instance.loadAbilities();
     await TraitHandler.instance.loadTraits();
     await StatusHandler.instance.loadStatuses();
@@ -147,7 +149,7 @@ export default class Presenter {
     // record += "Armor Class: " + Stylist.colorize(`${combatant.ac} `, 'yellow');
 
     const basics = {
-      weapon: (combatant.weapon || 'None'),
+      weapon: (combatant.equipment?.weapon || 'None'),
       armor: combatant.armor || 'None',
       // background: combatant.background || 'None',
       xp: combatant.xp,
@@ -157,9 +159,10 @@ export default class Presenter {
       return this.padLiteralEnd(`${Stylist.bold(Words.capitalize(key))} ${Words.humanize(value.toString())}`, 25);
     }).join('   ')) + "\n";
 
+    const effectiveWeapon = Fighting.effectiveWeapon(combatant, []);
     const bolt = Stylist.colorize('⚡', 'yellow');
     const core = {
-      "Attack Die": Stylist.colorize(combatant.attackDie, 'red'),
+      "Attack Die": Stylist.colorize(effectiveWeapon.damage, 'red'),
       "Armor Class": Stylist.colorize(`${(effective as any).ac}`, 'yellow'),
       "Spell Slots": ["mage", "bard", "cleric"].includes(combatant.class || '') ?
         bolt.repeat(Combat.maxSpellSlotsForCombatant(combatant)) : "none"
@@ -191,7 +194,7 @@ export default class Presenter {
             record += `  ${this.describeStatusWithName(status)}\n`;
           });
 
-          if ((trait.abilities||[]).length > 0) {
+          if ((trait.abilities || []).length > 0) {
             record += Stylist.italic("  Grants abilities: " + trait.abilities?.map(a => Stylist.colorize(a, 'magenta')).join(', '));
           }
           record += "\n";
@@ -203,9 +206,8 @@ export default class Presenter {
     if (combatant.activeEffects && combatant.activeEffects.length > 0) {
       record += Stylist.bold("\nActive Effects\n");
       combatant.activeEffects.forEach(status => {
-        record += `  ${Stylist.colorize(status.name, 'cyan')} (${
-          this.analyzeStatus(status)
-        })\n`;
+        record += `  ${Stylist.colorize(status.name, 'cyan')} (${this.analyzeStatus(status)
+          })\n`;
       });
     }
     const otherPassives = combatant.passiveEffects?.filter(effect => !passiveEffectsFromTraits.includes(effect.name)) || [];
@@ -222,19 +224,26 @@ export default class Presenter {
     if (combatant.equipment && Object.keys(combatant.equipment).length > 0) {
       record += Stylist.bold("\nEquipped Items: \n");
       // Object.entries(combatant.equipment).forEach(([slot, item]) => {
-      for (const slot of Object.keys(combatant.equipment)) {
+      for (const slot of Object.keys(combatant.equipment).filter(key => key !== 'id')) {
+        const equipmentSlot: EquipmentSlot = slot as EquipmentSlot;
         const itemName = (combatant.equipment as Record<EquipmentSlot, string>)[slot as EquipmentSlot];
-        const item = Deem.evaluate('lookup(equipment, "' + itemName + '")') as unknown as { effect: StatusModifications };
-        record += `  ${Stylist.colorize(Words.capitalize(slot), 'yellow')}: ${Words.humanize(itemName)} (${
-          this.describeModifications(item.effect)
-        })\n`;
+        if (equipmentSlot === 'weapon') {
+          // const item = Deem.evaluate('lookup(masterWeapon, "' + itemName + '")') as unknown as { effect: StatusModifications };
+          // const item = Fighting.effectiveWeapon(combatant, []);
+          const item = materializeItem(itemName, inventory) as ItemInstance;
+          record += `  ${Stylist.colorize(Words.capitalize(slot), 'yellow')}: ${Words.humanize(itemName)} (${this.describeModifications(item.effect || {})})\n`;
+        }
+        else {
+          const item = Deem.evaluate('lookup(masterEquipment, "' + itemName + '")') as unknown as { effect: StatusModifications };
+          record += `  ${Stylist.colorize(Words.capitalize(slot), 'yellow')}: ${Words.humanize(itemName)} (${this.describeModifications(item.effect)})\n`;
+        }
       }
     }
 
-    if (gear && gear.length > 0) {
-      record += Stylist.bold("\nGear: ") + this.aggregateList(gear.sort((a, b) => a.name.localeCompare(b.name)).map(i => i.name)) + "\n";
+    if (inventory && inventory.length > 0) {
+      record += Stylist.bold("\nGear: ") + this.aggregateList(inventory.sort((a, b) => a.name.localeCompare(b.name)).map(i => i.name)) + "\n";
     }
- 
+
 
     return record;
   }
@@ -245,6 +254,12 @@ export default class Presenter {
     const hpBar = Stylist.prettyValue(combatant.hp, effective.maxHp);
     const color = this.colors[Math.floor(hpRatio * (this.colors.length - 1))] || this.colors[0];
     let name = Stylist.format(combatant.forename, 'bold');
+
+    const combatClass = combatant.class;
+    const combatKind = (combatant as unknown as { kind?: string }).kind || combatant.race || '';
+
+    let combatantType = combatClass ? `${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '';
+
     const fx = Fighting.effectList(combatant);
     if (fx.some(e => e.effect?.displayName)) {
       const firstNameOverride = fx.find(e => e.effect?.displayName)?.effect?.displayName;
@@ -252,9 +267,13 @@ export default class Presenter {
         name = Stylist.format(firstNameOverride, 'bold');
       }
     }
+    if (fx.some(e => e.effect?.displayClass)) {
+      const firstClassOverride = fx.find(e => e.effect?.displayClass)?.effect?.displayClass;
+      if (firstClassOverride) {
+        combatantType = firstClassOverride;
+      }
+    }
 
-    const combatClass = combatant.class;
-    const combatKind = (combatant as unknown as { kind?: string }).kind || combatant.race || '';
     let tempHp = 0;
     for (const poolAmount of Object.values(combatant.tempHpPools || {})) {
       tempHp += poolAmount;
@@ -264,7 +283,8 @@ export default class Presenter {
       combatant.hp <= 0 ? Stylist.colorize('X', 'red') : Stylist.colorize(hpBar, color),
       tempHp > 0 ? Stylist.colorize(`(+${tempHp})`, 'blue') : '',
       combatant.hp > 0 ? `${combatant.hp}/${effective.maxHp}` : 'KO',
-      combatClass ? `${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '',
+      combatantType
+      // combatClass ? `${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '',
     ].join(' ');
   }
 
@@ -275,7 +295,7 @@ export default class Presenter {
     const color = this.colors[Math.floor(hpRatio * (this.colors.length - 1))] || this.colors[0];
 
     const combatClass = combatant.class;
-    const combatKind = (combatant as any).kind || combatant.race || '';
+    const combatKind = (combatant).kind || combatant.race || '';
     let classInfo = combatClass ? `Lvl. ${combatant.level.toString().padEnd(2)} ${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '';
     // const effective = Fighting.effectiveStats(combatant);
     // const stats = { STR: effective.str, DEX: effective.dex, INT: effective.int, WIS: effective.wis, CHA: effective.cha, CON: effective.con };
@@ -289,7 +309,7 @@ export default class Presenter {
       }));
     }
 
-    const friendly = ((combatant as any).friendly || false) || combatant.playerControlled;
+    const friendly = combatant.playerControlled;
     let name = combatant.name;
     const fx = Fighting.effectList(combatant);
     if (fx.some(e => e.effect?.displayName)) {
@@ -299,7 +319,7 @@ export default class Presenter {
       }
     }
     const lhs = `${Stylist.colorize(hpBar, color)} ${Stylist.format(
-      Stylist.colorize(combatant.name, friendly ? 'cyan' : 'yellow'),
+      Stylist.colorize(name, friendly ? 'cyan' : 'yellow'),
       'bold'
     ).padEnd(40)}${classInfo}`;
     // let rhs = `(${this.statLine(combatant)})`;
@@ -307,7 +327,7 @@ export default class Presenter {
     return lhs;
   }
 
-  static async statLine(combatant: Combatant) {
+  static statLine(combatant: Combatant) {
     // const str = Stylist.colorize(Stylist.prettyValue(combatant.str, 20), 'red');
     // const dex = Stylist.colorize(Stylist.prettyValue(combatant.dex, 20), 'yellow');
     // const int = Stylist.colorize(Stylist.prettyValue(combatant.int, 20), 'green');
@@ -317,7 +337,7 @@ export default class Presenter {
 
     // return [str, dex, int, wis, cha, con].join('');
 
-    const effective = await Fighting.effectiveStats(combatant);
+    const effective = Fighting.effectiveStats(combatant);
     return [
       this.stat('str', effective.str),
       this.stat('dex', effective.dex),
@@ -411,7 +431,7 @@ export default class Presenter {
         .filter(s => !ignoreStatuses.includes(s));
 
       const sep = // dot
-          '·';
+        '·';
       let statusLine = "";
       if (lhsStatuses.length > 0) {
         statusLine += this.padLiteralEnd(Stylist.colorize(lhsStatuses.join(sep), 'cyan'), 40);
@@ -433,9 +453,9 @@ export default class Presenter {
 
   static describeStatusWithName(status: StatusEffect | string): string {
     const statusEffect = StatusHandler.instance.dereference(status);
-        if (!statusEffect) {
-          throw new Error(`Buff effect has unknown status: ${JSON.stringify(status)}`);
-        }
+    if (!statusEffect) {
+      throw new Error(`Buff effect has unknown status: ${JSON.stringify(status)}`);
+    }
 
     // let concreteStatus: StatusEffect;
     // if (typeof status === 'string') {
@@ -453,12 +473,12 @@ export default class Presenter {
 
   static describeStatus(status: StatusEffect | string): string {
     const statusEffect = StatusHandler.instance.dereference(status);
-        if (!statusEffect) {
-          throw new Error(`Buff effect has unknown status: ${JSON.stringify(status)}`);
-        }
+    if (!statusEffect) {
+      throw new Error(`Buff effect has unknown status: ${JSON.stringify(status)}`);
+    }
 
 
- //(status.description ? status.description + " " : '') +
+    //(status.description ? status.description + " " : '') +
     return Words.capitalize(this.analyzeStatus(statusEffect));
   }
 
@@ -497,7 +517,7 @@ export default class Presenter {
       const saves: string[] = [];
       const immunities: string[] = [];
       for (const [key, value] of Object.entries(effect)) {
-        if (value === undefined) {continue;}
+        if (value === undefined) { continue; }
         const k: keyof StatusModifications = key as keyof StatusModifications;
         if (key.startsWith("saveVersus") && (value as number) > 0) {
           saves.push(Words.humanize(k.replace("saveVersus", "")));
@@ -524,7 +544,7 @@ export default class Presenter {
 
 
     for (const [key, value] of Object.entries(effect)) {
-      if (value === undefined) {continue;}
+      if (value === undefined) { continue; }
       const k: keyof StatusModifications = key as keyof StatusModifications;
       switch (k) {
         case "allRolls":
@@ -541,25 +561,25 @@ export default class Presenter {
         case "int":
         case "wis":
         case "cha":
-          parts.push(this.increaseDecrease(Words.statName(k), value));
+          parts.push(this.increaseDecrease(Words.statName(k), value as number));
           break;
         case "initiative":
-          parts.push(this.increaseDecrease('initiative', value));
+          parts.push(this.increaseDecrease('initiative', value as number));
           break;
         case "toHit":
-          parts.push(this.increaseDecrease('to hit', value));
+          parts.push(this.increaseDecrease('to hit', value as number));
           break;
         case "bonusDamage":
-          parts.push(this.increaseDecrease('bonus damage', value));
+          parts.push(this.increaseDecrease('bonus damage', value as number));
           break;
         case "ac":
           parts.push(this.increaseDecrease('AC', -value));
           break;
         case "evasion":
-          parts.push(this.increaseDecrease('evasion', value));
+          parts.push(this.increaseDecrease('evasion', value as number));
           break;
         case "bonusHealing":
-          parts.push(this.increaseDecrease('bonus healing', value));
+          parts.push(this.increaseDecrease('bonus healing', value as number));
           break;
         // case "allSaves":
         //   parts.push(this.increaseDecrease('all saves', value));
@@ -601,11 +621,10 @@ export default class Presenter {
         case "saveVersusBleed":
         case "saveVersusReflex":
         case "saveVersusFortitude":
-          const save = `Save versus ${Words.humanize(k.replace("saveVersus", ""))}`;
-          parts.push(this.increaseDecrease(save, value));
+          parts.push(this.increaseDecrease(`Save versus ${Words.humanize(k.replace("saveVersus", ""))}`, value as number));
           break;
         case "saveVersusAll":
-          parts.push(this.increaseDecrease('all saves', value));
+          parts.push(this.increaseDecrease('all saves', value as number));
           break;
 
         case "immunePoison":
@@ -664,7 +683,8 @@ export default class Presenter {
         case "onHeal":
         case "onLevelUp":
         case "onOffensiveCasting":
-        
+
+        // @eslint-disable-next-line no-fallthrough
         case "onEnemyCharge":
         case "onEnemyMelee":
         case "onEnemyAttack":
@@ -676,6 +696,7 @@ export default class Presenter {
         case "onEnemyCasting":
         case "onEnemyOffensiveCasting":
 
+        // @eslint-disable-next-line no-fallthrough
         case "onMissReceived":
         case "onSaveVersusPoison":
         case "onSaveVersusDisease":
@@ -692,20 +713,20 @@ export default class Presenter {
         case "onSaveVersusSleep":
         case "onSaveVersusReflex":
         case "onSaveVersusFortitude":
-          parts.push(`${Words.capitalize(Words.humanize(k).toLocaleLowerCase())}, ${this.describeEffects(value, 'self')}`);
+          parts.push(`${Words.capitalize(Words.humanize(k).toLocaleLowerCase())}, ${this.describeEffects(value as AbilityEffect[], 'self')}`);
           break;
 
         case "summonAnimalBonus":
-          parts.push(this.increaseDecrease('summon animal bonus', value));
+          parts.push(this.increaseDecrease('summon animal bonus', value as number));
           break;
         case "bonusSpellSlots":
-          parts.push(this.increaseDecrease('bonus spell slots', value));
+          parts.push(this.increaseDecrease('bonus spell slots', value as number));
           break;
         case "bonusSpellDC":
-          parts.push(this.increaseDecrease('bonus spell DC', value));
+          parts.push(this.increaseDecrease('bonus spell DC', value as number));
           break;
         case "spellDurationBonus":
-          parts.push(this.increaseDecrease('status duration', value));
+          parts.push(this.increaseDecrease('status duration', value as number));
           break;
         case "spellDurationMultiplier":
           parts.push(this.multipliedBy('status duration', value as number));
@@ -787,17 +808,17 @@ export default class Presenter {
         case "reflectDamagePercent":
           parts.push(this.increaseDecrease('damage reflection percent', value * 100 + '%'));
           break;
-        
+
         case "reflectSpellChance":
           parts.push(this.increaseDecrease('spell reflection chance', value * 100 + '%'));
           break;
-        
+
         case "untargetable":
           if (value) {
             parts.push(`Untargetable`);
           }
           break;
-        
+
         case "invisible":
           if (value) {
             parts.push(`Invisible`);
@@ -809,11 +830,11 @@ export default class Presenter {
             parts.push(`Can perceive invisible entities`);
           }
           break;
-        
+
         case "extraTurns":
-          parts.push(this.increaseDecrease('extra turns', value));
+          parts.push(this.increaseDecrease('extra turns', value as number));
           break;
-        
+
         case "triggerReactions":
           if (!value) {
             parts.push(`Does not trigger reactions`);
@@ -826,15 +847,21 @@ export default class Presenter {
           }
           break;
 
+        case "displayClass":
+          if (value) {
+            parts.push(`Displayed class changed to "${value}"`);
+          }
+          break;
+
         case "effectiveStats":
           if (value) {
             const stats = value as Partial<Combatant>;
             for (const [statKey, statValue] of Object.entries(stats)) {
-              parts.push(`${statKey.toUpperCase()} set to ${statValue}`);
+              parts.push(`${statKey.toUpperCase()} set to ${statValue as number}`);
             }
           }
           break;
-        
+
         case "maxHp":
           parts.push("max HP set to " + value);
           break;
@@ -850,16 +877,28 @@ export default class Presenter {
           break;
 
 
+        case "effectiveAbilities":
+          if (value) {
+            const abilities = value as string[];
+            parts.push(`Abilities set to: ${abilities.map(a => Words.humanize(a)).join(', ')}`);
+          }
+          break;
+
+        case "mayUseItems":
+          if (value) {
+            parts.push(`May use items`);
+          } else {
+            parts.push(`May not use items`);
+          }
+          break;
+
         default:
-          // @ts-ignore
-          if (k.startsWith("onEnemy")) {
-            parts.push(`${this.describeEffects(value, 'self')} ${Words.humanize(k)}`);
+          if ((k as string).startsWith("onEnemy")) {
+            parts.push(`${this.describeEffects(value as AbilityEffect[], 'self')} ${Words.humanize(k)}`);
             break;
-          // @ts-ignore
-          } else if (k.endsWith("Multiplier")) {
+          } else if ((k as string).endsWith("Multiplier")) {
             // get just first part
-            // @ts-ignore
-            const what = k.replace("Multiplier", "");
+            const what = (k as string).replace("Multiplier", "");
             parts.push(this.multipliedBy(Words.humanize(what), value as number));
             break;
           }
@@ -891,6 +930,20 @@ export default class Presenter {
     return "indefinitely";
   }
 
+  static describeSummoning(effect: AbilityEffect): string {
+    let options = "";
+    if ((effect.options)?._class) {
+      options += ` of class ${Words.capitalize((effect.options)._class)} `;
+    } else if ((effect.options)?.level) {
+      options += ` level ${(effect.options).level} `;
+    } else if ((effect.options)?.monster_type) {
+      options += ` with type ${(effect.options).monster_type} `;
+    } else if ((effect.options)?.rank) {
+      options += ` at rank ${(effect.options).rank} `;
+    }
+    return options;
+  }
+
   static describeEffect(effect: AbilityEffect, targetDescription: string): string {
     let description = "";
     let amount = effect.amount ? effect.amount.toString() : "1";
@@ -909,8 +962,7 @@ export default class Presenter {
         if (!effect.spellName) {
           throw new Error(`Cast effect must have a spellName`);
         }
-        description = (`Cast ability ${Words.humanize(effect.spellName)} (${
-          this.describeAbility(AbilityHandler.instance.getAbility(effect.spellName))
+        description = (`Cast ability ${Words.humanize(effect.spellName)} (${this.describeAbility(AbilityHandler.instance.getAbility(effect.spellName))
           }) on ${targetDescription}`);
         break;
       case "heal": description = (`Heal ${targetDescription} ${amount} HP`); break;
@@ -933,17 +985,7 @@ export default class Presenter {
         }
         break;
       case "summon":
-        let options = "";
-        if ((effect.options as any)?._class) {
-          options += ` of class ${Words.capitalize((effect.options as any)._class)} `;
-        } else if ((effect.options as any)?.level) {
-          options += ` level ${(effect.options as any).level} `;
-        } else if ((effect.options as any)?.monster_type) {
-          options += ` with type ${(effect.options as any).monster_type} `;
-        } else if ((effect.options as any)?.rank) {
-          options += ` at rank ${(effect.options as any).rank} `;
-        }
-        description = (`Summon ${options}${effect.creature || "creature"}`); break;
+        description = (`Summon ${this.describeSummoning(effect)}${effect.creature || "creature"}`); break;
       case "removeStatus":
         description = (`Purge ${targetDescription} of ${effect.statusName}`); break;
       case "upgrade":
@@ -965,17 +1007,14 @@ export default class Presenter {
       case "xp":
         description = (`Gain ${amount} XP`); break;
       case "randomEffect":
-        description = (`Apply one of the following random effects to ${targetDescription}: ${
-          (effect.randomEffects || []).map((opt: AbilityEffect) => this.describeEffect(opt, targetDescription)).join('; ')
-        }`); break;
+        description = (`Apply one of the following random effects to ${targetDescription}: ${(effect.randomEffects || []).map((opt: AbilityEffect) => this.describeEffect(opt, targetDescription)).join('; ')
+          }`); break;
       case "cycleEffects":
-        description = (`Cycle through the following effects on ${targetDescription}: ${
-          (effect.cycledEffects || []).map((opt: AbilityEffect) => this.describeEffect(opt, opt.target || targetDescription)).join('; ')
-        }`); break;
+        description = (`Cycle through the following effects on ${targetDescription}: ${(effect.cycledEffects || []).map((opt: AbilityEffect) => this.describeEffect(opt, opt.target || targetDescription)).join('; ')
+          }`); break;
       case "learn":
-        description = (`Learn ability ${Words.humanize(effect.abilityName!)} (${
-          this.describeAbility(AbilityHandler.instance.getAbility(effect.abilityName!))
-        })`); break;
+        description = (`Learn ability ${Words.humanize(effect.abilityName!)} (${this.describeAbility(AbilityHandler.instance.getAbility(effect.abilityName!))
+          })`); break;
       case "grantPassive":
         // lookup status by name
         if (!effect.traitName) {
@@ -1021,8 +1060,8 @@ export default class Presenter {
     description += condition;
 
     return description
-    // strip extra spaces
-       .replace(/\s+/g, ' ');
+      // strip extra spaces
+      .replace(/\s+/g, ' ');
   }
 
   static describeEffects(effects: AbilityEffect[], targetDescription: string = ""): string {

@@ -1,16 +1,18 @@
 # Notes from Playtesting
 
 ## Bugs
-- [ ] Gold still getting zeroed out at dungeon entry/not distributed somehow? (maybe fixed??)
 - [ ] Bombs should not be heal-able (maybe there is some 'repair/mending' skill for inanimate objects though)
-- [ ] Phylactery summoned a lich but we were able to finish the combat without defeating it???
+- [ ] Bombs should not be melee attacking!
+- [ ] Weird interaction with absorption (temp Hp) and trap descriptions [it was saying the _trap_ absorbed damage?]
+- [ ] Seems fixed but really make sure we're handling gold transition between town hub/dungeon correctly
 
 ## Features
-- [ ] Found treasure/gems should be redeemable for gold
-- [ ] Show current gold before purchasing potions (make sure we're handling gold transition between town hub/dungeon correctly)
+- [ ] Magic weapons/armor (ie unify equipment w/ armor/weapons)
+- [ ] Describe colors of prismatic spray (done for normal damage fx, but spell beams don't hint their description clearly)
+- [ ] Show current gold before purchasing potions
 - [ ] Remind players to rest if they're not at full health going into boss battle
-- [ ] Unify search/examine (should both have chance to find potions and both grant XP on success)
-- [ ] Bring back status displays on the per turn overview... (we have per-round overview)
+- [ ] Unify search/examine (should both have chance to find potions/loot and both grant XP on success)
+- [ ] Bring back status displays on the per turn overview... (we currently have per-round overview)
 
 ## Ideas
 - [ ] Rest could reset status effects? (would be nice to do this _before_ persisting PCs?)
@@ -69,7 +71,6 @@
 - [ ] Armorer should only let you give weapons for humanoids to wield
 - [ ] Weapon proficiencies should matter for equipping PCs (ie not letting mage have huge battleaxes)
 - ---
-- [ ] Magic weapons/armor (ie unify equipment w/ armor/weapons)
 - [ ] Offer to equip wearables if you find them in loot (give wearables/consumables in room treasure -- may need some tracking for 'unworn wearables'... -- don't think we give them out yet but a lot of the loot items are _suggestive_ of wearables or magic weapons/armor) 
 - [ ] Animals should not have _blur_ spell
 - [ ] Treasure that is just coins should just be gp (we could give platinum/copper/silver for variety but fine if not!!)
@@ -115,7 +116,6 @@
 ---
 - [ ] Tiny game db with towns you've visited so you can travel back
 ---
-- [ ] Describe colors of prismatic spray
 - [ ] Racial magic weapon/armor traits (sword of goblinkind with abilities we can lookup)
 - [ ] Dual terrain types
 - [ ] Model PC classes as a table; race job restrictions as data
@@ -126,7 +126,6 @@
 ---
 - [ ] Could call victory if all enemies petrified/asleep/mazed?
 ---
-- [ ] Polymorph effect
 ---
 - [ ] Handle 'defeated' barks more gracefully ('X has defeated X', and then they have a triumphant bark! [Which is wrong/immersion breaking])
 - [ ] Handle mutual TPK more gracefully (currently displays both "You are victorious!" and "Your party has been defeated")
@@ -146,6 +145,14 @@
 - [ ] Wonders should have _strictly better_ boons than normal room features!
 - [ ] Purge active fx on long rest
 - [ ] Flight should make you actually _untargetable_ by melee
+---
+- [ ] Group riddle answers by type so they're marginally more challenging?
+- [ ] Polymorph effect -- seems to roughly work, but should enforce some enforce ability limitations (effectiveAbilities)
+- [ ] Confused players (randomActions) should _also_ pick targets at random!!!
+- [ ] Teleport might be not working? (it said 'go to random room' and I _guess_ it could have selected the same room but -- need more debugging here)
+- [ ] Sell all junk option at general store
+---
+- [ ] Throwable aspect on weapons like javelin, spear (simple dual use as melee/ranged -- but maybe you need a 'retrieve' action after ranged, although possibly too involved?)
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing
@@ -270,6 +277,11 @@
 - [x] Bomb shouldn't be able to reset ticking status! [tried to adjust this]
 - [x] Confirm that room sequences are being adhered to?? [seems to be the case now]
 - [x] Blacksmith who can give a +1 to weapons?
+- [x] Could use a `loot` table for generic but saleable items? (If only to give them descriptions/stable values anyway -- done, junk table)
+- [x] Gold still getting zeroed out at dungeon entry/not distributed somehow? (maybe fixed??)
+- [x] Phylactery summoned a lich but we were able to finish the combat without defeating it??? (should be solved)
+- [x] Found treasure/gems should be redeemable for gold [should be true with general store now?]
+- [x] Make sure we can use wands??? (wand_of_polymorph not coming up in use item options)
 
 ## Not really issues atm
 - "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]

@@ -163,6 +163,7 @@ export interface StatusModifications {
 
   // polymorph
   displayName?: string;
+  displayClass?: string;
   effectiveStats?: {
     str?: number;
     dex?: number;
@@ -173,9 +174,10 @@ export interface StatusModifications {
     ac?: number;
     // damage?: string;
     // attackDie?: number;
-    // maxHp?: number;
+    maxHp?: number;
   };
-  // effectiveAbilities?: string[];
+  effectiveAbilities?: string[];
+  mayUseItems?: boolean;
 
   // noncombat
   examineBonus?: number;
@@ -215,6 +217,8 @@ export interface StatusEffect {
   }
 
   saveKind?: SaveKind;
+
+  sourceKey?: string; // where this status came from (e.g. equipment slot, ability name, etc)
 }
 
 type StatusDictionary = { [key: string]: StatusEffect };

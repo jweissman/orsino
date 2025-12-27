@@ -1,9 +1,8 @@
-import { sha } from "bun";
 import Deem from "../../deem";
 import { AcquireItemEvent, GameEvent, WieldEvent } from "../Events";
 import { Inventory, Weapon } from "../Inventory";
 import { Combatant } from "./Combatant";
-import { ItemInstance } from "./ItemInstance";
+import { ItemInstance, materializeItem } from "./ItemInstance";
 
 export interface GameState {
   day: number;
@@ -84,6 +83,7 @@ const processAcquireEvent = (state: GameState, event: AcquireItemEvent): GameSta
     ownerSlot: 'backpack',
   };
   it.shared = it.itemClass === 'consumable';
+  console.warn(`Acquired item ${it.name} for ${event.acquirer.name} (shared: ${it.shared})`);
   state.inventory = [
     ...(state.inventory ?? []),
     ...(Array(event.quantity).fill(it) as ItemInstance[]),
@@ -92,20 +92,16 @@ const processAcquireEvent = (state: GameState, event: AcquireItemEvent): GameSta
 }
 
 const processWieldEvent = (state: GameState, event: WieldEvent): GameState => {
-  const weapon = Deem.evaluate(`lookup(masterWeapon, "${event.weaponName}")`) as unknown as Weapon;
+  const weapon = materializeItem(event.weaponName, state.inventory);
+  state.inventory.push(weapon);
   state.party = state.party.map((pc: Combatant) => {
     if (pc.id === event.wielderId) {
-      const abilities: string[] = (pc.abilities || [])
-        .filter((abil: string) => abil.match(/melee|ranged/i) === null);
-      abilities.unshift(weapon.missile ? 'ranged' : 'melee');
       return {
         ...pc,
-        weapon: event.weaponName,
-        attackDie: weapon.damage,
-        damageKind: weapon.type,
-        hasMissileWeapon: weapon.missile || false,
-        hasInterceptWeapon: weapon.intercept || false,
-        abilities
+        equipment: {
+          ...(pc.equipment || {}),
+          weapon: weapon.id || weapon.key || event.weaponName,
+        }
       };
     } else {
       return pc;

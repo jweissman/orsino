@@ -5,9 +5,6 @@ import { Separator } from "@inquirer/select";
 
 export default class Automatic {
   static randomSelect: Select<Answers> = ( _prompt, choices) => {
-  //   <T extends Answers>(_prompt: string, choices: (
-  //   readonly (string)[] | Choice<T>[]
-  // )): Promise<string | Choice<T>> {
     if (choices.length === 0) {
       throw new Error("No choices provided to Automatic.randomSelect");
     }
@@ -28,10 +25,6 @@ export default class Automatic {
 
     const chosen = enabledOptions[Math.floor(Math.random() * enabledOptions.length)] as { value: string | Answers; };
 
-    // if (typeof chosen === 'string') {
-    //   return Promise.resolve(chosen);
-    // } else {
     return Promise.resolve(chosen.value);
-    // }
   }
 }

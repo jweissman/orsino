@@ -12,6 +12,7 @@ import Combat from "./Combat";
 import { StatusEffect, StatusModifications } from "./Status";
 import { ItemInstance } from "./types/ItemInstance";
 import { Inventory } from "./Inventory";
+import { Fighting } from "./rules/Fighting";
 
 type BaseEvent = {
   turn: number;
@@ -114,7 +115,10 @@ export type RestEvent = BaseDungeonEvent & { type: "rest"; stabilizedCombatants:
 export type GoldEvent = BaseDungeonEvent & { type: "gold"; amount: number };
 export type ExperienceEvent = BaseDungeonEvent & { type: "xp"; amount: number };
 export type InvestigateEvent = BaseDungeonEvent & { type: "investigate"; clue: string; discovery: string; };
-export type RiddleEvent = BaseDungeonEvent & { type: "riddle"; challenge: string; solution: string; reward: string; };
+
+export type RiddlePosedEvent = BaseDungeonEvent & { type: "riddlePosed"; challenge: string; };
+export type RiddleSolvedEvent = BaseDungeonEvent & { type: "riddleSolved"; challenge: string; solution: string; reward: ItemInstance; };
+
 export type TrapDetectedEvent = BaseDungeonEvent & { type: "trapDetected"; trapDescription: string; };
 export type TrapTriggeredEvent = BaseDungeonEvent & { type: "trapTriggered"; trigger: string; trapDescription: string; punishmentDescription: string; };
 export type TrapDisarmedEvent = BaseDungeonEvent & { type: "trapDisarmed"; trapDescription: string; success: boolean; trigger: string };
@@ -137,7 +141,8 @@ export type DungeonEvent =
   | RestEvent
   | EquipmentWornEvent
   | InvestigateEvent
-  | RiddleEvent
+  | RiddlePosedEvent
+  | RiddleSolvedEvent
   | TrapDetectedEvent
   | TrapTriggeredEvent
   | TrapDisarmedEvent
@@ -196,8 +201,21 @@ export type GameEvent = CombatEvent | DungeonEvent | ModuleEvent
 
 export default class Events {
   static async present(event: GameEvent): Promise<string> {
-    const subjectName = event.subject ? event.subject.forename : null;
-    const targetName = event.target ? event.target.forename : null;
+    let subjectName = event.subject ? event.subject.forename : null;
+    if (event.subject) {
+      const subjectEffects = Fighting.gatherEffects(event.subject);
+      if (subjectEffects.displayName) {
+        subjectName = subjectEffects.displayName;
+      }
+    }
+    let targetName = event.target ? event.target.forename : null;
+    if (event.target) {
+      const targetEffects = Fighting.gatherEffects(event.target);
+      if (targetEffects.displayName) {
+        targetName = targetEffects.displayName;
+      }
+    }
+
     switch (event.type) {
       case "engage":
         return '';
@@ -372,8 +390,11 @@ export default class Events {
       case "actedRandomly":
         return `${subjectName} is acting erratically.`;
 
-      case "riddle":
-        return `${subjectName} has solved the riddle: "${event.challenge}" (answer: ${event.solution}) and receives ${Words.a_an(event.reward)}.`;
+      case "riddlePosed":
+        return `${subjectName} is posed the riddle: "${event.challenge}".`;
+
+      case "riddleSolved":
+        return `${subjectName} has solved the riddle: "${event.challenge}" (answer: ${event.solution}) and receives ${Words.a_an(event.reward.name)}.`;
 
       case "trapDetected":
         return `${subjectName} detects ${Words.a_an(event.trapDescription)}.`;
@@ -432,7 +453,7 @@ export default class Events {
           records.push(await Presenter.characterRecord(pc, Inventory.propertyOf(pc, event.inventory) || []));
         }
         let overview = Stylist.bold(`Party Overview:\n${records.join("\n\n")}\n\n`);
-        let sharedItems = Inventory.sharedItems(event.inventory);
+        const sharedItems = Inventory.sharedItems(event.inventory);
         if (sharedItems.length > 0) {
           overview += Stylist.bold("Shared Inventory: ") + Presenter.aggregateList(sharedItems.sort((a, b) => a.name.localeCompare(b.name)).map(i => i.name)) + "\n";
         }

@@ -62,7 +62,7 @@ type RunnerOptions = {
 }
 
 export class ModuleRunner {
-  static configuration = { sharedGold: 100 }
+  static configuration = { sharedGold: 1000 }
 
   private roller: Roll;
   private select: Select<Answers>;
@@ -72,7 +72,7 @@ export class ModuleRunner {
   ) => CampaignModule;
   private state: GameState;
 
-  private gen: (type: GenerationTemplateType, options?: GeneratorOptions) => GeneratedValue;
+  private gen: (type: GenerationTemplateType, options?: GeneratorOptions) => GeneratedValue | GeneratedValue[];
 
   activeModule: CampaignModule | null = null;
   journal: ModuleEvent[] = [];
@@ -283,58 +283,58 @@ export class ModuleRunner {
         await this.shop('weapons');
       } else if (action === "general") {
         await this.shop('loot');
-      } else if (action === "jeweler") {
-        const gems = this.pcs.flatMap(pc => pc.gems || []);
-        if (gems.length === 0) {
-          console.log("You have no gems to sell.");
-        } else {
-          const totalValue = gems.reduce((sum, gem) => sum + gem.value, 0);
-          for (const gem of gems) {
-            await this.emit({ type: "sale", itemName: `${gem.name} (${gem.type})`, revenue: gem.value, seller: this.pcs.find(pc => (pc.gems || []).includes(gem))!, day: this.days });
-          }
-          console.log(`You sold your gems for a total of ${totalValue}g`);
-          this.state.sharedGold += totalValue;
-          this.pcs.forEach(pc => pc.gems = []);
-        }
-      } else if (action === "blacksmith") {
-        const improvementCost = 50;
-          const actor = await this.select("Who will improve their weapon?", this.pcs.map(pc => ({
-            short: pc.name, value: pc, name: pc.name, disabled: !pc.weapon
-          }))) as Combatant;
-          // console.log("Current weapon:", actor.weapon, actor.attackDie);
-        if (this.sharedGold > improvementCost) {
-          const originalAttackDie = actor.attackDie;
-          const alreadyImproved = actor.attackDie.includes("+");
-          if (alreadyImproved) {
-            // rewrite to improve further
-            const [baseDie, plusPart] = actor.attackDie.split("+");
-            let plusAmount = parseInt(plusPart);
-            if (plusAmount <= 5) {
-              plusAmount += 1;
-              actor.attackDie = `${baseDie}+${plusAmount}`;
-            } else {
-              // could add a trait instead but for now improve the base die
-              const [dieNumber, dieSides] = baseDie.split("d");
-              const dieClasses = [2, 3, 4, 6, 8, 10, 12, 20, 100];
-              const currentIndex = dieClasses.indexOf(parseInt(dieSides));
-              if (currentIndex < dieClasses.length - 1) {
-                const newDieSides = dieClasses[currentIndex + 1];
-                actor.attackDie = `${dieNumber}d${newDieSides}+${plusAmount}`;
-              } else {
-                const newDieNumber = parseInt(dieNumber) + 1;
-                actor.attackDie = `${newDieNumber}d${dieSides}+${plusAmount}`;
-              }
-            }
-          } else {
-            // improve weapon
-            actor.attackDie += "+1";
-          }
-          // console.log(`🛠️ ${actor.name}'s weapon has been improved to ${actor.attackDie}!`);
-          await this.emit({ type: "purchase", itemName: `${Words.humanize(actor.weapon)} Improvement (${originalAttackDie} -> ${actor.attackDie})`, cost: improvementCost, buyer: actor, day: this.days });
-          this.state.sharedGold -= improvementCost;
-        } else {
-          console.log(`You need at least ${improvementCost}g to improve a weapon.`);
-        }
+      // } else if (action === "jeweler") {
+      //   const gems = this.pcs.flatMap(pc => pc.gems || []);
+      //   if (gems.length === 0) {
+      //     console.log("You have no gems to sell.");
+      //   } else {
+      //     const totalValue = gems.reduce((sum, gem) => sum + gem.value, 0);
+      //     for (const gem of gems) {
+      //       await this.emit({ type: "sale", itemName: `${gem.name} (${gem.type})`, revenue: gem.value, seller: this.pcs.find(pc => (pc.gems || []).includes(gem))!, day: this.days });
+      //     }
+      //     console.log(`You sold your gems for a total of ${totalValue}g`);
+      //     this.state.sharedGold += totalValue;
+      //     this.pcs.forEach(pc => pc.gems = []);
+      //   }
+      // } else if (action === "blacksmith") {
+      //   const improvementCost = 50;
+      //     const actor = await this.select("Who will improve their weapon?", this.pcs.map(pc => ({
+      //       short: pc.name, value: pc, name: pc.name, disabled: !pc.equipment?.weapon
+      //     }))) as Combatant;
+      //     // console.log("Current weapon:", actor.weapon, actor.attackDie);
+      //   if (this.sharedGold > improvementCost) {
+      //     const originalAttackDie = actor.attackDie;
+      //     const alreadyImproved = actor.attackDie.includes("+");
+      //     if (alreadyImproved) {
+      //       // rewrite to improve further
+      //       const [baseDie, plusPart] = actor.attackDie.split("+");
+      //       let plusAmount = parseInt(plusPart);
+      //       if (plusAmount <= 5) {
+      //         plusAmount += 1;
+      //         actor.attackDie = `${baseDie}+${plusAmount}`;
+      //       } else {
+      //         // could add a trait instead but for now improve the base die
+      //         const [dieNumber, dieSides] = baseDie.split("d");
+      //         const dieClasses = [2, 3, 4, 6, 8, 10, 12, 20, 100];
+      //         const currentIndex = dieClasses.indexOf(parseInt(dieSides));
+      //         if (currentIndex < dieClasses.length - 1) {
+      //           const newDieSides = dieClasses[currentIndex + 1];
+      //           actor.attackDie = `${dieNumber}d${newDieSides}+${plusAmount}`;
+      //         } else {
+      //           const newDieNumber = parseInt(dieNumber) + 1;
+      //           actor.attackDie = `${newDieNumber}d${dieSides}+${plusAmount}`;
+      //         }
+      //       }
+      //     } else {
+      //       // improve weapon
+      //       actor.attackDie += "+1";
+      //     }
+      //     // console.log(`🛠️ ${actor.name}'s weapon has been improved to ${actor.attackDie}!`);
+      //     await this.emit({ type: "purchase", itemName: `${Words.humanize(actor.weapon)} Improvement (${originalAttackDie} -> ${actor.attackDie})`, cost: improvementCost, buyer: actor, day: this.days });
+      //     this.state.sharedGold -= improvementCost;
+      //   } else {
+      //     console.log(`You need at least ${improvementCost}g to improve a weapon.`);
+      //   }
       } else if (action === "tavern") {
         // let spend = 5;
         // if (this.sharedGold < spend) {
@@ -450,10 +450,10 @@ export class ModuleRunner {
     const advancedShops = {
       general: "Sell loot and other items",
       armory: "Buy weapons",
-      blacksmith: "Improve weapons",
+      // blacksmith: "Improve weapons",
       magicShop: "Buy equipment",
       itemShop: "Buy consumables",
-      jeweler: "Sell gems and jewelry",
+      // jeweler: "Sell gems and jewelry",
       temple: `Pray to ${Words.capitalize(this.mod.town.deity.name)}`,
       mirror: "Show Party Inventory/Character Records",
     }

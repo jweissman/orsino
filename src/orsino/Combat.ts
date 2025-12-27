@@ -1,23 +1,25 @@
-import Choice from "inquirer/lib/objects/choice";
-import { Combatant } from "./types/Combatant";
-import Presenter from "./tui/Presenter";
-import { Team } from "./types/Team";
-import { Roll } from "./types/Roll";
-import { Fighting } from "./rules/Fighting";
-import Events, { CombatEvent, RoundStartEvent, CombatEndEvent, FleeEvent, GameEvent, CombatantEngagedEvent, WaitEvent, NoActionsForCombatant, AllegianceChangeEvent, ItemUsedEvent, ActionEvent, ActedRandomly, StatusExpiryPreventedEvent, HealEvent, HitEvent, UnsummonEvent, PlaneshiftEvent } from "./Events";
-import AbilityHandler, { Ability } from "./Ability";
 import { Answers } from "inquirer";
+import Choice from "inquirer/lib/objects/choice";
+
 import { AbilityScoring } from "./tactics/AbilityScoring";
+import { Combatant } from "./types/Combatant";
 import { Commands } from "./rules/Commands";
-import Deem from "../deem";
-import TraitHandler from "./Trait";
-import Stylist from "./tui/Style";
-import Bark from "./Bark";
+import { Fighting } from "./rules/Fighting";
 import { Inventory } from "./Inventory";
-import Orsino from "../orsino";
-import Words from "./tui/Words";
+import { ItemInstance, materializeItem } from "./types/ItemInstance";
+import { Roll } from "./types/Roll";
 import { StatusEffect } from "./Status";
+import { Team } from "./types/Team";
+import AbilityHandler, { Ability } from "./Ability";
 import Automatic from "./tui/Automatic";
+import Bark from "./Bark";
+import Deem from "../deem";
+import Events, { CombatEvent, RoundStartEvent, CombatEndEvent, FleeEvent, GameEvent, CombatantEngagedEvent, WaitEvent, NoActionsForCombatant, AllegianceChangeEvent, ItemUsedEvent, ActionEvent, ActedRandomly, StatusExpiryPreventedEvent, HealEvent, HitEvent, UnsummonEvent, PlaneshiftEvent } from "./Events";
+import Orsino from "../orsino";
+import Presenter from "./tui/Presenter";
+import Stylist from "./tui/Style";
+import TraitHandler from "./Trait";
+import Words from "./tui/Words";
 
 export type ChoiceSelector<T extends Answers> = (description: string, options: Choice<T>[], combatant?: Combatant) => Promise<T>;
 
@@ -25,6 +27,8 @@ export interface CombatContext {
   subject: Combatant;
   allies: Combatant[];
   enemies: Combatant[];
+  inventory: ItemInstance[];
+  enemyInventory: ItemInstance[];
 }
 
 type CombatStats = {
@@ -151,6 +155,11 @@ export default class Combat {
     return this._teams[1];
   }
 
+  teamFor(combatant: Combatant): Team | null {
+    const team = this._teams.find(t => t.combatants.includes(combatant));
+    return team || null;
+  }
+
   alliesOf(combatant: Combatant): Combatant[] {
     const team = this._teams.find(t => t.combatants.includes(combatant));
     return team ? team.combatants.concat(...team.combatants.flatMap(c => c.activeSummonings || [])).filter(c => c !== combatant) : [];
@@ -183,20 +192,32 @@ export default class Combat {
     });
   }
 
-  static applyEquipmentEffects(combatant: Combatant): void {
-    const equipmentKeys = Object.values(combatant.equipment || []).filter(it => it !== undefined);
+  static applyEquipmentEffects(
+    combatant: Combatant,
+    inventory: ItemInstance[] = []
+  ): void {
     const equipmentList: StatusEffect[] = [];
-    for (const eq of equipmentKeys) {
-      const eqEffects = Deem.evaluate(`lookup(equipment, '${eq}')`) as unknown as StatusEffect;
-      if (eqEffects.effect) {
-        equipmentList.push(eqEffects);
+    for (const [slot, equipmentKey] of Object.entries(combatant.equipment || {})) {
+      if (slot === 'weapon') {
+        const weapon = materializeItem(equipmentKey, inventory) as ItemInstance;
+        if (weapon.effect) {
+          console.debug("weapon materialized", weapon.key, weapon.name, weapon.kind, weapon.effect?.onAttackHit);
+
+          equipmentList.push({ ...weapon, sourceKey: 'weapon' } as unknown as StatusEffect);
+        }
+      } else {
+        const eq = Deem.evaluate(`lookup(masterEquipment, '${equipmentKey}')`) as unknown as StatusEffect;
+        if (eq.effect) {
+          equipmentList.push({ ...eq, sourceKey: slot } as StatusEffect);
+        }
       }
     }
 
     combatant.passiveEffects ||= [];
     combatant.passiveEffects = combatant.passiveEffects.filter(e => !e.equipment);
     for (const effect of equipmentList) {
-      if (!combatant.passiveEffects.map(e => e.name).includes(effect.name)) {
+      if (!combatant.passiveEffects.map(e => e.sourceKey).includes(effect.sourceKey)) {
+        console.debug(`Applying equipment effect ${effect.name} to ${combatant.name}`);
         combatant.passiveEffects.push({ ...effect, equipment: true } );
       }
     }
@@ -229,7 +250,7 @@ export default class Combat {
   }
 
   // note: we could pre-bake the weapon weight into the combatant for efficiency here
-  static filterEffects(combatant: Combatant, effectList: StatusEffect[]): StatusEffect[] {
+  static filterEffects(combatant: Combatant, effectList: StatusEffect[], inventory: ItemInstance[] = []): StatusEffect[] {
     const filteredEffects: StatusEffect[] = [];
     for (const it of effectList) {
       if (it.whileEnvironment) {
@@ -241,8 +262,9 @@ export default class Combat {
         let meetsCondition = true;
         if (it.condition.weapon) {
           if (it.condition.weapon.weight) {
-            const weaponRecord = Deem.evaluate(`lookup(masterWeapon, '${combatant.weapon}')`) as unknown as { weight: string };
-            if (weaponRecord.weight !== it.condition.weapon.weight) {
+            const weapon = Fighting.effectiveWeapon(combatant, inventory);
+            // const weaponRecord = Deem.evaluate(`lookup(masterWeapon, '${combatant.weapon}')`) as unknown as { weight: string };
+            if (weapon.weight !== it.condition.weapon.weight) {
               meetsCondition = false;
             }
           }
@@ -277,10 +299,12 @@ export default class Combat {
       c.traits = c.traits || [];
 
       await Combat.reifyTraits(c);
-      await Combat.applyEquipmentEffects(c);
+      Combat.applyEquipmentEffects(c);
 
-      c.activeEffects = Combat.filterEffects(c, c.activeEffects || []);
-      c.passiveEffects = Combat.filterEffects(c, c.passiveEffects || []);
+      let team = this.teamFor(c);
+
+      c.activeEffects = Combat.filterEffects(c, c.activeEffects || [], team?.inventory || []);
+      c.passiveEffects = Combat.filterEffects(c, c.passiveEffects || [], team?.inventory || []);
 
       // apply auras
       c.activeEffects ||= [];
@@ -296,12 +320,27 @@ export default class Combat {
 
     // handle onCombatStart effects from statuses
     for (const combatant of this.allCombatants) {
-      let allies = this.alliesOf(combatant);
-      allies = allies.filter(c => c !== combatant);
-      const enemies = this.enemiesOf(combatant);
-      const ctx: CombatContext = { subject: combatant, allies, enemies };
+      // let allies = this.alliesOf(combatant);
+      // allies = allies.filter(c => c !== combatant);
+      // const enemies = this.enemiesOf(combatant);
+      // const ctx: CombatContext = { subject: combatant, allies, enemies };
+      const ctx = this.contextForCombatant(combatant);
       const events = await AbilityHandler.performHooks("onCombatStart", combatant, ctx, Commands.handlers(this.roller), "combat start effects");
       await this.emitAll(events, `combat start effects`, combatant);
+    }
+  }
+
+  contextForCombatant(combatant: Combatant): CombatContext {
+    const allies = this.alliesOf(combatant).filter(c => c !== combatant);
+    const enemies = this.enemiesOf(combatant);
+    const team = this.teamFor(combatant);
+
+    return {
+      subject: combatant,
+      allies,
+      enemies,
+      inventory: team ? team.inventory || [] : [],
+      enemyInventory: this._teams.filter(t => t !== team).flatMap(t => t.inventory || []),
     }
   }
 
@@ -385,7 +424,9 @@ export default class Combat {
     }
 
     if (condition?.hasInterceptWeapon) {
-      disabled = !combatant.hasInterceptWeapon;
+      const effectiveWeapon = Fighting.effectiveWeapon(combatant, this.teamFor(combatant)?.inventory || []);
+      // disabled = !combatant.hasInterceptWeapon;
+      disabled = effectiveWeapon.intercept !== true;
     }
 
     if (!disabled) {
@@ -414,28 +455,49 @@ export default class Combat {
 
     // do we have a 'compelNextMove' effect?
     const activeFx = Fighting.gatherEffects(combatant);
+
+    if (activeFx.effectiveAbilities) {
+      for (const abilName of activeFx.effectiveAbilities) {
+        const ability = this.abilityHandler.getAbility(abilName);
+        if (ability) {
+          const disabled = !(this.validateAction(ability, combatant, allies, enemies));
+          if (!disabled && !validAbilities.map(a => a.name).includes(ability.name)) {
+            validAbilities.push(ability);
+          }
+        }
+      }
+    } else {
+      const uniqAbilities = Array.from(new Set(combatant.abilities));
+      const weapon = Fighting.effectiveWeapon(combatant, this.teamFor(combatant)?.inventory || []);
+      if (weapon.missile) {
+        if (!uniqAbilities.includes("ranged")) {
+          uniqAbilities.push("ranged");
+        }
+      } else {
+        if (!uniqAbilities.includes("melee")) {
+          uniqAbilities.push("melee");
+        }
+      }
+
+      const abilities = uniqAbilities.map(a => this.abilityHandler.getAbility(a)); //.filter(a => a);
+      for (const ability of abilities) {
+        const disabled = !(this.validateAction(ability, combatant, allies, enemies));
+        if (!disabled) {
+          validAbilities.push(ability);
+        }
+      }
+    }
+
     if (activeFx.compelNextMove) {
       const compelledAbility = this.abilityHandler.getAbility(activeFx.compelNextMove);
       const validTargets = AbilityHandler.validTargets(compelledAbility, combatant, allies, enemies);
-      if (compelledAbility && validTargets.length > 0) {
+      if (compelledAbility && validTargets.length > 0 && validAbilities.map(a => a.name).includes(compelledAbility.name)) {
         return [compelledAbility];
       }
     }
-    const uniqAbilities = Array.from(new Set(combatant.abilities));
-    const abilities = uniqAbilities.map(a => this.abilityHandler.getAbility(a)); //.filter(a => a);
-    for (const ability of abilities) {
-      const disabled = !(this.validateAction(ability, combatant, allies, enemies));
-      if (!disabled) {
-        validAbilities.push(ability);
-      }
-    }
-
+    
     return validAbilities;
   }
-
-  // static inventoryQuantities(team: Team): { [itemName: string]: number } {
-  //   return Inventory.quantities(team.inventory || []);
-  // }
 
   async pcTurn(combatant: Combatant, enemies: Combatant[], allies: Combatant[]): Promise<{
     haltRound: boolean,
@@ -449,6 +511,7 @@ export default class Combat {
     console.warn(`It's ${Presenter.minimalCombatant(combatant)}'s turn.`);
 
     const inventoryItems = this._teams[0].inventory || [];
+    // console.warn(`Inventory items for player team:`, inventoryItems.map(ii => `${ii.name} (${ii.key})` ).join(", "));
     const itemQuantities = Inventory.quantities(inventoryItems);
     const itemAbilities: Ability[] = [];
     for (const [itemKey, qty] of Object.entries(itemQuantities)) {
@@ -457,22 +520,25 @@ export default class Combat {
       if (!item) {
         // console.warn(`Could not find item instance for key ${itemKey} in inventory.`);
         throw new Error(`Could not find item instance for key ${itemKey} in inventory.`);
-        continue;
       }
       if (item.itemClass !== "consumable") {
         // console.warn(`Skipping non-consumable item ${itemKey} in inventory for turn actions.`);
         continue;
       }
       if (!item.shared && item.ownerId !== combatant.id) {
+        // console.warn(`Skipping item ${itemKey} not owned by ${Presenter.minimalCombatant(combatant)} and not shared.`);
         continue;
       }
       // const itemAbility = Inventory.abilityForItem(itemKey);
       const proficient = Inventory.isItemProficient(item.kind || 'kit', item.aspect || 'unknown', combatant.itemProficiencies || {})
-      if (!proficient) { continue; }
+      if (!proficient) {
+        // console.warn(`Skipping item ${itemKey} since ${Presenter.minimalCombatant(combatant)} is not proficient with it.`);
+        continue;
+      }
 
       if (qty > 0) {
         // sum charges across all instances of this item
-        const matchingItems = inventoryItems.filter(ii => ii.name === itemKey);
+        const matchingItems = inventoryItems.filter(ii => ii.key === itemKey);
         let totalCharges = 0;
         const chargeBased = item.charges !== undefined;
         if (!chargeBased) {
@@ -489,6 +555,7 @@ export default class Combat {
           }
         }
         if (totalCharges <= 0) {
+          // console.warn(`Skipping item ${itemKey} since it has no charges left.`);
           continue;
         }
         itemAbilities.push({
@@ -496,11 +563,31 @@ export default class Combat {
           description: (item.description || 'unidentified item') + `(${totalCharges} charges left)`,
           key: itemKey
         } as unknown as Ability);
+      } else {
+        // console.warn(`Skipping item ${itemKey} since quantity is ${qty}.`);
       }
     }
 
-    const allAbilities = combatant.abilities.map(a => this.abilityHandler.getAbility(a))
-      .concat(itemAbilities);
+    const fx = Fighting.gatherEffects(combatant);
+    let coreAbilityKeys = combatant.abilities;
+    const weapon = Fighting.effectiveWeapon(combatant, this.teamFor(combatant)?.inventory || []);
+    if (weapon.missile) {
+      if (!coreAbilityKeys.includes("ranged")) {
+        coreAbilityKeys.unshift("ranged");
+      }
+    } else {
+      if (!coreAbilityKeys.includes("melee")) {
+        coreAbilityKeys.unshift("melee");
+      }
+    }
+
+    if (fx.effectiveAbilities) {
+      coreAbilityKeys = fx.effectiveAbilities;
+    }
+    let allAbilities = coreAbilityKeys.map(a => this.abilityHandler.getAbility(a));
+    if (fx.mayUseItems !== false) {
+      allAbilities = allAbilities.concat(itemAbilities);
+    }
 
     let pips = "";
     pips += "⚡".repeat((Combat.maxSpellSlotsForCombatant(combatant) || 0) - ((combatant.spellSlotsUsed || 0))) + "⚫".repeat(combatant.spellSlotsUsed || 0);
@@ -534,7 +621,6 @@ export default class Combat {
     })
 
     let action: Ability = waitAction;
-    const fx = Fighting.gatherEffects(combatant);
     if (fx.randomActions) {
       await this.emit({ type: "actedRandomly", subject: combatant } as Omit<ActedRandomly, "turn">);
       // pick a non-disabled action at random
@@ -579,7 +665,7 @@ export default class Combat {
       if (typeof action.target[1] === "number") {
         count = action.target[1];
       } else if (typeof action.target[1] === "string") {
-        count = Deem.evaluate(action.target[1], { ...combatant }) as number; // as any as number;
+        count = Deem.evaluate(action.target[1], { ...combatant } as any) as number; // as any as number;
       } else {
         throw new Error(`Invalid target count specification for randomEnemies: ${action.target[1]}`);
       }
@@ -635,7 +721,8 @@ export default class Combat {
     }
 
     // let team = this.teams.find(t => t.combatants.includes(combatant));
-    const ctx: CombatContext = { subject: combatant, allies, enemies };
+    // const ctx: CombatContext = { subject: combatant, allies, enemies };
+    const ctx = this.contextForCombatant(combatant);
     const numTargets = Array.isArray(targetOrTargets) ? targetOrTargets.length : 1;
     console.warn(`${combatant.forename} ${Combat.describeAbility(action)} on ${numTargets} target${numTargets > 1 ? "s" : ""}.`);
     const { events } = await AbilityHandler.perform(action, combatant, targetOrTargets, ctx, Commands.handlers(this.roller));
@@ -711,7 +798,8 @@ export default class Combat {
     }
 
     // invoke the action
-    const ctx: CombatContext = { subject: combatant, allies, enemies };
+    const ctx = this.contextForCombatant(combatant);
+
     const { events } = await AbilityHandler.perform(action, combatant, targetOrTargets, ctx, Commands.handlers(this.roller));
     await this.emitAll(events, Combat.describeAbility(action), combatant);
 
@@ -793,7 +881,8 @@ export default class Combat {
       }
     }
 
-    const ctx = { subject: combatant, allies, enemies: livingEnemies };
+    const ctx = this.contextForCombatant(combatant);
+
     const events = await AbilityHandler.performHooks("onTurnEnd", combatant, ctx, Commands.handlers(this.roller), "turn end effects");
     await this.emitAll(events, `ends their turn`, combatant);
     return { haltRound: false };
@@ -877,9 +966,10 @@ export default class Combat {
 
         const activeFx: StatusEffect[] = combatant.activeEffects ?? [];
         const expired = activeFx.filter(s => s.duration === 0);
+        const ctx = this.contextForCombatant(combatant);
 
         for (const status of expired) {
-          const expiryHookEvents = await AbilityHandler.performHooks("onExpire", combatant, { subject: combatant, allies: this.alliesOf(combatant), enemies: this.enemiesOf(combatant) }, Commands.handlers(this.roller), "status expire hook");
+          const expiryHookEvents = await AbilityHandler.performHooks("onExpire", combatant, ctx, Commands.handlers(this.roller), "status expire hook");
           expiryEvents.push(...expiryHookEvents);
           expiryEvents.push(...(await Commands.handleRemoveStatusEffect(combatant, status.name)));
         }
@@ -904,15 +994,6 @@ export default class Combat {
       this.winner = "Player";
       await this.emit({ type: "combatEnd", winner: this.winner } as Omit<CombatEndEvent, "turn">);
     }
-
-    // didn't contemplate summons
-    // for (const team of this._teams) {
-    //   if (team.combatants.every((c: any) => c.hp <= 0)) {
-    //     this.winner = team === this._teams[0] ? this._teams[1].name : this._teams[0].name;
-    //     await this.emit({ type: "combatEnd", winner: this.winner } as Omit<CombatEndEvent, "turn">);
-    //     break;
-    //   }
-    // }
 
     const netHpAfter = this.allCombatants.reduce((sum, c) => sum + c.hp, 0);
     const netHpLoss = netHp - netHpAfter;
@@ -949,27 +1030,31 @@ export default class Combat {
     return [
       {
         name: "Player", combatants: [{
+          id: "hero-1",
           forename: "Hero", name: "Hero", alignment: "neutral",
           hp: 14, maximumHitPoints: 14, level: 1, ac: 10,
           dex: 11, str: 12, int: 10, wis: 10, cha: 10, con: 12,
-          attackDie: "1d8",
           playerControlled: true, xp: 0, gp: 0,
-          weapon: "Short Sword", damageKind: "slashing", abilities: ["melee"], traits: [],
-          hasMissileWeapon: false
+          equipment: { weapon: "shortsword" },
+          abilities: ["melee"], traits: [],
         }],
         inventory: []
       },
       {
         name: "Enemy", combatants: [
           {
+            id: "goblin-1",
             forename: "Zok", name: "Goblin A", alignment: "neutral", hp: 4, maximumHitPoints: 4, level: 1, ac: 17,
-            attackDie: "1d3",
-            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: [], hasMissileWeapon: false, xp: 0, gp: 0
+            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, equipment: { weapon: "dagger" },
+            abilities: ["melee"], traits: [],
+            xp: 0, gp: 0
           },
           {
+            id: "goblin-2",
             forename: "Mog", name: "Goblin B", alignment: "neutral", hp: 4, maximumHitPoints: 4, level: 1, ac: 17,
-            attackDie: "1d3",
-            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: [], hasMissileWeapon: false, xp: 0, gp: 0
+            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, equipment: { weapon: "heavy_flail" },
+            abilities: ["melee"], traits: [],
+            xp: 0, gp: 0
           }
         ],
         inventory: []

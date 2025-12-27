@@ -1,10 +1,10 @@
 import { loadSetting } from "./orsino/loader";
 import { Combatant } from "./orsino/types/Combatant";
 import Dungeoneer from "./orsino/Dungeoneer";
-import { ModuleRunner } from "./orsino/ModuleRunner";
+import { CampaignModule, ModuleRunner } from "./orsino/ModuleRunner";
 import Interactive from "./orsino/tui/User";
 import CharacterRecord from "./orsino/rules/CharacterRecord";
-import Generator from "./orsino/Generator";
+import Generator, { GeneratorOptions } from "./orsino/Generator";
 import AbilityHandler from "./orsino/Ability";
 import TraitHandler from "./orsino/Trait";
 import Combat from "./orsino/Combat";
@@ -29,10 +29,7 @@ export default class Orsino {
     if (message) {
       process.stdout.write(message + "\n");
     }
-    // const timestamp = new Date().toISOString();
-    // console.warn(`${timestamp} [Orsino] ${message}`);
   }
-  // setting: Record<GenerationTemplateType, Template | Table>;
 
   constructor(public settingName?: string) {
     Generator.setting = settingName ? loadSetting(settingName) : Generator.defaultSetting;
@@ -44,23 +41,10 @@ export default class Orsino {
   ) {
     const partySize = options.partySize || 3;
     const pcs = await CharacterRecord.chooseParty(
-      (opts: Record<string, any>) => Generator.gen("pc", { setting: 'fantasy', ...opts }) as Combatant,
+      (opts: GeneratorOptions) => Generator.gen("pc", { setting: 'fantasy', ...opts }) as unknown as Combatant,
       partySize
     );
-    // if (type === "combat") {
-    //   const gauntlet = (new Gauntlet({
-    //     ...options,
-    //     roller: Interactive.roll.bind(Interactive),
-    //     select: Interactive.selection.bind(Interactive),
-    //     outputSink: Orsino.outputSink,
-    //   }))
-
-    //   // const partySize = options.partySize || Math.max(1, Math.floor(Math.random() * 3) + 1);
-    //   await gauntlet.run({
-    //     pcs, //: this.genList("pc", { setting: 'fantasy', ...options }, partySize),
-    //     encounterGen: (targetCr: number) => Generator.gen("encounter", { setting: 'fantasy', ...options, targetCr }),
-    //   });
-    // }
+    
     if (type === "dungeon") {
       const averageLevel = Math.round(pcs.reduce((sum, pc) => sum + pc.level, 0) / pcs.length);
       const targetCr = Math.round(averageLevel * 0.75);
@@ -84,7 +68,7 @@ export default class Orsino {
         select: Interactive.selection.bind(Interactive),
         prompt: Interactive.prompt.bind(Interactive),
         outputSink: Orsino.outputSink,
-        moduleGen: (opts: Record<string, any>) => Generator.gen("module", { setting: 'fantasy', ...options, ...opts }),
+        moduleGen: (opts?: GeneratorOptions) => Generator.gen("module", { setting: 'fantasy', ...options, ...opts }) as unknown as CampaignModule,
         gen: Generator.gen.bind(Generator), //.bind(this),
         pcs: pcs.map(pc => ({ ...pc, playerControlled: true })),
       });

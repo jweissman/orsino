@@ -1,6 +1,6 @@
 import Choice from "inquirer/lib/objects/choice";
 import AbilityHandler from "../Ability";
-import { ChoiceSelector } from "../Combat";
+import { ChoiceSelector, CombatContext } from "../Combat";
 import { DungeonEvent } from "../Events";
 import TraitHandler, { Trait } from "../Trait";
 import Presenter from "../tui/Presenter";
@@ -204,7 +204,7 @@ export default class CharacterRecord {
   static async chooseParty(
     pcGenerator: (options?: any) => Combatant,
     partySize: number,
-    selectionMethod: Select = User.selection.bind(User)
+    selectionMethod: Select<Answers> = User.selection.bind(User)
   ): Promise<Combatant[]> {
     const abilityHandler = AbilityHandler.instance;
     await abilityHandler.loadAbilities();
@@ -300,12 +300,18 @@ export default class CharacterRecord {
         { disabled: false, name: `Max HP (${pc.maximumHitPoints})`, value: 'maximumHitPoints', short: 'HP' },
       ]) as keyof Combatant;
 
-      pc[stat] += 1;
+      const statistic = stat as keyof Combatant;
+      // @ts-expect-error -- TS doesn't like dynamic access here (can't work out what type pc[statistic] is)
+      // maybe better to have a 'stats' model that's only numbers?
+      pc[statistic] = (pc[statistic] as number || 0) + 1;
       // this.note(`${c.name}'s ${stat.toUpperCase()} increased to ${c[stat as keyof Combatant]}!`);
 
       // let fx = await Fighting.gatherEffects(pc);
       // if (fx.onLevelUp) {
-      const pseudocontext = { subject: pc, allies: team.combatants.filter(c => c !== pc), enemies: [] };
+      const pseudocontext: CombatContext = {
+        subject: pc, allies: team.combatants.filter(c => c !== pc), enemies: [],
+        inventory: team.inventory, enemyInventory: []
+      };
       events.push(...(await AbilityHandler.performHooks(
         'onLevelUp',
         pc,

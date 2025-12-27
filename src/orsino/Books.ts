@@ -280,7 +280,7 @@ export default class Books {
     this.write("| Item | Description | Effects |");
     this.write("|------|-------------|---------|");
     for (const magicItemName of magicItemNames) {
-      const magicItem = Deem.evaluate('lookup(equipment, "' + magicItemName + '")') as unknown as { name: string; description: string; effect: StatusModifications };
+      const magicItem = Deem.evaluate('lookup(masterEquipment, "' + magicItemName + '")') as unknown as { name: string; description: string; effect: StatusModifications };
       // this.write(`\n#### ${magicItem.name}\n`);
       // this.write("_" + magicItem.description + "_\n");
       // this.write(
@@ -392,7 +392,7 @@ export default class Books {
     this.write("|------|-------------|---------|");
     for (const trapName of trapNames) {
       const trapDescription = Deem.evaluate('lookup(trapPunishmentDescriptions, "' + trapName + '")');
-      const trapEffects = Deem.evaluate('lookup(trapEffects, "' + trapName + '")');
+      const trapEffects = Deem.evaluate('lookup(trapEffects, "' + trapName + '")') as unknown as AbilityEffect[];
       let row = `| ${Words.humanize(trapName)} | _${trapDescription}_ | `;
       row += Presenter.describeEffects(trapEffects, 'target').replace(/\n/g, " ") + " |";
       this.write(row);
@@ -409,11 +409,11 @@ export default class Books {
 
     ) as string[];
     weaponNames.sort((a, b) => a.localeCompare(b));
-    this.write("| Weapon | Type | Damage | Properties | Value |");
-    this.write("|--------|------|--------|------------|-------|");
+    this.write("| Weapon | Description | Type | Damage | Properties | Value |");
+    this.write("|--------|-------------|------|--------|------------|-------|");
     for (const weaponName of weaponNames) {
       const weapon = Deem.evaluate('lookup(masterWeapon, "' + weaponName + '")') as unknown as Weapon;
-      const row = `| ${Words.humanize(weaponName)} | _${weapon.type}_ | ${weapon.damage} | ${Words.capitalize(weapon.weight)} ${weapon.intercept ? "Intercept " : ""
+      const row = `| ${Words.humanize(weaponName)} | ${weapon.description} | ${weapon.type} | ${weapon.damage} | ${Words.capitalize(weapon.weight)} ${weapon.intercept ? "Intercept " : ""
         }${weapon.missile ? "Missile " : ""
         } | ${weapon.value} gp |`;
       this.write(row);

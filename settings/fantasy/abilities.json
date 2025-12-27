@@ -2388,7 +2388,7 @@
     "description": "A dazzling array of multicolored beams springs from your hand.",
     "target": [
       "randomEnemies",
-      "=5 + round(#level / 2)"
+      "=7 + round(#level / 2)"
     ],
     "effects": [
       {
@@ -2399,56 +2399,78 @@
             "amount": "=1d3+1",
             "kind": "fire",
             "saveForHalf": true,
-            "target": "enemy"
+            "target": "enemy",
+            "description": "infrared beam"
           },
           {
             "type": "damage",
             "amount": "=1d4",
-            "kind": "cold",
+            "kind": "force",
             "saveForHalf": true,
-            "target": "enemy"
-          },
-          {
-            "type": "damage",
-            "amount": "=1d2",
-            "kind": "acid",
-            "saveForHalf": true,
-            "target": "enemy"
-          },
-          {
-            "type": "damage",
-            "amount": "=1d3",
-            "kind": "lightning",
-            "saveForHalf": true,
-            "target": "enemy"
+            "target": "enemy",
+            "description": "red beam"
           },
           {
             "type": "damage",
             "amount": "=1d3",
             "kind": "poison",
             "saveForHalf": true,
-            "target": "enemy"
+            "target": "enemy",
+            "description": "orange beam"
+          },
+          {
+            "type": "damage",
+            "amount": "=1d3",
+            "kind": "lightning",
+            "saveForHalf": true,
+            "target": "enemy",
+            "description": "yellow beam"
+          },
+          {
+            "type": "damage",
+            "amount": "=1d2",
+            "kind": "acid",
+            "saveForHalf": true,
+            "target": "enemy",
+            "description": "green beam"
+          },
+          {
+            "type": "damage",
+            "amount": "=1d4",
+            "kind": "cold",
+            "saveForHalf": true,
+            "target": "enemy",
+            "description": "blue beam"
+          },
+          {
+            "type": "cast",
+            "spellName": "flesh_to_stone",
+            "target": "enemy",
+            "description": "indigo beam"
           },
           {
             "type": "damage",
             "amount": "=1d4",
             "kind": "psychic",
             "saveForHalf": true,
-            "target": "enemy"
+            "target": "enemy",
+            "description": "violet beam"
           },
           {
             "type": "damage",
             "amount": "=1d2+1",
             "kind": "radiant",
             "saveForHalf": true,
-            "target": "enemy"
+            "target": "enemy",
+            "description": "white beam"
           },
           {
             "type": "damage",
             "amount": "=1d2",
             "kind": "necrotic",
             "saveForHalf": true,
-            "target": "enemy"
+            "target": "enemy",
+            "description": "ultraviolet beam"
           }
         ]
       }
@@ -3002,7 +3024,7 @@
       },
       {
         "type": "debuff",
-        "status": "diseased",
+        "status": "disease",
         "saveKind": "fortitude",
         "saveDC": 16
       }
@@ -3221,6 +3243,7 @@
           "name": "Polymorphed",
           "effect": {
             "displayName": "Sheep",
+            "displayClass": "Simple Beast",
             "attackDie": "1d2",
             "effectiveStats": {
               "maxHp": 5,
@@ -3231,7 +3254,9 @@
               "int": 2,
               "wis": 2,
               "cha": 2
-            }
+            },
+            "effectiveAbilities": ["melee", "bleat", "flee"],
+            "mayUseItems": false
           }
         },
         "duration": 5,
@@ -3241,6 +3266,19 @@
       {
         "type": "recalculateHp",
         "target": "target"
+      }
+    ]
+  },
+  "bleat": {
+    "name": "Bleat",
+    "type": "skill",
+    "description": "A pathetic bleat that does minimal damage.",
+    "target": [ "enemy" ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": 1,
+        "kind": "sonic"
       }
     ]
   },

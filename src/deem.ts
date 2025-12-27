@@ -313,7 +313,13 @@ export default class Deem {
         eval: (context: Record<string, DeemValue | Roll | Combatant>) => DeemValue
       };
       // const prettyExpr: string = sem.pretty as string;
-      const ret: DeemValue = sem.eval(context);
+      let ret: DeemValue = null;
+      try {
+        ret = sem.eval(context);
+      } catch (e) {
+        console.trace("Error evaluating expression:", expression);
+        throw new Error(`Error evaluating expression: ${expression}\n${(e as Error).message}`);
+      }
       return ret;
     } else {
       throw new Error('Failed to parse expression: ' + expression + '\n' + match.message);

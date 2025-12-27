@@ -7,10 +7,14 @@ import { GenerationTemplateType } from "./types/GenerationTemplateType";
 import deepCopy from "./util/deepCopy";
 
 export type GeneratorOptions = {
+  _index?: number;
+
   setting?: string;
 
   name?: string;
   _name?: string;
+
+  race?: string;
 
   count?: number;
   __count?: number;
@@ -74,10 +78,10 @@ export default class Generator {
       return assembled;
     } else if (templ instanceof Table) {
       let group = options.group || 'default';
-      if (options[templ.discriminator]) {
-        group = options[templ.discriminator];
+      if (options[templ.discriminator as keyof GeneratorOptions]) {
+        group = options[templ.discriminator as keyof GeneratorOptions] as string;
       }
-      return templ.pick(group);
+      return templ.pick(group) as GeneratedValue;
     } else {
       throw new Error('Invalid template type for generation: ' + type);
     }
@@ -122,6 +126,7 @@ export default class Generator {
     if (!this._defaultSetting) {
       this._defaultSetting = {
         module: new Template('module', {}),
+        loot: new Template('loot', {}),
         animal: new Template('animal', {
           name: '=oneOf("Wolf", "Bear", "Giant Spider", "Giant Snake", "Giant Giant")',
           cr: '=oneOf(0.25, 0.5, 1, 2, 3)',

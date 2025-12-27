@@ -1,12 +1,11 @@
 import { select } from "@inquirer/prompts";
-import { Separator } from "@inquirer/select";
-import Choice from "inquirer/lib/objects/choice";
 import { RollResult } from "../types/RollResult";
 import { Combatant } from "../types/Combatant";
 import { Commands } from "../rules/Commands";
 import { Fighting } from "../rules/Fighting";
 import { Answers } from "inquirer";
 import Automatic from "./Automatic";
+import { Select } from "../types/Select";
 
 export default class User {
   // print the message and return the user's input
@@ -20,50 +19,26 @@ export default class User {
     });
   }
 
-  // static async multiSelect(
-  //   message: string,
-  //   choices: string[], //(readonly (string | Separator)[] | Choice<any>[]),
-  //   count: number = 3
-  // ): Promise<any[]> {
-  //   if (choices.length === 0) {
-  //     throw new Error("No choices provided for selection");
-  //   }
-
-  //   // return await inquirer.prompt(message, { choices, type: 'checkbox'});
-  //   let selections: string[] = [];
-  //   while (selections.length < count) {
-  //     const answer = await select<string>({
-  //       message: `${message} (${selections.length + 1}/${count})`,
-  //       choices: choices.filter(c => !selections.includes(c))
-  //     });
-  //     if (!selections.includes(answer)) {
-  //       selections.push(answer);
-  //     }
-  //   }
-  //   console.log(`You selected: ${selections.join(", ")}`);
-  //   return selections;
-  // }
-
-  static async selection<T extends Answers>(
-    message: string,
-    choices: (
-      // readonly (string | Separator)[] | Choice<T>[]
-      readonly (Separator | Choice<T>)[]
-    ),
-    subject?: Combatant,
-  ): Promise<T | string> {
+  static selection: Select<Answers> = async (
+    message,
+    choices,
+    subject
+  ) => {
     if (choices.length === 0) {
       throw new Error("No choices provided for selection");
     }
 
     const effectivelyPlayerControlled = subject ? Fighting.effectivelyPlayerControlled(subject) : true;
     if (subject && !effectivelyPlayerControlled) {
-      // return Combat.samplingSelect(message, choices as any);
-      return Automatic.randomSelect<T>(message, choices as Choice<T>[]) as unknown as T; // as ((readonly string[]) | (Choice<T>)[]));
+      return Automatic.randomSelect(message, choices);
     }
 
     // console.log(`Selecting for ${subject?.name}: ${message}`);
-    const selection = await select({ message, choices }) as T;
+    // const options = choices as readonly (Separator | Choice<Answers>)[];
+    const selection = await select({
+      message,
+      choices
+    }) as string | Answers;
     return selection;
   }
 

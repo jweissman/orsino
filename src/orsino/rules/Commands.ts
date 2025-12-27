@@ -12,6 +12,7 @@ import Presenter from "../tui/Presenter";
 import Deem from "../../deem";
 import StatusHandler, { StatusModifications } from "../Status";
 import { SAVE_KINDS, SaveKind } from "../types/SaveKind";
+import { DeemValue } from "../../deem/stdlib";
 
 type TimelessEvent = Omit<GameEvent, "turn">;
 
@@ -133,7 +134,7 @@ export class Commands {
     }
 
     // we should roll anyway; they could have an allRolls bonus etc even if the DC is very high
-    const saveRoll = await roll(target, `for Save vs ${saveKind} (must roll ${saveVersus} or higher)`, 20);
+    const saveRoll = roll(target, `for Save vs ${saveKind} (must roll ${saveVersus} or higher)`, 20);
     const success = saveRoll.amount >= saveVersus;
     if (success) {
       target.savedTimes[saveKind] = (target.savedTimes[saveKind] || 0) + 1;
@@ -316,7 +317,7 @@ export class Commands {
     if (cascade) {
       let count = cascade.count;
       if (typeof count === "string") {
-        count = Deem.evaluate(count, { ...attacker }) as number;
+        count = Deem.evaluate(count, { ...attacker } as any) as number;
       }
       if (count > 0 && damage > 0) {
         const otherTargets = combatContext.enemies.filter(c => c !== defender && c.hp > 0);
@@ -394,10 +395,11 @@ export class Commands {
     target: Combatant;
     events: TimelessEvent[];
   }> {
-    let { damage, critical, success } = await Fighting.attack(roller, combatant, target, combatant.hasMissileWeapon || false);
+    let { damage, critical, success } = await Fighting.attack(roller, combatant, target, context);
     const targetOriginalHp = target.hp;
+    const weapon = Fighting.effectiveWeapon(combatant, context.inventory);
     const events = await Commands.handleHit(
-      combatant, target, damage, critical, `${combatant.forename}'s ${Words.humanize(combatant.weapon)}`, success, combatant.damageKind || "true",
+      combatant, target, damage, critical, `${combatant.forename}'s ${Words.humanize(weapon.name)}`, success, weapon.type || "true",
       null, // no cascade for normal attacks
       context, roller
     );
@@ -414,8 +416,9 @@ export class Commands {
           const newTarget = otherTargets[Math.floor(Math.random() * otherTargets.length)];
           // console.log(`${Presenter.combatant(target)} spilled over ${spillover} damage to ${Presenter.combatant(newTarget)}!`);
           const newTargetOriginalHp = newTarget.hp;
+          const weapon = Fighting.effectiveWeapon(combatant, context.inventory);
           const spilloverEvents = await Commands.handleHit(
-            combatant, newTarget, spillover, false, `${combatant.forename}'s ${Words.humanize(combatant.weapon)} (spillover, ${spillover} damage remaining)`, true, combatant.damageKind || "true",
+            combatant, newTarget, spillover, false, `${combatant.forename}'s ${Words.humanize(weapon.name)} (spillover, ${spillover} damage remaining)`, true, weapon.type || "true",
             null, // no cascade for normal attacks
             context, roller
           );
@@ -453,7 +456,7 @@ export class Commands {
     target.activeEffects = target.activeEffects || [];
     target.activeEffects.push({ name, effect, duration, by: user });
     if (effect.tempHp) {
-      const pool = Deem.evaluate(effect.tempHp.toString(), { ...user }) as number || 0;
+      const pool = Deem.evaluate(effect.tempHp.toString(), { ...user } as any) as number || 0;
       // console.warn(`${Presenter.combatant(target)} gains ${pool} temporary HP from status effect ${name}.`);
       // target.tempHp = (target.tempHp || 0) + effect.tempHp;
       target.tempHpPools = target.tempHpPools || {};

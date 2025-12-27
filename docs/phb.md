@@ -79,74 +79,74 @@
 
 | Armor | AC Bonus | Description | Weight | Value |
 |-------|----------|-------------|--------|-------|
-| Banded | 6 | _Banded armor consists of metal strips riveted to a leather backing, providing excellent protection._ | Heavy | 60 gp |
-| Chainmail | 5 | _Chainmail armor is made of interlinked metal rings, offering strong protection at the cost of weight._ | Heavy | 50 gp |
-| Cloth | 0 | _Cloth armor offers minimal protection but is very light and flexible._ | Light | 5 gp |
-| Hide | 1 | _Hide armor is made from the tanned hides of animals, providing basic protection._ | Light | 10 gp |
-| Leather | 2 | _Leather armor is crafted from toughened leather, offering a balance of protection and mobility._ | Light | 15 gp |
-| Plate | 7 | _Plate armor is made of large metal plates that cover the body, providing the highest level of protection._ | Heavy | 100 gp |
+| Banded | 6 | _Consists of metal strips riveted to a leather backing, providing excellent protection._ | Heavy | 60 gp |
+| Chainmail | 5 | _Made of interlinked metal rings, offering strong protection at the cost of weight._ | Heavy | 50 gp |
+| Cloth | 0 | _Offers minimal protection but is very light and flexible._ | Light | 5 gp |
+| Hide | 1 | _Made from the tanned hides of animals, providing basic protection._ | Light | 10 gp |
+| Leather | 2 | _Crafted from toughened leather, offering a balance of protection and mobility._ | Light | 15 gp |
+| Plate | 7 | _Made of large metal plates that cover the body, providing the highest level of protection._ | Heavy | 100 gp |
 | Ring | 3 | _Ring armor consists of interlocking metal rings, providing moderate protection._ | Medium | 25 gp |
-| Scale | 4 | _Scale armor is made of small metal plates sewn onto a backing, providing good protection._ | Medium | 40 gp |
-| Splint | 6 | _Splint armor is made of vertical metal strips attached to a fabric or leather backing, offering high protection._ | Heavy | 70 gp |
-| Studded | 3 | _Studded armor is leather reinforced with metal studs, offering enhanced protection._ | Medium | 30 gp |
+| Scale | 4 | _Made of small metal plates sewn onto a backing, providing good protection._ | Medium | 40 gp |
+| Splint | 6 | _Made of vertical metal strips attached to a fabric or leather backing, offering high protection._ | Heavy | 70 gp |
+| Studded | 3 | _Leather reinforced with metal studs, offering enhanced protection._ | Medium | 30 gp |
 
 
 ## Weapons
 
-| Weapon | Type | Damage | Properties | Value |
-|--------|------|--------|------------|-------|
-| Battleaxe | _slashing_ | 1d8 | Heavy  | 5 gp |
-| Bec De Corbin | _piercing_ | 1d8+1 | Heavy  | 18 gp |
-| Broadsword | _slashing_ | 2d4 | Medium  | 10 gp |
-| Claymore | _slashing_ | 2d4 | Heavy  | 25 gp |
-| Club | _bludgeoning_ | 1d4 | Light  | 1 gp |
-| Composite Bow | _piercing_ | 1d6 | Medium Missile  | 75 gp |
-| Cutlass | _slashing_ | 1d6 | Light  | 10 gp |
-| Dagger | _piercing_ | 1d4 | Light  | 2 gp |
-| Dart | _piercing_ | 1d3 | Light Missile  | 1 gp |
-| Falchion | _slashing_ | 2d4 | Medium  | 20 gp |
-| Glaive | _slashing_ | 1d10+1 | Heavy Intercept  | 12 gp |
-| Greatclub | _bludgeoning_ | 1d8+2 | Heavy  | 8 gp |
-| Greatsword | _slashing_ | 1d10 | Heavy  | 30 gp |
-| Halberd | _slashing_ | 1d10 | Heavy  | 9 gp |
-| Handaxe | _slashing_ | 1d6 | Light  | 1 gp |
-| Heavy Chain | _slashing_ | 1d8+2 | Heavy  | 12 gp |
-| Heavy Crossbow | _piercing_ | 1d6+1 | Heavy Missile  | 20 gp |
-| Heavy Flail | _bludgeoning_ | 1d6+1 | Heavy  | 3 gp |
-| Heavy Mace | _bludgeoning_ | 1d6+1 | Heavy  | 10 gp |
-| Heavy Pick | _piercing_ | 1d6+1 | Heavy  | 8 gp |
-| Heavy Warhammer | _bludgeoning_ | 1d6+1 | Heavy  | 7 gp |
-| Javelin | _piercing_ | 1d6 | Light Intercept  | 1 gp |
-| Katana | _slashing_ | 1d8+1 | Medium  | 50 gp |
-| Kusarigama | _slashing_ | 1d6+2 | Medium  | 18 gp |
-| Lance | _piercing_ | 2d4+1 | Heavy Intercept  | 6 gp |
-| Light Chain | _slashing_ | 1d6+2 | Medium  | 7 gp |
-| Light Crossbow | _piercing_ | 1d4+1 | Light Missile  | 12 gp |
-| Light Flail | _bludgeoning_ | 1d4+1 | Light  | 6 gp |
-| Light Mace | _bludgeoning_ | 1d4+1 | Light  | 4 gp |
-| Light Pick | _piercing_ | 1d4+1 | Light  | 5 gp |
-| Light Warhammer | _bludgeoning_ | 1d4+1 | Light  | 4 gp |
-| Longbow | _piercing_ | 1d6 | Medium Missile  | 30 gp |
-| Longsword | _slashing_ | 1d8 | Medium  | 15 gp |
-| Morningstar | _piercing_ | 2d4 | Medium  | 5 gp |
-| Naginata | _slashing_ | 1d10+1 | Heavy Intercept  | 20 gp |
-| Nunchaku | _bludgeoning_ | 1d6+2 | Light  | 15 gp |
-| Pike | _piercing_ | 1d10+1 | Heavy Intercept  | 15 gp |
-| Pole Arm | _piercing_ | 1d6+1 | Medium Intercept  | 6 gp |
-| Quarterstaff | _bludgeoning_ | 1d6+2 | Medium  | 10 gp |
-| Rapier | _piercing_ | 1d6+2 | Light  | 40 gp |
-| Scimitar | _slashing_ | 1d8 | Medium  | 15 gp |
-| Scythe | _slashing_ | 2d4+1 | Medium Intercept  | 10 gp |
-| Shortbow | _piercing_ | 1d4 | Light Missile  | 15 gp |
-| Shortsword | _slashing_ | 1d6 | Light  | 8 gp |
-| Shuriken | _piercing_ | 1d4+2 | Light Missile  | 5 gp |
-| Sling | _bludgeoning_ | 1d4 | Light Missile  | 1 gp |
-| Spear | _piercing_ | 1d6 | Light Intercept  | 1 gp |
-| Staff | _bludgeoning_ | 1d6 | Medium  | 1 gp |
-| Trident | _piercing_ | 1d6+1 | Medium Intercept  | 4 gp |
-| Voulge | _slashing_ | 1d10+1 | Heavy Intercept  | 14 gp |
-| Wakizashi | _slashing_ | 1d6+1 | Light  | 30 gp |
-| Whip | _slashing_ | 1d4+2 | Light  | 2 gp |
+| Weapon | Description | Type | Damage | Properties | Value |
+|--------|-------------|------|--------|------------|-------|
+| Battleaxe | A heavy battleaxe designed for powerful strikes. | slashing | 1d8 | Heavy  | 5 gp |
+| Bec De Corbin | A polearm with a beak-like spike used for piercing armor. | piercing | 1d8+1 | Heavy  | 18 gp |
+| Broadsword | A broad sword with a wide blade suitable for powerful slashes. | slashing | 2d4 | Medium  | 10 gp |
+| Claymore | A large two-handed sword known for its powerful slashing attacks. | slashing | 2d4 | Heavy  | 25 gp |
+| Club | A simple wooden club, effective for basic melee combat. | bludgeoning | 1d4 | Light  | 1 gp |
+| Composite Bow | A composite bow known for its enhanced power and flexibility. | piercing | 1d6 | Medium Missile  | 75 gp |
+| Cutlass | A short, curved sword with a single cutting edge, historically used by sailors and pirates. | slashing | 1d6 | Light  | 10 gp |
+| Dagger | A small dagger, ideal for close combat and throwing. | piercing | 1d4 | Light  | 2 gp |
+| Dart | A small dart, suitable for throwing. | piercing | 1d3 | Light Missile  | 1 gp |
+| Falchion | A one-handed, single-edged sword with a slightly curved blade that broadens toward the point. | slashing | 2d4 | Medium  | 20 gp |
+| Glaive | A polearm with a broad blade used for slashing attacks. | slashing | 1d10+1 | Heavy Intercept  | 12 gp |
+| Greatclub | A heavy club used for powerful bludgeoning attacks. | bludgeoning | 1d8+2 | Heavy  | 8 gp |
+| Greatsword | A massive two-handed sword capable of dealing devastating damage. | slashing | 1d10 | Heavy  | 30 gp |
+| Halberd | A halberd combining an axe blade and a spear point on a long pole. | slashing | 1d10 | Heavy  | 9 gp |
+| Handaxe | A small handaxe suitable for throwing or close combat. | slashing | 1d6 | Light  | 1 gp |
+| Heavy Chain | A heavy chain whip used for powerful flexible striking. | slashing | 1d8+2 | Heavy  | 12 gp |
+| Heavy Crossbow | A heavy crossbow known for its powerful piercing attacks. | piercing | 1d6+1 | Heavy Missile  | 20 gp |
+| Heavy Flail | A heavy flail with a spiked ball, effective for crushing blows. | bludgeoning | 1d6+1 | Heavy  | 3 gp |
+| Heavy Mace | A heavy mace with a solid head for delivering powerful blows. | bludgeoning | 1d6+1 | Heavy  | 10 gp |
+| Heavy Pick | A heavy pick designed for breaking through armor and shields. | piercing | 1d6+1 | Heavy  | 8 gp |
+| Heavy Warhammer | A heavy warhammer designed for powerful crushing blows. | bludgeoning | 1d6+1 | Heavy  | 7 gp |
+| Javelin | A light javelin suitable for throwing and close combat. | piercing | 1d6 | Light Intercept  | 1 gp |
+| Katana | A traditional sword known for its sharpness and cutting ability. | slashing | 1d8+1 | Medium  | 50 gp |
+| Kusarigama | A traditional weapon consisting of a kama (sickle) attached to a chain. | slashing | 1d6+2 | Medium  | 18 gp |
+| Lance | A heavy lance designed for mounted combat. | piercing | 2d4+1 | Heavy Intercept  | 6 gp |
+| Light Chain | A medium-weight chain whip used for flexible striking. | slashing | 1d6+2 | Medium  | 7 gp |
+| Light Crossbow | A light crossbow known for its ease of use and quick reload times. | piercing | 1d4+1 | Light Missile  | 12 gp |
+| Light Flail | A light flail with a spiked ball, suitable for quick strikes. | bludgeoning | 1d4+1 | Light  | 6 gp |
+| Light Mace | A light mace suitable for quick strikes. | bludgeoning | 1d4+1 | Light  | 4 gp |
+| Light Pick | A light pick suitable for quick strikes and climbing. | piercing | 1d4+1 | Light  | 5 gp |
+| Light Warhammer | A light warhammer suitable for quick, precise strikes. | bludgeoning | 1d4+1 | Light  | 4 gp |
+| Longbow | A longbow designed for ranged combat with moderate draw weight. | piercing | 1d6 | Medium Missile  | 30 gp |
+| Longsword | A versatile longsword suitable for both cutting and thrusting. | slashing | 1d8 | Medium  | 15 gp |
+| Morningstar | A morningstar with a spiked head for piercing armor. | piercing | 2d4 | Medium  | 5 gp |
+| Naginata | A traditional polearm with a curved blade used for slashing attacks. | slashing | 1d10+1 | Heavy Intercept  | 20 gp |
+| Nunchaku | A traditional weapon consisting of two sticks connected by a chain or rope. | bludgeoning | 1d6+2 | Light  | 15 gp |
+| Pike | A long spear used for thrusting attacks and keeping enemies at a distance. | piercing | 1d10+1 | Heavy Intercept  | 15 gp |
+| Pole Arm | A long-hafted pointed weapon for reach and leverage. | piercing | 1d6+1 | Medium Intercept  | 6 gp |
+| Quarterstaff | A sturdy quarterstaff used for both offense and defense. | bludgeoning | 1d6+2 | Medium  | 10 gp |
+| Rapier | A slender and sharply pointed sword designed for thrusting attacks. | piercing | 1d6+2 | Light  | 40 gp |
+| Scimitar | A curved blade designed for swift slashing attacks. | slashing | 1d8 | Medium  | 15 gp |
+| Scythe | A polearm with a curved blade used for slashing attacks. | slashing | 2d4+1 | Medium Intercept  | 10 gp |
+| Shortbow | A shortbow that is easy to carry and quick to draw. | piercing | 1d4 | Light Missile  | 15 gp |
+| Shortsword | A short sword ideal for close combat and quick strikes. | slashing | 1d6 | Light  | 8 gp |
+| Shuriken | A small star-shaped throwing weapon. | piercing | 1d4+2 | Light Missile  | 5 gp |
+| Sling | A simple sling used to hurl small stones or pellets. | bludgeoning | 1d4 | Light Missile  | 1 gp |
+| Spear | A versatile spear suitable for throwing and melee combat. | piercing | 1d6 | Light Intercept  | 1 gp |
+| Staff | A simple wooden staff used for defense and support. | bludgeoning | 1d6 | Medium  | 1 gp |
+| Trident | A three-pronged spear used for fishing and combat. | piercing | 1d6+1 | Medium Intercept  | 4 gp |
+| Voulge | A polearm with a broad, curved blade used for slashing attacks. | slashing | 1d10+1 | Heavy Intercept  | 14 gp |
+| Wakizashi | A traditional short sword known for its sharpness and cutting ability. | slashing | 1d6+1 | Light  | 30 gp |
+| Whip | A flexible whip used for striking at a distance. | slashing | 1d4+2 | Light  | 2 gp |
 
 
 ## Traits
@@ -339,7 +339,7 @@
 | <p id="Plane Shift">Plane Shift</p> | 7 | School of Conjuration| _Transport yourself and your party to another plane of existence._ | Planeshift yourself to =oneOf(Arcadia, Cthelll, Gehenna, Hades, Limbo, Mechanus, Pandemonium, Ysgard, Zephyrus). |
 | <p id="Poison Cloud">Poison Cloud</p> | 5 | School of Conjuration| _Release a cloud of toxic gas._ | Deal 3d4+#level poison damage to all enemies. |
 | <p id="Polar Ray">Polar Ray</p> | 4 | School of Evocation| _Fire a beam of intense cold that can freeze enemies in place._ | Deal 5d6 cold damage to an enemy. |
-| <p id="Polymorph Other">Polymorph Other</p> | 5 | School of Transmutation| _Transform an enemy into a harmless creature for a short duration._ | An enemy suffers Polymorphed (Displayed name changed to "Sheep", attack die set to 1d2, MAXHP set to 5, AC set to 10, STR set to 2, CON set to 2, DEX set to 2, INT set to 2, WIS set to 2, CHA set to 2); Recalculate HP for target. |
+| <p id="Polymorph Other">Polymorph Other</p> | 5 | School of Transmutation| _Transform an enemy into a harmless creature for a short duration._ | An enemy suffers Polymorphed (Displayed name changed to "Sheep", Displayed class changed to "Harmless Beast", attack die set to 1d2, MAXHP set to 5, AC set to 10, STR set to 2, CON set to 2, DEX set to 2, INT set to 2, WIS set to 2, CHA set to 2); Recalculate HP for target. |
 | <p id="Prismatic Spray">Prismatic Spray</p> | 1 | School of Evocation| _A dazzling array of multicolored beams springs from your hand._ | Cycle through the following effects on =5 + round(#level / 2) random enemies: Deal 1d3+1 fire damage to enemy; Deal 1d4 cold damage to enemy; Deal 1d2 acid damage to enemy; Deal 1d3 lightning damage to enemy; Deal 1d3 poison damage to enemy; Deal 1d4 psychic damage to enemy; Deal 1d2+1 radiant damage to enemy; Deal 1d2 necrotic damage to enemy. |
 | <p id="Ray of Frost">Ray of Frost</p> | 2 | School of Evocation| _Fire a ray of frost, dealing 1d4 damage and reducing the target's speed by 10 feet for 3 rounds._ | Deal 1d4 cold damage to an enemy. |
 | <p id="Reflection">Reflection</p> | 5 | School of Abjuration| _Create a magical shield that reflects some incoming damage._ | Grant yourself Reflect (Add 50% to damage reflection percent). |

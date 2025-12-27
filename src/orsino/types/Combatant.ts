@@ -2,7 +2,34 @@ import { DamageKind } from "./DamageKind";
 import { StatusEffect } from "../Status";
 import { SaveKind } from "./SaveKind";
 
-export type EquipmentSlot = 'ring1' | 'ring2' | 'amulet' | 'cloak' | 'boots' | 'helm' | 'gloves' | 'belt';
+// const EQUIPMENT_SLOTS: string[] = [
+//   'ring1',
+//   'ring2',
+//   'amulet',
+//   'cloak',
+//   'boots',
+//   'helm',
+//   'gloves',
+//   'belt',
+//   // 'left_hand',
+//   'weapon',
+//   'body',
+// ];
+
+export type EquipmentSlot
+  = 'ring1'
+  | 'ring2'
+  | 'amulet'
+  | 'cloak'
+  | 'boots'
+  | 'helm'
+  | 'gloves'
+  | 'belt'
+  // | 'left_hand'
+  | 'weapon'
+  | 'body';
+
+// export type EquipmentSlot = typeof EQUIPMENT_SLOTS[number];
 
 export interface Gem {
   type: string;
@@ -12,6 +39,7 @@ export interface Gem {
 
 export interface Combatant {
   id: string;
+  kind?: string;
   itemProficiencies?: {
     all?: boolean;
     kind?: string[];
@@ -40,9 +68,8 @@ export interface Combatant {
   forename: string;
 
   hp: number;
-  // maxHp: number;
   maximumHitPoints: number;
-  // tempHp?: number;
+
   tempHpPools?: { [source: string]: number };
 
   level: number;
@@ -58,7 +85,6 @@ export interface Combatant {
   playerControlled?: boolean;
   xp: number;
   gp: number;
-  weapon: string;
   armor?: string;
 
   spellSlotsUsed?: number;
@@ -76,23 +102,23 @@ export interface Combatant {
   hitDie?: number; // number of sides on the hit die for this combatant
 
   // demographic info
-  age?: any;
+  age?: number;
   gender?: 'male' | 'female' | 'androgynous';
-  background?: any;
+  background?: string;
 
-  attackDie: string;
-  damageKind: DamageKind;
+  // weapon: string;
+  // attackDie: string;
+  // damageKind: DamageKind;
+  // hasMissileWeapon?: boolean;
+  // hasInterceptWeapon?: boolean;
 
   currentEnvironment?: string;
 
   startingGear?: string[];
-  gems?: Gem[];
+  // gems?: Gem[];
 
   // todo count saves and prevent more than 3 saves from death
   savedTimes?: { [key in SaveKind]?: number };
-
-  hasMissileWeapon?: boolean;
-  hasInterceptWeapon?: boolean;
 
   equipment?: { [slot in EquipmentSlot]?: string };
 

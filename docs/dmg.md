@@ -158,7 +158,7 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 | Glowing Pool | _A pool that glows with a soft, radiant light._ | Heal user 4d8 HP |
 | Glowing Runes | _Runes that glow with an inner light, pulsing softly._ | Grant user Insight (Improve all saves by 2, improve bonus spell DC by 1) |
 | Illusory Visions | _Visions that appear and disappear at the edge of your sight._ | Grant user Clarity (Improve all rolls by 2, Immunity to Charm); Grant user Owl's Wisdom (Improve Wisdom by 2, improve all saves by 1) |
-| Intelligent Painting | _A painting that seems to change and shift, depicting different scenes._ | Learn ability Polymorph (An enemy suffers Polymorphed (Displayed name changed to "Sheep", attack die set to 1d2, MAXHP set to 5, AC set to 10, STR set to 2, CON set to 2, DEX set to 2, INT set to 2, WIS set to 2, CHA set to 2); Recalculate HP for target.) |
+| Intelligent Painting | _A painting that seems to change and shift, depicting different scenes._ | Learn ability Polymorph (An enemy suffers Polymorphed (Displayed name changed to "Sheep", Displayed class changed to "Harmless Beast", attack die set to 1d2, MAXHP set to 5, AC set to 10, STR set to 2, CON set to 2, DEX set to 2, INT set to 2, WIS set to 2, CHA set to 2); Recalculate HP for target.) |
 | Levitating Objects | _Various objects levitating gently in the air, defying gravity._ | Grant user Cat's Grace (Improve Dexterity by 2, improve evasion by 5) |
 | Life Tree | _A magnificent tree that radiates life energy, its leaves shimmering with vitality._ | Permanently increase user Constitution by 1 |
 | Living Book | _A book that seems to write itself, its pages filled with ever-changing text._ | Learn ability Lightning Bolt (Deal 1d8 electric damage to 2 random enemies; 2 random enemies suffer Paralyzed (Cannot take actions, degrade Strength by 5, degrade Dexterity by 5).) |
@@ -208,14 +208,14 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 
 | Treasure | Description | Value | Kind |
 |----------|-------------|-------|------|
-| A Wooden Bowl | A mysterious item | 200 gp | loot |
-| A Cloth Pouch | A mysterious item | 200 gp | loot |
-| A Broken Dagger | A mysterious item | 200 gp | loot |
-| A Tattered Map | A mysterious item | 50 gp | loot |
-| A Wooden Figurine | A mysterious item | 10 gp | loot |
+| Wooden Bowl | A simple wooden bowl, chipped and worn from use. | 1 gp | junk |
+| Cloth Pouch | A small cloth pouch, frayed at the edges. | 1 gp | junk |
+| Broken Dagger | A broken dagger with a dull blade and a cracked handle. | 2 gp | junk |
+| Tattered Map | A tattered map with faded markings and torn edges. | 3 gp | junk |
+| Wooden Figurine | A small wooden figurine, roughly carved and unfinished. | 2 gp | junk |
 | Minor Healing Potion | A vial of glittering red liquid that restores health when consumed. | 50 gp | consumable |
 | Firewood | A bundle of firewood for starting campfires. | 1 gp | gear |
-| Rope | A length of sturdy rope for climbing, tying, or securing items. | 1 gp | gear |
+| Shoes | A comfortable pair of shoes for everyday wear. | 2 gp | gear |
 | Candle | A simple wax candle that provides light in dark places. | 1 gp | gear |
 | Manacles | A pair of manacles for restraining prisoners. | 8 gp | gear |
 | Waterskin | A waterskin for carrying fresh water on long journeys. | 2 gp | gear |
@@ -234,10 +234,10 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 
 | Treasure | Description | Value | Kind |
 |----------|-------------|-------|------|
-| A Simple Ring | A mysterious item | 200 gp | loot |
-| A Small Statue | A mysterious item | 50 gp | loot |
-| A Bronze Bracelet | A mysterious item | 200 gp | loot |
-| A Faded Painting | A mysterious item | 10 gp | loot |
+| Simple Ring | A simple iron ring, slightly bent out of shape. | 5 gp | junk |
+| Small Statue | A small statue made of bronze, depicting a forgotten deity. | 10 gp | junk |
+| Bronze Bracelet | A bronze bracelet with intricate designs etched into its surface. | 8 gp | junk |
+| Faded Painting | A faded painting on canvas, its colors dulled by time. | 12 gp | junk |
 | Major Healing Potion | A vial of glowing red liquid that restores a significant amount of health when consumed. | 150 gp | consumable |
 | Crowbar | A sturdy crowbar for prying open doors or crates. | 2 gp | gear |
 | Dice | A set of dice for gambling or passing the time. | 1 gp | gear |
@@ -260,10 +260,13 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 | Treasure | Description | Value | Kind |
 |----------|-------------|-------|------|
 | Dagger | A small dagger, ideal for close combat and throwing. | 2 gp | weapon |
-| Chainmail | Chainmail armor is made of interlinked metal rings, offering strong protection at the cost of weight. | 50 gp | armor |
-| Longsword | A versatile longsword suitable for both cutting and thrusting. | 15 gp | weapon |
-| Agate | A common gemstone | 25 gp | gem |
-| Carnelian | A common gemstone | 100 gp | gem |
+| Agate | A common gemstone | 75 gp | gem |
+| Carnelian | A common gemstone | 25 gp | gem |
+| Moonstone | A common gemstone | 100 gp | gem |
+| Onyx | A common gemstone | 25 gp | gem |
+| Quartz | A common gemstone | 50 gp | gem |
+| Broken Crown | Missing several jewels and tarnished with age. | 25 gp | junk |
+| Lensing Crystal | A cracked lens that once belonged to a powerful magnifying glass. | 18 gp | junk |
 | Holy Symbol | A holy symbol for religious ceremonies or warding off evil. | 5 gp | gear |
 | Thieves Tools | A set of tools for picking locks and disarming traps. | 25 gp | gear |
 | Antidote | A small vial of clear liquid that neutralizes poison when consumed. | 30 gp | consumable |
@@ -271,11 +274,10 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 | Elixir Of Strength | A potent brew that temporarily enhances the drinker's physical strength. | 100 gp | consumable |
 | Wand Of Magic Missile | A slender wand that can fire magical darts of force energy at a target. | 250 gp | consumable |
 | Scroll Of Fireball | A magical scroll that allows the caster to unleash a fiery explosion at a target location. | 200 gp | consumable |
-| Amulet Of Health | A mystical amulet that bolsters the wearer's vitality. | 200 gp | equipment |
-| Gloves Of Dexterity | Fine gloves that enhance the wearer's dexterity. | 50 gp | equipment |
-| Helm Of Intellect | A finely crafted helm that sharpens the wearer's mind. | 150 gp | equipment |
-| Mantle Of Charisma | An elegant mantle that enhances the wearer's charisma. | 200 gp | equipment |
 | Scroll Of Cure Disease | A magical scroll that can cure a target of any disease afflicting them. | 150 gp | consumable |
+| Amulet Of Health | A mystical amulet that bolsters the wearer's vitality. | 200 gp | equipment |
+| Ring Of Minor Strength | A simple enchanted ring providing slight strength boost | 50 gp | equipment |
+| Mantle Of Charisma | An elegant mantle that enhances the wearer's charisma. | 200 gp | equipment |
 | Wand Of Cure Minor Wounds | A slender wand that can channel healing energy to mend minor wounds. | 100 gp | consumable |
 | Wand Of Paralyzing Touch | A slender wand that can deliver a paralyzing touch to a target. | 150 gp | consumable |
 | Canvas | A roll of canvas for making tents, sails, or other fabric items. | 2 gp | gear |
@@ -283,33 +285,32 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 | Hammer | A sturdy hammer for driving nails or breaking objects. | 2 gp | gear |
 | Ladder | A portable ladder for reaching high places. | 4 gp | gear |
 | Musical Instrument | A musical instrument for entertainment or rituals. | 10 gp | gear |
+| Rope | A length of sturdy rope for climbing, tying, or securing items. | 1 gp | gear |
 
 ### Major Treasure
 
 | Treasure | Description | Value | Kind |
 |----------|-------------|-------|------|
-| Amethyst | An uncommon gemstone | 100 gp | gem |
-| Tourmaline | An uncommon gemstone | 200 gp | gem |
-| A Magic Sword | A mysterious item | 5000 gp | loot |
-| An Enchanted Ring | A mysterious item | 10 gp | loot |
+| Amethyst | An uncommon gemstone | 150 gp | gem |
+| Tourmaline | An uncommon gemstone | 150 gp | gem |
+| Broken Scepter | A broken scepter, its head shattered and its shaft cracked. | 30 gp | junk |
+| Faded Tome | A faded tome with yellowed pages and a cracked spine. | 20 gp | junk |
+| Dowsing Rod | A simple dowsing rod made of wood, used for locating water or minerals. | 12 gp | junk |
+| Ancient Orrery | A complex orrery that models the movements of celestial bodies. | 5000 gp | junk |
+| A Magic Sword | A mysterious item | 200 gp | loot |
 | Ring Of Protection | A magical ring that grants the wearer enhanced protection. | 300 gp | equipment |
-| Boots Of Swiftness | Lightweight boots that increase the wearer's agility. | 200 gp | equipment |
-| A Crystal Orb | A mysterious item | 1000 gp | loot |
-| A Jeweled Crown | A mysterious item | 50 gp | loot |
-| A Bag Of Precious Gems | A mysterious item | 10 gp | loot |
-| Nunchaku | A traditional weapon consisting of two sticks connected by a chain or rope. | 15 gp | weapon |
-| Scroll Of Domination | A magical scroll that allows the caster to control the mind of a target creature. | 100 gp | consumable |
 | Ring Of Thorns | A magical ring that grants the wearer the ability to counterattack. | 400 gp | equipment |
-| Crown Of Insight | An ornate crown that enhances the wearer's wisdom. | 1000 gp | equipment |
 | Belt Of Giant Strength | A sturdy belt that enhances the wearer's physical strength. | 2500 gp | equipment |
-| Ring Of The Firmament | A celestial ring that grants the wearer resistance to elemental damage. | 500 gp | equipment |
+| Boots Of Swiftness | Lightweight boots that increase the wearer's agility. | 200 gp | equipment |
+| Crystal Orb | A small crystalline sphere that glimmers faintly in the light. | 15 gp | junk |
+| Nunchaku | A traditional weapon consisting of two sticks connected by a chain or rope. | 15 gp | weapon |
+| Longsword | A versatile longsword suitable for both cutting and thrusting. | 15 gp | weapon |
+| Chainmail | Made of interlinked metal rings, offering strong protection at the cost of weight. | 50 gp | armor |
 | Wardstone | A mystical stone that provides a protective barrier to the bearer. | 600 gp | equipment |
-| Polearm | A mysterious item | 10 gp | loot |
 | Katana | A traditional sword known for its sharpness and cutting ability. | 50 gp | weapon |
+| Longbow | A longbow designed for ranged combat with moderate draw weight. | 30 gp | weapon |
 | Gloves Of Dexterity | Fine gloves that enhance the wearer's dexterity. | 50 gp | equipment |
 | Amulet Of Vitality | A minor health charm | 50 gp | equipment |
-| Boots Of Swiftness | Lightweight boots that increase the wearer's agility. | 200 gp | equipment |
-| Amulet Of Health | A mystical amulet that bolsters the wearer's vitality. | 200 gp | equipment |
 | Helm Of Intellect | A finely crafted helm that sharpens the wearer's mind. | 150 gp | equipment |
 | Mantle Of Charisma | An elegant mantle that enhances the wearer's charisma. | 200 gp | equipment |
 | Ring Of Perfect Turning | Grants high resistance to all damage types, and good chance to reflect spells back to caster. | 2000 gp | equipment |
@@ -318,51 +319,62 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 
 | Treasure | Description | Value | Kind |
 |----------|-------------|-------|------|
-| Emerald | A rare gemstone | 1500 gp | gem |
-| Sapphire | A rare gemstone | 500 gp | gem |
+| Emerald | A rare gemstone | 1000 gp | gem |
+| Sapphire | A rare gemstone | 1500 gp | gem |
 | Belt Of Giant Strength | A sturdy belt that enhances the wearer's physical strength. | 2500 gp | equipment |
 | Ring Of Thorns | A magical ring that grants the wearer the ability to counterattack. | 400 gp | equipment |
 | Crown Of Insight | An ornate crown that enhances the wearer's wisdom. | 1000 gp | equipment |
-| Ring Of Regeneration | A mystical ring that slowly heals the wearer over time. | 800 gp | equipment |
 | Wardstone | A mystical stone that provides a protective barrier to the bearer. | 600 gp | equipment |
 | Helm Of The Stars | A mystical helm that enhances all senses of the wearer. | 400 gp | equipment |
-| Ring Of Spell Turning | Improve all resistances and inflict damage back to caster on spell saves. | 1200 gp | equipment |
-| A Chest Of Gold Coins | A mysterious item | 10 gp | loot |
-| A Priceless Painting | A mysterious item | 10 gp | loot |
-| A Legendary Weapon | A mysterious item | 50 gp | loot |
-| A Suit Of Enchanted Armor | A mysterious item | 200 gp | loot |
-| A Royal Scepter | A mysterious item | 200 gp | loot |
+| Ring Of Strength | A magical ring that enhances the wearer's physical strength. | 150 gp | equipment |
+| Ring Of Major Protection | A powerful ring that provides significant protection to the wearer. | 1000 gp | equipment |
+| Amulet Of Focus | A powerful amulet that enhances the wearer's magical abilities. | 600 gp | equipment |
+| Priceless Painting | A priceless painting by a renowned artist, its value immeasurable. | 1000 gp | junk |
+| Royal Scepter | An ornate scepter once wielded by royalty, encrusted with jewels. | 1500 gp | junk |
+| Dragons Egg | A rare and valuable dragon's egg, warm to the touch. | 2000 gp | junk |
+| Jeweled Crown | A small crown adorned with semi-precious stones. | 20 gp | junk |
+| Golden Idol | A small idol made of pure gold, intricately crafted. | 4000 gp | junk |
+| Scroll Of Domination | A magical scroll that allows the caster to control the mind of a target creature. | 100 gp | consumable |
+| Ancient Tome | An ancient tome filled with cryptic writings and illustrations. | 40 gp | junk |
 | A Hidden Stash Of Jewels | A mysterious item | 200 gp | loot |
-| A Tome Of Ancient Knowledge | A mysterious item | 50 gp | loot |
+| A Legendary Weapon | A mysterious item | 200 gp | loot |
+| A Suit Of Enchanted Armor | A mysterious item | 50 gp | loot |
+| A Tome Of Ancient Knowledge | A mysterious item | 200 gp | loot |
 | A Mystical Artifact | A mysterious item | 10 gp | loot |
-| A Dragon'S Egg | A mysterious item | 10 gp | loot |
-| A Crown Of The Lost King | A mysterious item | 10 gp | loot |
-| A Fabled Sword Of Legends | A mysterious item | 200 gp | loot |
+| A Fabled Sword Of Legends | A mysterious item | 10 gp | loot |
 
 ### Legendary Treasure
 
 | Treasure | Description | Value | Kind |
 |----------|-------------|-------|------|
-| Diamond | A legendary gemstone | 20000 gp | gem |
-| Black Opal | A legendary gemstone | 10000 gp | gem |
+| Black Diamond | A very_rare gemstone | 7500 gp | gem |
+| Diamond | A legendary gemstone | 40000 gp | gem |
+| Black Opal | A legendary gemstone | 15000 gp | gem |
+| Fire Opal | A legendary gemstone | 20000 gp | gem |
+| Star Ruby | A legendary gemstone | 20000 gp | gem |
 | Scroll Of Apocalypse | An ancient scroll that unleashes catastrophic energy upon all enemies in the area. | 2000 gp | consumable |
-| An Ancient Relic | A mysterious item | 50 gp | loot |
-| A Lost Tome | A mysterious item | 200 gp | loot |
-| A Sacred Idol | A mysterious item | 50 gp | loot |
-| A Crown Of The Lost King | A mysterious item | 200 gp | loot |
-| A Fabled Sword Of Legends | A mysterious item | 200 gp | loot |
-| A Wondrous Amulet Of Protection | A mysterious item | 10 gp | loot |
-| A Ring Of Ultimate Power | A mysterious item | 10 gp | loot |
-| A Legendary Artifact Of Immense Power | A mysterious item | 200 gp | loot |
-| A Mythical Beast'S Claw | A mysterious item | 50 gp | loot |
-| A Shard Of A Fallen Star | A mysterious item | 10 gp | loot |
-| A Vial Of Eternal Youth | A mysterious item | 2500 gp | loot |
-| A Scepter Of Divine Authority | A mysterious item | 200 gp | loot |
-| A Legendary Sword | A mysterious item | 50 gp | loot |
-| A Suit Of Enchanted Armor | A mysterious item | 200 gp | loot |
-| A Royal Scepter | A mysterious item | 50 gp | loot |
+| Ancient Crown | An ancient crown rumored to have belonged to a long-lost king. | 2500 gp | junk |
+| Sacred Idol | A sacred idol revered by an ancient civilization. | 3000 gp | junk |
+| Lost Tome | A lost tome containing forgotten knowledge and secrets. | 3500 gp | junk |
+| Fallen Star | A fragment of a fallen star, radiating a faint magical aura. | 5000 gp | junk |
+| Crystal Eye | A mystical crystal eye that seems to watch those who hold it. | 6000 gp | junk |
+| Kraken Claw | A massive claw from a kraken, still dripping with seawater. | 8000 gp | junk |
+| Phoenix Feather | A rare feather from a phoenix, said to have healing properties. | 7000 gp | junk |
+| Divine Scepter | A scepter imbued with divine power, radiating holy energy. | 10000 gp | junk |
+| Jeweled Statue | A statue encrusted with precious jewels, depicting a legendary figure. | 12000 gp | junk |
+| Vial Of Phoenix Tears | A small vial containing the tears of a phoenix, known for their healing properties. | 15000 gp | junk |
+| Amulet Of Protection | A protective amulet that increases the wearer's defenses. | 1200 gp | equipment |
+| Ring Of Regeneration | A mystical ring that slowly heals the wearer over time. | 800 gp | equipment |
+| Ring Of Spell Turning | Improve all resistances and inflict damage back to caster on spell saves. | 1200 gp | equipment |
+| Ring Of The Firmament | A celestial ring that grants the wearer resistance to elemental damage. | 500 gp | equipment |
+| A Fabled Sword Of Legends | A mysterious item | 10 gp | loot |
+| A Ring Of Ultimate Power | A mysterious item | 50 gp | loot |
+| An Ancient Relic | A mysterious item | 200 gp | loot |
+| A Legendary Artifact Of Immense Power | A mysterious item | 50 gp | loot |
+| A Legendary Sword | A mysterious item | 200 gp | loot |
+| A Suit Of Enchanted Armor | A mysterious item | 50 gp | loot |
 | A Hidden Stash Of Jewels | A mysterious item | 50 gp | loot |
-| A Mystical Artifact | A mysterious item | 200 gp | loot |
+| A Mystical Artifact | A mysterious item | 10 gp | loot |
 
 
 ## Items
@@ -372,7 +384,9 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 
 | Item | Description | Effects |
 |------|-------------|---------|
+| Amulet of Focus | _A powerful amulet that enhances the wearer's magical abilities._ | improve Intelligence by 3, improve Wisdom by 3, improve bonus spell DC by 2 |
 | Amulet of Health | _A mystical amulet that bolsters the wearer's vitality._ | improve Constitution by 2 |
+| Amulet of Protection | _A protective amulet that increases the wearer's defenses._ | improve AC by 2, 10% resistance to All |
 | Amulet of Vitality | _A minor health charm_ | improve Constitution by 1 |
 | Belt of Giant Strength | _A sturdy belt that enhances the wearer's physical strength._ | improve Strength by 6 |
 | Boots of Swiftness | _Lightweight boots that increase the wearer's agility._ | improve Dexterity by 2 |
@@ -381,11 +395,14 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 | Helm of Intellect | _A finely crafted helm that sharpens the wearer's mind._ | improve Intelligence by 2 |
 | Helm of the Stars | _A mystical helm that enhances all senses of the wearer._ | improve all stats by 1 |
 | Mantle of Charisma | _An elegant mantle that enhances the wearer's charisma._ | improve Charisma by 4 |
+| Ring of Major Protection | _A powerful ring that provides significant protection to the wearer._ | improve AC by 3 |
 | Ring of Minor Protection | _A simple enchanted ring providing slight protection_ | improve AC by 1 |
+| Ring of Minor Strength | _A simple enchanted ring providing slight strength boost_ | improve Strength by 1 |
 | Ring of Perfect Turning | _Grants high resistance to all damage types, and good chance to reflect spells back to caster._ | 50% resistance to All, add 75% to spell reflection chance |
 | Ring of Protection | _A magical ring that grants the wearer enhanced protection._ | improve AC by 2 |
 | Ring of Regeneration | _A mystical ring that slowly heals the wearer over time._ | On turn end, Heal self 1d2-1 HP |
 | Ring of Spell Turning | _Improve all resistances and inflict damage back to caster on spell saves._ | add 50% to spell reflection chance, 20% resistance to All, improve Save versus Magic by 4, On save versus magic, Deal 1d6 true damage to attacker |
+| Ring of Strength | _A magical ring that enhances the wearer's physical strength._ | improve Strength by 2 |
 | Ring of the Firmament | _A celestial ring that grants the wearer resistance to elemental damage._ | 50% resistance to Fire, 50% resistance to Cold, 50% resistance to Lightning |
 | Ring of Thorns | _A magical ring that grants the wearer the ability to counterattack._ | On attacked, Attack attacker |
 | Ring of True Sight | _A magical ring that allows the wearer to see through illusions and invisibility._ | Can perceive invisible entities |
@@ -410,7 +427,7 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 | Wand of Cure Minor Wounds | _A slender wand that can channel healing energy to mend minor wounds._ | Cast ability Cure Minor Wounds (Heal yourself or an ally 1d4 HP.) on yourself or an ally. |
 | Wand of Magic Missile | _A slender wand that can fire magical darts of force energy at a target._ | Cast ability Magic Missile (Deal 1d3 + floor(#level/3) force damage to 2 + round(#level/2) random enemies.) on 3 random enemies. |
 | Wand of Paralyzing Touch | _A slender wand that can deliver a paralyzing touch to a target._ | Cast ability Paralyzing Touch (An enemy suffers Paralyzed (Cannot take actions, degrade Strength by 5, degrade Dexterity by 5).) on an enemy. |
-| Wand of Polymorph | _A slender wand that can transform a target into a different creature._ | Cast ability Polymorph Other (An enemy suffers Polymorphed (Displayed name changed to "Sheep", attack die set to 1d2, MAXHP set to 5, AC set to 10, STR set to 2, CON set to 2, DEX set to 2, INT set to 2, WIS set to 2, CHA set to 2); Recalculate HP for target.) on an enemy. |
+| Wand of Polymorph | _A slender wand that can transform a target into a different creature._ | Cast ability Polymorph Other (An enemy suffers Polymorphed (Displayed name changed to "Sheep", Displayed class changed to "Harmless Beast", attack die set to 1d2, MAXHP set to 5, AC set to 10, STR set to 2, CON set to 2, DEX set to 2, INT set to 2, WIS set to 2, CHA set to 2); Recalculate HP for target.) on an enemy. |
 
 
 ## Status Effects

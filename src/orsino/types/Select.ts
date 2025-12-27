@@ -1,16 +1,11 @@
-import { Separator } from "@inquirer/select";
+// import { Separator } from "@inquirer/select";
 import { Answers } from "inquirer";
 import Choice from "inquirer/lib/objects/choice";
+import { Combatant } from "./Combatant";
 
 export type Select<T extends Answers> =
   (
     prompt: string,
-    options: readonly (Separator | Choice<T>)[] | readonly string[]
+    options: readonly Choice<T>[] | readonly string[],
+    subject?: Combatant
   ) => Promise<T | string>;
-// export type Select = (
-//       prompt: string,
-//       choices: (
-//         readonly (string)[] | Choice<any>[]
-//       )
-//     ) => Promise<string | Choice<any>>;
-

@@ -1,7 +1,7 @@
 // src/orsino/Template.ts
 import Deem from "../deem";
-import { DeemValue } from "../deem/stdlib";
-import Generator from "./Generator";
+import { DeemFunc, DeemValue } from "../deem/stdlib";
+import Generator, { GeneratorOptions } from "./Generator";
 import { StatusModifications } from "./Status";
 import { Table } from "./Table";
 import { GenerationTemplateType } from "./types/GenerationTemplateType";
@@ -17,11 +17,11 @@ export class Template {
   static bootstrapDeem(context: Record<string, DeemValue> = {}) {
     Deem.stdlib = Deem.stdlib || {};
     Deem.stdlib.eval = (expr: DeemValue) => Deem.evaluate(expr as string, context);
-    Deem.stdlib.lookup = (tableName: GenerationTemplateType, groupName: string) => {
+    Deem.stdlib.lookup = ((tableName: GenerationTemplateType, groupName: string) => {
       return Generator.lookupInTable(tableName, groupName);
-    }
-    Deem.stdlib.lookupUnique = (tableName: GenerationTemplateType, groupName: string) => Generator.lookupInTable(tableName, groupName, true);
-    Deem.stdlib.hasEntry = (tableName: GenerationTemplateType, groupName: string) => {
+    }) as DeemFunc;
+    Deem.stdlib.lookupUnique = ((tableName: GenerationTemplateType, groupName: string) => Generator.lookupInTable(tableName, groupName, true)) as DeemFunc;
+    Deem.stdlib.hasEntry = ((tableName: GenerationTemplateType, groupName: string) => {
       // console.log(`Checking hasEntry for table '${tableName}' and group '${groupName}'`);
       const table = Generator.generationSource(tableName);
       if (!table || !(table instanceof Table)) {
@@ -29,8 +29,8 @@ export class Template {
         return false;
       }
       return table.hasGroup(groupName);
-    };
-    Deem.stdlib.hasValue = (tableName: GenerationTemplateType, value: DeemValue) => {
+    }) as DeemFunc;
+    Deem.stdlib.hasValue = ((tableName: GenerationTemplateType, value: DeemValue) => {
       // console.log(`Checking hasValue for table '${tableName}' and group '${groupName}' for value:`, value);
       const table = Generator.generationSource(tableName);
       if (!table || !(table instanceof Table)) {
@@ -38,8 +38,8 @@ export class Template {
         return false;
       }
       return table.containsValue(value);
-    };
-    Deem.stdlib.findGroup = (tableName: GenerationTemplateType, value: DeemValue) => {
+    }) as DeemFunc;
+    Deem.stdlib.findGroup = ((tableName: GenerationTemplateType, value: DeemValue) => {
       // console.log(`Finding group for value in table '${tableName}':`, value);
       const table = Generator.generationSource(tableName);
       if (!table || !(table instanceof Table)) {
@@ -47,19 +47,19 @@ export class Template {
         return null;
       }
       return table.findGroupForValue(value);
-    }
+    }) as DeemFunc;
 
-    Deem.stdlib.gather = (
+    Deem.stdlib.gather = ((
       tableName: GenerationTemplateType, count: number = -1, condition?: string
-    ) => Generator.gatherKeysFromTable(tableName, count, condition);
-    Deem.stdlib.gen = (type: GenerationTemplateType) => {
+    ) => Generator.gatherKeysFromTable(tableName, count, condition)) as DeemFunc;
+    Deem.stdlib.gen = ((type: GenerationTemplateType) => {
       return Generator.gen(type, { ...context })
-    };
-    Deem.stdlib.genList = (type: GenerationTemplateType, count: number = 1) => {
+    }) as DeemFunc;
+    Deem.stdlib.genList = ((type: GenerationTemplateType, count: number = 1) => {
       return Generator.genList(type, { ...context }, count);
-    }
+    }) as DeemFunc;
 
-    Deem.stdlib.mapGenList = (type: GenerationTemplateType, items: any[], property: string) => {
+    Deem.stdlib.mapGenList = ((type: GenerationTemplateType, items: any[], property: string) => {
       // console.log(`mapGenList for type '${type}' over items:`, items);
       const results = [];
       // for (let item of items) {
@@ -67,17 +67,17 @@ export class Template {
       for (let i = 0; i < items.length; i++) {
         const item = items[i];
         const index = i;
-        const genOptions = { ...context, [property]: item, _index: index };
+        const genOptions: GeneratorOptions = { ...context, [property]: item, _index: index };
         const genResult = Generator.gen(type, genOptions);
         results.push(genResult);
       }
       // process.stdout.write(`.`);
       return results;
-    }
+    }) as DeemFunc;
 
-    Deem.stdlib.fxHeal = (amount: number | string) => ({ type: 'heal', amount });
-    Deem.stdlib.fxDamage = (amount: number | string, damageType?: string) => ({ type: 'damage', amount, kind: damageType });
-    Deem.stdlib.fxBuff = (name: string, effect: StatusModifications, duration: number | string = 10) => ({ type: 'buff', status: { effect, name }, duration });
+    Deem.stdlib.fxHeal = ((amount: number | string) => ({ type: 'heal', amount })) as DeemFunc;
+    Deem.stdlib.fxDamage = ((amount: number | string, damageType?: string) => ({ type: 'damage', amount, kind: damageType })) as DeemFunc;
+    Deem.stdlib.fxBuff = ((name: string, effect: StatusModifications, duration: number | string = 10) => ({ type: 'buff', status: { effect, name }, duration })) as unknown as DeemFunc;
   }
 
   assembleProperties(
@@ -162,8 +162,17 @@ export class Template {
       }
     });
 
+    let provideIdentifier = true;
+    if (this.props['__no_id'] === true || options['__no_id'] === true) {
+      provideIdentifier = false;
+    }
+
+    if (!assembled.id && provideIdentifier) {
+      assembled.id = `${this.type}:${Math.random().toString(36).substring(2, 8)}`;
+    }
+
     return {
-      id: `${this.type}:${Math.random().toString(36).substring(2, 8)}`,
+      // id: `${this.type}:${Math.random().toString(36).substring(2, 8)}`,
       ...assembled
     };
   }

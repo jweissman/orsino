@@ -25,7 +25,7 @@ export default class Shop {
       case 'equipment':
         return "Magician";
       case 'loot':
-        return "General Goods";
+        return "Provisioner";
       default:
         return never(type);
     }
@@ -187,7 +187,7 @@ export default class Shop {
 
   private async equipmentShop(): Promise<ModuleEvent[]> {
     const events: ModuleEvent[] = [];
-    const magicItemNames = Deem.evaluate(`gather(equipment)`) as string[];
+    const magicItemNames = Deem.evaluate(`gather(masterEquipment)`) as string[];
     const pcOptions = this.party.map(pc => ({
       short: pc.name,
       value: pc,
@@ -199,7 +199,7 @@ export default class Shop {
     const options = [];
     for (let index = 0; index < magicItemNames.length; index++) {
       const itemName = magicItemNames[index];
-      const item = Deem.evaluate(`lookup(equipment, "${itemName}")`) as unknown as Equipment;
+      const item = Deem.evaluate(`lookup(masterEquipment, "${itemName}")`) as unknown as Equipment;
       item.key = itemName;
       options.push({
         short: Words.humanize(itemName) + ` (${item.value}g)`,
@@ -220,14 +220,15 @@ export default class Shop {
     if (this.currentGold >= item.value) {
       const { oldItemKey: maybeOldItem } = Inventory.equipmentSlotAndExistingItem(item.key, wearer);
       if (maybeOldItem) {
-        const oldItem = Deem.evaluate(`lookup(equipment, "${maybeOldItem}")`) as unknown as Equipment;
-        events.push({
-          type: "sale",
-          itemName: maybeOldItem,
-          revenue: oldItem.value,
-          seller: wearer,
-          day: this.day,
-        });
+        // bring back when we can more clearly materialize old items regardless of which table they came from (weapons vs equipment vs gear)
+        // const oldItem = Deem.evaluate(`lookup(masterEquipment, "${maybeOldItem}")`) as unknown as Equipment;
+        // events.push({
+        //   type: "sale",
+        //   itemName: maybeOldItem,
+        //   revenue: oldItem.value,
+        //   seller: wearer,
+        //   day: this.day,
+        // });
       }
 
       events.push({
@@ -238,7 +239,7 @@ export default class Shop {
         day: this.day,
       });
       this.currentGold -= item.value;
-      const equipment = Deem.evaluate(`lookup(equipment, "${item.key}")`) as unknown as Equipment;
+      const equipment = Deem.evaluate(`lookup(masterEquipment, "${item.key}")`) as unknown as Equipment;
       const slot = equipment.kind;
       events.push({
         type: "equip",
@@ -316,7 +317,7 @@ export default class Shop {
     const pcOptions: Choice<Combatant>[] = this.party.map(pc => ({
       short: pc.name,
       value: pc,
-      name: `${pc.name} (${pc.weapon || 'unarmed'})`,
+      name: `${pc.name} (${pc.equipment?.weapon || 'unarmed'})`,
       disabled: false,
     }));
     const wielder = await this.select(`Who needs a new weapon?`, pcOptions) as Combatant;

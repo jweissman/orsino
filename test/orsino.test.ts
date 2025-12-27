@@ -3,7 +3,7 @@ import Combat from '../src/orsino/Combat';
 import Dungeoneer, { BossRoom, Dungeon, Room } from '../src/orsino/Dungeoneer';
 import { CampaignModule, ModuleRunner } from '../src/orsino/ModuleRunner';
 import AbilityHandler from '../src/orsino/Ability';
-import Generator from '../src/orsino/Generator';
+import Generator, { GeneratorOptions } from '../src/orsino/Generator';
 import CharacterRecord from '../src/orsino/rules/CharacterRecord';
 import { Combatant } from '../src/orsino/types/Combatant';
 import Presenter from '../src/orsino/tui/Presenter';
@@ -37,16 +37,12 @@ describe('Orsino', () => {
 
   it("generate room", () => {
     const room = Generator.gen("room", { setting: "fantasy", targetCr: 12 }) as unknown as Room;
-
-    // console.log("Generated room:", room);
-    // console.log(room.narrative);
     expect(room.narrative).toMatch(/[a-z\s]+/);
     expect(room.room_size).toMatch(/tiny|small|medium|large|enormous/);
   });
 
   it('pc gen', () => {
     const pc = Generator.gen("pc", { setting: "fantasy" }) as unknown as Combatant;
-    // console.log(pc);
     expect(pc).toHaveProperty('name');
     expect(pc.name).toMatch(/[A-Z][a-z]+/);
 
@@ -64,7 +60,9 @@ describe('Orsino', () => {
     expect(pc).toHaveProperty('maximumHitPoints');
     expect(pc).toHaveProperty('level');
     expect(pc).toHaveProperty('ac');
-    expect(pc).toHaveProperty('weapon');
+    expect(pc).toHaveProperty('equipment');
+    expect(pc.equipment).toBeInstanceOf(Object);
+    expect(pc.equipment).toHaveProperty('weapon');
   });
 
   it('combat generator', async () => {
@@ -97,7 +95,7 @@ describe('Orsino', () => {
     expect(crawler.isOver()).toBe(false);
     expect(crawler.dungeon).toBeDefined();
     expect(crawler.dungeon).toHaveProperty('dungeon_name');
-    expect(crawler.dungeon!.rooms.length).toBeGreaterThan(1);
+    expect(crawler.dungeon.rooms.length).toBeGreaterThan(1);
     while (!crawler.isOver()) {
       const room = crawler.currentRoom as Room | BossRoom;
       await crawler.enterRoom(room);
@@ -126,26 +124,25 @@ describe('Orsino', () => {
     const animal  = Generator.gen("animal", { setting: "fantasy" }) as unknown as Combatant;
     const monster = Generator.gen("monster", { setting: "fantasy" }) as unknown as Combatant;
 
-    console.log("\n--- Character Presentations (minimal) ---\n");
-    console.log("PC:      ", Presenter.minimalCombatant(pc));
-    console.log("NPC:     ", Presenter.minimalCombatant(npc));
-    console.log("Animal:  ", Presenter.minimalCombatant(animal));
-    console.log("Monster: ", Presenter.minimalCombatant(monster));
+    console.warn("\n--- Character Presentations (minimal) ---\n");
+    console.warn("PC:      ", Presenter.minimalCombatant(pc));
+    console.warn("NPC:     ", Presenter.minimalCombatant(npc));
+    console.warn("Animal:  ", Presenter.minimalCombatant(animal));
+    console.warn("Monster: ", Presenter.minimalCombatant(monster));
+    console.warn("\n--- Character Presentations (full) ---\n");
+    console.warn("PC:      ", Presenter.combatant(pc));
+    console.warn("NPC:     ", Presenter.combatant(npc));
+    console.warn("Animal:  ", Presenter.combatant(animal));
+    console.warn("Monster: ", Presenter.combatant(monster));
 
-    console.log("\n--- Character Presentations (full) ---\n");
-    console.log("PC:      ", Presenter.combatant(pc));
-    console.log("NPC:     ", Presenter.combatant(npc));
-    console.log("Animal:  ", Presenter.combatant(animal));
-    console.log("Monster: ", Presenter.combatant(monster));
-
-    console.log("\n--- Party Presentation ---\n")
+    console.warn("\n--- Party Presentation ---\n")
     const teams: Team[] = [
       { name: "Heroes", combatants: [pc, npc], inventory: [] },
       { name: "Foes", combatants: [animal, monster], inventory: [] }
     ];
-    console.log(Presenter.parties(teams));
+    console.warn(Presenter.parties(teams));
 
-    console.log("\n--- Round Presentation ---\n")
+    console.warn("\n--- Round Presentation ---\n")
     const roundEvent: GameEvent = {
       type: "roundStart",
       turn: 1,
@@ -154,7 +151,7 @@ describe('Orsino', () => {
       auras: [],
       environment: "Dark Cave"
     };
-    console.log(await Events.present(roundEvent));
+    console.warn(await Events.present(roundEvent));
   });
 
   it('simple mod runner', async () => {
@@ -172,7 +169,7 @@ describe('Orsino', () => {
     expect(mod.dungeons).toBeInstanceOf(Array);
 
     const party = await CharacterRecord.chooseParty(
-      (options?: any) => (Generator.gen("pc", { setting: "fantasy", ...options }) as unknown as Combatant),
+      (options?: GeneratorOptions) => (Generator.gen("pc", { setting: "fantasy", ...options }) as unknown as Combatant),
       3,
       Automatic.randomSelect.bind(Automatic)
     );
@@ -202,9 +199,9 @@ describe('Orsino', () => {
       await Presenter.printCharacterRecord(explorer.pcs[pc]);
     }
 
-    console.log("\n----\nCombat statistics:", Combat.statistics);
-    console.log("Rounds per combat:", (Combat.statistics.combats > 0) ? (Combat.statistics.totalRounds / Combat.statistics.combats).toFixed(2) : 0);
-    console.log("Victory rate:", Combat.statistics.combats > 0 ? ((Combat.statistics.victories / Combat.statistics.combats) * 100).toFixed(2) + "%" : "N/A");
+    console.warn("\n----\nCombat statistics:", Combat.statistics);
+    console.warn("Rounds per combat:", (Combat.statistics.combats > 0) ? (Combat.statistics.totalRounds / Combat.statistics.combats).toFixed(2) : 0);
+    console.warn("Victory rate:", Combat.statistics.combats > 0 ? ((Combat.statistics.victories / Combat.statistics.combats) * 100).toFixed(2) + "%" : "N/A");
   });
 
   it('autoplay', async () => {
@@ -246,9 +243,9 @@ describe('Orsino', () => {
       await Presenter.printCharacterRecord(explorer.pcs[pc]);
     }
 
-    console.log("\n----\nCombat statistics:", Combat.statistics);
-    console.log("Rounds per combat:", (Combat.statistics.combats > 0) ? (Combat.statistics.totalRounds / Combat.statistics.combats).toFixed(2) : 0);
-    console.log("Victory rate:", Combat.statistics.combats > 0 ? ((Combat.statistics.victories / Combat.statistics.combats) * 100).toFixed(2) + "%" : "N/A");
+    console.warn("\n----\nCombat statistics:", Combat.statistics);
+    console.warn("Rounds per combat:", (Combat.statistics.combats > 0) ? (Combat.statistics.totalRounds / Combat.statistics.combats).toFixed(2) : 0);
+    console.warn("Victory rate:", Combat.statistics.combats > 0 ? ((Combat.statistics.victories / Combat.statistics.combats) * 100).toFixed(2) + "%" : "N/A");
   });
 
 });

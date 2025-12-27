@@ -1012,5 +1012,20 @@
         }
       ]
     }
+  },
+  "feebleminded": {
+    "name": "Feebleminded",
+    "description": "Suffering from severe cognitive impairment.",
+    "effect": {
+      "int": -4,
+      "wis": -4,
+      "cha": -4,
+      "allRolls": -2,
+      "mayUseItems": false
+    },
+    "saveKind": "will",
+    "trigger": {
+      "damage": "psychic"
+    }
   }
 }

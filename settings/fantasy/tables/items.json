@@ -21,19 +21,19 @@
       "cloth": {
         "ac": 0,
         "weight": "light",
-        "description": "Cloth armor offers minimal protection but is very light and flexible.",
+        "description": "Offers minimal protection but is very light and flexible.",
         "value": 5
       },
       "hide": {
         "ac": 1,
         "weight": "light",
-        "description": "Hide armor is made from the tanned hides of animals, providing basic protection.",
+        "description": "Made from the tanned hides of animals, providing basic protection.",
         "value": 10
       },
       "leather": {
         "ac": 2,
         "weight": "light",
-        "description": "Leather armor is crafted from toughened leather, offering a balance of protection and mobility.",
+        "description": "Crafted from toughened leather, offering a balance of protection and mobility.",
         "value": 15
       },
       "ring": {
@@ -45,37 +45,37 @@
       "studded": {
         "ac": 3,
         "weight": "medium",
-        "description": "Studded armor is leather reinforced with metal studs, offering enhanced protection.",
+        "description": "Leather reinforced with metal studs, offering enhanced protection.",
         "value": 30
       },
       "scale": {
         "ac": 4,
         "weight": "medium",
-        "description": "Scale armor is made of small metal plates sewn onto a backing, providing good protection.",
+        "description": "Made of small metal plates sewn onto a backing, providing good protection.",
         "value": 40
       },
       "chainmail": {
         "ac": 5,
         "weight": "heavy",
-        "description": "Chainmail armor is made of interlinked metal rings, offering strong protection at the cost of weight.",
+        "description": "Made of interlinked metal rings, offering strong protection at the cost of weight.",
         "value": 50
       },
       "banded": {
         "ac": 6,
         "weight": "heavy",
-        "description": "Banded armor consists of metal strips riveted to a leather backing, providing excellent protection.",
+        "description": "Consists of metal strips riveted to a leather backing, providing excellent protection.",
         "value": 60
       },
       "splint": {
         "ac": 6,
         "weight": "heavy",
-        "description": "Splint armor is made of vertical metal strips attached to a fabric or leather backing, offering high protection.",
+        "description": "Made of vertical metal strips attached to a fabric or leather backing, offering high protection.",
         "value": 70
       },
       "plate": {
         "ac": 7,
         "weight": "heavy",
-        "description": "Plate armor is made of large metal plates that cover the body, providing the highest level of protection.",
+        "description": "Made of large metal plates that cover the body, providing the highest level of protection.",
         "value": 100
       }
     }
@@ -100,12 +100,12 @@
         "value": 5,
         "kind": "axe",
         "weight": "heavy",
-        "description": "A heavy battleaxe designed for powerful strikes."
+        "description": "A heavy axe designed for powerful slashing attacks."
       },
       "handaxe": {
         "damage": "1d6",
         "type": "slashing",
-        "value": 1,
+        "value": 10,
         "kind": "axe",
         "weight": "light",
         "description": "A small handaxe suitable for throwing or close combat."
@@ -117,7 +117,7 @@
         "value": 30,
         "kind": "bow",
         "weight": "medium",
-        "description": "A longbow designed for ranged combat with moderate draw weight."
+        "description": "A bow designed for ranged combat with moderate draw weight."
       },
       "shortbow": {
         "damage": "1d4",
@@ -142,7 +142,7 @@
         "value": 2,
         "kind": "blade",
         "weight": "light",
-        "description": "A small dagger, ideal for close combat and throwing."
+        "description": "A small blade ideal for close combat and throwing."
       },
       "dart": {
         "damage": "1d3",
@@ -151,7 +151,7 @@
         "value": 1,
         "kind": "dart",
         "weight": "light",
-        "description": "A small dart, suitable for throwing."
+        "description": "A small throwable missile weapon."
       },
       "heavy_flail": {
         "damage": "1d6+1",
@@ -159,7 +159,7 @@
         "value": 3,
         "kind": "flail",
         "weight": "heavy",
-        "description": "A heavy flail with a spiked ball, effective for crushing blows."
+        "description": "A heavy rod with a spiked ball, designed for powerful strikes."
       },
       "light_flail": {
         "damage": "1d4+1",
@@ -167,7 +167,7 @@
         "value": 6,
         "kind": "flail",
         "weight": "light",
-        "description": "A light flail with a spiked ball, suitable for quick strikes."
+        "description": "A light rod with a spiked ball, suitable for quick strikes."
       },
       "halberd": {
         "damage": "1d10",
@@ -175,7 +175,7 @@
         "value": 9,
         "kind": "polearm",
         "weight": "heavy",
-        "description": "A halberd combining an axe blade and a spear point on a long pole."
+        "description": "Combining an axe blade and a spear point on a long pole."
       },
       "heavy_warhammer": {
         "damage": "1d6+1",
@@ -183,7 +183,7 @@
         "value": 7,
         "kind": "warhammer",
         "weight": "heavy",
-        "description": "A heavy warhammer designed for powerful crushing blows."
+        "description": "A strong hammer designed for powerful crushing blows."
       },
       "light_warhammer": {
         "damage": "1d4+1",
@@ -191,7 +191,7 @@
         "value": 4,
         "kind": "warhammer",
         "weight": "light",
-        "description": "A light warhammer suitable for quick, precise strikes."
+        "description": "A light hammer suitable for quick, precise strikes."
       },
       "javelin": {
         "damage": "1d6",
@@ -200,7 +200,7 @@
         "value": 1,
         "kind": "polearm",
         "weight": "light",
-        "description": "A light javelin suitable for throwing and close combat."
+        "description": "A thin spear designed for throwing."
       },
       "lance": {
         "damage": "2d4+1",
@@ -209,7 +209,7 @@
         "value": 6,
         "kind": "polearm",
         "weight": "heavy",
-        "description": "A heavy lance designed for mounted combat."
+        "description": "A heavy spear designed for mounted combat."
       },
       "heavy_mace": {
         "damage": "1d6+1",
@@ -217,7 +217,7 @@
         "value": 10,
         "kind": "mace",
         "weight": "heavy",
-        "description": "A heavy mace with a solid head for delivering powerful blows."
+        "description": "A heavy rod with a solid head, designed for powerful strikes."
       },
       "light_mace": {
         "damage": "1d4+1",
@@ -225,7 +225,7 @@
         "value": 4,
         "kind": "mace",
         "weight": "light",
-        "description": "A light mace suitable for quick strikes."
+        "description": "A light rod with sturdy head suitable for quick strikes."
       },
       "morningstar": {
         "damage": "2d4",
@@ -233,7 +233,7 @@
         "value": 5,
         "kind": "morningstar",
         "weight": "medium",
-        "description": "A morningstar with a spiked head for piercing armor."
+        "description": "A rod with a spiked head for piercing armor."
       },
       "heavy_pick": {
         "damage": "1d6+1",
@@ -241,7 +241,7 @@
         "value": 8,
         "kind": "pick",
         "weight": "heavy",
-        "description": "A heavy pick designed for breaking through armor and shields."
+        "description": "A hardened tool designed for breaking through armor and shields."
       },
       "light_pick": {
         "damage": "1d4+1",
@@ -249,7 +249,7 @@
         "value": 5,
         "kind": "pick",
         "weight": "light",
-        "description": "A light pick suitable for quick strikes and climbing."
+        "description": "A light tool suitable for quick strikes and climbing."
       },
       "pole_arm": {
         "damage": "1d6+1",
@@ -267,7 +267,7 @@
         "value": 1,
         "kind": "spear",
         "weight": "light",
-        "description": "A versatile spear suitable for throwing and melee combat."
+        "description": "A versatile thrown weapon also suitable for melee combat."
       },
       "staff": {
         "damage": "1d6",
@@ -275,7 +275,7 @@
         "value": 1,
         "kind": "staff",
         "weight": "medium",
-        "description": "A simple wooden staff used for defense and support."
+        "description": "A simple wooden rod used for defense and support."
       },
       "quarterstaff": {
         "damage": "1d6+2",
@@ -283,7 +283,7 @@
         "value": 10,
         "kind": "staff",
         "weight": "medium",
-        "description": "A sturdy quarterstaff used for both offense and defense."
+        "description": "A reinforced wooden rod used for both offense and defense."
       },
       "claymore": {
         "damage": "2d4",
@@ -299,7 +299,7 @@
         "value": 10,
         "kind": "blade",
         "weight": "medium",
-        "description": "A broad sword with a wide blade suitable for powerful slashes."
+        "description": "A wide-bladed sword suitable for powerful slashes."
       },
       "longsword": {
         "damage": "1d8",
@@ -307,7 +307,7 @@
         "value": 15,
         "kind": "blade",
         "weight": "medium",
-        "description": "A versatile longsword suitable for both cutting and thrusting."
+        "description": "A versatile sword suitable for both cutting and thrusting."
       },
       "scimitar": {
         "damage": "1d8",
@@ -315,7 +315,7 @@
         "value": 15,
         "kind": "blade",
         "weight": "medium",
-        "description": "A curved blade designed for swift slashing attacks."
+        "description": "A curved sword designed for swift slashing attacks."
       },
       "shortsword": {
         "damage": "1d6",
@@ -323,7 +323,7 @@
         "value": 8,
         "kind": "blade",
         "weight": "light",
-        "description": "A short sword ideal for close combat and quick strikes."
+        "description": "A small sword ideal for close combat and quick strikes."
       },
       "greatsword": {
         "damage": "1d10",
@@ -339,7 +339,7 @@
         "value": 20,
         "kind": "blade",
         "weight": "medium",
-        "description": "A one-handed, single-edged sword with a slightly curved blade that broadens toward the point."
+        "description": "A one-handed single-edged sword with a slightly curved blade that broadens toward the point."
       },
       "cutlass": {
         "damage": "1d6",
@@ -347,7 +347,7 @@
         "value": 10,
         "kind": "blade",
         "weight": "light",
-        "description": "A short, curved sword with a single cutting edge, historically used by sailors and pirates."
+        "description": "A short curved sword with a single cutting edge."
       },
       "trident": {
         "damage": "1d6+1",
@@ -365,7 +365,7 @@
         "value": 1,
         "kind": "sling",
         "weight": "light",
-        "description": "A simple sling used to hurl small stones or pellets."
+        "description": "A simple throwing weapon used to hurl small stones or pellets."
       },
       "heavy_crossbow": {
         "damage": "1d6+1",
@@ -374,7 +374,7 @@
         "value": 20,
         "kind": "crossbow",
         "weight": "heavy",
-        "description": "A heavy crossbow known for its powerful piercing attacks."
+        "description": "A bolt-firing mechanical ranged weapon known for its powerful piercing attacks."
       },
       "light_crossbow": {
         "damage": "1d4+1",
@@ -383,7 +383,7 @@
         "value": 12,
         "kind": "crossbow",
         "weight": "light",
-        "description": "A light crossbow known for its ease of use and quick reload times."
+        "description": "A bolt-firing mechanical ranged weapon known for its ease of use and quick reload times."
       },
       "composite_bow": {
         "damage": "1d6",
@@ -392,7 +392,7 @@
         "value": 75,
         "kind": "bow",
         "weight": "medium",
-        "description": "A composite bow known for its enhanced power and flexibility."
+        "description": "A bow reinforced for enhanced power and flexibility."
       },
       "whip": {
         "damage": "1d4+2",
@@ -400,7 +400,7 @@
         "value": 2,
         "kind": "whip",
         "weight": "light",
-        "description": "A flexible whip used for striking at a distance."
+        "description": "A flexible weapon used for striking at a distance."
       },
       "light_chain": {
         "damage": "1d6+2",
@@ -408,7 +408,7 @@
         "value": 7,
         "kind": "whip",
         "weight": "medium",
-        "description": "A medium-weight chain whip used for flexible striking."
+        "description": "A medium-weight whip used for flexible striking."
       },
       "heavy_chain": {
         "damage": "1d8+2",
@@ -416,7 +416,7 @@
         "value": 12,
         "kind": "whip",
         "weight": "heavy",
-        "description": "A heavy chain whip used for powerful flexible striking."
+        "description": "A heavy whip used for powerful flexible striking."
       },
       "rapier": {
         "damage": "1d6+2",
@@ -441,7 +441,7 @@
         "value": 14,
         "kind": "polearm",
         "weight": "heavy",
-        "description": "A polearm with a broad, curved blade used for slashing attacks."
+        "description": "A polearm with a broad and curved blade used for slashing attacks."
       },
       "scythe": {
         "damage": "2d4+1",
@@ -467,7 +467,7 @@
         "value": 8,
         "kind": "club",
         "weight": "heavy",
-        "description": "A heavy club used for powerful bludgeoning attacks."
+        "description": "A heavy battering weapon used for powerful bludgeoning attacks."
       },
       "glaive": {
         "damage": "1d10+1",
@@ -484,7 +484,7 @@
         "value": 50,
         "kind": "blade",
         "weight": "medium",
-        "description": "A traditional sword known for its sharpness and cutting ability."
+        "description": "A fine sword with exquisite sharpness and cutting ability."
       },
       "wakizashi": {
         "damage": "1d6+1",
@@ -492,7 +492,7 @@
         "value": 30,
         "kind": "blade",
         "weight": "light",
-        "description": "A traditional short sword known for its sharpness and cutting ability."
+        "description": "A fine short sword with exceptional sharpness and cutting ability."
       },
       "naginata": {
         "damage": "1d10+1",
@@ -501,7 +501,7 @@
         "value": 20,
         "kind": "polearm",
         "weight": "heavy",
-        "description": "A traditional polearm with a curved blade used for slashing attacks."
+        "description": "A fine polearm with a curved blade used for slashing attacks."
       },
       "kusarigama": {
         "damage": "1d6+2",
@@ -509,7 +509,7 @@
         "value": 18,
         "kind": "polearm",
         "weight": "medium",
-        "description": "A traditional weapon consisting of a kama (sickle) attached to a chain."
+        "description": "A polearm attached to a sickle by a chain."
       },
       "nunchaku": {
         "damage": "1d6+2",
@@ -517,7 +517,7 @@
         "value": 15,
         "kind": "club",
         "weight": "light",
-        "description": "A traditional weapon consisting of two sticks connected by a chain or rope."
+        "description": "A battering weapon consisting of two sticks connected by a chain."
       },
       "shuriken": {
         "damage": "1d4+2",
@@ -1292,9 +1292,18 @@
       }
     }
   },
-  "equipment": {
+  "masterEquipment": {
     "discriminator": "kind",
     "groups": {
+      "ring_of_minor_protection": {
+        "name": "Ring of Minor Protection",
+        "kind": "ring",
+        "effect": {
+          "ac": -1
+        },
+        "value": 50,
+        "description": "A simple enchanted ring providing slight protection"
+      },
       "ring_of_protection": {
         "name": "Ring of Protection",
         "description": "A magical ring that grants the wearer enhanced protection.",
@@ -1304,6 +1313,17 @@
         "value": 300,
         "effect": {
           "ac": -2
+        }
+      },
+      "ring_of_major_protection": {
+        "name": "Ring of Major Protection",
+        "description": "A powerful ring that provides significant protection to the wearer.",
+        "type": "equipment",
+        "kind": "ring",
+        "rarity": "legendary",
+        "value": 1000,
+        "effect": {
+          "ac": -3
         }
       },
       "ring_of_regeneration": {
@@ -1320,28 +1340,6 @@
               "amount": "=1d2-1"
             }
           ]
-        }
-      },
-      "amulet_of_health": {
-        "name": "Amulet of Health",
-        "description": "A mystical amulet that bolsters the wearer's vitality.",
-        "type": "equipment",
-        "kind": "amulet",
-        "rarity": "uncommon",
-        "value": 200,
-        "effect": {
-          "con": 2
-        }
-      },
-      "crown_of_insight": {
-        "name": "Crown of Insight",
-        "description": "An ornate crown that enhances the wearer's wisdom.",
-        "type": "equipment",
-        "kind": "helm",
-        "rarity": "legendary",
-        "value": 1000,
-        "effect": {
-          "wis": 4
         }
       },
       "ring_of_thorns": {
@@ -1361,15 +1359,74 @@
           ]
         }
       },
-      "ring_of_minor_protection": {
-        "name": "Ring of Minor Protection",
+      "ring_of_minor_strength": {
+        "name": "Ring of Minor Strength",
         "kind": "ring",
         "effect": {
-          "ac": -1
+          "str": 1
         },
         "value": 50,
-        "description": "A simple enchanted ring providing slight protection"
+        "description": "A simple enchanted ring providing slight strength boost"
       },
+      "ring_of_strength": {
+        "name": "Ring of Strength",
+        "description": "A magical ring that enhances the wearer's physical strength.",
+        "type": "equipment",
+        "kind": "ring",
+        "rarity": "uncommon",
+        "value": 150,
+        "effect": {
+          "str": 2
+        }
+      },
+      "amulet_of_health": {
+        "name": "Amulet of Health",
+        "description": "A mystical amulet that bolsters the wearer's vitality.",
+        "type": "equipment",
+        "kind": "amulet",
+        "rarity": "uncommon",
+        "value": 200,
+        "effect": {
+          "con": 2
+        }
+      },
+      "amulet_of_focus": {
+        "name": "Amulet of Focus",
+        "description": "A powerful amulet that enhances the wearer's magical abilities.",
+        "type": "equipment",
+        "kind": "amulet",
+        "rarity": "rare",
+        "value": 600,
+        "effect": {
+          "int": 3,
+          "wis": 3,
+          "bonusSpellDC": 2
+        }
+      },
+      "amulet_of_protection": {
+        "name": "Amulet of Protection",
+        "description": "A protective amulet that increases the wearer's defenses.",
+        "type": "equipment",
+        "kind": "amulet",
+        "rarity": "legendary",
+        "value": 1200,
+        "effect": {
+          "ac": -2,
+          "resistAll": 0.1
+        }
+      },
+      "crown_of_insight": {
+        "name": "Crown of Insight",
+        "description": "An ornate crown that enhances the wearer's wisdom.",
+        "type": "equipment",
+        "kind": "helm",
+        "rarity": "legendary",
+        "value": 1000,
+        "effect": {
+          "wis": 4
+        }
+      },
+      
       "amulet_of_vitality": {
         "name": "Amulet of Vitality",
         "kind": "amulet",
@@ -1520,23 +1577,209 @@
         "effect": {
           "seeInvisible": true
         } 
+      },
+      "longsword_of_flames": {
+        "name": "Longsword of Flames",
+        "description": "A longsword engulfed in magical flames, dealing extra fire damage on hit.",
+        "type": "piercing",
+        "kind": "weapon",
+        "rarity": "rare",
+        "itemClass": "weapon",
+        "value": 800,
+        "damage": "1d8",
+        "effect": {
+          "onAttackHit": [
+            {
+              "type": "damage",
+              "amount": "1d6",
+              "kind": "fire",
+              "target": "target"
+            }
+          ]
+        }
       }
     }
   },
+  "junk": {
+    "discriminator": "kind",
+    "groups": {
+      "wooden_bowl": {
+        "description": "A simple wooden bowl, chipped and worn from use.",
+        "type": "junk",
+        "value": 1
+      },
+      "cloth_pouch": {
+        "description": "A small cloth pouch, frayed at the edges.",
+        "type": "junk",
+        "value": 1
+      },
+      "broken_dagger": {
+        "description": "A broken dagger with a dull blade and a cracked handle.",
+        "type": "junk",
+        "value": 2
+      },
+      "tattered_map": {
+        "description": "A tattered map with faded markings and torn edges.",
+        "type": "junk",
+        "value": 3
+      },
+      "wooden_figurine": {
+        "description": "A small wooden figurine, roughly carved and unfinished.",
+        "type": "junk",
+        "value": 2
+      },
+      "simple_ring": {
+        "description": "A simple iron ring, slightly bent out of shape.",
+        "type": "junk",
+        "value": 5
+      },
+      "small_statue": {
+        "description": "A small statue made of bronze, depicting a forgotten deity.",
+        "type": "junk",
+        "value": 10
+      },
+      "bronze_bracelet": {
+        "description": "A bronze bracelet with intricate designs etched into its surface.",
+        "type": "junk",
+        "value": 8
+      },
+      "faded_painting": {
+        "description": "A faded painting on canvas, its colors dulled by time.",
+        "type": "junk",
+        "value": 12
+      },
+      "broken_crown": {
+        "description": "Missing several jewels and tarnished with age.",
+        "type": "junk",
+        "value": 25
+      },
+      "lensing_crystal": {
+        "description": "A cracked lens that once belonged to a powerful magnifying glass.",
+        "type": "junk",
+        "value": 18
+      },
+      "broken_scepter": {
+        "description": "A broken scepter, its head shattered and its shaft cracked.",
+        "type": "junk",
+        "value": 30
+      },
+      "faded_tome": {
+        "description": "A faded tome with yellowed pages and a cracked spine.",
+        "type": "junk",
+        "value": 20
+      },
+      "dowsing_rod": {
+        "description": "A simple dowsing rod made of wood, used for locating water or minerals.",
+        "type": "junk",
+        "value": 12
+      },
+      "crystal_orb": {
+        "description": "A small crystalline sphere that glimmers faintly in the light.",
+        "type": "junk",
+        "value": 15
+      },
+      "jeweled_crown": {
+        "description": "A small crown adorned with semi-precious stones.",
+        "type": "junk",
+        "value": 20
+      },
+      "ancient_tome": {
+        "description": "An ancient tome filled with cryptic writings and illustrations.",
+        "type": "junk",
+        "value": 40
+      },
+      "priceless_painting": {
+        "description": "A priceless painting by a renowned artist, its value immeasurable.",
+        "type": "junk",
+        "value": 1000
+      },
+      "royal_scepter": {
+        "description": "An ornate scepter once wielded by royalty, encrusted with jewels.",
+        "type": "junk",
+        "value": 1500
+      },
+      "dragons_egg": {
+        "description": "A rare and valuable dragon's egg, warm to the touch.",
+        "type": "junk",
+        "value": 2000
+      },
+      "ancient_crown": {
+        "description": "An ancient crown rumored to have belonged to a long-lost king.",
+        "type": "junk",
+        "value": 2500
+      },
+      "sacred_idol": {
+        "description": "A sacred idol revered by an ancient civilization.",
+        "type": "junk",
+        "value": 3000
+      },
+      "lost_tome": {
+        "description": "A lost tome containing forgotten knowledge and secrets.",
+        "type": "junk",
+        "value": 3500
+      },
+      "fallen_star": {
+        "description": "A fragment of a fallen star, radiating a faint magical aura.",
+        "type": "junk",
+        "value": 5000
+      },
+      "golden_idol": {
+        "description": "A small idol made of pure gold, intricately crafted.",
+        "type": "junk",
+        "value": 4000
+      },
+      "crystal_eye": {
+        "description": "A mystical crystal eye that seems to watch those who hold it.",
+        "type": "junk",
+        "value": 6000
+      },
+      "phoenix_feather": {
+        "description": "A rare feather from a phoenix, said to have healing properties.",
+        "type": "junk",
+        "value": 7000
+      },
+      "kraken_claw": {
+        "description": "A massive claw from a kraken, still dripping with seawater.",
+        "type": "junk",
+        "value": 8000
+      },
+      "divine_scepter": {
+        "description": "A scepter imbued with divine power, radiating holy energy.",
+        "type": "junk",
+        "value": 10000
+      },
+      "jeweled_statue": {
+        "description": "A statue encrusted with precious jewels, depicting a legendary figure.",
+        "type": "junk",
+        "value": 12000
+      },
+      "vial_of_phoenix_tears": {
+        "description": "A small vial containing the tears of a phoenix, known for their healing properties.",
+        "type": "junk",
+        "value": 15000
+      },
+      "ancient_orrery": {
+        "description": "A complex orrery that models the movements of celestial bodies.",
+        "type": "junk",
+        "value": 5000
+      }
+    }
+  },
+
   "treasure": {
     "discriminator": "tier",
     "groups": {
       "basic": [
         [
-          "a wooden bowl", "a cloth pouch", "a broken dagger", "a tattered map", "a wooden figurine",
-          "minor_healing_potion", "firewood", "rope", "candle", "manacles",
+          "wooden_bowl", "cloth_pouch", "broken_dagger", "tattered_map", "wooden_figurine",
+          "minor_healing_potion", "firewood", "shoes", "candle", "manacles",
           "waterskin", "flask", "rations", "torch", "bedroll", "blanket",
           "soap", "fish_hook", "needle_and_thread", "skillet", "whetstone"
         ]
       ],
       "negligible": [
         [
-          "a simple ring", "a small statue", "a bronze bracelet", "a faded painting", "major_healing_potion",
+          "simple_ring", "small_statue", "bronze_bracelet", "faded_painting", "major_healing_potion",
           "crowbar", "dice", "lantern", "oil_flask", "pouch",
           "quill", "shovel", "signal_whistle", "tent", "vinegar",
           "wind_chime", "alchemist_fire", "first_aid_kit", "holy_water", "cloak_pin"
@@ -1544,35 +1787,45 @@
       ],
       "minor": [
         [
-          "dagger", "chainmail", "longsword", "agate", "carnelian",
+          "dagger",
+          "agate", "carnelian", "moonstone", "onyx", "quartz", 
+          "broken_crown", "lensing_crystal",
           "holy_symbol", "thieves_tools", "antidote", "ring_of_minor_protection", "elixir_of_strength",
-          "wand_of_magic_missile", "scroll_of_fireball", "amulet_of_health", "gloves_of_dexterity", "helm_of_intellect",
-          "mantle_of_charisma", "scroll_of_cure_disease", "wand_of_cure_minor_wounds", "wand_of_paralyzing_touch", "canvas", "lock", "hammer", "ladder", "musical_instrument"
+          "wand_of_magic_missile", "scroll_of_fireball", "scroll_of_cure_disease",
+          "amulet_of_health", "ring_of_minor_strength", "mantle_of_charisma", "wand_of_cure_minor_wounds", "wand_of_paralyzing_touch",
+          "canvas", "lock", "hammer", "ladder", "musical_instrument", "rope"
         ]
       ],
       "major": [
         [
-          "amethyst", "tourmaline", "a magic sword", "an enchanted ring", "ring_of_protection",
-          "boots_of_swiftness", "a crystal orb", "a jeweled crown", "a bag of precious gems", "nunchaku",
-          "scroll_of_domination", "ring_of_thorns", "crown_of_insight", "belt_of_giant_strength", "ring_of_the_firmament",
-          "wardstone", "polearm", "katana", "gloves_of_dexterity", "amulet_of_vitality",
-          "boots_of_swiftness", "amulet_of_health", "helm_of_intellect", "mantle_of_charisma", "ring_of_perfect_turning"
+          "amethyst", "tourmaline", "broken_scepter", "faded_tome", "dowsing_rod", "ancient_orrery",
+          "a magic sword",
+          "ring_of_protection", "ring_of_thorns", "belt_of_giant_strength", "boots_of_swiftness", "crystal_orb",
+          "nunchaku", "longsword", "chainmail", "wardstone", "katana", "longbow",
+          "gloves_of_dexterity", "amulet_of_vitality", "helm_of_intellect", "mantle_of_charisma", "ring_of_perfect_turning"
         ]
       ],
       "grand": [
         [
           "emerald", "sapphire", "belt_of_giant_strength", "ring_of_thorns", "crown_of_insight",
-          "ring_of_regeneration", "wardstone", "helm_of_the_stars", "ring_of_spell_turning", "a chest of gold coins",
-          "a priceless painting", "a legendary weapon", "a suit of enchanted armor", "a royal scepter", "a hidden stash of jewels",
-          "a tome of ancient knowledge", "a mystical artifact", "a dragon's egg", "a crown of the lost king", "a fabled sword of legends"
+          "wardstone", "helm_of_the_stars", "ring_of_strength", "ring_of_major_protection", "amulet_of_focus",
+          "priceless_painting", "royal_scepter", "dragons_egg", "jeweled_crown", "golden_idol",
+          "scroll_of_domination", "ancient_tome",
+          "a hidden stash of jewels",
+          "a legendary weapon", "a suit of enchanted armor", 
+          "a tome of ancient knowledge", "a mystical artifact", "a fabled sword of legends"
         ]
       ],
       "legendary": [
         [
-          "diamond", "black_opal", "scroll_of_apocalypse", "an ancient relic", "a lost tome",
-          "a sacred idol", "a crown of the lost king", "a fabled sword of legends", "a wondrous amulet of protection", "a ring of ultimate power",
-          "a legendary artifact of immense power", "a mythical beast's claw", "a shard of a fallen star", "a vial of eternal youth", "a scepter of divine authority",
-          "a legendary sword", "a suit of enchanted armor", "a royal scepter", "a hidden stash of jewels", "a mystical artifact"
+          "black_diamond", "diamond", "black_opal", "fire_opal", "star_ruby",
+          "scroll_of_apocalypse",
+          "ancient_crown", "sacred_idol", "lost_tome", "fallen_star", "crystal_eye",
+          "kraken_claw", "phoenix_feather", "divine_scepter", "jeweled_statue", "vial_of_phoenix_tears",
+          "amulet_of_protection", "ring_of_regeneration", "ring_of_spell_turning", "ring_of_the_firmament", 
+          "a fabled sword of legends", "a ring of ultimate power", "an ancient relic",
+          "a legendary artifact of immense power",
+          "a legendary sword", "a suit of enchanted armor", "a hidden stash of jewels", "a mystical artifact"
 
         ]
       ]

@@ -1,4 +1,3 @@
-import { select } from "@inquirer/prompts";
 import fs from "fs/promises";
 
 export default class Files {

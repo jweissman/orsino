@@ -50,7 +50,7 @@ interface Riddle {
   difficulty: "easy" | "medium" | "hard" | "deadly";
   form: string;
   challenge: { question: string; answer: string; };
-  reward: string;
+  reward: ItemInstance;
 }
 
 interface Wonder {
@@ -88,7 +88,7 @@ interface RoomBase {
   shrine: RoomFeature | null;
   riddle?: Riddle;
   wonder?: Wonder;
-  gems?: Gemstone[];
+  // gems?: Gemstone[];
   trap?: Trap;
 }
 
@@ -130,18 +130,17 @@ export default class Dungeoneer {
     return {
       name: "Party",
       combatants: [{
+        id: "pc:hero",
         forename: "Hero",
         name: "Hero",
         alignment: 'good',
         hp: 14, maximumHitPoints: 14, level: 1, ac: 10,
         dex: 11, str: 12, int: 10, wis: 10, cha: 10, con: 12,
-        weapon: "Short Sword",
-        hitDie: 8, attackDie: "1d20",
+        equipment: { weapon: "Short Sword" },
+        hitDie: 8,
         playerControlled: true, xp: 0, gp: 0,
         abilities: ["melee", "defend"],
-        traits: ["lucky"],
-        damageKind: "slashing",
-        hasMissileWeapon: false
+        traits: ["lucky"]
       }],
       inventory: []
     };
@@ -381,10 +380,10 @@ export default class Dungeoneer {
     });
 
     const roomAura = this.currentRoom?.aura;
-    const roomName = Words.humanize(this.currentRoom?.room_type || `Room ${this.currentRoomIndex + 1}/${this.dungeon!.rooms.length + 1}`);
+    const roomName = Words.humanize(this.currentRoom?.room_type || `Room ${this.currentRoomIndex + 1}/${this.dungeon.rooms.length + 1}`);
     await combat.setUp(
       [this.playerTeam, this.currentMonsterTeam],
-      [this.dungeon!.dungeon_name, roomName].join(" - "),
+      [this.dungeon.dungeon_name, roomName].join(" - "),
       roomAura ? [roomAura] : [],
       this.dry
     );
@@ -420,7 +419,7 @@ export default class Dungeoneer {
       const enemies = combat.enemyCombatants || [];
 
       let xp = 0;
-      let gold = Deem.evaluate(String(this.currentEncounter?.bonusGold || 0)) || 0;
+      let gold = Deem.evaluate(String(this.currentEncounter?.bonusGold || 0)) as number || 0;
 
       if (enemies.length > 0) {
         const monsterCount = enemies.length;
@@ -429,8 +428,8 @@ export default class Dungeoneer {
           + 25;
 
         for (const m of enemies) {
-          const monsterGold = (Deem.evaluate(String(m.gp))) || 0;
-          gold += monsterGold;
+          const monsterGold: number = Deem.evaluate(String(m.gp)) as number;
+          gold += (monsterGold || 0);
         }
 
       }
@@ -438,10 +437,10 @@ export default class Dungeoneer {
       const consumablesFound = Math.random();
       if (consumablesFound < 0.2) {
         const consumableRarity = (consumablesFound < 0.05) ? 'rare' : (consumablesFound < 0.1) ? 'uncommon' : 'common';
-        const consumable = Deem.evaluate(`pick(gather(consumables, -1, 'dig(#__it, rarity) == ${consumableRarity}'))`);
+        const consumable = Deem.evaluate(`pick(gather(consumables, -1, 'dig(#__it, rarity) == ${consumableRarity}'))`) as string;
         const consumableName = Words.humanize(consumable);
         await this.emit({ type: "itemFound", itemName: Words.humanize(consumableName), quantity: 1, where: "in the remains of your foes" });
-        this.playerTeam.inventory.push(await Inventory.item(consumable));
+        this.playerTeam.inventory.push(Inventory.item(consumable));
 
       }
 
@@ -577,13 +576,17 @@ export default class Dungeoneer {
           return { leaving, ...(newPlane ? { newPlane } : {}), ...(newLocation ? { newLocation } : {}) };
         }
       } else if (choice === "riddle") {
-        const riddle = room.riddle!;
-        await this.solveRiddle(riddle);
-        inspectedFeatures.push('riddle');
+        const riddle = room.riddle;
+        if (riddle) {
+          await this.solveRiddle(riddle);
+          inspectedFeatures.push('riddle');
+        }
       } else if (choice === "trap") {
-        const trap = room.trap!;
-        await this.handleTrap(trap);
-        inspectedFeatures.push('trap');
+        const trap = room.trap;
+        if (trap) {
+          await this.handleTrap(trap);
+          inspectedFeatures.push('trap');
+        }
       }
 
       else if (choice === "leave") {
@@ -619,7 +622,7 @@ export default class Dungeoneer {
 
       // const hasTools = this.playerTeam.combatants.some(c => c.gear?.includes('thieves_tools'));
       if (!toolsAvailable) {
-        this.note(`But no one has thieves' tools to disarm it! You carefully avoid the ${trap.trigger} and move on.`);
+        this.note(`But no one has thieves' tools to disarm it! You carefully avoid the ${Words.humanize(trap.trigger)} and move on.`);
         return;
       }
 
@@ -644,16 +647,18 @@ export default class Dungeoneer {
         forename: Words.humanize(trap.punishment),
         name: trap.punishment,
         alignment: 'neutral',
-        weapon: '',
+        equipment: { weapon: '' },
         hp: 1, maximumHitPoints: 1, level: 0, ac: 0,
         dex: 0, str: 0, int: 0, wis: 0, cha: 0, con: 0,
-        attackDie: '0d0', damageKind: 'true', abilities: [], playerControlled: false, xp: 0, gp: 0, traits: []
+        abilities: [], playerControlled: false, xp: 0, gp: 0, traits: []
       };
       for (const pc of this.playerTeam.combatants) {
         const context: CombatContext = {
           subject: pc, //alertCheck.actor,
           allies: this.playerTeam.combatants.filter(c => c !== pc),
           enemies: [],
+          inventory: this.playerTeam.inventory,
+          enemyInventory: []
         };
         const source = Words.a_an(Words.humanize(trap.punishment));
         for (const effect of fx) {
@@ -690,31 +695,23 @@ export default class Dungeoneer {
         "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P",
         "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
       ];
-      const answer = await this.select(`The ${Words.humanize(riddle.form)} asks: "${riddle.challenge.question}"`, [
+      await this.emit({ type: "riddlePosed", subject: check.actor, challenge: riddle.challenge.question });
+      const answer = await this.select(`The ${Words.humanize(riddle.form)} awaits your answer...`, [
         ...Sample.shuffle(...[
           { name: riddle.challenge.answer, value: "correct", short: 'Answer', disabled: false },
-          ...(Sample.count(5, ...wrongAnswerPool).map((w, i) => ({ name: w, value: 'wrong', short: 'Answer', disabled: false })))
+          ...(Sample.count(5, ...wrongAnswerPool).map((name) => ({ name, value: 'wrong', short: 'Answer', disabled: false })))
         ]),
         { name: "Remain silent", value: "silent", short: 'Silent', disabled: false },
       ]) as string;
       if (answer === "correct") {
-        await this.emit({ type: "riddle", subject: check.actor, challenge: riddle.challenge.question, reward: riddle.reward, solution: riddle.challenge.answer });
-        this.note(`${check.actor.forename} answered correctly and received ${Words.a_an(riddle.reward)}!`);
-        // give reward
-        // const isConsumable = Deem.evaluate(`hasEntry(consumables, '${riddle.reward}')`);
-        // if (isConsumable) {
-          this.playerTeam.inventory.push(Inventory.item(riddle.reward));
-        // } else {
-        //   check.actor.gear = check.actor.gear || [];
-        //   check.actor.gear.push(riddle.reward);
-        // }
+        await this.emit({ type: "riddleSolved", subject: check.actor, challenge: riddle.challenge.question, reward: riddle.reward, solution: riddle.challenge.answer });
+        this.playerTeam.inventory.push(riddle.reward);
       } else {
         this.note(`${check.actor.forename} answered incorrectly.`);
       }
     } else {
       this.note(`${check.actor.forename} could not make sense of the ${Words.humanize(riddle.form)}.`);
     }
-
   }
 
   private async interactWithFeature(featureName: string): Promise<{
@@ -758,7 +755,9 @@ export default class Dungeoneer {
             const nullCombatContext: CombatContext = {
               subject: check.actor, allies: [
                 ...this.playerTeam.combatants.filter(c => c !== check.actor)
-              ], enemies: [] };
+              ], enemies: [],
+              inventory: this.playerTeam.inventory, enemyInventory: []
+            };
             for (const effect of interaction.effects) {
               // this.note(`Applying effect: ${JSON.stringify(effect)}`);
               const { events } = await AbilityHandler.handleEffect(interaction.name, effect, check.actor, check.actor, nullCombatContext, Commands.handlers(this.roller));
@@ -794,7 +793,8 @@ export default class Dungeoneer {
           await this.emit({ type: "itemFound", itemName: Words.humanize(item), quantity: 1, where: "in the hidden stash" });
           // const isConsumable = Deem.evaluate(`=hasEntry(consumables, "${item}")`) as boolean;
           // const isGear = Deem.evaluate(`=hasEntry(masterGear, "${item}")`) as boolean;
-          const isEquipment = Deem.evaluate(`=hasEntry(equipment, "${item}")`) as boolean;
+          const isEquipment = Deem.evaluate(`=hasEntry(masterEquipment, "${item}")`) as boolean;
+
           // if (isConsumable) {
           //   // this.note(`You add ${Words.a_an(item)} to your inventory.`);
           //   // this.playerTeam.inventory.push({ name: item });
@@ -850,13 +850,14 @@ export default class Dungeoneer {
         }
       }
 
-      if (room.gems) {
-        for (const gem of room.gems) {
-          await this.emit({ type: "itemFound", itemName: Words.humanize(gem.name), quantity: 1, where: "in the hidden stash" });
-          actor.gems = actor.gems || [];
-          actor.gems.push(gem as Gem);
-        }
-      }
+      // if (room.gems) {
+      //   for (const gem of room.gems) {
+      //     await this.emit({ type: "itemFound", itemName: Words.humanize(gem.name), quantity: 1, where: "in the hidden stash" });
+      //     // actor.gems = actor.gems || [];
+      //     // actor.gems.push(gem as Gem);
+      //     this.playerTeam.inventory.push(Inventory.item(gem.key));
+      //   }
+      // }
 
       let lootBonus = 0;
       const fx = Fighting.gatherEffects(actor);
@@ -937,7 +938,8 @@ export default class Dungeoneer {
                   this.note(`Using ${Words.a_an(itemName)} on ${c.name}...`);
                   const effects = it.effects || [];
                   const nullCombatContext: CombatContext = {
-                    subject: c, allies: this.playerTeam.combatants.filter(ally => ally.name !== c.name && ally.hp > 0), enemies: []
+                    subject: c, allies: this.playerTeam.combatants.filter(ally => ally.name !== c.name && ally.hp > 0), enemies: [],
+                    inventory: this.playerTeam.inventory, enemyInventory: []
                   };
                   for (const effect of effects) {
                     const { events } = await AbilityHandler.handleEffect(it.name, effect, c, c, nullCombatContext, Commands.handlers(this.roller));
@@ -1066,8 +1068,9 @@ export default class Dungeoneer {
             {
               id: "npc:shadow_dragon_001",
               forename: "Shadow Dragon", name: "Shadow Dragon", hp: 50, maximumHitPoints: 50, level: 5, ac: 18, dex: 14, str: 20, con: 16, int: 12, wis: 10, cha: 14,
-              attackDie: "1d20", hitDie: 12, hasMissileWeapon: false,
-              playerControlled: false, xp: 500, gp: 1000, weapon: "Bite", damageKind: "piercing", abilities: ["melee"], traits: [], alignment: 'evil'
+              playerControlled: false, xp: 500, gp: 1000,
+              equipment: { weapon: "Bite" },
+              abilities: ["melee"], traits: [], alignment: 'evil'
             }
           ]
         },
@@ -1094,8 +1097,9 @@ export default class Dungeoneer {
               {
                 id: "npc:goblin_001",
                 forename: "Goblin", name: "Goblin", hp: 7, maximumHitPoints: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, alignment: "evil",
-                attackDie: "1d20", hitDie: 6, hasMissileWeapon: false,
-                playerControlled: false, xp: 50, gp: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: []
+                playerControlled: false, xp: 50, gp: 10,
+                equipment: { weapon: "Dagger" },
+                abilities: ["melee"], traits: []
               }
             ]
           },
@@ -1116,8 +1120,9 @@ export default class Dungeoneer {
               {
                 id: "npc:orc_001",
                 forename: "Orc", name: "Orc", hp: 15, maximumHitPoints: 15, level: 2, ac: 13, dex: 12, str: 16, con: 14, int: 8, wis: 10, cha: 8, alignment: "evil",
-                attackDie: "1d20", hitDie: 8, hasMissileWeapon: false,
-                playerControlled: false, xp: 100, gp: 20, weapon: "Axe", damageKind: "slashing", abilities: ["melee"], traits: []
+                playerControlled: false, xp: 100, gp: 20,
+                equipment: { weapon: "Axe" },
+                abilities: ["melee"], traits: []
               },
             ]
           },

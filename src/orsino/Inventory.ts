@@ -6,6 +6,7 @@ import { ItemInstance } from "./types/ItemInstance";
 
 export interface Weapon {
   key?: string;
+  description: string;
   damage: string;
   type: DamageKind;
   intercept?: boolean;
@@ -63,13 +64,17 @@ export class Inventory {
 
   static item(name: string): ItemInstance {
     const it = Generator.gen("loot", { _name: name }) as unknown as ItemInstance;
+    if (it.charges) {
+      console.warn(`Setting maxCharges for item ${it.name} to ${it.charges}.`);
+      it.maxCharges = Math.max(1,it.charges);
+    }
     return it;
   }
 
   static quantities(items: ItemInstance[]): { [itemName: string]: number; } {
     const inventoryCounts: { [itemName: string]: number; } = {};
     for (const itemInstance of items) {
-      inventoryCounts[itemInstance.key] = (inventoryCounts[itemInstance.name] || 0) + 1;
+      inventoryCounts[itemInstance.key] = (inventoryCounts[itemInstance.key] || 0) + 1;
     }
     return inventoryCounts;
   }
@@ -79,7 +84,7 @@ export class Inventory {
       wielder.equipment = {};
     }
 
-    const equipment = Deem.evaluate(`lookup(equipment, "${equipmentKey}")`) as unknown as Equipment;
+    const equipment = Deem.evaluate(`lookup(masterEquipment, "${equipmentKey}")`) as unknown as Equipment;
     let slot = equipment.kind;
     if (slot === 'ring' as EquipmentSlot) {
       if (!wielder.equipment['ring1']) {
@@ -87,25 +92,11 @@ export class Inventory {
       } else if (!wielder.equipment['ring2']) {
         slot = 'ring2';
       } else {
-        // both ring slots taken, replace ring1
         slot = 'ring1';
       }
     }
 
     const oldItemKey = wielder.equipment ? wielder.equipment[slot] : null;
-    // let oldItem = null;
-    // if (oldItemKey) {
-    //   oldItem = Deem.evaluate(`lookup(equipment, "${oldItemKey}")`) as unknown as Equipment;
-    //   // console.log(`Discard equipped ${Words.humanize(oldItemKey)} from ${wielder.name} in favor of ${Words.humanize(equipmentKey)}.`);
-    //   // wielder.gp += oldItem.value || 0;
-    //   // this.state.sharedGold += oldItem.value || 0;
-    //   // this.outputSink(`🔄 Replacing ${Words.humanize(oldItemKey)} equipped to ${wielder.name} (sold old item for ${oldItem.value}g).`)
-    // };
-    // wielder.equipment = wielder.equipment || {};
-    // wielder.equipment[slot] = equipmentKey;
-
-    // console.log(`🛡️ Equipped ${equipmentKey} to ${wielder.name} in slot ${slot}.`);
-
     return { oldItemKey: oldItemKey || null, slot };
   }
 

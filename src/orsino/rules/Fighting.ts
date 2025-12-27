@@ -1,8 +1,11 @@
 import Deem from "../../deem";
+import { CombatContext } from "../Combat";
+import { Weapon } from "../Inventory";
 import { StatusEffect, StatusModifications } from "../Status";
 import Words from "../tui/Words";
 import { AttackResult } from "../types/AttackResult";
 import { Combatant } from "../types/Combatant";
+import { ItemInstance, materializeItem } from "../types/ItemInstance";
 import { Roll } from "../types/Roll";
 
 type EffectiveStats = {
@@ -78,7 +81,7 @@ export class Fighting {
     return bonuses;
   }
 
-  static effectiveStats(combatant: Combatant): EffectiveStats{
+  static effectiveStats(combatant: Combatant): EffectiveStats {
     let stats: EffectiveStats = {
       str: combatant.str,
       dex: combatant.dex,
@@ -92,24 +95,25 @@ export class Fighting {
 
     const effectList = this.effectList(combatant);
     effectList.forEach(it => {
-        if (it.effect) {
-          Object.entries(it.effect).forEach(([key, value]) => {
-            if (key in stats && typeof value === "number") {
-              const k = key as keyof typeof stats;
-              stats[k] = (stats[k] || 0) + value;
-            }
-          });
-
-          if (it.effect.effectiveStats) {
-            stats = { ...stats, ...it.effect.effectiveStats };
+      if (it.effect) {
+        Object.entries(it.effect).forEach(([key, value]) => {
+          if (key in stats && typeof value === "number") {
+            const k = key as keyof typeof stats;
+            stats[k] = (stats[k] || 0) + value;
           }
+        });
+
+        if (it.effect.effectiveStats) {
+          stats = { ...stats, ...it.effect.effectiveStats };
         }
-      });
+      }
+    });
     return stats;
   }
 
-  static effectiveAttackDie(combatant: Combatant): string {
-    let baseAttackDie = combatant.attackDie || "1d6";
+  static effectiveAttackDie(combatant: Combatant, inventory: ItemInstance[]): string {
+    let weapon = this.effectiveWeapon(combatant, inventory || []);
+    let baseAttackDie = weapon.damage || "1d2";
     const effectList = this.effectList(combatant);
     effectList.forEach(it => {
       if (it.effect) {
@@ -119,6 +123,60 @@ export class Fighting {
       }
     });
     return baseAttackDie;
+  }
+
+  static effectiveWeapon(
+    combatant: Combatant,
+    inventory: ItemInstance[]
+  ): (Weapon & ItemInstance) {
+    const weapon = combatant.equipment?.weapon || 'fist'; //weapon;
+    const materializedWeapon = materializeItem(weapon, inventory);
+    if (materializedWeapon && materializedWeapon.itemClass === 'weapon') {
+      return materializedWeapon as unknown as (Weapon & ItemInstance);
+    }
+    // if (typeof weapon === "string") {
+    //if (inventory.map(ii => ii.id).includes(weapon)) {
+    //  const item = inventory.find(i => i.id === weapon);
+    //  if (item && item.kind === "weapon") {
+    //    return item as unknown as (Weapon & ItemInstance);
+    //  }
+    //}
+    //if (inventory.map(ii => ii.key).includes(weapon)) {
+    //  const item = inventory.find(i => i.key === weapon);
+    //  if (item && item.kind === "weapon") {
+    //    return item as unknown as (Weapon & ItemInstance);
+    //  }
+    //}
+    //const hasMasterWeaponEntry = Deem.evaluate(`hasEntry(masterWeapon, "${weapon}")`) as boolean;
+    //if (hasMasterWeaponEntry) {
+    //  const masterWeapon = Deem.evaluate(`lookup(masterWeapon, "${weapon}")`) as unknown as Weapon;
+    //  if (!masterWeapon) {
+    //    throw new Error(`Could not find weapon ${weapon} in effectiveWeapon`);
+    //  }
+    //  // note: straight lookup from master will actually be missing a bunch of true ItemInstance fields like id etc
+    //  return {
+    //    name: weapon,
+    //    ...masterWeapon,
+    //    itemClass: 'weapon',
+    //    key: weapon
+    //  };
+    //}
+    //const hasMasterEquipmentEntry = Deem.evaluate(`hasEntry(masterEquipment, "${weapon}")`) as boolean;
+    //if (hasMasterEquipmentEntry) {
+    //  const masterEquipment = Deem.evaluate(`lookup(masterEquipment, "${weapon}")`) as unknown as Weapon;
+    //  if (!masterEquipment) {
+    //    throw new Error(`Could not find equipment ${weapon} in effectiveWeapon`);
+    //  }
+
+    //  return {
+    //    name: weapon,
+    //    ...masterEquipment,
+    //    itemClass: 'weapon',
+    //    key: weapon
+    //  };
+    //}
+
+    throw new Error(`Could not resolve effective weapon for combatant ${combatant.name} with weapon ${weapon}`);
   }
 
   // gather all current passive + active effects and try to calculate any cumulative bonuses
@@ -149,7 +207,7 @@ export class Fighting {
         }
       }
     }
-    
+
     return resultingEffects;
   }
 
@@ -167,7 +225,7 @@ export class Fighting {
           if (!(key in resultingEffects)) {
             resultingEffects[key] = { value: 0, sources: [] };
           }
-          
+
           if (typeof value === "number" && typeof resultingEffects[key].value === "number") {
             resultingEffects[key].value = (resultingEffects[key].value || 0) + value;
             resultingEffects[key].sources.push(it.name || "unknown");
@@ -181,7 +239,7 @@ export class Fighting {
         });
       }
     }
-    
+
     return resultingEffects;
   }
 
@@ -195,7 +253,7 @@ export class Fighting {
     roll: Roll,
     attacker: Combatant,
     defender: Combatant,
-    isMissile: boolean
+    attackerContext: CombatContext
   ): Promise<AttackResult> {
     if (defender.hp <= 0) {
       return {
@@ -212,6 +270,8 @@ export class Fighting {
     const dexMod = this.statMod(effectiveAttacker.dex || 10);
 
     const toHitTurnBonus = (this.turnBonus(attacker, ["toHit"])).toHit || 0;
+    const attackerWeapon = this.effectiveWeapon(attacker, attackerContext.inventory || []);
+    const isMissile = attackerWeapon.missile === true;
     const toHitBonus = (isMissile ? dexMod : strMod)  // DEX affects accuracy for missiles
       + toHitTurnBonus;                 // Any temporary bonuses to hits
     const damageBonus = isMissile ? Math.max(0, dexMod) : Math.max(0, strMod);
@@ -222,7 +282,7 @@ export class Fighting {
     const ac = effectiveDefender.ac - defenderAcBonus;
     const whatNumberHits = thac0 - ac - toHitBonus;
 
-    const attackRoll = await roll(attacker, `to attack ${defender.forename} (must roll ${whatNumberHits} or higher to hit)`, 20);
+    const attackRoll = roll(attacker, `to attack ${defender.forename} (must roll ${whatNumberHits} or higher to hit)`, 20);
     description += attackRoll.description;
     const success = attackRoll.amount >= whatNumberHits;
     let critical = false;
@@ -251,13 +311,15 @@ export class Fighting {
       //   throw new Error(`Attacker ${attacker.name} does not have an attackDie defined.`);
       // }
 
-      const attackDie = this.effectiveAttackDie(attacker);
+      const attackDie = this.effectiveAttackDie(attacker, attackerContext.inventory);
 
       const weaponVerb =
-        attacker.hasMissileWeapon ? "shoot" : (this.weaponDamageKindVerbs[attacker.damageKind || "slashing"] || "strike");
+        // attacker.hasMissileWeapon ? "shoot" : (this.weaponDamageKindVerbs[attacker.damageKind || "slashing"] || "strike");
+        attackerWeapon.missile ? "shoot" : (
+          attackerWeapon.kind ? (this.weaponDamageKindVerbs[attackerWeapon.kind] || "strike") : "strike");
       damage = Deem.evaluate(attackDie, {
         roll, subject: attacker,
-        description: `to ${weaponVerb} ${defender.forename} with ${Words.humanize(attacker.weapon)}`
+        description: `to ${weaponVerb} ${defender.forename} with ${Words.humanize(attackerWeapon.name || 'weapon')}`
       }) as number;
 
       if (critical) {
@@ -270,7 +332,7 @@ export class Fighting {
       if (defenderEffects.evasion) {
         const evasionBonus = defenderEffects.evasion || 0;
         const whatNumberEvades = 20 - evasionBonus;
-        const evasionRoll = await roll(defender, `for evasion (must roll ${whatNumberEvades} or higher)`, 20);
+        const evasionRoll = roll(defender, `for evasion (must roll ${whatNumberEvades} or higher)`, 20);
         if (evasionRoll.amount >= whatNumberEvades) {
           description += ` ${defender.name} evades the attack!`;
           return {
