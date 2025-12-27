@@ -8,8 +8,9 @@ import { Combatant } from "./orsino/types/Combatant";
 import { GameState } from "./orsino/types/GameState";
 import Automatic from "./orsino/tui/Automatic";
 import { never } from "./orsino/util/never";
+import { materializeItem } from "./orsino/types/ItemInstance";
 
-export type ShopType = 'loot' | 'consumables' | 'weapons' | 'equipment';
+export type ShopType = 'loot' | 'consumables' | 'weapons' | 'equipment' | 'armor';
 
 type ShopStepResult =
   | { done: true; events: ModuleEvent[] }
@@ -21,6 +22,7 @@ export default class Shop {
       case 'consumables':
         return "Alchemist";
       case 'weapons':
+      case 'armor':
         return "Armorer";
       case 'equipment':
         return "Magician";
@@ -53,10 +55,78 @@ export default class Shop {
       equipment: this.equipmentShop.bind(this),
       consumables: this.consumablesShop.bind(this),
       weapons: this.weaponsShop.bind(this),
+      armor: this.armorShop.bind(this),
       loot: this.lootShop.bind(this),
     };
     const events: ModuleEvent[] = await stores[shopType].bind(this)();
     return { done: this.leaving, events };
+  }
+
+  private async armorShop(): Promise<ModuleEvent[]> {
+    const events: ModuleEvent[] = [];
+    const armorItemNames = Deem.evaluate(`gather(masterArmor)`) as string[];
+    const pcOptions = this.party.map(pc => ({
+      short: pc.name,
+      value: pc,
+      name: `${pc.name} (${pc.equipment ? Words.humanizeList(Object.values(pc.equipment)) : 'no equipment'})`,
+      disabled: false,
+    }));
+    const wearer = await this.select(`Who needs new armor?`, pcOptions) as Combatant;
+
+    const options = [];
+    for (let index = 0; index < armorItemNames.length; index++) {
+      const itemName = armorItemNames[index];
+      const item = Deem.evaluate(`lookup(masterArmor, "${itemName}")`) as unknown as Equipment;
+      item.key = itemName;
+      options.push({
+        short: Words.humanize(itemName) + ` (${item.value}g)`,
+        value: item,
+        name: `${Words.humanize(itemName)} - ${item.description} (${item.value}g)`,
+        disabled: this.currentGold < item.value,
+      })
+    }
+    options.push({ disabled: false, short: "Done", value: "done", name: "Finish shopping" });
+
+    const choice = await this.select("Available armor to purchase:", options);
+    if (choice === "done") {
+      this.leaving = true;
+      return events;
+    }
+    const item = choice as Equipment;
+
+    if (this.currentGold >= item.value) {
+      const { oldItemKey: maybeOldItem } = Inventory.equipmentSlotAndExistingItem(item.key, wearer);
+      if (maybeOldItem) {
+        const oldItem = materializeItem(maybeOldItem, this.gameState.inventory);
+        events.push({
+          type: "sale",
+          itemName: maybeOldItem,
+          revenue: oldItem.value,
+          seller: wearer,
+          day: this.day,
+        });
+      }
+
+      events.push({
+        type: "purchase",
+        itemName: item.key,
+        cost: item.value,
+        buyer: wearer,
+        day: this.day,
+      });
+      this.currentGold -= item.value;
+      const equipment = Deem.evaluate(`lookup(masterArmor, "${item.key}")`) as unknown as Equipment;
+      const slot = equipment.kind;
+      events.push({
+        type: "equip",
+        itemName: item.key,
+        slot,
+        wearerId: wearer.id,
+        wearerName: wearer.forename,
+        day: this.day,
+      })
+    }
+    return events;
   }
 
   private async lootShop(): Promise<ModuleEvent[]> {
@@ -220,15 +290,14 @@ export default class Shop {
     if (this.currentGold >= item.value) {
       const { oldItemKey: maybeOldItem } = Inventory.equipmentSlotAndExistingItem(item.key, wearer);
       if (maybeOldItem) {
-        // bring back when we can more clearly materialize old items regardless of which table they came from (weapons vs equipment vs gear)
-        // const oldItem = Deem.evaluate(`lookup(masterEquipment, "${maybeOldItem}")`) as unknown as Equipment;
-        // events.push({
-        //   type: "sale",
-        //   itemName: maybeOldItem,
-        //   revenue: oldItem.value,
-        //   seller: wearer,
-        //   day: this.day,
-        // });
+        const oldItem = materializeItem(maybeOldItem, this.gameState.inventory);
+        events.push({
+          type: "sale",
+          itemName: maybeOldItem,
+          revenue: oldItem.value,
+          seller: wearer,
+          day: this.day,
+        });
       }
 
       events.push({

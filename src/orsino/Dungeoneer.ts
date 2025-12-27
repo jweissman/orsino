@@ -134,9 +134,9 @@ export default class Dungeoneer {
         forename: "Hero",
         name: "Hero",
         alignment: 'good',
-        hp: 14, maximumHitPoints: 14, level: 1, ac: 10,
+        hp: 14, maximumHitPoints: 14, level: 1, // ac: 10,
         dex: 11, str: 12, int: 10, wis: 10, cha: 10, con: 12,
-        equipment: { weapon: "Short Sword" },
+        equipment: { weapon: "Short Sword", body: "Chainmail" },
         hitDie: 8,
         playerControlled: true, xp: 0, gp: 0,
         abilities: ["melee", "defend"],
@@ -647,8 +647,8 @@ export default class Dungeoneer {
         forename: Words.humanize(trap.punishment),
         name: trap.punishment,
         alignment: 'neutral',
-        equipment: { weapon: '' },
-        hp: 1, maximumHitPoints: 1, level: 0, ac: 0,
+        equipment: { weapon: '', body: '' },
+        hp: 1, maximumHitPoints: 1, level: 0,
         dex: 0, str: 0, int: 0, wis: 0, cha: 0, con: 0,
         abilities: [], playerControlled: false, xp: 0, gp: 0, traits: []
       };
@@ -1067,9 +1067,10 @@ export default class Dungeoneer {
           creatures: [
             {
               id: "npc:shadow_dragon_001",
-              forename: "Shadow Dragon", name: "Shadow Dragon", hp: 50, maximumHitPoints: 50, level: 5, ac: 18, dex: 14, str: 20, con: 16, int: 12, wis: 10, cha: 14,
+              forename: "Shadow Dragon", name: "Shadow Dragon", hp: 50, maximumHitPoints: 50, level: 5,
+              dex: 14, str: 20, con: 16, int: 12, wis: 10, cha: 14,
               playerControlled: false, xp: 500, gp: 1000,
-              equipment: { weapon: "Bite" },
+              equipment: { weapon: "bite", body: "scale" },
               abilities: ["melee"], traits: [], alignment: 'evil'
             }
           ]
@@ -1096,9 +1097,9 @@ export default class Dungeoneer {
             creatures: [
               {
                 id: "npc:goblin_001",
-                forename: "Goblin", name: "Goblin", hp: 7, maximumHitPoints: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, alignment: "evil",
+                forename: "Goblin", name: "Goblin", hp: 7, maximumHitPoints: 7, level: 1, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, alignment: "evil",
                 playerControlled: false, xp: 50, gp: 10,
-                equipment: { weapon: "Dagger" },
+                equipment: { weapon: "dagger", body: "scale" },
                 abilities: ["melee"], traits: []
               }
             ]
@@ -1119,9 +1120,9 @@ export default class Dungeoneer {
             creatures: [
               {
                 id: "npc:orc_001",
-                forename: "Orc", name: "Orc", hp: 15, maximumHitPoints: 15, level: 2, ac: 13, dex: 12, str: 16, con: 14, int: 8, wis: 10, cha: 8, alignment: "evil",
+                forename: "Orc", name: "Orc", hp: 15, maximumHitPoints: 15, level: 2, dex: 12, str: 16, con: 14, int: 8, wis: 10, cha: 8, alignment: "evil",
                 playerControlled: false, xp: 100, gp: 20,
-                equipment: { weapon: "Axe" },
+                equipment: { weapon: "axe", body: "leather" },
                 abilities: ["melee"], traits: []
               },
             ]

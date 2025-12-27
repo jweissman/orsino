@@ -158,7 +158,7 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 | Glowing Pool | _A pool that glows with a soft, radiant light._ | Heal user 4d8 HP |
 | Glowing Runes | _Runes that glow with an inner light, pulsing softly._ | Grant user Insight (Improve all saves by 2, improve bonus spell DC by 1) |
 | Illusory Visions | _Visions that appear and disappear at the edge of your sight._ | Grant user Clarity (Improve all rolls by 2, Immunity to Charm); Grant user Owl's Wisdom (Improve Wisdom by 2, improve all saves by 1) |
-| Intelligent Painting | _A painting that seems to change and shift, depicting different scenes._ | Learn ability Polymorph (An enemy suffers Polymorphed (Displayed name changed to "Sheep", Displayed class changed to "Harmless Beast", attack die set to 1d2, MAXHP set to 5, AC set to 10, STR set to 2, CON set to 2, DEX set to 2, INT set to 2, WIS set to 2, CHA set to 2); Recalculate HP for target.) |
+| Intelligent Painting | _A painting that seems to change and shift, depicting different scenes._ | Learn ability Polymorph (An enemy suffers Polymorphed (Displayed name changed to "Sheep", Displayed class changed to "Simple Beast", attack die set to 1d2, MAXHP set to 5, AC set to 10, STR set to 2, CON set to 2, DEX set to 2, INT set to 2, WIS set to 2, CHA set to 2, Abilities set to: Melee, Bleat, Flee, May not use items); Recalculate HP for target.) |
 | Levitating Objects | _Various objects levitating gently in the air, defying gravity._ | Grant user Cat's Grace (Improve Dexterity by 2, improve evasion by 5) |
 | Life Tree | _A magnificent tree that radiates life energy, its leaves shimmering with vitality._ | Permanently increase user Constitution by 1 |
 | Living Book | _A book that seems to write itself, its pages filled with ever-changing text._ | Learn ability Lightning Bolt (Deal 1d8 electric damage to 2 random enemies; 2 random enemies suffer Paralyzed (Cannot take actions, degrade Strength by 5, degrade Dexterity by 5).) |
@@ -259,12 +259,12 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 
 | Treasure | Description | Value | Kind |
 |----------|-------------|-------|------|
-| Dagger | A small dagger, ideal for close combat and throwing. | 2 gp | weapon |
-| Agate | A common gemstone | 75 gp | gem |
-| Carnelian | A common gemstone | 25 gp | gem |
+| Dagger | A small blade ideal for close combat and throwing. | 2 gp | weapon |
+| Agate | A common gemstone | 38 gp | gem |
+| Carnelian | A common gemstone | 38 gp | gem |
 | Moonstone | A common gemstone | 100 gp | gem |
-| Onyx | A common gemstone | 25 gp | gem |
-| Quartz | A common gemstone | 50 gp | gem |
+| Onyx | A common gemstone | 75 gp | gem |
+| Quartz | A common gemstone | 75 gp | gem |
 | Broken Crown | Missing several jewels and tarnished with age. | 25 gp | junk |
 | Lensing Crystal | A cracked lens that once belonged to a powerful magnifying glass. | 18 gp | junk |
 | Holy Symbol | A holy symbol for religious ceremonies or warding off evil. | 5 gp | gear |
@@ -292,7 +292,7 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 | Treasure | Description | Value | Kind |
 |----------|-------------|-------|------|
 | Amethyst | An uncommon gemstone | 150 gp | gem |
-| Tourmaline | An uncommon gemstone | 150 gp | gem |
+| Tourmaline | An uncommon gemstone | 100 gp | gem |
 | Broken Scepter | A broken scepter, its head shattered and its shaft cracked. | 30 gp | junk |
 | Faded Tome | A faded tome with yellowed pages and a cracked spine. | 20 gp | junk |
 | Dowsing Rod | A simple dowsing rod made of wood, used for locating water or minerals. | 12 gp | junk |
@@ -303,12 +303,12 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 | Belt Of Giant Strength | A sturdy belt that enhances the wearer's physical strength. | 2500 gp | equipment |
 | Boots Of Swiftness | Lightweight boots that increase the wearer's agility. | 200 gp | equipment |
 | Crystal Orb | A small crystalline sphere that glimmers faintly in the light. | 15 gp | junk |
-| Nunchaku | A traditional weapon consisting of two sticks connected by a chain or rope. | 15 gp | weapon |
-| Longsword | A versatile longsword suitable for both cutting and thrusting. | 15 gp | weapon |
+| Nunchaku | A battering weapon consisting of two sticks connected by a chain. | 15 gp | weapon |
+| Longsword | A versatile sword suitable for both cutting and thrusting. | 15 gp | weapon |
 | Chainmail | Made of interlinked metal rings, offering strong protection at the cost of weight. | 50 gp | armor |
 | Wardstone | A mystical stone that provides a protective barrier to the bearer. | 600 gp | equipment |
-| Katana | A traditional sword known for its sharpness and cutting ability. | 50 gp | weapon |
-| Longbow | A longbow designed for ranged combat with moderate draw weight. | 30 gp | weapon |
+| Katana | A fine sword with exquisite sharpness and cutting ability. | 50 gp | weapon |
+| Longbow | A bow designed for ranged combat with moderate draw weight. | 30 gp | weapon |
 | Gloves Of Dexterity | Fine gloves that enhance the wearer's dexterity. | 50 gp | equipment |
 | Amulet Of Vitality | A minor health charm | 50 gp | equipment |
 | Helm Of Intellect | A finely crafted helm that sharpens the wearer's mind. | 150 gp | equipment |
@@ -320,7 +320,7 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 | Treasure | Description | Value | Kind |
 |----------|-------------|-------|------|
 | Emerald | A rare gemstone | 1000 gp | gem |
-| Sapphire | A rare gemstone | 1500 gp | gem |
+| Sapphire | A rare gemstone | 1000 gp | gem |
 | Belt Of Giant Strength | A sturdy belt that enhances the wearer's physical strength. | 2500 gp | equipment |
 | Ring Of Thorns | A magical ring that grants the wearer the ability to counterattack. | 400 gp | equipment |
 | Crown Of Insight | An ornate crown that enhances the wearer's wisdom. | 1000 gp | equipment |
@@ -336,22 +336,22 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 | Golden Idol | A small idol made of pure gold, intricately crafted. | 4000 gp | junk |
 | Scroll Of Domination | A magical scroll that allows the caster to control the mind of a target creature. | 100 gp | consumable |
 | Ancient Tome | An ancient tome filled with cryptic writings and illustrations. | 40 gp | junk |
-| A Hidden Stash Of Jewels | A mysterious item | 200 gp | loot |
-| A Legendary Weapon | A mysterious item | 200 gp | loot |
+| A Hidden Stash Of Jewels | A mysterious item | 10 gp | loot |
+| A Legendary Weapon | A mysterious item | 10 gp | loot |
 | A Suit Of Enchanted Armor | A mysterious item | 50 gp | loot |
-| A Tome Of Ancient Knowledge | A mysterious item | 200 gp | loot |
-| A Mystical Artifact | A mysterious item | 10 gp | loot |
-| A Fabled Sword Of Legends | A mysterious item | 10 gp | loot |
+| A Tome Of Ancient Knowledge | A mysterious item | 50 gp | loot |
+| A Mystical Artifact | A mysterious item | 200 gp | loot |
+| A Fabled Sword Of Legends | A mysterious item | 50 gp | loot |
 
 ### Legendary Treasure
 
 | Treasure | Description | Value | Kind |
 |----------|-------------|-------|------|
-| Black Diamond | A very_rare gemstone | 7500 gp | gem |
-| Diamond | A legendary gemstone | 40000 gp | gem |
-| Black Opal | A legendary gemstone | 15000 gp | gem |
+| Black Diamond | A very_rare gemstone | 10000 gp | gem |
+| Diamond | A legendary gemstone | 15000 gp | gem |
+| Black Opal | A legendary gemstone | 40000 gp | gem |
 | Fire Opal | A legendary gemstone | 20000 gp | gem |
-| Star Ruby | A legendary gemstone | 20000 gp | gem |
+| Star Ruby | A legendary gemstone | 40000 gp | gem |
 | Scroll Of Apocalypse | An ancient scroll that unleashes catastrophic energy upon all enemies in the area. | 2000 gp | consumable |
 | Ancient Crown | An ancient crown rumored to have belonged to a long-lost king. | 2500 gp | junk |
 | Sacred Idol | A sacred idol revered by an ancient civilization. | 3000 gp | junk |
@@ -367,14 +367,14 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 | Ring Of Regeneration | A mystical ring that slowly heals the wearer over time. | 800 gp | equipment |
 | Ring Of Spell Turning | Improve all resistances and inflict damage back to caster on spell saves. | 1200 gp | equipment |
 | Ring Of The Firmament | A celestial ring that grants the wearer resistance to elemental damage. | 500 gp | equipment |
-| A Fabled Sword Of Legends | A mysterious item | 10 gp | loot |
-| A Ring Of Ultimate Power | A mysterious item | 50 gp | loot |
-| An Ancient Relic | A mysterious item | 200 gp | loot |
-| A Legendary Artifact Of Immense Power | A mysterious item | 50 gp | loot |
-| A Legendary Sword | A mysterious item | 200 gp | loot |
-| A Suit Of Enchanted Armor | A mysterious item | 50 gp | loot |
-| A Hidden Stash Of Jewels | A mysterious item | 50 gp | loot |
-| A Mystical Artifact | A mysterious item | 10 gp | loot |
+| A Fabled Sword Of Legends | A mysterious item | 200 gp | loot |
+| A Ring Of Ultimate Power | A mysterious item | 200 gp | loot |
+| An Ancient Relic | A mysterious item | 50 gp | loot |
+| A Legendary Artifact Of Immense Power | A mysterious item | 10 gp | loot |
+| A Legendary Sword | A mysterious item | 50 gp | loot |
+| A Suit Of Enchanted Armor | A mysterious item | 200 gp | loot |
+| A Hidden Stash Of Jewels | A mysterious item | 1000 gp | loot |
+| A Mystical Artifact | A mysterious item | 50 gp | loot |
 
 
 ## Items
@@ -394,6 +394,7 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 | Gloves of Dexterity | _Fine gloves that enhance the wearer's dexterity._ | improve Dexterity by 1 |
 | Helm of Intellect | _A finely crafted helm that sharpens the wearer's mind._ | improve Intelligence by 2 |
 | Helm of the Stars | _A mystical helm that enhances all senses of the wearer._ | improve all stats by 1 |
+| Longsword of Flames | _A longsword engulfed in magical flames, dealing extra fire damage on hit._ | On attack hit, Deal 1d6 fire damage to target |
 | Mantle of Charisma | _An elegant mantle that enhances the wearer's charisma._ | improve Charisma by 4 |
 | Ring of Major Protection | _A powerful ring that provides significant protection to the wearer._ | improve AC by 3 |
 | Ring of Minor Protection | _A simple enchanted ring providing slight protection_ | improve AC by 1 |
@@ -406,6 +407,7 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 | Ring of the Firmament | _A celestial ring that grants the wearer resistance to elemental damage._ | 50% resistance to Fire, 50% resistance to Cold, 50% resistance to Lightning |
 | Ring of Thorns | _A magical ring that grants the wearer the ability to counterattack._ | On attacked, Attack attacker |
 | Ring of True Sight | _A magical ring that allows the wearer to see through illusions and invisibility._ | Can perceive invisible entities |
+| Robe of Elvenkind | _A finely crafted robe that enhances the wearer's stealth and agility._ | improve Dexterity by 2, improve evasion by 10, On attacked, Attacker suffers Blinded (Degrade to hit by 4, degrade evasion by 10, degrade all rolls by 2) |
 | Wardstone | _A mystical stone that provides a protective barrier to the bearer._ | On combat start, Grant self Warded (Improve Save versus Magic by 1, 15% resistance to Fire, 15% resistance to Cold, 15% resistance to Lightning, 50% resistance to Force, Gain =14 + 2 * #level temporary HP) |
 
 ### Consumables
@@ -427,7 +429,7 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 | Wand of Cure Minor Wounds | _A slender wand that can channel healing energy to mend minor wounds._ | Cast ability Cure Minor Wounds (Heal yourself or an ally 1d4 HP.) on yourself or an ally. |
 | Wand of Magic Missile | _A slender wand that can fire magical darts of force energy at a target._ | Cast ability Magic Missile (Deal 1d3 + floor(#level/3) force damage to 2 + round(#level/2) random enemies.) on 3 random enemies. |
 | Wand of Paralyzing Touch | _A slender wand that can deliver a paralyzing touch to a target._ | Cast ability Paralyzing Touch (An enemy suffers Paralyzed (Cannot take actions, degrade Strength by 5, degrade Dexterity by 5).) on an enemy. |
-| Wand of Polymorph | _A slender wand that can transform a target into a different creature._ | Cast ability Polymorph Other (An enemy suffers Polymorphed (Displayed name changed to "Sheep", Displayed class changed to "Harmless Beast", attack die set to 1d2, MAXHP set to 5, AC set to 10, STR set to 2, CON set to 2, DEX set to 2, INT set to 2, WIS set to 2, CHA set to 2); Recalculate HP for target.) on an enemy. |
+| Wand of Polymorph | _A slender wand that can transform a target into a different creature._ | Cast ability Polymorph Other (An enemy suffers Polymorphed (Displayed name changed to "Sheep", Displayed class changed to "Simple Beast", attack die set to 1d2, MAXHP set to 5, AC set to 10, STR set to 2, CON set to 2, DEX set to 2, INT set to 2, WIS set to 2, CHA set to 2, Abilities set to: Melee, Bleat, Flee, May not use items); Recalculate HP for target.) on an enemy. |
 
 
 ## Status Effects
@@ -474,6 +476,7 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 | Entangled |  | Degrade Dexterity by 5, degrade to hit by 2, degrade evasion by 5, degrade initiative by 5 |
 | False Life |  | Gain =10d6 + 2 * #level temporary HP |
 | Fatigued |  | Degrade Strength by 1, degrade Dexterity by 1, degrade Constitution by 1, degrade all rolls by 1 |
+| Feebleminded | _Suffering from severe cognitive impairment._ | Degrade Intelligence by 4, degrade Wisdom by 4, degrade Charisma by 4, degrade all rolls by 2, May not use items |
 | Fireproof |  | 50% resistance to Fire |
 | Flight | _Soaring through the air with ease._ | Improve evasion by 20, improve AC by 5 |
 | Focus |  | Improve to hit by 2, improve Save versus Magic by 3, improve bonus spell DC by 2, improve bonus spell slots by 1 |

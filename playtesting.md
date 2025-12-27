@@ -153,6 +153,8 @@
 - [ ] Sell all junk option at general store
 ---
 - [ ] Throwable aspect on weapons like javelin, spear (simple dual use as melee/ranged -- but maybe you need a 'retrieve' action after ranged, although possibly too involved?)
+- [ ] Town suffixes linked to terrain type / town adjectives linked to pop size
+- [ ] More flavor on shops (inn and tavern should have an interesting name etc)
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing

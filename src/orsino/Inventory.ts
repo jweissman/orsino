@@ -2,7 +2,7 @@ import Deem from "../deem";
 import Generator from "./Generator";
 import { Combatant, EquipmentSlot } from "./types/Combatant";
 import { DamageKind } from "./types/DamageKind";
-import { ItemInstance } from "./types/ItemInstance";
+import { ItemInstance, materializeItem } from "./types/ItemInstance";
 
 export interface Weapon {
   key?: string;
@@ -14,6 +14,17 @@ export interface Weapon {
   value: number;
   kind: string;
   weight: string;
+  itemClass: 'weapon';
+}
+
+export interface Armor {
+  name: string;
+  ac: number;
+  weight: string;
+  description: string;
+  value: number;
+  kind: string;
+  itemClass: 'armor';
 }
 
 
@@ -22,6 +33,7 @@ export interface Equipment {
   description: string;
   value: number;
   kind: EquipmentSlot;
+  itemClass: 'equipment';
 }
 
 export class Inventory {
@@ -84,7 +96,8 @@ export class Inventory {
       wielder.equipment = {};
     }
 
-    const equipment = Deem.evaluate(`lookup(masterEquipment, "${equipmentKey}")`) as unknown as Equipment;
+    // const equipment = Deem.evaluate(`lookup(masterEquipment, "${equipmentKey}")`) as unknown as Equipment;
+    const equipment = materializeItem(equipmentKey, []) as unknown as Equipment;
     let slot = equipment.kind;
     if (slot === 'ring' as EquipmentSlot) {
       if (!wielder.equipment['ring1']) {

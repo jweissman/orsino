@@ -57,10 +57,11 @@ export default class Presenter {
     }
 
     const effectiveWeapon = Fighting.effectiveWeapon(combatant, []);
+    const effectiveArmorClass = Fighting.effectiveArmorClass(combatant, []);
 
     const core = {
       "Attack Die": effectiveWeapon.damage,
-      "Armor Class": (effective as any).ac,
+      "Armor Class": effectiveArmorClass,
       "Spell Slots": ["mage", "bard", "cleric"].includes(combatant.class || '') ? Combat.maxSpellSlotsForCombatant(combatant) : "none"
     }
     for (const [key, value] of Object.entries(core)) {
@@ -159,11 +160,12 @@ export default class Presenter {
       return this.padLiteralEnd(`${Stylist.bold(Words.capitalize(key))} ${Words.humanize(value.toString())}`, 25);
     }).join('   ')) + "\n";
 
-    const effectiveWeapon = Fighting.effectiveWeapon(combatant, []);
+    const effectiveWeapon = Fighting.effectiveWeapon(combatant, inventory);
+    const effectiveArmorClass = Fighting.effectiveArmorClass(combatant, inventory);
     const bolt = Stylist.colorize('⚡', 'yellow');
     const core = {
       "Attack Die": Stylist.colorize(effectiveWeapon.damage, 'red'),
-      "Armor Class": Stylist.colorize(`${(effective as any).ac}`, 'yellow'),
+      "Armor Class": Stylist.colorize(`${effectiveArmorClass}`, 'yellow'),
       "Spell Slots": ["mage", "bard", "cleric"].includes(combatant.class || '') ?
         bolt.repeat(Combat.maxSpellSlotsForCombatant(combatant)) : "none"
     }
@@ -227,7 +229,7 @@ export default class Presenter {
       for (const slot of Object.keys(combatant.equipment).filter(key => key !== 'id')) {
         const equipmentSlot: EquipmentSlot = slot as EquipmentSlot;
         const itemName = (combatant.equipment as Record<EquipmentSlot, string>)[slot as EquipmentSlot];
-        if (equipmentSlot === 'weapon') {
+        if (equipmentSlot === 'weapon' || equipmentSlot === 'body') {
           // const item = Deem.evaluate('lookup(masterWeapon, "' + itemName + '")') as unknown as { effect: StatusModifications };
           // const item = Fighting.effectiveWeapon(combatant, []);
           const item = materializeItem(itemName, inventory) as ItemInstance;
@@ -328,15 +330,6 @@ export default class Presenter {
   }
 
   static statLine(combatant: Combatant) {
-    // const str = Stylist.colorize(Stylist.prettyValue(combatant.str, 20), 'red');
-    // const dex = Stylist.colorize(Stylist.prettyValue(combatant.dex, 20), 'yellow');
-    // const int = Stylist.colorize(Stylist.prettyValue(combatant.int, 20), 'green');
-    // const wis = Stylist.colorize(Stylist.prettyValue(combatant.wis, 20), 'blue');
-    // const cha = Stylist.colorize(Stylist.prettyValue(combatant.cha, 20), 'magenta');
-    // const con = Stylist.colorize(Stylist.prettyValue(combatant.con, 20), 'cyan');
-
-    // return [str, dex, int, wis, cha, con].join('');
-
     const effective = Fighting.effectiveStats(combatant);
     return [
       this.stat('str', effective.str),
@@ -862,9 +855,9 @@ export default class Presenter {
           }
           break;
 
-        case "maxHp":
-          parts.push("max HP set to " + value);
-          break;
+        // case "maxHp":
+        //   parts.push("max HP set to " + value);
+        //   break;
 
         case "attackDie":
           parts.push("attack die set to " + value);
@@ -889,6 +882,14 @@ export default class Presenter {
             parts.push(`May use items`);
           } else {
             parts.push(`May not use items`);
+          }
+          break;
+        
+        case "hasPrimaryAttack":
+          if (value) {
+            parts.push(`Has primary attack`);
+          } else {
+            parts.push(`No primary attack`);
           }
           break;
 

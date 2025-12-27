@@ -1,6 +1,6 @@
 import Deem from "../../deem";
 import { CombatContext } from "../Combat";
-import { Weapon } from "../Inventory";
+import { Armor, Weapon } from "../Inventory";
 import { StatusEffect, StatusModifications } from "../Status";
 import Words from "../tui/Words";
 import { AttackResult } from "../types/AttackResult";
@@ -8,14 +8,14 @@ import { Combatant } from "../types/Combatant";
 import { ItemInstance, materializeItem } from "../types/ItemInstance";
 import { Roll } from "../types/Roll";
 
-type EffectiveStats = {
+type StatLine = {
   str: number;
   dex: number;
   int: number;
   wis: number;
   cha: number;
   con: number;
-  ac: number;
+  // ac: number;
   maxHp: number;
   // attackDie: string;
 }
@@ -81,15 +81,39 @@ export class Fighting {
     return bonuses;
   }
 
-  static effectiveStats(combatant: Combatant): EffectiveStats {
-    let stats: EffectiveStats = {
+  static effectiveArmorClass(
+    combatant: Combatant,
+    inventory: ItemInstance[]
+  ): number {
+    let ac = 10; // default AC
+
+    const effectiveArmor = this.effectiveArmor(combatant, inventory || []);
+    if (effectiveArmor && effectiveArmor.ac !== undefined) {
+      ac -= effectiveArmor.ac; // || ac;
+    }
+
+    const effectList = this.effectList(combatant);
+    effectList.forEach(it => {
+      if (it.effect) {
+        if (it.effect.ac) {
+          ac += it.effect.ac;
+        }
+      }
+    });
+
+    return ac;
+  }
+
+  static effectiveStats(
+    combatant: Combatant,
+  ): StatLine {
+    let stats: StatLine = {
       str: combatant.str,
       dex: combatant.dex,
       int: combatant.int,
       wis: combatant.wis,
       cha: combatant.cha,
       con: combatant.con,
-      ac: combatant.ac,
       maxHp: combatant.maximumHitPoints,
     };
 
@@ -134,49 +158,22 @@ export class Fighting {
     if (materializedWeapon && materializedWeapon.itemClass === 'weapon') {
       return materializedWeapon as unknown as (Weapon & ItemInstance);
     }
-    // if (typeof weapon === "string") {
-    //if (inventory.map(ii => ii.id).includes(weapon)) {
-    //  const item = inventory.find(i => i.id === weapon);
-    //  if (item && item.kind === "weapon") {
-    //    return item as unknown as (Weapon & ItemInstance);
-    //  }
-    //}
-    //if (inventory.map(ii => ii.key).includes(weapon)) {
-    //  const item = inventory.find(i => i.key === weapon);
-    //  if (item && item.kind === "weapon") {
-    //    return item as unknown as (Weapon & ItemInstance);
-    //  }
-    //}
-    //const hasMasterWeaponEntry = Deem.evaluate(`hasEntry(masterWeapon, "${weapon}")`) as boolean;
-    //if (hasMasterWeaponEntry) {
-    //  const masterWeapon = Deem.evaluate(`lookup(masterWeapon, "${weapon}")`) as unknown as Weapon;
-    //  if (!masterWeapon) {
-    //    throw new Error(`Could not find weapon ${weapon} in effectiveWeapon`);
-    //  }
-    //  // note: straight lookup from master will actually be missing a bunch of true ItemInstance fields like id etc
-    //  return {
-    //    name: weapon,
-    //    ...masterWeapon,
-    //    itemClass: 'weapon',
-    //    key: weapon
-    //  };
-    //}
-    //const hasMasterEquipmentEntry = Deem.evaluate(`hasEntry(masterEquipment, "${weapon}")`) as boolean;
-    //if (hasMasterEquipmentEntry) {
-    //  const masterEquipment = Deem.evaluate(`lookup(masterEquipment, "${weapon}")`) as unknown as Weapon;
-    //  if (!masterEquipment) {
-    //    throw new Error(`Could not find equipment ${weapon} in effectiveWeapon`);
-    //  }
-
-    //  return {
-    //    name: weapon,
-    //    ...masterEquipment,
-    //    itemClass: 'weapon',
-    //    key: weapon
-    //  };
-    //}
-
     throw new Error(`Could not resolve effective weapon for combatant ${combatant.name} with weapon ${weapon}`);
+  }
+
+  static effectiveArmor(
+    combatant: Combatant,
+    inventory: ItemInstance[]
+  ): (Armor & ItemInstance) | null {
+    const armor = combatant.equipment?.body;
+    if (!armor) {
+      return null;
+    }
+    const materializedArmor = materializeItem(armor, inventory);
+    if (materializedArmor && materializedArmor.itemClass === 'armor') {
+      return materializedArmor as unknown as (Armor & ItemInstance);
+    }
+    throw new Error(`Could not resolve effective armor for combatant ${combatant.name} with armor ${armor}`);
   }
 
   // gather all current passive + active effects and try to calculate any cumulative bonuses
@@ -279,7 +276,8 @@ export class Fighting {
     const thac0 = this.thac0(attacker.level);
     const effectiveDefender = this.effectiveStats(defender);
     const defenderAcBonus = this.statMod(effectiveDefender.dex || 10);
-    const ac = effectiveDefender.ac - defenderAcBonus;
+    const effectiveAc = this.effectiveArmorClass(defender, attackerContext.enemyInventory || []);
+    const ac = effectiveAc - defenderAcBonus;
     const whatNumberHits = thac0 - ac - toHitBonus;
 
     const attackRoll = roll(attacker, `to attack ${defender.forename} (must roll ${whatNumberHits} or higher to hit)`, 20);

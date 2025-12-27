@@ -73,7 +73,7 @@ export interface Combatant {
   tempHpPools?: { [source: string]: number };
 
   level: number;
-  ac: number;
+  // ac: number;
   str: number;
   dex: number;
   int: number;

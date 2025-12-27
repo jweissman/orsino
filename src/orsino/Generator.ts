@@ -10,6 +10,7 @@ export type GeneratorOptions = {
   _index?: number;
 
   setting?: string;
+  background?: string;
 
   name?: string;
   _name?: string;

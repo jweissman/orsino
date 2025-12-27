@@ -2,7 +2,7 @@ import Deem from "../deem";
 import Orsino from "../orsino";
 import AbilityHandler, { Ability, AbilityEffect } from "./Ability";
 import Generator from "./Generator";
-import { Inventory, Weapon } from "./Inventory";
+import { Armor, Inventory, Weapon } from "./Inventory";
 import StatusHandler, { StatusEffect, StatusModifications } from "./Status";
 import { Template } from "./Template";
 import TraitHandler from "./Trait";
@@ -275,7 +275,7 @@ export default class Books {
     this.write(`## Items\n`);
     // magic items
     this.write(`\n### Magic Items\n`);
-    const magicItemNames = Deem.evaluate("gather(equipment)") as string[];
+    const magicItemNames = Deem.evaluate("gather(masterEquipment)") as string[];
     magicItemNames.sort((a: string, b: string) => a.localeCompare(b));
     this.write("| Item | Description | Effects |");
     this.write("|------|-------------|---------|");
@@ -426,13 +426,14 @@ export default class Books {
     this.write(`## Armor\n`);
 
     const armorNames = Deem.evaluate("gather(masterArmor)") as string[];
-    armorNames.sort((a, b) => a.localeCompare(b));
+    const armors = armorNames.map(armorName => Deem.evaluate('lookup(masterArmor, "' + armorName + '")') as unknown as Armor);
+    // armorNames.sort((a, b) => a.localeCompare(b));
+    armors.sort((a, b) => a.ac - b.ac || a.name.localeCompare(b.name));
     this.write("| Armor | AC Bonus | Description | Weight | Value |");
     this.write("|-------|----------|-------------|--------|-------|");
-    for (const armorName of armorNames) {
-      const armor = Deem.evaluate('lookup(masterArmor, "' + armorName + '")') as unknown as { name: string; description: string; weight: string; value: number };
-      const acBonus = Deem.evaluate('lookup(armorAC, "' + armorName + '")') as number;
-      const row = `| ${Words.capitalize(armorName)} | ${acBonus} | _${armor.description}_ | ${Words.capitalize(armor.weight)} | ${armor.value} gp |`;
+    for (const armor of armors) {
+      // const acBonus = Deem.evaluate('lookup(armorAC, "' + armorName + '")') as number;
+      const row = `| ${Words.capitalize(armor.name)} | ${armor.ac} | _${armor.description}_ | ${Words.capitalize(armor.weight)} | ${armor.value} gp |`;
       this.write(row);
     }
   }

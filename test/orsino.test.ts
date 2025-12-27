@@ -59,10 +59,11 @@ describe('Orsino', () => {
     expect(pc).toHaveProperty('hp');
     expect(pc).toHaveProperty('maximumHitPoints');
     expect(pc).toHaveProperty('level');
-    expect(pc).toHaveProperty('ac');
+    // expect(pc).toHaveProperty('ac');
     expect(pc).toHaveProperty('equipment');
     expect(pc.equipment).toBeInstanceOf(Object);
     expect(pc.equipment).toHaveProperty('weapon');
+    expect(pc.equipment).toHaveProperty('body');
   });
 
   it('combat generator', async () => {
@@ -209,7 +210,7 @@ describe('Orsino', () => {
     const party: Combatant[] = [];
     await AbilityHandler.instance.loadAbilities();
     await TraitHandler.instance.loadTraits();
-    const mod = Generator.gen("module", { setting: "fantasy" });
+    const mod: CampaignModule = Generator.gen("module", { setting: "fantasy" }) as unknown as CampaignModule;
     const pcs = [
       Generator.gen("pc", { setting: 'fantasy', class: 'warrior', }) as unknown as Combatant,
       Generator.gen("pc", { setting: 'fantasy', class: 'thief', }) as unknown as Combatant,
@@ -233,11 +234,12 @@ describe('Orsino', () => {
 
     await explorer.run(true);
 
-    expect(explorer.activeModule).toBeDefined();
-    expect(explorer.activeModule!.name).toBe(mod.name);
-    expect(explorer.activeModule!.terrain).toBe(mod.terrain);
-    expect(explorer.activeModule!.town).toEqual(mod.town);
-    expect(explorer.activeModule!.dungeons).toEqual(mod.dungeons);
+    let module: CampaignModule = explorer.activeModule!;
+    expect(module).toBeDefined();
+    expect(module.name).toBe(mod.name);
+    expect(module.terrain).toBe(mod.terrain);
+    expect(module.town).toEqual(mod.town);
+    expect(module.dungeons).toEqual(mod.dungeons);
 
     for (const pc in explorer.pcs) {
       await Presenter.printCharacterRecord(explorer.pcs[pc]);

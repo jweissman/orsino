@@ -198,7 +198,7 @@ export default class Combat {
   ): void {
     const equipmentList: StatusEffect[] = [];
     for (const [slot, equipmentKey] of Object.entries(combatant.equipment || {})) {
-      if (slot === 'weapon') {
+      if (slot === 'weapon' || slot === 'body') {
         const weapon = materializeItem(equipmentKey, inventory) as ItemInstance;
         if (weapon.effect) {
           console.debug("weapon materialized", weapon.key, weapon.name, weapon.kind, weapon.effect?.onAttackHit);
@@ -468,16 +468,23 @@ export default class Combat {
       }
     } else {
       const uniqAbilities = Array.from(new Set(combatant.abilities));
-      const weapon = Fighting.effectiveWeapon(combatant, this.teamFor(combatant)?.inventory || []);
-      if (weapon.missile) {
-        if (!uniqAbilities.includes("ranged")) {
-          uniqAbilities.push("ranged");
-        }
-      } else {
-        if (!uniqAbilities.includes("melee")) {
-          uniqAbilities.push("melee");
+
+      // if (!combatant.traits.includes("inanimate")) {
+      if (activeFx.hasPrimaryAttack !== false) {
+        const weapon = Fighting.effectiveWeapon(combatant, this.teamFor(combatant)?.inventory || []);
+        if (weapon) {
+          if (weapon.missile) {
+            if (!uniqAbilities.includes("ranged")) {
+              uniqAbilities.push("ranged");
+            }
+          } else {
+            if (!uniqAbilities.includes("melee")) {
+              uniqAbilities.push("melee");
+            }
+          }
         }
       }
+      // }
 
       const abilities = uniqAbilities.map(a => this.abilityHandler.getAbility(a)); //.filter(a => a);
       for (const ability of abilities) {
@@ -1032,10 +1039,10 @@ export default class Combat {
         name: "Player", combatants: [{
           id: "hero-1",
           forename: "Hero", name: "Hero", alignment: "neutral",
-          hp: 14, maximumHitPoints: 14, level: 1, ac: 10,
+          hp: 14, maximumHitPoints: 14, level: 1, //ac: 10,
           dex: 11, str: 12, int: 10, wis: 10, cha: 10, con: 12,
           playerControlled: true, xp: 0, gp: 0,
-          equipment: { weapon: "shortsword" },
+          equipment: { weapon: "shortsword", body: "chainmail" },
           abilities: ["melee"], traits: [],
         }],
         inventory: []
@@ -1044,15 +1051,15 @@ export default class Combat {
         name: "Enemy", combatants: [
           {
             id: "goblin-1",
-            forename: "Zok", name: "Goblin A", alignment: "neutral", hp: 4, maximumHitPoints: 4, level: 1, ac: 17,
-            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, equipment: { weapon: "dagger" },
+            forename: "Zok", name: "Goblin A", alignment: "neutral", hp: 4, maximumHitPoints: 4, level: 1, // ac: 17,
+            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, equipment: { weapon: "dagger", body: "cloth" },
             abilities: ["melee"], traits: [],
             xp: 0, gp: 0
           },
           {
             id: "goblin-2",
-            forename: "Mog", name: "Goblin B", alignment: "neutral", hp: 4, maximumHitPoints: 4, level: 1, ac: 17,
-            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, equipment: { weapon: "heavy_flail" },
+            forename: "Mog", name: "Goblin B", alignment: "neutral", hp: 4, maximumHitPoints: 4, level: 1, // ac: 17,
+            str: 8, dex: 14, int: 10, wis: 8, cha: 8, con: 10, equipment: { weapon: "heavy_flail", body: "cloth" },
             abilities: ["melee"], traits: [],
             xp: 0, gp: 0
           }

@@ -863,7 +863,7 @@ export default class AbilityHandler {
     if (hookFx[hookKey]) {
       const hookEffects = hookFx[hookKey] as Array<AbilityEffect>;
       for (const hookEffect of hookEffects) {
-        console.log("Handling hook effect", hookKey, "for", user.name, ": ", JSON.stringify(hookEffect));
+        // console.log("Handling hook effect", hookKey, "for", user.name, ": ", JSON.stringify(hookEffect));
         let target: Combatant | Combatant[] = prevTarget || user;
         if (hookEffect.target && !prevTarget) {
           if (hookEffect.target === "self") {
@@ -875,7 +875,7 @@ export default class AbilityHandler {
             }
           }
         }
-        console.log("Hook effect target resolved to:", Array.isArray(target) ? target.map(t => t.name).join(", ") : target.name);
+        // console.log("Hook effect target resolved to:", Array.isArray(target) ? target.map(t => t.name).join(", ") : target.name);
         const { success: _ignored, events: hookEvents } = await this.handleEffect(
           (label) + " due to " + Words.humanizeList(hookFxWithNames[hookKey].sources),
           hookEffect, user, target, context, handlers

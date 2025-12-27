@@ -374,6 +374,7 @@ export class Commands {
       // does defender have onAttacked effects? (and attacker is not themselves...)
       if (attacker !== defender) {
         const onAttackedFx = defenderEffects.onAttacked as AbilityEffect[] || [];
+        // is there some reason we can't process with hooks?
         // console.log(`Defender ${defender.forename} has ${onAttackedFx.length} onAttacked effects to process.`);
         for (const fx of onAttackedFx) {
           // console.log(`Processing onAttacked effect: ${fx.description}`);

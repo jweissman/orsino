@@ -1018,7 +1018,8 @@
         "immunePoison": true,
         "immuneDisease": true,
         "immuneBleed": true,
-        "resurrectable": false
+        "resurrectable": false,
+        "hasPrimaryAttack": false
       }
     }]
   },

@@ -193,8 +193,10 @@ export interface StatusModifications {
   controlledActions?: boolean;
 
   // do we actually use this anywhere??? we need it for poly now though
-  maxHp?: number;
+  // maxHp?: number;
   attackDie?: string;
+
+  hasPrimaryAttack?: boolean;
 }
 
 export interface StatusEffect {

@@ -58,7 +58,7 @@ type RunnerOptions = {
   outputSink?: (message: string) => void;
   moduleGen?: (options?: GeneratorOptions) => CampaignModule;
   pcs?: Combatant[];
-  gen?: (type: GenerationTemplateType, options?: GeneratorOptions) => GeneratedValue;
+  gen?: (type: GenerationTemplateType, options?: GeneratorOptions) => GeneratedValue | GeneratedValue[];
 }
 
 export class ModuleRunner {
@@ -280,7 +280,12 @@ export class ModuleRunner {
       } else if (action === "magicShop") {
         await this.shop('equipment');
       } else if (action === "armory") {
-        await this.shop('weapons');
+        const weaponsOrArmor = await this.select("What would you like to buy?", [ 'Weapons', 'Armor' ]) as string;
+        if (weaponsOrArmor.toLowerCase() === 'weapons') {
+          await this.shop('weapons');
+        } else {
+          await this.shop('armor');
+        }
       } else if (action === "general") {
         await this.shop('loot');
       // } else if (action === "jeweler") {
@@ -529,7 +534,7 @@ export class ModuleRunner {
       return;
     }
     // gen a level 1 PC as hireling
-    const hireling = this.gen("pc", { background: "hireling", setting: "fantasy" }) as Combatant;
+    const hireling = this.gen("pc", { background: "hireling", setting: "fantasy" }) as unknown as Combatant;
     await CharacterRecord.pickInitialSpells(hireling, Automatic.randomSelect);
     const wouldLikeHireling = await this.select(
       // "A hireling is available to join your party. Would you like to consider their merits?",
@@ -593,7 +598,7 @@ export class ModuleRunner {
     const choice = await this.select("Which dungeon?", options);
     // console.log("Chosen dungeon index:", choice, available[choice].dungeon_name);
 
-    return dungeonChoices[choice];
+    return dungeonChoices[choice as unknown as number];
   }
 
   // private logGold(tag: string) {

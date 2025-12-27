@@ -1,82 +1,117 @@
 {
-  "armorAC": {
-    "discriminator": "kind",
-    "groups": {
-      "cloth": 0,
-      "hide": 1,
-      "leather": 2,
-      "ring": 3,
-      "studded": 3,
-      "scale": 4,
-      "chainmail": 5,
-      "banded": 6,
-      "splint": 6,
-      "plate": 7
-    }
-  },
-
   "masterArmor": {
     "discriminator": "kind",
     "groups": {
       "cloth": {
+        "name": "Clothing",
         "ac": 0,
         "weight": "light",
         "description": "Offers minimal protection but is very light and flexible.",
-        "value": 5
+        "value": 5,
+        "itemClass": "armor",
+        "kind": "body"
       },
       "hide": {
+        "name": "Hide Armor",
         "ac": 1,
         "weight": "light",
         "description": "Made from the tanned hides of animals, providing basic protection.",
-        "value": 10
+        "value": 10,
+        "itemClass": "armor",
+        "kind": "body"
       },
       "leather": {
+        "name": "Leather Armor",
         "ac": 2,
         "weight": "light",
         "description": "Crafted from toughened leather, offering a balance of protection and mobility.",
-        "value": 15
+        "value": 15,
+        "itemClass": "armor",
+        "kind": "body"
       },
       "ring": {
+        "name": "Ring Mail",
         "ac": 3,
         "weight": "medium",
         "description": "Ring armor consists of interlocking metal rings, providing moderate protection.",
-        "value": 25
+        "value": 25,
+        "itemClass": "armor",
+        "kind": "body"
       },
       "studded": {
+        "name": "Studded Leather Armor",
         "ac": 3,
         "weight": "medium",
         "description": "Leather reinforced with metal studs, offering enhanced protection.",
-        "value": 30
+        "value": 30,
+        "itemClass": "armor",
+        "kind": "body"
       },
       "scale": {
+        "name": "Scale Mail",
         "ac": 4,
         "weight": "medium",
         "description": "Made of small metal plates sewn onto a backing, providing good protection.",
-        "value": 40
+        "value": 40,
+        "itemClass": "armor",
+        "kind": "body"
       },
       "chainmail": {
+        "name": "Chain Mail",
         "ac": 5,
         "weight": "heavy",
         "description": "Made of interlinked metal rings, offering strong protection at the cost of weight.",
-        "value": 50
+        "value": 50,
+        "itemClass": "armor",
+        "kind": "body"
       },
       "banded": {
+        "name": "Banded Mail",
         "ac": 6,
         "weight": "heavy",
         "description": "Consists of metal strips riveted to a leather backing, providing excellent protection.",
-        "value": 60
+        "value": 60,
+        "itemClass": "armor",
+        "kind": "body"
       },
       "splint": {
+        "name": "Splint Mail",
         "ac": 6,
         "weight": "heavy",
         "description": "Made of vertical metal strips attached to a fabric or leather backing, offering high protection.",
-        "value": 70
+        "value": 70,
+        "itemClass": "armor",
+        "kind": "body"
       },
       "plate": {
+        "name": "Plate Mail",
         "ac": 7,
         "weight": "heavy",
         "description": "Made of large metal plates that cover the body, providing the highest level of protection.",
-        "value": 100
+        "value": 100,
+        "itemClass": "armor",
+        "kind": "body"
+      },
+
+      "feathers": {
+        "name": "Feather Armor",
+        "ac": -1,
+        "weight": "light",
+        "description": "Light armor made from layered feathers, offering minimal protection but great mobility.",
+        "value": 8,
+        "itemClass": "armor",
+        "kind": "body",
+        "natural": true
+      },
+      "chitin": {
+        "name": "Chitin Armor",
+        "ac": 2,
+        "weight": "medium",
+        "description": "Armor made from the hardened exoskeletons of insects or crustaceans, providing decent protection.",
+        "value": 20,
+        "itemClass": "armor",
+        "kind": "body",
+        "natural": true
       }
     }
   },
@@ -87,12 +122,15 @@
       "fist": {
         "natural": true,
         "damage": "1d2",
-        "type": "bludgeoning"
+        "type": "bludgeoning",
+        "description": "A basic unarmed strike using the fists.",
+        "itemClass": "weapon"
       },
       "kick": {
         "natural": true,
         "damage": "1d2",
-        "type": "bludgeoning"
+        "type": "bludgeoning",
+        "itemClass": "weapon"
       },
       "battleaxe": {
         "damage": "1d8",
@@ -100,7 +138,8 @@
         "value": 5,
         "kind": "axe",
         "weight": "heavy",
-        "description": "A heavy axe designed for powerful slashing attacks."
+        "description": "A heavy axe designed for powerful slashing attacks.",
+        "itemClass": "weapon"
       },
       "handaxe": {
         "damage": "1d6",
@@ -108,7 +147,8 @@
         "value": 10,
         "kind": "axe",
         "weight": "light",
-        "description": "A small handaxe suitable for throwing or close combat."
+        "description": "A small handaxe suitable for throwing or close combat.",
+        "itemClass": "weapon"
       },
       "longbow": {
         "damage": "1d6",
@@ -117,7 +157,8 @@
         "value": 30,
         "kind": "bow",
         "weight": "medium",
-        "description": "A bow designed for ranged combat with moderate draw weight."
+        "description": "A bow designed for ranged combat with moderate draw weight.",
+        "itemClass": "weapon"
       },
       "shortbow": {
         "damage": "1d4",
@@ -126,7 +167,8 @@
         "value": 15,
         "kind": "bow",
         "weight": "light",
-        "description": "A shortbow that is easy to carry and quick to draw."
+        "description": "A shortbow that is easy to carry and quick to draw.",
+        "itemClass": "weapon"
       },
       "club": {
         "damage": "1d4",
@@ -134,7 +176,8 @@
         "value": 1,
         "kind": "club",
         "weight": "light",
-        "description": "A simple wooden club, effective for basic melee combat."
+        "description": "A simple wooden club, effective for basic melee combat.",
+        "itemClass": "weapon"
       },
       "dagger": {
         "damage": "1d4",
@@ -142,7 +185,8 @@
         "value": 2,
         "kind": "blade",
         "weight": "light",
-        "description": "A small blade ideal for close combat and throwing."
+        "description": "A small blade ideal for close combat and throwing.",
+        "itemClass": "weapon"
       },
       "dart": {
         "damage": "1d3",
@@ -151,7 +195,8 @@
         "value": 1,
         "kind": "dart",
         "weight": "light",
-        "description": "A small throwable missile weapon."
+        "description": "A small throwable missile weapon.",
+        "itemClass": "weapon"
       },
       "heavy_flail": {
         "damage": "1d6+1",
@@ -159,7 +204,8 @@
         "value": 3,
         "kind": "flail",
         "weight": "heavy",
-        "description": "A heavy rod with a spiked ball, designed for powerful strikes."
+        "description": "A heavy rod with a spiked ball, designed for powerful strikes.",
+        "itemClass": "weapon"
       },
       "light_flail": {
         "damage": "1d4+1",
@@ -167,7 +213,8 @@
         "value": 6,
         "kind": "flail",
         "weight": "light",
-        "description": "A light rod with a spiked ball, suitable for quick strikes."
+        "description": "A light rod with a spiked ball, suitable for quick strikes.",
+        "itemClass": "weapon"
       },
       "halberd": {
         "damage": "1d10",
@@ -175,7 +222,8 @@
         "value": 9,
         "kind": "polearm",
         "weight": "heavy",
-        "description": "Combining an axe blade and a spear point on a long pole."
+        "description": "Combining an axe blade and a spear point on a long pole.",
+        "itemClass": "weapon"
       },
       "heavy_warhammer": {
         "damage": "1d6+1",
@@ -183,7 +231,8 @@
         "value": 7,
         "kind": "warhammer",
         "weight": "heavy",
-        "description": "A strong hammer designed for powerful crushing blows."
+        "description": "A strong hammer designed for powerful crushing blows.",
+        "itemClass": "weapon"
       },
       "light_warhammer": {
         "damage": "1d4+1",
@@ -191,7 +240,8 @@
         "value": 4,
         "kind": "warhammer",
         "weight": "light",
-        "description": "A light hammer suitable for quick, precise strikes."
+        "description": "A light hammer suitable for quick, precise strikes.",
+        "itemClass": "weapon"
       },
       "javelin": {
         "damage": "1d6",
@@ -200,7 +250,8 @@
         "value": 1,
         "kind": "polearm",
         "weight": "light",
-        "description": "A thin spear designed for throwing."
+        "description": "A thin spear designed for throwing.",
+        "itemClass": "weapon"
       },
       "lance": {
         "damage": "2d4+1",
@@ -209,7 +260,8 @@
         "value": 6,
         "kind": "polearm",
         "weight": "heavy",
-        "description": "A heavy spear designed for mounted combat."
+        "description": "A heavy spear designed for mounted combat.",
+        "itemClass": "weapon"
       },
       "heavy_mace": {
         "damage": "1d6+1",
@@ -217,7 +269,8 @@
         "value": 10,
         "kind": "mace",
         "weight": "heavy",
-        "description": "A heavy rod with a solid head, designed for powerful strikes."
+        "description": "A heavy rod with a solid head, designed for powerful strikes.",
+        "itemClass": "weapon"
       },
       "light_mace": {
         "damage": "1d4+1",
@@ -225,7 +278,8 @@
         "value": 4,
         "kind": "mace",
         "weight": "light",
-        "description": "A light rod with sturdy head suitable for quick strikes."
+        "description": "A light rod with sturdy head suitable for quick strikes.",
+        "itemClass": "weapon"
       },
       "morningstar": {
         "damage": "2d4",
@@ -233,7 +287,8 @@
         "value": 5,
         "kind": "morningstar",
         "weight": "medium",
-        "description": "A rod with a spiked head for piercing armor."
+        "description": "A rod with a spiked head for piercing armor.",
+        "itemClass": "weapon"
       },
       "heavy_pick": {
         "damage": "1d6+1",
@@ -241,7 +296,8 @@
         "value": 8,
         "kind": "pick",
         "weight": "heavy",
-        "description": "A hardened tool designed for breaking through armor and shields."
+        "description": "A hardened tool designed for breaking through armor and shields.",
+        "itemClass": "weapon"
       },
       "light_pick": {
         "damage": "1d4+1",
@@ -249,7 +305,8 @@
         "value": 5,
         "kind": "pick",
         "weight": "light",
-        "description": "A light tool suitable for quick strikes and climbing."
+        "description": "A light tool suitable for quick strikes and climbing.",
+        "itemClass": "weapon"
       },
       "pole_arm": {
         "damage": "1d6+1",
@@ -258,7 +315,8 @@
         "value": 6,
         "kind": "polearm",
         "weight": "medium",
-        "description": "A long-hafted pointed weapon for reach and leverage."
+        "description": "A long-hafted pointed weapon for reach and leverage.",
+        "itemClass": "weapon"
       },
       "spear": {
         "damage": "1d6",
@@ -267,7 +325,8 @@
         "value": 1,
         "kind": "spear",
         "weight": "light",
-        "description": "A versatile thrown weapon also suitable for melee combat."
+        "description": "A versatile thrown weapon also suitable for melee combat.",
+        "itemClass": "weapon"
       },
       "staff": {
         "damage": "1d6",
@@ -275,7 +334,8 @@
         "value": 1,
         "kind": "staff",
         "weight": "medium",
-        "description": "A simple wooden rod used for defense and support."
+        "description": "A simple wooden rod used for defense and support.",
+        "itemClass": "weapon"
       },
       "quarterstaff": {
         "damage": "1d6+2",
@@ -283,7 +343,8 @@
         "value": 10,
         "kind": "staff",
         "weight": "medium",
-        "description": "A reinforced wooden rod used for both offense and defense."
+        "description": "A reinforced wooden rod used for both offense and defense.",
+        "itemClass": "weapon"
       },
       "claymore": {
         "damage": "2d4",
@@ -291,7 +352,8 @@
         "value": 25,
         "kind": "blade",
         "weight": "heavy",
-        "description": "A large two-handed sword known for its powerful slashing attacks."
+        "description": "A large two-handed sword known for its powerful slashing attacks.",
+        "itemClass": "weapon"
       },
       "broadsword": {
         "damage": "2d4",
@@ -299,7 +361,8 @@
         "value": 10,
         "kind": "blade",
         "weight": "medium",
-        "description": "A wide-bladed sword suitable for powerful slashes."
+        "description": "A wide-bladed sword suitable for powerful slashes.",
+        "itemClass": "weapon"
       },
       "longsword": {
         "damage": "1d8",
@@ -307,7 +370,8 @@
         "value": 15,
         "kind": "blade",
         "weight": "medium",
-        "description": "A versatile sword suitable for both cutting and thrusting."
+        "description": "A versatile sword suitable for both cutting and thrusting.",
+        "itemClass": "weapon"
       },
       "scimitar": {
         "damage": "1d8",
@@ -315,7 +379,8 @@
         "value": 15,
         "kind": "blade",
         "weight": "medium",
-        "description": "A curved sword designed for swift slashing attacks."
+        "description": "A curved sword designed for swift slashing attacks.",
+        "itemClass": "weapon"
       },
       "shortsword": {
         "damage": "1d6",
@@ -323,7 +388,8 @@
         "value": 8,
         "kind": "blade",
         "weight": "light",
-        "description": "A small sword ideal for close combat and quick strikes."
+        "description": "A small sword ideal for close combat and quick strikes.",
+        "itemClass": "weapon"
       },
       "greatsword": {
         "damage": "1d10",
@@ -331,7 +397,8 @@
         "value": 30,
         "kind": "blade",
         "weight": "heavy",
-        "description": "A massive two-handed sword capable of dealing devastating damage."
+        "description": "A massive two-handed sword capable of dealing devastating damage.",
+        "itemClass": "weapon"
       },
       "falchion": {
         "damage": "2d4",
@@ -339,7 +406,8 @@
         "value": 20,
         "kind": "blade",
         "weight": "medium",
-        "description": "A one-handed single-edged sword with a slightly curved blade that broadens toward the point."
+        "description": "A one-handed single-edged sword with a slightly curved blade that broadens toward the point.",
+        "itemClass": "weapon"
       },
       "cutlass": {
         "damage": "1d6",
@@ -347,7 +415,8 @@
         "value": 10,
         "kind": "blade",
         "weight": "light",
-        "description": "A short curved sword with a single cutting edge."
+        "description": "A short curved sword with a single cutting edge.",
+        "itemClass": "weapon"
       },
       "trident": {
         "damage": "1d6+1",
@@ -356,7 +425,8 @@
         "value": 4,
         "kind": "trident",
         "weight": "medium",
-        "description": "A three-pronged spear used for fishing and combat."
+        "description": "A three-pronged spear used for fishing and combat.",
+        "itemClass": "weapon"
       },
       "sling": {
         "damage": "1d4",
@@ -365,7 +435,8 @@
         "value": 1,
         "kind": "sling",
         "weight": "light",
-        "description": "A simple throwing weapon used to hurl small stones or pellets."
+        "description": "A simple throwing weapon used to hurl small stones or pellets.",
+        "itemClass": "weapon"
       },
       "heavy_crossbow": {
         "damage": "1d6+1",
@@ -374,7 +445,8 @@
         "value": 20,
         "kind": "crossbow",
         "weight": "heavy",
-        "description": "A bolt-firing mechanical ranged weapon known for its powerful piercing attacks."
+        "description": "A bolt-firing mechanical ranged weapon known for its powerful piercing attacks.",
+        "itemClass": "weapon"
       },
       "light_crossbow": {
         "damage": "1d4+1",
@@ -383,7 +455,8 @@
         "value": 12,
         "kind": "crossbow",
         "weight": "light",
-        "description": "A bolt-firing mechanical ranged weapon known for its ease of use and quick reload times."
+        "description": "A bolt-firing mechanical ranged weapon known for its ease of use and quick reload times.",
+        "itemClass": "weapon"
       },
       "composite_bow": {
         "damage": "1d6",
@@ -392,7 +465,8 @@
         "value": 75,
         "kind": "bow",
         "weight": "medium",
-        "description": "A bow reinforced for enhanced power and flexibility."
+        "description": "A bow reinforced for enhanced power and flexibility.",
+        "itemClass": "weapon"
       },
       "whip": {
         "damage": "1d4+2",
@@ -400,7 +474,8 @@
         "value": 2,
         "kind": "whip",
         "weight": "light",
-        "description": "A flexible weapon used for striking at a distance."
+        "description": "A flexible weapon used for striking at a distance.",
+        "itemClass": "weapon"
       },
       "light_chain": {
         "damage": "1d6+2",
@@ -408,7 +483,8 @@
         "value": 7,
         "kind": "whip",
         "weight": "medium",
-        "description": "A medium-weight whip used for flexible striking."
+        "description": "A medium-weight whip used for flexible striking.",
+        "itemClass": "weapon"
       },
       "heavy_chain": {
         "damage": "1d8+2",
@@ -416,7 +492,8 @@
         "value": 12,
         "kind": "whip",
         "weight": "heavy",
-        "description": "A heavy whip used for powerful flexible striking."
+        "description": "A heavy whip used for powerful flexible striking.",
+        "itemClass": "weapon"
       },
       "rapier": {
         "damage": "1d6+2",
@@ -424,7 +501,8 @@
         "value": 40,
         "kind": "blade",
         "weight": "light",
-        "description": "A slender and sharply pointed sword designed for thrusting attacks."
+        "description": "A slender and sharply pointed sword designed for thrusting attacks.",
+        "itemClass": "weapon"
       },
       "bec_de_corbin": {
         "damage": "1d8+1",
@@ -432,7 +510,8 @@
         "value": 18,
         "kind": "polearm",
         "weight": "heavy",
-        "description": "A polearm with a beak-like spike used for piercing armor."
+        "description": "A polearm with a beak-like spike used for piercing armor.",
+        "itemClass": "weapon"
       },
       "voulge": {
         "damage": "1d10+1",
@@ -441,7 +520,8 @@
         "value": 14,
         "kind": "polearm",
         "weight": "heavy",
-        "description": "A polearm with a broad and curved blade used for slashing attacks."
+        "description": "A polearm with a broad and curved blade used for slashing attacks.",
+        "itemClass": "weapon"
       },
       "scythe": {
         "damage": "2d4+1",
@@ -450,7 +530,8 @@
         "value": 10,
         "kind": "polearm",
         "weight": "medium",
-        "description": "A polearm with a curved blade used for slashing attacks."
+        "description": "A polearm with a curved blade used for slashing attacks.",
+        "itemClass": "weapon"
       },
       "pike": {
         "damage": "1d10+1",
@@ -459,7 +540,8 @@
         "value": 15,
         "kind": "polearm",
         "weight": "heavy",
-        "description": "A long spear used for thrusting attacks and keeping enemies at a distance."
+        "description": "A long spear used for thrusting attacks and keeping enemies at a distance.",
+        "itemClass": "weapon"
       },
       "greatclub": {
         "damage": "1d8+2",
@@ -467,7 +549,8 @@
         "value": 8,
         "kind": "club",
         "weight": "heavy",
-        "description": "A heavy battering weapon used for powerful bludgeoning attacks."
+        "description": "A heavy battering weapon used for powerful bludgeoning attacks.",
+        "itemClass": "weapon"
       },
       "glaive": {
         "damage": "1d10+1",
@@ -476,7 +559,8 @@
         "value": 12,
         "kind": "polearm",
         "weight": "heavy",
-        "description": "A polearm with a broad blade used for slashing attacks."
+        "description": "A polearm with a broad blade used for slashing attacks.",
+        "itemClass": "weapon"
       },
       "katana": {
         "damage": "1d8+1",
@@ -484,7 +568,8 @@
         "value": 50,
         "kind": "blade",
         "weight": "medium",
-        "description": "A fine sword with exquisite sharpness and cutting ability."
+        "description": "A fine sword with exquisite sharpness and cutting ability.",
+        "itemClass": "weapon"
       },
       "wakizashi": {
         "damage": "1d6+1",
@@ -492,7 +577,8 @@
         "value": 30,
         "kind": "blade",
         "weight": "light",
-        "description": "A fine short sword with exceptional sharpness and cutting ability."
+        "description": "A fine short sword with exceptional sharpness and cutting ability.",
+        "itemClass": "weapon"
       },
       "naginata": {
         "damage": "1d10+1",
@@ -501,7 +587,8 @@
         "value": 20,
         "kind": "polearm",
         "weight": "heavy",
-        "description": "A fine polearm with a curved blade used for slashing attacks."
+        "description": "A fine polearm with a curved blade used for slashing attacks.",
+        "itemClass": "weapon"
       },
       "kusarigama": {
         "damage": "1d6+2",
@@ -509,7 +596,8 @@
         "value": 18,
         "kind": "polearm",
         "weight": "medium",
-        "description": "A polearm attached to a sickle by a chain."
+        "description": "A polearm attached to a sickle by a chain.",
+        "itemClass": "weapon"
       },
       "nunchaku": {
         "damage": "1d6+2",
@@ -517,7 +605,8 @@
         "value": 15,
         "kind": "club",
         "weight": "light",
-        "description": "A battering weapon consisting of two sticks connected by a chain."
+        "description": "A battering weapon consisting of two sticks connected by a chain.",
+        "itemClass": "weapon"
       },
       "shuriken": {
         "damage": "1d4+2",
@@ -526,72 +615,86 @@
         "value": 5,
         "kind": "shuriken",
         "weight": "light",
-        "description": "A small star-shaped throwing weapon."
+        "description": "A small star-shaped throwing weapon.",
+        "itemClass": "weapon"
       },
       "antlers": {
         "damage": "1d6",
         "natural": true,
-        "type": "piercing"
+        "type": "piercing",
+        "itemClass": "weapon"
       },
       "bite": {
         "damage": "1d6",
         "natural": true,
-        "type": "piercing"
+        "type": "piercing",
+        "itemClass": "weapon"
       },
       "claws": {
         "damage": "1d4",
         "natural": true,
-        "type": "slashing"
+        "type": "slashing",
+        "itemClass": "weapon"
       },
       "sting": {
         "damage": "1d3",
         "natural": true,
-        "type": "piercing"
+        "type": "piercing",
+        "itemClass": "weapon"
       },
       "horns": {
         "damage": "1d4",
         "natural": true,
-        "type": "bludgeoning"
+        "type": "bludgeoning",
+        "itemClass": "weapon"
       },
       "slam": {
         "damage": "1d6",
         "natural": true,
-        "type": "piercing"
+        "type": "piercing",
+        "itemClass": "weapon"
       },
       "talons": {
         "damage": "1d8",
         "natural": true,
-        "type": "piercing"
+        "type": "piercing",
+        "itemClass": "weapon"
       },
       "tusks": {
         "damage": "1d8",
         "natural": true,
-        "type": "piercing"
+        "type": "piercing",
+        "itemClass": "weapon"
       },
       "quills": {
         "damage": "1d3",
         "natural": true,
-        "type": "piercing"
+        "type": "piercing",
+        "itemClass": "weapon"
       },
       "headbutt": {
         "damage": "1d4",
         "natural": true,
-        "type": "bludgeoning"
+        "type": "bludgeoning",
+        "itemClass": "weapon"
       },
       "beak": {
         "damage": "1d4",
         "natural": true,
-        "type": "piercing"
+        "type": "piercing",
+        "itemClass": "weapon"
       },
       "flutter": {
         "damage": "1d2",
         "natural": true,
-        "type": "bludgeoning"
+        "type": "bludgeoning",
+        "itemClass": "weapon"
       },
       "tentacles": {
         "damage": "1d4+1",
         "natural": true,
-        "type": "bludgeoning"
+        "type": "bludgeoning",
+        "itemClass": "weapon"
       }
     }
   },
@@ -1302,7 +1405,8 @@
           "ac": -1
         },
         "value": 50,
-        "description": "A simple enchanted ring providing slight protection"
+        "description": "A simple enchanted ring providing slight protection",
+        "itemClass": "equipment"
       },
       "ring_of_protection": {
         "name": "Ring of Protection",
@@ -1313,7 +1417,8 @@
         "value": 300,
         "effect": {
           "ac": -2
-        }
+        },
+        "itemClass": "equipment"
       },
       "ring_of_major_protection": {
         "name": "Ring of Major Protection",
@@ -1324,7 +1429,8 @@
         "value": 1000,
         "effect": {
           "ac": -3
-        }
+        },
+        "itemClass": "equipment"
       },
       "ring_of_regeneration": {
         "name": "Ring of Regeneration",
@@ -1340,7 +1446,8 @@
               "amount": "=1d2-1"
             }
           ]
-        }
+        },
+        "itemClass": "equipment"
       },
       "ring_of_thorns": {
         "name": "Ring of Thorns",
@@ -1357,7 +1464,8 @@
               "kind": "force"
             }
           ]
-        }
+        },
+        "itemClass": "equipment"
       },
       "ring_of_minor_strength": {
         "name": "Ring of Minor Strength",
@@ -1366,7 +1474,8 @@
           "str": 1
         },
         "value": 50,
-        "description": "A simple enchanted ring providing slight strength boost"
+        "description": "A simple enchanted ring providing slight strength boost",
+        "itemClass": "equipment"
       },
       "ring_of_strength": {
         "name": "Ring of Strength",
@@ -1377,7 +1486,8 @@
         "value": 150,
         "effect": {
           "str": 2
-        }
+        },
+        "itemClass": "equipment"
       },
       "amulet_of_health": {
         "name": "Amulet of Health",
@@ -1388,7 +1498,8 @@
         "value": 200,
         "effect": {
           "con": 2
-        }
+        },
+        "itemClass": "equipment"
       },
       "amulet_of_focus": {
         "name": "Amulet of Focus",
@@ -1401,7 +1512,8 @@
           "int": 3,
           "wis": 3,
           "bonusSpellDC": 2
-        }
+        },
+        "itemClass": "equipment"
       },
       "amulet_of_protection": {
         "name": "Amulet of Protection",
@@ -1413,7 +1525,8 @@
         "effect": {
           "ac": -2,
           "resistAll": 0.1
-        }
+        },
+        "itemClass": "equipment"
       },
       "crown_of_insight": {
         "name": "Crown of Insight",
@@ -1424,9 +1537,9 @@
         "value": 1000,
         "effect": {
           "wis": 4
-        }
+        },
+        "itemClass": "equipment"
       },
-      
       "amulet_of_vitality": {
         "name": "Amulet of Vitality",
         "kind": "amulet",
@@ -1434,7 +1547,8 @@
           "con": 1
         },
         "value": 50,
-        "description": "A minor health charm"
+        "description": "A minor health charm",
+        "itemClass": "equipment"
       },
       "belt_of_giant_strength": {
         "name": "Belt of Giant Strength",
@@ -1443,7 +1557,8 @@
         "kind": "belt",
         "rarity": "rare",
         "value": 2500,
-        "effect": { "str": 6 }
+        "effect": { "str": 6 },
+        "itemClass": "equipment"
       },
       "boots_of_swiftness": {
         "name": "Boots of Swiftness",
@@ -1454,7 +1569,8 @@
         "value": 200,
         "effect": {
           "dex": 2
-        }
+        },
+        "itemClass": "equipment"
       },
       "gloves_of_dexterity": {
         "name": "Gloves of Dexterity",
@@ -1465,7 +1581,8 @@
         "value": 50,
         "effect": {
           "dex": 1
-        }
+        },
+        "itemClass": "equipment"
       },
       "helm_of_intellect": {
         "name": "Helm of Intellect",
@@ -1476,7 +1593,8 @@
         "value": 150,
         "effect": {
           "int": 2
-        }
+        },
+        "itemClass": "equipment"
       },
       "mantle_of_charisma": {
         "name": "Mantle of Charisma",
@@ -1487,7 +1605,8 @@
         "value": 200,
         "effect": {
           "cha": 4
-        }
+        },
+        "itemClass": "equipment"
       },
       "ring_of_the_firmament": {
         "name": "Ring of the Firmament",
@@ -1500,7 +1619,8 @@
           "resistFire": 0.5,
           "resistCold": 0.5,
           "resistLightning": 0.5
-        }
+        },
+        "itemClass": "equipment"
       },
       "helm_of_the_stars": {
         "name": "Helm of the Stars",
@@ -1516,7 +1636,8 @@
           "int": 1,
           "wis": 1,
           "cha": 1
-        }
+        },
+        "itemClass": "equipment"
       },
       "ring_of_spell_turning": {
         "name": "Ring of Spell Turning",
@@ -1537,7 +1658,8 @@
               "kind": "true"
             }
           ]
-        }
+        },
+        "itemClass": "equipment"
       },
       "ring_of_perfect_turning": {
         "name": "Ring of Perfect Turning",
@@ -1549,7 +1671,8 @@
         "effect": {
           "resistAll": 0.5,
           "reflectSpellChance": 0.75
-        }
+        },
+        "itemClass": "equipment"
       },
       "wardstone": {
         "name": "Wardstone",
@@ -1565,7 +1688,8 @@
               "status": "warded"
             }
           ]
-        }
+        },
+        "itemClass": "equipment"
       },
       "ring_of_true_sight": {
         "name": "Ring of True Sight",
@@ -1576,7 +1700,8 @@
         "value": 1500,
         "effect": {
           "seeInvisible": true
-        } 
+        },
+        "itemClass": "equipment"
       },
       "longsword_of_flames": {
         "name": "Longsword of Flames",
@@ -1597,6 +1722,33 @@
             }
           ]
         }
+      },
+      "robe_of_elvenkind": {
+        "name": "Robe of Elvenkind",
+        "description": "A finely crafted robe that enhances the wearer's stealth and agility.",
+        "type": "equipment",
+        "kind": "body",
+        "rarity": "rare",
+        "value": 700,
+        "effect": {
+          "dex": 2,
+          "evasion": 10,
+          "onAttacked": [
+            {
+              "type": "debuff",
+              "status": "blinded",
+              "target": "attacker",
+              "saveDC": 25
+            },
+            {
+              "type": "debuff",
+              "status": "slow",
+              "target": "attacker",
+              "saveDC": 25
+            }
+          ]
+        },
+        "itemClass": "armor"
       }
     }
   },

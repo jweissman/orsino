@@ -18,3 +18,6 @@ books: phb mm dmg
 
 pub: books
   mkdocs gh-deploy --clean
+
+test:
+  bun test --watch --bail --timeout 60000

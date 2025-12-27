@@ -126,9 +126,9 @@ export class Template {
               // console.log("Evaluated overlaid array for property", k, ":", v);
             }
 
-            assembled[k] = (assembled[k] || []).concat(v);
-          } else if (v instanceof Number || typeof v === 'number') {
-            assembled[k] = (assembled[k] || 0) + v;
+            assembled[k] = (assembled[k] as Array<any> || []).concat(v);
+          } else if (typeof v === 'number') {
+            assembled[k] = (assembled[k] as number || 0) + v;
           } else if (typeof v === 'string') {
             if (key.startsWith("^")) {
               // console.log(`Evaluating overlaid property ${k} with expression: ${v}`);
@@ -143,7 +143,7 @@ export class Template {
             assembled[k] = v || assembled[k];
           } else if (typeof v === 'object' && v !== null) {
             // assume obj?
-            assembled[k] = { ...v, ...(assembled[k] || {}) };
+            assembled[k] = { ...v, ...(assembled[k] as {} || {}) };
           } else {
             // assembled[k] = v + (assembled[k] || null);
             throw new Error(`Cannot overlay property ${k} with value of type ${typeof v}`);
