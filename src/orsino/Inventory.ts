@@ -62,24 +62,8 @@ export class Inventory {
   }
 
   static item(name: string): ItemInstance {
-    // console.trace(`Creating item instance for: ${name}`);
-    return Generator.gen("loot", { _name: name }) as unknown as ItemInstance;
-    // const isConsumable = Deem.evaluate(`hasEntry(consumables, '${name}')`);
-    // if (isConsumable) {
-    //   const itemInfo = Deem.evaluate(`lookup(consumables, '${name}')`) as { charges?: number; };
-    //   if (itemInfo.charges) {
-    //     return {
-    //       name,
-    //       maxCharges: itemInfo.charges,
-    //       charges: Math.max(1, Math.floor(Math.random() * itemInfo.charges))
-    //     };
-    //   } else {
-    //     return { name };
-    //   }
-    // } else {
-    //   // console.trace("Error: trying to add non-consumable item as instance:", name);
-    //   throw new Error(`Cannot add non-consumable item '${name}' as an instance to inventory.`);
-    // }
+    const it = Generator.gen("loot", { _name: name }) as unknown as ItemInstance;
+    return it;
   }
 
   static quantities(items: ItemInstance[]): { [itemName: string]: number; } {
@@ -123,5 +107,13 @@ export class Inventory {
     // console.log(`🛡️ Equipped ${equipmentKey} to ${wielder.name} in slot ${slot}.`);
 
     return { oldItemKey: oldItemKey || null, slot };
+  }
+
+  static propertyOf(subject: Combatant, inventory: ItemInstance[]): ItemInstance[] | null {
+    return inventory.filter(item => item.ownerId === subject.id);
+  }
+
+  static sharedItems(inventory: ItemInstance[]): ItemInstance[] {
+    return inventory.filter(item => !item.ownerId);
   }
 }

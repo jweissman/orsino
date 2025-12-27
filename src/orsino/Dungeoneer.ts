@@ -286,11 +286,7 @@ export default class Dungeoneer {
         // if (isConsumable) {
           // this.playerTeam.inventory[this.dungeon!.macguffin] = (this.playerTeam.inventory[this.dungeon!.macguffin] || 0) + 1;
           this.playerTeam.inventory.push(Inventory.item(this.dungeon.macguffin));
-        // } else {
-          // add to loot 
-          // this.playerTeam.combatants[0].loot = this.playerTeam.combatants[0].loot || [];
-          // this.playerTeam.combatants[0].loot.push(this.dungeon!.macguffin);
-        // }
+
       }
     } else {
       // this.note("\n💀 Party defeated...\n");
@@ -615,13 +611,19 @@ export default class Dungeoneer {
     if (alertCheck.success) {
       await this.emit({ type: "trapDetected", trapDescription: trap.description, subject: alertCheck.actor });
 
-      const hasTools = this.playerTeam.combatants.some(c => c.gear?.includes('thieves_tools'));
-      if (!hasTools) {
+      const inventoryQuantities = Inventory.quantities(this.playerTeam.inventory);
+      let toolsAvailable = false;
+      if (inventoryQuantities['thieves_tools'] && inventoryQuantities['thieves_tools'] > 0) {
+        toolsAvailable = true;
+      }
+
+      // const hasTools = this.playerTeam.combatants.some(c => c.gear?.includes('thieves_tools'));
+      if (!toolsAvailable) {
         this.note(`But no one has thieves' tools to disarm it! You carefully avoid the ${trap.trigger} and move on.`);
         return;
       }
 
-      const disarmCheck = await this.skillCheck("disarm", `to disarm the trap`, "dex", trap.disarm_dc, (c) => c.gear?.includes('thieves_tools') || false);
+      const disarmCheck = await this.skillCheck("disarm", `to disarm the trap`, "dex", trap.disarm_dc); //, (c) => c.gear?.includes('thieves_tools') || false);
       activated = !disarmCheck.success;
 
       if (disarmCheck.success) {
@@ -790,18 +792,19 @@ export default class Dungeoneer {
         for (const item of room.treasure) {
           // this.note(`You find ${Words.humanize(item)}`);
           await this.emit({ type: "itemFound", itemName: Words.humanize(item), quantity: 1, where: "in the hidden stash" });
-          const isConsumable = Deem.evaluate(`=hasEntry(consumables, "${item}")`) as boolean;
-          const isGear = Deem.evaluate(`=hasEntry(masterGear, "${item}")`) as boolean;
+          // const isConsumable = Deem.evaluate(`=hasEntry(consumables, "${item}")`) as boolean;
+          // const isGear = Deem.evaluate(`=hasEntry(masterGear, "${item}")`) as boolean;
           const isEquipment = Deem.evaluate(`=hasEntry(equipment, "${item}")`) as boolean;
-          if (isConsumable) {
-            // this.note(`You add ${Words.a_an(item)} to your inventory.`);
-            // this.playerTeam.inventory.push({ name: item });
-            this.playerTeam.inventory.push(Inventory.item(item));
-          } else if (isGear) {
-            // this.note(`${actor.forename} adds ${Words.a_an(item)} to their gear.`);
-            actor.gear = actor.gear || [];
-            actor.gear.push(item);
-          } else if (isEquipment) {
+          // if (isConsumable) {
+          //   // this.note(`You add ${Words.a_an(item)} to your inventory.`);
+          //   // this.playerTeam.inventory.push({ name: item });
+          //   this.playerTeam.inventory.push(Inventory.item(item));
+          // } else if (isGear) {
+          //   // this.note(`${actor.forename} adds ${Words.a_an(item)} to their gear.`);
+          //   actor.gear = actor.gear || [];
+          //   actor.gear.push(item);
+        // } else
+        if (isEquipment) {
             // this.note(`${actor.forename} may equip ${Words.a_an(item)}.`);
             const choice = await this.select(`Equip ${Words.humanize(item)} now?`, [
               { name: "Yes", value: "yes", short: 'Y', disabled: false },
@@ -841,8 +844,9 @@ export default class Dungeoneer {
         // this.note(`${actor.forename} finds ${Words.humanizeList(room.gear.map(Words.humanize))}!`);
         for (const item of room.gear) {
           await this.emit({ type: "itemFound", itemName: Words.humanize(item), quantity: 1, where: "in the hidden stash" });
-          actor.gear = actor.gear || [];
-          actor.gear.push(item);
+          // actor.gear = actor.gear || [];
+          // actor.gear.push(item);
+          this.playerTeam.inventory.push(Inventory.item(item));
         }
       }
 

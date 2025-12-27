@@ -127,8 +127,16 @@ export class ModuleRunner {
     // give initial gold to party
     this.state.sharedGold += this.pcs.reduce((sum, pc) => sum + (pc.gp || 0), 0);
     this.pcs.forEach(pc => pc.gp = 0);
-    // this.logGold("start");
-    // console.log(`Starting module with party of ${this.pcs.length} adventurers and ${this.state.sharedGold}g shared gold.`);
+
+    // gather inventory from PC starting gear
+    for (const pc of this.pcs) {
+      const itemNames: string[] = pc.startingGear || [];
+      for (const itemName of itemNames) {
+        const item = { ...Inventory.item(itemName), ownerId: pc.id, ownerSlot: 'backpack' };
+        item.shared = item.itemClass === 'consumable';
+        this.state.inventory.push(item);
+      }
+    }
 
     await this.emit({
       type: "campaignStart",
@@ -384,7 +392,8 @@ export class ModuleRunner {
           type: "partyOverview",
           pcs: this.pcs,
           day: this.days,
-          itemQuantities: Inventory.quantities(this.state.inventory),
+          inventory: this.state.inventory,
+          // itemQuantities: Inventory.quantities(this.state.inventory),
         });
       } else {
         throw new Error(`Unknown action selected: ${action}`);

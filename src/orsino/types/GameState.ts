@@ -1,5 +1,6 @@
+import { sha } from "bun";
 import Deem from "../../deem";
-import { GameEvent, WieldEvent } from "../Events";
+import { AcquireItemEvent, GameEvent, WieldEvent } from "../Events";
 import { Inventory, Weapon } from "../Inventory";
 import { Combatant } from "./Combatant";
 import { ItemInstance } from "./ItemInstance";
@@ -25,28 +26,6 @@ const newGameState = ({ party, sharedGold }: {
   discoveredDungeons: [],
 });
 
-const processWieldEvent = (state: GameState, event: WieldEvent): GameState => {
-  const weapon = Deem.evaluate(`lookup(masterWeapon, "${event.weaponName}")`) as unknown as Weapon;
-  state.party = state.party.map((pc: Combatant) => {
-    if (pc.id === event.wielderId) {
-      const abilities: string[] = (pc.abilities || [])
-        .filter((abil: string) => abil.match(/melee|ranged/i) === null);
-      abilities.unshift(weapon.missile ? 'ranged' : 'melee');
-      return {
-        ...pc,
-        weapon: event.weaponName,
-        attackDie: weapon.damage,
-        damageKind: weapon.type,
-        hasMissileWeapon: weapon.missile || false,
-        hasInterceptWeapon: weapon.intercept || false,
-        abilities
-      };
-    } else {
-      return pc;
-    }
-  });
-  return state;
-}
 
 const processEvents = (state: GameState, events: GameEvent[]): GameState => {
   let s = { ...state };
@@ -70,11 +49,7 @@ const processEvent = (state: GameState, event: GameEvent): GameState => {
       newState.sharedGold = newState.sharedGold + event.revenue;
       break;
     case "acquire":
-      newState.inventory = [
-        ...(newState.inventory ?? []),
-        ...(Array(event.quantity).fill(Inventory.item(event.itemName)) as ItemInstance[]),
-      ];
-      break;
+      return processAcquireEvent(newState, event);
     case 'equip':
       newState.party = (newState.party ?? []).map((pc: Combatant) => {
         if (pc.id === event.wearerId) {
@@ -100,6 +75,43 @@ const processEvent = (state: GameState, event: GameEvent): GameState => {
   }
 
   return newState;
+}
+
+const processAcquireEvent = (state: GameState, event: AcquireItemEvent): GameState => {
+  const it = {
+    ...Inventory.item(event.itemName),
+    ownerId: event.acquirer.id,
+    ownerSlot: 'backpack',
+  };
+  it.shared = it.itemClass === 'consumable';
+  state.inventory = [
+    ...(state.inventory ?? []),
+    ...(Array(event.quantity).fill(it) as ItemInstance[]),
+  ];
+  return state;
+}
+
+const processWieldEvent = (state: GameState, event: WieldEvent): GameState => {
+  const weapon = Deem.evaluate(`lookup(masterWeapon, "${event.weaponName}")`) as unknown as Weapon;
+  state.party = state.party.map((pc: Combatant) => {
+    if (pc.id === event.wielderId) {
+      const abilities: string[] = (pc.abilities || [])
+        .filter((abil: string) => abil.match(/melee|ranged/i) === null);
+      abilities.unshift(weapon.missile ? 'ranged' : 'melee');
+      return {
+        ...pc,
+        weapon: event.weaponName,
+        attackDie: weapon.damage,
+        damageKind: weapon.type,
+        hasMissileWeapon: weapon.missile || false,
+        hasInterceptWeapon: weapon.intercept || false,
+        abilities
+      };
+    } else {
+      return pc;
+    }
+  });
+  return state;
 }
 
 export { newGameState, processEvents };

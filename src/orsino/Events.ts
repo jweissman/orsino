@@ -10,6 +10,8 @@ import Words from "./tui/Words";
 import { BossRoom, Room } from "./Dungeoneer";
 import Combat from "./Combat";
 import { StatusEffect, StatusModifications } from "./Status";
+import { ItemInstance } from "./types/ItemInstance";
+import { Inventory } from "./Inventory";
 
 type BaseEvent = {
   turn: number;
@@ -163,13 +165,13 @@ export type ShopEnteredEvent = BaseModuleEvent & { type: "shopEntered"; shopName
 export type PurchaseEvent = BaseModuleEvent & { type: "purchase"; itemName: string; cost: number; buyer: Combatant; };
 export type SaleEvent = BaseModuleEvent & { type: "sale"; itemName: string; revenue: number; seller: Combatant; };
 export type EquipmentEvent = BaseModuleEvent & { type: "equip"; itemName: string; slot: EquipmentSlot; wearerId: string; wearerName: string };
-export type AcquireConsumableEvent = BaseModuleEvent & { type: "acquire"; itemName: string; quantity: number; acquirer: Combatant; };
+export type AcquireItemEvent = BaseModuleEvent & { type: "acquire"; itemName: string; quantity: number; acquirer: Combatant; };
 export type WieldEvent = BaseModuleEvent & { type: "wield"; weaponName: string; wielderId: string; wielderName: string; };
 
 export type RumorHeardEvent = BaseModuleEvent & { type: "rumorHeard"; rumor: string; };
 export type TempleVisitedEvent = BaseModuleEvent & { type: "templeVisited"; templeName: string; blessingsGranted: string[]; itemsRecharged: string[]; };
 export type CampaignStopEvent = BaseModuleEvent & { type: "campaignStop"; reason: string; at: Timestamp; };
-export type PartyOverviewEvent = BaseModuleEvent & { type: "partyOverview"; pcs: Combatant[]; itemQuantities: { [itemName: string]: number }; };
+export type PartyOverviewEvent = BaseModuleEvent & { type: "partyOverview"; pcs: Combatant[]; inventory: ItemInstance[] } //itemQuantities: { [itemName: string]: number }; };
 export type HirelingOfferedEvent = BaseModuleEvent & { type: "hirelingOffered"; hireling: Combatant; cost: number; };
 export type HirelingHiredEvent = BaseModuleEvent & { type: "hirelingHired"; hireling: Combatant; cost: number; };
 
@@ -182,7 +184,7 @@ export type ModuleEvent =
   | SaleEvent
   | EquipmentEvent
   | WieldEvent
-  | AcquireConsumableEvent
+  | AcquireItemEvent
   | RumorHeardEvent
   | TempleVisitedEvent
   | PartyOverviewEvent
@@ -427,13 +429,17 @@ export default class Events {
       case "partyOverview":
         const records = [];
         for (const pc of event.pcs) {
-          records.push(await Presenter.characterRecord(pc));
+          records.push(await Presenter.characterRecord(pc, Inventory.propertyOf(pc, event.inventory) || []));
         }
         let overview = Stylist.bold(`Party Overview:\n${records.join("\n\n")}\n\n`);
-        if (event.itemQuantities && Object.keys(event.itemQuantities).length > 0) {
-          overview += `Inventory:\n${Object.entries(event.itemQuantities).map(([itemName, qty]) => `- ${qty} x ${Words.humanize(itemName)}`).join("\n")
-            }`
+        let sharedItems = Inventory.sharedItems(event.inventory);
+        if (sharedItems.length > 0) {
+          overview += Stylist.bold("Shared Inventory: ") + Presenter.aggregateList(sharedItems.sort((a, b) => a.name.localeCompare(b.name)).map(i => i.name)) + "\n";
         }
+        // if (event.itemQuantities && Object.keys(event.itemQuantities).length > 0) {
+          // overview += `Inventory:\n${Object.entries(event.itemQuantities).map(([itemName, qty]) => `- ${qty} x ${Words.humanize(itemName)}`).join("\n")
+            // }`
+        // }
         return overview;
       case "hirelingOffered":
 

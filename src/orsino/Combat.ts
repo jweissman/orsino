@@ -455,11 +455,15 @@ export default class Combat {
       // const itemAbility = Deem.evaluate(`lookup(consumables, '${itemKey}')`) as unknown as Ability;
       const item = this._teams[0].inventory?.find(ii => ii.key === itemKey);
       if (!item) {
-        console.warn(`Could not find item instance for key ${itemKey} in inventory.`);
+        // console.warn(`Could not find item instance for key ${itemKey} in inventory.`);
+        throw new Error(`Could not find item instance for key ${itemKey} in inventory.`);
         continue;
       }
       if (item.itemClass !== "consumable") {
-        console.warn(`Skipping non-consumable item ${itemKey} in inventory for turn actions.`);
+        // console.warn(`Skipping non-consumable item ${itemKey} in inventory for turn actions.`);
+        continue;
+      }
+      if (!item.shared && item.ownerId !== combatant.id) {
         continue;
       }
       // const itemAbility = Inventory.abilityForItem(itemKey);

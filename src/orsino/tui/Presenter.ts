@@ -1,5 +1,5 @@
 import Stylist from "./Style";
-import { Combatant } from "../types/Combatant";
+import { Combatant, EquipmentSlot } from "../types/Combatant";
 import Words from "./Words";
 import { Fighting } from "../rules/Fighting";
 import AbilityHandler, { Ability, AbilityEffect, TargetKind } from "../Ability";
@@ -8,6 +8,7 @@ import Combat from "../Combat";
 import StatusHandler, { StatusEffect, StatusModifications } from "../Status";
 import { never } from "../util/never";
 import Deem from "../../deem";
+import { ItemInstance } from "../types/ItemInstance";
 
 export default class Presenter {
   static colors = ['magenta', 'red', 'yellow', 'yellow', 'yellow', 'green', 'green', 'green', 'green'];
@@ -115,7 +116,7 @@ export default class Presenter {
     return `${Words.capitalize(combatant.referenceName || combatant.forename)} is ${Words.a_an(Words.capitalize(combatant.background || 'adventurer'))} ${Words.humanize(combatant.archetype || 'neutral')} from the ${combatant.hometown || 'unknown'}, ${combatant.age || 'unknown'} years old. ${descriptor} of ${combatant.body_type || 'average'} build with ${combatant.hair || 'unknown color'} hair, ${combatant.eye_color || 'dark'} eyes and ${Words.a_an(combatant.personality || 'unreadable')} disposition.`
   }
 
-  static async characterRecord(combatant: Combatant) {
+  static async characterRecord(combatant: Combatant, gear: ItemInstance[] = []): Promise<string> {
     await AbilityHandler.instance.loadAbilities();
     await TraitHandler.instance.loadTraits();
     await StatusHandler.instance.loadStatuses();
@@ -222,21 +223,18 @@ export default class Presenter {
       record += Stylist.bold("\nEquipped Items: \n");
       // Object.entries(combatant.equipment).forEach(([slot, item]) => {
       for (const slot of Object.keys(combatant.equipment)) {
-        const itemName = (combatant.equipment as any)[slot];
-        const item = Deem.evaluate('lookup(equipment, "' + itemName + '")') as { effect: StatusModifications };
+        const itemName = (combatant.equipment as Record<EquipmentSlot, string>)[slot as EquipmentSlot];
+        const item = Deem.evaluate('lookup(equipment, "' + itemName + '")') as unknown as { effect: StatusModifications };
         record += `  ${Stylist.colorize(Words.capitalize(slot), 'yellow')}: ${Words.humanize(itemName)} (${
           this.describeModifications(item.effect)
         })\n`;
       }
     }
 
-    if (combatant.gear && combatant.gear.length > 0) {
-      record += Stylist.bold("\nGear: ") + this.aggregateList(combatant.gear.sort((a, b) => a.localeCompare(b)));
+    if (gear && gear.length > 0) {
+      record += Stylist.bold("\nGear: ") + this.aggregateList(gear.sort((a, b) => a.name.localeCompare(b.name)).map(i => i.name)) + "\n";
     }
-
-    if (combatant.loot && combatant.loot.length > 0) {
-      record += Stylist.bold("\nLoot: ") + this.aggregateList(combatant.loot.sort((a, b) => a.localeCompare(b)));
-    }
+ 
 
     return record;
   }

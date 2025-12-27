@@ -18,7 +18,7 @@
     "*armor": "=#_isArmor ? lookup(masterArmor, #_name) : nihil",
     "_gem_type": "=#_isGem ? #_name : nihil",
     "*gem": "=#_isGem ? gen(gemstone) : nihil",
-    "name": "#_name",
+    "name": "=#_name",
     "key": "=#_name",
     "value": "=#_value"
   },
@@ -105,7 +105,7 @@
     "_coreAbilities": [ "defend" ],
     "abilities": "=concat(#primaryAttack, #_coreAbilities, lookup(abilities, #class))",
     "traits": "=concat(humanoid, lookup(traits, #race))",
-    "gear": "=gather(masterGear, 2d4 + 1)",
+    "startingGear": "=gather(masterGear, 2d4 + 1)",
     "*classModifier": "=lookup(classModifier, #class)",
     "*backgroundModifier": "=lookup(backgroundModifier, #background)",
     "*racialModifier": "=lookup(racialModifier, #race)",

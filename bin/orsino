@@ -151,7 +151,7 @@ program
     } else {
       process.stdout.write(JSON.stringify(response, null, 2));
     }
-    let t1 = Date.now();
+    // let t1 = Date.now();
     // console.error(`\nGenerated in ${(t1 - t0)} ms.`);
     // Files.write(`data/${type}s/${response['name']}.json`, JSON.stringify(response, null, 2));
   });

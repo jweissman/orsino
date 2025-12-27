@@ -85,8 +85,7 @@ export interface Combatant {
 
   currentEnvironment?: string;
 
-  gear?: string[];
-  // loot?: string[];
+  startingGear?: string[];
   gems?: Gem[];
 
   // todo count saves and prevent more than 3 saves from death
