@@ -17,6 +17,7 @@ import Orsino from "../orsino";
 import { StatusEffect, StatusModifications } from "./Status";
 import Sample from "./util/Sample";
 import Automatic from "./tui/Automatic";
+import { ItemInstance } from "./types/ItemInstance";
 
 type SkillType = "search" | "examine" | "disarm"; // | "pickLock" | "climb" | "swim" | "jump" | "listen" | "spot";
 
@@ -160,7 +161,10 @@ export default class Dungeoneer {
   protected encounterGen: (cr: number) => Encounter;
 
   public playerTeam: Team;
-  public dungeon: Dungeon | null = null;
+  private _dungeon: Dungeon | null = null;
+  public get dungeon(): Dungeon {
+    return this._dungeon!;
+  }
 
   constructor(
     options: Record<string, any> = {}
@@ -180,11 +184,11 @@ export default class Dungeoneer {
 
     this.encounterGen = (cr: number) => {
       if (options.gen) {
-        return options.gen("encounter", { race: this.dungeon!.race, terrain: this.dungeon!.terrain, targetCr: cr }) as Encounter;
+        return options.gen("encounter", { race: this.dungeon.race, terrain: this.dungeon.terrain, targetCr: cr }) as Encounter;
       } else {
         return {
           creatures: [
-            { forename: "Goblin", name: "Goblin", hp: 7, maximumHitPoints: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, attackDie: '1d6', damageKind: 'slashing', abilities: [], playerControlled: false, xp: 50, gp: 10, attackRolls: 1, weapon: "Dagger", alignment: 'evil', traits: [] } as Combatant
+            { id: 'npc:123', forename: "Goblin", name: "Goblin", hp: 7, maximumHitPoints: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, attackDie: '1d6', damageKind: 'slashing', abilities: [], playerControlled: false, xp: 50, gp: 10, attackRolls: 1, weapon: "Dagger", alignment: 'evil', traits: [] } as Combatant
           ]
         }
       }
@@ -206,11 +210,11 @@ export default class Dungeoneer {
   // }
 
   get icon() {
-    return Dungeoneer.dungeonIcons[this.dungeon!.dungeon_type as keyof typeof Dungeoneer.dungeonIcons] || "🏰";
+    return Dungeoneer.dungeonIcons[this.dungeon.dungeon_type as keyof typeof Dungeoneer.dungeonIcons] || "🏰";
   }
 
   setUp() {
-    this.dungeon = this.dungeonGen();
+    this._dungeon = this.dungeonGen();
   }
 
   // Main run loop
@@ -224,15 +228,15 @@ export default class Dungeoneer {
 
     await this.emit({
       type: "enterDungeon",
-      dungeonName: this.dungeon!.dungeon_name,
+      dungeonName: this.dungeon.dungeon_name,
       dungeonIcon: this.icon,
-      dungeonType: this.dungeon!.dungeon_type,
-      depth: this.dungeon!.depth,
-      goal: this.dungeon!.goal || `Explore the ${this.dungeon!.dungeon_type} and defeat its denizens.`,
+      dungeonType: this.dungeon.dungeon_type,
+      depth: this.dungeon.depth,
+      goal: this.dungeon.goal || `Explore the ${this.dungeon.dungeon_type} and defeat its denizens.`,
     });
 
     // assign dungeon environment to each combatants currentEnvironment
-    this.playerTeam.combatants.forEach(c => c.currentEnvironment = this.dungeon!.terrain);
+    this.playerTeam.combatants.forEach(c => c.currentEnvironment = this.dungeon.terrain);
 
     while (!this.isOver()) {
       const room = this.currentRoom;
@@ -263,9 +267,9 @@ export default class Dungeoneer {
         // we are moving to a new location within the dungeon (firstRoom, lastRoom, bossRoom, etc.)
         switch (result.newLocation) {
           case "firstRoom": this.currentRoomIndex = 0; break;
-          case "lastRoom": this.currentRoomIndex = this.dungeon!.rooms.length - 1; break;
-          case "randomRoom": this.currentRoomIndex = Math.floor(Math.random() * this.dungeon!.rooms.length); break;
-          default: this.currentRoomIndex = Math.min(Math.max(0, parseInt(result.newLocation)), this.dungeon!.rooms.length - 1); break;
+          case "lastRoom": this.currentRoomIndex = this.dungeon.rooms.length - 1; break;
+          case "randomRoom": this.currentRoomIndex = Math.floor(Math.random() * this.dungeon.rooms.length); break;
+          default: this.currentRoomIndex = Math.min(Math.max(0, parseInt(result.newLocation)), this.dungeon.rooms.length - 1); break;
         }
       } else {
         this.moveToNextRoom();
@@ -274,23 +278,23 @@ export default class Dungeoneer {
 
     // Display outcome
     if (this.winner === 'Player') {
-      this.emit({ type: "dungeonCleared", macguffin: this.dungeon!.macguffin });
+      await this.emit({ type: "dungeonCleared", macguffin: this.dungeon.macguffin });
       // this.note("\n🎉 Victory! Dungeon cleared!\n");
-      if (this.dungeon!.macguffin) {
+      if (this.dungeon.macguffin) {
         // this.note(`You have secured ${Stylist.bold(this.dungeon!.macguffin)}!\n`);
-        const isConsumable = Deem.evaluate(`hasEntry(consumables, '${this.dungeon!.macguffin}')`);
-        if (isConsumable) {
+        // const isConsumable = Deem.evaluate(`hasEntry(consumables, '${this.dungeon!.macguffin}')`);
+        // if (isConsumable) {
           // this.playerTeam.inventory[this.dungeon!.macguffin] = (this.playerTeam.inventory[this.dungeon!.macguffin] || 0) + 1;
-          this.playerTeam.inventory.push(await Inventory.item(this.dungeon!.macguffin));
-        } else {
+          this.playerTeam.inventory.push(Inventory.item(this.dungeon.macguffin));
+        // } else {
           // add to loot 
-          this.playerTeam.combatants[0].loot = this.playerTeam.combatants[0].loot || [];
-          this.playerTeam.combatants[0].loot.push(this.dungeon!.macguffin);
-        }
+          // this.playerTeam.combatants[0].loot = this.playerTeam.combatants[0].loot || [];
+          // this.playerTeam.combatants[0].loot.push(this.dungeon!.macguffin);
+        // }
       }
     } else {
       // this.note("\n💀 Party defeated...\n");
-      await this.emit({ type: "dungeonFailed", dungeonName: this.dungeon!.dungeon_name, reason: "Your party has been defeated." });
+      await this.emit({ type: "dungeonFailed", dungeonName: this.dungeon.dungeon_name, reason: "Your party has been defeated." });
     }
 
     return {}
@@ -555,7 +559,7 @@ export default class Dungeoneer {
         let gp = 0;
         let items: string[] = [];
         if (check.success) {
-          gp = Deem.evaluate("1+1d20");
+          gp = Deem.evaluate("1+1d20") as number;
           items = Deem.evaluate("sample(gather(consumables, -1, 'dig(#__it, rarity) == common'), 1d2)") as string[];
           // this.note(`${check.actor.forename} found a hidden compartment in ${room.decor} containing ${gp} gold coins!`);
         } else {
@@ -566,7 +570,7 @@ export default class Dungeoneer {
 
         for (const item of items) {
           await this.emit({ type: "itemFound", itemName: Words.humanize(item), quantity: 1, where: `in the hidden compartment of ${room.decor}` });
-          this.playerTeam.inventory.push(await Inventory.item(item));
+          this.playerTeam.inventory.push(Inventory.item(item));
         }
         examinedDecor = true;
       } else if (typeof choice === "string" && choice.startsWith("feature:")) {
@@ -634,8 +638,9 @@ export default class Dungeoneer {
       // apply trap effects
       const fx = trap.effects;
       const trapPseudocombatant: Combatant = {
+        id: `trap:${trap.name.toLowerCase().replace(/\s+/g, '_')}`,
         forename: Words.humanize(trap.punishment),
-        name: trap.description,
+        name: trap.punishment,
         alignment: 'neutral',
         weapon: '',
         hp: 1, maximumHitPoints: 1, level: 0, ac: 0,
@@ -648,7 +653,7 @@ export default class Dungeoneer {
           allies: this.playerTeam.combatants.filter(c => c !== pc),
           enemies: [],
         };
-        const source = Words.a_an(trap.name) + " trap";
+        const source = Words.a_an(Words.humanize(trap.punishment));
         for (const effect of fx) {
           const { events } = await AbilityHandler.handleEffect(source, effect, trapPseudocombatant, pc, context, Commands.handlers(this.roller));
           for (const event of events) {
@@ -694,13 +699,13 @@ export default class Dungeoneer {
         await this.emit({ type: "riddle", subject: check.actor, challenge: riddle.challenge.question, reward: riddle.reward, solution: riddle.challenge.answer });
         this.note(`${check.actor.forename} answered correctly and received ${Words.a_an(riddle.reward)}!`);
         // give reward
-        const isConsumable = Deem.evaluate(`hasEntry(consumables, '${riddle.reward}')`);
-        if (isConsumable) {
-          this.playerTeam.inventory.push(await Inventory.item(riddle.reward));
-        } else {
-          check.actor.gear = check.actor.gear || [];
-          check.actor.gear.push(riddle.reward);
-        }
+        // const isConsumable = Deem.evaluate(`hasEntry(consumables, '${riddle.reward}')`);
+        // if (isConsumable) {
+          this.playerTeam.inventory.push(Inventory.item(riddle.reward));
+        // } else {
+        //   check.actor.gear = check.actor.gear || [];
+        //   check.actor.gear.push(riddle.reward);
+        // }
       } else {
         this.note(`${check.actor.forename} answered incorrectly.`);
       }
@@ -788,11 +793,10 @@ export default class Dungeoneer {
           const isConsumable = Deem.evaluate(`=hasEntry(consumables, "${item}")`) as boolean;
           const isGear = Deem.evaluate(`=hasEntry(masterGear, "${item}")`) as boolean;
           const isEquipment = Deem.evaluate(`=hasEntry(equipment, "${item}")`) as boolean;
-          // let isGear = await Deem.evaluate(`=hasEntry(masterGear, "${item}")`) as boolean;
           if (isConsumable) {
             // this.note(`You add ${Words.a_an(item)} to your inventory.`);
             // this.playerTeam.inventory.push({ name: item });
-            this.playerTeam.inventory.push(await Inventory.item(item));
+            this.playerTeam.inventory.push(Inventory.item(item));
           } else if (isGear) {
             // this.note(`${actor.forename} adds ${Words.a_an(item)} to their gear.`);
             actor.gear = actor.gear || [];
@@ -805,22 +809,28 @@ export default class Dungeoneer {
             ]) as string;
             if (choice === "no") {
               this.note(`${actor.forename} puts ${Words.a_an(item)} in their loot.`);
-              actor.loot = actor.loot || [];
-              actor.loot.push(item);
+              // actor.loot = actor.loot || [];
+              // actor.loot.push(item);
+              this.playerTeam.inventory.push(Inventory.item(item));
               continue;
             }
             // add to combatant.equipment
-            const { oldItemKey: maybeOldItem, slot } = await Inventory.equip(item, actor);
+            const { oldItemKey: maybeOldItem, slot } = Inventory.equipmentSlotAndExistingItem(item, actor);
             if (maybeOldItem !== null) {
               this.note(`${actor.forename} replaces ${Words.a_an(maybeOldItem)} with ${Words.a_an(item)}.`);
-              actor.loot = actor.loot || [];
-              actor.loot.push(maybeOldItem);
+              // actor.loot = actor.loot || [];
+              // actor.loot.push(maybeOldItem);
+              this.playerTeam.inventory.push(Inventory.item(maybeOldItem));
             }
             await this.emit({ type: "equipmentWorn", itemName: item, slot, subject: actor } as EquipmentWornEvent);
+
+            actor.equipment = actor.equipment || {};
+            actor.equipment[slot] = item;
           } else {
             // add to combatant.loot
-            actor.loot = actor.loot || [];
-            actor.loot.push(item);
+            // actor.loot = actor.loot || [];
+            // actor.loot.push(item);
+            this.playerTeam.inventory.push(Inventory.item(item));
           }
         }
         const xpReward = 10 + Math.floor(Math.random() * 20) + 5 * room.treasure.length;
@@ -854,7 +864,7 @@ export default class Dungeoneer {
           // this.note(`You found ${Words.a_an(Words.humanize(item))}!`);
           // this.playerTeam.inventory[item] = (this.playerTeam.inventory[item] || 0) + 1;
           // this.playerTeam.inventory.push({ name: item });
-          this.playerTeam.inventory.push(await Inventory.item(item));
+          this.playerTeam.inventory.push(Inventory.item(item));
           // this.note(`You add ${Words.a_an(Words.humanize(item))} to your inventory (total owned: ${this.playerTeam.inventory.filter(i => i.name === item).length})`);
           await this.emit({ type: "itemFound", itemName: Words.humanize(item), quantity: 1, where: "in the hidden stash" });
 
@@ -898,8 +908,9 @@ export default class Dungeoneer {
       const inventoryQuantities = Inventory.quantities(this.playerTeam.inventory);
       //Combat.inventoryQuantities(this.playerTeam);
       for (const [item, qty] of Object.entries(inventoryQuantities)) {
-        const it = Deem.evaluate(`=lookup(consumables, "${item}")`);
-        if (qty > 0 && it.aspect === "healing") {
+        // const it = Deem.evaluate(`=lookup(consumables, "${item}")`) as unknown as ItemInstance;
+        const it = this.playerTeam.inventory.find(i => i.key === item) as ItemInstance;
+        if (qty > 0 && it && it.aspect === "healing") {
           healingItems.push(item);
         }
       };
@@ -915,10 +926,12 @@ export default class Dungeoneer {
             if (c.hp < effective.maxHp) {
               for (const itemName of healingItems) {
                 // let qty = this.playerTeam.inventory[itemName] || 0;
-                const qty = this.playerTeam.inventory.filter(i => i.name === itemName).length;
+                const qty = this.playerTeam.inventory.filter(i => i.key === itemName).length;
                 if (qty > 0 && c.hp < effective.maxHp) {
-                  const it = Deem.evaluate(`=lookup(consumables, "${itemName}")`);
-                  const effects = it.effects;
+                  // const it = Deem.evaluate(`=lookup(consumables, "${itemName}")`);
+                  const it = this.playerTeam.inventory.find(i => i.key === itemName) as ItemInstance;
+                  this.note(`Using ${Words.a_an(itemName)} on ${c.name}...`);
+                  const effects = it.effects || [];
                   const nullCombatContext: CombatContext = {
                     subject: c, allies: this.playerTeam.combatants.filter(ally => ally.name !== c.name && ally.hp > 0), enemies: []
                   };
@@ -957,96 +970,15 @@ export default class Dungeoneer {
     return { survived: true };
   }
 
-  static defaultGen(): Dungeon {
-    return {
-      dungeon_name: 'The Cursed Caverns',
-      terrain: 'cave',
-      rumor: 'A dark cave rumored to be home to a fearsome Shadow Dragon.',
-      direction: 'north',
-      intendedCr: 3,
-      depth: 2,
-      dungeon_type: 'cave',
-      race: 'dwarven',
-      theme: 'underground',
-      aspect: 'dark',
-      bossRoom: {
-        narrative: "A shadowy chamber with a towering figure.",
-        room_size: 'large',
-        room_type: 'boss lair',
-        targetCr: 5,
-        boss_encounter: {
-          cr: 5,
-          creatures: [
-            {
-              forename: "Shadow Dragon", name: "Shadow Dragon", hp: 50, maximumHitPoints: 50, level: 5, ac: 18, dex: 14, str: 20, con: 16, int: 12, wis: 10, cha: 14,
-              attackDie: "1d20", hitDie: 12, hasMissileWeapon: false,
-              playerControlled: false, xp: 500, gp: 1000, weapon: "Bite", damageKind: "piercing", abilities: ["melee"], traits: [], alignment: 'evil'
-            }
-          ]
-        },
-        treasure: ["a legendary sword"],
-        features: [],
-        aura: null,
-        decor: "a magical portal",
-        gear: ["a legendary sword"],
-        shrine: null
-      },
-      rooms: [
-        {
-          narrative: "A dimly lit cave with dripping water.",
-          room_type: 'cave',
-          room_size: 'small',
-          treasure: ["a bag of gold coins", "a rusty sword"],
-          features: [],
-          aura: null,
-          decor: "a hidden alcove",
-          gear: ["a rusty sword", "a bag of gold coins"],
-          encounter: {
-            cr: 1,
-            creatures: [
-              {
-                forename: "Goblin", name: "Goblin", hp: 7, maximumHitPoints: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, alignment: "evil",
-                attackDie: "1d20", hitDie: 6, hasMissileWeapon: false,
-                playerControlled: false, xp: 50, gp: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: []
-              }
-            ]
-          },
-          shrine: null
-        },
-        {
-          narrative: "A grand hall with ancient tapestries.",
-          room_type: 'hall',
-          room_size: 'large',
-          treasure: ["a magical amulet", "a potion of healing"],
-          features: [],
-          aura: null,
-          decor: "a crumbling statue",
-          gear: ["a magical amulet", "a potion of healing"],
-          encounter: {
-            cr: 2,
-            creatures: [
-              {
-                forename: "Orc", name: "Orc", hp: 15, maximumHitPoints: 15, level: 2, ac: 13, dex: 12, str: 16, con: 14, int: 8, wis: 10, cha: 8, alignment: "evil",
-                attackDie: "1d20", hitDie: 8, hasMissileWeapon: false,
-                playerControlled: false, xp: 100, gp: 20, weapon: "Axe", damageKind: "slashing", abilities: ["melee"], traits: []
-              },
-            ]
-          },
-          shrine: null
-        }
-      ]
-    }
-  }
-
   get rooms(): Room[] {
-    return this.dungeon!.rooms;
+    return this.dungeon.rooms;
   }
 
   get currentRoom(): Room | BossRoom | null {
     if (this.currentRoomIndex < this.rooms.length) {
       return this.rooms[this.currentRoomIndex];
     } else if (this.currentRoomIndex === this.rooms.length) {
-      return this.dungeon!.bossRoom;
+      return this.dungeon.bossRoom;
     }
     return null;
   }
@@ -1082,7 +1014,7 @@ export default class Dungeoneer {
     if (nextIndex < this.rooms.length) {
       return this.rooms[nextIndex];
     } else if (nextIndex === this.rooms.length) {
-      return this.dungeon!.bossRoom;
+      return this.dungeon.bossRoom;
     }
     return null;
   }
@@ -1106,4 +1038,89 @@ export default class Dungeoneer {
     }
     return null;
   }
+
+  static defaultGen(): Dungeon {
+    return {
+      dungeon_name: 'The Cursed Caverns',
+      terrain: 'cave',
+      rumor: 'A dark cave rumored to be home to a fearsome Shadow Dragon.',
+      direction: 'north',
+      intendedCr: 3,
+      depth: 2,
+      dungeon_type: 'cave',
+      race: 'dwarven',
+      theme: 'underground',
+      aspect: 'dark',
+      bossRoom: {
+        narrative: "A shadowy chamber with a towering figure.",
+        room_size: 'large',
+        room_type: 'boss lair',
+        targetCr: 5,
+        boss_encounter: {
+          cr: 5,
+          creatures: [
+            {
+              id: "npc:shadow_dragon_001",
+              forename: "Shadow Dragon", name: "Shadow Dragon", hp: 50, maximumHitPoints: 50, level: 5, ac: 18, dex: 14, str: 20, con: 16, int: 12, wis: 10, cha: 14,
+              attackDie: "1d20", hitDie: 12, hasMissileWeapon: false,
+              playerControlled: false, xp: 500, gp: 1000, weapon: "Bite", damageKind: "piercing", abilities: ["melee"], traits: [], alignment: 'evil'
+            }
+          ]
+        },
+        treasure: ["a legendary sword"],
+        features: [],
+        aura: null,
+        decor: "a magical portal",
+        gear: ["a legendary sword"],
+        shrine: null
+      },
+      rooms: [
+        {
+          narrative: "A dimly lit cave with dripping water.",
+          room_type: 'cave',
+          room_size: 'small',
+          treasure: ["a bag of gold coins", "a rusty sword"],
+          features: [],
+          aura: null,
+          decor: "a hidden alcove",
+          gear: ["a rusty sword", "a bag of gold coins"],
+          encounter: {
+            cr: 1,
+            creatures: [
+              {
+                id: "npc:goblin_001",
+                forename: "Goblin", name: "Goblin", hp: 7, maximumHitPoints: 7, level: 1, ac: 15, dex: 14, str: 8, con: 10, int: 10, wis: 8, cha: 8, alignment: "evil",
+                attackDie: "1d20", hitDie: 6, hasMissileWeapon: false,
+                playerControlled: false, xp: 50, gp: 10, weapon: "Dagger", damageKind: "slashing", abilities: ["melee"], traits: []
+              }
+            ]
+          },
+          shrine: null
+        },
+        {
+          narrative: "A grand hall with ancient tapestries.",
+          room_type: 'hall',
+          room_size: 'large',
+          treasure: ["a magical amulet", "a potion of healing"],
+          features: [],
+          aura: null,
+          decor: "a crumbling statue",
+          gear: ["a magical amulet", "a potion of healing"],
+          encounter: {
+            cr: 2,
+            creatures: [
+              {
+                id: "npc:orc_001",
+                forename: "Orc", name: "Orc", hp: 15, maximumHitPoints: 15, level: 2, ac: 13, dex: 12, str: 16, con: 14, int: 8, wis: 10, cha: 8, alignment: "evil",
+                attackDie: "1d20", hitDie: 8, hasMissileWeapon: false,
+                playerControlled: false, xp: 100, gp: 20, weapon: "Axe", damageKind: "slashing", abilities: ["melee"], traits: []
+              },
+            ]
+          },
+          shrine: null
+        }
+      ]
+    }
+  }
+
 }

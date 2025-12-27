@@ -726,24 +726,24 @@ export default class Presenter {
           break;
 
         case "extraAttacksPerTurn":
-          parts.push(this.increaseDecrease('attacks per turn', value));
+          parts.push(this.increaseDecrease('attacks per turn', value as number));
           break;
 
         // noncombat
         case "examineBonus":
-          parts.push(this.increaseDecrease('examine bonus', value));
+          parts.push(this.increaseDecrease('examine bonus', value as number));
           break;
         case "searchBonus":
-          parts.push(this.increaseDecrease('search bonus', value));
+          parts.push(this.increaseDecrease('search bonus', value as number));
           break;
         case "pickLockBonus":
-          parts.push(this.increaseDecrease('pick lock bonus', value));
+          parts.push(this.increaseDecrease('pick lock bonus', value as number));
           break;
         case "disarmTrapBonus":
-          parts.push(this.increaseDecrease('disarm trap bonus', value));
+          parts.push(this.increaseDecrease('disarm trap bonus', value as number));
           break;
         case "lootBonus":
-          parts.push(this.increaseDecrease('loot bonus', value));
+          parts.push(this.increaseDecrease('loot bonus', value as number));
           break;
 
         case "xpMultiplier":

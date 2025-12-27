@@ -73,4 +73,19 @@ export class Table {
     const exists = groupName in this.groups;
     return exists;
   }
+
+  containsValue(value: string | number | boolean | DeemValue[] | { [key: string]: DeemValue; } | null): boolean {
+    const exists = Object.values(this.groups).some(group => group.includes(value));
+    // console.log(`Checking if table '${this.name}' contains value:`, value, '=>', exists);
+    return exists;
+  }
+
+  findGroupForValue(value: string | number | boolean | DeemValue[] | { [key: string]: DeemValue; } | null) {
+    for (const [groupName, items] of Object.entries(this.groups)) {
+      if (items.includes(value)) {
+        return groupName;
+      }
+    }
+    return null;
+  }
 }

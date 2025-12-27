@@ -15,7 +15,7 @@ import { never } from "./orsino/util/never";
 
 export type Prompt = (message: string) => Promise<string>;
 
-type PlaygroundType = "combat" | "dungeon" | "module";  // TODO "world";
+type PlaygroundType = "dungeon" | "module";  // TODO "world";
 
 type CommandLineOptions = {
   partySize?: number;

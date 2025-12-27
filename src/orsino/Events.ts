@@ -162,6 +162,10 @@ export type TownVisitedEvent = BaseModuleEvent & {
 export type ShopEnteredEvent = BaseModuleEvent & { type: "shopEntered"; shopName: string; };
 export type PurchaseEvent = BaseModuleEvent & { type: "purchase"; itemName: string; cost: number; buyer: Combatant; };
 export type SaleEvent = BaseModuleEvent & { type: "sale"; itemName: string; revenue: number; seller: Combatant; };
+export type EquipmentEvent = BaseModuleEvent & { type: "equip"; itemName: string; slot: EquipmentSlot; wearerId: string; wearerName: string };
+export type AcquireConsumableEvent = BaseModuleEvent & { type: "acquire"; itemName: string; quantity: number; acquirer: Combatant; };
+export type WieldEvent = BaseModuleEvent & { type: "wield"; weaponName: string; wielderId: string; wielderName: string; };
+
 export type RumorHeardEvent = BaseModuleEvent & { type: "rumorHeard"; rumor: string; };
 export type TempleVisitedEvent = BaseModuleEvent & { type: "templeVisited"; templeName: string; blessingsGranted: string[]; itemsRecharged: string[]; };
 export type CampaignStopEvent = BaseModuleEvent & { type: "campaignStop"; reason: string; at: Timestamp; };
@@ -176,6 +180,9 @@ export type ModuleEvent =
   | ShopEnteredEvent
   | PurchaseEvent
   | SaleEvent
+  | EquipmentEvent
+  | WieldEvent
+  | AcquireConsumableEvent
   | RumorHeardEvent
   | TempleVisitedEvent
   | PartyOverviewEvent
@@ -245,8 +252,7 @@ export default class Events {
       case "fall": return '';  //`${subjectName} falls.`;
       case "flee": return `${subjectName} flees from combat.`;
       case "statusEffect":
-        const effectName = Stylist.colorize(event.effectName, 'magenta');
-        return `${subjectName} is ${effectName} (${Presenter.describeModifications(event.effect)}).`
+        return `${subjectName} is ${event.effectName} (${Presenter.describeModifications(event.effect)}).`
       case "statusExpire":
         return `${subjectName} is no longer ${event.effectName}.`;
       case "statusExpiryPrevented":
@@ -394,6 +400,16 @@ export default class Events {
         return `${event.buyer.forename} purchased ${Words.a_an(event.itemName)} for ${event.cost} gold.`;
       case "sale":
         return `${event.seller.forename} sold ${Words.a_an(event.itemName)} for ${event.revenue} gold.`;
+      case "equip":
+        return `${event.wearerName} equips ${Words.a_an(event.itemName)} as their ${event.slot}.`;
+      case "wield": 
+        return `${event.wielderName} wields ${Words.a_an(event.weaponName)}!`;
+      case "acquire":
+        if (event.quantity === 1) {
+          return `${event.acquirer.forename} acquires ${Words.a_an(event.itemName)}.`;
+        } else {
+          return `${event.acquirer.forename} acquires ${event.quantity} x ${Words.a_an(event.itemName)}.`;
+        }
       case "rumorHeard":
         return `The tavern buzzes with news: "${event.rumor}"`;
       case "templeVisited":

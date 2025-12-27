@@ -16,7 +16,7 @@ export class Template {
 
   static bootstrapDeem(context: Record<string, DeemValue> = {}) {
     Deem.stdlib = Deem.stdlib || {};
-    Deem.stdlib.eval = (expr: string) => Deem.evaluate(expr, context);
+    Deem.stdlib.eval = (expr: DeemValue) => Deem.evaluate(expr as string, context);
     Deem.stdlib.lookup = (tableName: GenerationTemplateType, groupName: string) => {
       return Generator.lookupInTable(tableName, groupName);
     }
@@ -30,6 +30,25 @@ export class Template {
       }
       return table.hasGroup(groupName);
     };
+    Deem.stdlib.hasValue = (tableName: GenerationTemplateType, value: DeemValue) => {
+      // console.log(`Checking hasValue for table '${tableName}' and group '${groupName}' for value:`, value);
+      const table = Generator.generationSource(tableName);
+      if (!table || !(table instanceof Table)) {
+        throw new Error(`Table not found: ${tableName}`);
+        return false;
+      }
+      return table.containsValue(value);
+    };
+    Deem.stdlib.findGroup = (tableName: GenerationTemplateType, value: DeemValue) => {
+      // console.log(`Finding group for value in table '${tableName}':`, value);
+      const table = Generator.generationSource(tableName);
+      if (!table || !(table instanceof Table)) {
+        throw new Error(`Table not found: ${tableName}`);
+        return null;
+      }
+      return table.findGroupForValue(value);
+    }
+
     Deem.stdlib.gather = (
       tableName: GenerationTemplateType, count: number = -1, condition?: string
     ) => Generator.gatherKeysFromTable(tableName, count, condition);
@@ -66,7 +85,9 @@ export class Template {
     // _generator: any
   ): Record<string, any> {
     const localContext = { ...options };
-    const assembled: Record<string, any> = {};
+    const assembled: Record<string, DeemValue> = {};
+
+    // this.props.id ||= `${this.type}:${Math.random().toString(36).substring(2, 8)}`;
 
     // Object.entries(this.props).forEach(([key, value]) => {
     for (const [key, value] of Object.entries(this.props)) {
@@ -82,7 +103,7 @@ export class Template {
       // it felt like we needed deep copy here to prevent any mutations from affecting the original template
       assembled[key] = deepCopy(resolved) as DeemValue;
 
-      localContext[key] = assembled[key] as DeemValue;
+      localContext[key] = assembled[key];
 
       if (key.startsWith("*") || key.startsWith("^")) {
         // we have evaluated the value (confirm we have gotten an object) 
@@ -141,12 +162,15 @@ export class Template {
       }
     });
 
-    return assembled;
+    return {
+      id: `${this.type}:${Math.random().toString(36).substring(2, 8)}`,
+      ...assembled
+    };
   }
 
-  static evaluatePropertyExpression(expr: any, context: Record<string, any>): any {
+  static evaluatePropertyExpression(expr: any, context: Record<string, any>): DeemValue {
     if (!expr || typeof expr !== 'string') {
-      return expr;
+      return expr as DeemValue;
     }
 
     if (expr.startsWith("=")) {

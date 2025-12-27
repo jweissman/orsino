@@ -1,7 +1,31 @@
 {
+  "loot": {
+    "_epic": "=1d100 > 95",
+    "_loot_rank": "=#_epic ? oneOf(major, grand, legendary) : oneOf(basic, negligible, minor)",
+    "_name": "=pick(lookup(treasure, #_loot_rank))",
+    "_isConsumable": "=hasEntry(consumables, #_name)",
+    "_isGear": "=hasEntry(masterGear, #_name)",
+    "_isWeapon": "=hasEntry(masterWeapon, #_name)",
+    "_isArmor": "=hasEntry(masterArmor, #_name)",
+    "_isEquipment": "=hasEntry(equipment, #_name)",
+    "_isGem": "=hasValue(gems, #_name)",
+    "itemClass": "=#_isWeapon ? 'weapon' : (#_isArmor ? 'armor' : (#_isGear ? 'gear' : (#_isConsumable ? 'consumable' : (#_isEquipment ? 'equipment' : (#_isGem ? 'gem' : 'loot')))))",
+    "_value": "=lookup(treasureValue, #_loot_rank)",
+    "*gear": "=#_isGear ? lookup(masterGear, #_name) : nihil",
+    "*consumable": "=#_isConsumable ? lookup(consumables, #_name) : nihil",
+    "*equipment": "=#_isEquipment ? lookup(equipment, #_name) : nihil",
+    "*weapon": "=#_isWeapon ? lookup(masterWeapon, #_name) : nihil",
+    "*armor": "=#_isArmor ? lookup(masterArmor, #_name) : nihil",
+    "_gem_type": "=#_isGem ? #_name : nihil",
+    "*gem": "=#_isGem ? gen(gemstone) : nihil",
+    "name": "#_name",
+    "key": "=#_name",
+    "value": "=#_value"
+  },
   "gemstone": {
-    "rank": "=(1d20 < 19) ? oneOf(common, uncommon) : oneOf(rare, very_rare, legendary)",
-    "type": "=lookup(gems, #rank)",
+    "_gem_type": null,
+    "rank": "=#_gem_type ? findGroup(gems, #_gem_type) : ((1d20 < 19) ? oneOf(common, uncommon) : oneOf(rare, very_rare, legendary))",
+    "type": "=#_gem_type || lookup(gems, #rank)",
     "quality": "=oneOf(poor, fair, good, fine, flawless)",
     "cut": "=oneOf(rough, cabochon, brilliant, princess, cushion, oval, marquise, pear, heart)",
     "size": "=oneOf(tiny, small, medium, large, huge)",
@@ -73,7 +97,7 @@
     "damageKind": "=dig(#_weaponStat, 'type')",
     "attackDie": "=dig(#_weaponStat, 'damage')",
     "armor": "=lookup(armor, #class)",
-    "ac": "=10 - lookup(masterArmor, #armor)",
+    "ac": "=10 - lookup(armorAC, #armor)",
     "gp": "=1d100",
     "hasMissileWeapon": "=!!dig(#_weaponStat, 'missile')",
     "hasInterceptWeapon": "=!!dig(#_weaponStat, 'intercept')",
@@ -239,7 +263,7 @@
     "maximumHitPoints": "=#challenging ? max(30, #_maximumHitPoints) : #_maximumHitPoints",
     "_naturalArmor": "=dig(#_statLine, 'naturalArmor')",
     "armor": "=lookup(npcArmor, #race)",
-    "_armorBonus": "=lookup(masterArmor, #armor)",
+    "_armorBonus": "=lookup(armorAC, #armor)",
     "ac": "=10 - #_naturalArmor - #_armorBonus",
     "damageKind": "=dig(#_weaponStat, 'type')",
     "attackDie": "=dig(#_weaponStat, 'damage')",
@@ -317,7 +341,8 @@
     "difficulty": "=oneOf(easy, medium, hard, deadly)",
     "form": "=oneOf(tablet, inscription, mural, glyphs, puzzle_box)",
     "challenge": "=lookup(riddles, #difficulty)",
-    "reward": "=pick(lookup(treasure, #difficulty == easy ? negligible : oneOf(negligible, minor, major)))"
+    "_loot_rank": "=#difficulty == deadly ? oneOf(major, grand) : (#difficulty == hard ? oneOf(minor, major) : oneOf(negligible, minor))",
+    "reward": "=gen(loot)"
   },
   "trap": {
     "trap_type": "=1d10 > 8 ? magical : mechanical",
@@ -443,7 +468,7 @@
     "*planeModifier": "=lookup(planeModifiers, #_plane_name)",
     "town": "=gen(town)",
     "_townName": "=dig(#town, 'name')",
-    "dungeons": "=genList(dungeon, 8)",
+    "dungeons": "=genList(dungeon, 3)",
     "_moduleLevel": 0,
     "name": "=oneOf('Adventure', 'Saga', 'Reckoning', 'Quest', 'Expedition') + ' ' + oneOf('in the ' + capitalize(#terrain), 'at ' + capitalize(#_townName), 'for the ' + capitalize(#terrain))"
   }

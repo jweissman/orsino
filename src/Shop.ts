@@ -1,0 +1,363 @@
+import Choice from "inquirer/lib/objects/choice";
+
+import Deem from "./deem";
+import { ModuleEvent } from "./orsino/Events";
+import { Equipment, Inventory, Weapon } from "./orsino/Inventory";
+import Words from "./orsino/tui/Words";
+import { Combatant } from "./orsino/types/Combatant";
+import { GameState } from "./orsino/types/GameState";
+import Automatic from "./orsino/tui/Automatic";
+import { never } from "./orsino/util/never";
+
+export type ShopType = 'loot' | 'consumables' | 'weapons' | 'equipment';
+
+type ShopStepResult =
+  | { done: true; events: ModuleEvent[] }
+  | { done: false; events: ModuleEvent[] };
+
+export default class Shop {
+  static name(type: ShopType): string {
+    switch (type) {
+      case 'consumables':
+        return "Alchemist";
+      case 'weapons':
+        return "Armorer";
+      case 'equipment':
+        return "Magician";
+      case 'loot':
+        return "General Goods";
+      default:
+        return never(type);
+    }
+  }
+
+  constructor(
+    // private readonly gameState: GameState,
+    private select = Automatic.randomSelect.bind(Automatic),
+  ) { }
+
+  gameState!: GameState;
+  leaving = false;
+  currentGold: number = 0;
+  // events: ModuleEvent[] = [];
+
+  get gold() { return this.currentGold }
+  get day() { return this.gameState.day }
+  get party() { return this.gameState.party }
+
+  async interact(shopType: ShopType, gameState: GameState): Promise<ShopStepResult> {
+    this.gameState = gameState;
+    this.currentGold = this.gameState.sharedGold;
+    this.leaving = false;
+    const stores: Record<ShopType, () => Promise<ModuleEvent[]>> = {
+      equipment: this.equipmentShop.bind(this),
+      consumables: this.consumablesShop.bind(this),
+      weapons: this.weaponsShop.bind(this),
+      loot: this.lootShop.bind(this),
+    };
+    const events: ModuleEvent[] = await stores[shopType].bind(this)();
+    return { done: this.leaving, events };
+  }
+
+  private async lootShop(): Promise<ModuleEvent[]> {
+    const events: ModuleEvent[] = [];
+
+    const buyingSelling = await this.select("Would you like to buy or sell?", [
+      {
+        short: "Buy Gear",
+        value: "buy",
+        name: "Purchase gear from the shop",
+        disabled: false,
+      },
+      {
+        short: "Sell Items",
+        value: "sell",
+        name: "Sell items from your inventory",
+        disabled: this.gameState.inventory.length === 0,
+      },
+      {
+        short: "Done",
+        value: "done",
+        name: "Finish shopping",
+        disabled: false,
+      },
+    ]) as string;
+
+    if (buyingSelling === "buy") {
+      events.push(...await this.buyGear())
+    } else if (buyingSelling === "sell") {
+      events.push(...await this.sellItems());
+    } else if (buyingSelling === "done") {
+      this.leaving = true;
+    }
+
+    return events;
+  }
+
+  private async buyGear(): Promise<ModuleEvent[]> {
+    const events: ModuleEvent[] = [];
+    const gearItemNames = Deem.evaluate(`gather(masterGear)`) as string[];
+    const options: Choice[] = [];
+    for (let index = 0; index < gearItemNames.length; index++) {
+      const itemName = gearItemNames[index];
+      const item = Deem.evaluate(`lookup(masterGear, "${itemName}")`) as unknown as Equipment;
+      item.key = itemName;
+      options.push({
+        short: Words.humanize(itemName) + ` (${item.value}g)`,
+        value: item,
+        name: `${Words.humanize(itemName)} - ${item.description || 'no description'} (${item.value}g)`,
+        disabled: this.currentGold < item.value,
+      })
+    }
+
+    options.push({ disabled: false, short: "Done", value: "done", name: "Finish shopping" });
+
+    const choice = await this.select("Available gear to purchase:", options);
+    if (choice === "done") {
+      this.leaving = true;
+      return events;
+    }
+
+    const item = choice as Equipment;
+
+    if (this.currentGold >= item.value) {
+      const firstPc = this.party[0];
+      events.push({
+        type: "purchase",
+        itemName: item.key,
+        cost: item.value,
+        buyer: firstPc,
+        day: this.day,
+      });
+      this.currentGold -= item.value;
+      
+      events.push({
+        type: "acquire",
+        itemName: item.key,
+        quantity: 1,
+        acquirer: firstPc,
+        day: this.day,
+      });
+    }
+
+    return events;
+  }
+
+  private async sellItems(): Promise<ModuleEvent[]> {
+    const events: ModuleEvent[] = [];
+    const lootQuantities = Inventory.quantities(this.gameState.inventory);
+    const lootOptions: Choice[] = [];
+    for (const [itemKey, qty] of Object.entries(lootQuantities)) {
+      const item = this.gameState.inventory.find(ii => ii.key === itemKey);
+      if (!item) {
+        console.warn(`Could not find item instance for key ${itemKey} in inventory.`);
+        continue;
+      }
+      lootOptions.push({
+        short: `${Words.humanize(itemKey)} x${qty} (${item.value}g each)`,
+        value: item,
+        name: `${Words.humanize(itemKey)} - ${item.description || 'no description'} x${qty} (${item.value}g each)`,
+        disabled: false,
+      });
+    }
+    lootOptions.push({ disabled: false, short: "Done", value: "done", name: "Finish selling" });
+
+    const choice = await this.select("Available items to sell:", lootOptions);
+    if (choice === "done") {
+      this.leaving = true;
+      return events;
+    }
+    const item = choice as Equipment;
+
+    // sell one unit of the item
+    const itemIndex = this.gameState.inventory.findIndex(ii => ii.key === item.key);
+    if (itemIndex >= 0) {
+      this.gameState.inventory.splice(itemIndex, 1);
+      events.push({
+        type: "sale",
+        itemName: item.key,
+        revenue: item.value,
+        seller: this.party[0],
+        day: this.day,
+      });
+      this.currentGold += item.value;
+    }
+    return events;
+  }
+
+  private async equipmentShop(): Promise<ModuleEvent[]> {
+    const events: ModuleEvent[] = [];
+    const magicItemNames = Deem.evaluate(`gather(equipment)`) as string[];
+    const pcOptions = this.party.map(pc => ({
+      short: pc.name,
+      value: pc,
+      name: `${pc.name} (${pc.equipment ? Words.humanizeList(Object.values(pc.equipment)) : 'no equipment'})`,
+      disabled: false,
+    }));
+    const wearer = await this.select(`Who needs new equipment?`, pcOptions) as Combatant;
+
+    const options = [];
+    for (let index = 0; index < magicItemNames.length; index++) {
+      const itemName = magicItemNames[index];
+      const item = Deem.evaluate(`lookup(equipment, "${itemName}")`) as unknown as Equipment;
+      item.key = itemName;
+      options.push({
+        short: Words.humanize(itemName) + ` (${item.value}g)`,
+        value: item,
+        name: `${Words.humanize(itemName)} - ${item.description} (${item.value}g)`,
+        disabled: this.currentGold < item.value,
+      })
+    }
+    options.push({ disabled: false, short: "Done", value: "done", name: "Finish shopping" });
+
+    const choice = await this.select("Available equipment to purchase:", options);
+    if (choice === "done") {
+      this.leaving = true;
+      return events;
+    }
+    const item = choice as Equipment;
+
+    if (this.currentGold >= item.value) {
+      const { oldItemKey: maybeOldItem } = Inventory.equipmentSlotAndExistingItem(item.key, wearer);
+      if (maybeOldItem) {
+        const oldItem = Deem.evaluate(`lookup(equipment, "${maybeOldItem}")`) as unknown as Equipment;
+        events.push({
+          type: "sale",
+          itemName: maybeOldItem,
+          revenue: oldItem.value,
+          seller: wearer,
+          day: this.day,
+        });
+      }
+
+      events.push({
+        type: "purchase",
+        itemName: item.key,
+        cost: item.value,
+        buyer: wearer,
+        day: this.day,
+      });
+      this.currentGold -= item.value;
+      const equipment = Deem.evaluate(`lookup(equipment, "${item.key}")`) as unknown as Equipment;
+      const slot = equipment.kind;
+      events.push({
+        type: "equip",
+        itemName: item.key,
+        slot,
+        wearerId: wearer.id,
+        wearerName: wearer.forename,
+        day: this.day,
+      })
+    }
+    return events;
+  }
+
+  private async consumablesShop(): Promise<ModuleEvent[]> {
+    const events: ModuleEvent[] = [];
+    const consumableItemNames = Deem.evaluate(`gather(consumables)`) as string[];
+    const options: Choice[] = [];
+    for (let index = 0; index < consumableItemNames.length; index++) {
+      const itemName = consumableItemNames[index];
+      const item = Deem.evaluate(`lookup(consumables, "${itemName}")`) as unknown as {
+        key: string;
+        name: string;
+        description: string;
+        value: number;
+      };
+      item.key = itemName;
+      options.push({
+        short: item.name + ` (${item.value}g)`,
+        value: item,
+        name: `${item.name} - ${item.description} (${item.value}g)`,
+        disabled: this.currentGold < item.value,
+      })
+    }
+    options.push({ disabled: false, short: "Done", value: "done", name: "Finish shopping" });
+
+    const choice = await this.select("Available items to purchase:", options);
+    if (choice === "done") {
+      this.leaving = true;
+      return events;
+    }
+    const item = choice as {
+      key: string;
+      name: string;
+      description: string;
+      value: number;
+    };
+
+    if (this.currentGold >= item.value) {
+      const firstPc = this.party[0];
+      events.push({
+        type: "purchase",
+        itemName: item.key,
+        cost: item.value,
+        buyer: firstPc,
+        day: this.day,
+      });
+      this.currentGold -= item.value;
+
+      events.push({
+        type: "acquire",
+        itemName: item.key,
+        quantity: 1,
+        acquirer: firstPc,
+        day: this.day,
+      });
+    }
+    return events;
+  }
+
+  private async weaponsShop(): Promise<ModuleEvent[]> {
+    const events: ModuleEvent[] = [];
+    const weaponItemNames = Deem.evaluate(`gather(masterWeapon, -1, '!dig(#__it, "natural")')`) as string[];
+    weaponItemNames.sort();
+    // pick wielder
+    const pcOptions: Choice<Combatant>[] = this.party.map(pc => ({
+      short: pc.name,
+      value: pc,
+      name: `${pc.name} (${pc.weapon || 'unarmed'})`,
+      disabled: false,
+    }));
+    const wielder = await this.select(`Who needs a new weapon?`, pcOptions) as Combatant;
+
+    const options: Choice<Weapon>[] = [];
+    for (let index = 0; index < weaponItemNames.length; index++) {
+      const itemName = weaponItemNames[index];
+      const item = Deem.evaluate(`lookup(masterWeapon, "${itemName}")`) as unknown as Weapon;
+      item.key = itemName;
+      options.push({
+        short: Words.humanize(itemName) + ` (${item.value}g)`,
+        value: item,
+        name: `${Words.humanize(itemName)} - ${item.damage} ${item.weight} ${item.kind} (${item.value}g)`,
+        disabled: this.currentGold < item.value || (wielder.weaponProficiencies ? !Inventory.isWeaponProficient(item, wielder.weaponProficiencies) : true),
+      })
+    }
+    options.push({ disabled: false, short: "Done", value: "done", name: "Finish shopping" });
+
+    const choice = await this.select("Available weapons to purchase:", options);
+    if (choice === "done") {
+      this.leaving = true;
+      return events;
+    }
+    const item = choice as Weapon & { key: string };
+    if (this.currentGold >= item.value) {
+      events.push({
+        type: "purchase",
+        itemName: item.key,
+        cost: item.value,
+        buyer: wielder,
+        day: this.day,
+      });
+      this.currentGold -= item.value;
+      events.push({
+        type: "wield",
+        weaponName: item.key,
+        wielderId: wielder.id,
+        wielderName: wielder.forename,
+        day: this.day,
+      });
+    }
+    return events;
+  }
+}

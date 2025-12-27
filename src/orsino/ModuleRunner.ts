@@ -7,8 +7,6 @@ import { GenerationTemplateType } from "./types/GenerationTemplateType";
 import Stylist from "./tui/Style";
 import Words from "./tui/Words";
 import { Commands } from "./rules/Commands";
-import Deem from "../deem";
-import { ItemInstance } from "./types/ItemInstance";
 import { Inventory } from "./Inventory";
 import Events, { ModuleEvent } from "./Events";
 import { StatusEffect, StatusModifications } from "./Status";
@@ -19,6 +17,8 @@ import { Fighting } from "./rules/Fighting";
 import { Answers } from "inquirer";
 import { GeneratedValue, GeneratorOptions } from "./Generator";
 import Orsino from "../orsino";
+import { GameState, newGameState, processEvents } from "./types/GameState";
+import Shop, { ShopType } from "../Shop";
 
 type TownSize = 'hamlet' | 'village' | 'town' | 'city' | 'metropolis' | 'capital';
 type Race = 'human' | 'elf' | 'dwarf' | 'halfling' | 'gnome' | 'orc' | 'fae';
@@ -51,13 +51,6 @@ export interface CampaignModule {
   globalEffects?: StatusModifications;
 }
 
-interface GameState {
-  party: Combatant[];
-  sharedGold: number;
-  inventory: Array<ItemInstance>;
-  completedDungeons: number[];
-  discoveredDungeons: number[];
-}
 
 type RunnerOptions = {
   roller?: Roll;
@@ -69,23 +62,15 @@ type RunnerOptions = {
 }
 
 export class ModuleRunner {
-  static configuration = { startingGold: 100 }
+  static configuration = { sharedGold: 100 }
 
   private roller: Roll;
   private select: Select<Answers>;
-
   private _outputSink: (message: string) => void;
   private moduleGen: (
     options?: GeneratorOptions
-      //Record<string, any>
   ) => CampaignModule;
-  private state: GameState = {
-    party: [],
-    sharedGold: ModuleRunner.configuration.startingGold,
-    inventory: [],
-    completedDungeons: [],
-    discoveredDungeons: [],
-  };
+  private state: GameState;
 
   private gen: (type: GenerationTemplateType, options?: GeneratorOptions) => GeneratedValue;
 
@@ -99,7 +84,7 @@ export class ModuleRunner {
     this.moduleGen = options.moduleGen || this.defaultModuleGen.bind(this);
     this.gen = options.gen || (() => { throw new Error("No gen function provided") });
 
-    this.state.party = options.pcs || [];
+    this.state = newGameState({ ...ModuleRunner.configuration, party: options.pcs || [] });
   }
 
   get pcs() { return this.state.party; }
@@ -142,8 +127,8 @@ export class ModuleRunner {
     // give initial gold to party
     this.state.sharedGold += this.pcs.reduce((sum, pc) => sum + (pc.gp || 0), 0);
     this.pcs.forEach(pc => pc.gp = 0);
-    this.logGold("start");
-    console.log(`Starting module with party of ${this.pcs.length} adventurers and ${this.state.sharedGold}g shared gold.`);
+    // this.logGold("start");
+    // console.log(`Starting module with party of ${this.pcs.length} adventurers and ${this.state.sharedGold}g shared gold.`);
 
     await this.emit({
       type: "campaignStart",
@@ -236,7 +221,7 @@ export class ModuleRunner {
           this.pcs.forEach(pc => pc.gp = (pc.gp || 0) + share);
           this.state.sharedGold -= share * this.pcs.length;
 
-          this.logGold("before dungeoneer");
+          // this.logGold("before dungeoneer");
           // this.outputSink(`You embark on a Quest to the ${Stylist.bold(dungeon.dungeon_name)}...`);
           const dungeoneer = new Dungeoneer({
             dry,
@@ -253,7 +238,7 @@ export class ModuleRunner {
           });
           const { newPlane } = await dungeoneer.run();  //dungeon, this.pcs);
           if (newPlane !== null && newPlane !== undefined && newPlane !== mod.plane) {
-            console.log(`The party has shifted to a new plane: ${newPlane}`);
+            console.warn(`~~~ The party has shifted to the plane of ${newPlane} ~~~`);
             return { newModuleOptions: { _plane_name: newPlane } };
           }
 
@@ -264,7 +249,7 @@ export class ModuleRunner {
           this.state.sharedGold += dungeoneer.playerTeam.combatants
             .reduce((sum, pc) => sum + (pc.gp || 0), 0);
           this.pcs.forEach(pc => pc.gp = 0);
-          this.logGold("after dungeoneer");
+          // this.logGold("after dungeoneer");
 
           // stabilize unconscious PC to 1 HP
           this.pcs.forEach(pc => {
@@ -288,6 +273,8 @@ export class ModuleRunner {
         await this.shop('equipment');
       } else if (action === "armory") {
         await this.shop('weapons');
+      } else if (action === "general") {
+        await this.shop('loot');
       } else if (action === "jeweler") {
         const gems = this.pcs.flatMap(pc => pc.gems || []);
         if (gems.length === 0) {
@@ -443,7 +430,7 @@ export class ModuleRunner {
       season: this.season,
     })
 
-    this.logGold("status");
+    // this.logGold("status");
   }
 
   private async menu(dry = false): Promise<string> {
@@ -452,6 +439,7 @@ export class ModuleRunner {
       inn: "Restore HP/slots"
     }
     const advancedShops = {
+      general: "Sell loot and other items",
       armory: "Buy weapons",
       blacksmith: "Improve weapons",
       magicShop: "Buy equipment",
@@ -480,7 +468,7 @@ export class ModuleRunner {
     }
 
     this.note("You have " + Stylist.bold(this.sharedGold + "g") + " available.");
-    return await this.select("What would you like to do?", options);
+    return await this.select("What would you like to do?", options) as string;
   }
 
   private rest(party: Combatant[]) {
@@ -493,200 +481,15 @@ export class ModuleRunner {
     // this.outputSink("💤 Your party rests and recovers fully.");
   }
 
-  private async shop(category: 'consumables' | 'weapons' | 'equipment') {
-    if (category === 'equipment') {
-      // console.log("\nWelcome to the Magic Shop! Here are the available items:");
-      await this.emit({ type: "shopEntered", shopName: "Magician", day: this.days });
-
-      const magicItemNames = Deem.evaluate(`gather(equipment)`);
-      while (true) {
-        // pick wielder
-        const pcOptions: Choice<any>[] = this.pcs.map(pc => ({
-          short: pc.name,
-          value: pc,
-          name: `${pc.name} (${pc.equipment ? Words.humanizeList(Object.values(pc.equipment)) : 'no equipment'})`,
-          disabled: false,
-        }));
-        const wielder = await this.select(`Who needs new equipment?`, pcOptions) as Combatant;
-
-        const options: Choice<any>[] = [];
-        // shopItems.map((itemName: string, index: number) => {
-        for (let index = 0; index < magicItemNames.length; index++) {
-          const itemName = magicItemNames[index];
-          const item = Deem.evaluate(`lookup(equipment, "${itemName}")`);
-          item.key = itemName;
-          options.push({
-            short: Words.humanize(itemName) + ` (${item.value}g)`,
-            value: item,
-            name: `${Words.humanize(itemName)} - ${item.description} (${item.value}g)`,
-            disabled: this.sharedGold < item.value,
-          })
-        }
-        options.push({ disabled: false, short: "Done", value: -1, name: "Finish shopping" });
-
-        // console.log("You have " + Stylist.bold(this.sharedGold + "g") + " available.");
-        const choice = await this.select("Available equipment to purchase:", options);
-        if (choice === -1) {
-          // this.outputSink("You finish your shopping.");
-          break;
-        }
-        const item = choice;
-        // console.log("Chosen equipment:", item);
-
-        if (this.sharedGold >= item.value) {
-          const { oldItemKey: maybeOldItem } = await Inventory.equip(item.key, wielder);
-          if (maybeOldItem) {
-            const oldItem = Deem.evaluate(`lookup(equipment, "${maybeOldItem}")`);
-            this.state.sharedGold += oldItem.value || 0;
-            // this.outputSink(`🔄 Replacing ${Words.humanize(oldItem.key)} equipped to ${wielder.name} (sold old item ${oldItem.name} for ${oldItem.value}g).`)
-          }
-          // let oldItemKey = wielder.equipment ? wielder.equipment[item.kind as EquipmentSlot] : null;
-          // if (oldItemKey) {
-          //   let oldItem = await Deem.evaluate(`lookup(equipment, "${oldItemKey}")`);
-          //   this.state.sharedGold += oldItem.value || 0;
-          //   this.outputSink(`🔄 Replacing ${Words.humanize(oldItemKey)} equipped to ${wielder.name} (sold old item for ${oldItem.value}g).`)
-          // };
-          // this.state.sharedGold -= item.value;
-          // wielder.equipment = wielder.equipment || {};
-          // wielder.equipment[item.kind as EquipmentSlot] = item.key;
-
-          // this.outputSink(`Purchased ${Words.humanize(item.name)} for ${item.value}g, equipped to ${wielder.name}`);
-          await this.emit({
-            type: "purchase",
-            itemName: item.key,
-            cost: item.value,
-            buyer: wielder,
-            day: this.days,
-          });
-          this.state.sharedGold -= item.value;
-        }
-      }
-    } else if (category === 'consumables') {
-      // console.log("\nWelcome to the Alchemist's Shop! Here are the available items:");
-      await this.emit({ type: "shopEntered", shopName: "Alchemist", day: this.days });
-
-      const consumableItemNames = Deem.evaluate(`gather(consumables)`);
-      while (true) {
-        // console.log("Shop items:", shopItemNames);
-        const options: Choice<any>[] = [];
-        // shopItems.map((itemName: string, index: number) => {
-        for (let index = 0; index < consumableItemNames.length; index++) {
-          const itemName = consumableItemNames[index];
-          const item = Deem.evaluate(`lookup(consumables, "${itemName}")`);
-          item.key = itemName;
-          options.push({
-            short: item.name + ` (${item.value}g)`,
-            value: item,
-            name: `${item.name} - ${item.description} (${item.value}g)`,
-            disabled: this.sharedGold < item.value,
-          })
-        }
-        options.push({ disabled: false, short: "Done", value: -1, name: "Finish shopping" });
-
-        console.log("You have " + Stylist.bold(this.sharedGold + "g") + " available.");
-        const choice = await this.select("Available items to purchase:", options);
-        if (choice === -1) {
-          // this.outputSink("You finish your shopping.");
-          break;
-        }
-        const item = choice;
-        //shopItemNames[choice];
-        if (this.sharedGold >= item.value) {
-          this.state.sharedGold -= item.value;
-          // this.state.inventory[item.key] = (this.state.inventory[item.key] || 0) + 1;
-          this.state.inventory.push(await Inventory.item(item.key));
-          // this.outputSink(`✅ Purchased 1x ${item.name} for ${item.value}g`);
-          const firstPc = this.pcs[0];
-          await this.emit({
-            type: "purchase",
-            itemName: item.key,
-            cost: item.value,
-            buyer: firstPc,
-            day: this.days,
-          });
-        } else {
-          // this.outputSink("❌ Not enough gold!");
-        }
-        // this.share
-      }
-    } else if (category === 'weapons') {
-      // console.log("\nWelcome to the Armorer's Shop! Here are the available weapons:");
-      await this.emit({ type: "shopEntered", shopName: "Armorer", day: this.days });
-
-      const weaponItemNames = Deem.evaluate(`gather(masterWeapon, -1, '!dig(#__it, "natural")')`) as string[];
-      // console.log("Weapon items:", weaponItemNames);
-      weaponItemNames.sort();
-
-      while (true) {
-
-        // pick wielder
-        const pcOptions: Choice<any>[] = this.pcs.map(pc => ({
-          short: pc.name,
-          value: pc,
-          name: `${pc.name} (${pc.weapon || 'unarmed'})`,
-          disabled: false,
-        }));
-        const wielder = await this.select(`Who needs a new weapon?`, pcOptions) as Combatant;
-
-        const options: Choice<any>[] = [];
-        // shopItems.map((itemName: string, index: number) => {
-        for (let index = 0; index < weaponItemNames.length; index++) {
-          const itemName = weaponItemNames[index];
-          const item = Deem.evaluate(`lookup(masterWeapon, "${itemName}")`) as unknown as { 
-            key: string;
-            damage: string;
-            type: string;
-            missile: boolean;
-            intercept: boolean;
-            weight: string;
-            kind: string;
-            value: number;
-          };
-          item.key = itemName;
-          options.push({
-            short: Words.humanize(itemName) + ` (${item.value}g)`,
-            value: item,
-            name: `${Words.humanize(itemName)} - ${item.damage} ${item.weight} ${item.kind} (${item.value}g)`,
-            disabled: this.sharedGold < item.value || (wielder.weaponProficiencies ? !Inventory.isWeaponProficient(item, wielder.weaponProficiencies) : true),
-          })
-        }
-        options.push({ disabled: false, short: "Done", value: "done", name: "Finish shopping" });
-
-        // console.log("You have " + Stylist.bold(this.sharedGold + "g") + " available.");
-        const choice = await this.select("Available weapons to purchase:", options);
-        if (choice === "done") {
-          // this.outputSink("You finish your shopping.");
-          break;
-        }
-        const item = choice;
-        // console.log("Chosen weapon:", item);
-
-        if (this.sharedGold >= item.value) {
-          this.state.sharedGold -= item.value;
-          // wielder.equipment = wielder.equipment || {};
-          wielder.weapon = item.key;
-          wielder.attackDie = item.damage;
-          wielder.damageKind = item.type;
-          wielder.hasMissileWeapon = item.missile;
-          wielder.hasInterceptWeapon = item.intercept;
-
-          const primaryAttack = item.missile ? 'ranged' : 'melee';
-          // remove ranged/melee ability from ability list
-          wielder.abilities = (wielder.abilities || []).filter((abil: any) => abil.match(/melee|ranged/i) === null);
-          // add new ability (keep primary at front)
-          wielder.abilities.unshift(primaryAttack);
-
-          // this.outputSink(`✅ Purchased 1x ${Words.humanize(item.key)} for ${item.value}g, equipped to ${wielder.name}`);
-          await this.emit({
-            type: "purchase",
-            itemName: item.key,
-            cost: item.value,
-            buyer: wielder,
-            day: this.days,
-          });
-        }
-      }
-
+  private async shop(category: ShopType) {
+    await this.emit({ type: "shopEntered", shopName: Shop.name(category) + " Shop", day: this.days });
+    const shop = new Shop(this.select);
+    let done = false;
+    while (!done) {
+      const { events, done: newDone } = await shop.interact(category, this.state);
+      for (const event of events) { await this.emit(event); }
+      this.state = processEvents(this.state, events);
+      done = newDone;
     }
   }
 
@@ -784,10 +587,10 @@ export class ModuleRunner {
     return dungeonChoices[choice];
   }
 
-  private logGold(tag: string) {
-    const pcGold = this.pcs.map(p => `${p.forename}:${p.gp||0}`).join(", ");
-    console.log(`🪙 [gold] ${tag} shared=${this.state.sharedGold} pcs=[${pcGold}]`);
-  }
+  // private logGold(tag: string) {
+  //   const pcGold = this.pcs.map(p => `${p.forename}:${p.gp||0}`).join(", ");
+  //   console.log(`🪙 [gold] ${tag} shared=${this.state.sharedGold} pcs=[${pcGold}]`);
+  // }
 
 
   private defaultModuleGen(): CampaignModule {

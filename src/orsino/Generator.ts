@@ -9,6 +9,9 @@ import deepCopy from "./util/deepCopy";
 export type GeneratorOptions = {
   setting?: string;
 
+  name?: string;
+  _name?: string;
+
   count?: number;
   __count?: number;
 
@@ -17,6 +20,7 @@ export type GeneratorOptions = {
   class?: string;
   gender?: string;
   targetCr?: number;
+  _targetCr?: number;
   _moduleLevel?: number;
 
   // playerControlled?: boolean;

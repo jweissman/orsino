@@ -450,20 +450,30 @@ export default class Combat {
 
     const inventoryItems = this._teams[0].inventory || [];
     const itemQuantities = Inventory.quantities(inventoryItems);
-    const itemAbilities = [];
+    const itemAbilities: Ability[] = [];
     for (const [itemKey, qty] of Object.entries(itemQuantities)) {
-      const itemAbility = Deem.evaluate(`lookup(consumables, '${itemKey}')`) as unknown as Ability;
-      const proficient = Inventory.isItemProficient(itemAbility.kind || 'kit', itemAbility.aspect, combatant.itemProficiencies || {})
+      // const itemAbility = Deem.evaluate(`lookup(consumables, '${itemKey}')`) as unknown as Ability;
+      const item = this._teams[0].inventory?.find(ii => ii.key === itemKey);
+      if (!item) {
+        console.warn(`Could not find item instance for key ${itemKey} in inventory.`);
+        continue;
+      }
+      if (item.itemClass !== "consumable") {
+        console.warn(`Skipping non-consumable item ${itemKey} in inventory for turn actions.`);
+        continue;
+      }
+      // const itemAbility = Inventory.abilityForItem(itemKey);
+      const proficient = Inventory.isItemProficient(item.kind || 'kit', item.aspect || 'unknown', combatant.itemProficiencies || {})
       if (!proficient) { continue; }
 
       if (qty > 0) {
         // sum charges across all instances of this item
         const matchingItems = inventoryItems.filter(ii => ii.name === itemKey);
         let totalCharges = 0;
-        const chargeBased = itemAbility.charges !== undefined;
+        const chargeBased = item.charges !== undefined;
         if (!chargeBased) {
           // not charge based, so just add as is
-          itemAbilities.push({ ...itemAbility, key: itemKey });
+          itemAbilities.push({ ...item, key: itemKey } as unknown as Ability);
           continue;
         }
 
@@ -478,10 +488,10 @@ export default class Combat {
           continue;
         }
         itemAbilities.push({
-          ...itemAbility,
-          description: itemAbility.description + `(${totalCharges} charges left)`,
+          ...item,
+          description: (item.description || 'unidentified item') + `(${totalCharges} charges left)`,
           key: itemKey
-        });
+        } as unknown as Ability);
       }
     }
 

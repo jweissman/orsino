@@ -1,15 +1,26 @@
 import Deem from "../deem";
+import Generator from "./Generator";
 import { Combatant, EquipmentSlot } from "./types/Combatant";
+import { DamageKind } from "./types/DamageKind";
 import { ItemInstance } from "./types/ItemInstance";
 
-interface Weapon {
+export interface Weapon {
+  key?: string;
   damage: string;
-  type: string;
+  type: DamageKind;
   intercept?: boolean;
   missile?: boolean;
   value: number;
   kind: string;
   weight: string;
+}
+
+
+export interface Equipment {
+  key: string;
+  description: string;
+  value: number;
+  kind: EquipmentSlot;
 }
 
 export class Inventory {
@@ -51,39 +62,41 @@ export class Inventory {
   }
 
   static item(name: string): ItemInstance {
-    const isConsumable = Deem.evaluate(`hasEntry(consumables, '${name}')`);
-    if (isConsumable) {
-      const itemInfo = Deem.evaluate(`lookup(consumables, '${name}')`) as { charges?: number; };
-      if (itemInfo.charges) {
-        return {
-          name,
-          maxCharges: itemInfo.charges,
-          charges: Math.max(1, Math.floor(Math.random() * itemInfo.charges))
-        };
-      } else {
-        return { name };
-      }
-    } else {
-      // console.trace("Error: trying to add non-consumable item as instance:", name);
-      throw new Error(`Cannot add non-consumable item '${name}' as an instance to inventory.`);
-    }
+    // console.trace(`Creating item instance for: ${name}`);
+    return Generator.gen("loot", { _name: name }) as unknown as ItemInstance;
+    // const isConsumable = Deem.evaluate(`hasEntry(consumables, '${name}')`);
+    // if (isConsumable) {
+    //   const itemInfo = Deem.evaluate(`lookup(consumables, '${name}')`) as { charges?: number; };
+    //   if (itemInfo.charges) {
+    //     return {
+    //       name,
+    //       maxCharges: itemInfo.charges,
+    //       charges: Math.max(1, Math.floor(Math.random() * itemInfo.charges))
+    //     };
+    //   } else {
+    //     return { name };
+    //   }
+    // } else {
+    //   // console.trace("Error: trying to add non-consumable item as instance:", name);
+    //   throw new Error(`Cannot add non-consumable item '${name}' as an instance to inventory.`);
+    // }
   }
 
   static quantities(items: ItemInstance[]): { [itemName: string]: number; } {
     const inventoryCounts: { [itemName: string]: number; } = {};
     for (const itemInstance of items) {
-      inventoryCounts[itemInstance.name] = (inventoryCounts[itemInstance.name] || 0) + 1;
+      inventoryCounts[itemInstance.key] = (inventoryCounts[itemInstance.name] || 0) + 1;
     }
     return inventoryCounts;
   }
 
-  static equip(equipmentKey: string, wielder: Combatant): {oldItemKey: string | null, slot: EquipmentSlot} {
+  static equipmentSlotAndExistingItem(equipmentKey: string, wielder: Combatant): {oldItemKey: string | null, slot: EquipmentSlot} {
     if (!wielder.equipment) {
       wielder.equipment = {};
     }
 
-    const equipment = Deem.evaluate(`lookup(equipment, "${equipmentKey}")`) as unknown as Weapon;
-    let slot = equipment.kind as EquipmentSlot;
+    const equipment = Deem.evaluate(`lookup(equipment, "${equipmentKey}")`) as unknown as Equipment;
+    let slot = equipment.kind;
     if (slot === 'ring' as EquipmentSlot) {
       if (!wielder.equipment['ring1']) {
         slot = 'ring1';
@@ -96,18 +109,18 @@ export class Inventory {
     }
 
     const oldItemKey = wielder.equipment ? wielder.equipment[slot] : null;
-    let oldItem = null;
-    if (oldItemKey) {
-      oldItem = Deem.evaluate(`lookup(equipment, "${oldItemKey}")`);
-      // console.log(`Discard equipped ${Words.humanize(oldItemKey)} from ${wielder.name} in favor of ${Words.humanize(equipmentKey)}.`);
-      // wielder.gp += oldItem.value || 0;
-      // this.state.sharedGold += oldItem.value || 0;
-      // this.outputSink(`🔄 Replacing ${Words.humanize(oldItemKey)} equipped to ${wielder.name} (sold old item for ${oldItem.value}g).`)
-    };
-    wielder.equipment = wielder.equipment || {};
-    wielder.equipment[slot] = equipmentKey;
+    // let oldItem = null;
+    // if (oldItemKey) {
+    //   oldItem = Deem.evaluate(`lookup(equipment, "${oldItemKey}")`) as unknown as Equipment;
+    //   // console.log(`Discard equipped ${Words.humanize(oldItemKey)} from ${wielder.name} in favor of ${Words.humanize(equipmentKey)}.`);
+    //   // wielder.gp += oldItem.value || 0;
+    //   // this.state.sharedGold += oldItem.value || 0;
+    //   // this.outputSink(`🔄 Replacing ${Words.humanize(oldItemKey)} equipped to ${wielder.name} (sold old item for ${oldItem.value}g).`)
+    // };
+    // wielder.equipment = wielder.equipment || {};
+    // wielder.equipment[slot] = equipmentKey;
 
-    console.log(`🛡️ Equipped ${equipmentKey} to ${wielder.name} in slot ${slot}.`);
+    // console.log(`🛡️ Equipped ${equipmentKey} to ${wielder.name} in slot ${slot}.`);
 
     return { oldItemKey: oldItemKey || null, slot };
   }

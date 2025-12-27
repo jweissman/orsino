@@ -43,7 +43,6 @@ export default class Deem {
     TernaryExp(cond, _q, trueExp, _c, falseExp) {
       const ctx = (this.args as EvalArgs).context || {};
       const condition = (cond as EvalNode).eval(ctx);
-      // return condition ? (await (trueExp as EvalNode).eval(ctx)) : (await (falseExp as EvalNode).eval(ctx));
       if (condition) {
         return (trueExp as EvalNode).eval(ctx);
       } else {

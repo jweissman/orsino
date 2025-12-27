@@ -1,6 +1,7 @@
 
 export type GenerationTemplateType = 'name'
   | 'surname'
+  | 'loot'
   | 'pc'
   | 'npc'
   | 'room'

@@ -11,6 +11,7 @@ export interface Gem {
 }
 
 export interface Combatant {
+  id: string;
   itemProficiencies?: {
     all?: boolean;
     kind?: string[];
@@ -85,7 +86,7 @@ export interface Combatant {
   currentEnvironment?: string;
 
   gear?: string[];
-  loot?: string[];
+  // loot?: string[];
   gems?: Gem[];
 
   // todo count saves and prevent more than 3 saves from death

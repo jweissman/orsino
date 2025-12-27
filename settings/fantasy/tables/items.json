@@ -1,5 +1,5 @@
 {
-  "masterArmor": {
+  "armorAC": {
     "discriminator": "kind",
     "groups": {
       "cloth": 0,
@@ -14,6 +14,73 @@
       "plate": 7
     }
   },
+
+  "masterArmor": {
+    "discriminator": "kind",
+    "groups": {
+      "cloth": {
+        "ac": 0,
+        "weight": "light",
+        "description": "Cloth armor offers minimal protection but is very light and flexible.",
+        "value": 5
+      },
+      "hide": {
+        "ac": 1,
+        "weight": "light",
+        "description": "Hide armor is made from the tanned hides of animals, providing basic protection.",
+        "value": 10
+      },
+      "leather": {
+        "ac": 2,
+        "weight": "light",
+        "description": "Leather armor is crafted from toughened leather, offering a balance of protection and mobility.",
+        "value": 15
+      },
+      "ring": {
+        "ac": 3,
+        "weight": "medium",
+        "description": "Ring armor consists of interlocking metal rings, providing moderate protection.",
+        "value": 25
+      },
+      "studded": {
+        "ac": 3,
+        "weight": "medium",
+        "description": "Studded armor is leather reinforced with metal studs, offering enhanced protection.",
+        "value": 30
+      },
+      "scale": {
+        "ac": 4,
+        "weight": "medium",
+        "description": "Scale armor is made of small metal plates sewn onto a backing, providing good protection.",
+        "value": 40
+      },
+      "chainmail": {
+        "ac": 5,
+        "weight": "heavy",
+        "description": "Chainmail armor is made of interlinked metal rings, offering strong protection at the cost of weight.",
+        "value": 50
+      },
+      "banded": {
+        "ac": 6,
+        "weight": "heavy",
+        "description": "Banded armor consists of metal strips riveted to a leather backing, providing excellent protection.",
+        "value": 60
+      },
+      "splint": {
+        "ac": 6,
+        "weight": "heavy",
+        "description": "Splint armor is made of vertical metal strips attached to a fabric or leather backing, offering high protection.",
+        "value": 70
+      },
+      "plate": {
+        "ac": 7,
+        "weight": "heavy",
+        "description": "Plate armor is made of large metal plates that cover the body, providing the highest level of protection.",
+        "value": 100
+      }
+    }
+  },
+
   "masterWeapon": {
     "discriminator": "kind",
     "groups": {
@@ -480,245 +547,380 @@
     "discriminator": "kind",
     "groups": {
       "ale": {
+        "description": "A mug of frothy ale to quench your thirst after a long day of adventuring.",
         "type": "consumable",
         "effect": [
           {
             "type": "heal",
             "amount": "3d4"
           }
-        ]
+        ],
+        "value": 2
       },
       "backpack": {
+        "description": "A sturdy backpack for carrying your gear on your adventures.",
         "type": "container",
-        "capacity": 30
+        "capacity": 30,
+        "value": 5
       },
       "barrel": {
+        "description": "A large barrel for storing liquids or bulk goods.",
         "type": "container",
-        "capacity": 50
+        "capacity": 50,
+        "value": 10
       },
       "bedroll": {
-        "type": "camping"
+        "description": "A comfortable bedroll for sleeping outdoors.",
+        "type": "camping",
+        "value": 1
       },
       "bell": {
-        "type": "tool"
+        "description": "A small bell that can be used to signal others or scare off wildlife.",
+        "type": "tool",
+        "value": 1
       },
       "blanket": {
-        "type": "camping"
+        "description": "A warm blanket for cold nights around the campfire.",
+        "type": "camping",
+        "value": 1
       },
       "boots": {
-        "type": "clothing"
+        "description": "A sturdy pair of boots for trekking through rough terrain.",
+        "type": "clothing",
+        "value": 2
       },
       "wine": {
+        "description": "A bottle of fine wine to celebrate a successful adventure.",
         "type": "consumable",
         "effect": [
           {
             "type": "heal",
             "amount": "2d4"
           }
-        ]
+        ],
+        "value": 3
       },
       "box": {
+        "description": "A sturdy box for storing small items and valuables.",
         "type": "container",
-        "capacity": 20
+        "capacity": 20,
+        "value": 3
       },
       "bracers": {
-        "type": "clothing"
+        "description": "A pair of leather bracers for protecting your forearms in combat.",
+        "type": "clothing",
+        "value": 4
       },
       "caltrops": {
-        "type": "tool"
+        "description": "A bag of caltrops that can be scattered on the ground to slow down pursuers.",
+        "type": "tool",
+        "value": 1
       },
       "candle": {
+        "description": "A simple wax candle that provides light in dark places.",
         "type": "light source",
-        "duration": 6
+        "duration": 6,
+        "value": 1
       },
       "canvas": {
-        "type": "tool"
+        "description": "A roll of canvas for making tents, sails, or other fabric items.",
+        "type": "tool",
+        "value": 2
       },
       "chain": {
-        "type": "tool"
+        "description": "A length of sturdy chain for securing items or climbing.",
+        "type": "tool",
+        "value": 5
       },
       "chalk": {
-        "type": "tool"
+        "description": "A piece of chalk for marking walls or drawing maps.",
+        "type": "tool",
+        "value": 1
       },
       "cloak": {
-        "type": "clothing"
+        "description": "A warm cloak for protection against the elements.",
+        "type": "clothing",
+        "value": 3
       },
       "crowbar": {
-        "type": "tool"
+        "description": "A sturdy crowbar for prying open doors or crates.",
+        "type": "tool",
+        "value": 2
       },
       "dice": {
-        "type": "tool"
+        "description": "A set of dice for gambling or passing the time.",
+        "type": "tool",
+        "value": 1
       },
       "doublet": {
-        "type": "clothing"
+        "description": "A stylish doublet for formal occasions or impressing nobles.",
+        "type": "clothing",
+        "value": 3
       },
       "firewood": {
-        "type": "camping"
+        "description": "A bundle of firewood for starting campfires.",
+        "type": "camping",
+        "value": 1
       },
       "flask": {
+        "description": "A small flask for carrying liquids.",
         "type": "container",
-        "capacity": 5
+        "capacity": 5,
+        "value": 1
       },
       "fish_hook": {
-        "type": "tool"
+        "description": "A sharp fish hook for catching fish.",
+        "type": "tool",
+        "value": 1
       },
       "fishing_net": {
-        "type": "tool"
+        "description": "A sturdy fishing net for catching multiple fish at once.",
+        "type": "tool",
+        "value": 3
       },
       "flint_and_steel": {
-        "type": "tool"
+        "description": "A flint and steel for starting fires.",
+        "type": "tool",
+        "value": 2
       },
       "gloves": {
-        "type": "clothing"
+        "description": "A pair of gloves for protecting your hands.",
+        "type": "clothing",
+        "value": 2
       },
       "gown": {
-        "type": "clothing"
+        "description": "An elegant gown for formal occasions.",
+        "type": "clothing",
+        "value": 3
       },
       "hammer": {
-        "type": "tool"
+        "description": "A sturdy hammer for driving nails or breaking objects.",
+        "type": "tool",
+        "value": 2
       },
       "holy_symbol": {
-        "type": "tool"
+        "description": "A holy symbol for religious ceremonies or warding off evil.",
+        "type": "tool",
+        "value": 5
       },
       "hose": {
-        "type": "tool"
+        "description": "A length of hose for carrying water or other liquids.",
+        "type": "tool",
+        "value": 2
       },
       "iron_spikes": {
-        "type": "tool"
+        "description": "A set of iron spikes for securing tents or climbing walls.",
+        "type": "tool",
+        "value": 1
       },
       "ladder": {
-        "type": "tool"
+        "description": "A portable ladder for reaching high places.",
+        "type": "tool",
+        "value": 4
       },
       "lamp": {
+        "description": "An oil lamp that provides light in dark places.",
         "type": "light source",
-        "duration": 12
+        "duration": 12,
+        "value": 3
       },
       "lantern": {
+        "description": "A lantern that provides bright light for extended periods.",
         "type": "light source",
-        "duration": 24
+        "duration": 24,
+        "value": 7
       },
       "lock": {
-        "type": "tool"
+        "description": "A sturdy lock for securing doors or chests.",
+        "type": "tool",
+        "value": 10
       },
       "manacles": {
-        "type": "tool"
+        "description": "A pair of manacles for restraining prisoners.",
+        "type": "tool",
+        "value": 8
       },
       "mirror": {
-        "type": "tool"
+        "description": "A small mirror for signaling or personal grooming.",
+        "type": "tool",
+        "value": 5
       },
       "musical_instrument": {
-        "type": "tool"
+        "description": "A musical instrument for entertainment or rituals.",
+        "type": "tool",
+        "value": 10
       },
       "needle_and_thread": {
-        "type": "tool"
+        "description": "A needle and thread for repairing clothing or gear.",
+        "type": "tool",
+        "value": 1
       },
       "cloak_pin": {
-        "type": "tool"
+        "description": "A pin for securing a cloak in place.",
+        "type": "tool",
+        "value": 2
       },
       "piton": {
-        "type": "tool"
+        "description": "A metal spike for anchoring ropes in rock or ice.",
+        "type": "tool",
+        "value": 1
       },
       "pole": {
-        "type": "tool"
+        "description": "A long pole for support or investigation.",
+        "type": "tool",
+        "value": 2
       },
       "pot": {
+        "description": "A cooking pot for preparing meals while traveling.",
         "type": "container",
-        "capacity": 10
+        "capacity": 10,
+        "value": 3
       },
       "pouch": {
+        "description": "A small pouch for carrying personal items.",
         "type": "container",
-        "capacity": 5
+        "capacity": 5,
+        "value": 2
       },
       "quill": {
-        "type": "tool"
+        "description": "A feather quill for writing or drawing.",
+        "type": "tool",
+        "value": 1
       },
       "quiver": {
+        "description": "A quiver for holding arrows or bolts.",
         "type": "container",
-        "capacity": 20
+        "capacity": 20,
+        "value": 3
       },
       "rations": {
+        "description": "A day's worth of dried food rations for sustenance on the road.",
         "type": "consumable",
         "effect": [
           {
             "type": "heal",
             "amount": "1d4"
           }
-        ]
+        ],
+        "value": 2
       },
       "robe": {
-        "type": "clothing"
+        "description": "A flowing robe for wizards or priests.",
+        "type": "clothing",
+        "value": 4
       },
       "rope": {
-        "type": "tool"
+        "description": "A length of sturdy rope for climbing, tying, or securing items.",
+        "type": "tool",
+        "value": 1
       },
       "sack": {
+        "description": "A large sack for carrying bulky items.",
         "type": "container",
-        "capacity": 15
+        "capacity": 15,
+        "value": 2
       },
       "satchel": {
+        "description": "A small satchel for carrying books or scrolls.",
         "type": "container",
-        "capacity": 10
+        "capacity": 10,
+        "value": 3
       },
       "scrollcase": {
+        "description": "A protective case for carrying scrolls or maps.",
         "type": "container",
-        "capacity": 5
+        "capacity": 5,
+        "value": 2
       },
       "shoes": {
-        "type": "clothing"
+        "description": "A comfortable pair of shoes for everyday wear.",
+        "type": "clothing",
+        "value": 2
       },
       "shovel": {
-        "type": "tool"
+        "description": "A sturdy shovel for digging or moving earth.",
+        "type": "tool",
+        "value": 3
       },
       "signal_whistle": {
-        "type": "tool"
+        "description": "A whistle for signaling allies or alerting to danger.",
+        "type": "tool",
+        "value": 1
       },
       "skillet": {
-        "type": "tool"
+        "description": "A cast iron skillet for cooking meals over a campfire.",
+        "type": "tool",
+        "value": 2
       },
       "soap": {
-        "type": "tool"
+        "description": "A bar of soap for personal hygiene while traveling.",
+        "type": "tool",
+        "value": 1
       },
       "spellbook": {
-        "type": "tool"
+        "description": "A book containing spells and magical knowledge for wizards.",
+        "type": "tool",
+        "value": 15
       },
       "tent": {
-        "type": "camping"
+        "description": "A portable tent for shelter while camping outdoors.",
+        "type": "camping",
+        "value": 10
       },
       "thieves_tools": {
-        "type": "tool"
+        "description": "A set of tools for picking locks and disarming traps.",
+        "type": "tool",
+        "value": 25
       },
       "torch": {
+        "description": "A wooden torch that provides light and can be used as a weapon.",
         "type": "light source",
-        "duration": 4
+        "duration": 4,
+        "value": 1
       },
       "tunic": {
-        "type": "clothing"
+        "description": "A simple tunic for everyday wear.",
+        "type": "clothing",
+        "value": 2
       },
       "twine": {
-        "type": "tool"
+        "description": "A ball of twine for tying or binding objects.",
+        "type": "tool",
+        "value": 1
       },
       "vellum": {
-        "type": "tool"
+        "description": "A sheet of vellum for writing or drawing.",
+        "type": "tool",
+        "value": 3
       },
       "holy_water": {
+        "description": "A vial of holy water that can harm undead creatures.",
         "type": "consumable",
         "effect": [
           {
             "type": "damage",
+            "kind": "radiant",
             "amount": "2d6",
-            "target": "undead"
+            "condition": { "trait": "undead" }
           }
-        ]
+        ],
+        "value": 25
       },
       "waterskin": {
+        "description": "A waterskin for carrying fresh water on long journeys.",
         "type": "container",
-        "capacity": 10
+        "capacity": 10,
+        "value": 2
       },
       "whetstone": {
-        "type": "tool"
+        "description": "A whetstone for sharpening blades and tools.",
+        "type": "tool",
+        "value": 1
       },
       "wind_chime": {
-        "type": "tool"
+        "description": "A decorative wind chime that produces soothing sounds when the wind blows.",
+        "type": "tool",
+        "value": 3
       }
     }
   },
@@ -1014,7 +1216,7 @@
         "type": "consumable",
         "kind": "scroll",
         "rarity": "legendary",
-        "value": 1000,
+        "value": 2000,
         "target": [
           "enemies"
         ],
@@ -1285,24 +1487,29 @@
           "crowbar",
           "dice",
           "lantern",
-          "flask_of_oil"
+          "oil_flask"
         ]
       ],
       "minor": [
         [
-          "a small gemstone",
+          "dagger",
+          "chainmail",
+          "longsword",
+          "agate", "carnelian",
           "holy_symbol",
           "thieves_tools",
           "antidote",
           "ring_of_minor_protection",
           "elixir_of_strength",
-          "wand_of_magic_missiles",
+          "wand_of_magic_missile",
           "scroll_of_fireball",
           "amulet_of_health"
         ]
       ],
       "major": [
         [
+          "amethyst",
+          "tourmaline",
           "a magic sword",
           "an enchanted ring",
           "ring_of_protection",
@@ -1313,8 +1520,23 @@
           "a rare artifact"
         ]
       ],
+      "grand": [
+        [
+          "emerald",
+          "sapphire",
+          "belt_of_giant_strength",
+          "ring_of_thorns",
+          "crown_of_insight",
+          "ring_of_regeneration",
+          "wardstone",
+          "helm_of_the_stars",
+          "ring_of_spell_turning"
+        ]
+      ],
       "legendary": [
         [
+          "diamond",
+          "black_opal",
           "scroll_of_apocalypse",
           "an ancient relic",
           "a lost tome",
@@ -1326,6 +1548,18 @@
       ]
     }
   },
+  "treasureValue": {
+    "discriminator": "tier",
+    "groups": {
+      "basic": 10,
+      "negligible": 50,
+      "minor": 200,
+      "major": 1000,
+      "grand": 2500,
+      "legendary": 5000
+    }
+  },
+
   "gems": {
     "discriminator": "tier",
     "groups": {
