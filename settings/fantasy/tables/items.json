@@ -99,14 +99,16 @@
         "type": "slashing",
         "value": 5,
         "kind": "axe",
-        "weight": "heavy"
+        "weight": "heavy",
+        "description": "A heavy battleaxe designed for powerful strikes."
       },
       "handaxe": {
         "damage": "1d6",
         "type": "slashing",
         "value": 1,
         "kind": "axe",
-        "weight": "light"
+        "weight": "light",
+        "description": "A small handaxe suitable for throwing or close combat."
       },
       "longbow": {
         "damage": "1d6",
@@ -114,7 +116,8 @@
         "missile": true,
         "value": 30,
         "kind": "bow",
-        "weight": "medium"
+        "weight": "medium",
+        "description": "A longbow designed for ranged combat with moderate draw weight."
       },
       "shortbow": {
         "damage": "1d4",
@@ -122,21 +125,24 @@
         "missile": true,
         "value": 15,
         "kind": "bow",
-        "weight": "light"
+        "weight": "light",
+        "description": "A shortbow that is easy to carry and quick to draw."
       },
       "club": {
         "damage": "1d4",
         "type": "bludgeoning",
         "value": 1,
         "kind": "club",
-        "weight": "light"
+        "weight": "light",
+        "description": "A simple wooden club, effective for basic melee combat."
       },
       "dagger": {
         "damage": "1d4",
         "type": "piercing",
         "value": 2,
         "kind": "blade",
-        "weight": "light"
+        "weight": "light",
+        "description": "A small dagger, ideal for close combat and throwing."
       },
       "dart": {
         "damage": "1d3",
@@ -144,42 +150,48 @@
         "missile": true,
         "value": 1,
         "kind": "dart",
-        "weight": "light"
+        "weight": "light",
+        "description": "A small dart, suitable for throwing."
       },
       "heavy_flail": {
         "damage": "1d6+1",
         "type": "bludgeoning",
         "value": 3,
         "kind": "flail",
-        "weight": "heavy"
+        "weight": "heavy",
+        "description": "A heavy flail with a spiked ball, effective for crushing blows."
       },
       "light_flail": {
         "damage": "1d4+1",
         "type": "bludgeoning",
         "value": 6,
         "kind": "flail",
-        "weight": "light"
+        "weight": "light",
+        "description": "A light flail with a spiked ball, suitable for quick strikes."
       },
       "halberd": {
         "damage": "1d10",
         "type": "slashing",
         "value": 9,
         "kind": "polearm",
-        "weight": "heavy"
+        "weight": "heavy",
+        "description": "A halberd combining an axe blade and a spear point on a long pole."
       },
       "heavy_warhammer": {
         "damage": "1d6+1",
         "type": "bludgeoning",
         "value": 7,
         "kind": "warhammer",
-        "weight": "heavy"
+        "weight": "heavy",
+        "description": "A heavy warhammer designed for powerful crushing blows."
       },
       "light_warhammer": {
         "damage": "1d4+1",
         "type": "bludgeoning",
         "value": 4,
         "kind": "warhammer",
-        "weight": "light"
+        "weight": "light",
+        "description": "A light warhammer suitable for quick, precise strikes."
       },
       "javelin": {
         "damage": "1d6",
@@ -187,7 +199,8 @@
         "intercept": true,
         "value": 1,
         "kind": "polearm",
-        "weight": "light"
+        "weight": "light",
+        "description": "A light javelin suitable for throwing and close combat."
       },
       "lance": {
         "damage": "2d4+1",
@@ -195,42 +208,48 @@
         "intercept": true,
         "value": 6,
         "kind": "polearm",
-        "weight": "heavy"
+        "weight": "heavy",
+        "description": "A heavy lance designed for mounted combat."
       },
       "heavy_mace": {
         "damage": "1d6+1",
         "type": "bludgeoning",
         "value": 10,
         "kind": "mace",
-        "weight": "heavy"
+        "weight": "heavy",
+        "description": "A heavy mace with a solid head for delivering powerful blows."
       },
       "light_mace": {
         "damage": "1d4+1",
         "type": "bludgeoning",
         "value": 4,
         "kind": "mace",
-        "weight": "light"
+        "weight": "light",
+        "description": "A light mace suitable for quick strikes."
       },
       "morningstar": {
         "damage": "2d4",
         "type": "piercing",
         "value": 5,
         "kind": "morningstar",
-        "weight": "medium"
+        "weight": "medium",
+        "description": "A morningstar with a spiked head for piercing armor."
       },
       "heavy_pick": {
         "damage": "1d6+1",
         "type": "piercing",
         "value": 8,
         "kind": "pick",
-        "weight": "heavy"
+        "weight": "heavy",
+        "description": "A heavy pick designed for breaking through armor and shields."
       },
       "light_pick": {
         "damage": "1d4+1",
         "type": "piercing",
         "value": 5,
         "kind": "pick",
-        "weight": "light"
+        "weight": "light",
+        "description": "A light pick suitable for quick strikes and climbing."
       },
       "pole_arm": {
         "damage": "1d6+1",
@@ -238,7 +257,8 @@
         "intercept": true,
         "value": 6,
         "kind": "polearm",
-        "weight": "medium"
+        "weight": "medium",
+        "description": "A long-hafted pointed weapon for reach and leverage."
       },
       "spear": {
         "damage": "1d6",
@@ -246,77 +266,88 @@
         "intercept": true,
         "value": 1,
         "kind": "spear",
-        "weight": "light"
+        "weight": "light",
+        "description": "A versatile spear suitable for throwing and melee combat."
       },
       "staff": {
         "damage": "1d6",
         "type": "bludgeoning",
         "value": 1,
         "kind": "staff",
-        "weight": "medium"
+        "weight": "medium",
+        "description": "A simple wooden staff used for defense and support."
       },
       "quarterstaff": {
         "damage": "1d6+2",
         "type": "bludgeoning",
         "value": 10,
         "kind": "staff",
-        "weight": "medium"
+        "weight": "medium",
+        "description": "A sturdy quarterstaff used for both offense and defense."
       },
       "claymore": {
         "damage": "2d4",
         "type": "slashing",
         "value": 25,
         "kind": "blade",
-        "weight": "heavy"
+        "weight": "heavy",
+        "description": "A large two-handed sword known for its powerful slashing attacks."
       },
       "broadsword": {
         "damage": "2d4",
         "type": "slashing",
         "value": 10,
         "kind": "blade",
-        "weight": "medium"
+        "weight": "medium",
+        "description": "A broad sword with a wide blade suitable for powerful slashes."
       },
       "longsword": {
         "damage": "1d8",
         "type": "slashing",
         "value": 15,
         "kind": "blade",
-        "weight": "medium"
+        "weight": "medium",
+        "description": "A versatile longsword suitable for both cutting and thrusting."
       },
       "scimitar": {
         "damage": "1d8",
         "type": "slashing",
         "value": 15,
         "kind": "blade",
-        "weight": "medium"
+        "weight": "medium",
+        "description": "A curved blade designed for swift slashing attacks."
       },
       "shortsword": {
         "damage": "1d6",
         "type": "slashing",
         "value": 8,
         "kind": "blade",
-        "weight": "light"
+        "weight": "light",
+        "description": "A short sword ideal for close combat and quick strikes."
       },
       "greatsword": {
         "damage": "1d10",
         "type": "slashing",
         "value": 30,
         "kind": "blade",
-        "weight": "heavy"
+        "weight": "heavy",
+        "description": "A massive two-handed sword capable of dealing devastating damage."
       },
       "falchion": {
         "damage": "2d4",
         "type": "slashing",
         "value": 20,
         "kind": "blade",
-        "weight": "medium"
+        "weight": "medium",
+        "description": "A one-handed, single-edged sword with a slightly curved blade that broadens toward the point."
       },
       "cutlass": {
         "damage": "1d6",
         "type": "slashing",
         "value": 10,
         "kind": "blade",
-        "weight": "light"
+        "weight": "light",
+        "description": "A short, curved sword with a single cutting edge, historically used by sailors and pirates."
       },
       "trident": {
         "damage": "1d6+1",
@@ -324,7 +355,8 @@
         "intercept": true,
         "value": 4,
         "kind": "trident",
-        "weight": "medium"
+        "weight": "medium",
+        "description": "A three-pronged spear used for fishing and combat."
       },
       "sling": {
         "damage": "1d4",
@@ -332,7 +364,8 @@
         "missile": true,
         "value": 1,
         "kind": "sling",
-        "weight": "light"
+        "weight": "light",
+        "description": "A simple sling used to hurl small stones or pellets."
       },
       "heavy_crossbow": {
         "damage": "1d6+1",
@@ -340,7 +373,8 @@
         "missile": true,
         "value": 20,
         "kind": "crossbow",
-        "weight": "heavy"
+        "weight": "heavy",
+        "description": "A heavy crossbow known for its powerful piercing attacks."
       },
       "light_crossbow": {
         "damage": "1d4+1",
@@ -348,7 +382,8 @@
         "missile": true,
         "value": 12,
         "kind": "crossbow",
-        "weight": "light"
+        "weight": "light",
+        "description": "A light crossbow known for its ease of use and quick reload times."
       },
       "composite_bow": {
         "damage": "1d6",
@@ -356,42 +391,48 @@
         "missile": true,
         "value": 75,
         "kind": "bow",
-        "weight": "medium"
+        "weight": "medium",
+        "description": "A composite bow known for its enhanced power and flexibility."
       },
       "whip": {
         "damage": "1d4+2",
         "type": "slashing",
         "value": 2,
         "kind": "whip",
-        "weight": "light"
+        "weight": "light",
+        "description": "A flexible whip used for striking at a distance."
       },
       "light_chain": {
         "damage": "1d6+2",
         "type": "slashing",
         "value": 7,
         "kind": "whip",
-        "weight": "medium"
+        "weight": "medium",
+        "description": "A medium-weight chain whip used for flexible striking."
       },
       "heavy_chain": {
         "damage": "1d8+2",
         "type": "slashing",
         "value": 12,
         "kind": "whip",
-        "weight": "heavy"
+        "weight": "heavy",
+        "description": "A heavy chain whip used for powerful flexible striking."
       },
       "rapier": {
         "damage": "1d6+2",
         "type": "piercing",
         "value": 40,
         "kind": "blade",
-        "weight": "light"
+        "weight": "light",
+        "description": "A slender and sharply pointed sword designed for thrusting attacks."
       },
       "bec_de_corbin": {
         "damage": "1d8+1",
         "type": "piercing",
         "value": 18,
         "kind": "polearm",
-        "weight": "heavy"
+        "weight": "heavy",
+        "description": "A polearm with a beak-like spike used for piercing armor."
       },
       "voulge": {
         "damage": "1d10+1",
@@ -399,7 +440,8 @@
         "intercept": true,
         "value": 14,
         "kind": "polearm",
-        "weight": "heavy"
+        "weight": "heavy",
+        "description": "A polearm with a broad, curved blade used for slashing attacks."
       },
       "scythe": {
         "damage": "2d4+1",
@@ -407,7 +449,8 @@
         "intercept": true,
         "value": 10,
         "kind": "polearm",
-        "weight": "medium"
+        "weight": "medium",
+        "description": "A polearm with a curved blade used for slashing attacks."
       },
       "pike": {
         "damage": "1d10+1",
@@ -415,14 +458,16 @@
         "intercept": true,
         "value": 15,
         "kind": "polearm",
-        "weight": "heavy"
+        "weight": "heavy",
+        "description": "A long spear used for thrusting attacks and keeping enemies at a distance."
       },
       "greatclub": {
         "damage": "1d8+2",
         "type": "bludgeoning",
         "value": 8,
         "kind": "club",
-        "weight": "heavy"
+        "weight": "heavy",
+        "description": "A heavy club used for powerful bludgeoning attacks."
       },
       "glaive": {
         "damage": "1d10+1",
@@ -430,21 +475,24 @@
         "intercept": true,
         "value": 12,
         "kind": "polearm",
-        "weight": "heavy"
+        "weight": "heavy",
+        "description": "A polearm with a broad blade used for slashing attacks."
       },
       "katana": {
-        "damage": "1d8+2",
+        "damage": "1d8+1",
         "type": "slashing",
         "value": 50,
         "kind": "blade",
-        "weight": "medium"
+        "weight": "medium",
+        "description": "A traditional sword known for its sharpness and cutting ability."
       },
       "wakizashi": {
-        "damage": "1d6+2",
+        "damage": "1d6+1",
         "type": "slashing",
         "value": 30,
         "kind": "blade",
-        "weight": "light"
+        "weight": "light",
+        "description": "A traditional short sword known for its sharpness and cutting ability."
       },
       "naginata": {
         "damage": "1d10+1",
@@ -452,21 +500,24 @@
         "intercept": true,
         "value": 20,
         "kind": "polearm",
-        "weight": "heavy"
+        "weight": "heavy",
+        "description": "A traditional polearm with a curved blade used for slashing attacks."
       },
       "kusarigama": {
         "damage": "1d6+2",
         "type": "slashing",
         "value": 18,
         "kind": "polearm",
-        "weight": "medium"
+        "weight": "medium",
+        "description": "A traditional weapon consisting of a kama (sickle) attached to a chain."
       },
       "nunchaku": {
         "damage": "1d6+2",
         "type": "bludgeoning",
         "value": 15,
         "kind": "club",
-        "weight": "light"
+        "weight": "light",
+        "description": "A traditional weapon consisting of two sticks connected by a chain or rope."
       },
       "shuriken": {
         "damage": "1d4+2",
@@ -474,7 +525,8 @@
         "missile": true,
         "value": 5,
         "kind": "shuriken",
-        "weight": "light"
+        "weight": "light",
+        "description": "A small star-shaped throwing weapon."
       },
       "antlers": {
         "damage": "1d6",
@@ -892,6 +944,17 @@
         "description": "A sheet of vellum for writing or drawing.",
         "type": "tool",
         "value": 3
+      },
+      "vinegar": {
+        "description": "A bottle of vinegar for cooking or cleaning wounds.",
+        "type": "consumable",
+        "effect": [
+          {
+            "type": "heal",
+            "amount": "1d4"
+          }
+        ],
+        "value": 2
       },
       "holy_water": {
         "description": "A vial of holy water that can harm undead creatures.",
@@ -1465,85 +1528,52 @@
     "groups": {
       "basic": [
         [
-          "a wooden bowl",
-          "a cloth pouch",
-          "a broken dagger",
-          "a tattered map",
-          "a wooden figurine",
-          "minor_healing_potion",
-          "firewood",
-          "rope",
-          "candle",
-          "manacles"
+          "a wooden bowl", "a cloth pouch", "a broken dagger", "a tattered map", "a wooden figurine",
+          "minor_healing_potion", "firewood", "rope", "candle", "manacles",
+          "waterskin", "flask", "rations", "torch", "bedroll", "blanket",
+          "soap", "fish_hook", "needle_and_thread", "skillet", "whetstone"
         ]
       ],
       "negligible": [
         [
-          "a simple ring",
-          "a small statue",
-          "a bronze bracelet",
-          "a faded painting",
-          "major_healing_potion",
-          "crowbar",
-          "dice",
-          "lantern",
-          "oil_flask"
+          "a simple ring", "a small statue", "a bronze bracelet", "a faded painting", "major_healing_potion",
+          "crowbar", "dice", "lantern", "oil_flask", "pouch",
+          "quill", "shovel", "signal_whistle", "tent", "vinegar",
+          "wind_chime", "alchemist_fire", "first_aid_kit", "holy_water", "cloak_pin"
         ]
       ],
       "minor": [
         [
-          "dagger",
-          "chainmail",
-          "longsword",
-          "agate", "carnelian",
-          "holy_symbol",
-          "thieves_tools",
-          "antidote",
-          "ring_of_minor_protection",
-          "elixir_of_strength",
-          "wand_of_magic_missile",
-          "scroll_of_fireball",
-          "amulet_of_health"
+          "dagger", "chainmail", "longsword", "agate", "carnelian",
+          "holy_symbol", "thieves_tools", "antidote", "ring_of_minor_protection", "elixir_of_strength",
+          "wand_of_magic_missile", "scroll_of_fireball", "amulet_of_health", "gloves_of_dexterity", "helm_of_intellect",
+          "mantle_of_charisma", "scroll_of_cure_disease", "wand_of_cure_minor_wounds", "wand_of_paralyzing_touch", "canvas", "lock", "hammer", "ladder", "musical_instrument"
         ]
       ],
       "major": [
         [
-          "amethyst",
-          "tourmaline",
-          "a magic sword",
-          "an enchanted ring",
-          "ring_of_protection",
-          "boots_of_swiftness",
-          "a crystal orb",
-          "a jeweled crown",
-          "a bag of precious gems",
-          "a rare artifact"
+          "amethyst", "tourmaline", "a magic sword", "an enchanted ring", "ring_of_protection",
+          "boots_of_swiftness", "a crystal orb", "a jeweled crown", "a bag of precious gems", "nunchaku",
+          "scroll_of_domination", "ring_of_thorns", "crown_of_insight", "belt_of_giant_strength", "ring_of_the_firmament",
+          "wardstone", "polearm", "katana", "gloves_of_dexterity", "amulet_of_vitality",
+          "boots_of_swiftness", "amulet_of_health", "helm_of_intellect", "mantle_of_charisma", "ring_of_perfect_turning"
         ]
       ],
       "grand": [
         [
-          "emerald",
-          "sapphire",
-          "belt_of_giant_strength",
-          "ring_of_thorns",
-          "crown_of_insight",
-          "ring_of_regeneration",
-          "wardstone",
-          "helm_of_the_stars",
-          "ring_of_spell_turning"
+          "emerald", "sapphire", "belt_of_giant_strength", "ring_of_thorns", "crown_of_insight",
+          "ring_of_regeneration", "wardstone", "helm_of_the_stars", "ring_of_spell_turning", "a chest of gold coins",
+          "a priceless painting", "a legendary weapon", "a suit of enchanted armor", "a royal scepter", "a hidden stash of jewels",
+          "a tome of ancient knowledge", "a mystical artifact", "a dragon's egg", "a crown of the lost king", "a fabled sword of legends"
         ]
       ],
       "legendary": [
         [
-          "diamond",
-          "black_opal",
-          "scroll_of_apocalypse",
-          "an ancient relic",
-          "a lost tome",
-          "a sacred idol",
-          "a crown of the lost king",
-          "a fabled sword of legends",
-          "a wondrous amulet of protection"
+          "diamond", "black_opal", "scroll_of_apocalypse", "an ancient relic", "a lost tome",
+          "a sacred idol", "a crown of the lost king", "a fabled sword of legends", "a wondrous amulet of protection", "a ring of ultimate power",
+          "a legendary artifact of immense power", "a mythical beast's claw", "a shard of a fallen star", "a vial of eternal youth", "a scepter of divine authority",
+          "a legendary sword", "a suit of enchanted armor", "a royal scepter", "a hidden stash of jewels", "a mystical artifact"
+
         ]
       ]
     }

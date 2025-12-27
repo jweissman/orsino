@@ -2,7 +2,7 @@ import Deem from "../deem";
 import Orsino from "../orsino";
 import AbilityHandler, { Ability, AbilityEffect } from "./Ability";
 import Generator from "./Generator";
-import { Weapon } from "./Inventory";
+import { Inventory, Weapon } from "./Inventory";
 import StatusHandler, { StatusEffect, StatusModifications } from "./Status";
 import { Template } from "./Template";
 import TraitHandler from "./Trait";
@@ -124,7 +124,7 @@ export default class Books {
         trait.statuses?.forEach(status => {
           line += `**${Words.humanize(status.name)}** - ${Presenter.describeStatus(status).replace(/\n/g, " ")}<br/>`;
         });
-        if (trait.abilities?.length||0 > 0) {
+        if (trait.abilities?.length || 0 > 0) {
           line += "*You gain the following abilities:*<br/>";
         }
         trait.abilities?.forEach(abilityName => {
@@ -133,7 +133,7 @@ export default class Books {
             line += `**${Words.capitalize(ability.name)}** - ${Presenter.describeAbility(ability).replace(/\n/g, " ")}<br/>`;
           }
         });
-        
+
         line += " |";
         this.write(line);
       }
@@ -146,6 +146,33 @@ export default class Books {
     await this.bootstrap();
 
     this.write(`## Spells\n`);
+
+    const categoryIcons: { [key: string]: string } = {
+      "abjuration": "🛡️",
+      "conjuration": "✨",
+      "divination": "🔮",
+      "enchantment": "💫",
+      "evocation": "🔥",
+      "necromancy": "💀",
+      "transmutation": "🔄",
+      "illusion": "🎭",
+
+      "life": "🌿",
+      "death": "☠️",
+      "light": "🌞",
+      "darkness": "🌑",
+      "law": "⚖️",
+      "chaos": "🎲",
+      "nature": "🍃",
+      "war": "⚔️",
+    }
+    this.write("\n### Legend")
+    this.write("\n| Icon | School/Domain |");
+    this.write("|------|---------------|");
+    Object.entries(categoryIcons).forEach(([category, icon]) => {
+      this.write(`| ${icon} | ${Words.capitalize(category)} |`);
+    });
+
     const aspects = ['arcane', 'divine'];
     for (const aspect of aspects) {
       // this.write(`\n=== ${aspect.toUpperCase()} SPELLS ===\n`);
@@ -166,27 +193,6 @@ export default class Books {
           return a.localeCompare(b);
         }
       )
-
-      const categoryIcons: { [key: string]: string } = {
-        "abjuration": "🛡️",
-        "conjuration": "✨",
-        "divination": "🔮",
-        "enchantment": "💫",
-        "evocation": "🔥",
-        "necromancy": "💀",
-        "transmutation": "🔄",
-        "illusion": "🎭",
-
-        "life": "🌿",
-        "death": "☠️",
-        "light": "🌞",
-        "darkness": "🌑",
-        "law": "⚖️",
-        "chaos": "🎲",
-        "nature": "🍃",
-        "war": "⚔️",
-      }
-
       this.write("\n| Cantrip | Level 1 | Level 2 | Level 3 | Level 4 | Level 5 | Level 6 | Level 7 | Level 8 | Level 9 |");
       this.write("  |---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|");
       const spellLevels: Record<number, string[]> = {};
@@ -222,7 +228,7 @@ export default class Books {
         this.write(row);
       }
 
-      
+
 
       this.write("\n| Name | Level | School/Domain | Description | Details |");
       this.write("|---|---|---|---|-----|");
@@ -230,7 +236,7 @@ export default class Books {
         const ability = AbilityHandler.instance.getAbility(spellName);
         if (ability && ability.type === "spell") {
           let row = `| <p id="${ability.name}">${Words.capitalize(ability.name)}</p> | `;
-          row += `${ability.level || "??"} `;
+          row += `${ability.level || "Cantrip"} `;
           if (ability.school) {
             row += `| School of ${Words.capitalize(ability.school)}`;
           } else if (ability.domain) {
@@ -392,7 +398,7 @@ export default class Books {
       this.write(row);
     }
   }
-      
+
   static async weaponbook(_options: Record<string, any> = {}) {
     await this.bootstrap();
 
@@ -407,11 +413,9 @@ export default class Books {
     this.write("|--------|------|--------|------------|-------|");
     for (const weaponName of weaponNames) {
       const weapon = Deem.evaluate('lookup(masterWeapon, "' + weaponName + '")') as unknown as Weapon;
-      const row = `| ${Words.humanize(weaponName)} | _${weapon.type}_ | ${weapon.damage} | ${Words.capitalize(weapon.weight)} ${
-        weapon.intercept? "Intercept " : ""
-        }${
-        weapon.missile? "Missile " : ""
-      } | ${weapon.value} gp |`;
+      const row = `| ${Words.humanize(weaponName)} | _${weapon.type}_ | ${weapon.damage} | ${Words.capitalize(weapon.weight)} ${weapon.intercept ? "Intercept " : ""
+        }${weapon.missile ? "Missile " : ""
+        } | ${weapon.value} gp |`;
       this.write(row);
     }
   }
@@ -447,6 +451,25 @@ export default class Books {
       const gear = Deem.evaluate('lookup(masterGear, "' + gearName + '")') as unknown as { name: string; description: string; value: number };
       const row = `| ${Words.humanize(gearName)} | _${gear.description}_ | ${gear.value} gp |`;
       this.write(row);
+    }
+  }
+
+  static async treasurebook(_options: Record<string, any> = {}) {
+    await this.bootstrap();
+
+    this.write(`## Treasure Tables\n`);
+
+    const treasureTypes = Deem.evaluate("gather(treasure)") as string[];
+    for (const treasureType of treasureTypes) {
+      this.write(`\n### ${Words.capitalize(treasureType)} Treasure\n`);
+      this.write("| Treasure | Description | Value | Kind |");
+      this.write("|----------|-------------|-------|------|");
+      const treasureEntries = Deem.evaluate('lookup(treasure, "' + treasureType + '")') as string[];
+      for (let i = 0; i < treasureEntries.length; i++) {
+        const treasureEntry = Words.humanize(treasureEntries[i]);
+        const item = Inventory.item(treasureEntries[i]);
+        this.write(`| ${treasureEntry} | ${item.description || 'A mysterious item'} | ${item.value || 'varies'} gp | ${item.itemClass || '--'} |`);
+      }
     }
   }
 }

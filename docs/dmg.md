@@ -201,6 +201,170 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 | Whispering Voices | _Soft whispers that seem to come from the walls themselves._ | Grant user Owl's Wisdom (Improve Wisdom by 2, improve all saves by 1) |
 
 
+## Treasure Tables
+
+
+### Basic Treasure
+
+| Treasure | Description | Value | Kind |
+|----------|-------------|-------|------|
+| A Wooden Bowl | A mysterious item | 200 gp | loot |
+| A Cloth Pouch | A mysterious item | 200 gp | loot |
+| A Broken Dagger | A mysterious item | 200 gp | loot |
+| A Tattered Map | A mysterious item | 50 gp | loot |
+| A Wooden Figurine | A mysterious item | 10 gp | loot |
+| Minor Healing Potion | A vial of glittering red liquid that restores health when consumed. | 50 gp | consumable |
+| Firewood | A bundle of firewood for starting campfires. | 1 gp | gear |
+| Rope | A length of sturdy rope for climbing, tying, or securing items. | 1 gp | gear |
+| Candle | A simple wax candle that provides light in dark places. | 1 gp | gear |
+| Manacles | A pair of manacles for restraining prisoners. | 8 gp | gear |
+| Waterskin | A waterskin for carrying fresh water on long journeys. | 2 gp | gear |
+| Flask | A small flask for carrying liquids. | 1 gp | gear |
+| Rations | A day's worth of dried food rations for sustenance on the road. | 2 gp | gear |
+| Torch | A wooden torch that provides light and can be used as a weapon. | 1 gp | gear |
+| Bedroll | A comfortable bedroll for sleeping outdoors. | 1 gp | gear |
+| Blanket | A warm blanket for cold nights around the campfire. | 1 gp | gear |
+| Soap | A bar of soap for personal hygiene while traveling. | 1 gp | gear |
+| Fish Hook | A sharp fish hook for catching fish. | 1 gp | gear |
+| Needle And Thread | A needle and thread for repairing clothing or gear. | 1 gp | gear |
+| Skillet | A cast iron skillet for cooking meals over a campfire. | 2 gp | gear |
+| Whetstone | A whetstone for sharpening blades and tools. | 1 gp | gear |
+
+### Negligible Treasure
+
+| Treasure | Description | Value | Kind |
+|----------|-------------|-------|------|
+| A Simple Ring | A mysterious item | 200 gp | loot |
+| A Small Statue | A mysterious item | 50 gp | loot |
+| A Bronze Bracelet | A mysterious item | 200 gp | loot |
+| A Faded Painting | A mysterious item | 10 gp | loot |
+| Major Healing Potion | A vial of glowing red liquid that restores a significant amount of health when consumed. | 150 gp | consumable |
+| Crowbar | A sturdy crowbar for prying open doors or crates. | 2 gp | gear |
+| Dice | A set of dice for gambling or passing the time. | 1 gp | gear |
+| Lantern | A lantern that provides bright light for extended periods. | 7 gp | gear |
+| Oil Flask | A flask of slippery oil that can be thrown onto a surface or creature to make it more vulnerable to fire. | 20 gp | consumable |
+| Pouch | A small pouch for carrying personal items. | 2 gp | gear |
+| Quill | A feather quill for writing or drawing. | 1 gp | gear |
+| Shovel | A sturdy shovel for digging or moving earth. | 3 gp | gear |
+| Signal Whistle | A whistle for signaling allies or alerting to danger. | 1 gp | gear |
+| Tent | A portable tent for shelter while camping outdoors. | 10 gp | gear |
+| Vinegar | A bottle of vinegar for cooking or cleaning wounds. | 2 gp | gear |
+| Wind Chime | A decorative wind chime that produces soothing sounds when the wind blows. | 3 gp | gear |
+| Alchemist Fire | A sticky, flammable substance that ignites when exposed to air. | 40 gp | consumable |
+| First Aid Kit | A small kit containing bandages and salves for treating minor wounds. | 25 gp | consumable |
+| Holy Water | A vial of holy water that can harm undead creatures. | 25 gp | gear |
+| Cloak Pin | A pin for securing a cloak in place. | 2 gp | gear |
+
+### Minor Treasure
+
+| Treasure | Description | Value | Kind |
+|----------|-------------|-------|------|
+| Dagger | A small dagger, ideal for close combat and throwing. | 2 gp | weapon |
+| Chainmail | Chainmail armor is made of interlinked metal rings, offering strong protection at the cost of weight. | 50 gp | armor |
+| Longsword | A versatile longsword suitable for both cutting and thrusting. | 15 gp | weapon |
+| Agate | A common gemstone | 25 gp | gem |
+| Carnelian | A common gemstone | 100 gp | gem |
+| Holy Symbol | A holy symbol for religious ceremonies or warding off evil. | 5 gp | gear |
+| Thieves Tools | A set of tools for picking locks and disarming traps. | 25 gp | gear |
+| Antidote | A small vial of clear liquid that neutralizes poison when consumed. | 30 gp | consumable |
+| Ring Of Minor Protection | A simple enchanted ring providing slight protection | 50 gp | equipment |
+| Elixir Of Strength | A potent brew that temporarily enhances the drinker's physical strength. | 100 gp | consumable |
+| Wand Of Magic Missile | A slender wand that can fire magical darts of force energy at a target. | 250 gp | consumable |
+| Scroll Of Fireball | A magical scroll that allows the caster to unleash a fiery explosion at a target location. | 200 gp | consumable |
+| Amulet Of Health | A mystical amulet that bolsters the wearer's vitality. | 200 gp | equipment |
+| Gloves Of Dexterity | Fine gloves that enhance the wearer's dexterity. | 50 gp | equipment |
+| Helm Of Intellect | A finely crafted helm that sharpens the wearer's mind. | 150 gp | equipment |
+| Mantle Of Charisma | An elegant mantle that enhances the wearer's charisma. | 200 gp | equipment |
+| Scroll Of Cure Disease | A magical scroll that can cure a target of any disease afflicting them. | 150 gp | consumable |
+| Wand Of Cure Minor Wounds | A slender wand that can channel healing energy to mend minor wounds. | 100 gp | consumable |
+| Wand Of Paralyzing Touch | A slender wand that can deliver a paralyzing touch to a target. | 150 gp | consumable |
+| Canvas | A roll of canvas for making tents, sails, or other fabric items. | 2 gp | gear |
+| Lock | A sturdy lock for securing doors or chests. | 10 gp | gear |
+| Hammer | A sturdy hammer for driving nails or breaking objects. | 2 gp | gear |
+| Ladder | A portable ladder for reaching high places. | 4 gp | gear |
+| Musical Instrument | A musical instrument for entertainment or rituals. | 10 gp | gear |
+
+### Major Treasure
+
+| Treasure | Description | Value | Kind |
+|----------|-------------|-------|------|
+| Amethyst | An uncommon gemstone | 100 gp | gem |
+| Tourmaline | An uncommon gemstone | 200 gp | gem |
+| A Magic Sword | A mysterious item | 5000 gp | loot |
+| An Enchanted Ring | A mysterious item | 10 gp | loot |
+| Ring Of Protection | A magical ring that grants the wearer enhanced protection. | 300 gp | equipment |
+| Boots Of Swiftness | Lightweight boots that increase the wearer's agility. | 200 gp | equipment |
+| A Crystal Orb | A mysterious item | 1000 gp | loot |
+| A Jeweled Crown | A mysterious item | 50 gp | loot |
+| A Bag Of Precious Gems | A mysterious item | 10 gp | loot |
+| Nunchaku | A traditional weapon consisting of two sticks connected by a chain or rope. | 15 gp | weapon |
+| Scroll Of Domination | A magical scroll that allows the caster to control the mind of a target creature. | 100 gp | consumable |
+| Ring Of Thorns | A magical ring that grants the wearer the ability to counterattack. | 400 gp | equipment |
+| Crown Of Insight | An ornate crown that enhances the wearer's wisdom. | 1000 gp | equipment |
+| Belt Of Giant Strength | A sturdy belt that enhances the wearer's physical strength. | 2500 gp | equipment |
+| Ring Of The Firmament | A celestial ring that grants the wearer resistance to elemental damage. | 500 gp | equipment |
+| Wardstone | A mystical stone that provides a protective barrier to the bearer. | 600 gp | equipment |
+| Polearm | A mysterious item | 10 gp | loot |
+| Katana | A traditional sword known for its sharpness and cutting ability. | 50 gp | weapon |
+| Gloves Of Dexterity | Fine gloves that enhance the wearer's dexterity. | 50 gp | equipment |
+| Amulet Of Vitality | A minor health charm | 50 gp | equipment |
+| Boots Of Swiftness | Lightweight boots that increase the wearer's agility. | 200 gp | equipment |
+| Amulet Of Health | A mystical amulet that bolsters the wearer's vitality. | 200 gp | equipment |
+| Helm Of Intellect | A finely crafted helm that sharpens the wearer's mind. | 150 gp | equipment |
+| Mantle Of Charisma | An elegant mantle that enhances the wearer's charisma. | 200 gp | equipment |
+| Ring Of Perfect Turning | Grants high resistance to all damage types, and good chance to reflect spells back to caster. | 2000 gp | equipment |
+
+### Grand Treasure
+
+| Treasure | Description | Value | Kind |
+|----------|-------------|-------|------|
+| Emerald | A rare gemstone | 1500 gp | gem |
+| Sapphire | A rare gemstone | 500 gp | gem |
+| Belt Of Giant Strength | A sturdy belt that enhances the wearer's physical strength. | 2500 gp | equipment |
+| Ring Of Thorns | A magical ring that grants the wearer the ability to counterattack. | 400 gp | equipment |
+| Crown Of Insight | An ornate crown that enhances the wearer's wisdom. | 1000 gp | equipment |
+| Ring Of Regeneration | A mystical ring that slowly heals the wearer over time. | 800 gp | equipment |
+| Wardstone | A mystical stone that provides a protective barrier to the bearer. | 600 gp | equipment |
+| Helm Of The Stars | A mystical helm that enhances all senses of the wearer. | 400 gp | equipment |
+| Ring Of Spell Turning | Improve all resistances and inflict damage back to caster on spell saves. | 1200 gp | equipment |
+| A Chest Of Gold Coins | A mysterious item | 10 gp | loot |
+| A Priceless Painting | A mysterious item | 10 gp | loot |
+| A Legendary Weapon | A mysterious item | 50 gp | loot |
+| A Suit Of Enchanted Armor | A mysterious item | 200 gp | loot |
+| A Royal Scepter | A mysterious item | 200 gp | loot |
+| A Hidden Stash Of Jewels | A mysterious item | 200 gp | loot |
+| A Tome Of Ancient Knowledge | A mysterious item | 50 gp | loot |
+| A Mystical Artifact | A mysterious item | 10 gp | loot |
+| A Dragon'S Egg | A mysterious item | 10 gp | loot |
+| A Crown Of The Lost King | A mysterious item | 10 gp | loot |
+| A Fabled Sword Of Legends | A mysterious item | 200 gp | loot |
+
+### Legendary Treasure
+
+| Treasure | Description | Value | Kind |
+|----------|-------------|-------|------|
+| Diamond | A legendary gemstone | 20000 gp | gem |
+| Black Opal | A legendary gemstone | 10000 gp | gem |
+| Scroll Of Apocalypse | An ancient scroll that unleashes catastrophic energy upon all enemies in the area. | 2000 gp | consumable |
+| An Ancient Relic | A mysterious item | 50 gp | loot |
+| A Lost Tome | A mysterious item | 200 gp | loot |
+| A Sacred Idol | A mysterious item | 50 gp | loot |
+| A Crown Of The Lost King | A mysterious item | 200 gp | loot |
+| A Fabled Sword Of Legends | A mysterious item | 200 gp | loot |
+| A Wondrous Amulet Of Protection | A mysterious item | 10 gp | loot |
+| A Ring Of Ultimate Power | A mysterious item | 10 gp | loot |
+| A Legendary Artifact Of Immense Power | A mysterious item | 200 gp | loot |
+| A Mythical Beast'S Claw | A mysterious item | 50 gp | loot |
+| A Shard Of A Fallen Star | A mysterious item | 10 gp | loot |
+| A Vial Of Eternal Youth | A mysterious item | 2500 gp | loot |
+| A Scepter Of Divine Authority | A mysterious item | 200 gp | loot |
+| A Legendary Sword | A mysterious item | 50 gp | loot |
+| A Suit Of Enchanted Armor | A mysterious item | 200 gp | loot |
+| A Royal Scepter | A mysterious item | 50 gp | loot |
+| A Hidden Stash Of Jewels | A mysterious item | 50 gp | loot |
+| A Mystical Artifact | A mysterious item | 200 gp | loot |
+
+
 ## Items
 
 

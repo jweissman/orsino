@@ -32,7 +32,7 @@ program.command('autoplay')
   });
 
 program.command('book <type>')
-  .description('Generate a book of the specified type (monsters, spells, traits, skills, items, statuses, wonders, planes, traps, weapons, armor, gear)')
+  .description('Generate a book of the specified type (monsters, spells, traits, skills, items, statuses, wonders, planes, traps, weapons, armor, gear, treasure)')
   .option('-s, --setting <setting>', 'Specify the setting to use', 'fantasy')
   .action(async (type, options) => {
     const _orsino = new Orsino(options.setting || 'fantasy');
@@ -50,6 +50,7 @@ program.command('book <type>')
       weapon: Books.weaponbook.bind(Books),
       armor: Books.armorbook.bind(Books),
       gear: Books.gearbook.bind(Books),
+      treasure: Books.treasurebook.bind(Books),
     }
 
     let book = bookshelf[type as keyof typeof bookshelf] || bookshelf[type.slice(0, -1) as keyof typeof bookshelf];

@@ -8,6 +8,13 @@ export type DeemFunc = ((...args: DeemValue[]) => DeemValue)
 
 export default class StandardLibrary {
   static functions: Record<string, DeemFunc> = {
+    a_an: (word: DeemValue) => {
+      if (typeof word !== 'string') {
+        throw new Error(`a_an() expects a string, got: ${typeof word}`);
+      }
+      const vowels = ['a', 'e', 'i', 'o', 'u'];
+      return (vowels.includes(word.charAt(0).toLowerCase()) ? 'an' : 'a') + ' ' + word;
+    },
     count: (arr: DeemValue[]) => { return arr.length },
     rand: () => Math.random(),
     if: (cond: DeemValue, trueVal: DeemValue, falseVal: DeemValue) => (cond ? trueVal : falseVal),

@@ -32,7 +32,8 @@
     "name": "=capitalize(#size) + ' ' + capitalize(#cut) + ' ' + humanize(#type)",
     "_baseValue": "=#rank == 'common' ? 50 : (#rank == 'uncommon' ? 200 : (#rank == 'rare' ? 1000 : (#rank == 'very_rare' ? 5000 : 20000)))",
     "_sizeModifier": "=#size == 'tiny' ? 0.5 : (#size == 'small' ? 0.75 : (#size == 'medium' ? 1 : (#size == 'large' ? 1.5 : 2)))",
-    "value": "=round(#_baseValue * #_sizeModifier)"
+    "value": "=round(#_baseValue * #_sizeModifier)",
+    "description": "=capitalize(\"#{a_an(#rank)} gemstone\")"
   },
   "deity": {
     "domain": "=oneOf(light, darkness, nature, war, knowledge, trickery, life, death, magic, order, chaos, oceans, love, storms)",

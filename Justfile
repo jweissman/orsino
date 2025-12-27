@@ -9,6 +9,7 @@ dmg:
 	echo "# Dungeon Master's Guide" > docs/dmg.md
 	orsino book planes >> docs/dmg.md
 	orsino book wonders >> docs/dmg.md
+	orsino book treasures >> docs/dmg.md
 	orsino book items >> docs/dmg.md
 	orsino book statuses >> docs/dmg.md
 	orsino book traps >> docs/dmg.md
