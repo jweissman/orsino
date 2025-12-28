@@ -6,7 +6,8 @@
 - [ ] Seems fixed but really make sure we're handling gold transition between town hub/dungeon correctly
 
 ## Features
-- [ ] Describe colors of prismatic spray (done for normal damage fx, but spell beams don't hint their description clearly)
+- [ ] Blacksmith who can give a +1 to weapons?
+- [ ] Describe colors of prismatic spray/multiplicity cards (done for normal damage fx, but spell beams don't hint their description clearly)
 - [ ] Show current gold before purchasing potions
 - [ ] Remind players to rest if they're not at full health going into boss battle
 - [ ] Unify search/examine (should both have chance to find potions/loot and both grant XP on success)
@@ -149,6 +150,8 @@
 ---
 - [ ] Unify weapon/armor/item instance interfaces somehow
 - [ ] Mages can _summon familiar_ to get an animal companion appropriate for their racial group but also with the typical familiar benefits (ie it's always the same familiar, it can level up with you etc)
+---
+- [ ] Template for dragons
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing
@@ -272,7 +275,6 @@
 - [x] Player party _must_ be able to attempt to flee a battle intentionally (could be a dex skill check?)
 - [x] Bomb shouldn't be able to reset ticking status! [tried to adjust this]
 - [x] Confirm that room sequences are being adhered to?? [seems to be the case now]
-- [x] Blacksmith who can give a +1 to weapons?
 - [x] Could use a `loot` table for generic but saleable items? (If only to give them descriptions/stable values anyway -- done, junk table)
 - [x] Gold still getting zeroed out at dungeon entry/not distributed somehow? (maybe fixed??)
 - [x] Phylactery summoned a lich but we were able to finish the combat without defeating it??? (should be solved)

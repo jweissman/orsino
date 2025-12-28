@@ -10,11 +10,17 @@ import Automatic from "./orsino/tui/Automatic";
 import { never } from "./orsino/util/never";
 import { ItemInstance, materializeItem } from "./orsino/types/ItemInstance";
 
-export type ShopType = 'loot' | 'consumables' | 'weapons' | 'equipment' | 'armor';
+export type ShopType
+  = 'loot'
+  | 'consumables'
+  | 'weapons'
+  | 'equipment'
+  | 'armor'
+  | 'enhancements'
 
 type ShopStepResult =
   | { done: true; events: ModuleEvent[] }
-  | { done: false; events: ModuleEvent[] };
+  | { done: false; events: ModuleEvent[] }
 
 export default class Shop {
   static name(type: ShopType): string {
@@ -24,6 +30,8 @@ export default class Shop {
       case 'weapons':
       case 'armor':
         return "Armorer";
+      case 'enhancements':
+        return "Blacksmith";
       case 'equipment':
         return "Magician";
       case 'loot':
@@ -53,6 +61,7 @@ export default class Shop {
       weapons: this.weaponsShop.bind(this),
       armor: this.armorShop.bind(this),
       loot: this.lootShop.bind(this),
+      enhancements: this.blacksmithShop.bind(this),
     };
     const events: ModuleEvent[] = await stores[shopType].bind(this)();
     return { done: this.leaving, events };
@@ -299,13 +308,16 @@ export default class Shop {
         equipmentIds.map(eid => materializeItem(eid, this.gameState.inventory).name)
       );
     } 
-    const pcOptions = this.party.map(pc => ({
-      short: pc.name,
-      value: pc,
-      name: `${pc.name} (${pcEquipment(pc) || 'no equipment'})`,
-      disabled: false,
-    }));
-    const wearer = await this.select(`Who needs new equipment?`, pcOptions) as Combatant;
+    // const pcOptions = this.party.map(pc => ({
+    //   short: pc.name,
+    //   value: pc,
+    //   name: `${pc.name} (${pcEquipment(pc) || 'no equipment'})`,
+    //   disabled: false,
+    // }));
+    // const wearer = await this.select(`Who needs new equipment?`, pcOptions) as Combatant;
+    const wearer = await this.pickPartyMember(`Who needs new equipment?`, (combatant) => {
+      return `${combatant.name} (${pcEquipment(combatant) || 'no equipment'})`;
+    });
 
     const options = [];
     for (let index = 0; index < magicItemNames.length; index++) {
@@ -431,13 +443,16 @@ export default class Shop {
       return combatant.equipment && combatant.equipment.weapon ? materializeItem(combatant.equipment.weapon, this.gameState.inventory).name : 'unarmed';
     } 
     // pick wielder
-    const pcOptions: Choice<Combatant>[] = this.party.map(pc => ({
-      short: pc.name,
-      value: pc,
-      name: `${pc.name} (${pcWeapon(pc)})`,
-      disabled: false,
-    }));
-    const wielder = await this.select(`Who needs a new weapon?`, pcOptions) as Combatant;
+    // const pcOptions: Choice<Combatant>[] = this.party.map(pc => ({
+    //   short: pc.name,
+    //   value: pc,
+    //   name: `${pc.name} (${pcWeapon(pc)})`,
+    //   disabled: false,
+    // }));
+    // const wielder = await this.select(`Who needs a new weapon?`, pcOptions) as Combatant;
+    const wielder = await this.pickPartyMember(`Who needs a new weapon?`, (combatant) => {
+      return `${combatant.name} (${pcWeapon(combatant)})`;
+    });
 
     const options: Choice<Weapon>[] = [];
     for (let index = 0; index < weaponItemNames.length; index++) {
@@ -477,5 +492,183 @@ export default class Shop {
       });
     }
     return events;
+  }
+
+  private async blacksmithShop(): Promise<ModuleEvent[]> {
+    const events: ModuleEvent[] = [];
+
+    const weaponDetails = (combatant: Combatant) => {
+      if (combatant.equipment && combatant.equipment.weapon) {
+        const weapon = materializeItem(combatant.equipment.weapon, this.gameState.inventory) as Weapon & ItemInstance;
+        return `${weapon.name} (${weapon.damage}, ${weapon.weight})`;
+      } else {
+        return 'unarmed';
+      }
+    }
+
+    const improver = await this.pickPartyMember(`Who needs an enhancement?`, (combatant) => {
+      return `${combatant.name} (${weaponDetails(combatant)})`;
+    });
+
+    const currentWeaponInstance = improver.equipment && improver.equipment.weapon
+      ? materializeItem(improver.equipment.weapon, this.gameState.inventory) as Weapon & ItemInstance
+      : null;
+
+    if (!currentWeaponInstance) {
+      console.log(`${improver.name} is unarmed and cannot have their weapon enhanced.`);
+      return events;
+    }
+
+    // if (!improver.equipment?.weapon?.includes(":")) {
+    //   console.log(`Reifying ${improver.name}'s weapon ${currentWeaponInstance.name} for enhancement...`);
+    //   events.push({
+    //     type: "reifyWeapon",
+    //     weaponName: currentWeaponInstance.name,
+    //     weaponId: currentWeaponInstance.id!,
+    //     wielderId: improver.id,
+    //     weaponInstance: currentWeaponInstance,
+    //     day: this.day,
+    //   });
+      
+    // }
+
+    const originalAttackDie = currentWeaponInstance.damage;
+    let [baseDie, modifier] = originalAttackDie.split('+').map(s => s.trim());
+
+    const modifierNumber = modifier ? parseInt(modifier) : 0;
+
+    const [dieNumber, dieSides] = baseDie.split('d').map(s => s.trim()).map(s => parseInt(s));
+    const dieClasses = [2, 3, 4, 6, 8, 10, 12, 20, 30, 60, 100];
+    const baseDieIndex = dieClasses.indexOf(dieSides);
+    if (baseDieIndex < 0) {
+      console.log(`Cannot enhance weapon with unknown damage die ${originalAttackDie}.`);
+      return events;
+    }
+
+    const upgradedAttackDie = dieClasses[Math.min(baseDieIndex + 1, dieClasses.length - 1)];
+
+    const costs = {
+      sharpen:   500  + (modifierNumber * 200),
+      reinforce: 750  + (baseDieIndex * 300),
+      imbue:     1000 + (dieNumber * 500),
+    }
+
+    const improvementRequested = await this.select("What type of enhancement would you like?", [
+      {
+        short: "Sharpen Weapon",
+        value: "sharpen",
+        name: `${'Sharpen'.padEnd(12)} | Improve your weapon's minimum damage (from ${originalAttackDie} to ${baseDie}+${modifierNumber + 1}) (Cost: ${costs.sharpen} gp)`,
+        disabled: modifierNumber >= 5 || costs.sharpen > this.currentGold,
+      },
+      {
+        short: "Reinforce Weapon",
+        value: "reinforce",
+        name: `${'Reinforce'.padEnd(12)} | Improve your weapon's base damage die (from ${originalAttackDie} to ${dieNumber}d${upgradedAttackDie}${modifier ? ` + ${modifierNumber}` : ''}) (Cost: ${costs.reinforce} gp)`,
+        disabled: baseDieIndex >= dieClasses.length - 1 || costs.reinforce > this.currentGold,
+      },
+      {
+        short: "Imbue Weapon",
+        value: "imbue",
+        name: `${'Imbue'.padEnd(12)} | Improve your weapon's die number (from ${originalAttackDie} to ${dieNumber + 1}d${dieSides}${modifier ? ` + ${modifierNumber}` : ''}) (Cost: ${costs.imbue} gp)`,
+        disabled: dieNumber >= 5 || costs.imbue > this.currentGold,
+      },
+      {
+        short: "Done",
+        value: "done",
+        name: "Finish shopping",
+        disabled: false,
+      },
+    ]) as string;
+
+    if (improvementRequested === "done") {
+      this.leaving = true;
+      return events;
+    }
+
+    // modify weapon
+    console.log(`Enhancing ${improver.name}'s ${currentWeaponInstance.name}... (${improvementRequested})`);
+    // const weaponQualities = {
+    //   1: "sharpened",
+    //   2: "fine",
+    //   3: "excellent",
+    //   4: "superior",
+    //   5: "masterwork",
+    // }
+
+    let cost = costs[improvementRequested as keyof typeof costs];
+    events.push({
+      type: "purchase",
+      itemName: `${improvementRequested} enhancement`,
+      cost,
+      buyer: improver,
+      day: this.day,
+    })
+    switch (improvementRequested) {
+      case "sharpen": {
+        const newModifier = modifierNumber + 1;
+        const newAttackDie = `${baseDie} + ${newModifier}`;
+        events.push({
+          type: "enhanceWeapon",
+          weaponName: currentWeaponInstance.name,
+          weaponId: currentWeaponInstance.id!,
+          wielderId: improver.id,
+          wielderName: improver.forename,
+          enhancement: "sharpen",
+          oldDamage: originalAttackDie,
+          newDamage: newAttackDie,
+          day: this.day,
+          cost
+        });
+        break;
+      }
+      case "reinforce": {
+        const newAttackDie = `${dieNumber}d${upgradedAttackDie}` + (modifier ? ` + ${modifierNumber}` : '');
+        events.push({
+          type: "enhanceWeapon",
+          weaponName: currentWeaponInstance.name,
+          weaponId: currentWeaponInstance.id!,
+          wielderId: improver.id,
+          wielderName: improver.forename,
+          enhancement: "reinforce",
+          oldDamage: originalAttackDie,
+          newDamage: newAttackDie,
+          day: this.day,
+          cost
+        });
+        break;
+      }
+      case "imbue": {
+        const newDieNumber = dieNumber + 1;
+        const newAttackDie = `${newDieNumber}d${dieSides}` + (modifier ? ` + ${modifierNumber}` : '');
+        events.push({
+          type: "enhanceWeapon",
+          weaponName: currentWeaponInstance.name,
+          weaponId: currentWeaponInstance.id!,
+          wielderId: improver.id,
+          wielderName: improver.forename,
+          enhancement: "imbue",
+          oldDamage: originalAttackDie,
+          newDamage: newAttackDie,
+          day: this.day,
+          cost
+        });
+        break;
+      }
+    }
+
+    return events;
+  }
+
+  private async pickPartyMember(
+    prompt: string, presenter: (combatant: Combatant) => string = (combatant) => combatant.name
+  ): Promise<Combatant> {
+    const pcOptions: Choice<Combatant>[] = this.party.map(pc => ({
+      short: pc.name,
+      value: pc,
+      name: pc.name,
+      disabled: false,
+    }));
+    const pc = await this.select(prompt, pcOptions) as Combatant;
+    return pc;
   }
 }

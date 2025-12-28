@@ -527,9 +527,9 @@ export default class Dungeoneer {
         for (const c of this.playerTeam.combatants) {
           await Presenter.printCharacterRecord(c, this.playerTeam.inventory);
         }
-        if (Object.keys(Inventory.quantities(this.playerTeam.inventory)).length > 0) {
+        if (Object.keys(Inventory.quantities(this.playerTeam.inventory.filter(ii => ii.shared))).length > 0) {
           this.outputSink(`Inventory:`);
-          for (const [itemName, qty] of Object.entries(Inventory.quantities(this.playerTeam.inventory))) {
+          for (const [itemName, qty] of Object.entries(Inventory.quantities(this.playerTeam.inventory.filter(ii => ii.shared)))) {
             if (qty > 1) {
               this.outputSink(` - ${Words.humanize(itemName)} x${qty}`);
             } else {

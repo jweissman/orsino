@@ -1289,12 +1289,110 @@
       }
     ]
   },
+  "shrieking_missile": {
+    "name": "Shrieking Missile",
+    "type": "spell",
+    "level": 1,
+    "aspect": "arcane",
+    "school": "necromancy",
+    "alignment": "evil",
+    "description": "Fire a missile that emits a horrifying shriek.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=3d3",
+        "kind": "necrotic"
+      },
+      {
+        "type": "debuff",
+        "status": "fear",
+        "saveKind": "will",
+        "saveDC": 14
+      }
+    ]
+  },
+  "chill_blood": {
+    "name": "Chill Blood",
+    "type": "spell",
+    "level": 2,
+    "aspect": "arcane",
+    "school": "necromancy",
+    "alignment": "evil",
+    "description": "Touch an enemy to slow their movements for 3 rounds.",
+    "target": [ "enemy" ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": "slow",
+        "saveKind": "reflex",
+        "saveDC": 12
+      },
+      {
+        "type": "damage",
+        "amount": "=1d2",
+        "kind": "cold"
+      }
+    ]
+  },
+  "dismal_ray": {
+    "name": "Dismal Ray",
+    "type": "spell",
+    "level": 3,
+    "aspect": "arcane",
+    "school": "necromancy",
+    "alignment": "evil",
+    "description": "A black energy ray weakens an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": "weakened",
+        "saveKind": "fortitude",
+        "saveDC": 15
+      },
+      {
+        "type": "damage",
+        "amount": "=2d6",
+        "kind": "necrotic"
+      }
+    ]
+  },
+  "animate_animal": {
+    "name": "Animate Animal",
+    "type": "spell",
+    "aspect": "arcane",
+    "school": "necromancy",
+    "alignment": "evil",
+    "description": "Bring a dead animal back to life to serve you.",
+    "level": 0,
+    "target": [
+      "deadAlly"
+    ],
+    "effects": [
+      {
+        "type": "resurrect",
+        "hpPercent": 30,
+        "applyTraits": [
+          "undead"
+        ],
+        "condition": {
+          "trait": "animal"
+        }
+      }
+    ]
+  },
   "animate_dead": {
     "name": "Animate Dead",
     "type": "spell",
-    "aspect": "divine",
-    "domain": "death",
+    "aspect": "arcane",
+    "school": "necromancy",
     "alignment": "evil",
+    "level": 3,
     "description": "Bind souls to your service.",
     "target": [
       "deadAlly"
@@ -2227,7 +2325,7 @@
     "effects": [
       {
         "type": "removeStatus",
-        "statusName": "Frightened"
+        "statusName": "fear"
       }
     ]
   },
@@ -3308,7 +3406,7 @@
       }
     ]
   },
-  "fly": {
+  "flight": {
     "name": "Fly",
     "type": "spell",
     "level": 3,

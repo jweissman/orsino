@@ -292,6 +292,8 @@ export class ModuleRunner {
         }
       } else if (action === "general") {
         await this.shop('loot');
+      } else if (action === "blacksmith") {
+        await this.shop('enhancements');
       // } else if (action === "jeweler") {
       //   const gems = this.pcs.flatMap(pc => pc.gems || []);
       //   if (gems.length === 0) {
@@ -459,7 +461,7 @@ export class ModuleRunner {
     const advancedShops = {
       general: "Sell loot and other items",
       armory: "Buy weapons",
-      // blacksmith: "Improve weapons",
+      blacksmith: "Improve weapons",
       magicShop: "Buy equipment",
       itemShop: "Buy consumables",
       // jeweler: "Sell gems and jewelry",

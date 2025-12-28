@@ -39,6 +39,7 @@ export interface Gem {
 
 export interface Combatant {
   id: string;
+  description?: string;
   kind?: string;
   armorProficiencies?: {
     all?: boolean;

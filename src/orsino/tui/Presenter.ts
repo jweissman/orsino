@@ -7,7 +7,6 @@ import TraitHandler from "../Trait";
 import Combat from "../Combat";
 import StatusHandler, { StatusEffect, StatusModifications } from "../Status";
 import { never } from "../util/never";
-import Deem from "../../deem";
 import { ItemInstance, materializeItem } from "../types/ItemInstance";
 
 export default class Presenter {
@@ -26,7 +25,7 @@ export default class Presenter {
   static markdownCharacterRecord(combatant: Combatant): string {
     let record = "";
     record += (`### ${combatant.name}\n`);
-    record += `_${this.describeCharacter(combatant)}_\n`;
+    record += `_${combatant.description || this.describeCharacter(combatant)}_\n`;
 
     const statNames = ['str', 'dex', 'int', 'wis', 'cha', 'con'];
     const effective = Fighting.effectiveStats(combatant);
@@ -39,7 +38,7 @@ export default class Presenter {
     record += "|\n";
     statNames.forEach(stat => {
       const value = (effective as any)[stat];
-      const mod = Fighting.statMod(value);
+      // const mod = Fighting.statMod(value);
       // const sign = mod >= 0 ? '+' : '';
       record += (`| ${value}`); // (${sign}${mod}) `);
     })
@@ -48,7 +47,7 @@ export default class Presenter {
     record += `\n\n**Hit Points:** ${combatant.hp}/${effective.maxHp}\n\n`;
     const basics = {
       weapon: (combatant.equipment?.weapon || 'None'),
-      armor: combatant.armor || 'None',
+      armor: combatant.equipment?.body || 'None',
       xp: combatant.xp,
       gp: combatant.gp,
     }
@@ -117,9 +116,9 @@ export default class Presenter {
       male: "He is", female: "She is", androgynous: "They are"
     }[(combatant.gender || 'androgynous').toLowerCase()] || "They are";
 
-    const what = `${Words.a_an(Words.capitalize(combatant.background || 'adventurer'))} ${Words.humanize(combatant.archetype || 'neutral')}`;
+    const what = `${Words.humanize(combatant.archetype || 'neutral')} ${(Words.capitalize(combatant.background || 'adventurer'))}`;
 
-    return `${Words.capitalize(combatant.referenceName || combatant.forename)} is ${what} from the ${combatant.hometown || 'unknown'}, ${combatant.age || 'unknown'} years old. ${descriptor} of ${combatant.body_type || 'average'} build with ${combatant.hair || 'unknown color'} hair, ${combatant.eye_color || 'dark'} eyes and ${Words.a_an(combatant.personality || 'unreadable')} disposition.`
+    return `${Words.capitalize(combatant.referenceName || combatant.forename)} is ${Words.a_an(what)} from the ${combatant.hometown || 'unknown'}, ${combatant.age || 'unknown'} years old. ${descriptor} of ${combatant.body_type || 'average'} build with ${combatant.hair || 'unknown color'} hair, ${combatant.eye_color || 'dark'} eyes and ${Words.a_an(combatant.personality || 'unreadable')} disposition.`
   }
 
   static async characterRecord(combatant: Combatant, inventory: ItemInstance[]): Promise<string> {
@@ -262,7 +261,7 @@ export default class Presenter {
     let name = Stylist.format(combatant.forename, 'bold');
 
     const combatClass = combatant.class;
-    const combatKind = (combatant as unknown as { kind?: string }).kind || combatant.race || '';
+    const combatKind = (combatant as unknown as { kind?: string }).kind || Words.humanize(combatant.race || '');
 
     let combatantType = combatClass ? `${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '';
 
@@ -301,7 +300,7 @@ export default class Presenter {
     const color = this.colors[Math.floor(hpRatio * (this.colors.length - 1))] || this.colors[0];
 
     const combatClass = combatant.class;
-    const combatKind = (combatant).kind || combatant.race || '';
+    const combatKind = (combatant).kind || Words.humanize(combatant.race || '');
     let classInfo = combatClass ? `Lvl. ${combatant.level.toString().padEnd(2)} ${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '';
     // const effective = Fighting.effectiveStats(combatant);
     // const stats = { STR: effective.str, DEX: effective.dex, INT: effective.int, WIS: effective.wis, CHA: effective.cha, CON: effective.con };
@@ -506,7 +505,7 @@ export default class Presenter {
 
     if (effect === undefined || Object.keys(effect).length === 0) {
       // throw new Error("Cannot describe empty effect modifications for mod " + (modName || 'unknown'))
-      return "No modifications";
+      return "No enchantment";
     }
 
     // console.log("Describing modifications:", JSON.stringify(effect));

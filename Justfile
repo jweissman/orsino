@@ -4,6 +4,7 @@ phb:
 mm:
 	echo "# Monster Manual" > docs/mm.md
 	orsino book monsters >> docs/mm.md
+	orsino book animals >> docs/mm.md
 
 dmg:
 	echo "# Dungeon Master's Guide" > docs/dmg.md

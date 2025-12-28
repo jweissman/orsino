@@ -66,7 +66,7 @@ export default class Orsino {
       const moduleRunner = new ModuleRunner({
         roller: Interactive.roll.bind(Interactive),
         select: Interactive.selection.bind(Interactive),
-        prompt: Interactive.prompt.bind(Interactive),
+        // prompt: Interactive.prompt.bind(Interactive),
         outputSink: Orsino.outputSink,
         moduleGen: (opts?: GeneratorOptions) => Generator.gen("module", { setting: 'fantasy', ...options, ...opts }) as unknown as CampaignModule,
         gen: Generator.gen.bind(Generator), //.bind(this),
@@ -103,7 +103,7 @@ export default class Orsino {
       try {
       const moduleRunner = new ModuleRunner({
         outputSink,
-        moduleGen: () => Generator.gen("module", { setting: 'fantasy', ...options, _moduleLevel: averagePartyLevel }),
+        moduleGen: () => Generator.gen("module", { setting: 'fantasy', ...options, _moduleLevel: averagePartyLevel }) as unknown as CampaignModule,
         gen: Generator.gen.bind(Generator),
         pcs
       });
@@ -111,7 +111,7 @@ export default class Orsino {
 
       // show pc records
       for (const pc of pcs) {
-        outputSink(await Presenter.characterRecord(pc as Combatant));
+        outputSink(await Presenter.characterRecord(pc as Combatant, moduleRunner.inventory));
       }
 
       outputSink("\n----\nCombat statistics: " + JSON.stringify(Combat.statistics));

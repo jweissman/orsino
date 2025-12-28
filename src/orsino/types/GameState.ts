@@ -1,6 +1,5 @@
-import Deem from "../../deem";
 import { AcquireItemEvent, GameEvent, WieldEvent } from "../Events";
-import { Inventory, Weapon } from "../Inventory";
+import { Inventory } from "../Inventory";
 import { Combatant } from "./Combatant";
 import { ItemInstance, materializeItem } from "./ItemInstance";
 
@@ -67,6 +66,45 @@ const processEvent = (state: GameState, event: GameEvent): GameState => {
       break;
     case "wield":
       return processWieldEvent(newState, event);
+    case "enhanceWeapon":
+      let weaponId = event.weaponId;
+      const wielder = newState.party.find(pc => pc.id === event.wielderId);
+      if (!wielder?.equipment?.weapon?.includes(":")) {
+        console.warn(`!!! Reifying weapon ${event.weaponName} for wielderId ${event.wielderId} on day ${event.day}`);
+        const weaponInstance = materializeItem(event.weaponName, newState.inventory);
+        if (!weaponInstance.id) {
+          throw new Error(`Could not reify weapon ${event.weaponName} for wielderId ${event.wielderId} on day ${event.day} -- no id`);
+        }
+        weaponId = weaponInstance.id;
+        newState.inventory.push({ ...weaponInstance, ownerId: event.wielderId, ownerSlot: 'weapon' });
+        newState.party = newState.party.map((pc: Combatant) => {
+          if (pc.id === event.wielderId) {
+            return {
+              ...pc,
+              equipment: {
+                ...(pc.equipment || {}),
+                weapon: weaponId,
+              }
+            };
+          } else {
+            return pc;
+          }
+        });
+      }
+      // alter weapon in inventory
+      newState.inventory = newState.inventory.map((it) => {
+        if (it.ownerId === event.wielderId && it.id === weaponId) {
+          console.warn(`!!! Enhancing weapon ${it.name} for ${it.ownerId} with ${event.enhancement} on day ${event.day}`);
+          return {
+            ...it,
+            damage: event.newDamage,
+          };
+        } else {
+          return it;
+        }
+      });
+      break;
+
 
     default:
       console.warn(`Unhandled event type in processEvents: ${event.type}`);

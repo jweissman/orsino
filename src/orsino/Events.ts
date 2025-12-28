@@ -174,6 +174,8 @@ export type EquipmentEvent = BaseModuleEvent & { type: "equip"; itemName: string
 export type AcquireItemEvent = BaseModuleEvent & { type: "acquire"; itemName: string; quantity: number; acquirer: Combatant; };
 export type WieldEvent = BaseModuleEvent & { type: "wield"; weaponName: string; wielderId: string; wielderName: string; };
 
+export type EnhanceWeaponEvent = BaseModuleEvent & { type: "enhanceWeapon"; weaponName: string; weaponId: string;  wielderId: string; wielderName: string; enhancement: string; cost: number; oldDamage: string; newDamage: string; };
+
 export type RumorHeardEvent = BaseModuleEvent & { type: "rumorHeard"; rumor: string; };
 export type TempleVisitedEvent = BaseModuleEvent & { type: "templeVisited"; templeName: string; blessingsGranted: string[]; itemsRecharged: string[]; };
 export type CampaignStopEvent = BaseModuleEvent & { type: "campaignStop"; reason: string; at: Timestamp; };
@@ -191,6 +193,8 @@ export type ModuleEvent =
   | SaleEvent
   | EquipmentEvent
   | WieldEvent
+
+  | EnhanceWeaponEvent
   | AcquireItemEvent
   | RumorHeardEvent
   | TempleVisitedEvent
@@ -437,6 +441,9 @@ export default class Events {
         } else {
           return `${event.acquirer.forename} acquires ${event.quantity} x ${Words.a_an(event.itemName)}.`;
         }
+      case "enhanceWeapon":
+        return `${event.wielderName} enhances ${Words.a_an(event.weaponName)} with ${event.enhancement} for ${event.cost} gold (Damage: ${event.oldDamage} -> ${event.newDamage}).`;
+
       case "rumorHeard":
         return `The tavern buzzes with news: "${event.rumor}"`;
       case "templeVisited":

@@ -103,12 +103,42 @@
         "natural": true,
         "type": "inherent"
       },
+      "fur": {
+        "name": "Fur Armor",
+        "ac": 0,
+        "weight": "light",
+        "description": "Armor made from thick animal fur, providing basic protection and warmth.",
+        "value": 12,
+        "kind": "body",
+        "natural": true,
+        "type": "inherent"
+      },
+      "spine": {
+        "name": "Spine Armor",
+        "ac": 1,
+        "weight": "medium",
+        "description": "Armor composed of sharp spines or quills, offering some protection and deterrence.",
+        "value": 15,
+        "kind": "body",
+        "natural": true,
+        "type": "inherent"
+      },
       "chitin": {
         "name": "Chitin Armor",
         "ac": 2,
         "weight": "medium",
         "description": "Armor made from the hardened exoskeletons of insects or crustaceans, providing decent protection.",
         "value": 20,
+        "kind": "body",
+        "natural": true,
+        "type": "inherent"
+      },
+      "shell": {
+        "name": "Shell Armor",
+        "ac": 4,
+        "weight": "heavy",
+        "description": "Armor formed from the shells of turtles or similar creatures, offering strong protection.",
+        "value": 50,
         "kind": "body",
         "natural": true,
         "type": "inherent"
@@ -564,6 +594,7 @@
         "weight": "light",
         "description": "A small star-shaped throwing weapon."
       },
+
       "antlers": {
         "damage": "1d6",
         "natural": true,
@@ -628,7 +659,35 @@
         "damage": "1d4+1",
         "natural": true,
         "type": "bludgeoning"
-      }
+      },
+      "mandibles": {
+        "damage": "1d6",
+        "natural": true,
+        "type": "piercing"
+      },
+      "tongue": {
+        "damage": "1d4",
+        "natural": true,
+        "type": "bludgeoning"
+      },
+      "spines": {
+        "damage": "1d6",
+        "natural": true,
+        "type": "piercing"
+      },
+
+      "fire_breath": { "damage": "4d6", "natural": true, "type": "fire", "aoe": true },
+      "ice_breath": { "damage": "4d6", "natural": true, "type": "cold", "aoe": true },
+      "poison_breath": { "damage": "4d6", "natural": true, "type": "poison", "aoe": true },
+      "acid_breath": { "damage": "4d6", "natural": true, "type": "acid", "aoe": true },
+      "lightning_breath": { "damage": "4d6", "natural": true, "type": "electric", "aoe": true },
+      "doom_breath": { "damage": "4d6", "natural": true, "type": "necrotic", "aoe": true },
+
+      "holy_breath": { "damage": "6d6", "natural": true, "type": "true", "aoe": true },
+      "maddening_breath": { "damage": "5d6", "natural": true, "type": "psychic", "aoe": true },
+      "blinding_breath": { "damage": "4d6", "natural": true, "type": "radiant", "aoe": true },
+      "deafening_breath": { "damage": "4d6", "natural": true, "type": "sonic", "aoe": true },
+      "disintegrating_breath": { "damage": "4d6", "natural": true, "type": "force", "aoe": true }
     }
   },
   "masterGear": {
@@ -1430,12 +1489,20 @@
               { "description": "Three of Hearts", "type": "heal", "amount": "9", "target": "self" },
               { "description": "Two of Hearts", "type": "heal", "amount": "8", "target": "self" },
               { "description": "One of Hearts", "type": "heal", "amount": "6", "target": "self" },
-              { "description": "Ace of Shields", "type": "summon", "creature": "animal" },
-              { "description": "King of Shields", "type": "summon", "creature": "monster", "options": { "_class": "elemental" } },
-              { "description": "Dame of Shields", "type": "summon", "creature": "monster", "options": { "_class": "fiend" } },
+              { "description": "Ace of Shields", "type": "summon", "creature": "dragon" },
+              { "description": "King of Shields", "type": "summon", "creature": "pc" },
+              { "description": "Dame of Shields", "type": "summon", "creature": "monster", "options": { "_class": "elemental" } },
               { "description": "Jack of Shields", "type": "summon", "creature": "monster", "options": { "_class": "aberration" } },
               { "description": "Ten of Shields", "type": "summon", "creature": "monster", "options": { "_class": "fey" } },
-              { "description": "Nine of Shields", "type": "summon", "creature": "npc" }
+              { "description": "Nine of Shields", "type": "summon", "creature": "monster", "options": { "_class": "demon" } },
+              { "description": "Eight of Shields", "type": "summon", "creature": "monster", "options": { "_class": "giant" } },
+              { "description": "Seven of Shields", "type": "summon", "creature": "monster", "options": { "_class": "celestial" } },
+              { "description": "Six of Shields", "type": "summon", "creature": "monster", "options": { "_class": "construct" } },
+              { "description": "Five of Shields", "type": "summon", "creature": "monster", "options": { "_class": "beast" } },
+              { "description": "Four of Shields", "type": "summon", "creature": "npc", "options": { "race": "human" } },
+              { "description": "Three of Shields", "type": "summon", "creature": "npc", "options": { "race": "elf" } },
+              { "description": "Two of Shields", "type": "summon", "creature": "npc", "options": { "race": "dwarf" } },
+              { "description": "One of Shields", "type": "summon", "creature": "animal" }
             ]
           }
         ]

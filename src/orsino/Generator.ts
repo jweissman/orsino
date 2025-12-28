@@ -29,8 +29,13 @@ export type GeneratorOptions = {
   _moduleLevel?: number;
 
   // playerControlled?: boolean;
+  animal_type?: string;
+  animal_aspect?: string;
+
   monster_type?: string;
   monster_aspect?: string;
+  age_category?: string;
+  color?: string;
   element?: string;
   rank?: string;
 }

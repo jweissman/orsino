@@ -80,39 +80,60 @@
   "backgroundModifier": {
     "discriminator": "background",
     "groups": {
+      "acolyte": { "wis": 2, "int": 1, "gp": 5 },
+      "alchemist": { "int": 2, "dex": 1, "gp": 30 },
+      "artisan": { "int": 1, "wis": 1, "cha": 1, "gp": 20 },
       "artistocrat": { "cha": 2, "int": 1, "str": -1, "gp": 400 },
       "astronomer": { "int": 4, "wis": 2, "gp": 15 },
-      "cartographer": { "int": 2, "wis": 2, "dex": 1, "gp": 20 },
-      "jester": { "cha": 3, "dex": 1, "gp": 30 },
-      "singer": { "cha": 2, "wis": 1, "gp": 25 },
-      "spy": { "cha": 2, "dex": 2, "int": 1, "gp": 50 },
-      "alchemist": { "int": 2, "dex": 1, "gp": 30 },
-
-      "noble": { "str": 1, "int": 1, "cha": 2, "con": -1, "gp": 50 },
-      "merchant": { "wis": 1, "cha": 2, "int": 1, "gp": 100 },
-      "farmer": { "con": 2, "str": 1, "wis": 1, "gp": 10 },
-      "sailor": { "dex": 2, "con": 1, "str": 1, "gp": 20 },
-      "woodcutter": { "str": 2, "con": 2, "dex": -1, "gp": 15 },
-      "hunter": { "dex": 2, "wis": 1, "con": 1, "gp": 15 },
-      "fisherman": { "dex": 2, "con": 1, "wis": 1, "gp": 10 },
-      "blacksmith": { "str": 2, "con": 1, "dex": 1, "gp": 25 },
-
-      "soldier": { "str": 2, "con": 1, "dex": 1, "gp": 20 },
-      "folk_hero": { "str": 2, "con": 1, "cha": 1, "gp": 10 },
-      "outlander": { "str": 1, "dex": 1, "con": 1, "gp": 10 },
-      "scholar": { "int": 2, "wis": 1, "cha": -1, "gp": 5 },
-      "criminal": { "dex": 2, "cha": 1, "int": -1, "gp": 15 },
-      "artisan": { "int": 1, "wis": 1, "cha": 1, "gp": 20 },
-      "acolyte": { "wis": 2, "int": 1, "gp": 5 },
-      "hermit": { "con": 2, "wis": 1, "cha": -2, "gp": 5 },
-
-      "laborer": { "str": 2, "con": 1, "gp": 5 },
-      "courtier": { "cha": 2, "int": 1, "gp": 50 },
-      "messenger": { "dex": 2, "wis": 1, "gp": 10 },
-      "herald": { "cha": 2, "wis": 1, "gp": 15 },
-      "guard": { "str": 2, "con": 1, "gp": 10 },
-      "mercenary": { "str": 2, "con": 1, "dex": 1, "gp": 20 },
+      "athlete": { "str": 2, "dex": 2, "con": 1, "gp": 10 },
+      "baker": { "con": 2, "wis": 1, "gp": 15 },
       "bandit": { "dex": 2, "str": 1, "gp": 15 },
+      "beadle": { "wis": 2, "cha": 1, "gp": 10 },
+      "blacksmith": { "str": 2, "con": 1, "dex": 1, "gp": 25 },
+      "boatman": { "str": 2, "con": 1, "gp": 10 },
+      "brewer": { "con": 2, "int": 1, "gp": 20 },
+      "cartographer": { "int": 2, "wis": 2, "dex": 1, "gp": 20 },
+      "chef": { "con": 2, "wis": 1, "gp": 15 },
+      "courtier": { "cha": 2, "int": 1, "gp": 50 },
+      "criminal": { "dex": 2, "cha": 1, "int": -1, "gp": 15 },
+      "cultist": { "int": 2, "wis": 1, "cha": -1, "gp": 5 },
+      "diplomat": { "cha": 3, "int": 1, "gp": 75 },
+      "doctor": { "int": 2, "wis": 2, "gp": 20 },
+      "entertainer": { "cha": 2, "dex": 1, "gp": 30 },
+      "explorer": { "dex": 2, "wis": 1, "gp": 15 },
+      "factotum": { "int": 2, "dex": 1, "wis": 1, "gp": 10 },
+      "farmer": { "con": 2, "str": 1, "wis": 1, "gp": 10 },
+      "fisherman": { "dex": 2, "con": 1, "wis": 1, "gp": 10 },
+      "folk_hero": { "str": 2, "con": 1, "cha": 1, "gp": 10 },
+      "gardener": { "wis": 2, "con": 1, "gp": 15 },
+      "guard": { "str": 2, "con": 1, "gp": 10 },
+      "herald": { "cha": 2, "wis": 1, "gp": 15 },
+      "herbalist": { "wis": 2, "int": 1, "gp": 15 },
+      "hermit": { "con": 2, "wis": 1, "cha": -2, "gp": 5 },
+      "hunter": { "dex": 2, "wis": 1, "con": 1, "gp": 15 },
+      "innkeeper": { "cha": 2, "wis": 1, "gp": 25 },
+      "jester": { "cha": 3, "dex": 1, "gp": 30 },
+      "jewelcrafter": { "dex": 3, "int": 1, "gp": 50 },
+      "juggler": { "dex": 3, "cha": 1, "gp": 20 },
+      "laborer": { "str": 2, "con": 1, "gp": 5 },
+      "librarian": { "int": 2, "wis": 2, "gp": 10 },
+      "medic": { "wis": 2, "int": 2, "gp": 20 },
+      "mercenary": { "str": 2, "con": 1, "dex": 1, "gp": 20 },
+      "merchant": { "wis": 1, "cha": 2, "int": 1, "gp": 100 },
+      "messenger": { "dex": 2, "wis": 1, "gp": 10 },
+      "miner": { "con": 2, "str": 1, "gp": 15 },
+      "navigator": { "int": 2, "wis": 1, "gp": 20 },
+      "noble": { "str": 1, "int": 1, "cha": 2, "con": -1, "gp": 50 },
+      "outlander": { "str": 1, "dex": 1, "con": 1, "gp": 10 },
+      "prospector": { "con": 2, "wis": 1, "gp": 15 },
+      "sailor": { "dex": 2, "con": 1, "str": 1, "gp": 20 },
+      "scholar": { "int": 2, "wis": 1, "cha": -1, "gp": 5 },
+      "singer": { "cha": 2, "wis": 1, "gp": 25 },
+      "soldier": { "str": 2, "con": 1, "dex": 1, "gp": 20 },
+      "spy": { "cha": 2, "dex": 2, "int": 1, "gp": 50 },
+      "vagabond": { "dex": 2, "con": 1, "gp": 5 },
+      "woodcutter": { "str": 2, "con": 2, "dex": -1, "gp": 15 },
+      "yeoman": { "wis": 2, "dex": 1, "gp": 20 },
 
       "hireling": { "str": 1, "con": 1, "dex": 1, "gp": 0 }
     }
@@ -126,6 +147,7 @@
       "dwarf": { "con": 2, "str": 1, "cha": -1, "dex": -1, "occupationOptions": ["warrior", "cleric"] },
       "halfling": { "dex": 2, "cha": 1, "str": -1, "con": -1, "occupationOptions": ["warrior", "thief", "bard"] },
       "gnome": { "int": 2, "wis": 1, "str": -1, "con": -1, "occupationOptions": ["thief", "bard", "mage"] },
+
       "fae": { "cha": 3, "int": 2, "wis": 1, "str": -1, "con": -2, "occupationOptions": ["cleric", "thief", "bard", "mage" ] },
       "lizardfolk": { "con": 2, "str": 1, "int": -1, "cha": -1, "occupationOptions": ["warrior", "ranger", "thief"] },
       "half_orc": { "str": 2, "con": 1, "dex": -1, "int": -1, "occupationOptions": ["warrior", "thief", "ranger"] },
@@ -133,7 +155,13 @@
       "gnoll": { "str": 2, "con": 1, "int": -2, "cha": -1, "occupationOptions": ["warrior", "ranger", "thief"] },
       "catfolk": { "dex": 2, "cha": 1, "con": -1, "occupationOptions": ["thief", "ranger", "bard"] },
       "sylph": { "dex": 3, "int": 2, "con": -2, "str": -2, "occupationOptions": ["mage", "cleric"] },
-      "undine": { "wis": 3, "con": 2, "str": -2, "dex": -1, "occupationOptions": ["mage", "cleric"] }
+      "undine": { "wis": 3, "con": 2, "str": -2, "dex": -1, "occupationOptions": ["mage", "cleric"] },
+
+      "tiefling": { "cha": 3, "int": 1, "wis": -1, "con": -1, "occupationOptions": ["mage", "cleric", "thief"] },
+      "duergar": { "con": 3, "str": 2, "dex": -2, "cha": -2, "occupationOptions": ["warrior", "cleric"] },
+      "draconic": { "str": 2, "con": 1, "int": -1, "cha": -1, "occupationOptions": ["warrior", "cleric", "mage"] },
+      "insectoid": { "dex": 2, "con": 1, "int": -1, "cha": -1, "occupationOptions": ["warrior", "thief", "ranger"] },
+      "birdfolk": { "dex": 2, "wis": 1, "str": -1, "con": -1, "occupationOptions": ["warrior", "ranger", "mage"] }
     }
   },
 
@@ -151,7 +179,14 @@
       "half_orc": [[ "versatile", "fierce" ]],
       "gnoll": [[ "tough", "resilient" ]],
       "lizardfolk": [[ "nimble", "curious" ]],
-      "catfolk": [[ "agile", "lucky" ]]
+      "catfolk": [[ "agile", "lucky" ]],
+      "sylph": [[ "inventive", "mysterious" ]],
+      "undine": [[ "perceptive", "sturdy" ]],
+      "tiefling": [[ "resilient", "versatile" ]],
+      "duergar": [[ "tough", "fierce" ]],
+      "draconic": [[ "sturdy", "resilient" ]],
+      "insectoid": [[ "nimble", "adaptable" ]],
+      "birdfolk": [[ "agile", "curious" ]]
     }
   },
   
@@ -416,7 +451,12 @@
       "dwarf": { "str": 14, "dex": 10, "con": 14, "int": 10, "wis": 10, "cha": 8,    "naturalArmor": 0,   "hitDie": 6 },
       "halfling": { "str": 8, "dex": 14, "con": 10, "int": 10, "wis": 10, "cha": 12, "naturalArmor": -1,  "hitDie": 4 },
       "gnome": { "str": 8, "dex": 12, "con": 10, "int": 14, "wis": 10, "cha": 10,    "naturalArmor": -1,  "hitDie": 3 },
-      "fae": { "str": 10, "dex": 14, "con": 10, "int": 12, "wis": 14, "cha": 14,     "naturalArmor": -2,  "hitDie": 2 }
+      "fae": { "str": 10, "dex": 14, "con": 10, "int": 12, "wis": 14, "cha": 14,     "naturalArmor": -2,  "hitDie": 2 },
+      "draconic": { "str": 25, "dex": 14, "con": 25, "int": 20, "wis": 20, "cha": 20,  "naturalArmor": 10,   "hitDie": 24 },
+      "insectoid": { "str": 12, "dex": 16, "con": 14, "int": 6,  "wis": 8,  "cha": 6,   "naturalArmor": 2 ,  "hitDie": 6  },
+      "birdfolk": { "str": 10, "dex": 16, "con": 10, "int": 10, "wis": 12, "cha": 10,   "naturalArmor": -1,  "hitDie": 4  },
+      "lizardfolk": { "str": 14, "dex": 12, "con": 14, "int": 8,  "wis": 10, "cha": 8,   "naturalArmor": 1 ,  "hitDie": 6 },
+      "duergar": { "str": 16, "dex": 10, "con": 16, "int": 10, "wis": 10, "cha": 8,    "naturalArmor": 1,   "hitDie": 6  }
     }
   },
  
@@ -435,7 +475,13 @@
       "dwarf": [ "battleaxe", "light_warhammer", "heavy_crossbow" ],
       "halfling": [ "shortsword", "sling", "dagger" ],
       "gnome": [ "dagger", "staff", "heavy_crossbow" ],
-      "fae": [ "staff", "dagger", "shortsword" ]
+      "fae": [ "staff", "dagger", "shortsword" ],
+
+      "draconic": [ "bite", "claws", "tail_swipe", "fire_breath" ],
+      "insectoid": [ "mandibles", "claws", "stinger" ],
+      "birdfolk": [ "talons", "shortsword", "spear" ],
+      "lizardfolk": [ "bite", "claws", "spear", "tail_swipe" ],
+      "duergar": [ "warhammer", "battleaxe", "heavy_crossbow" ]
     }
   },
   "npcArmor": {
@@ -453,41 +499,31 @@
       "dwarf": [ "chainmail", "scale", "plate" ],
       "halfling": [ "leather", "studded" ],
       "gnome": [ "leather", "studded" ],
-      "fae": [ "cloth", "leather" ]
+      "fae": [ "cloth", "leather" ],
+
+      "draconic": [ "scale", "plate" ],
+      "insectoid": [ "chitin", "hide" ],
+      "birdfolk": [ "leather", "studded" ],
+      "lizardfolk": [ "scale", "hide" ],
+      "duergar": [ "chainmail", "scale", "plate" ]
     }
   },
   "npcXp": {
     "discriminator": "race",
     "groups": {
-      "kobold": 15,
-      "goblin": 25,
-      "human": 30,
-      "orc": 50,
-      "ogre": 200,
-      "troll": 500,
-      "dragon": 2000,
-      "elf": 40,
-      "dwarf": 50,
-      "halfling": 30,
-      "gnome": 30,
-      "fae": 60
+      "kobold": 15, "goblin": 25, "human": 30, "orc": 50,
+      "ogre": 200, "troll": 500, "dragon": 2000,
+      "elf": 40, "dwarf": 50, "halfling": 30, "gnome": 30, "fae": 60,
+      "draconic": 700, "insectoid": 75, "birdfolk": 60, "lizardfolk": 80, "duergar": 100
     }
   },
   "npcGold": {
     "discriminator": "race",
     "groups": {
-      "human": "1d10",
-      "elf": "1d8",
-      "dwarf": "1d8",
-      "halfling": "1d6",
-      "gnome": "1d6",
-      "fae": "1d6",
-      "goblin": "1d6",
-      "kobold": "1d4",
-      "orc": "2d10",
-      "ogre": "3d20",
-      "troll": "5d20",
-      "dragon": "1000 + 10d100"
+      "human": "1d10", "elf": "1d8", "dwarf": "1d8", "halfling": "1d6", "gnome": "1d6", "fae": "1d6",
+      "goblin": "1d6", "kobold": "1d4", "orc": "2d10", "ogre": "3d20", "troll": "5d20",
+      "dragon": "1000 + 10d100",
+      "draconic": "200 + 2d100", "insectoid": "2d10", "birdfolk": "1d8", "lizardfolk": "2d10", "duergar": "3d10"
     }
   },
   "terrainModifier": {
@@ -1658,132 +1694,62 @@
       "gnoll": [ "hyena", "wolf", "boar" ],
       "catfolk": [ "panther", "tiger", "lion", "fox" ],
       "sylph": [ "eagle", "hawk", "falcon", "owl" ],
-      "undine": [ "frog", "turtle", "otter" ]
+      "undine": [ "frog", "turtle", "otter" ],
+      "satyr": [ "goat", "ram", "deer" ],
+      "tiefling": [ "bat", "snake", "rat" ],
+      "duergar": [ "badger", "mole", "raven", "stoat" ],
+      "draconic": [ "wyrm", "pseudodragon", "snake" ],
+      "insectoid": [ "beetle", "spider", "centipede" ],
+      "birdfolk": [ "crow", "raven", "hawk", "eagle" ]
+
     }
   },
-  "animalStat": {
+  "animalKind": {
     "discriminator": "type",
     "groups": {
-      "badger": { "level": 1, "hp": 3, "str": 3, "dex": 2, "con": 3, "int": 2, "wis": 2, "cha": 2 },
-      "bat": { "level": 1, "hp": 1, "str": 1, "dex": 3, "con": 1, "int": 1, "wis": 2, "cha": 3 },
-      "bear": { "level": 1, "hp": 4, "str": 8, "dex": 2, "con": 8, "int": 2, "wis": 2, "cha": 2 },
-      "boar": { "level": 1, "hp": 3, "str": 6, "dex": 2, "con": 6, "int": 2, "wis": 2, "cha": 2 },
-      "butterfly": { "level": 1, "hp": 2, "str": 1, "dex": 5, "con": 2, "int": 2, "wis": 3, "cha": 4 },
-      "crocodile": { "level": 1, "hp": 5, "str": 6, "dex": 2, "con": 6, "int": 2, "wis": 3, "cha": 2 },
-      "crow": { "level": 1, "hp": 2, "str": 2, "dex": 5, "con": 2, "int": 5, "wis": 3, "cha": 3 },
-      "deer": { "level": 1, "hp": 3, "str": 2, "dex": 4, "con": 2, "int": 2, "wis": 3, "cha": 2 },
-      "dragonfly": { "level": 1, "hp": 2, "str": 1, "dex": 5, "con": 2, "int": 2, "wis": 3, "cha": 6 },
-      "eagle": { "level": 1, "hp": 3, "str": 2, "dex": 5, "con": 2, "int": 2, "wis": 3, "cha": 2 },
-      "falcon": { "level": 1, "hp": 3, "str": 3, "dex": 3, "con": 3, "int": 3, "wis": 3, "cha": 3 },
-      "ferret": { "level": 1, "hp": 3, "str": 2, "dex": 4, "con": 3, "int": 3, "wis": 3, "cha": 3 },
-      "fox": { "level": 1, "hp": 3, "str": 3, "dex": 4, "con": 3, "int": 3, "wis": 3, "cha": 3 },
-      "frog": { "level": 1, "hp": 2, "str": 1, "dex": 3, "con": 2, "int": 1, "wis": 2, "cha": 2 },
-      "goat": { "level": 1, "hp": 3, "str": 3, "dex": 2, "con": 3, "int": 2, "wis": 2, "cha": 3 },
-      "hawk": { "level": 1, "hp": 3, "str": 3, "dex": 4, "con": 3, "int": 3, "wis": 4, "cha": 3 },
-      "hedgehog": { "level": 1, "hp": 2, "str": 2, "dex": 2, "con": 3, "int": 2, "wis": 3, "cha": 2 },
-      "hound": { "level": 1, "hp": 3, "str": 4, "dex": 4, "con": 4, "int": 4, "wis": 4, "cha": 4 },
-      "hummingbird": { "level": 1, "hp": 2, "str": 1, "dex": 5, "con": 2, "int": 2, "wis": 3, "cha": 4 },
-      "hyena": { "level": 1, "hp": 4, "str": 5, "dex": 3, "con": 5, "int": 2, "wis": 2, "cha": 2 },
-      "lion": { "level": 1, "hp": 4, "str": 4, "dex": 3, "con": 4, "int": 2, "wis": 2, "cha": 4 },
-      "mole": { "level": 1, "hp": 3, "str": 2, "dex": 3, "con": 2, "int": 2, "wis": 2, "cha": 2 },
-      "moth": { "level": 1, "hp": 2, "str": 1, "dex": 5, "con": 2, "int": 2, "wis": 3, "cha": 4 },
-      "otter": { "level": 1, "hp": 3, "str": 3, "dex": 4, "con": 3, "int": 3, "wis": 3, "cha": 3 },
-      "owl": { "level": 1, "hp": 3, "str": 2, "dex": 4, "con": 2, "int": 3, "wis": 4, "cha": 2 },
-      "panther": { "level": 1, "hp": 4, "str": 3, "dex": 4, "con": 3, "int": 3, "wis": 3, "cha": 3 },
-      "pony": { "level": 1, "hp": 4, "str": 4, "dex": 3, "con": 4, "int": 2, "wis": 2, "cha": 3 },
-      "pseudodragon": { "level": 1, "hp": 3, "str": 5, "dex": 4, "con": 5, "int": 5, "wis": 5, "cha": 5 },
-      "rabbit": { "level": 1, "hp": 4, "str": 1, "dex": 3, "con": 2, "int": 2, "wis": 3, "cha": 2 },
-      "ram": { "level": 1, "hp": 4, "str": 4, "dex": 2, "con": 4, "int": 2, "wis": 2, "cha": 2 },
-      "rat": { "level": 1, "hp": 2, "str": 1, "dex": 2, "con": 1, "int": 1, "wis": 1, "cha": 1 },
-      "raven": { "level": 1, "hp": 2, "str": 2, "dex": 4, "con": 2, "int": 3, "wis": 3, "cha": 3 },
-      "snake": { "level": 1, "hp": 3, "str": 4, "dex": 3, "con": 4, "int": 3, "wis": 3, "cha": 3 },
-      "spider": { "level": 1, "hp": 2, "str": 2, "dex": 4, "con": 2, "int": 2, "wis": 2, "cha": 2 },
-      "squirrel": { "level": 1, "hp": 1, "str": 1, "dex": 4, "con": 2, "int": 3, "wis": 3, "cha": 2 },
-      "stoat": { "level": 1, "hp": 3, "str": 2, "dex": 4, "con": 3, "int": 3, "wis": 3, "cha": 3 },
-      "tiger": { "level": 1, "hp": 5, "str": 4, "dex": 4, "con": 4, "int": 3, "wis": 3, "cha": 3 },
-      "turtle": { "level": 1, "hp": 4, "str": 2, "dex": 1, "con": 5, "int": 2, "wis": 3, "cha": 2 },
-      "wolf": { "level": 1, "hp": 3, "str": 5, "dex": 3, "con": 5, "int": 4, "wis": 4, "cha": 4 },
-      "wyrm": { "level": 1, "hp": 3, "str": 7, "dex": 2, "con": 6, "int": 8, "wis": 8, "cha": 7 }
-    }
-  },
-  "animalWeapon": {
-    "discriminator": "type",
-    "groups": {
-      "bat": "bite",
-      "bear": "claws",
-      "boar": "tusks",
-      "falcon": "talons",
-      "hound": "bite",
-      "pseudodragon": "bite",
-      "rat": "bite",
-      "snake": "bite",
-      "spider": "bite",
-      "wolf": "bite",
-      "wyrm": "bite",
-      "eagle": "talons",
-      "tiger": "claws",
-      "panther": "claws",
-      "lion": "claws",
-      "deer": "antlers",
-      "owl": "talons",
-      "fox": "bite",
-      "hawk": "talons",
-      "badger": "claws",
-      "ram": "horns",
-      "mole": "claws",
-      "raven": "beak",
-      "rabbit": "bite",
-      "ferret": "bite",
-      "pony": "kick",
-      "goat": "headbutt",
-      "squirrel": "bite",
-      "hedgehog": "quills",
-      "stoat": "bite",
-      "crow": "beak",
-      "butterfly": "flutter",
-      "dragonfly": "flutter",
-      "hummingbird": "flutter",
-      "moth": "flutter"
-    }
-  },
-  "animalNaturalArmor": {
-    "discriminator": "type",
-    "groups": {
-      "bat": "hide",
-      "bear": "hide",
-      "boar": "hide",
-      "falcon": "feathers",
-      "hound": "hide",
-      "pseudodragon": "scale",
-      "rat": "hide",
-      "snake": "scale",
-      "spider": "chitin",
-      "wolf": "hide",
-      "wyrm": "scale",
-      "eagle": "feathers",
-      "tiger": "hide",
-      "panther": "hide",
-      "lion": "hide",
-      "deer": "hide",
-      "owl": "feathers",
-      "fox": "hide",
-      "hawk": "feathers",
-      "badger": "hide",
-      "ram": "hide",
-      "mole": "hide",
-      "raven": "feathers",
-      "rabbit": "hide",
-      "ferret": "hide",
-      "pony": "hide",
-      "goat": "hide",
-      "squirrel": "hide",
-      "hedgehog": "hide",
-      "stoat": "hide",
-      "crow": "feathers",
-      "butterfly": "chitin",
-      "dragonfly": "chitin",
-      "hummingbird": "feathers",
-      "moth": "chitin"
+      "badger":       { "hp": 3, "str": 3, "dex": 2, "con": 3, "int": 2, "wis": 2, "cha": 2, "weapon": "claws",     "body": "hide",   "description": "A small but fierce mammal with fine digging ability and extreme tenacity." },
+      "bat":          { "hp": 1, "str": 1, "dex": 3, "con": 1, "int": 1, "wis": 2, "cha": 3, "weapon": "bite",      "body": "fur",   "description": "A nocturnal flying mammal that uses echolocation to navigate in the dark." },
+      "bear":         { "hp": 4, "str": 8, "dex": 2, "con": 8, "int": 2, "wis": 2, "cha": 2, "weapon": "claws",     "body": "fur",  "description": "A large and powerful mammal with great strength and a protective disposition." },
+      "beetle":       { "hp": 2, "str": 2, "dex": 2, "con": 3, "int": 1, "wis": 2, "cha": 1, "weapon": "mandibles", "body": "chitin", "description": "A small insect with a hard exoskeleton and strong mandibles for biting." },
+      "boar":         { "hp": 3, "str": 6, "dex": 2, "con": 6, "int": 2, "wis": 2, "cha": 2, "weapon": "tusks",     "body": "hide", "description": "An aggressive wild pig with sharp tusks." },
+      "butterfly":    { "hp": 2, "str": 1, "dex": 5, "con": 2, "int": 2, "wis": 3, "cha": 4, "weapon": "flutter",   "body": "chitin", "description": "A delicate insect with colorful wings. Its flight is graceful and mesmerizing." },
+      "centipede":    { "hp": 2, "str": 2, "dex": 4, "con": 2, "int": 1, "wis": 2, "cha": 1, "weapon": "bite",      "body": "chitin", "description": "A long, segmented insect with many legs and a venomous bite." },
+      "crocodile":    { "hp": 5, "str": 6, "dex": 2, "con": 6, "int": 2, "wis": 3, "cha": 2, "weapon": "bite",      "body": "scale", "description": "A large aquatic reptile with powerful jaws and stealthy hunting." },
+      "crow":         { "hp": 2, "str": 2, "dex": 5, "con": 2, "int": 5, "wis": 3, "cha": 3, "weapon": "beak",      "body": "feathers", "description": "A highly intelligent bird remarkable for its problem-solving skills and adaptability." },
+      "deer":         { "hp": 3, "str": 2, "dex": 4, "con": 2, "int": 2, "wis": 3, "cha": 2, "weapon": "antlers",   "body": "hide", "description": "A graceful herbivore with exquisite agility and keen senses." },
+      "dragonfly":    { "hp": 2, "str": 1, "dex": 5, "con": 2, "int": 2, "wis": 3, "cha": 6, "weapon": "flutter",   "body": "chitin", "description": "A swift flying insect with iridescent wings and excellent maneuverability." },
+      "eagle":        { "hp": 3, "str": 2, "dex": 5, "con": 2, "int": 2, "wis": 3, "cha": 2, "weapon": "talons",    "body": "feathers", "description": "A majestic bird of prey renowned for keen eyesight and capable of powerful flight." },
+      "falcon":       { "hp": 3, "str": 3, "dex": 3, "con": 3, "int": 3, "wis": 3, "cha": 3, "weapon": "talons",    "body": "feathers", "description": "A swift bird of prey possessing extreme speed and remarkable hunting prowess." },
+      "ferret":       { "hp": 3, "str": 2, "dex": 4, "con": 3, "int": 3, "wis": 3, "cha": 3, "weapon": "bite",      "body": "fur", "description": "A small, agile mammal with great curiosity and playful nature." },
+      "fox":          { "hp": 3, "str": 3, "dex": 4, "con": 3, "int": 3, "wis": 3, "cha": 3, "weapon": "bite",      "body": "fur", "description": "A cunning and adaptable mammal of remarkable intelligence." },
+      "frog":         { "hp": 2, "str": 1, "dex": 3, "con": 2, "int": 1, "wis": 2, "cha": 2, "weapon": "tongue",    "body": "hide", "description": "A small amphibian with a powerful jumping ability and croaking calls." },
+      "goat":         { "hp": 3, "str": 3, "dex": 2, "con": 3, "int": 2, "wis": 2, "cha": 3, "weapon": "headbutt",  "body": "fur", "description": "A sure-footed and hardy herbivore with a curious nature." },
+      "hawk":         { "hp": 3, "str": 3, "dex": 4, "con": 3, "int": 3, "wis": 4, "cha": 3, "weapon": "talons",    "body": "feathers", "description": "A sharp-eyed bird of prey with excellent hunting skills." },
+      "hedgehog":     { "hp": 2, "str": 2, "dex": 2, "con": 3, "int": 2, "wis": 3, "cha": 2, "weapon": "spines",    "body": "spine", "description": "A small mammal covered in spines. When threatened it exhibits its defensive curling behavior." },
+      "hound":        { "hp": 3, "str": 4, "dex": 4, "con": 4, "int": 4, "wis": 4, "cha": 4, "weapon": "bite",      "body": "fur", "description": "A loyal and intelligent canine companion known for its keen senses and tracking ability." },
+      "hummingbird":  { "hp": 2, "str": 1, "dex": 5, "con": 2, "int": 2, "wis": 3, "cha": 4, "weapon": "beak",      "body": "feathers", "description": "A tiny bird capable of hovering in mid-air thanks to its rapid wing flapping." },
+      "hyena":        { "hp": 4, "str": 5, "dex": 3, "con": 5, "int": 2, "wis": 2, "cha": 2, "weapon": "bite",      "body": "fur", "description": "A scavenging carnivore with powerful jaws and distinctive laugh-like vocalizations." },
+      "lion":         { "hp": 4, "str": 4, "dex": 3, "con": 4, "int": 2, "wis": 2, "cha": 4, "weapon": "bite",      "body": "fur", "description": "A majestic big cat of enormous strength and courage." },
+      "lizard":       { "hp": 2, "str": 2, "dex": 3, "con": 2, "int": 2, "wis": 2, "cha": 2, "weapon": "bite",      "body": "scale", "description": "A small reptile known with exquisite agility and unusual ability to regenerate lost tails." },
+      "mole":         { "hp": 3, "str": 2, "dex": 3, "con": 2, "int": 2, "wis": 2, "cha": 2, "weapon": "bite",      "body": "fur", "description": "A small burrowing mammal with powerful forelimbs for digging and poor eyesight." },
+      "moth":         { "hp": 2, "str": 1, "dex": 5, "con": 2, "int": 2, "wis": 3, "cha": 4, "weapon": "flutter",   "body": "chitin", "description": "A nocturnal flying insect attracted to light, with soft, furry wings." },
+      "otter":        { "hp": 3, "str": 3, "dex": 4, "con": 3, "int": 3, "wis": 3, "cha": 3, "weapon": "bite",      "body": "fur", "description": "A playful aquatic mammal with great agility in water and dexterous forepaws." },
+      "owl":          { "hp": 3, "str": 2, "dex": 4, "con": 2, "int": 3, "wis": 4, "cha": 2, "weapon": "talons",    "body": "feathers", "description": "A nocturnal bird of prey with night vision and silent flight." },
+      "panther":      { "hp": 4, "str": 3, "dex": 4, "con": 3, "int": 3, "wis": 3, "cha": 3, "weapon": "claws",     "body": "fur", "description": "A sleek and stealthy big cat with great agility and hunting prowess." },
+      "pony":         { "hp": 4, "str": 4, "dex": 3, "con": 4, "int": 2, "wis": 2, "cha": 3, "weapon": "kick",      "body": "hide", "description": "A small horse with surprising strength and endurance. It has a gentle temperament." },
+      "pseudodragon": { "hp": 3, "str": 5, "dex": 4, "con": 5, "int": 5, "wis": 5, "cha": 5, "weapon": "bite",      "body": "scale", "description": "A small dragon-like creature with keen intelligence and magical resistance." },
+      "rabbit":       { "hp": 4, "str": 1, "dex": 3, "con": 2, "int": 2, "wis": 3, "cha": 2, "weapon": "bite",      "body": "fur", "description": "A small herbivorous mammal possessing excellent speed and agility." },
+      "ram":          { "hp": 4, "str": 4, "dex": 2, "con": 4, "int": 2, "wis": 2, "cha": 2, "weapon": "horns",     "body": "hide", "description": "A sturdy sure-footed herbivore capable of powerful headbutts." },
+      "rat":          { "hp": 2, "str": 1, "dex": 2, "con": 1, "int": 1, "wis": 1, "cha": 1, "weapon": "bite",      "body": "fur", "description": "A small rodent of great adaptability and resourcefulness." },
+      "raven":        { "hp": 2, "str": 2, "dex": 4, "con": 2, "int": 3, "wis": 3, "cha": 3, "weapon": "beak",      "body": "feathers", "description": "A highly intelligent bird with exceptional problem-solving skills and adaptability." },
+      "snake":        { "hp": 3, "str": 4, "dex": 3, "con": 4, "int": 3, "wis": 3, "cha": 3, "weapon": "bite",      "body": "scale", "description": "A legless reptile of profound stealth and, in some species, venomous bite." },
+      "spider":       { "hp": 2, "str": 2, "dex": 4, "con": 2, "int": 2, "wis": 2, "cha": 2, "weapon": "bite",      "body": "chitin", "description": "An eight-legged arachnid with a unique web-spinning ability and very stealthy movement." },
+      "squirrel":     { "hp": 1, "str": 1, "dex": 4, "con": 2, "int": 3, "wis": 3, "cha": 2, "weapon": "bite",      "body": "fur", "description": "A small rodent of great agility and bushy tail. It is an excellent climber." },
+      "stoat":        { "hp": 3, "str": 2, "dex": 4, "con": 3, "int": 3, "wis": 3, "cha": 3, "weapon": "bite",      "body": "fur", "description": "A small carnivorous mammal with exceptional agility and clever hunting techniques." },
+      "tiger":        { "hp": 5, "str": 4, "dex": 4, "con": 4, "int": 3, "wis": 3, "cha": 3, "weapon": "claws",     "body": "fur", "description": "A powerful big cat with great strength, agility, and striking striped coat." },
+      "turtle":       { "hp": 4, "str": 2, "dex": 1, "con": 5, "int": 2, "wis": 3, "cha": 2, "weapon": "bite",      "body": "shell", "description": "A slow-moving reptile with a hard protective shell and long lifespan." },
+      "wolf":         { "hp": 3, "str": 5, "dex": 3, "con": 5, "int": 4, "wis": 4, "cha": 4, "weapon": "bite",      "body": "fur", "description": "A social carnivore known for its pack behavior, keen senses, and endurance." },
+      "wyrm":         { "hp": 3, "str": 7, "dex": 2, "con": 6, "int": 8, "wis": 8, "cha": 7, "weapon": "bite",      "body": "scale", "description": "A small dragon-like creature with intelligence and magical resistance." }
     }
   },
 
@@ -1964,6 +1930,7 @@
   "monsterKind": {
     "discriminator": "monster_type",
     "groups": {
+      "dragon": [[ "Dragon", "Wyvern", "Drake", "Wyrm" ]],
       "giant": [[ "Titan", "Behemoth", "Colossus" ]],
       "undead": [[ "Lich", "Vampire", "Wraith", "Banshee", "Mummy", "Ghoul", "Spirit" ]],
       "demon": [[ "Ifrit", "Balor", "Marilith", "Fiend" ]],
@@ -1978,10 +1945,14 @@
     }
   },
 
-
   "monsterTypeClass": {
     "discriminator": "monster_type",
     "groups": {
+      "Dragon": "dragon",
+      "Wyvern": "dragon",
+      "Drake": "dragon",
+      "Wyrm": "dragon",
+
       "Titan": "giant",
       "Behemoth": "giant",
       "Colossus": "giant",
@@ -2025,6 +1996,11 @@
   "monsterTypeModifier": {
     "discriminator": "monster_type",
     "groups": {
+      "Dragon": { "str": 6, "dex": 4, "con": 5, "int": 4, "wis": 3, "cha": 5, "traits": [ "flying"] },
+      "Wyvern": { "str": 5, "dex": 5, "con": 4, "int": 2, "wis": 3, "cha": 3, "traits": [ "flying"] },
+      "Drake": { "str": 4, "dex": 4, "con": 4, "int": 3, "wis": 3, "cha": 3, "traits": [ "flying"] },
+      "Wyrm": { "str": 7, "dex": 3, "con": 6, "int": 5, "wis": 4, "cha": 4, "traits": [ "flying"] },
+
       "Titan": { "str": 8, "con": 6, "traits": [ "formidable"] },
       "Behemoth": { "str": 5, "con": 3, "traits": [ "formidable"] },
       "Colossus": { "str": 4, "con": 2, "traits": [ "formidable"] },
@@ -2067,6 +2043,11 @@
   "monsterTypeAbilities": {
     "discriminator": "monster_type",
     "groups": {
+      "Dragon": [ "flight", "maul" ],
+      "Wyvern": [ "flight", "maul" ],
+      "Drake": [ "flight", "maul" ],
+      "Wyrm": [ "flight", "maul" ],
+
       "Titan": [ "earthquake", "maul" ],
       "Behemoth": [ "stomp", "dig_in", "maul" ],
       "Colossus": [ "smash", "maul" ],
@@ -2118,21 +2099,23 @@
       "elemental": 12,
       "celestial": 14,
       "aberration": 16,
-      "giant": 18
+      "giant": 18,
+      "dragon": 21
     }
   },
   "monsterStat": {
     "discriminator": "monster_type",
     "groups": {
-      "construct":  { "hp": 4, "str": 3,  "dex": -1, "con": 4,  "int": 0,  "wis": 0, "cha": -1 },
-      "beast":      { "hp": 8,  "str": 6,  "dex": 2,  "con": 1,  "int": -4, "wis": -4, "cha": -4 },
-      "undead":     { "hp": 9, "str": 0,  "dex": 0,  "con": -2, "int": 2,  "wis": 1, "cha": -3 },
+      "construct":  { "hp": 6, "str": 3,  "dex": -1, "con": 4,  "int": 0,  "wis": 0, "cha": -1 },
+      "beast":      { "hp": 9,  "str": 6,  "dex": 2,  "con": 1,  "int": -4, "wis": -4, "cha": -4 },
+      "undead":     { "hp": 10, "str": 0,  "dex": 0,  "con": -2, "int": 2,  "wis": 1, "cha": -3 },
       "fey":        { "hp": 12, "str": -1, "dex": 2,  "con": 0,  "int": 1,  "wis": 2, "cha": 3 },
-      "elemental":  { "hp": 14, "str": 0,  "dex": 3,  "con": 0,  "int": 0,  "wis": 1, "cha": 0 },
-      "demon":      { "hp": 16, "str": 4,  "dex": 2,  "con": 2,  "int": 1,  "wis": 0, "cha": -2 },
-      "celestial":  { "hp": 20, "str": 2,  "dex": 1,  "con": 2,  "int": 1,  "wis": 3, "cha": 2 },
-      "aberration": { "hp": 24, "str": 2,  "dex": 1,  "con": 2,  "int": 3,  "wis": 1, "cha": -2 },
-      "giant":      { "hp": 28, "str": 4,  "dex": -2, "con": 3,  "int": -2, "wis": 0, "cha": -1 }
+      "elemental":  { "hp": 16, "str": 0,  "dex": 3,  "con": 0,  "int": 0,  "wis": 1, "cha": 0 },
+      "demon":      { "hp": 20, "str": 4,  "dex": 2,  "con": 2,  "int": 1,  "wis": 0, "cha": -2 },
+      "celestial":  { "hp": 25, "str": 2,  "dex": 1,  "con": 2,  "int": 1,  "wis": 3, "cha": 2 },
+      "aberration": { "hp": 34, "str": 2,  "dex": 1,  "con": 2,  "int": 3,  "wis": 1, "cha": -2 },
+      "giant":      { "hp": 48, "str": 4,  "dex": -2, "con": 3,  "int": -2, "wis": 0, "cha": -1 },
+      "dragon":     { "hp": 85, "str": 6,  "dex": 4,  "con": 5,  "int": 4,  "wis": 3, "cha": 5 }
     }
   },
 
@@ -2153,6 +2136,7 @@
   "monsterHome": {
     "discriminator": "monster_type",
     "groups": {
+      "dragon": [ "mountains", "caves", "ruins" ],
       "celestial": [ "heavens" ],
       "demon": [ "abyss", "Cthelll" ],
       "aberration": [ "void" ],
@@ -2168,6 +2152,7 @@
   "monsterTraits": {
     "discriminator": "monster_type",
     "groups": {
+      "dragon": [[ "formidable", "flying" ]],
       "giant": [[ "huge" ]],
       "undead": [[ "undead" ]],
       "demon": [[ "fiendish" ]],
@@ -2182,6 +2167,7 @@
   "monsterXp": {
     "discriminator": "monster_type",
     "groups": {
+      "dragon": 800,
       "giant": 500,
       "undead": 300,
       "demon": 400,
@@ -2196,6 +2182,7 @@
   "monsterGold": {
     "discriminator": "monster_type",
     "groups": {
+      "dragon": "10d100",
       "giant": "5d10",
       "undead": "2d10",
       "demon": "3d10",
@@ -2211,6 +2198,11 @@
   "monsterAbilities": {
     "discriminator": "monster_type",
     "groups": {
+      "dragon": [[ 
+        "melee",
+        "flight",
+        "maul"
+      ]],
       "giant": [
         [
           "melee",
@@ -2286,6 +2278,23 @@
       ]
     }
   },
+
+  "dragonColors": {
+    "discriminator": "dragon_type",
+    "groups": {
+      "red":    { "weapon": "fire_breath", "description": "Its crimson scales shimmer like molten lava." },
+      "blue":   { "weapon": "lightning_breath", "description": "Its shining azure scales sparkle like the summer sky." },
+      "green":  { "weapon": "poison_breath", "description": "Its green and brown scales blend seamlessly with the forest foliage." },
+      "black":  { "weapon": "doom_breath", "description": "Its fine scales devour light." },
+      "white":  { "weapon": "ice_breath", "description": "Its opalescent scales glisten like freshly fallen snow." },
+      "gold":   { "weapon": "holy_breath", "description": "Its shimmering scales shine like the midday sun." },
+      "silver": { "weapon": "maddening_breath", "description": "Its glowing scales shimmer like moonlight on water." },
+      "bronze": { "weapon": "deafening_breath", "description": "Its scales gleam like polished metal." },
+      "copper": { "weapon": "blinding_breath", "description": "Its scales glow like embers in a fire." },
+      "brass":  { "weapon": "disintegrating_breath", "description": "Its polished scales reflect like burnished steel." }
+    }
+  },
+
   "terrainElements": {
     "discriminator": "terrain",
     "groups": {
@@ -2364,7 +2373,8 @@
       "construct": "slam",
       "celestial": "longsword",
       "fey": "dagger",
-      "beast": "claws"
+      "beast": "claws",
+      "dragon": "bite"
     }
   },
   "monsterNaturalArmor": {
@@ -2378,7 +2388,8 @@
       "construct": "plate",
       "celestial": "chainmail",
       "fey": "leather",
-      "beast": "hide"
+      "beast": "hide",
+      "dragon": "scale"
     }
   },
   "monsterAttacksPerTurn": {
@@ -2392,7 +2403,8 @@
       "construct": 1,
       "celestial": 2,
       "fey": 1,
-      "beast": 2
+      "beast": 2,
+      "dragon": 3
     }
   },
 

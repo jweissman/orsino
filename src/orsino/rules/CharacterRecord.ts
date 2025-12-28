@@ -44,13 +44,14 @@ export default class CharacterRecord {
   }
 
   static async pickSpell(
-    spellLevel: number, school: 'arcane' | 'divine',
+    spellLevel: number,
+    aspect: 'arcane' | 'divine',
     alreadyKnown: string[] = [],
     selectionMethod: Select<Answers> = User.selection.bind(User)
   ): Promise<string> {
     const abilityHandler = AbilityHandler.instance;
     await abilityHandler.loadAbilities();
-    let spellChoices = abilityHandler.allSpellNames(school, spellLevel);
+    let spellChoices = abilityHandler.allSpellNames(aspect, spellLevel, false);
     spellChoices = spellChoices.filter(spellName => alreadyKnown.indexOf(spellName) === -1);
     const spellChoicesDetailed = spellChoices.map(spellName => {
       const spell = abilityHandler.getAbility(spellName);
@@ -63,7 +64,7 @@ export default class CharacterRecord {
       };
     });
     const chosenSpell: Choice<Answers> = await selectionMethod(
-      `Select a level ${spellLevel} ${school} spell:`,
+      `Select a level ${spellLevel} ${aspect} spell:`,
       spellChoicesDetailed
     ) as Choice<Answers>;
     return chosenSpell as any as string;
@@ -132,7 +133,7 @@ export default class CharacterRecord {
     const job = pc.class;
     const spellbook: string[] = [];
     if (job === 'mage') {
-      const cantrips = AbilityHandler.instance.allSpellNames('arcane', 0);
+      const cantrips = AbilityHandler.instance.allSpellNames('arcane', 0, false);
       // give all cantrips
       spellbook.push(...cantrips);
 

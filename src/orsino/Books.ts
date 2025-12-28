@@ -24,8 +24,33 @@ export default class Books {
     this.write("\n");
   }
 
+  static async bestiary(options: Record<string, any> = {}) {
+    await this.bootstrap();
+
+    this.write(`## Animals\n`);
+
+    const animalKinds = Deem.evaluate("gather(animalKind)") as string[];
+    animalKinds.sort((a: string, b: string) => a.localeCompare(b));
+    for (const animalKind of animalKinds) {
+      // this.write(`\n### ${Words.capitalize(animalKind)}s\n`);
+      const animal = Generator.gen("animal", {
+        setting: 'fantasy',
+        animal_type: animalKind,
+        background: 'wild',
+        animal_aspect: 'wildtype',
+        ...options
+      }) as unknown as Combatant;
+      this.write(
+        Presenter.markdownCharacterRecord(animal)
+      )
+    }
+
+  }
+
   static async monsters(options: Record<string, any> = {}) {
     await this.bootstrap();
+
+    this.write(`## Monsters\n`);
 
     const monsterKinds = Deem.evaluate("gather(monsterKind)") as string[];
     monsterKinds.sort((a: string, b: string) => a.localeCompare(b));
@@ -53,6 +78,24 @@ export default class Books {
             monsterList.push(monster);
           }
         }
+      } else if (monsterKind === "dragon") {
+        const dragonColors = Deem.evaluate("gather(dragonColors)") as string[];
+        for (const color of dragonColors) {
+          const monster = Generator.gen("monster", {
+            setting: 'fantasy',
+            monster_type: "Dragon",
+            monster_aspect: 'wildtype',
+            rank: 'standard',
+            age_category: 'adult',
+            color,
+            forename: 'Dragon',
+            name: `Dragon, ${Words.capitalize(color)}`,
+            ...options
+          }) as unknown as Combatant;
+
+          monsterList.push(monster);
+        }
+
       } else {
         for (const monsterName of monsterNames) {
           const monster = Generator.gen("monster", {
@@ -179,26 +222,13 @@ export default class Books {
       this.write(`\n### ${Words.capitalize(aspect)} Spells\n`);
 
       const spells = AbilityHandler.instance.allSpellNames(aspect, Infinity, false)
-      spells.sort(
-        (a, b) => {
-          // const abilityA = AbilityHandler.instance.getAbility(a);
-          // const abilityB = AbilityHandler.instance.getAbility(b);
-          // if (abilityA && abilityB) {
-          //   let levelDiff = ((abilityA.level || 1) - (abilityB.level || 1));
-          //   if (levelDiff !== 0) {
-          //     return levelDiff;
-          //   }
-          //   return ((abilityA.school || abilityA.domain || "").localeCompare(abilityB.school || abilityB.domain || "")) || a.localeCompare(b);
-          // }
-          return a.localeCompare(b);
-        }
-      )
+      spells.sort((a, b) => a.localeCompare(b));
       this.write("\n| Cantrip | Level 1 | Level 2 | Level 3 | Level 4 | Level 5 | Level 6 | Level 7 | Level 8 | Level 9 |");
       this.write("  |---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|");
       const spellLevels: Record<number, string[]> = {};
       spells.forEach(spellName => {
         const ability = AbilityHandler.instance.getAbility(spellName);
-        if (ability && ability.type === "spell" && ability.alignment !== "evil") {
+        if (ability) { //} && ability.type === "spell" && ability.alignment !== "evil") {
           const level = ability.level || 0;
           if (!spellLevels[level]) {
             spellLevels[level] = [];

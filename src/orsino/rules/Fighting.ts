@@ -173,6 +173,8 @@ export class Fighting {
     if (materializedArmor && materializedArmor.itemClass === 'armor') {
       return materializedArmor as unknown as (Armor & ItemInstance);
     }
+
+    console.warn(`Materialized armor: ${JSON.stringify(materializedArmor)}`);
     throw new Error(`Could not resolve effective armor for combatant ${combatant.name} with armor ${armor}`);
   }
 
