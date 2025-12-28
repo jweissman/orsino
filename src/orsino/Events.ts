@@ -167,6 +167,7 @@ export type TownVisitedEvent = BaseModuleEvent & {
   townName: string; race: string; size: string; population: number; adjective: string; season: "spring" | "summer" | "autumn" | "winter";
 };
 export type ShopEnteredEvent = BaseModuleEvent & { type: "shopEntered"; shopName: string; };
+export type GoldStatusEvent = BaseModuleEvent & { type: "goldStatus"; amount: number; };
 export type PurchaseEvent = BaseModuleEvent & { type: "purchase"; itemName: string; cost: number; buyer: Combatant; };
 export type SaleEvent = BaseModuleEvent & { type: "sale"; itemName: string; revenue: number; seller: Combatant; };
 export type EquipmentEvent = BaseModuleEvent & { type: "equip"; itemName: string; slot: EquipmentSlot; wearerId: string; wearerName: string };
@@ -185,6 +186,7 @@ export type ModuleEvent =
   | CampaignStartEvent
   | TownVisitedEvent
   | ShopEnteredEvent
+  | GoldStatusEvent
   | PurchaseEvent
   | SaleEvent
   | EquipmentEvent
@@ -417,6 +419,8 @@ export default class Events {
           }`);
       case "shopEntered":
         return Stylist.bold(`Entered ${event.shopName}'s shop.`);
+      case "goldStatus":
+        return `Current gold: ${Words.humanizeNumber(event.amount)} gp.`;
       case "townVisited":
         return (`It is the ${Words.ordinal(1 + (event.day % 90))} day of ${event.season} in the ${event.adjective} ${Words.capitalize(event.race)} ${event.size} of ${Stylist.bold(event.townName)} on the plane of ${Words.capitalize(event.plane)} (Population: ${Words.humanizeNumber(event.population)}). The weather is currently ${event.weather}.`);
       case "purchase":
@@ -464,7 +468,7 @@ export default class Events {
         return overview;
       case "hirelingOffered":
 
-        return `A hireling is available: ${await Presenter.characterRecord(event.hireling)} for ${event.cost} gold per month.`;
+        return `A hireling is available: ${await Presenter.characterRecord(event.hireling, [])} for ${event.cost} gold per month.`;
       case "hirelingHired":
         return `${event.hireling.forename} has joined your party as a hireling for ${event.cost} gold per month.`;
       case "campaignStop":

@@ -23,6 +23,7 @@
         "gp": 30,
         "startingGear": ["torch", "pole"],
         "weaponProficiencies": { "all": true },
+        "armorProficiencies": { "all": true },
         "itemProficiencies": { "kind": ["kit", "potion", "flask"] }
       },
       "mage": {
@@ -31,6 +32,7 @@
         "con": -1,
         "gp": 10,
         "startingGear": ["spellbook"],
+        "armorProficiencies": { "kind": ["cloth"], "weight": ["light"] },
         "weaponProficiencies": { "kind": ["blade", "staff", "dart", "sling"], "weight": ["light"] },
         "itemProficiencies": { "all": true }
       },
@@ -40,8 +42,9 @@
         "str": -1,
         "gp": 20,
         "startingGear": ["thieves_tools"],
+        "armorProficiencies": { "kind": ["leather"], "weight": ["light"] },
         "weaponProficiencies": { "kind": ["blade", "bow", "crossbow", "dart", "sling"], "weight": ["light", "medium"] },
-        "itemProficiencies": { "kind": ["kit", "potion", "flask"] }
+        "itemProficiencies": { "kind": ["kit", "potion", "flask", "special"] }
       },
       "cleric": {
         "wis": 2,
@@ -49,6 +52,7 @@
         "cha": 1,
         "gp": 15,
         "startingGear": ["holy_symbol"],
+        "armorProficiencies": { "kind": ["cloth", "leather", "metal"], "weight": ["light", "medium"] },
         "weaponProficiencies": { "kind": ["flail", "mace", "warhammer", "staff", "club"], "weight": ["light", "medium", "heavy"] },
         "itemProficiencies": { "kind": ["kit", "potion", "flask", "wand", "scroll"], "withoutAspect": "arcane" }
       },
@@ -57,8 +61,9 @@
         "dex": 1,
         "gp": 25,
         "startingGear": ["musical_instrument"],
+        "armorProficiencies": { "kind": ["leather", "cloth"], "weight": ["light"] },
         "weaponProficiencies": { "kind": ["blade", "bow", "crossbow", "staff", "light_mace"], "weight": ["light"] },
-        "itemProficiencies": { "kind": ["kit", "potion", "flask", "scroll"] }
+        "itemProficiencies": { "kind": ["kit", "potion", "flask", "scroll", "special"] }
       },
       "ranger": {
         "dex": 2,
@@ -66,6 +71,7 @@
         "con": 1,
         "gp": 30,
         "startingGear": ["rations", "bedroll", "firewood", "flask"],
+        "armorProficiencies": { "all": true, "weight": ["light", "medium"] },
         "weaponProficiencies": { "kind": ["blade", "bow", "crossbow", "polearm"], "weight": ["light", "medium"] },
         "itemProficiencies": { "kind": ["kit", "potion", "flask", "scroll"] }
       }
@@ -74,105 +80,60 @@
   "backgroundModifier": {
     "discriminator": "background",
     "groups": {
-      "noble": {
-        "str": 1,
-        "int": 1,
-        "cha": 2,
-        "con": -1,
-        "gp": 50
-      },
-      "soldier": {
-        "str": 2,
-        "con": 1,
-        "dex": 1,
-        "gp": 20
-      },
-      "outlander": {
-        "str": 1,
-        "dex": 1,
-        "con": 1,
-        "gp": 10
-      },
-      "scholar": {
-        "int": 2,
-        "wis": 1,
-        "cha": -1,
-        "gp": 5
-      },
-      "criminal": {
-        "dex": 2,
-        "cha": 1,
-        "int": -1,
-        "gp": 15
-      },
-      "artisan": {
-        "int": 1,
-        "wis": 1,
-        "cha": 1,
-        "gp": 20
-      },
-      "acolyte": {
-        "wis": 2,
-        "int": 1,
-        "gp": 5
-      },
-      "hermit": {
-        "con": 2,
-        "wis": 1,
-        "cha": -2,
-        "gp": 5
-      },
-      "hireling": {
-        "str": 1,
-        "con": 1,
-        "dex": 1,
-        "gp": 0
-      }
+      "artistocrat": { "cha": 2, "int": 1, "str": -1, "gp": 400 },
+      "astronomer": { "int": 4, "wis": 2, "gp": 15 },
+      "cartographer": { "int": 2, "wis": 2, "dex": 1, "gp": 20 },
+      "jester": { "cha": 3, "dex": 1, "gp": 30 },
+      "singer": { "cha": 2, "wis": 1, "gp": 25 },
+      "spy": { "cha": 2, "dex": 2, "int": 1, "gp": 50 },
+      "alchemist": { "int": 2, "dex": 1, "gp": 30 },
+
+      "noble": { "str": 1, "int": 1, "cha": 2, "con": -1, "gp": 50 },
+      "merchant": { "wis": 1, "cha": 2, "int": 1, "gp": 100 },
+      "farmer": { "con": 2, "str": 1, "wis": 1, "gp": 10 },
+      "sailor": { "dex": 2, "con": 1, "str": 1, "gp": 20 },
+      "woodcutter": { "str": 2, "con": 2, "dex": -1, "gp": 15 },
+      "hunter": { "dex": 2, "wis": 1, "con": 1, "gp": 15 },
+      "fisherman": { "dex": 2, "con": 1, "wis": 1, "gp": 10 },
+      "blacksmith": { "str": 2, "con": 1, "dex": 1, "gp": 25 },
+
+      "soldier": { "str": 2, "con": 1, "dex": 1, "gp": 20 },
+      "folk_hero": { "str": 2, "con": 1, "cha": 1, "gp": 10 },
+      "outlander": { "str": 1, "dex": 1, "con": 1, "gp": 10 },
+      "scholar": { "int": 2, "wis": 1, "cha": -1, "gp": 5 },
+      "criminal": { "dex": 2, "cha": 1, "int": -1, "gp": 15 },
+      "artisan": { "int": 1, "wis": 1, "cha": 1, "gp": 20 },
+      "acolyte": { "wis": 2, "int": 1, "gp": 5 },
+      "hermit": { "con": 2, "wis": 1, "cha": -2, "gp": 5 },
+
+      "laborer": { "str": 2, "con": 1, "gp": 5 },
+      "courtier": { "cha": 2, "int": 1, "gp": 50 },
+      "messenger": { "dex": 2, "wis": 1, "gp": 10 },
+      "herald": { "cha": 2, "wis": 1, "gp": 15 },
+      "guard": { "str": 2, "con": 1, "gp": 10 },
+      "mercenary": { "str": 2, "con": 1, "dex": 1, "gp": 20 },
+      "bandit": { "dex": 2, "str": 1, "gp": 15 },
+
+      "hireling": { "str": 1, "con": 1, "dex": 1, "gp": 0 }
     }
   },
   "racialModifier": {
     "discriminator": "race",
     "groups": {
-      "human": {
-        "str": 1,
-        "dex": 1,
-        "con": 1,
-        "int": 1,
-        "wis": 1,
-        "cha": 1
-      },
-      "orc": {
-        "str": 2,
-        "con": 1,
-        "int": -1
-      },
-      "elf": {
-        "dex": 2,
-        "int": 1,
-        "con": -1
-      },
-      "dwarf": {
-        "con": 2,
-        "str": 1,
-        "cha": -1
-      },
-      "halfling": {
-        "dex": 2,
-        "cha": 1,
-        "str": -1
-      },
-      "gnome": {
-        "int": 2,
-        "wis": 1,
-        "str": -1
-      },
-      "fae": {
-        "cha": 3,
-        "int": 2,
-        "wis": 1,
-        "str": -1,
-        "con": -2
-      }
+      "human": { "str": 1, "dex": 1, "con": 1, "int": 1, "wis": 1, "cha": 1, "occupationOptions": ["all"] },
+      "orc": { "str": 2, "con": 1, "int": -1, "cha": -1, "occupationOptions": ["warrior", "thief", "ranger"] },
+      "elf": { "dex": 2, "int": 1, "con": -1, "str": -1, "occupationOptions": ["warrior", "thief", "ranger", "bard", "mage"] },
+      "dwarf": { "con": 2, "str": 1, "cha": -1, "dex": -1, "occupationOptions": ["warrior", "cleric"] },
+      "halfling": { "dex": 2, "cha": 1, "str": -1, "con": -1, "occupationOptions": ["warrior", "thief", "bard"] },
+      "gnome": { "int": 2, "wis": 1, "str": -1, "con": -1, "occupationOptions": ["thief", "bard", "mage"] },
+      "fae": { "cha": 3, "int": 2, "wis": 1, "str": -1, "con": -2, "occupationOptions": ["cleric", "thief", "bard", "mage" ] },
+      "lizardfolk": { "con": 2, "str": 1, "int": -1, "cha": -1, "occupationOptions": ["warrior", "ranger", "thief"] },
+      "half_orc": { "str": 2, "con": 1, "dex": -1, "int": -1, "occupationOptions": ["warrior", "thief", "ranger"] },
+      "half_elf": { "cha": 2, "dex": 1, "int": 1, "occupationOptions": ["all"] },
+      "gnoll": { "str": 2, "con": 1, "int": -2, "cha": -1, "occupationOptions": ["warrior", "ranger", "thief"] },
+      "catfolk": { "dex": 2, "cha": 1, "con": -1, "occupationOptions": ["thief", "ranger", "bard"] },
+      "sylph": { "dex": 3, "int": 2, "con": -2, "str": -2, "occupationOptions": ["mage", "cleric"] },
+      "undine": { "wis": 3, "con": 2, "str": -2, "dex": -1, "occupationOptions": ["mage", "cleric"] }
     }
   },
 
@@ -185,7 +146,12 @@
       "dwarf": [[ "sturdy", "tough" ]],
       "halfling": [[ "nimble", "lucky" ]],
       "gnome": [[ "inventive", "curious" ]],
-      "fae": [[ "mysterious", "enchanting" ]]
+      "fae": [[ "mysterious", "enchanting" ]],
+      "half_elf": [[ "agile", "adaptable" ]],
+      "half_orc": [[ "versatile", "fierce" ]],
+      "gnoll": [[ "tough", "resilient" ]],
+      "lizardfolk": [[ "nimble", "curious" ]],
+      "catfolk": [[ "agile", "lucky" ]]
     }
   },
   
@@ -686,7 +652,7 @@
         "_npcCount": 3,
         "npc_type": "Cultist",
         "_companionCount": 0,
-        "_treasureItems": ["soul gem", "ring_of_protection", "staff of power", "cloak of invisibility"],
+        "_treasureItems": ["soul_gem", "ring_of_protection", "staff_of_power", "cloak_of_invisibility"],
         "bonusGold": "10 + 6d100"
       },
       "catacombs": {
@@ -695,21 +661,21 @@
         "_npcCount": 4,
         "_npc_types": ["Gravedigger", "Tombrobber", "Adept", "Acolyte"],
         "_companionCount": 0,
-        "_treasureItems": ["wand_of_cure_minor_wounds", "bone armor"],
+        "_treasureItems": ["wand_of_cure_minor_wounds", "bone_armor"],
         "bonusGold": "5 + 4d20"
       },
       "ritual_chamber": {
         "_npcCount": 4,
         "_npc_types": ["Cult Master", "Wizard", "Acolyte", "Acolyte"],
         "_companionCount": 0,
-        "_treasureItems": ["amulet_of_health", "wand_of_magic_missiles", "robe of the archmagi"],
+        "_treasureItems": ["amulet_of_health", "wand_of_magic_missile", "robe_of_the_archmagi"],
         "bonusGold": "10 + 5d20"
       },
       "dark_altar": {
         "_npcCount": 3,
         "_npc_types": ["Death Priest", "Adept", "Adept"],
         "_companionCount": 0,
-        "_treasureItems": ["unholy symbol", "ring_of_regeneration", "staff of the necromancer"],
+        "_treasureItems": ["unholy_symbol", "ring_of_regeneration", "staff_of_the_necromancer"],
         "bonusGold": "10 + 4d10"
       },
       "mortuary_garden": {
@@ -733,7 +699,7 @@
         "_npcCount": 4,
         "_npc_types": ["Wizard", "Adept", "Adept", "Adept"],
         "_companionCount": 0,
-        "_treasureItems": ["scroll_of_fireball", "wand_of_magic_missiles"],
+        "_treasureItems": ["scroll_of_fireball", "wand_of_magic_missile"],
         "bonusGold": "10 + 5d50"
       },
 
@@ -1674,113 +1640,70 @@
   "companionType": {
     "discriminator": "race",
     "groups": {
-      "kobold": [
-        "spider",
-        "rat",
-        "bat"
-      ],
-      "goblin": [
-        "rat",
-        "wolf",
-        "spider"
-      ],
-      "human": [
-        "hound",
-        "falcon",
-        "wolf"
-      ],
-      "orc": [
-        "wolf",
-        "bear",
-        "boar"
-      ],
-      "ogre": [
-        "bear",
-        "boar",
-        "wolf",
-        "eagle"
-      ],
-      "troll": [
-        "bear",
-        "tiger",
-        "panther",
-        "lion"
-      ],
-      "dragon": [
-        "wyrm",
-        "snake",
-        "pseudodragon"
-      ],
-      "elf": [
-        "deer",
-        "owl",
-        "fox",
-        "hawk"
-      ],
-      "dwarf": [
-        "badger",
-        "ram",
-        "mole",
-        "raven"
-      ],
-      "halfling": [
-        "rabbit",
-        "ferret",
-        "pony",
-        "goat"
-      ],
-      "gnome": [
-        "squirrel",
-        "hedgehog",
-        "stoat",
-        "crow"
-      ],
-      "fae": [
-        "butterfly",
-        "dragonfly",
-        "hummingbird",
-        "moth"
-      ]
+      "kobold": [ "spider", "rat", "bat" ],
+      "goblin": [ "rat", "wolf", "spider" ],
+      "human": [ "hound", "falcon", "wolf" ],
+      "orc": [ "wolf", "bear", "boar" ],
+      "ogre": [ "bear", "boar", "wolf", "eagle" ],
+      "troll": [ "bear", "tiger", "panther", "lion" ],
+      "dragon": [ "wyrm", "snake", "pseudodragon" ],
+      "elf": [ "deer", "owl", "fox", "hawk" ],
+      "dwarf": [ "badger", "ram", "mole", "raven" ],
+      "halfling": [ "rabbit", "ferret", "pony", "goat" ],
+      "gnome": [ "squirrel", "hedgehog", "stoat", "crow" ],
+      "fae": [ "butterfly", "dragonfly", "hummingbird", "moth" ],
+      "half_elf": [ "fox", "owl", "hawk", "wolf" ],
+      "half_orc": [ "boar", "wolf", "bear", "hound" ],
+      "lizardfolk": [ "snake", "lizard", "frog", "crocodile" ],
+      "gnoll": [ "hyena", "wolf", "boar" ],
+      "catfolk": [ "panther", "tiger", "lion", "fox" ],
+      "sylph": [ "eagle", "hawk", "falcon", "owl" ],
+      "undine": [ "frog", "turtle", "otter" ]
     }
   },
   "animalStat": {
     "discriminator": "type",
     "groups": {
+      "badger": { "level": 1, "hp": 3, "str": 3, "dex": 2, "con": 3, "int": 2, "wis": 2, "cha": 2 },
       "bat": { "level": 1, "hp": 1, "str": 1, "dex": 3, "con": 1, "int": 1, "wis": 2, "cha": 3 },
       "bear": { "level": 1, "hp": 4, "str": 8, "dex": 2, "con": 8, "int": 2, "wis": 2, "cha": 2 },
       "boar": { "level": 1, "hp": 3, "str": 6, "dex": 2, "con": 6, "int": 2, "wis": 2, "cha": 2 },
+      "butterfly": { "level": 1, "hp": 2, "str": 1, "dex": 5, "con": 2, "int": 2, "wis": 3, "cha": 4 },
+      "crocodile": { "level": 1, "hp": 5, "str": 6, "dex": 2, "con": 6, "int": 2, "wis": 3, "cha": 2 },
+      "crow": { "level": 1, "hp": 2, "str": 2, "dex": 5, "con": 2, "int": 5, "wis": 3, "cha": 3 },
+      "deer": { "level": 1, "hp": 3, "str": 2, "dex": 4, "con": 2, "int": 2, "wis": 3, "cha": 2 },
+      "dragonfly": { "level": 1, "hp": 2, "str": 1, "dex": 5, "con": 2, "int": 2, "wis": 3, "cha": 6 },
       "eagle": { "level": 1, "hp": 3, "str": 2, "dex": 5, "con": 2, "int": 2, "wis": 3, "cha": 2 },
       "falcon": { "level": 1, "hp": 3, "str": 3, "dex": 3, "con": 3, "int": 3, "wis": 3, "cha": 3 },
+      "ferret": { "level": 1, "hp": 3, "str": 2, "dex": 4, "con": 3, "int": 3, "wis": 3, "cha": 3 },
+      "fox": { "level": 1, "hp": 3, "str": 3, "dex": 4, "con": 3, "int": 3, "wis": 3, "cha": 3 },
+      "frog": { "level": 1, "hp": 2, "str": 1, "dex": 3, "con": 2, "int": 1, "wis": 2, "cha": 2 },
+      "goat": { "level": 1, "hp": 3, "str": 3, "dex": 2, "con": 3, "int": 2, "wis": 2, "cha": 3 },
+      "hawk": { "level": 1, "hp": 3, "str": 3, "dex": 4, "con": 3, "int": 3, "wis": 4, "cha": 3 },
+      "hedgehog": { "level": 1, "hp": 2, "str": 2, "dex": 2, "con": 3, "int": 2, "wis": 3, "cha": 2 },
       "hound": { "level": 1, "hp": 3, "str": 4, "dex": 4, "con": 4, "int": 4, "wis": 4, "cha": 4 },
+      "hummingbird": { "level": 1, "hp": 2, "str": 1, "dex": 5, "con": 2, "int": 2, "wis": 3, "cha": 4 },
+      "hyena": { "level": 1, "hp": 4, "str": 5, "dex": 3, "con": 5, "int": 2, "wis": 2, "cha": 2 },
+      "lion": { "level": 1, "hp": 4, "str": 4, "dex": 3, "con": 4, "int": 2, "wis": 2, "cha": 4 },
+      "mole": { "level": 1, "hp": 3, "str": 2, "dex": 3, "con": 2, "int": 2, "wis": 2, "cha": 2 },
+      "moth": { "level": 1, "hp": 2, "str": 1, "dex": 5, "con": 2, "int": 2, "wis": 3, "cha": 4 },
+      "otter": { "level": 1, "hp": 3, "str": 3, "dex": 4, "con": 3, "int": 3, "wis": 3, "cha": 3 },
+      "owl": { "level": 1, "hp": 3, "str": 2, "dex": 4, "con": 2, "int": 3, "wis": 4, "cha": 2 },
+      "panther": { "level": 1, "hp": 4, "str": 3, "dex": 4, "con": 3, "int": 3, "wis": 3, "cha": 3 },
+      "pony": { "level": 1, "hp": 4, "str": 4, "dex": 3, "con": 4, "int": 2, "wis": 2, "cha": 3 },
       "pseudodragon": { "level": 1, "hp": 3, "str": 5, "dex": 4, "con": 5, "int": 5, "wis": 5, "cha": 5 },
+      "rabbit": { "level": 1, "hp": 4, "str": 1, "dex": 3, "con": 2, "int": 2, "wis": 3, "cha": 2 },
+      "ram": { "level": 1, "hp": 4, "str": 4, "dex": 2, "con": 4, "int": 2, "wis": 2, "cha": 2 },
       "rat": { "level": 1, "hp": 2, "str": 1, "dex": 2, "con": 1, "int": 1, "wis": 1, "cha": 1 },
+      "raven": { "level": 1, "hp": 2, "str": 2, "dex": 4, "con": 2, "int": 3, "wis": 3, "cha": 3 },
       "snake": { "level": 1, "hp": 3, "str": 4, "dex": 3, "con": 4, "int": 3, "wis": 3, "cha": 3 },
       "spider": { "level": 1, "hp": 2, "str": 2, "dex": 4, "con": 2, "int": 2, "wis": 2, "cha": 2 },
-      "wolf": { "level": 1, "hp": 3, "str": 5, "dex": 3, "con": 5, "int": 4, "wis": 4, "cha": 4 },
-      "wyrm": { "level": 1, "hp": 3, "str": 7, "dex": 2, "con": 6, "int": 8, "wis": 8, "cha": 7 },
-      "tiger": { "level": 1, "hp": 5, "str": 4, "dex": 4, "con": 4, "int": 3, "wis": 3, "cha": 3 },
-      "panther": { "level": 1, "hp": 4, "str": 3, "dex": 4, "con": 3, "int": 3, "wis": 3, "cha": 3 },
-      "lion": { "level": 1, "hp": 4, "str": 4, "dex": 3, "con": 4, "int": 2, "wis": 2, "cha": 4 },
-      "deer": { "level": 1, "hp": 3, "str": 2, "dex": 4, "con": 2, "int": 2, "wis": 3, "cha": 2 },
-      "owl": { "level": 1, "hp": 3, "str": 2, "dex": 4, "con": 2, "int": 3, "wis": 4, "cha": 2 },
-      "fox": { "level": 1, "hp": 3, "str": 3, "dex": 4, "con": 3, "int": 3, "wis": 3, "cha": 3 },
-      "hawk": { "level": 1, "hp": 3, "str": 3, "dex": 4, "con": 3, "int": 3, "wis": 4, "cha": 3 },
-      "badger": { "level": 1, "hp": 3, "str": 3, "dex": 2, "con": 3, "int": 2, "wis": 2, "cha": 2 },
-      "ram": { "level": 1, "hp": 4, "str": 4, "dex": 2, "con": 4, "int": 2, "wis": 2, "cha": 2 },
-      "mole": { "level": 1, "hp": 3, "str": 2, "dex": 3, "con": 2, "int": 2, "wis": 2, "cha": 2 },
-      "raven": { "level": 1, "hp": 2, "str": 2, "dex": 4, "con": 2, "int": 3, "wis": 3, "cha": 3 },
-      "rabbit": { "level": 1, "hp": 4, "str": 1, "dex": 3, "con": 2, "int": 2, "wis": 3, "cha": 2 },
-      "ferret": { "level": 1, "hp": 3, "str": 2, "dex": 4, "con": 3, "int": 3, "wis": 3, "cha": 3 },
-      "pony": { "level": 1, "hp": 4, "str": 4, "dex": 3, "con": 4, "int": 2, "wis": 2, "cha": 3 },
-      "goat": { "level": 1, "hp": 3, "str": 3, "dex": 2, "con": 3, "int": 2, "wis": 2, "cha": 3 },
       "squirrel": { "level": 1, "hp": 1, "str": 1, "dex": 4, "con": 2, "int": 3, "wis": 3, "cha": 2 },
-      "hedgehog": { "level": 1, "hp": 2, "str": 2, "dex": 2, "con": 3, "int": 2, "wis": 3, "cha": 2 },
       "stoat": { "level": 1, "hp": 3, "str": 2, "dex": 4, "con": 3, "int": 3, "wis": 3, "cha": 3 },
-      "crow": { "level": 1, "hp": 2, "str": 2, "dex": 5, "con": 2, "int": 5, "wis": 3, "cha": 3 },
-      "butterfly": { "level": 1, "hp": 2, "str": 1, "dex": 5, "con": 2, "int": 2, "wis": 3, "cha": 4 },
-      "dragonfly": { "level": 1, "hp": 2, "str": 1, "dex": 5, "con": 2, "int": 2, "wis": 3, "cha": 6 },
-      "hummingbird": { "level": 1, "hp": 2, "str": 1, "dex": 5, "con": 2, "int": 2, "wis": 3, "cha": 4 },
-      "moth": { "level": 1, "hp": 2, "str": 1, "dex": 5, "con": 2, "int": 2, "wis": 3, "cha": 4 }
+      "tiger": { "level": 1, "hp": 5, "str": 4, "dex": 4, "con": 4, "int": 3, "wis": 3, "cha": 3 },
+      "turtle": { "level": 1, "hp": 4, "str": 2, "dex": 1, "con": 5, "int": 2, "wis": 3, "cha": 2 },
+      "wolf": { "level": 1, "hp": 3, "str": 5, "dex": 3, "con": 5, "int": 4, "wis": 4, "cha": 4 },
+      "wyrm": { "level": 1, "hp": 3, "str": 7, "dex": 2, "con": 6, "int": 8, "wis": 8, "cha": 7 }
     }
   },
   "animalWeapon": {
@@ -1867,12 +1790,7 @@
   "creatureTemplateOverlays": {
     "discriminator": "type",
     "groups": {
-      "undead": [
-        "skeletal",
-        "zombie",
-        "spectral",
-        "vampiric"
-      ]
+      "undead": [ "skeletal", "zombie", "spectral", "vampiric" ]
     }
   },
 

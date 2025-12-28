@@ -2,13 +2,13 @@ import Choice from "inquirer/lib/objects/choice";
 
 import Deem from "./deem";
 import { ModuleEvent } from "./orsino/Events";
-import { Equipment, Inventory, Weapon } from "./orsino/Inventory";
+import { Armor, Equipment, Inventory, Weapon } from "./orsino/Inventory";
 import Words from "./orsino/tui/Words";
 import { Combatant } from "./orsino/types/Combatant";
 import { GameState } from "./orsino/types/GameState";
 import Automatic from "./orsino/tui/Automatic";
 import { never } from "./orsino/util/never";
-import { materializeItem } from "./orsino/types/ItemInstance";
+import { ItemInstance, materializeItem } from "./orsino/types/ItemInstance";
 
 export type ShopType = 'loot' | 'consumables' | 'weapons' | 'equipment' | 'armor';
 
@@ -33,15 +33,11 @@ export default class Shop {
     }
   }
 
-  constructor(
-    // private readonly gameState: GameState,
-    private select = Automatic.randomSelect.bind(Automatic),
-  ) { }
+  constructor(private select = Automatic.randomSelect.bind(Automatic)) { }
 
   gameState!: GameState;
   leaving = false;
   currentGold: number = 0;
-  // events: ModuleEvent[] = [];
 
   get gold() { return this.currentGold }
   get day() { return this.gameState.day }
@@ -64,11 +60,20 @@ export default class Shop {
 
   private async armorShop(): Promise<ModuleEvent[]> {
     const events: ModuleEvent[] = [];
-    const armorItemNames = Deem.evaluate(`gather(masterArmor)`) as string[];
+    const armorItemNames = Deem.evaluate(`gather(masterArmor, -1, '!dig(#__it, "natural")')`) as string[];
+    // const weaponItemNames = Deem.evaluate(`gather(masterWeapon, -1, '!dig(#__it, "natural")')`) as string[];
+    const pcEquipment = (combatant: Combatant) => {
+      let equipmentWithoutWeapon = { ...combatant.equipment };
+      delete equipmentWithoutWeapon.weapon;
+      let equipmentIds = Object.values(equipmentWithoutWeapon || {});
+      return Words.humanizeList(
+        equipmentIds.map(eid => materializeItem(eid, this.gameState.inventory).name)
+      );
+    }
     const pcOptions = this.party.map(pc => ({
       short: pc.name,
       value: pc,
-      name: `${pc.name} (${pc.equipment ? Words.humanizeList(Object.values(pc.equipment)) : 'no equipment'})`,
+      name: `${pc.name} (${pcEquipment(pc)})`,
       disabled: false,
     }));
     const wearer = await this.select(`Who needs new armor?`, pcOptions) as Combatant;
@@ -76,13 +81,15 @@ export default class Shop {
     const options = [];
     for (let index = 0; index < armorItemNames.length; index++) {
       const itemName = armorItemNames[index];
-      const item = Deem.evaluate(`lookup(masterArmor, "${itemName}")`) as unknown as Equipment;
+      // const item = Deem.evaluate(`lookup(masterArmor, "${itemName}")`) as unknown as Equipment;
+      const item = materializeItem(itemName, []) as Armor & ItemInstance;
       item.key = itemName;
       options.push({
         short: Words.humanize(itemName) + ` (${item.value}g)`,
         value: item,
         name: `${Words.humanize(itemName)} - ${item.description} (${item.value}g)`,
-        disabled: this.currentGold < item.value,
+        disabled: this.currentGold < item.value || (wearer.armorProficiencies ? !Inventory.isArmorProficient(item, wearer.armorProficiencies) : true),
+        // disabled: this.currentGold < item.value || (wielder.weaponProficiencies ? !Inventory.isWeaponProficient(item, wielder.weaponProficiencies) : true),
       })
     }
     options.push({ disabled: false, short: "Done", value: "done", name: "Finish shopping" });
@@ -146,6 +153,12 @@ export default class Shop {
         disabled: this.gameState.inventory.length === 0,
       },
       {
+        short: "Sell All Junk",
+        value: "sell_junk",
+        name: "Sell all junk items from your inventory",
+        disabled: this.gameState.inventory.filter(ii => ii.itemClass === 'junk').length === 0,
+      },
+      {
         short: "Done",
         value: "done",
         name: "Finish shopping",
@@ -157,6 +170,8 @@ export default class Shop {
       events.push(...await this.buyGear())
     } else if (buyingSelling === "sell") {
       events.push(...await this.sellItems());
+    } else if (buyingSelling === "sell_junk") {
+      events.push(...await this.sellJunk());
     } else if (buyingSelling === "done") {
       this.leaving = true;
     }
@@ -255,13 +270,39 @@ export default class Shop {
     return events;
   }
 
+  private async sellJunk(): Promise<ModuleEvent[]> {
+    const events: ModuleEvent[] = [];
+    const junkItems = this.gameState.inventory.filter(ii => ii.itemClass === 'junk');
+    for (const item of junkItems) {
+      const itemIndex = this.gameState.inventory.findIndex(ii => ii.id === item.id);
+      if (itemIndex >= 0) {
+        this.gameState.inventory.splice(itemIndex, 1);
+        events.push({
+          type: "sale",
+          itemName: item.key,
+          revenue: item.value,
+          seller: this.party[0],
+          day: this.day,
+        });
+        this.currentGold += item.value;
+      }
+    }
+    return events;
+  }
+
   private async equipmentShop(): Promise<ModuleEvent[]> {
     const events: ModuleEvent[] = [];
     const magicItemNames = Deem.evaluate(`gather(masterEquipment)`) as string[];
+    const pcEquipment = (combatant: Combatant) => {
+      let equipmentIds = Object.values(combatant.equipment || {});
+      return Words.humanizeList(
+        equipmentIds.map(eid => materializeItem(eid, this.gameState.inventory).name)
+      );
+    } 
     const pcOptions = this.party.map(pc => ({
       short: pc.name,
       value: pc,
-      name: `${pc.name} (${pc.equipment ? Words.humanizeList(Object.values(pc.equipment)) : 'no equipment'})`,
+      name: `${pc.name} (${pcEquipment(pc) || 'no equipment'})`,
       disabled: false,
     }));
     const wearer = await this.select(`Who needs new equipment?`, pcOptions) as Combatant;
@@ -328,18 +369,22 @@ export default class Shop {
     const options: Choice[] = [];
     for (let index = 0; index < consumableItemNames.length; index++) {
       const itemName = consumableItemNames[index];
-      const item = Deem.evaluate(`lookup(consumables, "${itemName}")`) as unknown as {
-        key: string;
-        name: string;
-        description: string;
-        value: number;
-      };
-      item.key = itemName;
+      const item = materializeItem(itemName, []);
+      // const item = Deem.evaluate(`lookup(consumables, "${itemName}")`) as unknown as {
+      //   key: string;
+      //   name: string;
+      //   description: string;
+      //   value: number;
+      // };
+      // item.key = itemName;
+      let anyoneProficient = this.party.some(pc => {
+        return pc.itemProficiencies ? Inventory.isItemProficient(item, pc.itemProficiencies) : false;
+      });
       options.push({
         short: item.name + ` (${item.value}g)`,
         value: item,
         name: `${item.name} - ${item.description} (${item.value}g)`,
-        disabled: this.currentGold < item.value,
+        disabled: this.currentGold < item.value || (!anyoneProficient),
       })
     }
     options.push({ disabled: false, short: "Done", value: "done", name: "Finish shopping" });
@@ -382,11 +427,14 @@ export default class Shop {
     const events: ModuleEvent[] = [];
     const weaponItemNames = Deem.evaluate(`gather(masterWeapon, -1, '!dig(#__it, "natural")')`) as string[];
     weaponItemNames.sort();
+    const pcWeapon = (combatant: Combatant) => {
+      return combatant.equipment && combatant.equipment.weapon ? materializeItem(combatant.equipment.weapon, this.gameState.inventory).name : 'unarmed';
+    } 
     // pick wielder
     const pcOptions: Choice<Combatant>[] = this.party.map(pc => ({
       short: pc.name,
       value: pc,
-      name: `${pc.name} (${pc.equipment?.weapon || 'unarmed'})`,
+      name: `${pc.name} (${pcWeapon(pc)})`,
       disabled: false,
     }));
     const wielder = await this.select(`Who needs a new weapon?`, pcOptions) as Combatant;

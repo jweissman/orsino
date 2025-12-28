@@ -186,6 +186,36 @@
 | Hordeling | _War Horde_ | **Blood Frenzy** - On kill, Grant self Blood Frenzy (Improve to hit by 2, improve bonus damage by 2, degrade AC by 2)<br/> |
 | Huge | _Colossal Size_ | **Titanic Strength** - Improve to hit by 2, improve bonus damage by 2<br/> |
 | Imperceptible | _Invisible_ | **Hidden Presence** - Invisible<br/> |
+| Inanimate | _Inanimate_ | **Inanimate Nature** - Immunity to Charm, Immunity to Fear, Immunity to Stun, Immunity to Sleep, Immunity to Poison, Immunity to Disease, Immunity to Bleed, Not resurrectable, No primary attack<br/> |
+| Incorporeal | _Ghostly_ | **Ethereal Form** - 50% resistance to Bludgeoning, 50% resistance to Piercing, 50% resistance to Slashing, improve evasion by 5<br/> |
+| Inventive | _Inventive_ | **Tinker** - +25% consumable effectiveness<br/> |
+| Knight | _Knight_ | **Heavy Handed** - When wielding a Heavy weapon improve to hit by 1, improve bonus damage by 2<br/>*You gain the following abilities:*<br/>**Taunt** - An enemy suffers Taunted (Next target forced to be you).<br/>**Shield Bash** - Deal 1d6 bludgeoning damage to an enemy; An enemy suffers Stunned (Cannot take actions, degrade all rolls by 2).<br/>**Overwatch** - Grant yourself Overwatching (Improve bonus damage by 2, On enemy melee, Attack attacker; Purge self of Overwatching).<br/> |
+| Lucky | _Fortunate_ | **Not How I Remember It** - Reroll natural ones<br/> |
+| Mana Focusing | _Mana Focusing_ | **Focused Casting** - Improve bonus spell slots by 2<br/> |
+| Mysterious | _Mysterious_ | **Ethereal Form** - Improve AC by 1, Immunity to Charm<br/> |
+| Natural Bond | _Natural Bond_ | **Animal Companion** - Improve summon animal bonus by 1<br/> |
+| Nimble | _Nimble_ | **Small And Quick** - Improve AC by 2, improve evasion by 2<br/> |
+| Oligarch | _Oligarchy_ | **Corruption** - While in an urban environment improve search bonus by 10, improve examine bonus by 10<br/>**Bountiful Spoils** - On kill, Gain 2d6 gold; Gain 3d8 XP<br/> |
+| Outsider | _Otherworldly_ | **Planar Adaptation** - 50% resistance to Fire, 50% resistance to Cold, 50% resistance to Lightning, improve Save versus Magic by 2<br/> |
+| Perceptive | _Perceptive_ | **Keen Senses** - Improve search bonus by 4<br/> |
+| Perinath | _Halfling Band_ | **Moral Economy** - On heal, Heal self 1d3 HP<br/> |
+| Piety | _Piety_ | **Divine Favor** - Add 1d4 to bonus healing<br/> |
+| Radiant | _Radiant_ | **Radiant** - Improve all rolls by 1, improve to hit by 2, improve bonus damage by 1, 10% resistance to Necrotic, improve Save versus Fear by 2<br/> |
+| Regeneration | _Regeneration_ | **Regeneration** - On turn end, Heal self 1d2-1 HP<br/> |
+| Resilient | _Resilient_ | **Dread Fortitude** - 10% resistance to Necrotic, improve Save versus Death by 10<br/> |
+| Rhythm Rhyme | _Rhythm and Rhyme_ | **Rousing Performance** - Improve status duration by 2<br/> |
+| Skeletal | _Animated Bones_ | **Bone Resilience** - Immunity to Bleed, 50% resistance to Piercing, 100% vulnerability to Bludgeoning<br/> |
+| Stealthy | _Stealthy_ | **Silent Footsteps** - Improve pick lock bonus by 2, +25% backstab damage<br/> |
+| Sturdy | _Sturdy_ | **Stout Constitution** - +1 to saves versus Poison, Disease, Death, Magic, Insanity, Charm, Fear, Stun, Will<br/>**Hemlock Drinker** - 50% resistance to Poison<br/> |
+| Synodist | _Clerical Synod_ | **Herbal Remedies** - On heal, Heal self 1d4 HP<br/> |
+| Tough | _Tough_ | **Enduring** - On level up, Permanently increase self Max HP by 2<br/> |
+| Tragedian | _Troupe_ | **Resonant Harmony** - Improve status duration by 1<br/> |
+| Undead | _Brought Back_ | **Undead Nature** - Immunity to Poison, Charm, Sleep, Disease<br/>**Radiant Vulnerability** - 100% vulnerability to Radiant<br/> |
+| Versatile | _Versatile_ | **Jack Of All Trades** - Improve search bonus by 1, improve examine bonus by 1, improve pick lock bonus by 1, improve disarm trap bonus by 1<br/> |
+| Warbander | _War Band_ | **Battle Hardened** - On level up, Permanently increase self Max HP by 1<br/>**Martial Focus** - Improve to hit by 1<br/> |
+| Water Affinity | _Water Affinity_ | **Water Affinity** - 50% resistance to Cold, 100% vulnerability to Fire, 100% vulnerability to Lightning, Immunity to Will<br/> |
+| Wild | _Wild_ | **Wild** - Improve all rolls by 1, improve to hit by 2, improve bonus damage by 2, improve evasion by 2, 10% resistance to All<br/> |
+| Wildfolk | _Circle_ | **Natural Sympathy** - Improve summon animal bonus by 1<br/> |
 
 
 ## Skills
@@ -263,14 +293,14 @@
 
 | Cantrip | Level 1 | Level 2 | Level 3 | Level 4 | Level 5 | Level 6 | Level 7 | Level 8 | Level 9 |
   |---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
-| [<small> 🎭 Dancing Lights</small>](#Dancing Lights) | [<small> ✨ Acid Arrow</small>](#Acid Arrow) | [<small> ✨ Acid Spray</small>](#Acid Spray) | [<small> 🔥 Chaos Bolt</small>](#Chaos Bolt) | [<small> 🔥 Chain Lightning</small>](#Chain Lightning) | [<small> 🔥 Disintegrate</small>](#Disintegrate) | [<small> 🔥 Fireball</small>](#Fireball) | [<small> ✨ Plane Shift</small>](#Plane Shift) | [<small> 🔥 Implosion</small>](#Implosion) | [<small> 🔥 Apocalypse</small>](#Apocalypse) | 
-| [<small> 🔥 Firebolt</small>](#Firebolt) | [<small> 🛡️ Mage Armor</small>](#Mage Armor) | [<small> 🎭 Blur</small>](#Blur) | [<small> 🎭 Confuse</small>](#Confuse) | [<small> 🛡️ Disruption</small>](#Disruption) | [<small> 🔥 Earthquake</small>](#Earthquake) | [<small> 🔄 Flesh to Stone</small>](#Flesh to Stone) | [<small> 🛡️ Spellturning</small>](#Spellturning) | [<small> ✨ Maze</small>](#Maze) | [<small> 🔥 Meteor Swarm</small>](#Meteor Swarm) | 
-| [<small> 🔥 Frostbite</small>](#Frostbite) | [<small> 🔥 Burning Hands</small>](#Burning Hands) | [<small> 🛡️ Dispel Magic</small>](#Dispel Magic) | [<small> 🔄 Drench</small>](#Drench) | [<small> 💀 False Life</small>](#False Life) | [<small> 🔄 Haste</small>](#Haste) | [<small> 🎭 Invisibility</small>](#Invisibility) | [<small> 🔄 Warp Enemy</small>](#Warp Enemy) | [<small> 🔄 Time Stop</small>](#Time Stop) |  | 
-| [<small> 🔄 Ghost Touch</small>](#Ghost Touch) | [<small> 🔥 Magic Missile</small>](#Magic Missile) | [<small> 🛡️ Magebane</small>](#Magebane) | [<small> 🔄 Fly</small>](#Fly) | [<small> 🔥 Lightning Bolt</small>](#Lightning Bolt) | [<small> ✨ Poison Cloud</small>](#Poison Cloud) | [<small> 🔄 Stone to Flesh</small>](#Stone to Flesh) |  |  |  | 
-| [<small> 🛡️ Minor Ward</small>](#Minor Ward) | [<small> 🔥 Prismatic Spray</small>](#Prismatic Spray) | [<small> 🎭 Mirror Image</small>](#Mirror Image) | [<small> ✨ Obscuring Mist</small>](#Obscuring Mist) | [<small> 🔥 Polar Ray</small>](#Polar Ray) | [<small> 🔄 Polymorph Other</small>](#Polymorph Other) | [<small> 🔮 True Sight</small>](#True Sight) |  |  |  | 
-| [<small> 🔥 Shock Pulse</small>](#Shock Pulse) | [<small> 🔥 Shocking Grasp</small>](#Shocking Grasp) | [<small> 🔥 Ray of Frost</small>](#Ray of Frost) | [<small> 🎭 Silence</small>](#Silence) | [<small> 🔥 Sandstorm</small>](#Sandstorm) | [<small> 🛡️ Reflection</small>](#Reflection) |  |  |  |  | 
-| [<small> ✨ Soot Cloud</small>](#Soot Cloud) | [<small> 💫 Sleep</small>](#Sleep) | [<small> 🔥 Scald</small>](#Scald) | [<small> 🔄 Slow</small>](#Slow) | [<small> ✨ Summon Elemental</small>](#Summon Elemental) | [<small> 🔥 Sound Lance</small>](#Sound Lance) |  |  |  |  | 
-| [<small> 🔥 Spark</small>](#Spark) | [<small> 🛡️ Arcane Ward</small>](#Arcane Ward) |  | [<small> ✨ Summon Monster I</small>](#Summon Monster I) |  |  |  |  |  |  | 
+| [<small> 🎭 Dancing Lights</small>](#Dancing Lights) | [<small> ✨ Acid Arrow</small>](#Acid Arrow) | [<small> ✨ Acid Spray</small>](#Acid Spray) | [<small> 🔥 Chaos Bolt</small>](#Chaos Bolt) | [<small> 🔥 Chain Lightning</small>](#Chain Lightning) | [<small> 🔥 Cone of Cold</small>](#Cone of Cold) | [<small> 🔥 Fireball</small>](#Fireball) | [<small> 🔥 Fire Storm</small>](#Fire Storm) | [<small> 🔥 Implosion</small>](#Implosion) | [<small> 🔥 Apocalypse</small>](#Apocalypse) | 
+| [<small> 🔥 Firebolt</small>](#Firebolt) | [<small> 🛡️ Mage Armor</small>](#Mage Armor) | [<small> 🎭 Blur</small>](#Blur) | [<small> 🎭 Confuse</small>](#Confuse) | [<small> 🛡️ Disruption</small>](#Disruption) | [<small> 🔥 Disintegrate</small>](#Disintegrate) | [<small> 🔄 Flesh to Stone</small>](#Flesh to Stone) | [<small> ✨ Plane Shift</small>](#Plane Shift) | [<small> ✨ Maze</small>](#Maze) | [<small> 🔥 Meteor Swarm</small>](#Meteor Swarm) | 
+| [<small> 🔥 Frostbite</small>](#Frostbite) | [<small> 🔥 Burning Hands</small>](#Burning Hands) | [<small> 🛡️ Dispel Magic</small>](#Dispel Magic) | [<small> 🔄 Drench</small>](#Drench) | [<small> 💀 False Life</small>](#False Life) | [<small> 🔥 Earthquake</small>](#Earthquake) | [<small> 🎭 Invisibility</small>](#Invisibility) | [<small> 🛡️ Spellturning</small>](#Spellturning) | [<small> 🔄 Time Stop</small>](#Time Stop) |  | 
+| [<small> 🔄 Ghost Touch</small>](#Ghost Touch) | [<small> 🔥 Magic Missile</small>](#Magic Missile) | [<small> 🛡️ Magebane</small>](#Magebane) | [<small> 🔄 Fly</small>](#Fly) | [<small> 🔥 Ice Storm</small>](#Ice Storm) | [<small> 🔄 Haste</small>](#Haste) | [<small> 🔄 Stone to Flesh</small>](#Stone to Flesh) | [<small> 🔄 Warp Enemy</small>](#Warp Enemy) |  |  | 
+| [<small> 🛡️ Minor Ward</small>](#Minor Ward) | [<small> 🔥 Prismatic Spray</small>](#Prismatic Spray) | [<small> 🎭 Mirror Image</small>](#Mirror Image) | [<small> ✨ Obscuring Mist</small>](#Obscuring Mist) | [<small> 🔥 Lightning Bolt</small>](#Lightning Bolt) | [<small> ✨ Poison Cloud</small>](#Poison Cloud) | [<small> 🔮 True Sight</small>](#True Sight) |  |  |  | 
+| [<small> 🔥 Shock Pulse</small>](#Shock Pulse) | [<small> 🔥 Shocking Grasp</small>](#Shocking Grasp) | [<small> 🔥 Ray of Frost</small>](#Ray of Frost) | [<small> 🎭 Silence</small>](#Silence) | [<small> 🔥 Polar Ray</small>](#Polar Ray) | [<small> 🔄 Polymorph Other</small>](#Polymorph Other) |  |  |  |  | 
+| [<small> ✨ Soot Cloud</small>](#Soot Cloud) | [<small> 💫 Sleep</small>](#Sleep) | [<small> 🔥 Scald</small>](#Scald) | [<small> 🔄 Slow</small>](#Slow) | [<small> 🔥 Sandstorm</small>](#Sandstorm) | [<small> 🛡️ Reflection</small>](#Reflection) |  |  |  |  | 
+| [<small> 🔥 Spark</small>](#Spark) | [<small> 🛡️ Arcane Ward</small>](#Arcane Ward) |  | [<small> ✨ Summon Monster I</small>](#Summon Monster I) | [<small> ✨ Summon Elemental</small>](#Summon Elemental) | [<small> 🔥 Sound Lance</small>](#Sound Lance) |  |  |  |  | 
 
 | Name | Level | School/Domain | Description | Details |
 |---|---|---|---|-----|
@@ -282,6 +312,7 @@
 | <p id="Burning Hands">Burning Hands</p> | 1 | School of Evocation| _Unleash a cone of fire, dealing 1d6 damage to all enemies in the area._ | Deal 1d6 fire damage to all enemies. |
 | <p id="Chain Lightning">Chain Lightning</p> | 4 | School of Evocation| _Strike multiple enemies with lightning._ | Deal 2d6+#level lightning damage to an enemy cascading =3+floor(#level/2) times. |
 | <p id="Chaos Bolt">Chaos Bolt</p> | 3 | School of Evocation| _Hurl a bolt of chaotic energy that deals random types of damage._ | Apply one of the following random effects to an enemy: Deal 2d6 fire damage to an enemy; Deal 2d6 cold damage to an enemy; Deal 2d6 acid damage to an enemy; Deal 2d6 poison damage to an enemy. |
+| <p id="Cone of Cold">Cone of Cold</p> | 5 | School of Evocation| _Blast enemies in a cone with intense cold._ | Deal 5d6 cold damage to =1d6 + floor(#level / 2) random enemies. |
 | <p id="Confuse">Confuse</p> | 3 | School of Illusion| _Confuse an enemy, causing them to act randomly._ | An enemy suffers Confused (Actions are random). |
 | <p id="Dancing Lights">Dancing Lights</p> | Cantrip | School of Illusion| _Create small lights that hover and move._ | All enemies suffer Distracted (Degrade to hit by 1, degrade bonus damage by 1, degrade evasion by 5); All enemies suffer Blinded (Degrade to hit by 4, degrade evasion by 10, degrade all rolls by 2). |
 | <p id="Detonation">Detonation</p> | Cantrip | School of Evocation| _Countdown to a fiery explosion._ | Grant yourself Ticking (On expire, Deal 2d6 fire damage to enemies; Instantly kill self for 3 turns). |
@@ -291,6 +322,7 @@
 | <p id="Drench">Drench</p> | 3 | School of Transmutation| _Drench an enemy, reducing their attack rolls by 2 for 3 rounds._ | An enemy suffers Drenched (Degrade to hit by 2, 100% vulnerability to Lightning, 200% vulnerability to Cold). |
 | <p id="Earthquake">Earthquake</p> | 5 | School of Evocation| _Cause the ground to shake._ | Deal 2d6 bludgeoning damage to all enemies; All enemies suffer Prone (Cannot take actions, degrade Dexterity by 2). |
 | <p id="False Life">False Life</p> | 4 | School of Necromancy| _Grant yourself temporary hit points._ | Grant yourself False Life (Gain =10d6 + 2 * #level temporary HP). |
+| <p id="Fire Storm">Fire Storm</p> | 7 | School of Evocation| _Summon a raging firestorm that engulfs enemies in flames._ | Deal 6d6 fire damage to all enemies. |
 | <p id="Fireball">Fireball</p> | 6 | School of Evocation| _Hurl a destructive ball of energy that explodes in a fiery blast._ | Deal 6d6 fire damage to all enemies. |
 | <p id="Firebolt">Firebolt</p> | Cantrip | School of Evocation| _A small bolt of fire shoots from your fingertips._ | Deal 1d3 fire damage to an enemy. |
 | <p id="Flesh to Stone">Flesh to Stone</p> | 6 | School of Transmutation| _Turn an enemy to stone._ | An enemy suffers Petrified (Cannot take actions, Immunity to Fear, Immunity to Charm, Immunity to Stun, Immunity to Sleep, Immunity to Poison, Immunity to Disease). |
@@ -298,6 +330,7 @@
 | <p id="Frostbite">Frostbite</p> | Cantrip | School of Evocation| _A chilling blast of cold air._ | Deal 1d4 cold damage to an enemy. |
 | <p id="Ghost Touch">Ghost Touch</p> | Cantrip | School of Transmutation| _Induce necrosis with your touch._ | Grant yourself Ghost Touch (On attack hit, Deal 1d3 necrotic damage to target). |
 | <p id="Haste">Haste</p> | 5 | School of Transmutation| _Increase an ally's speed._ | Grant an ally Haste (Improve Dexterity by 4, improve initiative by 10, improve attacks per turn by 1, improve AC by 2). |
+| <p id="Ice Storm">Ice Storm</p> | 4 | School of Evocation| _Create a storm of ice and hail that damages enemies within the area._ | Deal 3d6 cold damage to all enemies; Deal 1d8 bludgeoning damage to all enemies. |
 | <p id="Implosion">Implosion</p> | 8 | School of Evocation| _Create a powerful gravitational collapse at a target location, damaging all enemies within the area._ | Deal 10d6 force damage to all enemies. |
 | <p id="Invisibility">Invisibility</p> | 6 | School of Illusion| _Turn invisible for 5 rounds or until you attack or cast a spell._ | Grant yourself or an ally Invisible (Invisible, On attack, Remove Invisible from self, On offensive casting, Remove Invisible from self). |
 | <p id="Lightning Bolt">Lightning Bolt</p> | 4 | School of Evocation| _Strike random enemies with lightning, dealing 1d8 damage and paralyzing them for 1 round._ | Deal 1d8 electric damage to 2 random enemies; 2 random enemies suffer Paralyzed (Cannot take actions, degrade Strength by 5, degrade Dexterity by 5). |

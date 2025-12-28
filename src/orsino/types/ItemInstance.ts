@@ -11,7 +11,7 @@ export interface ItemInstance {
   description?: string;
   charges?: number;
   maxCharges?: number;
-  itemClass: 'weapon' | 'armor' | 'gear' | 'consumable' | 'equipment' | 'misc';
+  itemClass: 'weapon' | 'armor' | 'gear' | 'consumable' | 'equipment' | 'junk';
   effects?: AbilityEffect[];
 
   effect?: StatusModifications; // shorthand single status mod for equipment/weapons/etc
@@ -42,14 +42,15 @@ export const materializeItem = (itemName: string, inventory: ItemInstance[]): It
   if (hasMasterWeaponEntry) {
     const masterWeapon = Deem.evaluate(`lookup(masterWeapon, "${itemName}")`) as unknown as Weapon;
     if (!masterWeapon) {
-      throw new Error(`Could not find itemName ${itemName} in effectiveWeapon`);
+      throw new Error(`Could not find itemName ${itemName} in masterWeapon table`);
     }
     // note: straight lookup from master will actually be missing a bunch of true ItemInstance fields like id etc
     return {
       id: genId('weapon'),
       name: itemName,
       ...masterWeapon,
-      key: itemName
+      key: itemName,
+      itemClass: 'weapon',
     };
   }
 
@@ -57,12 +58,13 @@ export const materializeItem = (itemName: string, inventory: ItemInstance[]): It
   if (hasMasterEquipmentEntry) {
     const masterEquipment = Deem.evaluate(`lookup(masterEquipment, "${itemName}")`) as unknown as Equipment;
     if (!masterEquipment) {
-      throw new Error(`Could not find equipment ${itemName} in effectiveWeapon`);
+      throw new Error(`Could not find equipment ${itemName} in masterEquipment table`);
     }
 
     return {
       id: genId('equipment'),
       name: itemName,
+      itemClass: 'equipment',
       ...masterEquipment,
       key: itemName
     };
@@ -72,14 +74,29 @@ export const materializeItem = (itemName: string, inventory: ItemInstance[]): It
   if (hasMasterArmorEntry) {
     const masterArmor = Deem.evaluate(`lookup(masterArmor, "${itemName}")`) as unknown as Armor;
     if (!masterArmor) {
-      throw new Error(`Could not find armor ${itemName} in effectiveArmor`);
+      throw new Error(`Could not find armor ${itemName} in masterArmor table`);
     }
     
     return {
       id: genId('armor'),
-      // name: itemName,
       ...masterArmor,
-      key: itemName
+      key: itemName,
+      itemClass: 'armor'
+    };
+  }
+
+  const hasConsumableEntry = Deem.evaluate(`hasEntry(consumables, "${itemName}")`) as boolean;
+  if (hasConsumableEntry) {
+    const consumable = Deem.evaluate(`lookup(consumables, "${itemName}")`) as unknown as ItemInstance;
+    if (!consumable) {
+      throw new Error(`Could not find consumable ${itemName} in consumables table`);
+    }
+    
+    return {
+      id: genId('consumable'),
+      ...consumable,
+      key: itemName,
+      itemClass: 'consumable'
     };
   }
 

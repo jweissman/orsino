@@ -3325,5 +3325,87 @@
         "status": "flight"
       }
     ]
+  },
+  "ice_storm": {
+    "name": "Ice Storm",
+    "type": "spell",
+    "level": 4,
+    "aspect": "arcane",
+    "school": "evocation",
+    "description": "Create a storm of ice and hail that damages enemies within the area.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=3d6",
+        "kind": "cold",
+        "saveForHalf": true
+      },
+      {
+        "type": "damage",
+        "amount": "=1d8",
+        "kind": "bludgeoning",
+        "saveForHalf": true
+      }
+    ]
+  },
+  "fire_storm": {
+    "name": "Fire Storm",
+    "type": "spell",
+    "level": 7,
+    "aspect": "arcane",
+    "school": "evocation",
+    "description": "Summon a raging firestorm that engulfs enemies in flames.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=6d6",
+        "kind": "fire",
+        "saveForHalf": true
+      }
+    ]
+  },
+  "cone_of_cold": {
+    "name": "Cone of Cold",
+    "type": "spell",
+    "level": 5,
+    "aspect": "arcane",
+    "school": "evocation",
+    "description": "Blast enemies in a cone with intense cold.",
+    "target": [
+      "randomEnemies", "=1d6 + floor(#level / 2)"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=5d6",
+        "kind": "cold",
+        "saveForHalf": true
+      }
+    ]
+  },
+  "ice_bolt": {
+    "name": "Ice Bolt",
+    "type": "spell",
+    "level": 2,
+    "aspect": "arcane",
+    "school": "evocation",
+    "description": "A bolt of freezing ice shoots from your fingertips.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=2d6",
+        "kind": "cold",
+        "saveForHalf": true
+      }
+    ]
   }
 }

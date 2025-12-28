@@ -106,9 +106,9 @@ export default class Presenter {
   }
 
 
-  static async printCharacterRecord(combatant: Combatant) {
+  static async printCharacterRecord(combatant: Combatant, inventory: ItemInstance[]) {
     console.log("\n" + "=".repeat(40) + "\n");
-    console.log(await this.characterRecord(combatant));
+    console.log(await this.characterRecord(combatant, inventory));
     console.log("\n" + "=".repeat(40) + "\n");
   }
 
@@ -116,17 +116,20 @@ export default class Presenter {
     const descriptor = {
       male: "He is", female: "She is", androgynous: "They are"
     }[(combatant.gender || 'androgynous').toLowerCase()] || "They are";
-    return `${Words.capitalize(combatant.referenceName || combatant.forename)} is ${Words.a_an(Words.capitalize(combatant.background || 'adventurer'))} ${Words.humanize(combatant.archetype || 'neutral')} from the ${combatant.hometown || 'unknown'}, ${combatant.age || 'unknown'} years old. ${descriptor} of ${combatant.body_type || 'average'} build with ${combatant.hair || 'unknown color'} hair, ${combatant.eye_color || 'dark'} eyes and ${Words.a_an(combatant.personality || 'unreadable')} disposition.`
+
+    const what = `${Words.a_an(Words.capitalize(combatant.background || 'adventurer'))} ${Words.humanize(combatant.archetype || 'neutral')}`;
+
+    return `${Words.capitalize(combatant.referenceName || combatant.forename)} is ${what} from the ${combatant.hometown || 'unknown'}, ${combatant.age || 'unknown'} years old. ${descriptor} of ${combatant.body_type || 'average'} build with ${combatant.hair || 'unknown color'} hair, ${combatant.eye_color || 'dark'} eyes and ${Words.a_an(combatant.personality || 'unreadable')} disposition.`
   }
 
-  static async characterRecord(combatant: Combatant, inventory: ItemInstance[] = []): Promise<string> {
+  static async characterRecord(combatant: Combatant, inventory: ItemInstance[]): Promise<string> {
     await AbilityHandler.instance.loadAbilities();
     await TraitHandler.instance.loadTraits();
     await StatusHandler.instance.loadStatuses();
 
     let record = "";
     // record += (Stylist.bold("\n\nCharacter Record\n"));
-    record += (Stylist.format(`${this.combatant(combatant)}\t${(await this.statLine(combatant))}\n`, 'underline'));
+    record += (Stylist.format(`${this.combatant(combatant)}\t${(this.statLine(combatant))}\n`, 'underline'));
 
     // "Human Female Warrior of Hometown (41 years old)"
 
@@ -147,12 +150,12 @@ export default class Presenter {
     record += statLine.join(' | ');
 
     record += "\nHit Points: " + Stylist.colorize(`${combatant.hp}/${effective.maxHp} \n`, 'green');
-    // record += "Armor Class: " + Stylist.colorize(`${combatant.ac} `, 'yellow');
+    const weapon = combatant.equipment?.weapon ? materializeItem(combatant.equipment?.weapon, inventory) : { name: 'Unarmed' };
+    const armor = combatant.equipment?.body ? materializeItem(combatant.equipment?.body, inventory) : { name: 'None' };
 
     const basics = {
-      weapon: (combatant.equipment?.weapon || 'None'),
-      armor: combatant.armor || 'None',
-      // background: combatant.background || 'None',
+      weapon: weapon.name,
+      armor: armor.name,
       xp: combatant.xp,
       gp: combatant.gp,
     }
@@ -228,17 +231,18 @@ export default class Presenter {
       // Object.entries(combatant.equipment).forEach(([slot, item]) => {
       for (const slot of Object.keys(combatant.equipment).filter(key => key !== 'id')) {
         const equipmentSlot: EquipmentSlot = slot as EquipmentSlot;
-        const itemName = (combatant.equipment as Record<EquipmentSlot, string>)[slot as EquipmentSlot];
-        if (equipmentSlot === 'weapon' || equipmentSlot === 'body') {
+        const itemName = (combatant.equipment as Record<EquipmentSlot, string>)[equipmentSlot];
+        // if (equipmentSlot === 'weapon' || equipmentSlot === 'body') {
           // const item = Deem.evaluate('lookup(masterWeapon, "' + itemName + '")') as unknown as { effect: StatusModifications };
           // const item = Fighting.effectiveWeapon(combatant, []);
           const item = materializeItem(itemName, inventory) as ItemInstance;
-          record += `  ${Stylist.colorize(Words.capitalize(slot), 'yellow')}: ${Words.humanize(itemName)} (${this.describeModifications(item.effect || {})})\n`;
-        }
-        else {
-          const item = Deem.evaluate('lookup(masterEquipment, "' + itemName + '")') as unknown as { effect: StatusModifications };
-          record += `  ${Stylist.colorize(Words.capitalize(slot), 'yellow')}: ${Words.humanize(itemName)} (${this.describeModifications(item.effect)})\n`;
-        }
+          record += `  ${Stylist.colorize(Words.capitalize(equipmentSlot), 'yellow')}: ${Words.humanize(item.name)} (${this.describeModifications(item.effect || {}, item.name)})\n`;
+        // }
+        // else {
+        //   // const item = Deem.evaluate('lookup(masterEquipment, "' + itemName + '")') as unknown as { effect: StatusModifications };
+        //   const item = materializeItem(itemName, inventory) as ItemInstance;
+        //   record += `  ${Stylist.colorize(Words.capitalize(slot), 'yellow')}: ${Words.humanize(itemName)} (${this.describeModifications(item.effect || {}, item.name)})\n`;
+        // }
       }
     }
 
@@ -489,7 +493,7 @@ export default class Presenter {
         }
       }
     }
-    parts.push(this.describeModifications(effect));
+    parts.push(this.describeModifications(effect, status.name));
 
     if (status.duration !== undefined) {
       parts.push(this.describeDuration(status.duration));
@@ -497,8 +501,13 @@ export default class Presenter {
     return parts.join(' ');
   }
 
-  static describeModifications(effect: StatusModifications): string {
+  static describeModifications(effect: StatusModifications, modName?: string): string {
     const parts: string[] = [];
+
+    if (effect === undefined || Object.keys(effect).length === 0) {
+      // throw new Error("Cannot describe empty effect modifications for mod " + (modName || 'unknown'))
+      return "No modifications";
+    }
 
     // console.log("Describing modifications:", JSON.stringify(effect));
     // if all effect entries are saves or immunities, summarize differently

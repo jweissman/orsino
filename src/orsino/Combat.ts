@@ -68,7 +68,7 @@ export default class Combat {
   private auras: StatusEffect[] = [];
 
   constructor(
-    options: Record<string, any> = {},
+    options: CombatOptions = {} //Record<string, any> = {},
   ) {
     this.roller = options.roller || Commands.roll.bind(Commands);
     this.select = options.select || Automatic.randomSelect.bind(Automatic);
@@ -194,30 +194,31 @@ export default class Combat {
 
   static applyEquipmentEffects(
     combatant: Combatant,
-    inventory: ItemInstance[] = []
+    inventory: ItemInstance[]
   ): void {
     const equipmentList: StatusEffect[] = [];
     for (const [slot, equipmentKey] of Object.entries(combatant.equipment || {})) {
-      if (slot === 'weapon' || slot === 'body') {
+      // if (slot === 'weapon' || slot === 'body') {
         const weapon = materializeItem(equipmentKey, inventory) as ItemInstance;
         if (weapon.effect) {
-          console.debug("weapon materialized", weapon.key, weapon.name, weapon.kind, weapon.effect?.onAttackHit);
+          // console.debug("weapon materialized", weapon.key, weapon.name, weapon.kind, weapon.effect?.onAttackHit);
 
-          equipmentList.push({ ...weapon, sourceKey: 'weapon' } as unknown as StatusEffect);
+          equipmentList.push({ ...weapon, sourceKey: slot } as unknown as StatusEffect);
         }
-      } else {
-        const eq = Deem.evaluate(`lookup(masterEquipment, '${equipmentKey}')`) as unknown as StatusEffect;
-        if (eq.effect) {
-          equipmentList.push({ ...eq, sourceKey: slot } as StatusEffect);
-        }
-      }
+      // } else {
+      //   const eq = materializeItem(equipmentKey, inventory) as ItemInstance;
+      //     //Deem.evaluate(`lookup(masterEquipment, '${equipmentKey}')`) as unknown as StatusEffect;
+      //   if (eq.effect) {
+      //     equipmentList.push({ ...eq, sourceKey: slot } as StatusEffect);
+      //   }
+      // }
     }
 
     combatant.passiveEffects ||= [];
     combatant.passiveEffects = combatant.passiveEffects.filter(e => !e.equipment);
     for (const effect of equipmentList) {
       if (!combatant.passiveEffects.map(e => e.sourceKey).includes(effect.sourceKey)) {
-        console.debug(`Applying equipment effect ${effect.name} to ${combatant.name}`);
+        // console.debug(`Applying equipment effect ${effect.name} to ${combatant.name}`);
         combatant.passiveEffects.push({ ...effect, equipment: true } );
       }
     }
@@ -250,7 +251,7 @@ export default class Combat {
   }
 
   // note: we could pre-bake the weapon weight into the combatant for efficiency here
-  static filterEffects(combatant: Combatant, effectList: StatusEffect[], inventory: ItemInstance[] = []): StatusEffect[] {
+  static filterEffects(combatant: Combatant, effectList: StatusEffect[], inventory: ItemInstance[]): StatusEffect[] {
     const filteredEffects: StatusEffect[] = [];
     for (const it of effectList) {
       if (it.whileEnvironment) {
@@ -298,10 +299,10 @@ export default class Combat {
       c.passiveEffects = [];
       c.traits = c.traits || [];
 
-      await Combat.reifyTraits(c);
-      Combat.applyEquipmentEffects(c);
 
       let team = this.teamFor(c);
+      await Combat.reifyTraits(c);
+      Combat.applyEquipmentEffects(c, team?.inventory || []);
 
       c.activeEffects = Combat.filterEffects(c, c.activeEffects || [], team?.inventory || []);
       c.passiveEffects = Combat.filterEffects(c, c.passiveEffects || [], team?.inventory || []);
@@ -709,7 +710,6 @@ export default class Combat {
           if (itemInstance.charges !== undefined) {
             itemInstance.charges -= 1;
           }
-          // this.note(`${Presenter.combatant(combatant)} uses ${action.name} (${itemInstance.charges} charges remaining).`);
           const chargesLeft = itemInstance.charges;
           await this.emit({ type: "itemUsed", subject: combatant, itemName: action.name, chargesLeft } as Omit<ItemUsedEvent, "turn">);
         }
@@ -727,8 +727,6 @@ export default class Combat {
 
     }
 
-    // let team = this.teams.find(t => t.combatants.includes(combatant));
-    // const ctx: CombatContext = { subject: combatant, allies, enemies };
     const ctx = this.contextForCombatant(combatant);
     const numTargets = Array.isArray(targetOrTargets) ? targetOrTargets.length : 1;
     console.warn(`${combatant.forename} ${Combat.describeAbility(action)} on ${numTargets} target${numTargets > 1 ? "s" : ""}.`);
@@ -814,7 +812,18 @@ export default class Combat {
   }
 
   static describeAbility(action: Ability): string {
-    const verb = action.type === "spell" ? 'casts' : 'performs';
+    let verb = 'performs';  //action.type === "spell" ? 'casts' : 'performs';
+    if (action.type === "consumable") {
+      if (action.kind === 'wand') {
+        verb = 'wields';
+      } else if (action.kind === 'potion') {
+        verb = 'quaffs';
+      } else {
+        verb = 'uses';
+      }
+    }
+    else if (action.type === "spell") { verb = 'casts'; }
+
     const actionName = Stylist.italic(action.name.toLowerCase());
     const message = (verb ? `${verb} ` : "") + actionName;
     return message;

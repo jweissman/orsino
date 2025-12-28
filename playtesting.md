@@ -2,12 +2,10 @@
 
 ## Bugs
 - [ ] Bombs should not be heal-able (maybe there is some 'repair/mending' skill for inanimate objects though)
-- [ ] Bombs should not be melee attacking!
 - [ ] Weird interaction with absorption (temp Hp) and trap descriptions [it was saying the _trap_ absorbed damage?]
 - [ ] Seems fixed but really make sure we're handling gold transition between town hub/dungeon correctly
 
 ## Features
-- [ ] Magic weapons/armor (ie unify equipment w/ armor/weapons)
 - [ ] Describe colors of prismatic spray (done for normal damage fx, but spell beams don't hint their description clearly)
 - [ ] Show current gold before purchasing potions
 - [ ] Remind players to rest if they're not at full health going into boss battle
@@ -26,7 +24,7 @@
 - [ ] Would be interesting to distinguish between positive/negative effects (maybe rest should cure only bad things?)
 - [ ] We don't seem to redisplay room details if you've levelled up?
 - [ ] Maybe taking damage makes enemies more likely to defend?
-- [ ] Examining maps/atlases could have a chance to give dungeon clues?
+- [ ] Examining maps/atlases could have a chance to give dungeon clues? (ie clues to _other_ dungeons)
 - [ ] Should at least be a _chance_ for AI to pick on someone other than weakest enemy
 - ---
 - [ ] Better adventure module names (not just quest/saga/adventure of the $terrain...)
@@ -62,10 +60,6 @@
 - ---
 - [ ] Dirty trick should not give a save vs magic? (maybe vs will or even specifically vs blinding?)
 - [ ] Should say 'leave the dungeon' instead of 'move to next room' for last room
-- [ ] There should be a shop to sell treasure (maybe also buy other kinds of consumables?)
-- ---
-- [ ] Resting somehow advances us into the next room? (thought this was wandering monster but definitely a new room)
-- [ ] Special effect type for 'cast' (ie to make scrolls simpler to implement/less duplicative)
 - ---
 - [ ] Summon creature should display a _little_ more information about the summon than the forename (type/class at least)
 - [ ] Armorer should only let you give weapons for humanoids to wield
@@ -76,9 +70,8 @@
 - [ ] Treasure that is just coins should just be gp (we could give platinum/copper/silver for variety but fine if not!!)
 - [ ] Should your own summoned creatures be able to flee?? (presumably henchmen can flee if morale drops too low but we don't have henches proper yet)
 - ---
-- [ ] Staff/quarterstaff may not be listed in armory for some reason?
 - [ ] Acid should degrade armor/weapons...
-- [ ] Traps/lockpicking
+- [ ] Traps/lockpicking [we have traps but no locks to pick yet, maybe it doesn't make sense until we have topology/direction choices and can block the shortest path though]
 - [ ] Double-check that initial weapon loadouts match proficiencies
 - [ ] Restrict consumable purchases if no one in the party is proficient at all with it
 - ---
@@ -91,11 +84,9 @@
 - [ ] NPCs with wildtype aspect shouldn't have that as part of their name
 - [ ] AI heuristic scoring for disable devices (AI thieves should favor disable if there's a non-disabled device etc)
 - [ ] Show mechanical descriptions of all statuses/auras/traits (not just flavor)
-- [ ] Impose max summons cap for wizards (1 at level 1, growing slowly; slots for: familiar, animal, monsters)
+- [ ] Impose max summons cap for wizards (1 at level 1, growing slowly; slots for: familiar, animal, monsters) [implemented at 1 but should implement growing logic]
 - [ ] Summon undead doesn't seem to summon appropriate races for the given dungeon
-- [ ] Remove auras at end of combat
-- [ ] A dispelling buffer would be amazing too (for _arcane ward_)
-- [ ] Make _heavy handed_ feat actually improve proficiency with heavy weapons _only_
+- [ ] A dispelling buffer (for _arcane ward_) that counters up to a certain number of offensive spells cast on you
 - [ ] Morale/loyalty for hirelings?
 ---
 - [ ] Better verbs for wand/stave actions (not 'performs', maybe 'use')
@@ -103,8 +94,6 @@
 - [ ] Arbitrary scrolls/wands for every effect [technically enabled now with 'cast' effect but needs some thinking about how to implement -- I guess we could have a scroll/wand generator?]
 - [ ] mapLookup (to reify more things at gen time)
 ---
-- [ ] Generator/template for gems/high-order treasure [gem done anyway but treasure could use some love still]
-- [ ] All loot is meaningful (either wearable, consumable or saleable at some general store in town)
 - [ ] Pick a single pantheon for deities?
 - [ ] Maybe deific blessings _don't_ expire but you can only have one?
 ---
@@ -130,7 +119,6 @@
 - [ ] Handle 'defeated' barks more gracefully ('X has defeated X', and then they have a triumphant bark! [Which is wrong/immersion breaking])
 - [ ] Handle mutual TPK more gracefully (currently displays both "You are victorious!" and "Your party has been defeated")
 ---
-- [ ] "General store" to purchase gear, jeweler to purchase gems [jeweler in place but need to test!]
 - [ ] Should display _what_ healing items were used on rest
 - [ ] Divine blessings should be (specially-marked) passives? Maybe restrict to one at a time?
 - [ ] Staying at the inn should cost gold
@@ -147,7 +135,6 @@
 - [ ] Flight should make you actually _untargetable_ by melee
 ---
 - [ ] Group riddle answers by type so they're marginally more challenging?
-- [ ] Polymorph effect -- seems to roughly work, but should enforce some enforce ability limitations (effectiveAbilities)
 - [ ] Confused players (randomActions) should _also_ pick targets at random!!!
 - [ ] Teleport might be not working? (it said 'go to random room' and I _guess_ it could have selected the same room but -- need more debugging here)
 - [ ] Sell all junk option at general store
@@ -155,6 +142,13 @@
 - [ ] Throwable aspect on weapons like javelin, spear (simple dual use as melee/ranged -- but maybe you need a 'retrieve' action after ranged, although possibly too involved?)
 - [ ] Town suffixes linked to terrain type / town adjectives linked to pop size
 - [ ] More flavor on shops (inn and tavern should have an interesting name etc)
+---
+- [ ] Make sure inanimate things like barrier/antimagic ward have some action they can take (or at least a response to common actions) 
+- [ ] Legendary armor sets
+- [ ] Campaign-global unique items
+---
+- [ ] Unify weapon/armor/item instance interfaces somehow
+- [ ] Mages can _summon familiar_ to get an animal companion appropriate for their racial group but also with the typical familiar benefits (ie it's always the same familiar, it can level up with you etc)
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing
@@ -284,6 +278,19 @@
 - [x] Phylactery summoned a lich but we were able to finish the combat without defeating it??? (should be solved)
 - [x] Found treasure/gems should be redeemable for gold [should be true with general store now?]
 - [x] Make sure we can use wands??? (wand_of_polymorph not coming up in use item options)
+- [x] Magic weapons/armor (ie unify equipment w/ armor/weapons)
+- [x] Special effect type for 'cast' (ie to make scrolls simpler to implement/less duplicative) -- think this is done
+- [x] There should be a shop to sell treasure (maybe also buy other kinds of consumables?) -- general store!
+- [x] Resting somehow advances us into the next room? (thought this was wandering monster but definitely a new room) -- think this was just a flow issue
+- [x] "General store" to purchase gear, jeweler to purchase gems [jeweler in place but need to test!]
+- [x] Staff/quarterstaff may not be listed in armory for some reason? [it's there...?]
+- [x] Remove auras at end of combat [should be done i think?]
+- [x] Bombs should not be melee attacking! [added 'mayNotPrimary' kind of status mod to inanimate creatures but maybe a better way to do this?]
+- [x] Make _heavy handed_ feat actually improve proficiency with heavy weapons _only_ (done!)
+- [x] Polymorph effect -- seems to roughly work, but should enforce some enforce ability limitations (effectiveAbilities) -- should be true now!
+- [x] Generator/template for gems/high-order treasure [gem done anyway but treasure could use some love still] -- see loot generator!
+- [x] All loot is meaningful (either wearable, consumable or saleable at some general store in town) -- should be true now
+- [x] Restrict casters from heavy armor (armorProficiencies by class)
 
 ## Not really issues atm
 - "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]

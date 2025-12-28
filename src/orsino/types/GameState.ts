@@ -93,7 +93,7 @@ const processAcquireEvent = (state: GameState, event: AcquireItemEvent): GameSta
 
 const processWieldEvent = (state: GameState, event: WieldEvent): GameState => {
   const weapon = materializeItem(event.weaponName, state.inventory);
-  state.inventory.push(weapon);
+  state.inventory.push({ ...weapon, ownerId: event.wielderId, ownerSlot: 'weapon' });
   state.party = state.party.map((pc: Combatant) => {
     if (pc.id === event.wielderId) {
       return {

@@ -62,7 +62,7 @@ type RunnerOptions = {
 }
 
 export class ModuleRunner {
-  static configuration = { sharedGold: 1000 }
+  static configuration = { sharedGold: 10000 }
 
   private roller: Roll;
   private select: Select<Answers>;
@@ -94,6 +94,10 @@ export class ModuleRunner {
       throw new Error("No active module!");
     }
     return this.activeModule;
+  }
+
+  get inventory() {
+    return this.state.inventory;
   }
 
   private note(message: string): void {
@@ -496,10 +500,11 @@ export class ModuleRunner {
   }
 
   private async shop(category: ShopType) {
-    await this.emit({ type: "shopEntered", shopName: Shop.name(category) + " Shop", day: this.days });
+    await this.emit({ type: "shopEntered", shopName: Shop.name(category), day: this.days });
     const shop = new Shop(this.select);
     let done = false;
     while (!done) {
+      await this.emit({ type: "goldStatus", amount: this.sharedGold, day: this.days });
       const { events, done: newDone } = await shop.interact(category, this.state);
       for (const event of events) { await this.emit(event); }
       this.state = processEvents(this.state, events);

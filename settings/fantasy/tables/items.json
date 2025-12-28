@@ -8,8 +8,8 @@
         "weight": "light",
         "description": "Offers minimal protection but is very light and flexible.",
         "value": 5,
-        "itemClass": "armor",
-        "kind": "body"
+        "kind": "body",
+        "type": "cloth"
       },
       "hide": {
         "name": "Hide Armor",
@@ -17,8 +17,8 @@
         "weight": "light",
         "description": "Made from the tanned hides of animals, providing basic protection.",
         "value": 10,
-        "itemClass": "armor",
-        "kind": "body"
+        "kind": "body",
+        "type": "leather"
       },
       "leather": {
         "name": "Leather Armor",
@@ -26,8 +26,8 @@
         "weight": "light",
         "description": "Crafted from toughened leather, offering a balance of protection and mobility.",
         "value": 15,
-        "itemClass": "armor",
-        "kind": "body"
+        "kind": "body",
+        "type": "leather"
       },
       "ring": {
         "name": "Ring Mail",
@@ -35,8 +35,8 @@
         "weight": "medium",
         "description": "Ring armor consists of interlocking metal rings, providing moderate protection.",
         "value": 25,
-        "itemClass": "armor",
-        "kind": "body"
+        "kind": "body",
+        "type": "metal"
       },
       "studded": {
         "name": "Studded Leather Armor",
@@ -44,8 +44,8 @@
         "weight": "medium",
         "description": "Leather reinforced with metal studs, offering enhanced protection.",
         "value": 30,
-        "itemClass": "armor",
-        "kind": "body"
+        "kind": "body",
+        "type": "leather"
       },
       "scale": {
         "name": "Scale Mail",
@@ -53,8 +53,8 @@
         "weight": "medium",
         "description": "Made of small metal plates sewn onto a backing, providing good protection.",
         "value": 40,
-        "itemClass": "armor",
-        "kind": "body"
+        "kind": "body",
+        "type": "metal"
       },
       "chainmail": {
         "name": "Chain Mail",
@@ -62,8 +62,8 @@
         "weight": "heavy",
         "description": "Made of interlinked metal rings, offering strong protection at the cost of weight.",
         "value": 50,
-        "itemClass": "armor",
-        "kind": "body"
+        "kind": "body",
+        "type": "metal"
       },
       "banded": {
         "name": "Banded Mail",
@@ -71,8 +71,8 @@
         "weight": "heavy",
         "description": "Consists of metal strips riveted to a leather backing, providing excellent protection.",
         "value": 60,
-        "itemClass": "armor",
-        "kind": "body"
+        "kind": "body",
+        "type": "metal"
       },
       "splint": {
         "name": "Splint Mail",
@@ -80,8 +80,8 @@
         "weight": "heavy",
         "description": "Made of vertical metal strips attached to a fabric or leather backing, offering high protection.",
         "value": 70,
-        "itemClass": "armor",
-        "kind": "body"
+        "kind": "body",
+        "type": "metal"
       },
       "plate": {
         "name": "Plate Mail",
@@ -89,8 +89,8 @@
         "weight": "heavy",
         "description": "Made of large metal plates that cover the body, providing the highest level of protection.",
         "value": 100,
-        "itemClass": "armor",
-        "kind": "body"
+        "kind": "body",
+        "type": "metal"
       },
 
       "feathers": {
@@ -99,9 +99,9 @@
         "weight": "light",
         "description": "Light armor made from layered feathers, offering minimal protection but great mobility.",
         "value": 8,
-        "itemClass": "armor",
         "kind": "body",
-        "natural": true
+        "natural": true,
+        "type": "inherent"
       },
       "chitin": {
         "name": "Chitin Armor",
@@ -109,9 +109,9 @@
         "weight": "medium",
         "description": "Armor made from the hardened exoskeletons of insects or crustaceans, providing decent protection.",
         "value": 20,
-        "itemClass": "armor",
         "kind": "body",
-        "natural": true
+        "natural": true,
+        "type": "inherent"
       }
     }
   },
@@ -123,14 +123,12 @@
         "natural": true,
         "damage": "1d2",
         "type": "bludgeoning",
-        "description": "A basic unarmed strike using the fists.",
-        "itemClass": "weapon"
+        "description": "A basic unarmed strike using the fists."
       },
       "kick": {
         "natural": true,
         "damage": "1d2",
-        "type": "bludgeoning",
-        "itemClass": "weapon"
+        "type": "bludgeoning"
       },
       "battleaxe": {
         "damage": "1d8",
@@ -138,8 +136,7 @@
         "value": 5,
         "kind": "axe",
         "weight": "heavy",
-        "description": "A heavy axe designed for powerful slashing attacks.",
-        "itemClass": "weapon"
+        "description": "A heavy axe designed for powerful slashing attacks."
       },
       "handaxe": {
         "damage": "1d6",
@@ -147,8 +144,7 @@
         "value": 10,
         "kind": "axe",
         "weight": "light",
-        "description": "A small handaxe suitable for throwing or close combat.",
-        "itemClass": "weapon"
+        "description": "A small handaxe suitable for throwing or close combat."
       },
       "longbow": {
         "damage": "1d6",
@@ -157,8 +153,7 @@
         "value": 30,
         "kind": "bow",
         "weight": "medium",
-        "description": "A bow designed for ranged combat with moderate draw weight.",
-        "itemClass": "weapon"
+        "description": "A bow designed for ranged combat with moderate draw weight."
       },
       "shortbow": {
         "damage": "1d4",
@@ -167,8 +162,7 @@
         "value": 15,
         "kind": "bow",
         "weight": "light",
-        "description": "A shortbow that is easy to carry and quick to draw.",
-        "itemClass": "weapon"
+        "description": "A shortbow that is easy to carry and quick to draw."
       },
       "club": {
         "damage": "1d4",
@@ -176,8 +170,7 @@
         "value": 1,
         "kind": "club",
         "weight": "light",
-        "description": "A simple wooden club, effective for basic melee combat.",
-        "itemClass": "weapon"
+        "description": "A simple wooden club, effective for basic melee combat."
       },
       "dagger": {
         "damage": "1d4",
@@ -185,8 +178,7 @@
         "value": 2,
         "kind": "blade",
         "weight": "light",
-        "description": "A small blade ideal for close combat and throwing.",
-        "itemClass": "weapon"
+        "description": "A small blade ideal for close combat and throwing."
       },
       "dart": {
         "damage": "1d3",
@@ -195,8 +187,7 @@
         "value": 1,
         "kind": "dart",
         "weight": "light",
-        "description": "A small throwable missile weapon.",
-        "itemClass": "weapon"
+        "description": "A small throwable missile weapon."
       },
       "heavy_flail": {
         "damage": "1d6+1",
@@ -204,8 +195,7 @@
         "value": 3,
         "kind": "flail",
         "weight": "heavy",
-        "description": "A heavy rod with a spiked ball, designed for powerful strikes.",
-        "itemClass": "weapon"
+        "description": "A heavy rod with a spiked ball, designed for powerful strikes."
       },
       "light_flail": {
         "damage": "1d4+1",
@@ -213,8 +203,7 @@
         "value": 6,
         "kind": "flail",
         "weight": "light",
-        "description": "A light rod with a spiked ball, suitable for quick strikes.",
-        "itemClass": "weapon"
+        "description": "A light rod with a spiked ball, suitable for quick strikes."
       },
       "halberd": {
         "damage": "1d10",
@@ -222,8 +211,7 @@
         "value": 9,
         "kind": "polearm",
         "weight": "heavy",
-        "description": "Combining an axe blade and a spear point on a long pole.",
-        "itemClass": "weapon"
+        "description": "Combining an axe blade and a spear point on a long pole."
       },
       "heavy_warhammer": {
         "damage": "1d6+1",
@@ -231,8 +219,7 @@
         "value": 7,
         "kind": "warhammer",
         "weight": "heavy",
-        "description": "A strong hammer designed for powerful crushing blows.",
-        "itemClass": "weapon"
+        "description": "A strong hammer designed for powerful crushing blows."
       },
       "light_warhammer": {
         "damage": "1d4+1",
@@ -240,8 +227,7 @@
         "value": 4,
         "kind": "warhammer",
         "weight": "light",
-        "description": "A light hammer suitable for quick, precise strikes.",
-        "itemClass": "weapon"
+        "description": "A light hammer suitable for quick, precise strikes."
       },
       "javelin": {
         "damage": "1d6",
@@ -250,8 +236,7 @@
         "value": 1,
         "kind": "polearm",
         "weight": "light",
-        "description": "A thin spear designed for throwing.",
-        "itemClass": "weapon"
+        "description": "A thin spear designed for throwing."
       },
       "lance": {
         "damage": "2d4+1",
@@ -260,8 +245,7 @@
         "value": 6,
         "kind": "polearm",
         "weight": "heavy",
-        "description": "A heavy spear designed for mounted combat.",
-        "itemClass": "weapon"
+        "description": "A heavy spear designed for mounted combat."
       },
       "heavy_mace": {
         "damage": "1d6+1",
@@ -269,8 +253,7 @@
         "value": 10,
         "kind": "mace",
         "weight": "heavy",
-        "description": "A heavy rod with a solid head, designed for powerful strikes.",
-        "itemClass": "weapon"
+        "description": "A heavy rod with a solid head, designed for powerful strikes."
       },
       "light_mace": {
         "damage": "1d4+1",
@@ -278,8 +261,7 @@
         "value": 4,
         "kind": "mace",
         "weight": "light",
-        "description": "A light rod with sturdy head suitable for quick strikes.",
-        "itemClass": "weapon"
+        "description": "A light rod with sturdy head suitable for quick strikes."
       },
       "morningstar": {
         "damage": "2d4",
@@ -287,8 +269,7 @@
         "value": 5,
         "kind": "morningstar",
         "weight": "medium",
-        "description": "A rod with a spiked head for piercing armor.",
-        "itemClass": "weapon"
+        "description": "A rod with a spiked head for piercing armor."
       },
       "heavy_pick": {
         "damage": "1d6+1",
@@ -296,8 +277,7 @@
         "value": 8,
         "kind": "pick",
         "weight": "heavy",
-        "description": "A hardened tool designed for breaking through armor and shields.",
-        "itemClass": "weapon"
+        "description": "A hardened tool designed for breaking through armor and shields."
       },
       "light_pick": {
         "damage": "1d4+1",
@@ -305,8 +285,7 @@
         "value": 5,
         "kind": "pick",
         "weight": "light",
-        "description": "A light tool suitable for quick strikes and climbing.",
-        "itemClass": "weapon"
+        "description": "A light tool suitable for quick strikes and climbing."
       },
       "pole_arm": {
         "damage": "1d6+1",
@@ -315,8 +294,7 @@
         "value": 6,
         "kind": "polearm",
         "weight": "medium",
-        "description": "A long-hafted pointed weapon for reach and leverage.",
-        "itemClass": "weapon"
+        "description": "A long-hafted pointed weapon for reach and leverage."
       },
       "spear": {
         "damage": "1d6",
@@ -325,8 +303,7 @@
         "value": 1,
         "kind": "spear",
         "weight": "light",
-        "description": "A versatile thrown weapon also suitable for melee combat.",
-        "itemClass": "weapon"
+        "description": "A versatile thrown weapon also suitable for melee combat."
       },
       "staff": {
         "damage": "1d6",
@@ -334,8 +311,7 @@
         "value": 1,
         "kind": "staff",
         "weight": "medium",
-        "description": "A simple wooden rod used for defense and support.",
-        "itemClass": "weapon"
+        "description": "A simple wooden rod used for defense and support."
       },
       "quarterstaff": {
         "damage": "1d6+2",
@@ -343,8 +319,7 @@
         "value": 10,
         "kind": "staff",
         "weight": "medium",
-        "description": "A reinforced wooden rod used for both offense and defense.",
-        "itemClass": "weapon"
+        "description": "A reinforced wooden rod used for both offense and defense."
       },
       "claymore": {
         "damage": "2d4",
@@ -352,8 +327,7 @@
         "value": 25,
         "kind": "blade",
         "weight": "heavy",
-        "description": "A large two-handed sword known for its powerful slashing attacks.",
-        "itemClass": "weapon"
+        "description": "A large two-handed sword known for its powerful slashing attacks."
       },
       "broadsword": {
         "damage": "2d4",
@@ -361,8 +335,7 @@
         "value": 10,
         "kind": "blade",
         "weight": "medium",
-        "description": "A wide-bladed sword suitable for powerful slashes.",
-        "itemClass": "weapon"
+        "description": "A wide-bladed sword suitable for powerful slashes."
       },
       "longsword": {
         "damage": "1d8",
@@ -370,8 +343,7 @@
         "value": 15,
         "kind": "blade",
         "weight": "medium",
-        "description": "A versatile sword suitable for both cutting and thrusting.",
-        "itemClass": "weapon"
+        "description": "A versatile sword suitable for both cutting and thrusting."
       },
       "scimitar": {
         "damage": "1d8",
@@ -379,8 +351,7 @@
         "value": 15,
         "kind": "blade",
         "weight": "medium",
-        "description": "A curved sword designed for swift slashing attacks.",
-        "itemClass": "weapon"
+        "description": "A curved sword designed for swift slashing attacks."
       },
       "shortsword": {
         "damage": "1d6",
@@ -388,8 +359,7 @@
         "value": 8,
         "kind": "blade",
         "weight": "light",
-        "description": "A small sword ideal for close combat and quick strikes.",
-        "itemClass": "weapon"
+        "description": "A small sword ideal for close combat and quick strikes."
       },
       "greatsword": {
         "damage": "1d10",
@@ -397,8 +367,7 @@
         "value": 30,
         "kind": "blade",
         "weight": "heavy",
-        "description": "A massive two-handed sword capable of dealing devastating damage.",
-        "itemClass": "weapon"
+        "description": "A massive two-handed sword capable of dealing devastating damage."
       },
       "falchion": {
         "damage": "2d4",
@@ -406,8 +375,7 @@
         "value": 20,
         "kind": "blade",
         "weight": "medium",
-        "description": "A one-handed single-edged sword with a slightly curved blade that broadens toward the point.",
-        "itemClass": "weapon"
+        "description": "A one-handed single-edged sword with a slightly curved blade that broadens toward the point."
       },
       "cutlass": {
         "damage": "1d6",
@@ -415,8 +383,7 @@
         "value": 10,
         "kind": "blade",
         "weight": "light",
-        "description": "A short curved sword with a single cutting edge.",
-        "itemClass": "weapon"
+        "description": "A short curved sword with a single cutting edge."
       },
       "trident": {
         "damage": "1d6+1",
@@ -425,8 +392,7 @@
         "value": 4,
         "kind": "trident",
         "weight": "medium",
-        "description": "A three-pronged spear used for fishing and combat.",
-        "itemClass": "weapon"
+        "description": "A three-pronged spear used for fishing and combat."
       },
       "sling": {
         "damage": "1d4",
@@ -435,8 +401,7 @@
         "value": 1,
         "kind": "sling",
         "weight": "light",
-        "description": "A simple throwing weapon used to hurl small stones or pellets.",
-        "itemClass": "weapon"
+        "description": "A simple throwing weapon used to hurl small stones or pellets."
       },
       "heavy_crossbow": {
         "damage": "1d6+1",
@@ -445,8 +410,7 @@
         "value": 20,
         "kind": "crossbow",
         "weight": "heavy",
-        "description": "A bolt-firing mechanical ranged weapon known for its powerful piercing attacks.",
-        "itemClass": "weapon"
+        "description": "A bolt-firing mechanical ranged weapon known for its powerful piercing attacks."
       },
       "light_crossbow": {
         "damage": "1d4+1",
@@ -455,8 +419,7 @@
         "value": 12,
         "kind": "crossbow",
         "weight": "light",
-        "description": "A bolt-firing mechanical ranged weapon known for its ease of use and quick reload times.",
-        "itemClass": "weapon"
+        "description": "A bolt-firing mechanical ranged weapon known for its ease of use and quick reload times."
       },
       "composite_bow": {
         "damage": "1d6",
@@ -465,8 +428,7 @@
         "value": 75,
         "kind": "bow",
         "weight": "medium",
-        "description": "A bow reinforced for enhanced power and flexibility.",
-        "itemClass": "weapon"
+        "description": "A bow reinforced for enhanced power and flexibility."
       },
       "whip": {
         "damage": "1d4+2",
@@ -474,8 +436,7 @@
         "value": 2,
         "kind": "whip",
         "weight": "light",
-        "description": "A flexible weapon used for striking at a distance.",
-        "itemClass": "weapon"
+        "description": "A flexible weapon used for striking at a distance."
       },
       "light_chain": {
         "damage": "1d6+2",
@@ -483,8 +444,7 @@
         "value": 7,
         "kind": "whip",
         "weight": "medium",
-        "description": "A medium-weight whip used for flexible striking.",
-        "itemClass": "weapon"
+        "description": "A medium-weight whip used for flexible striking."
       },
       "heavy_chain": {
         "damage": "1d8+2",
@@ -492,8 +452,7 @@
         "value": 12,
         "kind": "whip",
         "weight": "heavy",
-        "description": "A heavy whip used for powerful flexible striking.",
-        "itemClass": "weapon"
+        "description": "A heavy whip used for powerful flexible striking."
       },
       "rapier": {
         "damage": "1d6+2",
@@ -501,8 +460,7 @@
         "value": 40,
         "kind": "blade",
         "weight": "light",
-        "description": "A slender and sharply pointed sword designed for thrusting attacks.",
-        "itemClass": "weapon"
+        "description": "A slender and sharply pointed sword designed for thrusting attacks."
       },
       "bec_de_corbin": {
         "damage": "1d8+1",
@@ -510,8 +468,7 @@
         "value": 18,
         "kind": "polearm",
         "weight": "heavy",
-        "description": "A polearm with a beak-like spike used for piercing armor.",
-        "itemClass": "weapon"
+        "description": "A polearm with a beak-like spike used for piercing armor."
       },
       "voulge": {
         "damage": "1d10+1",
@@ -520,8 +477,7 @@
         "value": 14,
         "kind": "polearm",
         "weight": "heavy",
-        "description": "A polearm with a broad and curved blade used for slashing attacks.",
-        "itemClass": "weapon"
+        "description": "A polearm with a broad and curved blade used for slashing attacks."
       },
       "scythe": {
         "damage": "2d4+1",
@@ -530,8 +486,7 @@
         "value": 10,
         "kind": "polearm",
         "weight": "medium",
-        "description": "A polearm with a curved blade used for slashing attacks.",
-        "itemClass": "weapon"
+        "description": "A polearm with a curved blade used for slashing attacks."
       },
       "pike": {
         "damage": "1d10+1",
@@ -540,8 +495,7 @@
         "value": 15,
         "kind": "polearm",
         "weight": "heavy",
-        "description": "A long spear used for thrusting attacks and keeping enemies at a distance.",
-        "itemClass": "weapon"
+        "description": "A long spear used for thrusting attacks and keeping enemies at a distance."
       },
       "greatclub": {
         "damage": "1d8+2",
@@ -549,8 +503,7 @@
         "value": 8,
         "kind": "club",
         "weight": "heavy",
-        "description": "A heavy battering weapon used for powerful bludgeoning attacks.",
-        "itemClass": "weapon"
+        "description": "A heavy battering weapon used for powerful bludgeoning attacks."
       },
       "glaive": {
         "damage": "1d10+1",
@@ -559,8 +512,7 @@
         "value": 12,
         "kind": "polearm",
         "weight": "heavy",
-        "description": "A polearm with a broad blade used for slashing attacks.",
-        "itemClass": "weapon"
+        "description": "A polearm with a broad blade used for slashing attacks."
       },
       "katana": {
         "damage": "1d8+1",
@@ -568,8 +520,7 @@
         "value": 50,
         "kind": "blade",
         "weight": "medium",
-        "description": "A fine sword with exquisite sharpness and cutting ability.",
-        "itemClass": "weapon"
+        "description": "A fine sword with exquisite sharpness and cutting ability."
       },
       "wakizashi": {
         "damage": "1d6+1",
@@ -577,8 +528,7 @@
         "value": 30,
         "kind": "blade",
         "weight": "light",
-        "description": "A fine short sword with exceptional sharpness and cutting ability.",
-        "itemClass": "weapon"
+        "description": "A fine short sword with exceptional sharpness and cutting ability."
       },
       "naginata": {
         "damage": "1d10+1",
@@ -587,8 +537,7 @@
         "value": 20,
         "kind": "polearm",
         "weight": "heavy",
-        "description": "A fine polearm with a curved blade used for slashing attacks.",
-        "itemClass": "weapon"
+        "description": "A fine polearm with a curved blade used for slashing attacks."
       },
       "kusarigama": {
         "damage": "1d6+2",
@@ -596,8 +545,7 @@
         "value": 18,
         "kind": "polearm",
         "weight": "medium",
-        "description": "A polearm attached to a sickle by a chain.",
-        "itemClass": "weapon"
+        "description": "A polearm attached to a sickle by a chain."
       },
       "nunchaku": {
         "damage": "1d6+2",
@@ -605,8 +553,7 @@
         "value": 15,
         "kind": "club",
         "weight": "light",
-        "description": "A battering weapon consisting of two sticks connected by a chain.",
-        "itemClass": "weapon"
+        "description": "A battering weapon consisting of two sticks connected by a chain."
       },
       "shuriken": {
         "damage": "1d4+2",
@@ -615,86 +562,72 @@
         "value": 5,
         "kind": "shuriken",
         "weight": "light",
-        "description": "A small star-shaped throwing weapon.",
-        "itemClass": "weapon"
+        "description": "A small star-shaped throwing weapon."
       },
       "antlers": {
         "damage": "1d6",
         "natural": true,
-        "type": "piercing",
-        "itemClass": "weapon"
+        "type": "piercing"
       },
       "bite": {
         "damage": "1d6",
         "natural": true,
-        "type": "piercing",
-        "itemClass": "weapon"
+        "type": "piercing"
       },
       "claws": {
         "damage": "1d4",
         "natural": true,
-        "type": "slashing",
-        "itemClass": "weapon"
+        "type": "slashing"
       },
       "sting": {
         "damage": "1d3",
         "natural": true,
-        "type": "piercing",
-        "itemClass": "weapon"
+        "type": "piercing"
       },
       "horns": {
         "damage": "1d4",
         "natural": true,
-        "type": "bludgeoning",
-        "itemClass": "weapon"
+        "type": "bludgeoning"
       },
       "slam": {
         "damage": "1d6",
         "natural": true,
-        "type": "piercing",
-        "itemClass": "weapon"
+        "type": "piercing"
       },
       "talons": {
         "damage": "1d8",
         "natural": true,
-        "type": "piercing",
-        "itemClass": "weapon"
+        "type": "piercing"
       },
       "tusks": {
         "damage": "1d8",
         "natural": true,
-        "type": "piercing",
-        "itemClass": "weapon"
+        "type": "piercing"
       },
       "quills": {
         "damage": "1d3",
         "natural": true,
-        "type": "piercing",
-        "itemClass": "weapon"
+        "type": "piercing"
       },
       "headbutt": {
         "damage": "1d4",
         "natural": true,
-        "type": "bludgeoning",
-        "itemClass": "weapon"
+        "type": "bludgeoning"
       },
       "beak": {
         "damage": "1d4",
         "natural": true,
-        "type": "piercing",
-        "itemClass": "weapon"
+        "type": "piercing"
       },
       "flutter": {
         "damage": "1d2",
         "natural": true,
-        "type": "bludgeoning",
-        "itemClass": "weapon"
+        "type": "bludgeoning"
       },
       "tentacles": {
         "damage": "1d4+1",
         "natural": true,
-        "type": "bludgeoning",
-        "itemClass": "weapon"
+        "type": "bludgeoning"
       }
     }
   },
@@ -1161,7 +1094,7 @@
         "kind": "potion",
         "rarity": "common",
         "aspect": "healing",
-        "value": 50,
+        "value": 15,
         "target": [
           "self",
           "ally"
@@ -1173,6 +1106,25 @@
           }
         ]
       },
+      "healing_potion": {
+        "name": "Potion of Healing",
+        "description": "A vial of shimmering red liquid that restores a moderate amount of health when consumed.",
+        "type": "consumable",
+        "kind": "potion",
+        "rarity": "uncommon",
+        "aspect": "healing",
+        "value": 80,
+        "target": [
+          "self",
+          "ally"
+        ],
+        "effects": [
+          {
+            "type": "heal",
+            "amount": "3d4+3"
+          }
+        ]
+      },
       "major_healing_potion": {
         "name": "Major Potion of Healing",
         "description": "A vial of glowing red liquid that restores a significant amount of health when consumed.",
@@ -1180,7 +1132,7 @@
         "rarity": "uncommon",
         "kind": "potion",
         "aspect": "healing",
-        "value": 150,
+        "value": 250,
         "target": [
           "self",
           "ally"
@@ -1390,6 +1342,101 @@
           {
             "type": "cast",
             "spellName": "Apocalypse"
+          }
+        ]
+      },
+      "deck_of_multiplicity": {
+        "name": "Deck of Multiplicity",
+        "description": "A magical deck of cards with many uses.",
+        "type": "consumable",
+        "kind": "special",
+        "rarity": "legendary",
+        "value": 5000,
+        "charges": 60,
+        "target": [
+          "randomEnemies", 7
+        ],
+        "effects": [
+          {
+            "type": "randomEffect",
+            "randomEffects": [
+              { "description": "Ace of Clubs", "type": "buff", "status": "haste", "target": "self" },
+              { "description": "King of Clubs", "type": "buff", "status": "scaleskin", "target": "self" },
+              { "description": "Dame of Clubs", "type": "buff", "status": "major_strength", "target": "self" },
+              { "description": "Jack of Clubs", "type": "buff", "status": "wisdom", "target": "self" },
+              { "description": "Ten of Clubs", "type": "buff", "status": "clarity", "target": "self" },
+              { "description": "Nine of Clubs", "type": "buff", "status": "focus", "target": "self" },
+              { "description": "Eight of Clubs", "type": "buff", "status": "rage", "target": "self" },
+              { "description": "Seven of Clubs", "type": "buff", "status": "steelskin", "target": "self" },
+              { "description": "Six of Clubs", "type": "buff", "status": "strength", "target": "self" },
+              { "description": "Five of Clubs", "type": "buff", "status": "ironskin", "target": "self" },
+              { "description": "Four of Clubs", "type": "buff", "status": "cunning", "target": "self" },
+              { "description": "Three of Clubs", "type": "buff", "status": "splendor", "target": "self" },
+              { "description": "Two of Clubs", "type": "buff", "status": "courage", "target": "self" },
+              { "description": "One of Clubs", "type": "buff", "status": "barkskin", "target": "self" },
+              { "description": "Ace of Coins", "type": "cast", "spellName": "death" },
+              { "description": "King of Coins", "type": "cast", "spellName": "disintegrate" },
+              { "description": "Dame of Coins", "type": "cast", "spellName": "flesh_to_stone" },
+              { "description": "Jack of Coins", "type": "cast", "spellName": "meteor_swarm" },
+              { "description": "Ten of Coins", "type": "cast", "spellName": "polymorph" },
+              { "description": "Nine of Coins", "type": "cast", "spellName": "sandstorm" },
+              { "description": "Eight of Coins", "type": "cast", "spellName": "chain_lightning" },
+              { "description": "Seven of Coins", "type": "cast", "spellName": "ice_storm" },
+              { "description": "Six of Coins", "type": "cast", "spellName": "fire_storm" },
+              { "description": "Five of Coins", "type": "cast", "spellName": "cone_of_cold" },
+              { "description": "Four of Coins", "type": "cast", "spellName": "dispel_magic" },
+              { "description": "Three of Coins", "type": "cast", "spellName": "lightning_bolt" },
+              { "description": "Two of Coins", "type": "cast", "spellName": "fireball" },
+              { "description": "One of Coins", "type": "cast", "spellName": "ice_bolt" },
+              { "description": "Ace of Swords", "type": "damage", "amount": "1d100", "kind": "radiant" },
+              { "description": "King of Swords", "type": "damage", "amount": "1d60", "kind": "psychic" },
+              { "description": "Dame of Swords", "type": "damage", "amount": "1d20", "kind": "true" },
+              { "description": "Jack of Swords", "type": "damage", "amount": "1d12", "kind": "acid" },
+              { "description": "Ten of Swords", "type": "damage", "amount": "1d10", "kind": "sonic" },
+              { "description": "Nine of Swords", "type": "damage", "amount": "2d8", "kind": "poison" },
+              { "description": "Eight of Swords", "type": "damage", "amount": "2d8", "kind": "cold" },
+              { "description": "Seven of Swords", "type": "damage", "amount": "3d6", "kind": "fire" },
+              { "description": "Six of Swords", "type": "damage", "amount": "3d6", "kind": "necrotic" },
+              { "description": "Five of Swords", "type": "damage", "amount": "3d6", "kind": "lightning" },
+              { "description": "Four of Swords", "type": "damage", "amount": "4d4", "kind": "force" },
+              { "description": "Three of Swords", "type": "damage", "amount": "4d3", "kind": "slashing" },
+              { "description": "Two of Swords", "type": "damage", "amount": "6d2", "kind": "piercing" },
+              { "description": "One of Swords", "type": "damage", "amount": "8d2", "kind": "bludgeoning" },
+              { "description": "Ace of Cups", "type": "debuff", "status": "asleep", "saveDC": 30 },
+              { "description": "King of Cups", "type": "debuff", "status": "confused", "saveDC": 30 },
+              { "description": "Dame of Cups", "type": "debuff", "status": "fatigue", "saveDC": 30 },
+              { "description": "Jack of Cups", "type": "debuff", "status": "fear", "saveDC": 30 },
+              { "description": "Ten of Cups", "type": "debuff", "status": "slow", "saveDC": 30 },
+              { "description": "Nine of Cups", "type": "debuff", "status": "weakened", "saveDC": 30 },
+              { "description": "Eight of Cups", "type": "debuff", "status": "feebleminded", "saveDC": 30 },
+              { "description": "Seven of Cups", "type": "debuff", "status": "petrified", "saveDC": 30 },
+              { "description": "Six of Cups", "type": "debuff", "status": "charmed", "saveDC": 30 },
+              { "description": "Five of Cups", "type": "debuff", "status": "blinded", "saveDC": 30 },
+              { "description": "Four of Cups", "type": "debuff", "status": "deafened", "saveDC": 30 },
+              { "description": "Three of Cups", "type": "debuff", "status": "paralyzed", "saveDC": 30 },
+              { "description": "Two of Cups", "type": "debuff", "status": "poison", "saveDC": 30 },
+              { "description": "One of Cups", "type": "debuff", "status": "silence", "saveDC": 30 },
+              { "description": "Ace of Hearts", "type": "heal", "amount": "3d20", "target": "self" },
+              { "description": "King of Hearts", "type": "heal", "amount": "4d12", "target": "self" },
+              { "description": "Dame of Hearts", "type": "heal", "amount": "4d10", "target": "self" },
+              { "description": "Jack of Hearts", "type": "heal", "amount": "4d8", "target": "self" },
+              { "description": "Ten of Hearts", "type": "heal", "amount": "3d8", "target": "self" },
+              { "description": "Nine of Hearts", "type": "heal", "amount": "4d6", "target": "self" },
+              { "description": "Eight of Hearts", "type": "heal", "amount": "5d4", "target": "self" },
+              { "description": "Seven of Hearts", "type": "heal", "amount": "6d3", "target": "self" },
+              { "description": "Six of Hearts", "type": "heal", "amount": "8d2", "target": "self" },
+              { "description": "Five of Hearts", "type": "heal", "amount": "14", "target": "self" },
+              { "description": "Four of Hearts", "type": "heal", "amount": "10", "target": "self" },
+              { "description": "Three of Hearts", "type": "heal", "amount": "9", "target": "self" },
+              { "description": "Two of Hearts", "type": "heal", "amount": "8", "target": "self" },
+              { "description": "One of Hearts", "type": "heal", "amount": "6", "target": "self" },
+              { "description": "Ace of Shields", "type": "summon", "creature": "animal" },
+              { "description": "King of Shields", "type": "summon", "creature": "monster", "options": { "_class": "elemental" } },
+              { "description": "Dame of Shields", "type": "summon", "creature": "monster", "options": { "_class": "fiend" } },
+              { "description": "Jack of Shields", "type": "summon", "creature": "monster", "options": { "_class": "aberration" } },
+              { "description": "Ten of Shields", "type": "summon", "creature": "monster", "options": { "_class": "fey" } },
+              { "description": "Nine of Shields", "type": "summon", "creature": "npc" }
+            ]
           }
         ]
       }
@@ -1723,9 +1770,29 @@
           ]
         }
       },
+      "bolt_blade": {
+        "name": "Bolt Blade",
+        "description": "A sleek blade that crackles with electrical energy, shocking enemies on hit.",
+        "type": "slashing",
+        "kind": "weapon",
+        "rarity": "rare",
+        "itemClass": "weapon",
+        "value": 900,
+        "damage": "1d8",
+        "effect": {
+          "onAttackHit": [
+            {
+              "type": "damage",
+              "amount": "1d6",
+              "kind": "lightning",
+              "target": "target"
+            }
+          ]
+        }
+      },
       "robe_of_elvenkind": {
         "name": "Robe of Elvenkind",
-        "description": "A finely crafted robe that enhances the wearer's stealth and agility.",
+        "description": "A finely crafted robe imbued with a protective aura that enhances the wearer's agility.",
         "type": "equipment",
         "kind": "body",
         "rarity": "rare",
@@ -1749,6 +1816,304 @@
           ]
         },
         "itemClass": "armor"
+      },
+      "sword_of_ages": {
+        "name": "Sword of Ages",
+        "description": "An ancient sword of immense power.",
+        "type": "slashing",
+        "kind": "weapon",
+        "rarity": "legendary",
+        "itemClass": "weapon",
+        "value": 5000,
+        "damage": "1d10",
+        "effect": {
+          "onAttackHit": [
+            {
+              "type": "damage",
+              "amount": "=1d4+1",
+              "kind": "true",
+              "target": "target"
+            },
+            {
+              "type": "debuff",
+              "status": "weakened",
+              "target": "target",
+              "saveDC": 30
+            }
+          ]
+        }
+      },
+      "dragonhelm": {
+        "name": "Dragonhelm",
+        "description": "A helm forged from dragon scales, providing exceptional protection.",
+        "type": "equipment",
+        "kind": "helm",
+        "rarity": "legendary",
+        "value": 3000,
+        "effect": {
+          "ac": -3,
+          "resistFire": 0.5,
+          "onAttacked": [
+            {
+              "type": "damage",
+              "amount": "1d6",
+              "kind": "fire",
+              "target": "attacker"
+            }
+          ]
+        },
+        "itemClass": "armor"
+      },
+      "darkwood_staff": {
+        "name": "Darkwood Staff",
+        "description": "A staff made from darkwood, enhancing the wielder's spellcasting abilities.",
+        "type": "equipment",
+        "kind": "weapon",
+        "rarity": "rare",
+        "itemClass": "weapon",
+        "value": 1200,
+        "damage": "1d6",
+        "effect": {
+          "bonusSpellDC": 2,
+          "int": 2
+        }
+      },
+      "galvorn_mail": {
+        "name": "Galvorn Mail",
+        "description": "A suit of mail armor made from the rare and nearly indestructible galvorn metal.",
+        "type": "equipment",
+        "kind": "body",
+        "rarity": "legendary",
+        "value": 4000,
+        "effect": {
+          "ac": -5,
+          "resistAll": 0.2
+        },
+        "itemClass": "armor"
+      },
+      "angelmail": {
+        "name": "Angelmail",
+        "description": "A radiant suit of armor that provides divine protection to the wearer.",
+        "type": "equipment",
+        "kind": "body",
+        "rarity": "legendary",
+        "value": 4500,
+        "effect": {
+          "ac": -4,
+          "resistRadiant": 0.5,
+          "onAttacked": [
+            {
+              "type": "damage",
+              "amount": "1d8",
+              "kind": "radiant",
+              "target": "attacker"
+            }
+          ]
+        }
+      },
+      "tirions_fury": {
+        "name": "Tirion's Fury",
+        "description": "A legendary sword imbued with the wrath of a fallen hero.",
+        "type": "slashing",
+        "kind": "weapon",
+        "rarity": "legendary",
+        "itemClass": "weapon",
+        "value": 8000,
+        "damage": "2d6",
+        "effect": {
+          "onAttackHit": [
+            {
+              "type": "damage",
+              "amount": "=2d6+2",
+              "kind": "true",
+              "target": "target"
+            },
+            {
+              "type": "debuff",
+              "status": "stun",
+              "target": "target",
+              "saveDC": 35
+            }
+          ]
+        }
+      },
+      "aegis_of_eternity": {
+        "name": "Aegis of Eternity",
+        "description": "An indestructible shield that grants unparalleled protection.",
+        "type": "equipment",
+        "kind": "shield",
+        "rarity": "legendary",
+        "value": 10000,
+        "effect": {
+          "ac": -6,
+          "resistAll": 0.3,
+          "onAttacked": [
+            {
+              "type": "damage",
+              "amount": "2d6",
+              "kind": "true",
+              "target": "attacker"
+            }
+          ]
+        },
+        "itemClass": "armor"
+      },
+      "arcane_conduit": {
+        "name": "Arcane Conduit",
+        "description": "A staff that amplifies the wielder's magical power to extraordinary levels.",
+        "type": "equipment",
+        "kind": "weapon",
+        "rarity": "legendary",
+        "itemClass": "weapon",
+        "value": 12000,
+        "damage": "2d8",
+        "effect": {
+          "bonusSpellDC": 5,
+          "int": 5
+        }
+      },
+      "aeon_stone": {
+        "name": "Aeon Stone",
+        "description": "A mystical stone that grants the bearer control over time itself.",
+        "type": "equipment",
+        "kind": "orbital",
+        "rarity": "legendary",
+        "value": 15000,
+        "effect": {
+          "onCombatStart": [
+            {
+              "type": "buff",
+              "status": "haste",
+              "target": "self"
+            }
+          ],
+          "onAttacked": [
+            {
+              "type": "debuff",
+              "status": "slow",
+              "target": "attacker",
+              "saveDC": 35
+            }
+          ]
+        },
+        "itemClass": "equipment"
+      },
+      "staff_of_power": {
+        "name": "Staff of Power",
+        "description": "A legendary staff that channels immense magical energy.",
+        "type": "equipment",
+        "kind": "weapon",
+        "rarity": "legendary",
+        "itemClass": "weapon",
+        "value": 20000,
+        "damage": "2d10",
+        "effect": {
+          "bonusSpellDC": 6,
+          "int": 6,
+          "onAttackHit": [
+            {
+              "type": "damage",
+              "amount": "=3d6",
+              "kind": "force",
+              "target": "target"
+            }
+          ]
+        }
+      },
+      "cloak_of_invisibility": {
+        "name": "Cloak of Invisibility",
+        "description": "A magical cloak that renders the wearer invisible.",
+        "type": "equipment",
+        "kind": "cloak",
+        "rarity": "legendary",
+        "value": 25000,
+        "effect": {
+          "invisible": true
+        },
+        "itemClass": "armor"
+      },
+      "bone_armor": {
+        "name": "Bone Armor",
+        "description": "Armor crafted from the bones of ancient creatures, offering unique protection.",
+        "type": "equipment",
+        "kind": "body",
+        "rarity": "rare",
+        "value": 700,
+        "ac": 5,
+        "weight": "heavy",
+        "effect": {
+          "resistNecrotic": 0.4,
+          "onAttacked": [
+            {
+              "type": "damage",
+              "amount": "1d3",
+              "kind": "necrotic",
+              "target": "attacker"
+            }
+          ]
+        },
+        "itemClass": "armor"
+      },
+      "robe_of_the_archmagi": {
+        "name": "Robe of the Archmagi",
+        "description": "A legendary robe that enhances the wearer's magical prowess.",
+        "type": "equipment",
+        "kind": "body",
+        "rarity": "legendary",
+        "value": 8000,
+        "ac": 3,
+        "weight": "light",
+        "effect": {
+          "int": 4,
+          "wis": 4,
+          "bonusSpellDC": 4,
+          "resistAll": 0.15
+        },
+        "itemClass": "armor"
+      },
+      "staff_of_the_necromancer": {
+        "name": "Staff of the Necromancer",
+        "description": "A dark staff that empowers necromantic magic.",
+        "type": "equipment",
+        "kind": "weapon",
+        "rarity": "legendary",
+        "itemClass": "weapon",
+        "value": 9000,
+        "damage": "2d6",
+        "effect": {
+          "bonusSpellDC": 5,
+          "int": 5,
+          "onAttackHit": [
+            {
+              "type": "damage",
+              "amount": "=2d6",
+              "kind": "necrotic",
+              "target": "target"
+            }
+          ]
+        }
+      },
+      "sword_of_goblinkind": {
+        "name": "Sword of Goblinkind",
+        "description": "A mischievous sword that enhances the wielder's cunning and agility.",
+        "type": "slashing",
+        "kind": "weapon",
+        "rarity": "rare",
+        "itemClass": "weapon",
+        "value": 600,
+        "damage": "1d8",
+        "effect": {
+          "dex": 3,
+          "int": 3,
+          "onAttackHit": [
+            {
+              "type": "debuff",
+              "status": "confused",
+              "target": "target",
+              "saveDC": 20
+            }
+          ]
+        }
       }
     }
   },
@@ -1840,6 +2205,16 @@
         "type": "junk",
         "value": 40
       },
+      "music_box": {
+        "description": "A beautifully crafted music box that plays a haunting melody.",
+        "type": "junk",
+        "value": 50
+      },
+      "unholy_symbol": {
+        "description": "A profane icon associated with forbidden rituals.",
+        "type": "junk",
+        "value": 75
+      },
       "priceless_painting": {
         "description": "A priceless painting by a renowned artist, its value immeasurable.",
         "type": "junk",
@@ -1895,6 +2270,11 @@
         "type": "junk",
         "value": 8000
       },
+      "diamond_necklace": {
+        "description": "A necklace adorned with a single, flawless diamond.",
+        "type": "junk",
+        "value": 10000
+      },
       "divine_scepter": {
         "description": "A scepter imbued with divine power, radiating holy energy.",
         "type": "junk",
@@ -1914,6 +2294,41 @@
         "description": "A complex orrery that models the movements of celestial bodies.",
         "type": "junk",
         "value": 5000
+      },
+      "titan_statue": {
+        "description": "A massive statue carved from stone, depicting a titan of old.",
+        "type": "junk",
+        "value": 8000
+      },
+      "celestial_chart": {
+        "description": "An ancient chart mapping the stars and constellations.",
+        "type": "junk",
+        "value": 3000
+      },
+      "jeweled_zodiac": {
+        "description": "A decorative zodiac made of precious jewels.",
+        "type": "junk",
+        "value": 15000
+      },
+      "diamond_eye": {
+        "description": "A flawless diamond shaped like an eye, rumored to possess mystical properties.",
+        "type": "junk",
+        "value": 20000
+      },
+      "opalescent_skull": {
+        "description": "A skull made of opalescent material, shimmering with various colors.",
+        "type": "junk",
+        "value": 25000
+      },
+      "intelligent_book": {
+        "description": "A book that possesses its own consciousness and can communicate with its reader.",
+        "type": "junk",
+        "value": 30000
+      },
+      "soul_gem": {
+        "description": "A gem that contains a trapped soul, pulsating with dark energy.",
+        "type": "junk",
+        "value": 50000
       }
     }
   },
@@ -1931,54 +2346,52 @@
       ],
       "negligible": [
         [
-          "simple_ring", "small_statue", "bronze_bracelet", "faded_painting", "major_healing_potion",
+          "simple_ring", "small_statue", "bronze_bracelet", "faded_painting", "faded_tome",
           "crowbar", "dice", "lantern", "oil_flask", "pouch",
           "quill", "shovel", "signal_whistle", "tent", "vinegar",
-          "wind_chime", "alchemist_fire", "first_aid_kit", "holy_water", "cloak_pin"
+          "wind_chime", "alchemist_fire", "first_aid_kit", "holy_water", "cloak_pin",
+          "healing_potion"
         ]
       ],
       "minor": [
         [
-          "dagger",
-          "agate", "carnelian", "moonstone", "onyx", "quartz", 
-          "broken_crown", "lensing_crystal",
-          "holy_symbol", "thieves_tools", "antidote", "ring_of_minor_protection", "elixir_of_strength",
+          "dagger", "longsword", "shortbow", "chainmail", 
+          "major_healing_potion",
           "wand_of_magic_missile", "scroll_of_fireball", "scroll_of_cure_disease",
+          "agate", "carnelian", "moonstone", "onyx", "quartz", 
+          "broken_crown", "lensing_crystal", "music_box", "ancient_tome", "broken_scepter", "dowsing_rod", 
+          "holy_symbol", "thieves_tools", "antidote", "ring_of_minor_protection", "elixir_of_strength",
           "amulet_of_health", "ring_of_minor_strength", "mantle_of_charisma", "wand_of_cure_minor_wounds", "wand_of_paralyzing_touch",
           "canvas", "lock", "hammer", "ladder", "musical_instrument", "rope"
         ]
       ],
       "major": [
         [
-          "amethyst", "tourmaline", "broken_scepter", "faded_tome", "dowsing_rod", "ancient_orrery",
-          "a magic sword",
+          "amethyst", "tourmaline", "bolt_blade", "potion_of_barkskin", "scroll_of_domination",
+          "ancient_orrery", "ancient_crown", "sacred_idol", "lost_tome",
           "ring_of_protection", "ring_of_thorns", "belt_of_giant_strength", "boots_of_swiftness", "crystal_orb",
-          "nunchaku", "longsword", "chainmail", "wardstone", "katana", "longbow",
-          "gloves_of_dexterity", "amulet_of_vitality", "helm_of_intellect", "mantle_of_charisma", "ring_of_perfect_turning"
+          "nunchaku", "wardstone", "katana", "longbow", "galvorn_mail", 
+          "longsword_of_flames", "wardstone", "gloves_of_dexterity", "amulet_of_vitality", "helm_of_intellect", "mantle_of_charisma"
         ]
       ],
       "grand": [
         [
-          "emerald", "sapphire", "belt_of_giant_strength", "ring_of_thorns", "crown_of_insight",
-          "wardstone", "helm_of_the_stars", "ring_of_strength", "ring_of_major_protection", "amulet_of_focus",
-          "priceless_painting", "royal_scepter", "dragons_egg", "jeweled_crown", "golden_idol",
-          "scroll_of_domination", "ancient_tome",
-          "a hidden stash of jewels",
-          "a legendary weapon", "a suit of enchanted armor", 
-          "a tome of ancient knowledge", "a mystical artifact", "a fabled sword of legends"
+          "emerald", "sapphire",
+          "crown_of_insight", "helm_of_the_stars", "ring_of_strength", "ring_of_major_protection", "amulet_of_focus",
+          "amulet_of_protection", "ring_of_regeneration", "ring_of_spell_turning", "ring_of_the_firmament", 
+          "priceless_painting", "royal_scepter", "dragons_egg", "jeweled_crown", "golden_idol", "titan_statue", "celestial_chart",
+          "scroll_of_domination", "deck_of_multiplicity", 
+          "sword_of_ages", "robe_of_elvenkind", "darkwood_staff", "angelmail", "dragonhelm"
         ]
       ],
       "legendary": [
         [
           "black_diamond", "diamond", "black_opal", "fire_opal", "star_ruby",
           "scroll_of_apocalypse",
-          "ancient_crown", "sacred_idol", "lost_tome", "fallen_star", "crystal_eye",
+          "fallen_star", "crystal_eye", "diamond_necklace",
           "kraken_claw", "phoenix_feather", "divine_scepter", "jeweled_statue", "vial_of_phoenix_tears",
-          "amulet_of_protection", "ring_of_regeneration", "ring_of_spell_turning", "ring_of_the_firmament", 
-          "a fabled sword of legends", "a ring of ultimate power", "an ancient relic",
-          "a legendary artifact of immense power",
-          "a legendary sword", "a suit of enchanted armor", "a hidden stash of jewels", "a mystical artifact"
-
+          "tirions_fury", "ring_of_perfect_turning", "arcane_conduit", "aegis_of_eternity", "aeon_stone",
+          "jeweled_zodiac", "diamond_eye", "opalescent_skull", "intelligent_book"
         ]
       ]
     }

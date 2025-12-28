@@ -287,7 +287,7 @@ export default class Books {
       //   Presenter.describeModifications(magicItem.effect)
       // )
       let row = `| ${Words.capitalize(magicItem.name)} | _${magicItem.description}_ | `;
-      row += Presenter.describeModifications(magicItem.effect).replace(/\n/g, " ") + " |";
+      row += Presenter.describeModifications(magicItem.effect, magicItem.name).replace(/\n/g, " ") + " |";
       this.write(row);
     }
 

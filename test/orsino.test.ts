@@ -197,7 +197,7 @@ describe('Orsino', () => {
 
     // for (const pc in explorer.pcs) {
     for (let pc = 0; pc < explorer.pcs.length; pc++) {
-      await Presenter.printCharacterRecord(explorer.pcs[pc]);
+      await Presenter.printCharacterRecord(explorer.pcs[pc], explorer.inventory);
     }
 
     console.warn("\n----\nCombat statistics:", Combat.statistics);
@@ -242,7 +242,7 @@ describe('Orsino', () => {
     expect(module.dungeons).toEqual(mod.dungeons);
 
     for (const pc in explorer.pcs) {
-      await Presenter.printCharacterRecord(explorer.pcs[pc]);
+      await Presenter.printCharacterRecord(explorer.pcs[pc], explorer.inventory);
     }
 
     console.warn("\n----\nCombat statistics:", Combat.statistics);

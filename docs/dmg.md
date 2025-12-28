@@ -213,7 +213,7 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 | Broken Dagger | A broken dagger with a dull blade and a cracked handle. | 2 gp | junk |
 | Tattered Map | A tattered map with faded markings and torn edges. | 3 gp | junk |
 | Wooden Figurine | A small wooden figurine, roughly carved and unfinished. | 2 gp | junk |
-| Minor Healing Potion | A vial of glittering red liquid that restores health when consumed. | 50 gp | consumable |
+| Minor Healing Potion | A vial of glittering red liquid that restores health when consumed. | 15 gp | consumable |
 | Firewood | A bundle of firewood for starting campfires. | 1 gp | gear |
 | Shoes | A comfortable pair of shoes for everyday wear. | 2 gp | gear |
 | Candle | A simple wax candle that provides light in dark places. | 1 gp | gear |
@@ -238,7 +238,7 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 | Small Statue | A small statue made of bronze, depicting a forgotten deity. | 10 gp | junk |
 | Bronze Bracelet | A bronze bracelet with intricate designs etched into its surface. | 8 gp | junk |
 | Faded Painting | A faded painting on canvas, its colors dulled by time. | 12 gp | junk |
-| Major Healing Potion | A vial of glowing red liquid that restores a significant amount of health when consumed. | 150 gp | consumable |
+| Faded Tome | A faded tome with yellowed pages and a cracked spine. | 20 gp | junk |
 | Crowbar | A sturdy crowbar for prying open doors or crates. | 2 gp | gear |
 | Dice | A set of dice for gambling or passing the time. | 1 gp | gear |
 | Lantern | A lantern that provides bright light for extended periods. | 7 gp | gear |
@@ -254,27 +254,36 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 | First Aid Kit | A small kit containing bandages and salves for treating minor wounds. | 25 gp | consumable |
 | Holy Water | A vial of holy water that can harm undead creatures. | 25 gp | gear |
 | Cloak Pin | A pin for securing a cloak in place. | 2 gp | gear |
+| Healing Potion | A vial of shimmering red liquid that restores a moderate amount of health when consumed. | 80 gp | consumable |
 
 ### Minor Treasure
 
 | Treasure | Description | Value | Kind |
 |----------|-------------|-------|------|
 | Dagger | A small blade ideal for close combat and throwing. | 2 gp | weapon |
-| Agate | A common gemstone | 38 gp | gem |
-| Carnelian | A common gemstone | 38 gp | gem |
-| Moonstone | A common gemstone | 100 gp | gem |
-| Onyx | A common gemstone | 75 gp | gem |
-| Quartz | A common gemstone | 75 gp | gem |
+| Longsword | A versatile sword suitable for both cutting and thrusting. | 15 gp | weapon |
+| Shortbow | A shortbow that is easy to carry and quick to draw. | 15 gp | weapon |
+| Chainmail | Made of interlinked metal rings, offering strong protection at the cost of weight. | 50 gp | armor |
+| Major Healing Potion | A vial of glowing red liquid that restores a significant amount of health when consumed. | 250 gp | consumable |
+| Wand Of Magic Missile | A slender wand that can fire magical darts of force energy at a target. | 250 gp | consumable |
+| Scroll Of Fireball | A magical scroll that allows the caster to unleash a fiery explosion at a target location. | 200 gp | consumable |
+| Scroll Of Cure Disease | A magical scroll that can cure a target of any disease afflicting them. | 150 gp | consumable |
+| Agate | A Common Gemstone | 50 gp | gem |
+| Carnelian | A Common Gemstone | 25 gp | gem |
+| Moonstone | A Common Gemstone | 38 gp | gem |
+| Onyx | A Common Gemstone | 25 gp | gem |
+| Quartz | A Common Gemstone | 100 gp | gem |
 | Broken Crown | Missing several jewels and tarnished with age. | 25 gp | junk |
 | Lensing Crystal | A cracked lens that once belonged to a powerful magnifying glass. | 18 gp | junk |
+| Music Box | A beautifully crafted music box that plays a haunting melody. | 50 gp | junk |
+| Ancient Tome | An ancient tome filled with cryptic writings and illustrations. | 40 gp | junk |
+| Broken Scepter | A broken scepter, its head shattered and its shaft cracked. | 30 gp | junk |
+| Dowsing Rod | A simple dowsing rod made of wood, used for locating water or minerals. | 12 gp | junk |
 | Holy Symbol | A holy symbol for religious ceremonies or warding off evil. | 5 gp | gear |
 | Thieves Tools | A set of tools for picking locks and disarming traps. | 25 gp | gear |
 | Antidote | A small vial of clear liquid that neutralizes poison when consumed. | 30 gp | consumable |
 | Ring Of Minor Protection | A simple enchanted ring providing slight protection | 50 gp | equipment |
 | Elixir Of Strength | A potent brew that temporarily enhances the drinker's physical strength. | 100 gp | consumable |
-| Wand Of Magic Missile | A slender wand that can fire magical darts of force energy at a target. | 250 gp | consumable |
-| Scroll Of Fireball | A magical scroll that allows the caster to unleash a fiery explosion at a target location. | 200 gp | consumable |
-| Scroll Of Cure Disease | A magical scroll that can cure a target of any disease afflicting them. | 150 gp | consumable |
 | Amulet Of Health | A mystical amulet that bolsters the wearer's vitality. | 200 gp | equipment |
 | Ring Of Minor Strength | A simple enchanted ring providing slight strength boost | 50 gp | equipment |
 | Mantle Of Charisma | An elegant mantle that enhances the wearer's charisma. | 200 gp | equipment |
@@ -291,90 +300,89 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 
 | Treasure | Description | Value | Kind |
 |----------|-------------|-------|------|
-| Amethyst | An uncommon gemstone | 150 gp | gem |
-| Tourmaline | An uncommon gemstone | 100 gp | gem |
-| Broken Scepter | A broken scepter, its head shattered and its shaft cracked. | 30 gp | junk |
-| Faded Tome | A faded tome with yellowed pages and a cracked spine. | 20 gp | junk |
-| Dowsing Rod | A simple dowsing rod made of wood, used for locating water or minerals. | 12 gp | junk |
+| Amethyst | An Uncommon Gemstone | 300 gp | gem |
+| Tourmaline | An Uncommon Gemstone | 400 gp | gem |
+| Bolt Blade | A sleek blade that crackles with electrical energy, shocking enemies on hit. | 900 gp | weapon |
+| Potion Of Barkskin | A vial of thick, green liquid that hardens the drinker's skin, providing additional protection. | 120 gp | consumable |
+| Scroll Of Domination | A magical scroll that allows the caster to control the mind of a target creature. | 100 gp | consumable |
 | Ancient Orrery | A complex orrery that models the movements of celestial bodies. | 5000 gp | junk |
-| A Magic Sword | A mysterious item | 200 gp | loot |
+| Ancient Crown | An ancient crown rumored to have belonged to a long-lost king. | 2500 gp | junk |
+| Sacred Idol | A sacred idol revered by an ancient civilization. | 3000 gp | junk |
+| Lost Tome | A lost tome containing forgotten knowledge and secrets. | 3500 gp | junk |
 | Ring Of Protection | A magical ring that grants the wearer enhanced protection. | 300 gp | equipment |
 | Ring Of Thorns | A magical ring that grants the wearer the ability to counterattack. | 400 gp | equipment |
 | Belt Of Giant Strength | A sturdy belt that enhances the wearer's physical strength. | 2500 gp | equipment |
 | Boots Of Swiftness | Lightweight boots that increase the wearer's agility. | 200 gp | equipment |
 | Crystal Orb | A small crystalline sphere that glimmers faintly in the light. | 15 gp | junk |
 | Nunchaku | A battering weapon consisting of two sticks connected by a chain. | 15 gp | weapon |
-| Longsword | A versatile sword suitable for both cutting and thrusting. | 15 gp | weapon |
-| Chainmail | Made of interlinked metal rings, offering strong protection at the cost of weight. | 50 gp | armor |
 | Wardstone | A mystical stone that provides a protective barrier to the bearer. | 600 gp | equipment |
 | Katana | A fine sword with exquisite sharpness and cutting ability. | 50 gp | weapon |
 | Longbow | A bow designed for ranged combat with moderate draw weight. | 30 gp | weapon |
+| Galvorn Mail | A suit of mail armor made from the rare and nearly indestructible galvorn metal. | 4000 gp | armor |
+| Longsword Of Flames | A longsword engulfed in magical flames, dealing extra fire damage on hit. | 800 gp | weapon |
+| Wardstone | A mystical stone that provides a protective barrier to the bearer. | 600 gp | equipment |
 | Gloves Of Dexterity | Fine gloves that enhance the wearer's dexterity. | 50 gp | equipment |
 | Amulet Of Vitality | A minor health charm | 50 gp | equipment |
 | Helm Of Intellect | A finely crafted helm that sharpens the wearer's mind. | 150 gp | equipment |
 | Mantle Of Charisma | An elegant mantle that enhances the wearer's charisma. | 200 gp | equipment |
-| Ring Of Perfect Turning | Grants high resistance to all damage types, and good chance to reflect spells back to caster. | 2000 gp | equipment |
 
 ### Grand Treasure
 
 | Treasure | Description | Value | Kind |
 |----------|-------------|-------|------|
-| Emerald | A rare gemstone | 1000 gp | gem |
-| Sapphire | A rare gemstone | 1000 gp | gem |
-| Belt Of Giant Strength | A sturdy belt that enhances the wearer's physical strength. | 2500 gp | equipment |
-| Ring Of Thorns | A magical ring that grants the wearer the ability to counterattack. | 400 gp | equipment |
+| Emerald | A Rare Gemstone | 1500 gp | gem |
+| Sapphire | A Rare Gemstone | 2000 gp | gem |
 | Crown Of Insight | An ornate crown that enhances the wearer's wisdom. | 1000 gp | equipment |
-| Wardstone | A mystical stone that provides a protective barrier to the bearer. | 600 gp | equipment |
 | Helm Of The Stars | A mystical helm that enhances all senses of the wearer. | 400 gp | equipment |
 | Ring Of Strength | A magical ring that enhances the wearer's physical strength. | 150 gp | equipment |
 | Ring Of Major Protection | A powerful ring that provides significant protection to the wearer. | 1000 gp | equipment |
 | Amulet Of Focus | A powerful amulet that enhances the wearer's magical abilities. | 600 gp | equipment |
+| Amulet Of Protection | A protective amulet that increases the wearer's defenses. | 1200 gp | equipment |
+| Ring Of Regeneration | A mystical ring that slowly heals the wearer over time. | 800 gp | equipment |
+| Ring Of Spell Turning | Improve all resistances and inflict damage back to caster on spell saves. | 1200 gp | equipment |
+| Ring Of The Firmament | A celestial ring that grants the wearer resistance to elemental damage. | 500 gp | equipment |
 | Priceless Painting | A priceless painting by a renowned artist, its value immeasurable. | 1000 gp | junk |
 | Royal Scepter | An ornate scepter once wielded by royalty, encrusted with jewels. | 1500 gp | junk |
 | Dragons Egg | A rare and valuable dragon's egg, warm to the touch. | 2000 gp | junk |
 | Jeweled Crown | A small crown adorned with semi-precious stones. | 20 gp | junk |
 | Golden Idol | A small idol made of pure gold, intricately crafted. | 4000 gp | junk |
+| Titan Statue | A massive statue carved from stone, depicting a titan of old. | 8000 gp | junk |
+| Celestial Chart | An ancient chart mapping the stars and constellations. | 3000 gp | junk |
 | Scroll Of Domination | A magical scroll that allows the caster to control the mind of a target creature. | 100 gp | consumable |
-| Ancient Tome | An ancient tome filled with cryptic writings and illustrations. | 40 gp | junk |
-| A Hidden Stash Of Jewels | A mysterious item | 10 gp | loot |
-| A Legendary Weapon | A mysterious item | 10 gp | loot |
-| A Suit Of Enchanted Armor | A mysterious item | 50 gp | loot |
-| A Tome Of Ancient Knowledge | A mysterious item | 50 gp | loot |
-| A Mystical Artifact | A mysterious item | 200 gp | loot |
-| A Fabled Sword Of Legends | A mysterious item | 50 gp | loot |
+| Deck Of Multiplicity | A magical deck of cards with many uses. | 5000 gp | consumable |
+| Sword Of Ages | An ancient sword of immense power. | 5000 gp | weapon |
+| Robe Of Elvenkind | A finely crafted robe imbued with a protective aura that enhances the wearer's agility. | 700 gp | armor |
+| Darkwood Staff | A staff made from darkwood, enhancing the wielder's spellcasting abilities. | 1200 gp | weapon |
+| Angelmail | A radiant suit of armor that provides divine protection to the wearer. | 4500 gp | equipment |
+| Dragonhelm | A helm forged from dragon scales, providing exceptional protection. | 3000 gp | armor |
 
 ### Legendary Treasure
 
 | Treasure | Description | Value | Kind |
 |----------|-------------|-------|------|
-| Black Diamond | A very_rare gemstone | 10000 gp | gem |
-| Diamond | A legendary gemstone | 15000 gp | gem |
-| Black Opal | A legendary gemstone | 40000 gp | gem |
-| Fire Opal | A legendary gemstone | 20000 gp | gem |
-| Star Ruby | A legendary gemstone | 40000 gp | gem |
+| Black Diamond | A Very Rare Gemstone | 5000 gp | gem |
+| Diamond | A Legendary Gemstone | 20000 gp | gem |
+| Black Opal | A Legendary Gemstone | 40000 gp | gem |
+| Fire Opal | A Legendary Gemstone | 10000 gp | gem |
+| Star Ruby | A Legendary Gemstone | 10000 gp | gem |
 | Scroll Of Apocalypse | An ancient scroll that unleashes catastrophic energy upon all enemies in the area. | 2000 gp | consumable |
-| Ancient Crown | An ancient crown rumored to have belonged to a long-lost king. | 2500 gp | junk |
-| Sacred Idol | A sacred idol revered by an ancient civilization. | 3000 gp | junk |
-| Lost Tome | A lost tome containing forgotten knowledge and secrets. | 3500 gp | junk |
 | Fallen Star | A fragment of a fallen star, radiating a faint magical aura. | 5000 gp | junk |
 | Crystal Eye | A mystical crystal eye that seems to watch those who hold it. | 6000 gp | junk |
+| Diamond Necklace | A necklace adorned with a single, flawless diamond. | 10000 gp | junk |
 | Kraken Claw | A massive claw from a kraken, still dripping with seawater. | 8000 gp | junk |
 | Phoenix Feather | A rare feather from a phoenix, said to have healing properties. | 7000 gp | junk |
 | Divine Scepter | A scepter imbued with divine power, radiating holy energy. | 10000 gp | junk |
 | Jeweled Statue | A statue encrusted with precious jewels, depicting a legendary figure. | 12000 gp | junk |
 | Vial Of Phoenix Tears | A small vial containing the tears of a phoenix, known for their healing properties. | 15000 gp | junk |
-| Amulet Of Protection | A protective amulet that increases the wearer's defenses. | 1200 gp | equipment |
-| Ring Of Regeneration | A mystical ring that slowly heals the wearer over time. | 800 gp | equipment |
-| Ring Of Spell Turning | Improve all resistances and inflict damage back to caster on spell saves. | 1200 gp | equipment |
-| Ring Of The Firmament | A celestial ring that grants the wearer resistance to elemental damage. | 500 gp | equipment |
-| A Fabled Sword Of Legends | A mysterious item | 200 gp | loot |
-| A Ring Of Ultimate Power | A mysterious item | 200 gp | loot |
-| An Ancient Relic | A mysterious item | 50 gp | loot |
-| A Legendary Artifact Of Immense Power | A mysterious item | 10 gp | loot |
-| A Legendary Sword | A mysterious item | 50 gp | loot |
-| A Suit Of Enchanted Armor | A mysterious item | 200 gp | loot |
-| A Hidden Stash Of Jewels | A mysterious item | 1000 gp | loot |
-| A Mystical Artifact | A mysterious item | 50 gp | loot |
+| Tirions Fury | A legendary sword imbued with the wrath of a fallen hero. | 8000 gp | weapon |
+| Ring Of Perfect Turning | Grants high resistance to all damage types, and good chance to reflect spells back to caster. | 2000 gp | equipment |
+| Arcane Conduit | A staff that amplifies the wielder's magical power to extraordinary levels. | 12000 gp | weapon |
+| Aegis Of Eternity | An indestructible shield that grants unparalleled protection. | 10000 gp | armor |
+| Aeon Stone | A mystical stone that grants the bearer control over time itself. | 15000 gp | equipment |
+| Jeweled Zodiac | A decorative zodiac made of precious jewels. | 15000 gp | junk |
+| Diamond Eye | A flawless diamond shaped like an eye, rumored to possess mystical properties. | 20000 gp | junk |
+| Opalescent Skull | A skull made of opalescent material, shimmering with various colors. | 25000 gp | junk |
+| Intelligent Book | A book that possesses its own consciousness and can communicate with its reader. | 30000 gp | junk |
 
 
 ## Items
@@ -384,13 +392,23 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 
 | Item | Description | Effects |
 |------|-------------|---------|
+| Aegis of Eternity | _An indestructible shield that grants unparalleled protection._ | improve AC by 6, 30% resistance to All, On attacked, Deal 2d6 true damage to attacker |
+| Aeon Stone | _A mystical stone that grants the bearer control over time itself._ | On combat start, Grant self Haste (Improve Dexterity by 4, improve initiative by 10, improve attacks per turn by 1, improve AC by 2), On attacked, Attacker suffers Slow (Degrade Dexterity by 5, degrade initiative by 10, degrade attacks per turn by 1) |
 | Amulet of Focus | _A powerful amulet that enhances the wearer's magical abilities._ | improve Intelligence by 3, improve Wisdom by 3, improve bonus spell DC by 2 |
 | Amulet of Health | _A mystical amulet that bolsters the wearer's vitality._ | improve Constitution by 2 |
 | Amulet of Protection | _A protective amulet that increases the wearer's defenses._ | improve AC by 2, 10% resistance to All |
 | Amulet of Vitality | _A minor health charm_ | improve Constitution by 1 |
+| Angelmail | _A radiant suit of armor that provides divine protection to the wearer._ | improve AC by 4, 50% resistance to Radiant, On attacked, Deal 1d8 radiant damage to attacker |
+| Arcane Conduit | _A staff that amplifies the wielder's magical power to extraordinary levels._ | improve bonus spell DC by 5, improve Intelligence by 5 |
 | Belt of Giant Strength | _A sturdy belt that enhances the wearer's physical strength._ | improve Strength by 6 |
+| Bolt Blade | _A sleek blade that crackles with electrical energy, shocking enemies on hit._ | On attack hit, Deal 1d6 lightning damage to target |
+| Bone Armor | _Armor crafted from the bones of ancient creatures, offering unique protection._ | 40% resistance to Necrotic, On attacked, Deal 1d3 necrotic damage to attacker |
 | Boots of Swiftness | _Lightweight boots that increase the wearer's agility._ | improve Dexterity by 2 |
+| Cloak of Invisibility | _A magical cloak that renders the wearer invisible._ | Invisible |
 | Crown of Insight | _An ornate crown that enhances the wearer's wisdom._ | improve Wisdom by 4 |
+| Darkwood Staff | _A staff made from darkwood, enhancing the wielder's spellcasting abilities._ | improve bonus spell DC by 2, improve Intelligence by 2 |
+| Dragonhelm | _A helm forged from dragon scales, providing exceptional protection._ | improve AC by 3, 50% resistance to Fire, On attacked, Deal 1d6 fire damage to attacker |
+| Galvorn Mail | _A suit of mail armor made from the rare and nearly indestructible galvorn metal._ | improve AC by 5, 20% resistance to All |
 | Gloves of Dexterity | _Fine gloves that enhance the wearer's dexterity._ | improve Dexterity by 1 |
 | Helm of Intellect | _A finely crafted helm that sharpens the wearer's mind._ | improve Intelligence by 2 |
 | Helm of the Stars | _A mystical helm that enhances all senses of the wearer._ | improve all stats by 1 |
@@ -407,7 +425,13 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 | Ring of the Firmament | _A celestial ring that grants the wearer resistance to elemental damage._ | 50% resistance to Fire, 50% resistance to Cold, 50% resistance to Lightning |
 | Ring of Thorns | _A magical ring that grants the wearer the ability to counterattack._ | On attacked, Attack attacker |
 | Ring of True Sight | _A magical ring that allows the wearer to see through illusions and invisibility._ | Can perceive invisible entities |
-| Robe of Elvenkind | _A finely crafted robe that enhances the wearer's stealth and agility._ | improve Dexterity by 2, improve evasion by 10, On attacked, Attacker suffers Blinded (Degrade to hit by 4, degrade evasion by 10, degrade all rolls by 2) |
+| Robe of Elvenkind | _A finely crafted robe imbued with a protective aura that enhances the wearer's agility._ | improve Dexterity by 2, improve evasion by 10, On attacked, Attacker suffers Blinded (Degrade to hit by 4, degrade evasion by 10, degrade all rolls by 2); Attacker suffers Slow (Degrade Dexterity by 5, degrade initiative by 10, degrade attacks per turn by 1) |
+| Robe of the Archmagi | _A legendary robe that enhances the wearer's magical prowess._ | improve Intelligence by 4, improve Wisdom by 4, improve bonus spell DC by 4, 15% resistance to All |
+| Staff of Power | _A legendary staff that channels immense magical energy._ | improve bonus spell DC by 6, improve Intelligence by 6, On attack hit, Deal 3d6 force damage to target |
+| Staff of the Necromancer | _A dark staff that empowers necromantic magic._ | improve bonus spell DC by 5, improve Intelligence by 5, On attack hit, Deal 2d6 necrotic damage to target |
+| Sword of Ages | _An ancient sword of immense power._ | On attack hit, Deal 1d4+1 true damage to target; Target suffers Weakened (Degrade Strength by 2, degrade bonus damage by 2) |
+| Sword of Goblinkind | _A mischievous sword that enhances the wielder's cunning and agility._ | improve Dexterity by 3, improve Intelligence by 3, On attack hit, Target suffers Confused (Actions are random) |
+| Tirion's Fury | _A legendary sword imbued with the wrath of a fallen hero._ | On attack hit, Deal 2d6+2 true damage to target; Target suffers Stunned (Cannot take actions, degrade all rolls by 2) |
 | Wardstone | _A mystical stone that provides a protective barrier to the bearer._ | On combat start, Grant self Warded (Improve Save versus Magic by 1, 15% resistance to Fire, 15% resistance to Cold, 15% resistance to Lightning, 50% resistance to Force, Gain =14 + 2 * #level temporary HP) |
 
 ### Consumables
@@ -416,8 +440,10 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 |------------|-------------|---------|
 | Alchemist's Fire | _A sticky, flammable substance that ignites when exposed to air._ | Deal 1d6 fire damage to an enemy. |
 | Antidote | _A small vial of clear liquid that neutralizes poison when consumed._ | Remove Poison from yourself or an ally. |
+| Deck of Multiplicity | _A magical deck of cards with many uses._ | Apply one of the following random effects to 7 random enemies: Grant 7 random enemies Haste (Improve Dexterity by 4, improve initiative by 10, improve attacks per turn by 1, improve AC by 2); Grant 7 random enemies Scaleskin (Improve AC by 8, 25% resistance to Fire); Grant 7 random enemies Giant's Strength (Improve Strength by 6, add =1d3 to bonus damage); Grant 7 random enemies Owl's Wisdom (Improve Wisdom by 2, improve all saves by 1); Grant 7 random enemies Clarity (Improve all rolls by 2, Immunity to Charm); Grant 7 random enemies Focus (Improve to hit by 2, improve Save versus Magic by 3, improve bonus spell DC by 2, improve bonus spell slots by 1); Grant 7 random enemies Raging (Improve to hit by 1, improve bonus damage by 2, degrade AC by 3); Grant 7 random enemies Steelskin (Improve AC by 10, 50% resistance to Piercing, 50% resistance to Slashing); Grant 7 random enemies Bull's Strength (Improve Strength by 2, improve bonus damage by 1); Grant 7 random enemies Ironskin (Improve AC by 5); Grant 7 random enemies Fox's Cunning (Improve Intelligence by 2, improve all rolls by 1); Grant 7 random enemies Eagle's Splendor (Improve Charisma by 2, improve to hit by 1); Grant 7 random enemies Courage (Improve all saves by 2, Immunity to Fear); Grant 7 random enemies Barkskin (Improve AC by 2); Cast ability Death (Instantly kill an enemy.) on 7 random enemies; Cast ability Disintegrate (Deal 10d6 force damage to an enemy.) on 7 random enemies; Cast ability Lightning Bolt (Deal 1d8 electric damage to 2 random enemies; 2 random enemies suffer Paralyzed (Cannot take actions, degrade Strength by 5, degrade Dexterity by 5).) on 7 random enemies; Cast ability Meteor Swarm (Deal 8d6 fire damage to =5 + floor(#level / 2) random enemies; Deal 2d6 bludgeoning damage to =5 + floor(#level / 2) random enemies.) on 7 random enemies; Cast ability Polymorph (An enemy suffers Polymorphed (Displayed name changed to "Sheep", Displayed class changed to "Simple Beast", attack die set to 1d2, MAXHP set to 5, AC set to 10, STR set to 2, CON set to 2, DEX set to 2, INT set to 2, WIS set to 2, CHA set to 2, Abilities set to: Melee, Bleat, Flee, May not use items); Recalculate HP for target.) on 7 random enemies; Cast ability Sandstorm (Deal 2d6 bludgeoning damage to all enemies; All enemies suffer Blinded (Degrade to hit by 4, degrade evasion by 10, degrade all rolls by 2).) on 7 random enemies; Cast ability Chain Lightning (Deal 2d6+#level lightning damage to an enemy cascading =3+floor(#level/2) times.) on 7 random enemies; Cast ability Ice Storm (Deal 3d6 cold damage to all enemies; Deal 1d8 bludgeoning damage to all enemies.) on 7 random enemies; Cast ability Fire Storm (Deal 6d6 fire damage to all enemies.) on 7 random enemies; Cast ability Cone Of Cold (Deal 5d6 cold damage to =1d6 + floor(#level / 2) random enemies.) on 7 random enemies; Cast ability Dispel Magic (Remove .* from yourself or an ally or an enemy.) on 7 random enemies; Deal 1d100 radiant damage to 7 random enemies; Deal 1d60 psychic damage to 7 random enemies; Deal 1d20 true damage to 7 random enemies; Deal 1d12 acid damage to 7 random enemies; Deal 1d10 sonic damage to 7 random enemies; Deal 2d8 poison damage to 7 random enemies; Deal 2d8 cold damage to 7 random enemies; Deal 3d6 fire damage to 7 random enemies; Deal 3d6 necrotic damage to 7 random enemies; Deal 3d6 lightning damage to 7 random enemies; Deal 4d4 force damage to 7 random enemies; Deal 4d3 slashing damage to 7 random enemies; Deal 6d2 piercing damage to 7 random enemies; Deal 8d2 bludgeoning damage to 7 random enemies; 7 random enemies suffer Asleep (Cannot take actions); 7 random enemies suffer Confused (Actions are random); 7 random enemies suffer Fatigued (Degrade Strength by 1, degrade Dexterity by 1, degrade Constitution by 1, degrade all rolls by 1); 7 random enemies suffer Frightened (Degrade to hit by 2, degrade initiative by 5, degrade all rolls by 1, degrade all saves by 2); 7 random enemies suffer Slow (Degrade Dexterity by 5, degrade initiative by 10, degrade attacks per turn by 1); 7 random enemies suffer Weakened (Degrade Strength by 2, degrade bonus damage by 2); 7 random enemies suffer Feebleminded (Degrade Intelligence by 4, degrade Wisdom by 4, degrade Charisma by 4, degrade all rolls by 2, May not use items); 7 random enemies suffer Petrified (Cannot take actions, Immunity to Fear, Immunity to Charm, Immunity to Stun, Immunity to Sleep, Immunity to Poison, Immunity to Disease); 7 random enemies suffer Charmed (Allegiance changed); 7 random enemies suffer Blinded (Degrade to hit by 4, degrade evasion by 10, degrade all rolls by 2); 7 random enemies suffer Deafened (50% resistance to Sonic, degrade bonus damage by 2, degrade AC by 2, degrade to hit by 2, degrade all saves by 1); 7 random enemies suffer Paralyzed (Cannot take actions, degrade Strength by 5, degrade Dexterity by 5); 7 random enemies suffer Poison (On turn end, Deal 1d4 true damage to self); 7 random enemies suffer Silence (Cannot cast spells); Heal 7 random enemies 3d20 HP; Heal 7 random enemies 4d12 HP; Heal 7 random enemies 4d10 HP; Heal 7 random enemies 4d8 HP; Heal 7 random enemies 3d8 HP; Heal 7 random enemies 4d6 HP; Heal 7 random enemies 5d4 HP; Heal 7 random enemies 6d3 HP; Heal 7 random enemies 8d2 HP; Heal 7 random enemies 14 HP; Heal 7 random enemies 10 HP; Heal 7 random enemies 9 HP; Heal 7 random enemies 8 HP; Heal 7 random enemies 6 HP; Summon animal; Summon of class Elemental monster; Summon of class Fiend monster; Summon of class Aberration monster; Summon of class Fey monster; Summon npc. |
 | Elixir of Strength | _A potent brew that temporarily enhances the drinker's physical strength._ | Grant yourself or an ally Bull's Strength (Improve Strength by 2, improve bonus damage by 1). |
 | First Aid Kit | _A small kit containing bandages and salves for treating minor wounds._ | Heal yourself or an ally 1d4+1 HP; Purge yourself or an ally of Bleeding. |
+| Potion of Healing | _A vial of shimmering red liquid that restores a moderate amount of health when consumed._ | Heal yourself or an ally 3d4+3 HP. |
 | Major Potion of Healing | _A vial of glowing red liquid that restores a significant amount of health when consumed._ | Heal yourself or an ally 4d4+4 HP. |
 | Minor Potion of Healing | _A vial of glittering red liquid that restores health when consumed._ | Heal yourself or an ally 2d4+2 HP. |
 | Flask of Oil | _A flask of slippery oil that can be thrown onto a surface or creature to make it more vulnerable to fire._ | An enemy suffers Oiled (200% vulnerability to Fire). |

@@ -361,6 +361,11 @@ export default class AbilityHandler {
     let success = false;
     const events: Omit<GameEvent, "turn">[] = [];
 
+    // could try to 'fix' target combatant reference if needed
+    // if (effect.target === "self" && targetCombatant.id !== user.id) {
+    //   targetCombatant = user;
+    // }
+
     // console.log(`Handling effect ${effect.type} of ability ${name} from ${user.name} to ${targetCombatant.name}`);
 
     // does the target meet all conditions?
@@ -475,7 +480,8 @@ export default class AbilityHandler {
       const statusEffect = this.reifyStatus(effect.status, targetCombatant);
 
       const statusEvents = await status(
-        user, targetCombatant,
+        user,
+        targetCombatant,
         statusEffect.name, { ...statusEffect.effect }, effect.duration || 3
       );
       events.push(...statusEvents);
@@ -623,7 +629,12 @@ export default class AbilityHandler {
       }
       const randomIndex = Math.floor(Math.random() * effect.randomEffects.length);
       const randomEffect = effect.randomEffects[randomIndex];
-      const result = await this.handleEffect(name, randomEffect, user, targetCombatant, context, handlers);
+
+      let nestedTarget = targetCombatant;
+      if (randomEffect.target === "self" && targetCombatant.id !== user.id) {
+        nestedTarget = user;
+      }
+      const result = await this.handleEffect(name, randomEffect, user, nestedTarget, context, handlers);
       success = result.success;
       events.push(...result.events);
     } else if (effect.type === "cycleEffects") {
@@ -812,8 +823,6 @@ export default class AbilityHandler {
     }
 
     const enemies = context?.enemies ?? [];
-    // if (result) {
-    // console.log(`${user.name} successfully uses ${ability.name} on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target.name}!`);
     if (isSpell) {
       if (isOffensive) {
         events.push(...await this.performHooks(

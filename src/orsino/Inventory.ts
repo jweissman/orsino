@@ -23,7 +23,8 @@ export interface Armor {
   weight: string;
   description: string;
   value: number;
-  kind: string;
+  kind: string; // slot
+  type: string; // cloth, leather, metal, etc.
   itemClass: 'armor';
 }
 
@@ -33,10 +34,25 @@ export interface Equipment {
   description: string;
   value: number;
   kind: EquipmentSlot;
-  itemClass: 'equipment';
+  itemClass?: 'equipment';
 }
 
 export class Inventory {
+  static isArmorProficient(item: Armor, armorProficiencies: {
+    weight?: string[]; all?: boolean; kind?: string[]; 
+}) {
+    if (armorProficiencies.all) {
+      return true;
+    }
+    if (armorProficiencies.kind && !armorProficiencies.kind.includes(item.type)) {
+      return false;
+    }
+    if (armorProficiencies.weight && !armorProficiencies.weight.includes(item.weight)) {
+      return false;
+    }
+    return true;
+  }
+
   static isWeaponProficient(item: Weapon, weaponProficiencies: { all?: boolean; kind?: string[]; weight?: string[]; }) {
     if (weaponProficiencies.all) {
       return true;
@@ -50,7 +66,17 @@ export class Inventory {
     return true;
   }
 
-  static isItemProficient(kind: string, aspect: string, itemProficiencies: { all?: boolean; kind?: string[]; withoutAspect?: string }): boolean {
+  static isItemProficient(
+    // kind: string, aspect: string,
+    item: ItemInstance,
+    itemProficiencies: { all?: boolean; kind?: string[]; withoutAspect?: string }
+  ): boolean {
+    let kind = '';
+    let aspect = '';
+    if (item.itemClass === 'consumable') {
+      kind = item.kind || '';
+      aspect = item.aspect || '';
+    }
     if (itemProficiencies.all) {
       return true;
     }

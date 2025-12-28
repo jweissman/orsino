@@ -331,7 +331,7 @@ export default class Dungeoneer {
 
   async presentCharacterRecords(): Promise<void> {
     for (const c of this.playerTeam.combatants) {
-      await Presenter.printCharacterRecord(c);
+      await Presenter.printCharacterRecord(c, this.playerTeam.inventory);
     }
   }
 
@@ -525,7 +525,7 @@ export default class Dungeoneer {
       const choice = await this.select("What would you like to do?", options) as string;
       if (choice === "status") {
         for (const c of this.playerTeam.combatants) {
-          await Presenter.printCharacterRecord(c);
+          await Presenter.printCharacterRecord(c, this.playerTeam.inventory);
         }
         if (Object.keys(Inventory.quantities(this.playerTeam.inventory)).length > 0) {
           this.outputSink(`Inventory:`);

@@ -10,14 +10,14 @@ import Words from "../tui/Words";
 import { Combatant } from "../types/Combatant";
 import { Roll } from "../types/Roll";
 import { Team } from "../types/Team";
-import { never } from "../util/never";
 import { Commands } from "./Commands";
 import { Fighting } from "./Fighting";
 import Automatic from "../tui/Automatic";
 import { Select } from "../types/Select";
 import { Answers } from "inquirer";
+import Deem from "../../deem";
 
-type PlayerCharacterRace = "human" | "elf" | "dwarf" | "halfling" | "orc" | "fae" | "gnome";
+type PlayerCharacterRace = string; // "human" | "elf" | "dwarf" | "halfling" | "orc" | "fae" | "gnome";
 
 export default class CharacterRecord {
 
@@ -32,36 +32,15 @@ export default class CharacterRecord {
   }
 
   static get pcRaces(): PlayerCharacterRace[] {
-    return ["human", "elf", "dwarf", "halfling", "orc", "fae", "gnome"];
+    return Deem.evaluate("gather(racialModifier)") as PlayerCharacterRace[];
   }
 
   static validClassesForRace(race: PlayerCharacterRace): string[] {
-    let occupationOptions: string[] = [];
-    switch (race) {
-      case "human":
-        occupationOptions = ["warrior", "thief", "mage", "cleric", "ranger", "bard"];
-        break;
-      case "elf":
-        occupationOptions = ["warrior", "thief", "mage", "ranger", "bard"];
-        break;
-      case "dwarf":
-        occupationOptions = ["warrior", "thief", "cleric"];
-        break;
-      case "halfling":
-        occupationOptions = ["warrior", "thief", "bard"];
-        break;
-      case "orc":
-        occupationOptions = ["warrior", "thief", "ranger"];
-        break;
-      case "fae":
-        occupationOptions = ["mage", "cleric", "bard"];
-        break;
-      case "gnome":
-        occupationOptions = ["thief", "mage", "bard"];
-        break;
-      default: never(race);
+    let options = Deem.evaluate("dig(lookup(racialModifier, '" + race + "'), occupationOptions)") as string[];
+    if (options.includes("all")) {
+      return Deem.evaluate("gather(classModifier)") as string[];
     }
-    return occupationOptions;
+    return options;
   }
 
   static async pickSpell(
@@ -106,7 +85,7 @@ export default class CharacterRecord {
       if (shouldWizard === 'Yes') {
         const raceSelect = await selectionMethod(
           'Select a race for this PC: ' + prompt,
-          ['human', 'elf', 'dwarf', 'halfling', 'orc', 'fae', 'gnome']
+          this.pcRaces
         ) as PlayerCharacterRace;
 
         const occupationSelect = await selectionMethod(
@@ -117,7 +96,7 @@ export default class CharacterRecord {
         pc = pcGenerator({ setting: 'fantasy', race: raceSelect, class: occupationSelect });
         await this.pickInitialSpells(pc, selectionMethod);
 
-        await Presenter.printCharacterRecord(pc);
+        await Presenter.printCharacterRecord(pc, []);
         const confirm = await selectionMethod(
           'Do you want to use this PC? ' + prompt,
           ['Yes', 'No']
@@ -135,7 +114,7 @@ export default class CharacterRecord {
         });
         await this.pickInitialSpells(pc, Automatic.randomSelect.bind(Automatic));
 
-        await Presenter.printCharacterRecord(pc);
+        await Presenter.printCharacterRecord(pc, []);
         accepted = await selectionMethod(
           'Do you want to use this PC? ' + prompt,
           ['Yes', 'No']
@@ -231,7 +210,7 @@ export default class CharacterRecord {
           // console.warn(Stylist.bold(`A PC named ${(pc.name)} is already in the party. Please choose a different name.`));
           continue;
         }
-        await Presenter.printCharacterRecord(pc);
+        await Presenter.printCharacterRecord(pc, []);
         party.push(pc);
       }
     };

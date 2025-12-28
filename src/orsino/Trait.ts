@@ -9,12 +9,12 @@ export interface Trait {
   requirements: {
     level?: number;
     // for racial/class traits
-    race?: "human" | "elf" | "dwarf" | "halfling" | "orc" | "gnome" | "fae";
-    class?: "mage" | "warrior" | "thief" | "ranger" | "cleric" | "bard";
+    race?: string; // "human" | "elf" | "dwarf" | "halfling" | "orc" | "gnome" | "fae";
+    class?: string;  //"mage" | "warrior" | "thief" | "ranger" | "cleric" | "bard";
 
     // for party traits
-    races?: ("human" | "elf" | "dwarf" | "halfling" | "orc" | "gnome" | "fae")[];
-    formation?: ("mage" | "warrior" | "thief" | "ranger" | "cleric" | "bard")[];
+    races?: string[]; //("human" | "elf" | "dwarf" | "halfling" | "orc" | "gnome" | "fae")[];
+    formation?: string[]; //("mage" | "warrior" | "thief" | "ranger" | "cleric" | "bard")[];
   }
   statuses: StatusEffect[];
   abilities?: string[];
