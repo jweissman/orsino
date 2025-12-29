@@ -201,7 +201,6 @@ export default class Combat {
       // if (slot === 'weapon' || slot === 'body') {
         const weapon = materializeItem(equipmentKey, inventory) as ItemInstance;
         if (weapon.effect) {
-          // console.debug("weapon materialized", weapon.key, weapon.name, weapon.kind, weapon.effect?.onAttackHit);
 
           equipmentList.push({ ...weapon, sourceKey: slot } as unknown as StatusEffect);
         }
@@ -218,7 +217,6 @@ export default class Combat {
     combatant.passiveEffects = combatant.passiveEffects.filter(e => !e.equipment);
     for (const effect of equipmentList) {
       if (!combatant.passiveEffects.map(e => e.sourceKey).includes(effect.sourceKey)) {
-        // console.debug(`Applying equipment effect ${effect.name} to ${combatant.name}`);
         combatant.passiveEffects.push({ ...effect, equipment: true } );
       }
     }
@@ -263,7 +261,9 @@ export default class Combat {
         let meetsCondition = true;
         if (it.condition.weapon) {
           if (it.condition.weapon.weight) {
-            const weapon = Fighting.effectiveWeapon(combatant, inventory);
+            const weapon = Fighting.effectiveWeapon(
+              combatant, { subject: combatant, allies: [combatant], enemies: [], inventory, enemyInventory: [] }
+            );
             // const weaponRecord = Deem.evaluate(`lookup(masterWeapon, '${combatant.weapon}')`) as unknown as { weight: string };
             if (weapon.weight !== it.condition.weapon.weight) {
               meetsCondition = false;
@@ -339,10 +339,7 @@ export default class Combat {
       inventory: team ? team.inventory || [] : [],
       enemyInventory: this._teams.filter(t => t !== team).flatMap(t => t.inventory || []),
     }
-    console.log("Constructed combat context for", Presenter.minimalCombatant(combatant), ":", {
-      inventory: ctx.inventory.length,
-      enemyInventory: ctx.enemyInventory.length,
-    });
+    
     return ctx;
   }
 
@@ -365,7 +362,6 @@ export default class Combat {
 
   validateAction(ability: Ability, combatant: Combatant, allies: Combatant[], enemies: Combatant[]): boolean {
     const valid = this._actionIsValid(ability, combatant, allies, enemies);
-    // console.warn("Validating action:", ability.name, "for", Presenter.minimalCombatant(combatant), "valid:", valid);
     return valid;
   }
 
@@ -426,7 +422,8 @@ export default class Combat {
     }
 
     if (condition?.hasInterceptWeapon) {
-      const effectiveWeapon = Fighting.effectiveWeapon(combatant, this.teamFor(combatant)?.inventory || []);
+      const effectiveWeapon = Fighting.effectiveWeapon(combatant, this.contextForCombatant(combatant));
+        //this.teamFor(combatant)?.inventory || []);
       // disabled = !combatant.hasInterceptWeapon;
       disabled = effectiveWeapon.intercept !== true;
     }
@@ -473,7 +470,8 @@ export default class Combat {
 
       // if (!combatant.traits.includes("inanimate")) {
       if (activeFx.hasPrimaryAttack !== false) {
-        const weapon = Fighting.effectiveWeapon(combatant, this.teamFor(combatant)?.inventory || []);
+        const weapon = Fighting.effectiveWeapon(combatant, this.contextForCombatant(combatant));
+          //this.teamFor(combatant)?.inventory || []);
         if (weapon) {
           if (weapon.missile) {
             if (!uniqAbilities.includes("ranged")) {
@@ -516,32 +514,23 @@ export default class Combat {
     if (!combatant) {
       throw new Error("No combatant provided to pcTurn");
     }
-
-    console.warn(`It's ${Presenter.minimalCombatant(combatant)}'s turn.`);
-
     const inventoryItems = this._teams[0].inventory || [];
-    // console.warn(`Inventory items for player team:`, inventoryItems.map(ii => `${ii.name} (${ii.key})` ).join(", "));
     const itemQuantities = Inventory.quantities(inventoryItems);
     const itemAbilities: Ability[] = [];
     for (const [itemKey, qty] of Object.entries(itemQuantities)) {
       // const itemAbility = Deem.evaluate(`lookup(consumables, '${itemKey}')`) as unknown as Ability;
       const item = this._teams[0].inventory?.find(ii => ii.key === itemKey);
       if (!item) {
-        // console.warn(`Could not find item instance for key ${itemKey} in inventory.`);
         throw new Error(`Could not find item instance for key ${itemKey} in inventory.`);
       }
       if (item.itemClass !== "consumable") {
-        // console.warn(`Skipping non-consumable item ${itemKey} in inventory for turn actions.`);
         continue;
       }
       if (!item.shared && item.ownerId !== combatant.id) {
-        // console.warn(`Skipping item ${itemKey} not owned by ${Presenter.minimalCombatant(combatant)} and not shared.`);
         continue;
       }
-      // const itemAbility = Inventory.abilityForItem(itemKey);
       const proficient = Inventory.isItemProficient(item, combatant.itemProficiencies || {})
       if (!proficient) {
-        // console.warn(`Skipping item ${itemKey} since ${Presenter.minimalCombatant(combatant)} is not proficient with it.`);
         continue;
       }
 
@@ -564,7 +553,6 @@ export default class Combat {
           }
         }
         if (totalCharges <= 0) {
-          // console.warn(`Skipping item ${itemKey} since it has no charges left.`);
           continue;
         }
         itemAbilities.push({
@@ -572,14 +560,12 @@ export default class Combat {
           description: (item.description || 'unidentified item') + `(${totalCharges} charges left)`,
           key: itemKey
         } as unknown as Ability);
-      } else {
-        // console.warn(`Skipping item ${itemKey} since quantity is ${qty}.`);
       }
     }
 
     const fx = Fighting.gatherEffects(combatant);
     let coreAbilityKeys = combatant.abilities;
-    const weapon = Fighting.effectiveWeapon(combatant, this.teamFor(combatant)?.inventory || []);
+    const weapon = Fighting.effectiveWeapon(combatant, this.contextForCombatant(combatant));
     if (weapon.missile) {
       if (!coreAbilityKeys.includes("ranged")) {
         coreAbilityKeys.unshift("ranged");
@@ -643,13 +629,11 @@ export default class Combat {
     if (action.name === "Flee") {
       const succeed = Math.random() < 0.5;
       if (succeed) {
-        // console.log("You successfully flee from combat!");
         this.winner = "Enemy";
         // this.combatantsByInitiative = [];
         await this.emit({ type: "flee", subject: combatant } as Omit<FleeEvent, "turn">);
         return { haltRound: true };
       }
-      // console.log("You attempt to flee but could not escape!");
       return { haltRound: false };
 
     } else if (action.name === "Wait") {
@@ -678,7 +662,6 @@ export default class Combat {
       } else {
         throw new Error(`Invalid target count specification for randomEnemies: ${action.target[1]}`);
       }
-      // console.warn(`Selecting ${count} random enemy targets for ${action.name}...`);
       const possibleTargets = Combat.living(enemies);
       targetOrTargets = [];
       for (let i = 0; i < count; i++) {
@@ -730,7 +713,6 @@ export default class Combat {
 
     const ctx = this.contextForCombatant(combatant);
     const numTargets = Array.isArray(targetOrTargets) ? targetOrTargets.length : 1;
-    console.warn(`${combatant.forename} ${Combat.describeAbility(action)} on ${numTargets} target${numTargets > 1 ? "s" : ""}.`);
     const { events } = await AbilityHandler.perform(action, combatant, targetOrTargets, ctx, Commands.handlers(this.roller));
     await this.emitAll(events, Combat.describeAbility(action), combatant);
 
@@ -759,7 +741,6 @@ export default class Combat {
       score: AbilityScoring.scoreAbility(ability, combatant, allies, enemies)
     }));
 
-    // console.log(`${combatant.forename} rates abilities:`, scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`).join(", "));
     scoredAbilities = scoredAbilities.filter(sa => sa.score > 0);
 
     scoredAbilities.sort((a, b) => b.score - a.score);
@@ -780,9 +761,6 @@ export default class Combat {
       this.emit({ type: "wait", subject: combatant } as Omit<WaitEvent, "turn">);
       return { haltRound: false };
     }
-    // console.log(
-    //   `Considering best targets for ${action?.name}...`, { allies: allies.map(a => a.name), enemies: enemies.map(e => e.name) }
-    // )
     const targetOrTargets: Combatant | Combatant[] = AbilityScoring.bestAbilityTarget(action, combatant, allies, enemies);
 
     if (targetOrTargets === null || targetOrTargets === undefined) {
@@ -804,7 +782,6 @@ export default class Combat {
     }
 
     // invoke the action
-    console.debug(`${Presenter.minimalCombatant(combatant)} ${Combat.describeAbility(action)} on ${Array.isArray(targetOrTargets) ? targetOrTargets.map(t => t.forename).join(", ") : (targetOrTargets as Combatant).forename}.`);
     const ctx = this.contextForCombatant(combatant);
 
     const { events } = await AbilityHandler.perform(action, combatant, targetOrTargets, ctx, Commands.handlers(this.roller));
@@ -872,7 +849,6 @@ export default class Combat {
       //   playerControlled = !playerControlled;
       // }
     }
-    // console.log("allegiance check:", { playerControlled, allegianceEffect: allegianceEffect?.name, controlEffect: controlEffect?.name });
 
     let attacksPerTurn = combatant.attacksPerTurn || 1;
     
@@ -935,7 +911,6 @@ export default class Combat {
 
     // ask to press enter
     if (!this.dry) {
-      console.log(`\nThe next round begins...`);
       process.stdin.setRawMode(true);
       process.stdin.resume();
       await new Promise<void>(resolve => {
@@ -963,7 +938,6 @@ export default class Combat {
       if (this.enemyTeam.combatants.every(c => c.hp <= 0)) {
         this.winner = "Player";
 
-        console.log(Stylist.bold("All enemies defeated! You are victorious!"));
         break;
       }
       if (combatant.hp <= 0) { continue; } // Skip defeated combatants

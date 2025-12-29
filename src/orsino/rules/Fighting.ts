@@ -84,11 +84,11 @@ export class Fighting {
 
   static effectiveArmorClass(
     combatant: Combatant,
-    inventory: ItemInstance[]
+    context: CombatContext
   ): number {
     let ac = 10; // default AC
 
-    const effectiveArmor = this.effectiveArmor(combatant, inventory || []);
+    const effectiveArmor = this.effectiveArmor(combatant, context);
     if (effectiveArmor && effectiveArmor.ac !== undefined) {
       ac -= effectiveArmor.ac; // || ac;
     }
@@ -136,8 +136,11 @@ export class Fighting {
     return stats;
   }
 
-  static effectiveAttackDie(combatant: Combatant, inventory: ItemInstance[]): string {
-    let weapon = this.effectiveWeapon(combatant, inventory || []);
+  static effectiveAttackDie(
+    combatant: Combatant,
+    context: CombatContext
+  ): string {
+    let weapon = this.effectiveWeapon(combatant, context);
     let baseAttackDie = weapon.damage || "1d2";
     const effectList = this.effectList(combatant);
     effectList.forEach(it => {
@@ -152,9 +155,10 @@ export class Fighting {
 
   static effectiveWeapon(
     combatant: Combatant,
-    inventory: ItemInstance[]
+    context: CombatContext
   ): (Weapon & ItemInstance) {
-    const weapon = combatant.equipment?.weapon || 'fist'; //weapon;
+    const weapon = combatant.equipment?.weapon || 'fist';
+    let inventory = Fighting.inventoryFor(combatant, context);
     const materializedWeapon = materializeItem(weapon, inventory);
     if (materializedWeapon && materializedWeapon.itemClass === 'weapon') {
       return materializedWeapon as unknown as (Weapon & ItemInstance);
@@ -171,13 +175,14 @@ export class Fighting {
 
   static effectiveArmor(
     combatant: Combatant,
-    inventory: ItemInstance[]
+    context: CombatContext
   ): (Armor & ItemInstance) | null {
     console.log("Resolving effective armor for", Presenter.minimalCombatant(combatant));
     const armor = combatant.equipment?.body;
     if (!armor) {
       return null;
     }
+    let inventory = Fighting.inventoryFor(combatant, context);
     const materializedArmor = materializeItem(armor, inventory);
     if (materializedArmor && materializedArmor.itemClass === 'armor') {
       return materializedArmor as unknown as (Armor & ItemInstance);
@@ -293,8 +298,7 @@ export class Fighting {
     const dexMod = this.statMod(effectiveAttacker.dex || 10);
 
     const toHitTurnBonus = (this.turnBonus(attacker, ["toHit"])).toHit || 0;
-    const attackerWeapon = this.effectiveWeapon(attacker, this.inventoryFor(attacker, attackerContext));
-    //attackerContext.inventory);
+    const attackerWeapon = this.effectiveWeapon(attacker, attackerContext);
     const isMissile = attackerWeapon.missile === true;
     const toHitBonus = (isMissile ? dexMod : strMod)  // DEX affects accuracy for missiles
       + toHitTurnBonus;                 // Any temporary bonuses to hits
@@ -303,7 +307,7 @@ export class Fighting {
     const thac0 = this.thac0(attacker.level);
     const effectiveDefender = this.effectiveStats(defender);
     const defenderAcBonus = this.statMod(effectiveDefender.dex || 10);
-    const effectiveAc = this.effectiveArmorClass(defender, this.inventoryFor(defender, attackerContext));
+    const effectiveAc = this.effectiveArmorClass(defender, attackerContext);
     const ac = effectiveAc - defenderAcBonus;
     const whatNumberHits = thac0 - ac - toHitBonus;
 
@@ -336,7 +340,7 @@ export class Fighting {
       //   throw new Error(`Attacker ${attacker.name} does not have an attackDie defined.`);
       // }
 
-      const attackDie = this.effectiveAttackDie(attacker, this.inventoryFor(attacker, attackerContext));
+      const attackDie = this.effectiveAttackDie(attacker, attackerContext); // this.inventoryFor(attacker, attackerContext));
 
       const weaponVerb =
         // attacker.hasMissileWeapon ? "shoot" : (this.weaponDamageKindVerbs[attacker.damageKind || "slashing"] || "strike");

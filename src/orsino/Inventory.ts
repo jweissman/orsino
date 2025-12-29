@@ -180,6 +180,9 @@ export class Inventory {
 
     // If it looks like an id, don't try to treat it like a key
     if (ref.includes(":")) {
+      if (inventory.length === 0) {
+        console.trace(`materialize called with id=${ref} but empty inventory; caller is wrong`);
+      }
       throw new Error(
         `Missing item instance ${ref} in provided inventory (len=${inventory.length}). ` +
         `This ref looks like an id, not a key.`

@@ -394,7 +394,7 @@ export class Commands {
     const events = [];
     let { damage, critical, success } = await Fighting.attack(roller, combatant, target, context);
     const targetOriginalHp = target.hp;
-    const weapon = Fighting.effectiveWeapon(combatant, context.inventory);
+    const weapon = Fighting.effectiveWeapon(combatant, context); //.inventory);
     const bonusMeleeDamage = Fighting.gatherEffects(combatant).bonusMeleeDamage || 0;
     if (bonusMeleeDamage > 0 && Fighting.isMeleeWeapon(weapon)) {
       damage += bonusMeleeDamage;
@@ -412,14 +412,13 @@ export class Commands {
 
     if (success && lethal && spillover) {
       // if lethal and spillover damage, apply to another target
-      if (damage > targetOriginalHp) { //} + damage) {
+      if (damage > targetOriginalHp) {
         let spillover = damage - (targetOriginalHp);
         let otherTargets = context.enemies.filter(c => c !== target && c.hp > 0);
         while (otherTargets.length > 0) {
           const newTarget = otherTargets[Math.floor(Math.random() * otherTargets.length)];
-          // console.log(`${Presenter.combatant(target)} spilled over ${spillover} damage to ${Presenter.combatant(newTarget)}!`);
           const newTargetOriginalHp = newTarget.hp;
-          const weapon = Fighting.effectiveWeapon(combatant, context.inventory);
+          // const weapon = Fighting.effectiveWeapon(combatant, context.inventory);
           const spilloverEvents = await Commands.handleHit(
             combatant, newTarget, spillover, false, `${combatant.forename}'s ${Words.humanize(weapon.name)} (spillover, ${spillover} damage remaining)`, true, weapon.type || "true",
             null, // no cascade for normal attacks

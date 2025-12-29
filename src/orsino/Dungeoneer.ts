@@ -237,10 +237,10 @@ export default class Dungeoneer {
 
     // assign dungeon environment to each combatants currentEnvironment
     this.playerTeam.combatants.forEach(c => c.currentEnvironment = this.dungeon.terrain);
-    for (const c of this.playerTeam.combatants) {
-      // acquire a robe_of_the_archmagi for testing
-      await this.acquireItem(c, Inventory.materialize("robe_of_the_archmagi", []));
-    };
+    // for (const c of this.playerTeam.combatants) {
+    //   // acquire a robe_of_the_archmagi for testing
+    //   await this.acquireItem(c, Inventory.materialize("robe_of_the_archmagi", []));
+    // };
 
     while (!this.isOver()) {
       const room = this.currentRoom;

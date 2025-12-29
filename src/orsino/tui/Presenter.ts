@@ -4,7 +4,7 @@ import Words from "./Words";
 import { Fighting } from "../rules/Fighting";
 import AbilityHandler, { Ability, AbilityEffect, TargetKind } from "../Ability";
 import TraitHandler from "../Trait";
-import Combat from "../Combat";
+import Combat, { CombatContext } from "../Combat";
 import StatusHandler, { StatusEffect, StatusModifications } from "../Status";
 import { never } from "../util/never";
 import { ItemInstance, materializeItem } from "../types/ItemInstance";
@@ -55,8 +55,9 @@ export default class Presenter {
       record += (`**${Words.capitalize(key)}:** ${Words.humanize(value.toString())}<br/>\n`);
     }
 
-    const effectiveWeapon = Fighting.effectiveWeapon(combatant, []);
-    const effectiveArmorClass = Fighting.effectiveArmorClass(combatant, []);
+    let pseudocontext: CombatContext = { subject: combatant, inventory: [], allies: [combatant], enemies: [], enemyInventory: [] };
+    const effectiveWeapon = Fighting.effectiveWeapon(combatant, pseudocontext);
+    const effectiveArmorClass = Fighting.effectiveArmorClass(combatant, pseudocontext);
 
     const core = {
       "Attack Die": effectiveWeapon.damage,
@@ -162,8 +163,9 @@ export default class Presenter {
       return this.padLiteralEnd(`${Stylist.bold(Words.capitalize(key))} ${Words.humanize(value.toString())}`, 25);
     }).join('   ')) + "\n";
 
-    const effectiveWeapon = Fighting.effectiveWeapon(combatant, inventory);
-    const effectiveArmorClass = Fighting.effectiveArmorClass(combatant, inventory);
+    let pseudocontext: CombatContext = { subject: combatant, inventory: inventory, allies: [combatant], enemies: [], enemyInventory: [] };
+    const effectiveWeapon = Fighting.effectiveWeapon(combatant, pseudocontext);
+    const effectiveArmorClass = Fighting.effectiveArmorClass(combatant, pseudocontext);
     const bolt = Stylist.colorize('⚡', 'yellow');
     const core = {
       "Attack Die": Stylist.colorize(effectiveWeapon.damage, 'red'),
