@@ -164,10 +164,12 @@
 | Adventurer | _Venturing Guild_ | **Lisan Al Gaib** - While in a desert environment improve to hit by 2, improve search bonus by 1<br/> |
 | Agile | _Agile_ | **Graceful** - Improve AC by 1, improve Save versus Magic by 1<br/> |
 | Air Affinity | _Air Affinity_ | **Air Affinity** - 50% resistance to Lightning, 50% resistance to Cold, 100% vulnerability to Fire, Immunity to Paralyze<br/> |
+| Automatic Fire | _Automatic Fire_ | **Countermeasures** - On enemy attack, Attack attacker; Attack attacker; Attack attacker<br/> |
 | Barbarian | _Barbarian_ | *You gain the following abilities:*<br/>**Rage** - Grant yourself Raging (Improve to hit by 1, improve bonus damage by 2, degrade AC by 3).<br/>**Whirlwind Attack** - Attack all enemies.<br/>**Reckless Attack** - Attack an enemy; Attack an enemy; Self suffers Reckless (Degrade to hit by 2, degrade AC by 2).<br/> |
 | Battle Cry | _Battle Cry_ | **Fearsome Shout** - On kill, Grant self Battlecry (Add =1d3 to bonus damage)<br/> |
 | Celestial | _Holy_ | **Celestial Radiance** - 50% resistance to Radiant, 50% resistance to Necrotic, add 1d4 to bonus healing<br/> |
 | Construct | _Automaton_ | **Constructed Resilience** - Immunity to Poison, Immunity to Disease, Immunity to Sleep, 50% resistance to Bludgeoning, 50% resistance to Piercing, 50% resistance to Slashing<br/> |
+| Counter Arcane | _Counter Arcane_ | **Arcane Ward** - Improve Save versus Magic by 3, 10% resistance to All, add 5% to spell reflection chance<br/>**Mage Punishment** - On enemy offensive casting, Deal 1d4 true damage to caster<br/> |
 | Curious | _Curious_ | **Inquisitive Mind** - Improve examine bonus by 4, +10% XP gain<br/> |
 | Cursed | _Cursed_ | **Cursed Fate** - 100% vulnerability to Radiant, degrade Save versus Magic by 2, degrade all rolls by 1<br/> |
 | Deepfolk | _Dwarf Clan_ | **Stonecunning** - While in a cave environment improve search bonus by 1<br/> |
@@ -215,6 +217,7 @@
 | Tragedian | _Troupe_ | **Resonant Harmony** - Improve status duration by 1<br/> |
 | Undead | _Brought Back_ | **Undead Nature** - Immunity to Poison, Charm, Sleep, Disease<br/>**Radiant Vulnerability** - 100% vulnerability to Radiant<br/> |
 | Versatile | _Versatile_ | **Jack Of All Trades** - Improve search bonus by 1, improve examine bonus by 1, improve pick lock bonus by 1, improve disarm trap bonus by 1<br/> |
+| Wall | _Wall_ | **Defender** - Improve AC by 2, 20% resistance to Bludgeoning, 20% resistance to Piercing, 20% resistance to Slashing, On enemy attack, Attack attacker<br/> |
 | Warbander | _War Band_ | **Battle Hardened** - On level up, Permanently increase self Max HP by 1<br/>**Martial Focus** - Improve to hit by 1<br/> |
 | Water Affinity | _Water Affinity_ | **Water Affinity** - 50% resistance to Cold, 100% vulnerability to Fire, 100% vulnerability to Lightning, Immunity to Will<br/> |
 | Wild | _Wild_ | **Wild** - Improve all rolls by 1, improve to hit by 2, improve bonus damage by 2, improve evasion by 2, 10% resistance to All<br/> |
@@ -392,7 +395,8 @@
 | [<small> ☠️ Mass Curse</small>](#Mass Curse) | [<small> 🌿 Heal Ally</small>](#Heal Ally) | [<small> 🌿 Resist Fire</small>](#Resist Fire) | [<small> 🌿 Rally</small>](#Rally) | [<small> ☠️ Death Touch</small>](#Death Touch) | [<small> ☠️ Summon Lich</small>](#Summon Lich) | [<small> 🍃 Ironskin</small>](#Ironskin) |  |  |  | 
 | [<small> 🌞 Sunmark</small>](#Sunmark) | [<small> ☠️ Life Drain</small>](#Life Drain) | [<small> ⚖️ Shield of Faith</small>](#Shield of Faith) | [<small> 🍃 Stoneskin</small>](#Stoneskin) | [<small> 🌿 Raise Dead</small>](#Raise Dead) | [<small> 🌞 Sunburst</small>](#Sunburst) |  |  |  |  | 
 |  | [<small> ⚖️ Protection from Evil</small>](#Protection from Evil) | [<small> ☠️ Terror</small>](#Terror) |  |  |  |  |  |  |  | 
-|  | [<small> 🌿 Remove Fear</small>](#Remove Fear) | [<small> 🌞 Turn Undead</small>](#Turn Undead) |  |  |  |  |  |  |  | 
+|  | [<small> 🌞 Pure Beam</small>](#Pure Beam) | [<small> 🌞 Turn Undead</small>](#Turn Undead) |  |  |  |  |  |  |  | 
+|  | [<small> 🌿 Remove Fear</small>](#Remove Fear) |  |  |  |  |  |  |  |  | 
 |  | [<small> ⚔️ Smite Evil</small>](#Smite Evil) |  |  |  |  |  |  |  |  | 
 
 | Name | Level | School/Domain | Description | Details |
@@ -426,6 +430,7 @@
 | <p id="Mass Curse">Mass Curse</p> | Cantrip | death domain | _Your venomous words fill your enemies with a sense of doom._ | All enemies suffer Cursed (Degrade all stats by 1). |
 | <p id="Prayer">Prayer</p> | 2 | life domain | _Bolster your team with a prayer._ | Grant your party Praying (Improve to hit by 1, improve all saves by 2, improve bonus healing by 2, Gain 10 temporary HP). |
 | <p id="Protection from Evil">Protection from Evil</p> | 1 | law domain | _Grant immunity to charm and fear for 6 rounds._ | Grant an ally Protected (50% resistance to Necrotic, Immunity to Charm); Grant an ally Courage (Improve all saves by 2, Immunity to Fear). |
+| <p id="Pure Beam">Pure Beam</p> | 1 | light domain | _A beam of pure radiant energy that damages undead and evil creatures._ | Deal 1d4 radiant damage to an enemy; Deal 3d4 radiant damage to an enemy if undead. |
 | <p id="Raise Dead">Raise Dead</p> | 4 | life domain | _Restore life to the dead._ | Restore a fallen ally to life with 50% health. |
 | <p id="Rally">Rally</p> | 3 | life domain | _Restore your team's spirit._ | Heal all allies 1d6 HP. |
 | <p id="Remove Fear">Remove Fear</p> | 1 | life domain | _Calm a frightened ally._ | Remove fear from an ally. |

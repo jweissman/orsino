@@ -1351,15 +1351,15 @@
           {
             "type": "randomEffect",
             "randomEffects": [
-              { "type": "cast", "spellName": "Magic Missile" },
-              { "type": "cast", "spellName": "Fireball" },
-              { "type": "cast", "spellName": "Lightning Bolt" },
-              { "type": "cast", "spellName": "Cone of Cold" },
-              { "type": "cast", "spellName": "Invisibility", "target": "self" },
-              { "type": "cast", "spellName": "Fly", "target": "self" },
-              { "type": "cast", "spellName": "Heal", "target": "self" },
-              { "type": "cast", "spellName": "Summon Monster" },
-              { "type": "cast", "spellName": "Summon Elemental" }
+              { "type": "cast", "spellName": "missile" },
+              { "type": "cast", "spellName": "fireball" },
+              { "type": "cast", "spellName": "lightning_bolt" },
+              { "type": "cast", "spellName": "cone_of_cold" },
+              { "type": "cast", "spellName": "invisibility", "target": "self" },
+              { "type": "cast", "spellName": "flight", "target": "self" },
+              { "type": "cast", "spellName": "heal", "target": "self" },
+              { "type": "cast", "spellName": "summon_monster" },
+              { "type": "cast", "spellName": "summon_elemental" }
             ]
           }
         ]
