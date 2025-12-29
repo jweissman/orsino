@@ -38,11 +38,12 @@ export type KillEvent = BaseEvent & { type: "kill"; };
 export type FallenEvent = BaseEvent & { type: "fall" };
 export type FleeEvent = BaseEvent & { type: "flee" };
 
+export type CastEvent = BaseEvent & { type: "cast"; spellName: string; source?: string };
+
 export type ActedRandomly = BaseEvent & { type: "actedRandomly" };
 export type HealEvent = BaseEvent & { type: "heal"; amount: number };
 export type DefendEvent = BaseEvent & { type: "defend"; bonusAc: number };
-export type QuaffEvent = BaseEvent & { type: "quaff" };
-export type SummonEvent = BaseEvent & { type: "summon" };
+export type SummonEvent = BaseEvent & { type: "summon", source?: string };
 export type UnsummonEvent = BaseEvent & { type: "unsummon" };
 export type SaveEvent = BaseEvent & { type: "save"; success: boolean; dc: number; immune: boolean; reason: string; versus: string; };
 export type ReactionEvent = BaseEvent & { type: "reaction"; reactionName: string; success: boolean };
@@ -59,7 +60,7 @@ export type UntargetableEvent = BaseEvent & { type: "untargetable"; abilityName:
 export type ResistantEvent = BaseEvent & { type: "resist"; damageKind: DamageKind; originalDamage: number; finalDamage: number; sources: string[] };
 export type VulnerableEvent = BaseEvent & { type: "vulnerable"; damageKind: DamageKind; originalDamage: number; finalDamage: number; sources: string[] };
 
-export type StatusEffectEvent = BaseEvent & { type: "statusEffect"; effectName: string; effect: StatusModifications; duration: number };
+export type StatusEffectEvent = BaseEvent & { type: "statusEffect"; effectName: string; effect: StatusModifications; duration: number; source: string };
 export type StatusExpireEvent = BaseEvent & { type: "statusExpire"; effectName: string };
 export type StatusExpiryPreventedEvent = BaseEvent & { type: "statusExpiryPrevented"; reason: string };
 
@@ -69,6 +70,7 @@ export type CombatEvent =
   | ActionEvent
   | ActedRandomly
   | HitEvent
+  | CastEvent
   | DamageBonus
   | DamageReduction
   | DamageAbsorb
@@ -85,7 +87,6 @@ export type CombatEvent =
   | HealEvent
   | DefendEvent
   | InitiateCombatEvent
-  | QuaffEvent
   | FallenEvent
   | FleeEvent
   | StatusEffectEvent
@@ -109,7 +110,7 @@ export type EnterRoom = BaseDungeonEvent & { type: "enterRoom"; roomDescription:
 export type RoomCleared = BaseDungeonEvent & { type: "roomCleared"; room: Room | BossRoom; combat?: Combat };
 export type DungeonCleared = BaseDungeonEvent & { type: "dungeonCleared"; macguffin?: string; };
 export type DungeonFailed = BaseDungeonEvent & { type: "dungeonFailed"; dungeonName: string; reason: string; };
-export type ItemFoundEvent = BaseDungeonEvent & { type: "itemFound"; itemName: string; quantity: number; where: string; };
+export type ItemFoundEvent = BaseDungeonEvent & { type: "itemFound"; itemName: string; itemDescription: string; quantity: number; where: string; };
 export type EquipmentWornEvent = BaseDungeonEvent & { type: "equipmentWorn"; itemName: string; slot: EquipmentSlot; };
 export type RestEvent = BaseDungeonEvent & { type: "rest"; stabilizedCombatants: string[]; };
 export type GoldEvent = BaseDungeonEvent & { type: "gold"; amount: number };
@@ -247,9 +248,9 @@ export default class Events {
         return `${subjectName} examines ${event.clue} and discovers ${event.discovery}`;
       case "itemFound":
         if (event.quantity > 1) {
-          return `Found ${event.quantity} x ${Words.a_an(event.itemName)} ${event.where}.`;
+          return `${subjectName} found ${event.quantity} x ${Words.a_an(event.itemName)} ${event.where}.`;
         }
-        return `Found ${Words.a_an(event.itemName)} ${event.where}.`;
+        return `${subjectName} found ${event.itemDescription.toLocaleLowerCase()} ${event.where}.`;
       case "equipmentWorn":
         return `${subjectName} is now wearing ${Words.a_an(event.itemName)} as their ${event.slot}.`;
       case "rest":
@@ -274,13 +275,14 @@ export default class Events {
         }
       case "miss": return `${subjectName} attacks ${targetName} but misses.`;
       case "defend": return `${subjectName} takes a defensive stance, preparing to block incoming attacks.`;
-      case "quaff": return `${subjectName} quaffs a healing potion.`;
       case "fall": return '';  //`${subjectName} falls.`;
       case "flee": return `${subjectName} flees from combat.`;
+
       case "statusEffect":
-        return `${subjectName} is ${event.effectName} (${Presenter.describeModifications(event.effect)}).`
+        return `${subjectName} is ${event.effectName} (${Presenter.describeModifications(event.effect)}) by ${event.source}.`
+
       case "statusExpire":
-        return `${subjectName} is no longer ${event.effectName}.`;
+        return `${subjectName} no longer has ${event.effectName}.`;
       case "statusExpiryPrevented":
         return `${subjectName}'s status effects do not expire (${event.reason}).`;
       case "initiate":
@@ -313,6 +315,9 @@ export default class Events {
         }
         return message;
 
+      case "cast":
+        return `${subjectName} casts ${event.spellName} ${event.source ? `from ${event.source}` : ""}.`;
+
       case "damageBonus":
         return `${targetName} takes an additional ${event.amount} damage from ${subjectName} due to ${event.reason}.`;
 
@@ -325,7 +330,7 @@ export default class Events {
       case "reaction":
         return `${subjectName} reacts ${(event.reactionName)} from ${event.target?.forename}.`;
       case "summon":
-        return `${subjectName} summons ${event.target?.referenceName || event.target?.forename}.`;
+        return `${subjectName} summons ${event.target?.referenceName || event.target?.forename} ${event.source ? `from ${event.source}` : ""}.`;
       case "unsummon":
         return `${subjectName} unsummons ${event.target?.referenceName || event.target?.forename}.`;
       case "save":
@@ -442,7 +447,7 @@ export default class Events {
           return `${event.acquirer.forename} acquires ${event.quantity} x ${Words.a_an(event.itemName)}.`;
         }
       case "enhanceWeapon":
-        return `${event.wielderName} enhances ${Words.a_an(event.weaponName)} with ${event.enhancement} for ${event.cost} gold (Damage: ${event.oldDamage} -> ${event.newDamage}).`;
+        return `${event.wielderName} ${event.enhancement}s their ${Words.a_an(event.weaponName)}! Damage changed from ${event.oldDamage} to ${event.newDamage}).`;
 
       case "rumorHeard":
         return `The tavern buzzes with news: "${event.rumor}"`;

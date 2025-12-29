@@ -37,10 +37,12 @@ export interface Equipment {
   itemClass?: 'equipment';
 }
 
+type ItemRef = { key: string; kind: "key" } | { id: string; kind: "id" } | null
+
 export class Inventory {
   static isArmorProficient(item: Armor, armorProficiencies: {
-    weight?: string[]; all?: boolean; kind?: string[]; 
-}) {
+    weight?: string[]; all?: boolean; kind?: string[];
+  }) {
     if (armorProficiencies.all) {
       return true;
     }
@@ -80,8 +82,8 @@ export class Inventory {
     if (itemProficiencies.all) {
       return true;
     }
-    // let itemInfo = Deem.evaluate(`lookup(consumables, "${itemKey}")`) as any;
-    const itemInfo = { kind, aspects: [aspect] }; // mock item info for checking proficiencies
+
+    const itemInfo = { kind, aspects: [aspect] };
     if (itemProficiencies.kind) {
       if (itemInfo && itemInfo.kind && !itemProficiencies.kind.includes(itemInfo.kind)) {
         return false;
@@ -89,22 +91,109 @@ export class Inventory {
     }
     if (itemProficiencies.withoutAspect) {
       if (itemInfo && itemInfo.aspects) {
-        // for (let aspect of itemProficiencies.withoutAspect) {
-          if (itemInfo.aspects.includes(itemProficiencies.withoutAspect)) {
-            return false;
-          }
-        // }
+        if (itemInfo.aspects.includes(itemProficiencies.withoutAspect)) {
+          return false;
+        }
       }
     }
 
     return true;
   }
 
-  static item(name: string): ItemInstance {
+  private static genId = (prefix: string): string => {
+    return prefix + ':' + Math.random().toString(36).substring(2, 9);
+  }
+
+  static reifyFromKey(itemKey: string): ItemInstance {
+    const hasMasterWeaponEntry = Deem.evaluate(`hasEntry(masterWeapon, "${itemKey}")`) as boolean;
+    if (hasMasterWeaponEntry) {
+      const masterWeapon = Deem.evaluate(`lookup(masterWeapon, "${itemKey}")`) as unknown as Weapon;
+      if (!masterWeapon) {
+        throw new Error(`Could not find itemName ${itemKey} in masterWeapon table`);
+      }
+      // note: straight lookup from master will actually be missing a bunch of true ItemInstance fields like id etc
+      return {
+        id: this.genId('weapon'),
+        name: itemKey,
+        ...masterWeapon,
+        key: itemKey,
+        itemClass: 'weapon',
+      };
+    }
+
+    const hasMasterEquipmentEntry = Deem.evaluate(`hasEntry(masterEquipment, "${itemKey}")`) as boolean;
+    if (hasMasterEquipmentEntry) {
+      const masterEquipment = Deem.evaluate(`lookup(masterEquipment, "${itemKey}")`) as unknown as Equipment;
+      if (!masterEquipment) {
+        throw new Error(`Could not find equipment ${itemKey} in masterEquipment table`);
+      }
+
+      return {
+        id: this.genId('equipment'),
+        name: itemKey,
+        itemClass: 'equipment',
+        ...masterEquipment,
+        key: itemKey
+      };
+    }
+
+    const hasMasterArmorEntry = Deem.evaluate(`hasEntry(masterArmor, "${itemKey}")`) as boolean;
+    if (hasMasterArmorEntry) {
+      const masterArmor = Deem.evaluate(`lookup(masterArmor, "${itemKey}")`) as unknown as Armor;
+      if (!masterArmor) {
+        throw new Error(`Could not find armor ${itemKey} in masterArmor table`);
+      }
+
+      return {
+        id: this.genId('armor'),
+        ...masterArmor,
+        key: itemKey,
+        itemClass: 'armor'
+      };
+    }
+
+    const hasConsumableEntry = Deem.evaluate(`hasEntry(consumables, "${itemKey}")`) as boolean;
+    if (hasConsumableEntry) {
+      const consumable = Deem.evaluate(`lookup(consumables, "${itemKey}")`) as unknown as ItemInstance;
+      if (!consumable) {
+        throw new Error(`Could not find consumable ${itemKey} in consumables table`);
+      }
+
+      return {
+        id: this.genId('consumable'),
+        ...consumable,
+        key: itemKey,
+        itemClass: 'consumable'
+      };
+    }
+
+    throw new Error(`Could not materialize item ${itemKey}`);
+  }
+
+  static materialize = (itemKey: string, inventory: ItemInstance[]): ItemInstance => {
+    const ref = itemKey;
+    const byId = inventory.find(i => i.id === ref);
+    if (byId) return byId;
+
+    const byKey = inventory.find(i => i.key === ref);
+    if (byKey) return byKey;
+
+    // If it looks like an id, don't try to treat it like a key
+    if (ref.includes(":")) {
+      throw new Error(
+        `Missing item instance ${ref} in provided inventory (len=${inventory.length}). ` +
+        `This ref looks like an id, not a key.`
+      );
+    }
+
+    return Inventory.reifyFromKey(itemKey);
+  }
+
+  static genLoot(name: string): ItemInstance {
     const it = Generator.gen("loot", { _name: name }) as unknown as ItemInstance;
     if (it.charges) {
       console.warn(`Setting maxCharges for item ${it.name} to ${it.charges}.`);
-      it.maxCharges = Math.max(1,it.charges);
+      it.maxCharges = Math.max(1, it.charges);
     }
     return it;
   }
@@ -116,15 +205,22 @@ export class Inventory {
     }
     return inventoryCounts;
   }
+  static slotForItem(it: ItemInstance): EquipmentSlot {
+    if (it.itemClass === "weapon") return "weapon";
+    if (it.itemClass === "armor") {
+      // if you’re using kind=body/helm/shield etc, map here
+      return (it.kind as EquipmentSlot) || "body";
+    }
+    // equipment: ring/amulet/cloak/orbital/etc
+    return (it.kind as EquipmentSlot);
+  }
 
-  static equipmentSlotAndExistingItem(equipmentKey: string, wielder: Combatant): {oldItemKey: string | null, slot: EquipmentSlot} {
+  static equipmentSlotAndExistingItem(it: ItemInstance, wielder: Combatant, inventory: ItemInstance[]): { oldItemRef: ItemRef, slot: EquipmentSlot } {
     if (!wielder.equipment) {
       wielder.equipment = {};
     }
 
-    // const equipment = Deem.evaluate(`lookup(masterEquipment, "${equipmentKey}")`) as unknown as Equipment;
-    const equipment = materializeItem(equipmentKey, []) as unknown as Equipment;
-    let slot = equipment.kind;
+    let slot = Inventory.slotForItem(it);
     if (slot === 'ring' as EquipmentSlot) {
       if (!wielder.equipment['ring1']) {
         slot = 'ring1';
@@ -135,11 +231,19 @@ export class Inventory {
       }
     }
 
-    const oldItemKey = wielder.equipment ? wielder.equipment[slot] : null;
-    return { oldItemKey: oldItemKey || null, slot };
+    const oldItemSlotValue = wielder.equipment?.[slot] ?? null;
+
+    let oldItemRef: ItemRef = null;
+    if (oldItemSlotValue) {
+      const byId = inventory.some(i => i.id === oldItemSlotValue);
+      oldItemRef = byId
+        ? { kind: "id", id: oldItemSlotValue }
+        : { kind: "key", key: oldItemSlotValue };
+    }
+    return { oldItemRef, slot };
   }
 
-  static propertyOf(subject: Combatant, inventory: ItemInstance[]): ItemInstance[] | null {
+  static propertyOf(subject: Combatant, inventory: ItemInstance[]): ItemInstance[] {
     return inventory.filter(item => item.ownerId === subject.id);
   }
 

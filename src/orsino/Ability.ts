@@ -1,7 +1,7 @@
 import Deem from "../deem";
 import Combat, { CombatContext } from "./Combat";
 import { DamageKind } from "./types/DamageKind";
-import { ExperienceEvent, GameEvent, GoldEvent, HitEvent, ReactionEvent, ResurrectEvent, UpgradeEvent } from "./Events";
+import { CastEvent, ExperienceEvent, GameEvent, GoldEvent, HitEvent, ReactionEvent, ResurrectEvent, UpgradeEvent } from "./Events";
 import Generator from "./Generator";
 import { CommandHandlers } from "./rules/Commands";
 import { Fighting } from "./rules/Fighting";
@@ -361,18 +361,10 @@ export default class AbilityHandler {
     let success = false;
     const events: Omit<GameEvent, "turn">[] = [];
 
-    // could try to 'fix' target combatant reference if needed
-    // if (effect.target === "self" && targetCombatant.id !== user.id) {
-    //   targetCombatant = user;
-    // }
-
-    // console.log(`Handling effect ${effect.type} of ability ${name} from ${user.name} to ${targetCombatant.name}`);
-
     // does the target meet all conditions?
     const effectCondition = effect.condition;
     if (effectCondition) {
       if (effectCondition.trait) {
-        // let traitMatch = !(targetCombatant.traits || []).includes(effect.condition.trait))
         // using regexp
         const traitMatch = (targetCombatant.traits || []).some(t => {
           const re = new RegExp(`^${effectCondition.trait}$`, 'i');
@@ -444,6 +436,7 @@ export default class AbilityHandler {
       // lookup spell by name and process its effects
       const spellName = effect.spellName || name;
       const spell = AbilityHandler.instance.getAbility(spellName);
+      events.push({ type: "cast", subject: user, spellName: spell.name, source: effect.description } as Omit<CastEvent, "turn">);
       for (const spellEffect of spell.effects) {
         const result = await this.handleEffect(effect.description || spellName, spellEffect, user, targetCombatant, context, handlers);
         success ||= result.success;
@@ -482,7 +475,9 @@ export default class AbilityHandler {
       const statusEvents = await status(
         user,
         targetCombatant,
-        statusEffect.name, { ...statusEffect.effect }, effect.duration || 3
+        statusEffect.name, { ...statusEffect.effect },
+        effect.duration || 3,
+        effect.description || user.forename
       );
       events.push(...statusEvents);
       success = true;
@@ -501,7 +496,8 @@ export default class AbilityHandler {
           events.push(...saveEvents);
           if (!saved) {
             const statusEvents = await status(user, targetCombatant,
-              statusEffect.name, { ...statusEffect.effect }, effect.duration || 3
+              statusEffect.name, { ...statusEffect.effect }, effect.duration || 3,
+              effect.description || user.forename
             );
             events.push(...statusEvents);
             success = true;
@@ -589,7 +585,7 @@ export default class AbilityHandler {
         });
         summoned.push(summon as unknown as Combatant);
       }
-      const summonEvents = await summon(user, summoned);
+      const summonEvents = await summon(user, summoned, effect.description || name);
       events.push(...summonEvents);
       success = amount > 0;
     }
@@ -809,11 +805,7 @@ export default class AbilityHandler {
       targets = targets.filter(t => !turnedTargets.includes(t));
     }
 
-
-
-    // console.log(`${user.name} is performing ${ability.name} on ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target?.name}...`);
     for (const effect of ability.effects) {
-      // console.log("performing effect of type", effect.type, "...");
       const { success, events: effectEvents } = await this.handleEffect(ability.name, effect, user, targets, context, handlers);
       result = result || success;
       events.push(...effectEvents);
@@ -918,24 +910,29 @@ export default class AbilityHandler {
 
     for (const reactor of reactors) {
       if (reactor.hp <= 0) { continue; }
-      const reactorOnActorSide = actorSide.includes(reactor);
+      const reactorOnActorSide = actorSide.some(c => c.id === reactor.id);
+        //.includes(reactor);
       // If reactor is on the same side as the acting user, then reactor's enemies are context.enemies.
       // Otherwise reactor's enemies are context.allies.
-      const reactorAllies = (reactorOnActorSide ? actorSide : opponentSide).filter(c => c !== reactor);
+      const reactorAllies = (reactorOnActorSide ? actorSide : opponentSide); //.filter(c => c !== reactor);
       const reactorEnemies = reactorOnActorSide ? opponentSide : actorSide;
 
       const reactorContext: CombatContext = {
         subject: reactor,
         allies: reactorAllies,
         enemies: reactorEnemies,
-        inventory: reactorOnActorSide ? context.enemyInventory : context.inventory,
-        enemyInventory: reactorOnActorSide ? context.inventory : context.enemyInventory,
+        // inventory: reactorOnActorSide ? context.enemyInventory : context.inventory,
+        // enemyInventory: reactorOnActorSide ? context.inventory : context.enemyInventory,
+        // need to flip these
+        inventory: reactorOnActorSide ? context.inventory : context.enemyInventory,
+        enemyInventory: reactorOnActorSide ? context.enemyInventory : context.inventory,
       };
       const reactionFx = Fighting.gatherEffects(reactor);
       const reactionFxWithNames = Fighting.gatherEffectsWithNames(reactor);
       if (reactionFx[reactionKey]) {
         const sources = Words.humanizeList(reactionFxWithNames[reactionKey].sources);
         const reactionEffects = reactionFx[reactionKey] as Array<AbilityEffect>;
+        console.log(`${reactor.name} has reaction ${reactionKey} from ${sources}`);
         for (const reactionEffect of reactionEffects) {
           let target: (Combatant | Combatant[]) = user;
           if (reactionEffect.target) {

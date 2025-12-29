@@ -62,7 +62,7 @@ type RunnerOptions = {
 }
 
 export class ModuleRunner {
-  static configuration = { sharedGold: 10000 }
+  static configuration = { sharedGold: 100 }
 
   private roller: Roll;
   private select: Select<Answers>;
@@ -136,7 +136,7 @@ export class ModuleRunner {
     for (const pc of this.pcs) {
       const itemNames: string[] = pc.startingGear || [];
       for (const itemName of itemNames) {
-        const item = { ...Inventory.item(itemName), ownerId: pc.id, ownerSlot: 'backpack' };
+        const item = { ...Inventory.genLoot(itemName), ownerId: pc.id, ownerSlot: 'backpack' };
         item.shared = item.itemClass === 'consumable';
         this.state.inventory.push(item);
       }

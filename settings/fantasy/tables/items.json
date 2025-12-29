@@ -1335,6 +1335,35 @@
           }
         ]
       },
+      "wand_of_wonder": {
+        "name": "Wand of Wonder",
+        "description": "A whimsical wand that produces random magical effects when used.",
+        "type": "consumable",
+        "charges": 10,
+        "kind": "wand",
+        "aspect": "arcane",
+        "rarity": "legendary",
+        "value": 500,
+        "target": [
+          "randomEnemies", 5
+        ],
+        "effects": [
+          {
+            "type": "randomEffect",
+            "randomEffects": [
+              { "type": "cast", "spellName": "Magic Missile" },
+              { "type": "cast", "spellName": "Fireball" },
+              { "type": "cast", "spellName": "Lightning Bolt" },
+              { "type": "cast", "spellName": "Cone of Cold" },
+              { "type": "cast", "spellName": "Invisibility", "target": "self" },
+              { "type": "cast", "spellName": "Fly", "target": "self" },
+              { "type": "cast", "spellName": "Heal", "target": "self" },
+              { "type": "cast", "spellName": "Summon Monster" },
+              { "type": "cast", "spellName": "Summon Elemental" }
+            ]
+          }
+        ]
+      },
       "scroll_of_domination": {
         "name": "Scroll of Domination",
         "description": "A magical scroll that allows the caster to control the mind of a target creature.",

@@ -498,7 +498,7 @@ export default class Books {
       const treasureEntries = Deem.evaluate('lookup(treasure, "' + treasureType + '")') as string[];
       for (let i = 0; i < treasureEntries.length; i++) {
         const treasureEntry = Words.humanize(treasureEntries[i]);
-        const item = Inventory.item(treasureEntries[i]);
+        const item = Inventory.genLoot(treasureEntries[i]);
         this.write(`| ${treasureEntry} | ${item.description || 'A mysterious item'} | ${item.value || 'varies'} gp | ${item.itemClass || '--'} |`);
       }
     }

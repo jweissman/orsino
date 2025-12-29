@@ -151,7 +151,7 @@
 - [ ] Unify weapon/armor/item instance interfaces somehow
 - [ ] Mages can _summon familiar_ to get an animal companion appropriate for their racial group but also with the typical familiar benefits (ie it's always the same familiar, it can level up with you etc)
 ---
-- [ ] Template for dragons
+- [ ] 
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing
@@ -293,6 +293,7 @@
 - [x] Generator/template for gems/high-order treasure [gem done anyway but treasure could use some love still] -- see loot generator!
 - [x] All loot is meaningful (either wearable, consumable or saleable at some general store in town) -- should be true now
 - [x] Restrict casters from heavy armor (armorProficiencies by class)
+- [x] Template for dragons
 
 ## Not really issues atm
 - "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]

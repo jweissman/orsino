@@ -111,7 +111,7 @@ export default class Shop {
     const item = choice as Equipment;
 
     if (this.currentGold >= item.value) {
-      const { oldItemKey: maybeOldItem } = Inventory.equipmentSlotAndExistingItem(item.key, wearer);
+      const { oldItemRef: maybeOldItem } = Inventory.equipmentSlotAndExistingItem(item.key, wearer);
       if (maybeOldItem) {
         const oldItem = materializeItem(maybeOldItem, this.gameState.inventory);
         events.push({
@@ -341,7 +341,7 @@ export default class Shop {
     const item = choice as Equipment;
 
     if (this.currentGold >= item.value) {
-      const { oldItemKey: maybeOldItem } = Inventory.equipmentSlotAndExistingItem(item.key, wearer);
+      const { oldItemRef: maybeOldItem } = Inventory.equipmentSlotAndExistingItem(item.key, wearer);
       if (maybeOldItem) {
         const oldItem = materializeItem(maybeOldItem, this.gameState.inventory);
         events.push({
@@ -665,7 +665,7 @@ export default class Shop {
     const pcOptions: Choice<Combatant>[] = this.party.map(pc => ({
       short: pc.name,
       value: pc,
-      name: pc.name,
+      name: presenter(pc),
       disabled: false,
     }));
     const pc = await this.select(prompt, pcOptions) as Combatant;

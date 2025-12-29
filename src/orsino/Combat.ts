@@ -321,10 +321,6 @@ export default class Combat {
 
     // handle onCombatStart effects from statuses
     for (const combatant of this.allCombatants) {
-      // let allies = this.alliesOf(combatant);
-      // allies = allies.filter(c => c !== combatant);
-      // const enemies = this.enemiesOf(combatant);
-      // const ctx: CombatContext = { subject: combatant, allies, enemies };
       const ctx = this.contextForCombatant(combatant);
       const events = await AbilityHandler.performHooks("onCombatStart", combatant, ctx, Commands.handlers(this.roller), "combat start effects");
       await this.emitAll(events, `combat start effects`, combatant);
@@ -332,17 +328,22 @@ export default class Combat {
   }
 
   contextForCombatant(combatant: Combatant): CombatContext {
-    const allies = this.alliesOf(combatant).filter(c => c !== combatant);
+    const allies = this.alliesOf(combatant); //.filter(c => c !== combatant);
     const enemies = this.enemiesOf(combatant);
     const team = this.teamFor(combatant);
 
-    return {
+    let ctx: CombatContext = {
       subject: combatant,
       allies,
       enemies,
       inventory: team ? team.inventory || [] : [],
       enemyInventory: this._teams.filter(t => t !== team).flatMap(t => t.inventory || []),
     }
+    // console.log("Constructed combat context for", Presenter.minimalCombatant(combatant), ":", {
+    //   inventory: ctx.inventory.map(i => i.id),
+    //   enemyInventory: ctx.enemyInventory.map(i => i.id),
+    // });
+    return ctx;
   }
 
   static maxSpellSlotsForLevel(level: number): number { return 2 + Math.ceil(level); }
@@ -803,6 +804,7 @@ export default class Combat {
     }
 
     // invoke the action
+    // console.debug(`${Presenter.minimalCombatant(combatant)} ${Combat.describeAbility(action)} on ${Array.isArray(targetOrTargets) ? targetOrTargets.map(t => t.forename).join(", ") : (targetOrTargets as Combatant).forename}.`);
     const ctx = this.contextForCombatant(combatant);
 
     const { events } = await AbilityHandler.perform(action, combatant, targetOrTargets, ctx, Commands.handlers(this.roller));

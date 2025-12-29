@@ -2,6 +2,7 @@ import Deem from "../../deem";
 import { CombatContext } from "../Combat";
 import { Armor, Weapon } from "../Inventory";
 import { StatusEffect, StatusModifications } from "../Status";
+import Presenter from "../tui/Presenter";
 import Words from "../tui/Words";
 import { AttackResult } from "../types/AttackResult";
 import { Combatant } from "../types/Combatant";
@@ -161,10 +162,18 @@ export class Fighting {
     throw new Error(`Could not resolve effective weapon for combatant ${combatant.name} with weapon ${weapon}`);
   }
 
+  static isMeleeWeapon(weapon: Weapon & ItemInstance): boolean {
+    if (weapon.missile) {
+      return false;
+    }
+    return true;
+  }
+
   static effectiveArmor(
     combatant: Combatant,
     inventory: ItemInstance[]
   ): (Armor & ItemInstance) | null {
+    console.log("Resolving effective armor for", Presenter.minimalCombatant(combatant));
     const armor = combatant.equipment?.body;
     if (!armor) {
       return null;
@@ -248,6 +257,21 @@ export class Fighting {
     bludgeoning: "bludgeon",
   };
 
+  static inventoryFor(c: Combatant, ctx: CombatContext): ItemInstance[] {
+    if (c === ctx.subject) return ctx.inventory ?? [];
+
+    // if c is on subject's side, use ctx.inventory; if opposing, use ctx.enemyInventory
+    const onAlliesSide = (ctx.allies ?? []).some(a => a.id === c.id);
+    const onEnemySide = (ctx.enemies ?? []).some(e => e.id === c.id);
+
+    if (onAlliesSide) return ctx.inventory ?? [];
+    if (onEnemySide) return ctx.enemyInventory ?? [];
+
+    // fallback: safest is ctx.inventory (or empty), but I'd rather throw in dev
+    console.warn("inventoryFor: combatant not in allies/enemies lists", c.name);
+    return ctx.inventory ?? [];
+  }
+
   static async attack(
     roll: Roll,
     attacker: Combatant,
@@ -269,7 +293,8 @@ export class Fighting {
     const dexMod = this.statMod(effectiveAttacker.dex || 10);
 
     const toHitTurnBonus = (this.turnBonus(attacker, ["toHit"])).toHit || 0;
-    const attackerWeapon = this.effectiveWeapon(attacker, attackerContext.inventory || []);
+    const attackerWeapon = this.effectiveWeapon(attacker, this.inventoryFor(attacker, attackerContext));
+    //attackerContext.inventory);
     const isMissile = attackerWeapon.missile === true;
     const toHitBonus = (isMissile ? dexMod : strMod)  // DEX affects accuracy for missiles
       + toHitTurnBonus;                 // Any temporary bonuses to hits
@@ -278,7 +303,7 @@ export class Fighting {
     const thac0 = this.thac0(attacker.level);
     const effectiveDefender = this.effectiveStats(defender);
     const defenderAcBonus = this.statMod(effectiveDefender.dex || 10);
-    const effectiveAc = this.effectiveArmorClass(defender, attackerContext.enemyInventory || []);
+    const effectiveAc = this.effectiveArmorClass(defender, this.inventoryFor(defender, attackerContext));
     const ac = effectiveAc - defenderAcBonus;
     const whatNumberHits = thac0 - ac - toHitBonus;
 

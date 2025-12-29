@@ -1202,7 +1202,10 @@
     "effects": [
       {
         "type": "summon",
-        "creature": "animal"
+        "creature": "animal",
+        "options": {
+          "background": "companion"
+        }
       }
     ]
   },
@@ -3503,6 +3506,32 @@
         "amount": "=2d6",
         "kind": "cold",
         "saveForHalf": true
+      }
+    ]
+  },
+  "pure_beam": {
+    "name": "Pure Beam",
+    "type": "spell",
+    "level": 1,
+    "aspect": "divine",
+    "domain": "light",
+    "description": "A beam of pure radiant energy that damages undead and evil creatures.",
+    "target": [ "enemy" ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d4",
+        "kind": "radiant",
+        "saveForHalf": true
+      },
+      {
+        "type": "damage",
+        "amount": "=3d4",
+        "kind": "radiant",
+        "saveForHalf": true,
+        "condition": {
+          "trait": "undead"
+        }
       }
     ]
   }

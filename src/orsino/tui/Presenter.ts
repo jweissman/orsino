@@ -227,21 +227,11 @@ export default class Presenter {
 
     if (combatant.equipment && Object.keys(combatant.equipment).length > 0) {
       record += Stylist.bold("\nEquipped Items: \n");
-      // Object.entries(combatant.equipment).forEach(([slot, item]) => {
-      for (const slot of Object.keys(combatant.equipment).filter(key => key !== 'id')) {
+      for (const slot of Object.keys(combatant.equipment)) {
         const equipmentSlot: EquipmentSlot = slot as EquipmentSlot;
         const itemName = (combatant.equipment as Record<EquipmentSlot, string>)[equipmentSlot];
-        // if (equipmentSlot === 'weapon' || equipmentSlot === 'body') {
-          // const item = Deem.evaluate('lookup(masterWeapon, "' + itemName + '")') as unknown as { effect: StatusModifications };
-          // const item = Fighting.effectiveWeapon(combatant, []);
           const item = materializeItem(itemName, inventory) as ItemInstance;
           record += `  ${Stylist.colorize(Words.capitalize(equipmentSlot), 'yellow')}: ${Words.humanize(item.name)} (${this.describeModifications(item.effect || {}, item.name)})\n`;
-        // }
-        // else {
-        //   // const item = Deem.evaluate('lookup(masterEquipment, "' + itemName + '")') as unknown as { effect: StatusModifications };
-        //   const item = materializeItem(itemName, inventory) as ItemInstance;
-        //   record += `  ${Stylist.colorize(Words.capitalize(slot), 'yellow')}: ${Words.humanize(itemName)} (${this.describeModifications(item.effect || {}, item.name)})\n`;
-        // }
       }
     }
 
@@ -572,6 +562,9 @@ export default class Presenter {
           break;
         case "bonusDamage":
           parts.push(this.increaseDecrease('bonus damage', value as number));
+          break;
+        case "bonusMeleeDamage":
+          parts.push(this.increaseDecrease('bonus melee damage', value as number));
           break;
         case "ac":
           parts.push(this.increaseDecrease('AC', -value));

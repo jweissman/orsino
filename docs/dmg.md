@@ -269,10 +269,10 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 | Scroll Of Fireball | A magical scroll that allows the caster to unleash a fiery explosion at a target location. | 200 gp | consumable |
 | Scroll Of Cure Disease | A magical scroll that can cure a target of any disease afflicting them. | 150 gp | consumable |
 | Agate | A Common Gemstone | 38 gp | gem |
-| Carnelian | A Common Gemstone | 50 gp | gem |
-| Moonstone | A Common Gemstone | 50 gp | gem |
+| Carnelian | A Common Gemstone | 25 gp | gem |
+| Moonstone | A Common Gemstone | 100 gp | gem |
 | Onyx | A Common Gemstone | 25 gp | gem |
-| Quartz | A Common Gemstone | 50 gp | gem |
+| Quartz | A Common Gemstone | 100 gp | gem |
 | Broken Crown | Missing several jewels and tarnished with age. | 25 gp | junk |
 | Lensing Crystal | A cracked lens that once belonged to a powerful magnifying glass. | 18 gp | junk |
 | Music Box | A beautifully crafted music box that plays a haunting melody. | 50 gp | junk |
@@ -300,8 +300,8 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 
 | Treasure | Description | Value | Kind |
 |----------|-------------|-------|------|
-| Amethyst | An Uncommon Gemstone | 400 gp | gem |
-| Tourmaline | An Uncommon Gemstone | 150 gp | gem |
+| Amethyst | An Uncommon Gemstone | 150 gp | gem |
+| Tourmaline | An Uncommon Gemstone | 100 gp | gem |
 | Bolt Blade | A sleek blade that crackles with electrical energy, shocking enemies on hit. | 900 gp | weapon |
 | Potion Of Barkskin | A vial of thick, green liquid that hardens the drinker's skin, providing additional protection. | 120 gp | consumable |
 | Scroll Of Domination | A magical scroll that allows the caster to control the mind of a target creature. | 100 gp | consumable |
@@ -331,7 +331,7 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 | Treasure | Description | Value | Kind |
 |----------|-------------|-------|------|
 | Emerald | A Rare Gemstone | 1000 gp | gem |
-| Sapphire | A Rare Gemstone | 2000 gp | gem |
+| Sapphire | A Rare Gemstone | 500 gp | gem |
 | Crown Of Insight | An ornate crown that enhances the wearer's wisdom. | 1000 gp | equipment |
 | Helm Of The Stars | A mystical helm that enhances all senses of the wearer. | 400 gp | equipment |
 | Ring Of Strength | A magical ring that enhances the wearer's physical strength. | 150 gp | equipment |
@@ -360,11 +360,11 @@ _Zephyrus is a vibrant forested plane perpetually stirred by thunderstorms, aliv
 
 | Treasure | Description | Value | Kind |
 |----------|-------------|-------|------|
-| Black Diamond | A Very Rare Gemstone | 10000 gp | gem |
-| Diamond | A Legendary Gemstone | 10000 gp | gem |
-| Black Opal | A Legendary Gemstone | 20000 gp | gem |
+| Black Diamond | A Very Rare Gemstone | 5000 gp | gem |
+| Diamond | A Legendary Gemstone | 30000 gp | gem |
+| Black Opal | A Legendary Gemstone | 15000 gp | gem |
 | Fire Opal | A Legendary Gemstone | 15000 gp | gem |
-| Star Ruby | A Legendary Gemstone | 40000 gp | gem |
+| Star Ruby | A Legendary Gemstone | 30000 gp | gem |
 | Scroll Of Apocalypse | An ancient scroll that unleashes catastrophic energy upon all enemies in the area. | 2000 gp | consumable |
 | Fallen Star | A fragment of a fallen star, radiating a faint magical aura. | 5000 gp | junk |
 | Crystal Eye | A mystical crystal eye that seems to watch those who hold it. | 6000 gp | junk |

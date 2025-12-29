@@ -112,7 +112,7 @@
     "hp": "=#maximumHitPoints"
   },
   "animal": {
-    "alignment": "animal",
+    "alignment": "neutral",
     "challenging": false,
     "gender": "=oneOf(male, female, neutral)",
     "background": "=oneOf(wild, trained)",
@@ -281,7 +281,8 @@
     "wis": 3,
     "cha": 3,
     "maximumHitPoints": 14,
-    "traits": ["inanimate"],
+    "_traits": ["inanimate"],
+    "traits": "=concat(#_traits, hasEntry(combatEntityTraits, #entity_type) ? lookup(combatEntityTraits, #entity_type) : nihil)",
     "_abilities": ["wait"],
     "abilities": "=concat(#_abilities, lookup(combatEntityAbilities, #entity_type))",
     "damageKind": "true",

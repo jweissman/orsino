@@ -116,7 +116,7 @@ const processEvent = (state: GameState, event: GameEvent): GameState => {
 
 const processAcquireEvent = (state: GameState, event: AcquireItemEvent): GameState => {
   const it = {
-    ...Inventory.item(event.itemName),
+    ...Inventory.genLoot(event.itemName),
     ownerId: event.acquirer.id,
     ownerSlot: 'backpack',
   };

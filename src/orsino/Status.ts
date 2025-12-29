@@ -21,6 +21,7 @@ export interface StatusModifications {
   initiative?: number;
   toHit?: number;
   bonusDamage?: number;
+  bonusMeleeDamage?: number;
   ac?: number;
   evasion?: number;
 

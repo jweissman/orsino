@@ -1,6 +1,6 @@
 import Deem from "../../deem";
 import { AbilityEffect } from "../Ability";
-import { Armor, Equipment, Weapon } from "../Inventory";
+import { Armor, Equipment, Inventory, Weapon } from "../Inventory";
 import { StatusModifications } from "../Status";
 
 export interface ItemInstance {
@@ -26,79 +26,7 @@ export interface ItemInstance {
   shared?: boolean; // indicates if item is shared among team members
 }
 
-const genId = (prefix: string): string => {
-  return prefix + ':' + Math.random().toString(36).substring(2, 9);
-}
 
-export const materializeItem = (itemName: string, inventory: ItemInstance[]): ItemInstance => {
-  const ref = itemName;
-  const byId = inventory.find(i => i.id === ref);
-  if (byId) return byId;
-  
-  const byKey = inventory.find(i => i.key === ref);
-  if (byKey) return byKey;
-
-  const hasMasterWeaponEntry = Deem.evaluate(`hasEntry(masterWeapon, "${itemName}")`) as boolean;
-  if (hasMasterWeaponEntry) {
-    const masterWeapon = Deem.evaluate(`lookup(masterWeapon, "${itemName}")`) as unknown as Weapon;
-    if (!masterWeapon) {
-      throw new Error(`Could not find itemName ${itemName} in masterWeapon table`);
-    }
-    // note: straight lookup from master will actually be missing a bunch of true ItemInstance fields like id etc
-    return {
-      id: genId('weapon'),
-      name: itemName,
-      ...masterWeapon,
-      key: itemName,
-      itemClass: 'weapon',
-    };
-  }
-
-  const hasMasterEquipmentEntry = Deem.evaluate(`hasEntry(masterEquipment, "${itemName}")`) as boolean;
-  if (hasMasterEquipmentEntry) {
-    const masterEquipment = Deem.evaluate(`lookup(masterEquipment, "${itemName}")`) as unknown as Equipment;
-    if (!masterEquipment) {
-      throw new Error(`Could not find equipment ${itemName} in masterEquipment table`);
-    }
-
-    return {
-      id: genId('equipment'),
-      name: itemName,
-      itemClass: 'equipment',
-      ...masterEquipment,
-      key: itemName
-    };
-  }
-
-  const hasMasterArmorEntry = Deem.evaluate(`hasEntry(masterArmor, "${itemName}")`) as boolean;
-  if (hasMasterArmorEntry) {
-    const masterArmor = Deem.evaluate(`lookup(masterArmor, "${itemName}")`) as unknown as Armor;
-    if (!masterArmor) {
-      throw new Error(`Could not find armor ${itemName} in masterArmor table`);
-    }
-    
-    return {
-      id: genId('armor'),
-      ...masterArmor,
-      key: itemName,
-      itemClass: 'armor'
-    };
-  }
-
-  const hasConsumableEntry = Deem.evaluate(`hasEntry(consumables, "${itemName}")`) as boolean;
-  if (hasConsumableEntry) {
-    const consumable = Deem.evaluate(`lookup(consumables, "${itemName}")`) as unknown as ItemInstance;
-    if (!consumable) {
-      throw new Error(`Could not find consumable ${itemName} in consumables table`);
-    }
-    
-    return {
-      id: genId('consumable'),
-      ...consumable,
-      key: itemName,
-      itemClass: 'consumable'
-    };
-  }
-
-  throw new Error(`Could not materialize item ${itemName}`);
+export const materializeItem = (itemKey: string, inventory: ItemInstance[]): ItemInstance => {
+  return Inventory.materialize(itemKey, inventory);
 }

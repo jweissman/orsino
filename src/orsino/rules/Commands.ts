@@ -12,7 +12,6 @@ import Presenter from "../tui/Presenter";
 import Deem from "../../deem";
 import StatusHandler, { StatusModifications } from "../Status";
 import { SAVE_KINDS, SaveKind } from "../types/SaveKind";
-import { DeemValue } from "../../deem/stdlib";
 
 type TimelessEvent = Omit<GameEvent, "turn">;
 
@@ -27,14 +26,14 @@ export type CommandHandlers = {
     healer: Combatant, target: Combatant, amount: number,
     combatContext: CombatContext
   ) => Promise<TimelessEvent[]>;
-  status: (user: Combatant, target: Combatant, name: string, effect: StatusModifications, duration?: number) => Promise<TimelessEvent[]>;
+  status: (user: Combatant, target: Combatant, name: string, effect: StatusModifications, duration?: number, source?: string) => Promise<TimelessEvent[]>;
   removeStatus: (target: Combatant, name: string) => Promise<TimelessEvent[]>;
   // removeItem: (user: Combatant, item: keyof Team) => Promise<TimelessEvent[]>;
   save: (target: Combatant, saveKind: SaveKind, dc: number, roll: Roll) => Promise<{
     success: boolean;
     events: TimelessEvent[];
   }>;
-  summon: (user: Combatant, summoned: Combatant[]) => Promise<TimelessEvent[]>;
+  summon: (user: Combatant, summoned: Combatant[], source?: string) => Promise<TimelessEvent[]>;
 }
 
 export class Commands {
@@ -327,7 +326,7 @@ export class Commands {
           const cascadeDamage = Math.max(1, Math.floor(damage * cascade.damageRatio));
           // console.log(`${Presenter.minimalCombatant(defender)} cascades ${cascadeDamage} ${damageKind} damage to ${Presenter.minimalCombatant(newTarget)}!`);
           const cascadeEvents = await Commands.handleHit(
-            attacker, newTarget, cascadeDamage, false, `cascade from ${defender.forename}`, true, damageKind,
+            attacker, newTarget, cascadeDamage, false, `cascade via ${defender.forename}`, true, damageKind,
             { count: count - 1, damageRatio: cascade.damageRatio }, combatContext, roll
           );
           events.push(...cascadeEvents);
@@ -348,24 +347,20 @@ export class Commands {
         }
       }
     } else {
-      // chance to cause status effect based on damage type
-      // console.log(`Checking for status effects triggered by ${damageKind} damage...`);
-      const triggers = StatusHandler.instance.triggersForDamageType(damageKind || "true"); //.forEach(async (statusName) => {
+      const triggers = StatusHandler.instance.triggersForDamageType(damageKind || "true");
       for (const statusName of triggers) {
         const statusEffect = StatusHandler.instance.getStatus(statusName);
 
-        // console.log(`Found status effect trigger: ${statusName}`);
         if (statusEffect) {
           const { success: saved, events: saveEvents } = await Commands.handleSave(defender, statusEffect.saveKind || "magic", 15, roll);
           events.push(...saveEvents);
           if (!saved) {
-            // console.log(`${Presenter.minimalCombatant(defender)} failed their save against status effect ${statusName} triggered by ${damageKind} damage! Applying status effect...`);
             const statusEvents = await Commands.handleStatusEffect(
-              // user, targetCombatant,
               attacker, defender,
-              statusEffect.name, { ...statusEffect.effect }, statusEffect.duration || 3
+              statusEffect.name, { ...statusEffect.effect },
+              statusEffect.duration || 3,
+              attacker.forename
             );
-            // console.log("Status effect events:", statusEvents);
             events.push(...statusEvents);
           }
         }
@@ -396,15 +391,22 @@ export class Commands {
     target: Combatant;
     events: TimelessEvent[];
   }> {
+    const events = [];
     let { damage, critical, success } = await Fighting.attack(roller, combatant, target, context);
     const targetOriginalHp = target.hp;
     const weapon = Fighting.effectiveWeapon(combatant, context.inventory);
-    const events = await Commands.handleHit(
+    const bonusMeleeDamage = Fighting.gatherEffects(combatant).bonusMeleeDamage || 0;
+    if (bonusMeleeDamage > 0 && Fighting.isMeleeWeapon(weapon)) {
+      damage += bonusMeleeDamage;
+      events.push({ type: "damageBonus", subject: combatant, target, amount: bonusMeleeDamage, damageKind: weapon.type || "true", reason: `bonus melee damage` } as Omit<DamageBonus, "turn">);
+    }
+    const hitEvents = await Commands.handleHit(
       combatant, target, damage, critical, `${combatant.forename}'s ${Words.humanize(weapon.name)}`, success, weapon.type || "true",
       null, // no cascade for normal attacks
       context, roller
     );
-    success = success && events.some(e => e.type === "hit");
+    events.push(...hitEvents);
+    success = success && hitEvents.some(e => e.type === "hit");
 
     const lethal = target.hp <= 0;
 
@@ -439,7 +441,7 @@ export class Commands {
   }
 
   static async handleStatusEffect(
-    user: Combatant, target: Combatant, name: string, effect: StatusModifications, duration?: number
+    user: Combatant, target: Combatant, name: string, effect: StatusModifications, duration?: number, source?: string
   ): Promise<TimelessEvent[]> {
     if (target.activeEffects) {
       const existingEffectIndex = target.activeEffects.findIndex(e => e.name === name);
@@ -458,16 +460,21 @@ export class Commands {
     target.activeEffects.push({ name, effect, duration, by: user });
     if (effect.tempHp) {
       const pool = Deem.evaluate(effect.tempHp.toString(), { ...user } as any) as number || 0;
-      // console.warn(`${Presenter.combatant(target)} gains ${pool} temporary HP from status effect ${name}.`);
-      // target.tempHp = (target.tempHp || 0) + effect.tempHp;
       target.tempHpPools = target.tempHpPools || {};
 
       target.tempHpPools[name] = pool;
     }
 
-    return [{
-      type: "statusEffect", subject: target, effectName: name, effect, duration
-    } as Omit<StatusEffectEvent, "turn">];
+    return [
+      {
+        type: "statusEffect",
+        subject: target,
+        effectName: name,
+        effect,
+        duration,
+        source: source || user.forename
+      } as Omit<StatusEffectEvent, "turn">
+    ];
   }
 
   static async handleRemoveStatusEffect(target: Combatant, name: string): Promise<TimelessEvent[]> {
@@ -489,9 +496,11 @@ export class Commands {
       if (existingEffectIndex !== -1) {
         target.activeEffects.splice(existingEffectIndex, 1);
         // this.emit({
-        events.push({
-          type: "statusExpire", subject: target, effectName: name
-        } as Omit<StatusExpireEvent, "turn">);
+        let effectName = name;
+        if (effectName == '.*') {
+          effectName = 'any active status effect';
+        }
+        events.push({ type: "statusExpire", subject: target, effectName, } as Omit<StatusExpireEvent, "turn">);
       }
     }
     // else {
@@ -500,7 +509,7 @@ export class Commands {
     return Promise.resolve(events);
   }
 
-  static async handleSummon(user: Combatant, summoned: Combatant[]): Promise<TimelessEvent[]> {
+  static async handleSummon(user: Combatant, summoned: Combatant[], source?: string): Promise<TimelessEvent[]> {
     const summoningEvents: TimelessEvent[] = [];
     user.activeSummonings = user.activeSummonings || [];
     if (summoned.length + (user.activeSummonings?.length || 0) > Combat.maxSummoningsForCombatant(user)) {
@@ -520,7 +529,7 @@ export class Commands {
 
     for (const s of summoned) {
       user.activeSummonings.push(s);
-      summoningEvents.push({ type: "summon", subject: user, target: s } as Omit<SummonEvent, "turn">);
+      summoningEvents.push({ type: "summon", subject: user, target: s, source } as Omit<SummonEvent, "turn">);
     }
     // return summoningEvents;
 

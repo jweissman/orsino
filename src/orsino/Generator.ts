@@ -15,6 +15,8 @@ export type GeneratorOptions = {
   name?: string;
   _name?: string;
 
+  forename?: string;
+
   race?: string;
 
   count?: number;

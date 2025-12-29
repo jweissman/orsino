@@ -605,11 +605,21 @@
   "combatEntityAbilities": {
     "discriminator": "entity_type",
     "groups": {
-      "antimagic_ward": [["silence", "dispel_magic", "magebane"]],
+      "antimagic_ward": [["silence", "pure_beam", "dispel_magic", "magebane"]],
       "barrier": [[]],
       "turret": [["arrow_volley"]],
       "bomb": [["detonation"]],
       "phylactery": [["summon_undead", "life_drain", "black_ritual"]]
+    }
+  },
+  "combatEntityTraits": {
+    "discriminator": "entity_type",
+    "groups": {
+      "antimagic_ward": ["counter_arcane", "wall"],
+      "barrier": ["wall"],
+      "turret": ["automatic_fire"],
+      "bomb": [],
+      "phylactery": ["fiendish"]
     }
   },
 
@@ -2408,58 +2418,99 @@
     }
   },
 
+  "riddleAnswerGroups": {
+    "discriminator": "answer_type",
+    "groups": {
+      "instrument": ["Piano", "Guitar", "Violin", "Drum", "Flute", "Harp", "Trumpet", "Lute", "Cello", "Horn"],
+      "food": [
+        "Artichoke", "Egg", "Bread", "Cheese", "Apple", "Salted Pork", "Halibut", "Brussel Sprout",
+        "Mushroom", "Carrot", "Potato", "Onion", "Garlic", "Peach", "Pear", "Grapes", "Chicken"
+      ],
+      "element": [
+        "Fire", "Water", "Earth", "Air", "Ice", "Metal", "Lightning", "Steam", "Smoke", "Ash", "Lava", "Mud", "Crystal", "Sand", "Salt", "Dust", "Lead", "Gold", "Silver", "Copper", "Bronze", "Iron", "Steel"
+      ],
+      "large_object": [
+        "House", "Barn", "Boat", "Tower", "Menhir", "Gate", "Wall", "Ship",
+        "Coffin", "Carriage", "Chariot", "Catapult", "Statue", "Bridge", "Castle"
+      ],
+      "small_object": [
+        "Teapot", "Key", "Candle", "Feather", "Map", "Clock", "Stamp", "Ring", "Book", "Knife",
+        "Coin", "Cup", "Bottle", "Brush", "Comb", "Lock", "Needle", "Pin", "Spoon", "Fork", "Plate",
+        "Glove", "Hat", "Boot", "Bag", "Box", "Lamp", "Bell", "Cloak", "Fan", "Pocket"
+      ],
+      "phenomenon": [
+        "Echo", "Darkness", "Light", "Wind", "Rain", "Footsteps", "Cloud", "Hurricane", "Earthquake",
+        "Starlight", "Thunder", "Fog", "Rainbow", "Sunrise"
+      ],
+      "natural_feature": [
+        "River", "Mountain", "Forest", "Desert", "Ocean", "Valley", "Canyon", "Glacier", "Volcano", "Waterfall",
+        "Island", "Swamp", "Cave", "Cliff", "Beach"
+      ],
+      "letter": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"],
+      "abstract_concept": [
+        "Memory", "Age", "Death", "Silence", "Love", "Time", "Fear", "Hope", "Dream", "Truth",
+        "Word", "Song", "Dance", "Hot", "Cold", "Joy", "Sorrow", "Courage", "Wisdom", "Power", "Freedom", "Peace",
+        "Day", "Tomorrow", "Fate", "Luck", "Honor", "Glory", "Strength", "Beauty", "Never"
+      ],
+      "plant": ["Cactus", "Rose", "Oak", "Tulip", "Sunflower", "Daisy", "Fern", "Moss", "Ivy", "Lily"],
+      "body_part": ["Legs", "Arms", "Eyes", "Ears", "Heart", "Hands", "Feet", "Head", "Mouth", "Nose"]
+    }
+  },
+
   "riddles": {
     "discriminator": "riddle_type",
     "groups": {
       "easy": [
-        { "question": "What has keys but can't open locks?", "answer": "Piano" },
-        { "question": "What has a heart that doesn't beat?", "answer": "Artichoke" },
-        { "question": "I am not alive, but I grow; I don't have lungs, but I need air; I don't have a mouth, but water kills me. What am I?", "answer": "Fire" },
-        { "question": "I am always hungry, I must always be fed. The finger I touch will soon turn red. What am I?", "answer": "Fire" },
-        { "question": "The person who makes it, sells it. The person who buys it never uses it. The person who uses it never knows they're using it. What is it?", "answer": "Coffin" },
-        { "question": "What has to be broken before you can use it?", "answer": "Egg" },
-        { "question": "What begins with T, ends with T, and has T in it?", "answer": "Teapot" }
+        { "question": "What has keys but can't open locks?", "answer": "Piano", "answer_type": "instrument" },
+        { "question": "What has a heart that doesn't beat?", "answer": "Artichoke", "answer_type": "food" },
+        { "question": "I am not alive, but I grow; I don't have lungs, but I need air; I don't have a mouth, but water kills me. What am I?", "answer": "Fire", "answer_type": "element" },
+        { "question": "I am always hungry, I must always be fed. The finger I touch will soon turn red. What am I?", "answer": "Fire", "answer_type": "element" },
+        { "question": "The person who makes it, sells it. The person who buys it never uses it. The person who uses it never knows they're using it. What is it?", "answer": "Coffin", "answer_type": "large_object" },
+        { "question": "What has to be broken before you can use it?", "answer": "Egg", "answer_type": "food" },
+        { "question": "What begins with T, ends with T, and has T in it?", "answer": "Teapot", "answer_type": "small_object" }
       ],
       "medium": [
-        { "question": "I speak without a mouth and hear without ears. I have nobody, but I come alive with wind. What am I?", "answer": "Echo" },
-        { "question": "The more of this there is, the less you see. What is it?", "answer": "Darkness" },
-        { "question": "I have cities, but no houses; forests, but no trees; and rivers, but no water. What am I?", "answer": "Map" },
-        { "question": "What can run but never walks, has a mouth but never talks, has a head but never weeps, has a bed but never sleeps?", "answer": "River" },
-        { "question": "What comes once in a minute, twice in a moment, but never in a thousand years?", "answer": "M" },
-        { "question": "What can bring back the dead; make us cry, make us laugh, make us young; is born in an instant, yet lasts a lifetime?", "answer": "Memory" },
-        { "question": "What goes up but never comes down?", "answer": "Age" },
-        { "question": "What begins without ending and is the ending of all beginnings?", "answer": "Death" },
-        { "question": "What is easy to lift but hard to throw?", "answer": "Feather" }
+        { "question": "I speak without a mouth and hear without ears. I have nobody, but I come alive with wind. What am I?", "answer": "Echo", "answer_type": "phenomenon" },
+        { "question": "The more of this there is, the less you see. What is it?", "answer": "Darkness", "answer_type": "phenomenon" },
+        { "question": "I have cities, but no houses; forests, but no trees; and rivers, but no water. What am I?", "answer": "Map", "answer_type": "small_object" },
+        { "question": "What can run but never walks, has a mouth but never talks, has a head but never weeps, has a bed but never sleeps?", "answer": "River", "answer_type": "natural_feature" },
+        { "question": "What comes once in a minute, twice in a moment, but never in a thousand years?", "answer": "M", "answer_type": "letter" },
+        { "question": "What can bring back the dead; make us cry, make us laugh, make us young; is born in an instant, yet lasts a lifetime?", "answer": "Memory", "answer_type": "abstract_concept" },
+        { "question": "What has many needles but doesn't sew?", "answer": "Cactus", "answer_type": "plant" },
+        { "question": "What goes up but never comes down?", "answer": "Age", "answer_type": "abstract_concept" },
+        { "question": "What begins without ending and is the ending of all beginnings?", "answer": "Death", "answer_type": "abstract_concept" },
+        { "question": "What is easy to lift but hard to throw?", "answer": "Feather", "answer_type": "small_object" }
       ],
       "hard": [
-        { "question": "I turn once, what is out will not get in. I turn again, what is in will not get out. What am I?", "answer": "Key" },
-        { "question": "What can fill a room but takes up no space?", "answer": "Light" },
-        { "question": "What is seen in the middle of March and April that can't be seen at the beginning or end of either month?", "answer": "R" },
-        { "question": "What flies without wings and cries without eyes?", "answer": "Cloud" },
-        { "question": "The more you take, the more you leave behind. What am I?", "answer": "Footsteps" },
-        { "question": "What has roots as nobody sees, Is taller than trees, Up, up it goes, And yet it never grows?", "answer": "Mountain" },
-        { "question": "Voiceless it cries, Wingless flutters, Toothless bites, Mouthless mutters.", "answer": "Wind" },
-        { "question": "What has a bottom at the top?", "answer": "Legs" },
-        { "question": "I'm quick when I'm thin and slow when I'm fat. The wind is my enemy.", "answer": "Candle" },
-        { "question": "I disappear when you say my name.", "answer": "Silence" },
-        { "question": "I lie behind the stars and underneath the ancient hills. I always come first and yet follow after, end every life and silence laughter.", "answer": "Darkness" },
-        { "question": "What has four fingers and a thumb but is not alive?", "answer": "Glove" },
-        { "question": "You can keep me only once you give me away.", "answer": "Word" }
+        { "question": "I turn once, what is out will not get in. I turn again, what is in will not get out. What am I?", "answer": "Key", "answer_type": "small_object" },
+        { "question": "What can fill a room but takes up no space?", "answer": "Light", "answer_type": "phenomenon" },
+        { "question": "What is seen in the middle of March and April that can't be seen at the beginning or end of either month?", "answer": "R", "answer_type": "letter" },
+        { "question": "What flies without wings and cries without eyes?", "answer": "Cloud", "answer_type": "phenomenon" },
+        { "question": "The more you take, the more you leave behind. What am I?", "answer": "Footsteps", "answer_type": "phenomenon" },
+        { "question": "What has roots as nobody sees, Is taller than trees, Up, up it goes, And yet it never grows?", "answer": "Mountain", "answer_type": "natural_feature" },
+        { "question": "Voiceless it cries, Wingless flutters, Toothless bites, Mouthless mutters.", "answer": "Wind", "answer_type": "phenomenon" },
+        { "question": "What has a bottom at the top?", "answer": "Legs", "answer_type": "body_part" },
+        { "question": "I'm quick when I'm thin and slow when I'm fat. The wind is my enemy.", "answer": "Candle", "answer_type": "small_object" },
+        { "question": "I disappear when you say my name.", "answer": "Silence", "answer_type": "abstract_concept" },
+        { "question": "I lie behind the stars and underneath the ancient hills. I always come first and yet follow after, end every life and silence laughter.", "answer": "Darkness", "answer_type": "phenomenon" },
+        { "question": "What has four fingers and a thumb but is not alive?", "answer": "Glove", "answer_type": "clothing" },
+        { "question": "You can keep me only once you give me away.", "answer": "Word", "answer_type": "abstract_concept" }
       ],
       "deadly": [
-        { "question": "What has a head, a tail, is brown, and has no legs?", "answer": "Coin" },
-        { "question": "I am taken from a mine and shut up in a wooden case, from which I am never released, and yet I am used by almost every person. What am I?", "answer": "Lead" },
-        { "question": "What can travel around the world while staying in the same spot?", "answer": "Stamp" },
-        { "question": "What has one eye but can't see?", "answer": "Needle" },
-        { "question": "What has many teeth but can't bite?", "answer": "Comb" },
-        { "question": "What has hands but can't clap?", "answer": "Clock" },
-        { "question": "What has a neck but no head?", "answer": "Bottle" },
-        { "question": "What has an eye but cannot see?", "answer": "Hurricane" },
-        { "question": "What can you catch but not throw?", "answer": "Cold" },
-        { "question": "What breaks but never falls?", "answer": "Day" },
-        { "question": "What goes through cities and fields, but never moves?", "answer": "Road" },
-        { "question": "I always was, yet never will be.", "answer": "Tomorrow" },
-        { "question": "I travel the world, yet stay in a corner.", "answer": "Stamp" }
+        { "question": "What has a head, a tail, is brown, and has no legs?", "answer": "Coin", "answer_type": "small_object" },
+        { "question": "I am taken from a mine and shut up in a wooden case, from which I am never released, and yet I am used by almost every person. What am I?", "answer": "Lead", "answer_type": "element" },
+        { "question": "What is so fragile that saying its name breaks it?", "answer": "Silence", "answer_type": "abstract_concept" },
+        { "question": "What can travel around the world while staying in the same spot?", "answer": "Stamp", "answer_type": "small_object" },
+        { "question": "What has one eye but can't see?", "answer": "Needle", "answer_type": "small_object" },
+        { "question": "What has many teeth but can't bite?", "answer": "Comb", "answer_type": "small_object" },
+        { "question": "What has hands but can't clap?", "answer": "Clock", "answer_type": "small_object" },
+        { "question": "What has a neck but no head?", "answer": "Bottle", "answer_type": "small_object" },
+        { "question": "What has an eye but cannot see?", "answer": "Hurricane", "answer_type": "phenomenon" },
+        { "question": "What can you catch but not throw?", "answer": "Cold", "answer_type": "abstract_concept" },
+        { "question": "What breaks but never falls?", "answer": "Day", "answer_type": "abstract_concept" },
+        { "question": "What goes through cities and fields, but never moves?", "answer": "Road", "answer_type": "natural_feature" },
+        { "question": "I always was, yet never will be.", "answer": "Tomorrow", "answer_type": "abstract_concept" },
+        { "question": "I travel the world, yet stay in a corner.", "answer": "Stamp", "answer_type": "small_object" }
       ]
     }
   }

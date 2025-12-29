@@ -1139,5 +1139,79 @@
         "saveVersusFear": 2
       }
     }]
+  },
+
+  "wall": {
+    "name": "Wall",
+    "type": "trait",
+    "description": "Wall",
+    "statuses": [{
+      "name": "Defender",
+      "description": "Unyielding and sturdy, this creature is difficult to damage and counters melee with bludgeoning impacts.",
+      "effect": {
+        "ac": -2,
+        "resistBludgeoning": 0.2,
+        "resistPiercing": 0.2,
+        "resistSlashing": 0.2,
+        "onEnemyAttack": [
+          {
+            "type": "attack",
+            "target": "attacker",
+            "damage": "=1d4",
+            "damageType": "bludgeoning"
+          }
+        ]
+      }
+    }]
+  },
+
+  "counter_arcane": {
+    "name": "Counter Arcane",
+    "type": "trait",
+    "description": "Counter Arcane",
+    "statuses": [
+      {
+        "name": "Arcane Ward",
+        "description": "This creature has a natural resistance to magical attacks.",
+        "effect": {
+          "saveVersusMagic": 3,
+          "resistAll": 0.1,
+          "reflectSpellChance": 0.05
+        }
+      },
+      {
+        "name": "Mage Punishment",
+        "description": "When struck by a spell, deal 1d4 true damage to the caster.",
+        "effect": {
+          "onEnemyOffensiveCasting": [
+            {
+              "type": "damage",
+              "target": "caster",
+              "amount": "=1d4",
+              "damageType": "true"
+            }
+          ]
+        }
+      }
+    ]
+  },
+
+  "automatic_fire": {
+    "name": "Automatic Fire",
+    "type": "trait",
+    "description": "Automatic Fire",
+    "statuses": [
+      {
+        "name": "Countermeasures",
+        "description": "Unleash a barrage of bolts in response to hostile attacks.",
+        "effect": {
+          "onEnemyAttack": [
+            { "type": "attack", "target": "attacker", "damage": "=1d6", "damageType": "weapon" },
+            { "type": "attack", "target": "attacker", "damage": "=1d6", "damageType": "weapon" },
+            { "type": "attack", "target": "attacker", "damage": "=1d6", "damageType": "weapon" }
+          ]
+        }
+      }
+    ]
   }
 }

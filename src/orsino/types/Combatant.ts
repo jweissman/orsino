@@ -38,6 +38,8 @@ export interface Gem {
 }
 
 export interface Combatant {
+  dead?: boolean;
+
   id: string;
   description?: string;
   kind?: string;

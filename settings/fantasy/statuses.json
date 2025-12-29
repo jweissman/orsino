@@ -148,15 +148,14 @@
   "strength": {
     "name": "Bull's Strength",
     "effect": {
-      "str": 2,
-      "bonusDamage": 1
+      "str": 2
     }
   },
   "major_strength": {
     "name": "Giant's Strength",
     "effect": {
       "str": 6,
-      "bonusDamage": "=1d3"
+      "bonusMeleeDamage": "=1d3"
     }
   },
   "grace": {
