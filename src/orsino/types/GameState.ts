@@ -12,14 +12,15 @@ export interface GameState {
   discoveredDungeons: number[];
 }
 
-const newGameState = ({ party, sharedGold }: {
+const newGameState = ({ party, sharedGold, inventory }: {
   party: Combatant[];
   sharedGold: number;
+  inventory: ItemInstance[];
 }): GameState => ({
   day: 1,
   party,
   sharedGold,
-  inventory: [],
+  inventory,
   completedDungeons: [],
   discoveredDungeons: [],
 });

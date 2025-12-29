@@ -19,6 +19,7 @@ import { GeneratedValue, GeneratorOptions } from "./Generator";
 import Orsino from "../orsino";
 import { GameState, newGameState, processEvents } from "./types/GameState";
 import Shop, { ShopType } from "../Shop";
+import { ItemInstance } from "./types/ItemInstance";
 
 type TownSize = 'hamlet' | 'village' | 'town' | 'city' | 'metropolis' | 'capital';
 type Race = 'human' | 'elf' | 'dwarf' | 'halfling' | 'gnome' | 'orc' | 'fae';
@@ -59,6 +60,7 @@ type RunnerOptions = {
   moduleGen?: (options?: GeneratorOptions) => CampaignModule;
   pcs?: Combatant[];
   gen?: (type: GenerationTemplateType, options?: GeneratorOptions) => GeneratedValue | GeneratedValue[];
+  inventory?: ItemInstance[];
 }
 
 export class ModuleRunner {
@@ -84,7 +86,7 @@ export class ModuleRunner {
     this.moduleGen = options.moduleGen || this.defaultModuleGen.bind(this);
     this.gen = options.gen || (() => { throw new Error("No gen function provided") });
 
-    this.state = newGameState({ ...ModuleRunner.configuration, party: options.pcs || [] });
+    this.state = newGameState({ ...ModuleRunner.configuration, party: options.pcs || [], inventory: options.inventory || [] });
   }
 
   get pcs() { return this.state.party; }

@@ -98,6 +98,8 @@ export default class Orsino {
 
     const outputSink = Orsino.outputSink;
 
+    let inventory = [];
+
     while (true) {
       const averagePartyLevel = Math.round(pcs.reduce((sum, pc) => sum + pc.level, 0) / pcs.length);
       try {
@@ -105,13 +107,15 @@ export default class Orsino {
         outputSink,
         moduleGen: () => Generator.gen("module", { setting: 'fantasy', ...options, _moduleLevel: averagePartyLevel }) as unknown as CampaignModule,
         gen: Generator.gen.bind(Generator),
-        pcs
+        pcs,
+        inventory
       });
       await moduleRunner.run(true);
+      inventory = moduleRunner.inventory;
 
       // show pc records
       for (const pc of pcs) {
-        outputSink(await Presenter.characterRecord(pc as Combatant, moduleRunner.inventory));
+        outputSink(await Presenter.characterRecord(pc as Combatant, inventory));
       }
 
       outputSink("\n----\nCombat statistics: " + JSON.stringify(Combat.statistics));
