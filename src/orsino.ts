@@ -12,6 +12,7 @@ import { Team } from "./orsino/types/Team";
 import Presenter from "./orsino/tui/Presenter";
 import Automatic from "./orsino/tui/Automatic";
 import { never } from "./orsino/util/never";
+import { ItemInstance } from "./orsino/types/ItemInstance";
 
 export type Prompt = (message: string) => Promise<string>;
 
@@ -98,12 +99,12 @@ export default class Orsino {
 
     const outputSink = Orsino.outputSink;
 
-    let inventory = [];
+    let inventory: ItemInstance[] = [];
 
     while (true) {
       const averagePartyLevel = Math.round(pcs.reduce((sum, pc) => sum + pc.level, 0) / pcs.length);
       try {
-      const moduleRunner = new ModuleRunner({
+      const moduleRunner: ModuleRunner = new ModuleRunner({
         outputSink,
         moduleGen: () => Generator.gen("module", { setting: 'fantasy', ...options, _moduleLevel: averagePartyLevel }) as unknown as CampaignModule,
         gen: Generator.gen.bind(Generator),

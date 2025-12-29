@@ -339,10 +339,10 @@ export default class Combat {
       inventory: team ? team.inventory || [] : [],
       enemyInventory: this._teams.filter(t => t !== team).flatMap(t => t.inventory || []),
     }
-    // console.log("Constructed combat context for", Presenter.minimalCombatant(combatant), ":", {
-    //   inventory: ctx.inventory.map(i => i.id),
-    //   enemyInventory: ctx.enemyInventory.map(i => i.id),
-    // });
+    console.log("Constructed combat context for", Presenter.minimalCombatant(combatant), ":", {
+      inventory: ctx.inventory.length,
+      enemyInventory: ctx.enemyInventory.length,
+    });
     return ctx;
   }
 
@@ -539,7 +539,7 @@ export default class Combat {
         continue;
       }
       // const itemAbility = Inventory.abilityForItem(itemKey);
-      const proficient = Inventory.isItemProficient(item.kind || 'kit', item.aspect || 'unknown', combatant.itemProficiencies || {})
+      const proficient = Inventory.isItemProficient(item, combatant.itemProficiencies || {})
       if (!proficient) {
         // console.warn(`Skipping item ${itemKey} since ${Presenter.minimalCombatant(combatant)} is not proficient with it.`);
         continue;
@@ -804,7 +804,7 @@ export default class Combat {
     }
 
     // invoke the action
-    // console.debug(`${Presenter.minimalCombatant(combatant)} ${Combat.describeAbility(action)} on ${Array.isArray(targetOrTargets) ? targetOrTargets.map(t => t.forename).join(", ") : (targetOrTargets as Combatant).forename}.`);
+    console.debug(`${Presenter.minimalCombatant(combatant)} ${Combat.describeAbility(action)} on ${Array.isArray(targetOrTargets) ? targetOrTargets.map(t => t.forename).join(", ") : (targetOrTargets as Combatant).forename}.`);
     const ctx = this.contextForCombatant(combatant);
 
     const { events } = await AbilityHandler.perform(action, combatant, targetOrTargets, ctx, Commands.handlers(this.roller));

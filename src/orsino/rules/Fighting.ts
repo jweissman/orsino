@@ -336,7 +336,7 @@ export class Fighting {
       //   throw new Error(`Attacker ${attacker.name} does not have an attackDie defined.`);
       // }
 
-      const attackDie = this.effectiveAttackDie(attacker, attackerContext.inventory);
+      const attackDie = this.effectiveAttackDie(attacker, this.inventoryFor(attacker, attackerContext));
 
       const weaponVerb =
         // attacker.hasMissileWeapon ? "shoot" : (this.weaponDamageKindVerbs[attacker.damageKind || "slashing"] || "strike");
