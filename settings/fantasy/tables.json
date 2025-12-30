@@ -24,7 +24,8 @@
         "startingGear": ["torch", "pole"],
         "weaponProficiencies": { "all": true },
         "armorProficiencies": { "all": true },
-        "itemProficiencies": { "kind": ["kit", "potion", "flask"] }
+        "itemProficiencies": { "kind": ["kit", "potion", "flask"] },
+        "traitChoices": ["toughness", "brave", "strong_willed"]
       },
       "mage": {
         "int": 3,
@@ -34,7 +35,8 @@
         "startingGear": ["spellbook"],
         "armorProficiencies": { "kind": ["cloth"], "weight": ["light"] },
         "weaponProficiencies": { "kind": ["blade", "staff", "dart", "sling"], "weight": ["light"] },
-        "itemProficiencies": { "all": true }
+        "itemProficiencies": { "all": true },
+        "traitChoices": ["abjurer", "conjurer", "diviner", "enchanter", "evoker", "illusionist", "necromancer", "transmuter", "generalist"]
       },
       "thief": {
         "dex": 2,
@@ -54,7 +56,8 @@
         "startingGear": ["holy_symbol"],
         "armorProficiencies": { "kind": ["cloth", "leather", "metal"], "weight": ["light", "medium"] },
         "weaponProficiencies": { "kind": ["flail", "mace", "warhammer", "staff", "club"], "weight": ["light", "medium", "heavy"] },
-        "itemProficiencies": { "kind": ["kit", "potion", "flask", "wand", "scroll"], "withoutAspect": "arcane" }
+        "itemProficiencies": { "kind": ["kit", "potion", "flask", "wand", "scroll"], "withoutAspect": "arcane" },
+        "traitChoices": ["vitalist", "deathspeaker", "lightbringer", "shadowmancer", "oathkeeper", "wildcaller", "chaotician", "warbringer"]
       },
       "bard": {
         "cha": 3,
@@ -2006,10 +2009,10 @@
   "monsterTypeModifier": {
     "discriminator": "monster_type",
     "groups": {
-      "Dragon": { "str": 6, "dex": 4, "con": 5, "int": 4, "wis": 3, "cha": 5, "traits": [ "flying"] },
-      "Wyvern": { "str": 5, "dex": 5, "con": 4, "int": 2, "wis": 3, "cha": 3, "traits": [ "flying"] },
-      "Drake": { "str": 4, "dex": 4, "con": 4, "int": 3, "wis": 3, "cha": 3, "traits": [ "flying"] },
-      "Wyrm": { "str": 7, "dex": 3, "con": 6, "int": 5, "wis": 4, "cha": 4, "traits": [ "flying"] },
+      "Dragon": { "str": 6, "dex": 4, "con": 5, "int": 4, "wis": 3, "cha": 5, "traits": [] },
+      "Wyvern": { "str": 5, "dex": 5, "con": 4, "int": 2, "wis": 3, "cha": 3, "traits": [] },
+      "Drake": { "str": 4, "dex": 4, "con": 4, "int": 3, "wis": 3, "cha": 3, "traits": [] },
+      "Wyrm": { "str": 7, "dex": 3, "con": 6, "int": 5, "wis": 4, "cha": 4, "traits": [] },
 
       "Titan": { "str": 8, "con": 6, "traits": [ "formidable"] },
       "Behemoth": { "str": 5, "con": 3, "traits": [ "formidable"] },

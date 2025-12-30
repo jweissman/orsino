@@ -18,6 +18,10 @@ export interface Trait {
   }
   statuses: StatusEffect[];
   abilities?: string[];
+
+  spellbooks?: string[];
+  domain?: string;
+  school?: string;
 }
 
 type TraitDictionary = {
@@ -45,7 +49,12 @@ export default class TraitHandler {
     return Object.keys(this.traits);
   }
 
-  getTrait(name: string): Trait | null { return this.traits[name] || null; }
+  getTrait(name: string): Trait {
+    if (!this.traits[name]) {
+      throw new Error(`Trait not found: ${name}`);
+    }
+    return this.traits[name];
+  }
 
   partyTraits(combatant: Combatant[]): Trait[] {
     const synergies: Trait[] = [];

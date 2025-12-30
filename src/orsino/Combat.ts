@@ -20,16 +20,10 @@ import Presenter from "./tui/Presenter";
 import Stylist from "./tui/Style";
 import TraitHandler from "./Trait";
 import Words from "./tui/Words";
+import { CombatContext, pseudocontextFor } from "./types/CombatContext";
+import Sample from "./util/Sample";
 
 export type ChoiceSelector<T extends Answers> = (description: string, options: Choice<T>[], combatant?: Combatant) => Promise<T>;
-
-export interface CombatContext {
-  subject: Combatant;
-  allies: Combatant[];
-  enemies: Combatant[];
-  inventory: ItemInstance[];
-  enemyInventory: ItemInstance[];
-}
 
 type CombatStats = {
   combats: number;
@@ -187,7 +181,7 @@ export default class Combat {
     return combatants.filter(c => {
       const fx = Fighting.effectList(c);
       const invisibleEffect = fx.find(e => e.effect.invisible);
-        //c.activeEffects?.find(e => e.effect.invisible);
+      //c.activeEffects?.find(e => e.effect.invisible);
       return !invisibleEffect;
     });
   }
@@ -199,11 +193,11 @@ export default class Combat {
     const equipmentList: StatusEffect[] = [];
     for (const [slot, equipmentKey] of Object.entries(combatant.equipment || {})) {
       // if (slot === 'weapon' || slot === 'body') {
-        const weapon = materializeItem(equipmentKey, inventory) as ItemInstance;
-        if (weapon.effect) {
+      const weapon = materializeItem(equipmentKey, inventory) as ItemInstance;
+      if (weapon.effect) {
 
-          equipmentList.push({ ...weapon, sourceKey: slot } as unknown as StatusEffect);
-        }
+        equipmentList.push({ ...weapon, sourceKey: slot } as unknown as StatusEffect);
+      }
       // } else {
       //   const eq = materializeItem(equipmentKey, inventory) as ItemInstance;
       //     //Deem.evaluate(`lookup(masterEquipment, '${equipmentKey}')`) as unknown as StatusEffect;
@@ -217,15 +211,15 @@ export default class Combat {
     combatant.passiveEffects = combatant.passiveEffects.filter(e => !e.equipment);
     for (const effect of equipmentList) {
       if (!combatant.passiveEffects.map(e => e.sourceKey).includes(effect.sourceKey)) {
-        combatant.passiveEffects.push({ ...effect, equipment: true } );
+        combatant.passiveEffects.push({ ...effect, equipment: true });
       }
     }
   }
 
-  static async reifyTraits(combatant: Combatant): Promise<void> {
+  static async reifyTraits(combatant: Combatant, playerTeam: boolean): Promise<void> {
     const traitHandler = TraitHandler.instance;
     await traitHandler.loadTraits();
-    combatant.traits.forEach(traitName => {
+    for (const traitName of combatant.traits) {
       const trait = traitHandler.getTrait(traitName);
       if (trait) {
         combatant.passiveEffects ||= [];
@@ -244,8 +238,57 @@ export default class Combat {
             }
           }
         }
+
+        if (trait.spellbooks && !playerTeam) {
+          const abilityHandler = AbilityHandler.instance;
+          await abilityHandler.loadAbilities();
+          // only for enemy npcs: give _all_ spells from this spellbook that match the school/domain
+          for (const spellbook of trait.spellbooks) {
+            const cantrips = abilityHandler.spellKeysByLevel(spellbook as 'arcane' | 'divine', 0, false)
+              .filter(spellKey => !combatant.abilities.includes(spellKey));
+            combatant.abilities.push(...cantrips);
+
+            // if caster _already_ has spells from this aspect we could skip
+            // const hasKnown = combatant.abilities.some(abKey => {
+            //   const ab = abilityHandler.getAbility(abKey);
+            //   return ab.aspect === spellbook;
+            // });
+            // if (hasKnown) {
+            //   continue;
+            // }
+
+            const allSpellKeys = abilityHandler.allSpellKeys(
+              spellbook as 'arcane' | 'divine',
+              Math.ceil(combatant.level / 2),
+              true
+            );
+
+            const newSpellKeys = allSpellKeys.filter(spellKey => {
+              const spell = abilityHandler.getAbility(spellKey);
+              if (spellbook === 'arcane') {
+                if (!trait.school || trait.school === "all") return true;
+                return spell.school === trait.school;
+              }
+              if (spellbook === 'divine') {
+                if (!trait.domain || trait.domain === "all") return true;
+                return spell.domain === trait.domain;
+              }
+              return true;
+            });
+            
+            const preparedN = Math.min(6, 2 + Math.ceil((combatant.level || 1) / 2));
+
+            let spellSelection = Sample.count(preparedN, ...newSpellKeys.filter(
+              spellKey => !combatant.abilities.includes(spellKey)
+            ));
+            console.warn(`!!! Reifying spells for NPC combatant ${combatant.name}: adding spells ${spellSelection.join(", ")}`);
+            combatant.abilities.push(...spellSelection);
+          }
+
+          combatant.abilities = Array.from(new Set(combatant.abilities));
+        }
       }
-    });
+    };
   }
 
   // note: we could pre-bake the weapon weight into the combatant for efficiency here
@@ -262,7 +305,8 @@ export default class Combat {
         if (it.condition.weapon) {
           if (it.condition.weapon.weight) {
             const weapon = Fighting.effectiveWeapon(
-              combatant, { subject: combatant, allies: [combatant], enemies: [], inventory, enemyInventory: [] }
+              combatant,
+              pseudocontextFor(combatant, inventory)
             );
             // const weaponRecord = Deem.evaluate(`lookup(masterWeapon, '${combatant.weapon}')`) as unknown as { weight: string };
             if (weapon.weight !== it.condition.weapon.weight) {
@@ -301,7 +345,7 @@ export default class Combat {
 
 
       let team = this.teamFor(c);
-      await Combat.reifyTraits(c);
+      await Combat.reifyTraits(c, team !== this.enemyTeam);
       Combat.applyEquipmentEffects(c, team?.inventory || []);
 
       c.activeEffects = Combat.filterEffects(c, c.activeEffects || [], team?.inventory || []);
@@ -328,19 +372,24 @@ export default class Combat {
   }
 
   contextForCombatant(combatant: Combatant): CombatContext {
-    const allies = this.alliesOf(combatant); //.filter(c => c !== combatant);
-    const enemies = this.enemiesOf(combatant);
     const team = this.teamFor(combatant);
+    const allySide = team?.combatants ?? [combatant];
+    const enemySide = this._teams.filter(t => t !== team).flatMap(t => t.combatants ?? []);
 
-    let ctx: CombatContext = {
+    const allies = allySide.filter(c => c.id !== combatant.id);
+    const enemies = enemySide;
+
+    return {
       subject: combatant,
       allies,
       enemies,
-      inventory: team ? team.inventory || [] : [],
-      enemyInventory: this._teams.filter(t => t !== team).flatMap(t => t.inventory || []),
-    }
-    
-    return ctx;
+      allySide,
+      enemySide,
+      inventory: team?.inventory ?? [],
+      enemyInventory: this._teams.filter(t => t !== team).flatMap(t => t.inventory ?? []),
+      allyIds: new Set(allySide.map(c => c.id)),
+      enemyIds: new Set(enemySide.map(c => c.id)),
+    };
   }
 
   static maxSpellSlotsForLevel(level: number): number { return 2 + Math.ceil(level); }
@@ -357,7 +406,7 @@ export default class Combat {
   }
 
   static maxSummoningsForCombatant(combatant: Combatant): number {
-    return 1 + Math.floor((combatant.level || 1) / 3);
+    return 3 + Math.floor((combatant.level || 1) / 3);
   }
 
   validateAction(ability: Ability, combatant: Combatant, allies: Combatant[], enemies: Combatant[]): boolean {
@@ -423,7 +472,7 @@ export default class Combat {
 
     if (condition?.hasInterceptWeapon) {
       const effectiveWeapon = Fighting.effectiveWeapon(combatant, this.contextForCombatant(combatant));
-        //this.teamFor(combatant)?.inventory || []);
+      //this.teamFor(combatant)?.inventory || []);
       // disabled = !combatant.hasInterceptWeapon;
       disabled = effectiveWeapon.intercept !== true;
     }
@@ -471,7 +520,7 @@ export default class Combat {
       // if (!combatant.traits.includes("inanimate")) {
       if (activeFx.hasPrimaryAttack !== false) {
         const weapon = Fighting.effectiveWeapon(combatant, this.contextForCombatant(combatant));
-          //this.teamFor(combatant)?.inventory || []);
+        //this.teamFor(combatant)?.inventory || []);
         if (weapon) {
           if (weapon.missile) {
             if (!uniqAbilities.includes("ranged")) {
@@ -502,7 +551,7 @@ export default class Combat {
         return [compelledAbility];
       }
     }
-    
+
     return validAbilities;
   }
 
@@ -842,7 +891,7 @@ export default class Combat {
     // let controlEffect = combatant.activeEffects?.find(e => e.effect.controlledActions);
     if (allegianceEffect) {
       this.emit({ type: "allegianceChange", subject: combatant, statusName: allegianceEffect.name } as Omit<AllegianceChangeEvent, "turn">);
-      
+
       [allies, livingEnemies] = [enemies, livingAllies];
 
       // if (controlEffect) {
@@ -851,7 +900,7 @@ export default class Combat {
     }
 
     let attacksPerTurn = combatant.attacksPerTurn || 1;
-    
+
     // gather effects to see if we have extra attacks
     const activeFx = Fighting.gatherEffects(combatant);
     if (activeFx.extraAttacksPerTurn) {
@@ -971,7 +1020,7 @@ export default class Combat {
         await this.emitAll(expiryEvents, "effects expire", combatant);
       }
       const result = await this.turn(combatant);
-      
+
       if (result.haltCombat) {
         return { haltCombat: true, newPlane: result.newPlane };
       } else if (result.haltRound) {

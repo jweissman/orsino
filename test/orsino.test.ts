@@ -175,7 +175,8 @@ describe('Orsino', () => {
       Automatic.randomSelect.bind(Automatic)
     );
     for (const pc of party) {
-      await CharacterRecord.pickInitialSpells(pc, Automatic.randomSelect.bind(Automatic));
+      // await CharacterRecord.pickInitialSpells(pc, Automatic.randomSelect.bind(Automatic));
+      await CharacterRecord.chooseTraits(pc, Automatic.randomSelect.bind(Automatic));
     }
     await CharacterRecord.assignPartyPassives(party);
 
@@ -220,7 +221,7 @@ describe('Orsino', () => {
       Generator.gen("pc", { setting: 'fantasy', class: 'bard', }) as unknown as Combatant,
     ].map(pc => ({ ...pc, playerControlled: true }))
     for (const pc of party) {
-      await CharacterRecord.pickInitialSpells(pc, Automatic.randomSelect.bind(this));
+      await CharacterRecord.chooseTraits(pc, Automatic.randomSelect.bind(Automatic));
     }
     await CharacterRecord.assignPartyPassives(party);
 

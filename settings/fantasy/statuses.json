@@ -1026,5 +1026,14 @@
     "trigger": {
       "damage": "psychic"
     }
+  },
+  "augured": {
+    "name": "Augured",
+    "description": "Blessed with foresight and clarity of mind.",
+    "effect": {
+      "allRolls": 2,
+      "saveVersusAll": 2,
+      "initiative": 5
+    }
   }
 }

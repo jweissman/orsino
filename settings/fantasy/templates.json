@@ -150,7 +150,8 @@
     "*terrainModifier": "=lookup(terrainModifier, #terrain)",
     "*aspectModifier": "=lookup(creatureAspects, #animal_aspect)",
     "hp": "=#maximumHitPoints",
-    "traits": []
+    "traits": [],
+    "!remove": [ "race" ]
   },
   "dragon": {
     "__no_id": true,

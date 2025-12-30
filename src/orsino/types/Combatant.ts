@@ -38,8 +38,6 @@ export interface Gem {
 }
 
 export interface Combatant {
-  dead?: boolean;
-
   id: string;
   description?: string;
   kind?: string;
@@ -101,6 +99,7 @@ export interface Combatant {
   passiveEffects?: StatusEffect[];
 
   type?: string; // monster type, e.g. "shaman", "brute", etc.
+
   // Track which abilities have been used in the current combat
   abilitiesUsed?: string[];
   abilityCooldowns?: { [abilityName: string]: number };
@@ -114,16 +113,9 @@ export interface Combatant {
   gender?: 'male' | 'female' | 'androgynous';
   background?: string;
 
-  // weapon: string;
-  // attackDie: string;
-  // damageKind: DamageKind;
-  // hasMissileWeapon?: boolean;
-  // hasInterceptWeapon?: boolean;
-
   currentEnvironment?: string;
 
   startingGear?: string[];
-  // gems?: Gem[];
 
   // todo count saves and prevent more than 3 saves from death
   savedTimes?: { [key in SaveKind]?: number };
@@ -137,4 +129,7 @@ export interface Combatant {
   domain?: string;
 
   activeSummonings?: Combatant[];
+  traitChoices?: string[];
+  dead?: boolean;
+
 }

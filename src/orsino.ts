@@ -93,7 +93,7 @@ export default class Orsino {
       Generator.gen("pc", { setting: 'fantasy', class: 'bard'    }) as unknown as Combatant,
     ].map(pc => ({ ...pc, playerControlled: true }))
     for (const pc of pcs) {
-      await CharacterRecord.pickInitialSpells(pc, Automatic.randomSelect.bind(Automatic));
+      await CharacterRecord.chooseTraits(pc, Automatic.randomSelect.bind(Automatic));
     }
     await CharacterRecord.assignPartyPassives(pcs);
 

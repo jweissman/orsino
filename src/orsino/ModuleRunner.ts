@@ -544,7 +544,8 @@ export class ModuleRunner {
     }
     // gen a level 1 PC as hireling
     const hireling = this.gen("pc", { background: "hireling", setting: "fantasy" }) as unknown as Combatant;
-    await CharacterRecord.pickInitialSpells(hireling, Automatic.randomSelect);
+    // await CharacterRecord.pickInitialSpells(hireling, Automatic.randomSelect);
+    await CharacterRecord.chooseTraits(hireling, Automatic.randomSelect.bind(Automatic));
     const wouldLikeHireling = await this.select(
       // "A hireling is available to join your party. Would you like to consider their merits?",
       `A ${hireling.class} named ${hireling.name} is looking for work. Would you like to interview them?`,

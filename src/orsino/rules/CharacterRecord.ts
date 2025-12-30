@@ -1,6 +1,7 @@
 import Choice from "inquirer/lib/objects/choice";
 import AbilityHandler from "../Ability";
-import { ChoiceSelector, CombatContext } from "../Combat";
+import { ChoiceSelector } from "../Combat";
+import { CombatContext, pseudocontextFor } from "../types/CombatContext";
 import { DungeonEvent } from "../Events";
 import TraitHandler, { Trait } from "../Trait";
 import Presenter from "../tui/Presenter";
@@ -47,12 +48,14 @@ export default class CharacterRecord {
     spellLevel: number,
     aspect: 'arcane' | 'divine',
     alreadyKnown: string[] = [],
-    selectionMethod: Select<Answers> = User.selection.bind(User)
-  ): Promise<string> {
+    selectionMethod: Select<Answers> = User.selection.bind(User),
+    schoolOrDomainRestriction: string = 'all'
+  ): Promise<string | boolean> {
+
     const abilityHandler = AbilityHandler.instance;
     await abilityHandler.loadAbilities();
-    let spellChoices = abilityHandler.allSpellNames(aspect, spellLevel, false);
-    spellChoices = spellChoices.filter(spellName => alreadyKnown.indexOf(spellName) === -1);
+    let spellChoices = abilityHandler.spellKeysByLevel(aspect, spellLevel, false);
+    spellChoices = spellChoices.filter(spell => alreadyKnown.indexOf(spell) === -1);
     const spellChoicesDetailed = spellChoices.map(spellName => {
       const spell = abilityHandler.getAbility(spellName);
       return {
@@ -60,9 +63,19 @@ export default class CharacterRecord {
           Stylist.colorize(spell.description, 'brightBlack'),
         value: spellName,
         short: spell.name,
-        disabled: false
+        disabled: !!(schoolOrDomainRestriction && schoolOrDomainRestriction !== 'all' && (
+          (aspect === 'arcane' && spell.school !== schoolOrDomainRestriction) ||
+          (aspect === 'divine' && spell.domain !== schoolOrDomainRestriction)
+        ))
       };
+
     });
+    const available = spellChoicesDetailed.filter(s => !s.disabled);
+    console.warn(`Picking level ${spellLevel} ${aspect} spell (already known: ${alreadyKnown.join(", ")}) with restriction: ${schoolOrDomainRestriction} -- available: ${available.map(s => s.value).join(", ")}`);
+    if (available.length === 0) {
+      console.warn(`No available level ${spellLevel} ${aspect} spells to choose from for restriction: ${schoolOrDomainRestriction}`);
+      return false;
+    }
     const chosenSpell: Choice<Answers> = await selectionMethod(
       `Select a level ${spellLevel} ${aspect} spell:`,
       spellChoicesDetailed
@@ -95,7 +108,8 @@ export default class CharacterRecord {
         );
 
         pc = pcGenerator({ setting: 'fantasy', race: raceSelect, class: occupationSelect });
-        await this.pickInitialSpells(pc, selectionMethod);
+        await this.chooseTraits(pc, selectionMethod);
+        // await this.pickInitialSpells(pc, selectionMethod);
 
         await Presenter.printCharacterRecord(pc, []);
         const confirm = await selectionMethod(
@@ -113,7 +127,8 @@ export default class CharacterRecord {
           class: occupation
 
         });
-        await this.pickInitialSpells(pc, Automatic.randomSelect.bind(Automatic));
+        await this.chooseTraits(pc, Automatic.randomSelect.bind(Automatic));
+        // await this.pickInitialSpells(pc, Automatic.randomSelect.bind(Automatic));
 
         await Presenter.printCharacterRecord(pc, []);
         accepted = await selectionMethod(
@@ -126,59 +141,73 @@ export default class CharacterRecord {
     return pc;
   }
 
-  static async pickInitialSpells(
+  static async chooseTraits(
     pc: Combatant,
     selectionMethod: Select<Answers> = User.selection.bind(User)
   ) {
-    const job = pc.class;
-    const spellbook: string[] = [];
-    if (job === 'mage') {
-      const cantrips = AbilityHandler.instance.allSpellNames('arcane', 0, false);
-      // give all cantrips
-      spellbook.push(...cantrips);
+    if (pc.traitChoices && pc.traitChoices.length > 0) {
+      const traitHandler = TraitHandler.instance;
+      await traitHandler.loadTraits();
 
-      // let availableSpells = AbilityHandler.instance.allSpellNames('arcane', 1).filter(spellName => cantrips.indexOf(spellName) === -1);
-      for (let i = 0; i < 3; i++) {
-        const spell = await this.pickSpell(1, 'arcane', spellbook, selectionMethod);
-        // console.log(`Adding to ${pc.name}'s spellbook: ${spell} (already has ${spellbook.join(", ")})`);
-        spellbook.push(spell);
-        // availableSpells = availableSpells.filter(s => s !== spell);
+      const selectedTrait = await selectionMethod("Select a trait for " + pc.name + ":",
+        pc.traitChoices.map(traitName => {
+          const trait = traitHandler.getTrait(traitName);
+          return {
+            name: Words.capitalize(trait.name) + ': ' + trait.description,
+            value: trait,
+            short: trait.name,
+            disabled: false
+          };
+        }
+        ));
+      pc.traits.push((selectedTrait as Trait).name);
+      pc.passiveEffects ||= [];
+      const trait = traitHandler.getTrait((selectedTrait as Trait).name);
+      if (trait.statuses) {
+        pc.passiveEffects.push(...trait.statuses);
       }
-    } else if (job === 'cleric') {
-      // give all cantrips
-      const cantrips = AbilityHandler.instance.allSpellNames('divine', 0);
-      spellbook.push(...cantrips);
+      if (trait.abilities) {
+        pc.abilities.push(...trait.abilities);
+      }
+      if (trait.spellbooks) {
+        await this.pickInitialSpells(pc, trait.spellbooks, trait.school || trait.domain || 'all',
+          selectionMethod);
+      }
+      console.log(`${Presenter.minimalCombatant(pc)} gained the trait: ${Words.capitalize((selectedTrait as Trait).name)}.`);
+      
+      delete pc.traitChoices;
+    }
+  }
 
-      // clerics select a 'domain' (life, death, war, knowledge, etc.) which influences their spell selection
-      const domainSelect = await selectionMethod(
-        'Select a divine domain for this PC: ' + pc.forename,
-        ['life', 'law']
-      ) as string;
+  static async pickInitialSpells(
+    pc: Combatant,
+    spellbooks: string[],
+    schoolOrDomain: string = 'all',
+    selectionMethod: Select<Answers> = User.selection.bind(User)
+  ) {
+    const pcSpells: string[] = [];
 
-      pc.domain = domainSelect;
+    const cantrips = [];
+    for (const spellbook of spellbooks) {
+      cantrips.push(...AbilityHandler.instance.allSpellKeys(spellbook as 'arcane' | 'divine', 0, false));
+    }
+    pcSpells.push(...cantrips);
 
-      const domainSpells = AbilityHandler.instance.allSpellNames('divine', 1).filter(spellName => {
-        const spell = AbilityHandler.instance.getAbility(spellName);
-        return spell.domain === domainSelect && cantrips.indexOf(spellName) === -1;
-      });
-
-      // give all domain spells for now
-      spellbook.push(...domainSpells);
-
-      // then select additional spells
-      // let availableSpells = AbilityHandler.instance.allSpellNames('divine', 1).filter(spellName => {
-      //   let spell = AbilityHandler.instance.getAbility(spellName);
-      //   return spell.domain !== domainSelect;
-      // });
-
-      for (let i = 0; i < 2; i++) {
-        const spell = await this.pickSpell(1, 'divine', spellbook, selectionMethod);
-        // console.log(`Adding to ${pc.name}'s spellbook: ${spell} (already has ${spellbook.join(", ")})`);
-        spellbook.push(spell);
-        // availableSpells = availableSpells.filter(s => s !== spell);
+    const spellLevelsToPick: { [level: number]: number; } = { 1: 3, 2: 2, 3: 1 };
+    for (const spellbook of spellbooks) {
+      for (const levelStr of Object.keys(spellLevelsToPick)) {
+        const level = parseInt(levelStr, 10);
+        console.warn(`Picking ${spellLevelsToPick[level]} level ${level} spells for ${pc.name} from ${spellbook} with restriction: ${schoolOrDomain}`);
+        for (let i = 0; i < spellLevelsToPick[level]; i++) {
+            const spell = await this.pickSpell(level, spellbook as 'arcane' | 'divine', pcSpells, selectionMethod, schoolOrDomain);
+          if (typeof spell === 'string') {
+            pcSpells.push(spell);
+          }
+        }
       }
     }
-    pc.abilities.push(...spellbook);
+
+    pc.abilities.push(...pcSpells);
   }
 
   static async chooseParty(
@@ -244,7 +273,9 @@ export default class CharacterRecord {
         const trait = traitHandler.getTrait(traitName);
         if (trait) {
           c.passiveEffects ||= [];
-          c.passiveEffects.push(...trait.statuses);
+          if (trait.statuses) {
+            c.passiveEffects.push(...trait.statuses);
+          }
         }
       });
     });
@@ -288,10 +319,10 @@ export default class CharacterRecord {
 
       // let fx = await Fighting.gatherEffects(pc);
       // if (fx.onLevelUp) {
-      const pseudocontext: CombatContext = {
-        subject: pc, allies: team.combatants.filter(c => c !== pc), enemies: [],
-        inventory: team.inventory, enemyInventory: []
-      };
+      const pseudocontext: CombatContext = pseudocontextFor(pc, team.inventory);
+      //   subject: pc, allies: team.combatants.filter(c => c !== pc), enemies: [],
+      //   inventory: team.inventory, enemyInventory: []
+      // };
       events.push(...(await AbilityHandler.performHooks(
         'onLevelUp',
         pc,
@@ -315,7 +346,7 @@ export default class CharacterRecord {
         // gain spells
         const abilityHandler = AbilityHandler.instance;
         await abilityHandler.loadAbilities();
-        const allSpellKeys = abilityHandler.allSpellNames('arcane', Math.ceil(pc.level / 2));
+        const allSpellKeys = abilityHandler.allSpellKeys('arcane', Math.ceil(pc.level / 2));
 
         const newSpellKeys = allSpellKeys.filter(spellKey => {
           return !pc.abilities.includes(spellKey);
@@ -342,7 +373,7 @@ export default class CharacterRecord {
         // gain spells
         const abilityHandler = AbilityHandler.instance;
         await abilityHandler.loadAbilities();
-        const allSpellKeys = abilityHandler.allSpellNames('divine', Math.ceil(pc.level / 2));
+        const allSpellKeys = abilityHandler.allSpellKeys('divine', Math.ceil(pc.level / 2));
 
         const newSpellKeys = allSpellKeys.filter(spellKey => {
           return !pc.abilities.includes(spellKey);

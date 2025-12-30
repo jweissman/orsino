@@ -221,7 +221,7 @@ export default class Books {
       // this.write(`\n=== ${aspect.toUpperCase()} SPELLS ===\n`);
       this.write(`\n### ${Words.capitalize(aspect)} Spells\n`);
 
-      const spells = AbilityHandler.instance.allSpellNames(aspect, Infinity, false)
+      const spells = AbilityHandler.instance.allSpellKeys(aspect, Infinity, false)
       spells.sort((a, b) => a.localeCompare(b));
       this.write("\n| Cantrip | Level 1 | Level 2 | Level 3 | Level 4 | Level 5 | Level 6 | Level 7 | Level 8 | Level 9 |");
       this.write("  |---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|");

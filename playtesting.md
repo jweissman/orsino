@@ -6,8 +6,8 @@
 - [ ] Seems fixed but really make sure we're handling gold transition between town hub/dungeon correctly
 
 ## Features
-- [ ] Blacksmith who can give a +1 to weapons?
-- [ ] Describe colors of prismatic spray/multiplicity cards (done for normal damage fx, but spell beams don't hint their description clearly)
+- [ ] All mage schools should have enough low-level spells to pick from
+- [ ] Flight should make you actually _untargetable_ by melee
 - [ ] Show current gold before purchasing potions
 - [ ] Remind players to rest if they're not at full health going into boss battle
 - [ ] Unify search/examine (should both have chance to find potions/loot and both grant XP on success)
@@ -133,7 +133,6 @@
 - [ ] Generate static list of tavern hirelings each day
 - [ ] Wonders should have _strictly better_ boons than normal room features!
 - [ ] Purge active fx on long rest
-- [ ] Flight should make you actually _untargetable_ by melee
 ---
 - [ ] Group riddle answers by type so they're marginally more challenging?
 - [ ] Confused players (randomActions) should _also_ pick targets at random!!!
@@ -151,7 +150,7 @@
 - [ ] Unify weapon/armor/item instance interfaces somehow
 - [ ] Mages can _summon familiar_ to get an animal companion appropriate for their racial group but also with the typical familiar benefits (ie it's always the same familiar, it can level up with you etc)
 ---
-- [ ] 
+- [ ] Would be interesting to restrict domain/school by _race_ too (only gnome illusionists etc)
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing
@@ -294,6 +293,8 @@
 - [x] All loot is meaningful (either wearable, consumable or saleable at some general store in town) -- should be true now
 - [x] Restrict casters from heavy armor (armorProficiencies by class)
 - [x] Template for dragons
+- [x] Blacksmith who can give a +1 to weapons?
+- [x] Describe colors of prismatic spray/multiplicity cards (done for normal damage fx, but spell beams don't hint their description clearly)
 
 ## Not really issues atm
 - "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]

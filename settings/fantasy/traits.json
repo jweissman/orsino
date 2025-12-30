@@ -641,7 +641,6 @@
       }
     ]
   },
-
   "battle_cry": {
     "type": "feat",
     "description": "Battle Cry",
@@ -664,7 +663,6 @@
       }
     ]
   },
-
   "mana_focusing": {
     "type": "feat",
     "description": "Mana Focusing",
@@ -682,7 +680,6 @@
       }
     ]
   },
-
   "stealthy": {
     "type": "feat",
     "description": "Stealthy",
@@ -701,7 +698,6 @@
       }
     ]
   },
-
   "piety": {
     "type": "feat",
     "description": "Piety",
@@ -719,7 +715,6 @@
       }
     ]
   },
-
   "natural_bond": {
     "type": "feat",
     "description": "Natural Bond",
@@ -737,7 +732,6 @@
       }
     ]
   },
-
   "rhythm_rhyme": {
     "type": "feat",
     "description": "Rhythm and Rhyme",
@@ -755,7 +749,6 @@
       }
     ]
   },
-
   "barbarian": {
     "type": "feat",
     "description": "Barbarian",
@@ -763,9 +756,12 @@
       "level": 3,
       "class": "warrior"
     },
-    "abilities": [ "enrage", "whirlwind", "reckless_attack" ]
+    "abilities": [
+      "enrage",
+      "whirlwind",
+      "reckless_attack"
+    ]
   },
-
   "knight": {
     "type": "feat",
     "description": "Knight",
@@ -773,13 +769,19 @@
       "level": 3,
       "class": "warrior"
     },
-    "abilities": [ "taunt", "shield_bash", "overwatch" ],
+    "abilities": [
+      "taunt",
+      "shield_bash",
+      "overwatch"
+    ],
     "statuses": [
       {
         "name": "Heavy Handed",
         "description": "You are proficient with heavy weaponry.",
         "condition": {
-          "weapon": { "weight": "heavy" }
+          "weapon": {
+            "weight": "heavy"
+          }
         },
         "effect": {
           "toHit": 1,
@@ -788,383 +790,469 @@
       }
     ]
   },
-
   "undead": {
     "type": "template",
     "description": "Brought Back",
-    "statuses": [{
-      "name": "Undead Nature",
-      "description": "Unaffected by biological effects.",
-      "effect": {
-        "immunePoison": true,
-        "immuneCharm": true,
-        "immuneSleep": true,
-        "immuneDisease": true
+    "statuses": [
+      {
+        "name": "Undead Nature",
+        "description": "Unaffected by biological effects.",
+        "effect": {
+          "immunePoison": true,
+          "immuneCharm": true,
+          "immuneSleep": true,
+          "immuneDisease": true
+        }
+      },
+      {
+        "name": "Radiant Vulnerability",
+        "description": "Vulnerable to radiant damage.",
+        "effect": {
+          "resistRadiant": -1
+        }
       }
-    },
-    {
-      "name": "Radiant Vulnerability",
-      "description": "Vulnerable to radiant damage.",
-      "effect": {
-        "resistRadiant": -1
-      }
-    }]
+    ]
   },
-
   "skeletal": {
     "type": "template",
     "description": "Animated Bones",
-    "statuses": [{
-      "name": "Bone Resilience",
-      "description": "Arrows and pointed blades pass through you, but blunt force harms you more.",
-      "effect": {
-        "immuneBleed": true,
-        "resistPiercing": 0.5,
-        "resistBludgeoning": -1
+    "statuses": [
+      {
+        "name": "Bone Resilience",
+        "description": "Arrows and pointed blades pass through you, but blunt force harms you more.",
+        "effect": {
+          "immuneBleed": true,
+          "resistPiercing": 0.5,
+          "resistBludgeoning": -1
+        }
       }
-    }]
+    ]
   },
-
   "incorporeal": {
     "name": "Incorporeal",
     "type": "template",
     "description": "Ghostly",
-    "statuses": [{
-      "name": "Ethereal Form",
-      "description": "Resistant to physical damage and difficult to hit.",
-      "effect": {
-        "resistBludgeoning": 0.5,
-        "resistPiercing": 0.5,
-        "resistSlashing": 0.5,
-        "evasion": 5
+    "statuses": [
+      {
+        "name": "Ethereal Form",
+        "description": "Resistant to physical damage and difficult to hit.",
+        "effect": {
+          "resistBludgeoning": 0.5,
+          "resistPiercing": 0.5,
+          "resistSlashing": 0.5,
+          "evasion": 5
+        }
       }
-    }]
+    ]
   },
-
   "imperceptible": {
     "type": "template",
     "description": "Invisible",
-    "statuses": [{
-      "name": "Hidden Presence",
-      "description": "Difficult to detect and hit.",
-      "effect": {
-        "invisible": true
+    "statuses": [
+      {
+        "name": "Hidden Presence",
+        "description": "Difficult to detect and hit.",
+        "effect": {
+          "invisible": true
+        }
       }
-    }]
+    ]
   },
-
   "fiendish": {
     "type": "template",
     "description": "Demonic",
-    "statuses": [{
-      "name": "Fiendish Resilience",
-      "description": "Resistant to fire and poison damage. Immune to charm effects.",
-      "effect": {
-        "resistFire": 0.5,
-        "resistPoison": 0.5,
-        "immuneCharm": true
+    "statuses": [
+      {
+        "name": "Fiendish Resilience",
+        "description": "Resistant to fire and poison damage. Immune to charm effects.",
+        "effect": {
+          "resistFire": 0.5,
+          "resistPoison": 0.5,
+          "immuneCharm": true
+        }
       }
-    }]
+    ]
   },
   "celestial": {
     "type": "template",
     "description": "Holy",
-    "statuses": [{
-      "name": "Celestial Radiance",
-      "description": "You were forged in the light of the heavens.",
-      "effect": {
-        "resistRadiant": 0.5,
-        "resistNecrotic": 0.5,
-        "bonusHealing": "1d4"
+    "statuses": [
+      {
+        "name": "Celestial Radiance",
+        "description": "You were forged in the light of the heavens.",
+        "effect": {
+          "resistRadiant": 0.5,
+          "resistNecrotic": 0.5,
+          "bonusHealing": "1d4"
+        }
       }
-    }]
+    ]
   },
   "construct": {
     "type": "template",
     "description": "Automaton",
-    "statuses": [{
-      "name": "Constructed Resilience",
-      "description": "Immune to poison, sleep and disease. Weak to physical damage.",
-      "effect": {
-        "immunePoison": true,
-        "immuneDisease": true,
-        "immuneSleep": true,
-        "resistBludgeoning": 0.5,
-        "resistPiercing": 0.5,
-        "resistSlashing": 0.5
+    "statuses": [
+      {
+        "name": "Constructed Resilience",
+        "description": "Immune to poison, sleep and disease. Weak to physical damage.",
+        "effect": {
+          "immunePoison": true,
+          "immuneDisease": true,
+          "immuneSleep": true,
+          "resistBludgeoning": 0.5,
+          "resistPiercing": 0.5,
+          "resistSlashing": 0.5
+        }
       }
-    }]
+    ]
   },
   "outsider": {
     "type": "template",
     "description": "Otherworldly",
-    "statuses": [{
-      "name": "Planar Adaptation",
-      "description": "Resistant to elements and gain +2 to save vs magic.",
-      "effect": {
-        "resistFire": 0.5,
-        "resistCold": 0.5,
-        "resistLightning": 0.5,
-        "saveVersusMagic": 2
+    "statuses": [
+      {
+        "name": "Planar Adaptation",
+        "description": "Resistant to elements and gain +2 to save vs magic.",
+        "effect": {
+          "resistFire": 0.5,
+          "resistCold": 0.5,
+          "resistLightning": 0.5,
+          "saveVersusMagic": 2
+        }
       }
-    }]
+    ]
   },
   "huge": {
     "type": "template",
     "description": "Colossal Size",
-    "statuses": [{
-      "name": "Titanic Strength",
-      "description": "Gain +2 to hit and +2 bonus damage with melee attacks.",
-      "effect": {
-        "toHit": 2,
-        "bonusDamage": 2
+    "statuses": [
+      {
+        "name": "Titanic Strength",
+        "description": "Gain +2 to hit and +2 bonus damage with melee attacks.",
+        "effect": {
+          "toHit": 2,
+          "bonusDamage": 2
+        }
       }
-    }]
+    ]
   },
   "formidable": {
     "name": "Formidable",
     "type": "trait",
     "description": "Formidable",
-    "statuses": [{
-      "name": "Formidable",
-      "description": "This creature is particularly tough, granting it additional resilience in combat.",
-      "effect": {
-        "toHit": 3,
-        "bonusDamage": 3,
-        "saveVersusWill": 2,
-        "resistBludgeoning": 0.1,
-        "resistPiercing": 0.1,
-        "resistSlashing": 0.1
+    "statuses": [
+      {
+        "name": "Formidable",
+        "description": "This creature is particularly tough, granting it additional resilience in combat.",
+        "effect": {
+          "toHit": 3,
+          "bonusDamage": 3,
+          "saveVersusWill": 2,
+          "resistBludgeoning": 0.1,
+          "resistPiercing": 0.1,
+          "resistSlashing": 0.1
+        }
       }
-    }]
+    ]
   },
   "favored": {
     "name": "Favored",
     "type": "trait",
     "description": "Favored",
-    "statuses": [{
-      "name": "Favored",
-      "description": "This creature is favored by fate, granting it enhanced luck and resilience.",
-      "effect": {
-        "allRolls": 2,
-        "evasion": 3,
-        "resistAll": 0.1,
-        "saveVersusDeath": 2
+    "statuses": [
+      {
+        "name": "Favored",
+        "description": "This creature is favored by fate, granting it enhanced luck and resilience.",
+        "effect": {
+          "allRolls": 2,
+          "evasion": 3,
+          "resistAll": 0.1,
+          "saveVersusDeath": 2
+        }
       }
-    }]
+    ]
   },
   "radiant": {
     "name": "Radiant",
     "type": "trait",
     "description": "Radiant",
-    "statuses": [{
-      "name": "Radiant",
-      "description": "This creature is blessed with divine favor, enhancing its combat prowess and resilience.",
-      "effect": {
-        "allRolls": 1,
-        "toHit": 2,
-        "bonusDamage": 1,
-        "resistNecrotic": 0.1,
-        "saveVersusFear": 2
+    "statuses": [
+      {
+        "name": "Radiant",
+        "description": "This creature is blessed with divine favor, enhancing its combat prowess and resilience.",
+        "effect": {
+          "allRolls": 1,
+          "toHit": 2,
+          "bonusDamage": 1,
+          "resistNecrotic": 0.1,
+          "saveVersusFear": 2
+        }
       }
-    }]
+    ]
   },
-
   "regeneration": {
     "name": "Regeneration",
     "type": "trait",
     "description": "Regeneration",
-    "statuses": [{
-      "name": "Regeneration",
-      "description": "This creature regenerates health over time, allowing it to recover from wounds quickly.",
-      "effect": {
-        "onTurnEnd": [
-          {
-            "type": "heal",
-            "target": "self",
-            "amount": "=1d2-1"
-          }
-        ]
+    "statuses": [
+      {
+        "name": "Regeneration",
+        "description": "This creature regenerates health over time, allowing it to recover from wounds quickly.",
+        "effect": {
+          "onTurnEnd": [
+            {
+              "type": "heal",
+              "target": "self",
+              "amount": "=1d2-1"
+            }
+          ]
+        }
       }
-    }]
+    ]
   },
   "disciplined": {
     "name": "Disciplined",
     "type": "trait",
     "description": "Disciplined",
-    "statuses": [{
-      "name": "Disciplined",
-      "description": "This creature has a disciplined mind and body, granting it enhanced focus and resilience.",
-      "effect": {
-        "toHit": 1,
-        "bonusDamage": 1,
-        "saveVersusMagic": 2,
-        "evasion": 3
+    "statuses": [
+      {
+        "name": "Disciplined",
+        "description": "This creature has a disciplined mind and body, granting it enhanced focus and resilience.",
+        "effect": {
+          "toHit": 1,
+          "bonusDamage": 1,
+          "saveVersusMagic": 2,
+          "evasion": 3
+        }
       }
-    }]
+    ]
   },
-
   "inanimate": {
     "type": "template",
     "description": "Inanimate",
-    "statuses": [{
-      "name": "Inanimate Nature",
-      "description": "Immune to charm, fear, stun, sleep, poison, and disease. Cannot be resurrected.",
-      "effect": {
-        "immuneCharm": true,
-        "immuneFear": true,
-        "immuneStun": true,
-        "immuneSleep": true,
-        "immunePoison": true,
-        "immuneDisease": true,
-        "immuneBleed": true,
-        "resurrectable": false,
-        "hasPrimaryAttack": false
+    "statuses": [
+      {
+        "name": "Inanimate Nature",
+        "description": "Immune to charm, fear, stun, sleep, poison, and disease. Cannot be resurrected.",
+        "effect": {
+          "immuneCharm": true,
+          "immuneFear": true,
+          "immuneStun": true,
+          "immuneSleep": true,
+          "immunePoison": true,
+          "immuneDisease": true,
+          "immuneBleed": true,
+          "resurrectable": false,
+          "hasPrimaryAttack": false
+        }
       }
-    }]
+    ]
   },
-
   "cursed": {
     "type": "template",
     "description": "Cursed",
-    "statuses": [{
-      "name": "Cursed Fate",
-      "description": "Vulnerable to radiant damage",
-      "effect": {
-        "resistRadiant": -1,
-        "saveVersusMagic": -2,
-        "allRolls": -1
+    "statuses": [
+      {
+        "name": "Cursed Fate",
+        "description": "Vulnerable to radiant damage",
+        "effect": {
+          "resistRadiant": -1,
+          "saveVersusMagic": -2,
+          "allRolls": -1
+        }
       }
-    }]
+    ]
   },
   "elemental": {
     "type": "template",
     "description": "Elemental",
-    "statuses": [{
-      "name": "Elemental Affinity",
-      "description": "Resistant to nonstandard elemental damage types.",
-      "effect": {
-        "resistAcid": 0.1,
-        "resistSonic": 0.1,
-        "resistForce": 0.1,
-        "resistPsychic": 0.1
+    "statuses": [
+      {
+        "name": "Elemental Affinity",
+        "description": "Resistant to nonstandard elemental damage types.",
+        "effect": {
+          "resistAcid": 0.1,
+          "resistSonic": 0.1,
+          "resistForce": 0.1,
+          "resistPsychic": 0.1
+        }
       }
-    }]
+    ]
   },
-
   "wild": {
     "name": "Wild",
     "type": "trait",
     "description": "Wild",
-    "statuses": [{
-      "name": "Wild",
-      "description": "This creature is attuned to the primal forces of nature, granting it enhanced physical prowess and resilience.",
-      "effect": {
-        "allRolls": 1,
-        "toHit": 2,
-        "bonusDamage": 2,
-        "evasion": 2,
-        "resistAll": 0.1
+    "statuses": [
+      {
+        "name": "Wild",
+        "description": "This creature is attuned to the primal forces of nature, granting it enhanced physical prowess and resilience.",
+        "effect": {
+          "allRolls": 1,
+          "toHit": 2,
+          "bonusDamage": 2,
+          "evasion": 2,
+          "resistAll": 0.1
+        }
       }
-    }]
+    ]
   },
-
   "air_affinity": {
     "type": "template",
     "description": "Air Affinity",
-    "statuses": [{
-      "name": "Air Affinity",
-      "description": "Resistant to lightning and cold damage. Immune to paralysis effects.",
-      "effect": {
-        "resistLightning": 0.5,
-        "resistCold": 0.5,
-        "resistFire": -1,
-        "immuneParalyze": true
+    "statuses": [
+      {
+        "name": "Air Affinity",
+        "description": "Resistant to lightning and cold damage. Immune to paralysis effects.",
+        "effect": {
+          "resistLightning": 0.5,
+          "resistCold": 0.5,
+          "resistFire": -1,
+          "immuneParalyze": true
+        }
       }
-    }]
+    ]
   },
-
   "fire_affinity": {
     "type": "template",
     "description": "Fire Affinity",
-    "statuses": [{
-      "name": "Fire Affinity",
-      "description": "Resistant to fire damage. Immune to breath effects.",
-      "effect": {
-        "resistFire": 0.5,
-        "resistCold": -1,
-        "immuneBreath": true
+    "statuses": [
+      {
+        "name": "Fire Affinity",
+        "description": "Resistant to fire damage. Immune to breath effects.",
+        "effect": {
+          "resistFire": 0.5,
+          "resistCold": -1,
+          "immuneBreath": true
+        }
       }
-    }]
+    ]
   },
-
   "earth_affinity": {
     "type": "template",
     "description": "Earth Affinity",
-    "statuses": [{
-      "name": "Earth Affinity",
-      "description": "Resistant to bludgeoning damage. Immune to stun effects.",
-      "effect": {
-        "resistBludgeoning": 0.5,
-        "immuneStun": true,
-        "resistLightning": -1
+    "statuses": [
+      {
+        "name": "Earth Affinity",
+        "description": "Resistant to bludgeoning damage. Immune to stun effects.",
+        "effect": {
+          "resistBludgeoning": 0.5,
+          "immuneStun": true,
+          "resistLightning": -1
+        }
       }
-    }]
+    ]
   },
-
   "water_affinity": {
     "type": "template",
     "description": "Water Affinity",
-    "statuses": [{
-      "name": "Water Affinity",
-      "description": "Resistant to cold damage.",
-      "effect": {
-        "resistCold": 0.5,
-        "resistFire": -1,
-        "resistLightning": -1,
-        "immuneWill": true
+    "statuses": [
+      {
+        "name": "Water Affinity",
+        "description": "Resistant to cold damage.",
+        "effect": {
+          "resistCold": 0.5,
+          "resistFire": -1,
+          "resistLightning": -1,
+          "immuneWill": true
+        }
       }
-    }]
+    ]
+  },
+  "air_vulnerability": {
+    "type": "template",
+    "description": "Air Vulnerability",
+    "statuses": [
+      {
+        "name": "Air Vulnerability",
+        "description": "Vulnerable to lightning and cold damage.",
+        "effect": {
+          "resistLightning": -1,
+          "resistCold": -1
+        }
+      }
+    ]
+  },
+  "fire_vulnerability": {
+    "type": "template",
+    "description": "Fire Vulnerability",
+    "statuses": [
+      {
+        "name": "Fire Vulnerability",
+        "description": "Vulnerable to fire damage.",
+        "effect": {
+          "resistFire": -1
+        }
+      }
+    ]
+  },
+  "earth_vulnerability": {
+    "type": "template",
+    "description": "Earth Vulnerability",
+    "statuses": [
+      {
+        "name": "Earth Vulnerability",
+        "description": "Vulnerable to bludgeoning damage.",
+        "effect": {
+          "resistBludgeoning": -1
+        }
+      }
+    ]
+  },
+  "water_vulnerability": {
+    "type": "template",
+    "description": "Water Vulnerability",
+    "statuses": [
+      {
+        "name": "Water Vulnerability",
+        "description": "Vulnerable to cold damage.",
+        "effect": {
+          "resistCold": -1
+        }
+      }
+    ]
   },
 
   "firekissed": {
     "name": "Firekissed",
     "type": "trait",
     "description": "Firekissed",
-    "statuses": [{
-      "name": "Firekissed",
-      "description": "This creature is imbued with the essence of fire.",
-      "effect": {
-        "resistFire": 0.4,
-        "saveVersusFear": 2
+    "statuses": [
+      {
+        "name": "Firekissed",
+        "description": "This creature is imbued with the essence of fire.",
+        "effect": {
+          "resistFire": 0.4,
+          "saveVersusFear": 2
+        }
       }
-    }]
+    ]
   },
-
   "wall": {
     "name": "Wall",
     "type": "trait",
     "description": "Wall",
-    "statuses": [{
-      "name": "Defender",
-      "description": "Unyielding and sturdy, this creature is difficult to damage and counters melee with bludgeoning impacts.",
-      "effect": {
-        "ac": -2,
-        "resistBludgeoning": 0.2,
-        "resistPiercing": 0.2,
-        "resistSlashing": 0.2,
-        "onEnemyAttack": [
-          {
-            "type": "attack",
-            "target": "attacker",
-            "damage": "=1d4",
-            "damageType": "bludgeoning"
-          }
-        ]
+    "statuses": [
+      {
+        "name": "Defender",
+        "description": "Unyielding and sturdy, this creature is difficult to damage and counters melee with bludgeoning impacts.",
+        "effect": {
+          "ac": -2,
+          "resistBludgeoning": 0.2,
+          "resistPiercing": 0.2,
+          "resistSlashing": 0.2,
+          "onEnemyAttack": [
+            {
+              "type": "attack",
+              "target": "attacker",
+              "damage": "=1d4",
+              "damageType": "bludgeoning"
+            }
+          ]
+        }
       }
-    }]
+    ]
   },
-
   "counter_arcane": {
     "name": "Counter Arcane",
     "type": "trait",
@@ -1195,7 +1283,6 @@
       }
     ]
   },
-
   "automatic_fire": {
     "name": "Automatic Fire",
     "type": "trait",
@@ -1206,12 +1293,336 @@
         "description": "Unleash a barrage of bolts in response to hostile attacks.",
         "effect": {
           "onEnemyAttack": [
-            { "type": "attack", "target": "attacker", "damage": "=1d6", "damageType": "weapon" },
-            { "type": "attack", "target": "attacker", "damage": "=1d6", "damageType": "weapon" },
-            { "type": "attack", "target": "attacker", "damage": "=1d6", "damageType": "weapon" }
+            {
+              "type": "attack",
+              "target": "attacker",
+              "damage": "=1d6",
+              "damageType": "weapon"
+            },
+            {
+              "type": "attack",
+              "target": "attacker",
+              "damage": "=1d6",
+              "damageType": "weapon"
+            },
+            {
+              "type": "attack",
+              "target": "attacker",
+              "damage": "=1d6",
+              "damageType": "weapon"
+            }
           ]
         }
       }
     ]
+  },
+  "toughness": {
+    "name": "Toughness",
+    "type": "trait",
+    "description": "Toughness",
+    "statuses": [
+      {
+        "name": "Toughness",
+        "description": "This creature has an exceptional constitution, granting it increased durability and resilience.",
+        "effect": {
+          "resistAll": 0.1,
+          "saveVersusDeath": 2,
+          "ac": -1
+        }
+      }
+    ]
+  },
+  "brave": {
+    "name": "Brave",
+    "type": "trait",
+    "description": "Brave",
+    "statuses": [
+      {
+        "name": "Bravery",
+        "description": "This creature possesses unwavering courage, granting it enhanced resilience against fear and mind-affecting effects.",
+        "effect": {
+          "saveVersusFear": 3,
+          "saveVersusCharm": 2,
+          "evasion": 2
+        }
+      }
+    ]
+  },
+  "strong_willed": {
+    "name": "Strong Willed",
+    "type": "trait",
+    "description": "Strong Willed",
+    "statuses": [
+      {
+        "name": "Strong Willed",
+        "description": "This creature has a formidable mind, granting it increased resistance to mental manipulation and magical effects.",
+        "effect": {
+          "saveVersusMagic": 3,
+          "saveVersusInsanity": 2,
+          "toHit": 1
+        }
+      }
+    ]
+  },
+  "humanoid": {
+    "type": "template",
+    "description": "Humanoid",
+    "statuses": [
+      {
+        "name": "Humanoid Traits",
+        "description": "Humankind is known for its versatility, resilience, and stubbornness.",
+        "effect": {
+          "resistAll": 0.05,
+          "saveVersusCharm": 1,
+          "saveVersusFear": 1
+        }
+      }
+    ]
+  },
+  "flying": {
+    "type": "template",
+    "description": "Flying",
+    "abilities": ["flight"],
+    "statuses": [
+      {
+        "name": "Aerial Mobility",
+        "description": "This creature can fly, granting it enhanced mobility and evasion in combat.",
+        "effect": {
+          "evasion": 5,
+          "toHit": 1
+        }
+      }
+    ]
+  },
+
+  "abjurer": {
+    "type": "template",
+    "description": "Protective specialist",
+    "requirements": {
+      "classes": [
+        "mage",
+        "bard"
+      ]
+    },
+    "spellbooks": [
+      "arcane"
+    ],
+    "statuses": [
+      {
+        "name": "Abjuration Specialist",
+        "description": "You are skilled in protective magics and wards.",
+        "effect": { "displayClass": "Abjurer" }
+      }
+    ],
+    "school": "abjuration"
+  },
+  "conjurer": {
+    "type": "template",
+    "description": "Summoning and teleportation focus",
+    "requirements": {
+      "classes": [
+        "mage",
+        "bard"
+      ]
+    },
+    "spellbooks": [
+      "arcane"
+    ],
+    "statuses": [
+      {
+        "name": "Conjuration Specialist",
+        "description": "You are skilled in summoning creatures and teleportation magics.",
+        "effect": { "displayClass": "Conjurer" }
+      }
+    ],
+    "school": "conjuration"
+  },
+  "diviner": {
+    "type": "template",
+    "description": "Information-gathering specialist",
+    "spellbooks": [
+      "arcane"
+    ],
+    "statuses": [
+      {
+        "name": "Divination Specialist",
+        "description": "You are skilled in divination and scrying magics.",
+        "effect": { "displayClass": "Diviner" }
+      }
+    ],
+    "school": "divination"
+  },
+  "evoker": {
+    "type": "template",
+    "description": "Focus on damage dealing",
+    "spellbooks": [
+      "arcane"
+    ],
+    "statuses": [
+      {
+        "name": "Evocation Specialist",
+        "description": "You are skilled in offensive and elemental magics.",
+        "effect": { "displayClass": "Evoker" }
+      }
+    ],
+    "school": "evocation"
+  },
+  "illusionist": {
+    "type": "template",
+    "description": "Specialist in deception and trickery",
+    "spellbooks": [
+      "arcane"
+    ],
+    "statuses": [
+      {
+        "name": "Illusion Specialist",
+        "description": "You are skilled in illusion and mind-affecting magics.",
+        "effect": { "displayClass": "Illusionist" }
+      }
+    ],
+    "school": "illusion"
+  },
+  "necromancer": {
+    "type": "template",
+    "description": "Death and life manipulation",
+    "spellbooks": [
+      "arcane"
+    ],
+    "statuses": [
+      {
+        "name": "Necromancy Specialist",
+        "description": "You are skilled in necromantic magics, manipulating life and death.",
+        "effect": { "displayClass": "Necromancer" }
+      }
+    ],
+    "school": "necromancy"
+  },
+  "transmuter": {
+    "type": "template",
+    "description": "Transformation and alteration specialist",
+    "spellbooks": [
+      "arcane"
+    ],
+    "statuses": [
+      {
+        "name": "Transmutation Specialist",
+        "description": "You are skilled in transmutation magics, altering the properties of matter and energy.",
+        "effect": { "displayClass": "Transmuter" }
+      }
+    ],
+    "school": "transmutation"
+  },
+  "enchanter": {
+    "type": "template",
+    "description": "Specialist in enchantments and mind-affecting magic",
+    "spellbooks": [
+      "arcane"
+    ],
+    "statuses": [
+      {
+        "name": "Enchantment Specialist",
+        "description": "You are skilled in enchantment magics, influencing the minds and emotions of others.",
+        "effect": { "displayClass": "Enchanter" }
+      }
+    ],
+    "school": "enchantment"
+  },
+  "generalist": {
+    "type": "template",
+    "description": "Generalist familiar with all schools of arcane magic",
+    "spellbooks": [
+      "arcane"
+    ],
+    "statuses": [
+      {
+        "name": "Generalist Caster",
+        "description": "You have a broad understanding of all schools of arcane magic.",
+        "effect": { "displayClass": "Mage" }
+      }
+    ],
+    "school": "all"
+  },
+
+  "vitalist": {
+    "type": "template",
+    "description": "Specialist in divine life magic",
+    "spellbooks": [
+      "divine"
+    ],
+    "domain": "life"
+  },
+  "deathspeaker": {
+    "type": "template",
+    "description": "Focus on the grave and what lies beyond",
+    "spellbooks": [
+      "divine"
+    ],
+    "domain": "death"
+  },
+  "lightbringer": {
+    "type": "template",
+    "description": "Illumination specialist",
+    "spellbooks": [
+      "divine"
+    ],
+    "domain": "light"
+  },
+  "shadowmancer": {
+    "type": "template",
+    "description": "Darkness and shadow specialist",
+    "spellbooks": [
+      "divine"
+    ],
+    "domain": "darkness"
+  },
+  "oathkeeper": {
+    "type": "template",
+    "description": "Protection of the wronged and punishment of the wicked",
+    "spellbooks": [
+      "divine"
+    ],
+    "domain": "law"
+  },
+  "wildcaller": {
+    "type": "template",
+    "description": "Nature and wilderness specialist",
+    "spellbooks": [
+      "divine"
+    ],
+    "domain": "nature"
+  },
+  "chaotician": {
+    "type": "template",
+    "description": "Trickery, chaos and mischief specialist",
+    "spellbooks": [
+      "divine"
+    ],
+    "domain": "chaos"
+  },
+  "warbringer": {
+    "type": "template",
+    "description": "Focus on combat and conflict",
+    "spellbooks": [
+      "divine"
+    ],
+    "domain": "war"
+  },
+  "divine_caster": {
+    "type": "template",
+    "description": "Divine Caster",
+    "spellbooks": [
+      "divine"
+    ],
+    "domain": "all"
+  },
+  "universal_caster": {
+    "type": "template",
+    "description": "Universal Caster",
+    "spellbooks": [
+      "arcane",
+      "divine"
+    ],
+    "school": "all",
+    "domain": "all"
   }
 }

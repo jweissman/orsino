@@ -105,6 +105,17 @@ export class Template {
 
       localContext[key] = assembled[key];
 
+      if (key.startsWith("!")) {
+        // handle special commands (just !remove for now)
+        if (key === "!remove" && Array.isArray(assembled[key])) {
+          for (const propToRemove of assembled[key] as DeemValue[]) {
+            delete assembled[propToRemove as string];
+            delete localContext[propToRemove as string];
+          }
+        }
+        continue;
+      }
+
       if (key.startsWith("*") || key.startsWith("^")) {
         // we have evaluated the value (confirm we have gotten an object) 
         // then 'overlay' (add) each property onto the context
@@ -157,7 +168,7 @@ export class Template {
 
     // omit internal/overlay properties starting with '_' or '*'
     Object.keys(assembled).forEach(key => {
-      if (key.startsWith('_') || key.startsWith('*') || key.startsWith('^')) {
+      if (key.startsWith('_') || key.startsWith('*') || key.startsWith('^') || key.startsWith('!')) {
         delete assembled[key];
       }
     });

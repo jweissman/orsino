@@ -4,7 +4,8 @@ import Words from "./Words";
 import { Fighting } from "../rules/Fighting";
 import AbilityHandler, { Ability, AbilityEffect, TargetKind } from "../Ability";
 import TraitHandler from "../Trait";
-import Combat, { CombatContext } from "../Combat";
+import Combat from "../Combat";
+import { CombatContext, pseudocontextFor } from "../types/CombatContext";
 import StatusHandler, { StatusEffect, StatusModifications } from "../Status";
 import { never } from "../util/never";
 import { ItemInstance, materializeItem } from "../types/ItemInstance";
@@ -55,7 +56,7 @@ export default class Presenter {
       record += (`**${Words.capitalize(key)}:** ${Words.humanize(value.toString())}<br/>\n`);
     }
 
-    let pseudocontext: CombatContext = { subject: combatant, inventory: [], allies: [combatant], enemies: [], enemyInventory: [] };
+    let pseudocontext: CombatContext = pseudocontextFor(combatant, []);
     const effectiveWeapon = Fighting.effectiveWeapon(combatant, pseudocontext);
     const effectiveArmorClass = Fighting.effectiveArmorClass(combatant, pseudocontext);
 
@@ -163,7 +164,8 @@ export default class Presenter {
       return this.padLiteralEnd(`${Stylist.bold(Words.capitalize(key))} ${Words.humanize(value.toString())}`, 25);
     }).join('   ')) + "\n";
 
-    let pseudocontext: CombatContext = { subject: combatant, inventory: inventory, allies: [combatant], enemies: [], enemyInventory: [] };
+    let pseudocontext: CombatContext = pseudocontextFor(combatant, inventory);
+      //{ subject: combatant, inventory: inventory, allies: [combatant], enemies: [], enemyInventory: [], allyIds: new Set([combatant.id]), enemyIds: new Set() };
     const effectiveWeapon = Fighting.effectiveWeapon(combatant, pseudocontext);
     const effectiveArmorClass = Fighting.effectiveArmorClass(combatant, pseudocontext);
     const bolt = Stylist.colorize('⚡', 'yellow');
@@ -252,10 +254,8 @@ export default class Presenter {
     const color = this.colors[Math.floor(hpRatio * (this.colors.length - 1))] || this.colors[0];
     let name = Stylist.format(combatant.forename, 'bold');
 
-    const combatClass = combatant.class;
-    const combatKind = (combatant as unknown as { kind?: string }).kind || Words.humanize(combatant.race || '');
+    let combatClass = combatant.class;
 
-    let combatantType = combatClass ? `${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '';
 
     const fx = Fighting.effectList(combatant);
     if (fx.some(e => e.effect?.displayName)) {
@@ -267,9 +267,12 @@ export default class Presenter {
     if (fx.some(e => e.effect?.displayClass)) {
       const firstClassOverride = fx.find(e => e.effect?.displayClass)?.effect?.displayClass;
       if (firstClassOverride) {
-        combatantType = firstClassOverride;
+        combatClass = firstClassOverride;
       }
     }
+
+    const combatKind = (combatant as unknown as { kind?: string }).kind || Words.humanize(combatant.race || '');
+    let combatantType = combatClass ? `${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '';
 
     let tempHp = 0;
     for (const poolAmount of Object.values(combatant.tempHpPools || {})) {
@@ -286,12 +289,23 @@ export default class Presenter {
   }
 
   static combatant = (combatant: Combatant) => {
+
     const effective = Fighting.effectiveStats(combatant);
+    const fx = Fighting.effectList(combatant);
+    // gather displa class
+    let displayClass = combatant.class;
+    if (fx.some(e => e.effect?.displayClass)) {
+      const firstClassOverride = fx.find(e => e.effect?.displayClass)?.effect?.displayClass;
+      if (firstClassOverride) {
+        displayClass = firstClassOverride;
+      }
+    }
+
     const hpRatio = combatant.hp / effective.maxHp;
     const hpBar = Stylist.prettyValue(combatant.hp, effective.maxHp);
     const color = this.colors[Math.floor(hpRatio * (this.colors.length - 1))] || this.colors[0];
 
-    const combatClass = combatant.class;
+    const combatClass = displayClass || combatant.class;
     const combatKind = (combatant).kind || Words.humanize(combatant.race || '');
     let classInfo = combatClass ? `Lvl. ${combatant.level.toString().padEnd(2)} ${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '';
     // const effective = Fighting.effectiveStats(combatant);
@@ -308,7 +322,7 @@ export default class Presenter {
 
     const friendly = combatant.playerControlled;
     let name = combatant.name;
-    const fx = Fighting.effectList(combatant);
+    // const fx = Fighting.effectList(combatant);
     if (fx.some(e => e.effect?.displayName)) {
       const firstNameOverride = fx.find(e => e.effect?.displayName)?.effect?.displayName;
       if (firstNameOverride) {

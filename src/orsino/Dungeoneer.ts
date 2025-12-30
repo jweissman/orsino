@@ -1,4 +1,5 @@
-import Combat, { CombatContext } from "./Combat";
+import Combat from "./Combat";
+import { CombatContext, pseudocontextFor } from "./types/CombatContext";
 import { Team } from "./types/Team";
 import Presenter from "./tui/Presenter";
 import { Combatant, Gem } from "./types/Combatant";
@@ -238,8 +239,9 @@ export default class Dungeoneer {
     // assign dungeon environment to each combatants currentEnvironment
     this.playerTeam.combatants.forEach(c => c.currentEnvironment = this.dungeon.terrain);
     // for (const c of this.playerTeam.combatants) {
-    //   // acquire a robe_of_the_archmagi for testing
-    //   await this.acquireItem(c, Inventory.materialize("robe_of_the_archmagi", []));
+      // acquire any testing items
+      // await this.acquireItem(c, Inventory.materialize("robe_of_the_archmagi", []));
+      // await this.acquireItem(c, Inventory.materialize("censer_of_consecration", []));
     // };
 
     while (!this.isOver()) {
@@ -657,13 +659,15 @@ export default class Dungeoneer {
         abilities: [], playerControlled: false, xp: 0, gp: 0, traits: []
       };
       for (const pc of this.playerTeam.combatants) {
-        const context: CombatContext = {
-          subject: pc, //alertCheck.actor,
-          allies: this.playerTeam.combatants.filter(c => c !== pc),
-          enemies: [],
-          inventory: this.playerTeam.inventory,
-          enemyInventory: []
-        };
+        const context: CombatContext = pseudocontextFor(pc, this.playerTeam.inventory);
+        //   subject: pc, //alertCheck.actor,
+        //   allies: this.playerTeam.combatants.filter(c => c !== pc),
+        //   enemies: [],
+        //   inventory: this.playerTeam.inventory,
+        //   enemyInventory: [],
+        //   allyIds: new Set(this.playerTeam.combatants.map(c => c.id)),
+        //   enemyIds: new Set(),
+        // };
         const source = Words.a_an(Words.humanize(trap.punishment));
         for (const effect of fx) {
           const { events } = await AbilityHandler.handleEffect(source, effect, trapPseudocombatant, pc, context, Commands.handlers(this.roller));
@@ -736,12 +740,14 @@ export default class Dungeoneer {
               if (gpCost <= 0) { break; }
             }
             this.note(`Purchased ${interaction.name} from ${Words.humanize(featureName)}.`);
-            const nullCombatContext: CombatContext = {
-              subject: check.actor, allies: [
-                ...this.playerTeam.combatants.filter(c => c !== check.actor)
-              ], enemies: [],
-              inventory: this.playerTeam.inventory, enemyInventory: []
-            };
+            const nullCombatContext: CombatContext = pseudocontextFor(check.actor, this.playerTeam.inventory);
+            //   subject: check.actor, allies: [
+            //     ...this.playerTeam.combatants.filter(c => c !== check.actor)
+            //   ], enemies: [],
+            //   inventory: this.playerTeam.inventory, enemyInventory: [],
+            //   allyIds: new Set(this.playerTeam.combatants.map(c => c.id)),
+            //   enemyIds: new Set(),
+            // };
             for (const effect of interaction.effects) {
               const { events } = await AbilityHandler.handleEffect(interaction.name, effect, check.actor, check.actor, nullCombatContext, Commands.handlers(this.roller));
               for (const event of events) {
@@ -869,10 +875,7 @@ export default class Dungeoneer {
                   const it = this.playerTeam.inventory.find(i => i.key === itemName) as ItemInstance;
                   this.note(`Using ${Words.a_an(itemName)} on ${c.name}...`);
                   const effects = it.effects || [];
-                  const nullCombatContext: CombatContext = {
-                    subject: c, allies: this.playerTeam.combatants.filter(ally => ally.name !== c.name && ally.hp > 0), enemies: [],
-                    inventory: this.playerTeam.inventory, enemyInventory: []
-                  };
+                  const nullCombatContext: CombatContext = pseudocontextFor(c, this.playerTeam.inventory);
                   for (const effect of effects) {
                     const { events } = await AbilityHandler.handleEffect(it.name, effect, c, c, nullCombatContext, Commands.handlers(this.roller));
                     // events.forEach(e => this.emit({ ...e, turn: -1 } as DungeonEvent));

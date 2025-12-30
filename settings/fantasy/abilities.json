@@ -1809,6 +1809,31 @@
       }
     ]
   },
+  "contagion": {
+    "name": "Contagion",
+    "type": "spell",
+    "level": 7,
+    "aspect": "arcane",
+    "school": "necromancy",
+    "description": "Infect enemies with a virulent disease that worsens over time.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=3d6 + #level",
+        "kind": "necrotic",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "disease",
+        "saveKind": "fortitude",
+        "saveDC": 18
+      }
+    ]
+  },
   "black_ritual": {
     "name": "Black Ritual",
     "type": "spell",
@@ -2396,9 +2421,9 @@
     "effects": [
       {
         "type": "buff",
+        "duration": 25,
         "status": {
           "name": "Consecrated",
-          "duration": 5,
           "effect": {
             "onEnemyOffensiveCasting": [
               {
@@ -2617,7 +2642,7 @@
   "spark": {
     "name": "Spark",
     "type": "spell",
-    "level": 0,
+    "level": 1,
     "aspect": "arcane",
     "school": "evocation",
     "description": "A small jolt of electricity.",
@@ -2627,9 +2652,32 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d3",
+        "amount": "=1d4",
         "kind": "lightning",
         "saveForHalf": true
+      }
+    ]
+  },
+  "electric_arc": {
+    "name": "Electric Arc",
+    "type": "spell",
+    "level": 2,
+    "aspect": "arcane",
+    "school": "evocation",
+    "description": "An arc of electricity jumps to multiple targets.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d4",
+        "kind": "lightning",
+        "saveForHalf": true,
+        "cascade": {
+          "count": "=1+floor(#level/2)",
+          "damageRatio": 0.5
+        }
       }
     ]
   },
@@ -3458,7 +3506,7 @@
     "level": 7,
     "aspect": "arcane",
     "school": "evocation",
-    "description": "Summon a raging firestorm that engulfs enemies in flames.",
+    "description": "Produce a raging firestorm that engulfs enemies in flames.",
     "target": [
       "enemies"
     ],
@@ -3532,6 +3580,141 @@
         "condition": {
           "trait": "undead"
         }
+      }
+    ]
+  },
+  "cause_blindness": {
+    "name": "Cause Blindness",
+    "type": "spell",
+    "level": 2,
+    "aspect": "arcane",
+    "school": "necromancy",
+    "description": "Blind an enemy.",
+    "target": [ "enemy" ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": "blinded",
+        "duration": 5,
+        "saveKind": "fortitude",
+        "saveDC": 14
+      }
+    ]
+  },
+  "foretell": {
+    "name": "Foretell",
+    "type": "spell",
+    "level": 1,
+    "aspect": "arcane",
+    "school": "divination",
+    "description": "Gain insight into future events, granting advantage on upcoming rolls.",
+    "target": [
+      "self",
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "focus"
+      }
+    ]
+  },
+  "second_sight": {
+    "name": "Second Sight",
+    "type": "spell",
+    "level": 1,
+    "aspect": "arcane",
+    "school": "divination",
+    "description": "For a moment, perceive the true nature of things, gaining enhanced evasion and accuracy.",
+    "target": [ "self", "ally" ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Second Sight",
+          "duration": 2,
+          "effect": {
+            "evasion": 10,
+            "toHit": 5,
+            "seeInvisible": true
+          }
+        }
+      }
+    ]
+  },
+  "augury": {
+    "name": "Augury",
+    "type": "spell",
+    "level": 2,
+    "aspect": "arcane",
+    "school": "divination",
+    "description": "Receive a cryptic omen about the outcome of a specific course of action.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "augured"
+      }
+    ]
+  },
+  "siphon_life": {
+    "name": "Siphon Life",
+    "type": "spell",
+    "level": 1,
+    "aspect": "arcane",
+    "school": "necromancy",
+    "description": "Drain life energy from an enemy.",
+    "target": [ "enemy" ],
+    "effects": [
+      {
+        "type": "drain",
+        "amount": "=1d6",
+        "saveForHalf": true
+      }
+    ]
+  },
+  "summon_vermin": {
+    "name": "Summon Vermin",
+    "type": "spell",
+    "level": 1,
+    "aspect": "arcane",
+    "school": "conjuration",
+    "description": "Summon a swarm of vermin to harass your enemies.",
+    "target": [ "self" ],
+    "effects": [
+      {
+        "type": "summon",
+        "creature": "animal",
+        "options": {
+          "animal_type": "=oneOf(rat, spider, centipede)"
+        },
+        "amount": "=1d4 + floor(#level / 2)"
+      }
+    ]
+  },
+  "thunderclap": {
+    "name": "Thunderclap",
+    "type": "spell",
+    "level": 1,
+    "aspect": "arcane",
+    "school": "evocation",
+    "description": "Create a burst of thunderous sound that damages and deafens enemies nearby.",
+    "target": [ "enemies" ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d6",
+        "kind": "sonic",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "deafened",
+        "duration": 5,
+        "saveKind": "fortitude",
+        "saveDC": 13
       }
     ]
   }

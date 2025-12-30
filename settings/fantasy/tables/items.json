@@ -2210,6 +2210,27 @@
             }
           ]
         }
+      },
+      "censer_of_consecration": {
+        "name": "Censer of Consecration",
+        "description": "A holy censer that empowers divine magic.",
+        "type": "equipment",
+        "kind": "special",
+        "rarity": "rare",
+        "itemClass": "equipment",
+        "value": 750,
+        "damage": "1d6",
+        "effect": {
+          "bonusSpellDC": 3,
+          "wis": 3,
+          "onCombatStart": [
+            {
+              "type": "cast",
+              "spellName": "consecrated_ground",
+              "target": "self"
+            }
+          ]
+        }
       }
     }
   },

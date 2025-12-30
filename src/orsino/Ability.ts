@@ -1,8 +1,9 @@
 import Deem from "../deem";
-import Combat, { CombatContext } from "./Combat";
+import Combat from "./Combat";
+import { CombatContext, translateContext } from "./types/CombatContext";
 import { DamageKind } from "./types/DamageKind";
 import { CastEvent, ExperienceEvent, GameEvent, GoldEvent, HitEvent, ReactionEvent, ResurrectEvent, UpgradeEvent } from "./Events";
-import Generator from "./Generator";
+import Generator, { GeneratorOptions } from "./Generator";
 import { CommandHandlers } from "./rules/Commands";
 import { Fighting } from "./rules/Fighting";
 import StatusHandler, { StatusEffect, StatusModifications } from "./Status";
@@ -208,11 +209,18 @@ export default class AbilityHandler {
     return Object.values(this.abilities).filter(ab => ab.type === 'spell');
   }
 
-  allSpellNames(aspect: string, maxLevel = Infinity, excludeEvilSpells = true): string[] {
+  allSpellKeys(aspect: string, maxLevel = Infinity, excludeEvilSpells = true): string[] {
     return Object.entries(this.abilities)
       .filter(([_key, ab]) => ab.aspect === aspect && ab.type === 'spell' && (ab.level ?? 0) <= maxLevel && (!excludeEvilSpells || ab.alignment !== 'evil'))
       .map(([key, _ab]) => key);
   }
+
+  spellKeysByLevel(aspect: string, level: number, excludeEvilSpells = true): string[] {
+    return Object.entries(this.abilities)
+      .filter(([_key, ab]) => ab.aspect === aspect && ab.type === 'spell' && (ab.level ?? 0) === level && (!excludeEvilSpells || ab.alignment !== 'evil'))
+      .map(([key, _ab]) => key);
+  }
+
 
   allSkillNames(): string[] {
     return Object.entries(this.abilities)
@@ -377,7 +385,6 @@ export default class AbilityHandler {
       }
     }
 
-    // try to permit more general responses
     const enemies = context.enemies || [];
     const reactionEffectName = `onEnemy${Words.capitalize(name.replace(/\s+/g, ""))}` as keyof StatusModifications;
     const reactionEvents = await this.performReactions(
@@ -390,7 +397,6 @@ export default class AbilityHandler {
       typeReactionEffectName, enemies, user, context, handlers, "ability " + name
     );
     events.push(...typeReactionEvents);
-    // }
 
     if ((targetCombatant.hp <= 0 && effect.type !== "resurrect") || user.hp <= 0) {
       return { success, events };
@@ -561,13 +567,16 @@ export default class AbilityHandler {
       events.push({ type: "xp", subject: user, amount } as ExperienceEvent);
       success = true;
     } else if (effect.type === "summon") {
-      let amount = AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
-      const allies = 1 + context.allies.length;
-      amount = Math.min(amount, 6 - allies);
+      console.warn(`Handling summon effect: ${JSON.stringify(effect)}`);
+      // let amount = AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
+      let amount = Deem.evaluate(effect.amount || "1", { subject: user, ...user, description: name } as unknown as GeneratorOptions) as number;
+      // const allies = 1 + context.allies.length;
+      // amount = Math.min(amount, 6 - allies);
       // could add summon ability bonus here
       // if (userFx.summonAnimalBonus) {
       //   amount += (userFx.summonAnimalBonus || 0) as number;
       // }
+      console.log(`${user.name} summons ${amount} creature(s)!`);
       const summoned: Combatant[] = [];
       for (let i = 0; i < amount; i++) {
         const options: Record<string, any> = effect.options || {};
@@ -582,10 +591,12 @@ export default class AbilityHandler {
           race: user.race,
           _targetCr: Math.max(1, Math.floor((user.level || 1) / 2)),
           ...options
-        });
+        }) as unknown as Combatant;
+        console.log(`Summoned ${summon.forename}`);
         summoned.push(summon as unknown as Combatant);
       }
       const summonEvents = await summon(user, summoned, effect.description || name);
+      console.log(`Summon events: ${summonEvents.length}`);
       events.push(...summonEvents);
       success = amount > 0;
     }
@@ -904,29 +915,11 @@ export default class AbilityHandler {
     }
 
     const events: Omit<GameEvent, "turn">[] = [];
-
-    const actorSide = [user, ...(context.allies ?? [])];
-    const opponentSide = [...(context.enemies ?? [])];
-
+    const actorIds = context.allyIds;
     for (const reactor of reactors) {
       if (reactor.hp <= 0) { continue; }
-      const reactorOnActorSide = actorSide.some(c => c.id === reactor.id);
-        //.includes(reactor);
-      // If reactor is on the same side as the acting user, then reactor's enemies are context.enemies.
-      // Otherwise reactor's enemies are context.allies.
-      const reactorAllies = (reactorOnActorSide ? actorSide : opponentSide); //.filter(c => c !== reactor);
-      const reactorEnemies = reactorOnActorSide ? opponentSide : actorSide;
-
-      const reactorContext: CombatContext = {
-        subject: reactor,
-        allies: reactorAllies,
-        enemies: reactorEnemies,
-        // inventory: reactorOnActorSide ? context.enemyInventory : context.inventory,
-        // enemyInventory: reactorOnActorSide ? context.inventory : context.enemyInventory,
-        // need to flip these
-        inventory: reactorOnActorSide ? context.inventory : context.enemyInventory,
-        enemyInventory: reactorOnActorSide ? context.enemyInventory : context.inventory,
-      };
+      const reactorOnActorSide = actorIds.has(reactor.id);
+      const reactorContext = translateContext(context, reactor);
       const reactionFx = Fighting.gatherEffects(reactor);
       const reactionFxWithNames = Fighting.gatherEffectsWithNames(reactor);
       if (reactionFx[reactionKey]) {
@@ -936,11 +929,28 @@ export default class AbilityHandler {
         for (const reactionEffect of reactionEffects) {
           let target: (Combatant | Combatant[]) = user;
           if (reactionEffect.target) {
-            target = this.validTargets({ target: [reactionEffect.target], effects: [reactionEffect] } as Ability, reactor, reactorAllies, reactorEnemies).flat();
+            target = this.validTargets({ target: [reactionEffect.target], effects: [reactionEffect] } as Ability, reactor, reactorContext.allies, reactorContext.enemies).flat();
             if (target.length === 0) {
               target = user;
             }
           }
+
+          if (reactor.equipment) {
+            for (const ref of Object.values(reactor.equipment)) {
+              if (ref?.includes(":")) {
+                const inv = Fighting.inventoryFor(reactor, reactorContext);
+                const ok = inv.some(i => i.id === ref);
+                if (!ok) {
+                  console.error("Context mismatch: reactor has equipped id not in reactor inventory", {
+                    reactor: reactor.id, ref, invLen: inv.length, enemyInv: reactorContext.enemyInventory.length,
+                    reactorOnActorSide
+                  });
+                  throw new Error(`Reactor ${reactor.name} has equipped item ${ref} not in their inventory for reactions context`);
+                }
+              }
+            }
+          }
+
           const { success, events: reactionEvents } = await this.handleEffect(
             reactor.forename + "'s " + (label).toLocaleLowerCase() + " reaction from " + sources,
             reactionEffect, reactor, target, reactorContext, handlers

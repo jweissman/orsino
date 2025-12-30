@@ -12,7 +12,8 @@ export default class Sample {
       population.splice(population.indexOf(item), 1);
       results.push(item);
     }
-    return results;
+    return results
+      .filter(i => i !== null && i !== undefined);
   }
 
   static shuffle<T>(...items: T[]): T[] {

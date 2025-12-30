@@ -1,5 +1,5 @@
 import Deem from "../../deem";
-import { CombatContext } from "../Combat";
+import { CombatContext } from "../types/CombatContext";
 import { Armor, Weapon } from "../Inventory";
 import { StatusEffect, StatusModifications } from "../Status";
 import Presenter from "../tui/Presenter";
@@ -177,7 +177,6 @@ export class Fighting {
     combatant: Combatant,
     context: CombatContext
   ): (Armor & ItemInstance) | null {
-    console.log("Resolving effective armor for", Presenter.minimalCombatant(combatant));
     const armor = combatant.equipment?.body;
     if (!armor) {
       return null;
@@ -188,7 +187,6 @@ export class Fighting {
       return materializedArmor as unknown as (Armor & ItemInstance);
     }
 
-    console.warn(`Materialized armor: ${JSON.stringify(materializedArmor)}`);
     throw new Error(`Could not resolve effective armor for combatant ${combatant.name} with armor ${armor}`);
   }
 
@@ -263,11 +261,13 @@ export class Fighting {
   };
 
   static inventoryFor(c: Combatant, ctx: CombatContext): ItemInstance[] {
-    if (c === ctx.subject) return ctx.inventory ?? [];
+    if (c.id === ctx.subject.id) return ctx.inventory ?? [];
 
     // if c is on subject's side, use ctx.inventory; if opposing, use ctx.enemyInventory
-    const onAlliesSide = (ctx.allies ?? []).some(a => a.id === c.id);
-    const onEnemySide = (ctx.enemies ?? []).some(e => e.id === c.id);
+    // const onAlliesSide = (ctx.allies ?? []).some(a => a.id === c.id);
+    // const onEnemySide = (ctx.enemies ?? []).some(e => e.id === c.id);
+    const onAlliesSide = ctx.allyIds.has(c.id);
+    const onEnemySide = ctx.enemyIds.has(c.id);
 
     if (onAlliesSide) return ctx.inventory ?? [];
     if (onEnemySide) return ctx.enemyInventory ?? [];

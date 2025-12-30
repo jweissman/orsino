@@ -6,7 +6,7 @@ Old-School TTRPG engine
 
 - OSR-style rules engine and template/table-based generation
 - `orsino gen ...` (Generate entities based on templates and tables)
-- `orsino play ...` (Play through geneated worlds -- for now just `combat` gauntlets and `dungeon`)
+- `orsino play ...` (Play through geneated worlds -- for now just `dungeon` gauntlets and `module` for town-hub and small dungeon set)
 
 # Deem, Templates and Tables
 ## Tables
@@ -112,29 +112,62 @@ The engine supports the following features:
 Note there are special key structures that give additional hints to assembly:
 - Keys with `_` are omitted from final output structure so can be useful for intermediate values
 - Keys prefixed with `*` merge their result into the parent object. That is, if the result of evaluating a star-prefixed key is itself an object, all values are 'overlaid' onto matching already-assembled values (any values from the overlay object will be added to the assembled value matching that key). For instance, with the terrain modification above:
-
 ```json
 "*terrainModifier": "=lookup(terrainMods, #terrain)"
 ```
 
 If `terrainMods` returns `{con: -1, dex: 1}`, those values are added to the monster's base stats, creating variants like "Swamp Goblin" with adjusted attributes.
+- Keys prefixed with `^` merge their result but we attempt to evaluate the target template first. For instance
+```
+    "^dungeonOverlay": "=lookup(dungeonOverlay, #building_type)"
+```
+If there is a table `dungeonOverlay` we would evaluate elements in the matching object definition as if it were a template.
+- Keys prefixed with `!` are special directives (only `!remove` for now which takes a list of keys to remove from the generated output)
+
+There is also a special directive `__no_id` which omits the generation of a template id field (including an id field with the template name and a random key is the default for all templates)
 
 
 ## Deem Builtins
 
-- `oneOf(item1, item2...)`: select randomly from a list
-- `lookup(tableName, value)`: select randomly from a table, indexed by value
-- `if(condition, true_value, false_value)`: apply a logical condition
+- `if(condition, true_value, false_value)`: apply a logical condition (there is also a builtin ternary if it is not possible/desirable to evaluate both true and false conditions, ie `condition ? true_value : false_value`)
 - `gen()`: call generate again and create a subentity
-- `genList(entity, count)`.  Note `genList` can be used in combination with `sum(list, condition)` which is a specialized helper to help with constrained/budget-based list generation. Note condition _must_ be a string for this to work since we need to re-evaluate it to check we haven't fulfilled the condition yet! Within `condition` you can reference `__items` (the list as it is being constructed). `genList` will also inject `_index` to generated items.
+- `genList(entity, count)`: call `gen` multiple times and return the list of entities; note `genList` will also inject `_index` to generated item context
+- `mapGenList(type, items, prop)`: identical to `genList` but build an entity for each value in `items`, feeding each generation the value of the item as a key (named by `prop`) into the generation options
 
-There are some simple math and lexical operations as well:
+### Table helpers
+- `lookup(tableName, value)`: select randomly from a table, indexed by value
+- `lookupUnique(tableName, value)`: select randomly from a table, indexed by value, avoiding duplicates until group is consumed (and then resetting)
+- `hasEntry(tableName, value)` returns true if there is any group with key `value`
+- `hasValue(tableName, value)` returns true if any group contains `value` in its list
+- `findGroup(tableName, value)` does a reverse lookup of the group in a table from the value list
+
+### List helpers
+- `concat(item1, item2...)` flattens all arguments into a single array and removes null/undefined
+- `uniq(arr)` returns only unique items from an array
+- `distribute(total, parts)` returns an array distributing the total value into buckets (count of buckets given by `parts`)
+
+### Value extraction
+- `dig(obj, ...path)` can extract values from within nested structures/subgenerations
+
+### Randomness
+- `oneOf(item1, item2...)`: select randomly from a list
+- `pick(arr)`: select randomly from an array
+- `sample(arr, count)`: sample `count` elements from a population given by `array`
+- `rand()`: random number between 0 and 1
+- `roll(dieCount, dieSides)` rolls a die of `dieSides` faces `dieCount` times
+- `rollWithDrop(dieCount, dieSides)` rolls a die of `dieSides` faces `dieCount` times, dropping the lowest value
+
+### Math
 - `round(number)` rounds to the nearest whole number
 - `ceil(number)` and `floor(number)` round up and down to the nearest whole number respectively
+- `min(item1, item2...)` and `max(item1, item2...)` for minimum and maximum values
+- `sum(arr, prop?)` sums the values in a list, or of objects by property if `prop` is specified (string value of key in objects)
+- `count(array)`: measures length of an array
+- `len(obj)`: measures string or object length
+
+### Words
 - `capitalize(string)` returns the given string value with the first character capitalized
+- `humanize(string)` 'humanizes' a string, removing underscores and splitting camelCase and then capitalizing each word
 
-# TODO
-
-- Dungeoneering: explore the generated dungeons
-- World mode: explore the hinterlands and return to cities to spend gold
-- Textual gloss? Illustrations?
+### CRPG
+- `statMod(value)` returns a 'statistic modifier' (computed as `Math.round((value - 10) / 3)`)

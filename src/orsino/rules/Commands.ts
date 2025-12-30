@@ -7,7 +7,8 @@ import Words from "../tui/Words";
 import { Combatant } from "../types/Combatant";
 import { Roll } from "../types/Roll";
 import { Fighting } from "./Fighting";
-import Combat, { CombatContext } from "../Combat";
+import Combat from "../Combat";
+import { CombatContext } from "../types/CombatContext";
 import Presenter from "../tui/Presenter";
 import Deem from "../../deem";
 import StatusHandler, { StatusModifications } from "../Status";
@@ -511,26 +512,27 @@ export class Commands {
   static async handleSummon(user: Combatant, summoned: Combatant[], source?: string): Promise<TimelessEvent[]> {
     const summoningEvents: TimelessEvent[] = [];
     user.activeSummonings = user.activeSummonings || [];
-    if (summoned.length + (user.activeSummonings?.length || 0) > Combat.maxSummoningsForCombatant(user)) {
-      // un-summon extras
-      const unsummoned = [];
-      while (summoned.length + (user.activeSummonings?.length || 0) > Combat.maxSummoningsForCombatant(user)) {
-        const s = user.activeSummonings.pop();
-        if (s) {
-          unsummoned.push(s);
-        }
-      }
-
-      unsummoned.forEach(s => {
+    const max = Combat.maxSummoningsForCombatant(user);
+    // First, if we are over cap due to *new* summons, trim the new list.
+    if (summoned.length > max) {
+      const overflow = summoned.length - max;
+      const trimmed = summoned.splice(-overflow, overflow);
+      for (const s of trimmed) {
         summoningEvents.push({ type: "unsummon", subject: user, target: s } as Omit<UnsummonEvent, "turn">);
-      })
+      }
+    }
+
+    // Now enforce cap against existing summons by removing oldest (or newest) deterministically.
+    while (user.activeSummonings.length + summoned.length > max) {
+      const removed = user.activeSummonings.shift(); // or pop()
+      if (!removed) break; // defensive
+      summoningEvents.push({ type: "unsummon", subject: user, target: removed } as Omit<UnsummonEvent, "turn">);
     }
 
     for (const s of summoned) {
       user.activeSummonings.push(s);
       summoningEvents.push({ type: "summon", subject: user, target: s, source } as Omit<SummonEvent, "turn">);
     }
-    // return summoningEvents;
 
     return Promise.resolve(summoningEvents);
   }
