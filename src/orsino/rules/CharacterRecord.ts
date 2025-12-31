@@ -149,8 +149,10 @@ export default class CharacterRecord {
       const traitHandler = TraitHandler.instance;
       await traitHandler.loadTraits();
 
+      const choices = pc.traitChoices.filter(traitName => !pc.forbiddenTraits?.includes(traitName))
+
       const selectedTrait = await selectionMethod("Select a trait for " + pc.name + ":",
-        pc.traitChoices.map(traitName => {
+        choices.map(traitName => {
           const trait = traitHandler.getTrait(traitName);
           return {
             name: Words.capitalize(trait.name) + ': ' + trait.description,

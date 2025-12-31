@@ -3,15 +3,13 @@
 ## Bugs
 - [ ] Bombs should not be heal-able (maybe there is some 'repair/mending' skill for inanimate objects though)
 - [ ] Weird interaction with absorption (temp Hp) and trap descriptions [it was saying the _trap_ absorbed damage?]
-- [ ] Seems fixed but really make sure we're handling gold transition between town hub/dungeon correctly
 
 ## Features
-- [ ] All mage schools should have enough low-level spells to pick from
 - [ ] Flight should make you actually _untargetable_ by melee
 - [ ] Show current gold before purchasing potions
 - [ ] Remind players to rest if they're not at full health going into boss battle
 - [ ] Unify search/examine (should both have chance to find potions/loot and both grant XP on success)
-- [ ] Bring back status displays on the per turn overview... (we currently have per-round overview)
+- [ ] All mage schools should have enough low-level spells to pick from
 
 ## Ideas
 - [ ] Rest could reset status effects? (would be nice to do this _before_ persisting PCs?)
@@ -151,6 +149,19 @@
 - [ ] Mages can _summon familiar_ to get an animal companion appropriate for their racial group but also with the typical familiar benefits (ie it's always the same familiar, it can level up with you etc)
 ---
 - [ ] Would be interesting to restrict domain/school by _race_ too (only gnome illusionists etc)
+- [ ] Inn should not heal the dead (need temple rez)
+- [ ] Traps should remember if they've been triggered (ie if you return to the dungeon again)
+- [ ] Extraneous period in item description on acquisition ('Found some nice gloves. in the secret stash.')
+- [ ] Maybe you should be able to use consumables between rooms / cast noncombat spells + buffs
+- [ ] Could autocast healing spells on stabilize also
+- [ ] Trap rate seems _really_ high (like every examine item is trapped?)
+- [ ] Barriers/walls should not have 'fists' (maybe 'impact')
+- [ ] Damage type effects (ie infected status trigger on bleed) should not trigger on 0 damage events
+- [ ] An _extra_ lich got summoned by _black ritual_...? (Something weird with tickdown?)
+- [ ] You could attempt stabilization of less-than-zero hp members at the Inn (and have to rez at temple if failed) -- ie this already is what happens on short rest in the dungeon (and if it fails you have to rez)
+- [ ] Rez even at temple should have a chance to fail
+- [ ] Can't equip multiple rings from the shop anymore? (They all go to a 'ring' slot and don't differentiate 'ring1', 'ring2')
+- [ ] Should only offer to equip found items if you're proficient in them
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing
@@ -295,6 +306,8 @@
 - [x] Template for dragons
 - [x] Blacksmith who can give a +1 to weapons?
 - [x] Describe colors of prismatic spray/multiplicity cards (done for normal damage fx, but spell beams don't hint their description clearly)
+- [x] Bring back status displays on the per turn overview... (we currently have per-round overview) -- now per turn displayed
+- [x] Seems fixed but really make sure we're handling gold transition between town hub/dungeon correctly -- think this is okay now??
 
 ## Not really issues atm
 - "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]

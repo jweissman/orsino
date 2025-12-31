@@ -429,7 +429,7 @@
     "building_type": "=oneOf(temple, tomb)",
     "_roomBias": "=lookup(roomBias, #building_type)",
     "dungeon_type": "=lookup(dungeonTypes, #building_type)",
-    "race": "=if(#_targetCr <= 5, oneOf(goblin, kobold), if(#_targetCr <= 10, oneOf(orc, human), if(#_targetCr <= 15, oneOf(ogre, troll), oneOf(dragon))))",
+    "race": "=if(#_targetCr <= 5, oneOf(goblin, kobold), if(#_targetCr <= 10, oneOf(orc, human, lizardfolk), if(#_targetCr <= 15, oneOf(ogre, troll, duergar), oneOf(draconic, insectoid))))",
     "theme": "=oneOf(pain, power, darkness, nature, fire, ice, shadow, light, chaos, order, water, air, earth, lightning, death, life, time, mystery)",
     "domain": "=oneOf(light, darkness, nature, war, knowledge, trickery, life, death, magic, order, chaos, oceans, love, storms)",
     "dungeon_aspect": "=lookup(dungeonAspect, #building_type)",

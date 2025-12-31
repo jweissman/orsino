@@ -675,6 +675,16 @@
         "natural": true,
         "type": "piercing"
       },
+      "stinger": {
+        "damage": "1d4",
+        "natural": true,
+        "type": "piercing"
+      },
+      "tail": {
+        "damage": "1d6",
+        "natural": true,
+        "type": "bludgeoning"
+      },
 
       "fire_breath": { "damage": "4d6", "natural": true, "type": "fire", "aoe": true },
       "ice_breath": { "damage": "4d6", "natural": true, "type": "cold", "aoe": true },

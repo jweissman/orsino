@@ -1235,20 +1235,12 @@
     "statuses": [
       {
         "name": "Defender",
-        "description": "Unyielding and sturdy, this creature is difficult to damage and counters melee with bludgeoning impacts.",
+        "description": "Unyielding and sturdy, this creature is difficult to damage.",
         "effect": {
           "ac": -2,
           "resistBludgeoning": 0.2,
           "resistPiercing": 0.2,
-          "resistSlashing": 0.2,
-          "onEnemyAttack": [
-            {
-              "type": "attack",
-              "target": "attacker",
-              "damage": "=1d4",
-              "damageType": "bludgeoning"
-            }
-          ]
+          "resistSlashing": 0.2
         }
       }
     ]

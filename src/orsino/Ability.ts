@@ -568,14 +568,7 @@ export default class AbilityHandler {
       success = true;
     } else if (effect.type === "summon") {
       console.warn(`Handling summon effect: ${JSON.stringify(effect)}`);
-      // let amount = AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
       let amount = Deem.evaluate(effect.amount || "1", { subject: user, ...user, description: name } as unknown as GeneratorOptions) as number;
-      // const allies = 1 + context.allies.length;
-      // amount = Math.min(amount, 6 - allies);
-      // could add summon ability bonus here
-      // if (userFx.summonAnimalBonus) {
-      //   amount += (userFx.summonAnimalBonus || 0) as number;
-      // }
       console.log(`${user.name} summons ${amount} creature(s)!`);
       const summoned: Combatant[] = [];
       for (let i = 0; i < amount; i++) {

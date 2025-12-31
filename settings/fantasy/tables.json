@@ -36,7 +36,7 @@
         "armorProficiencies": { "kind": ["cloth"], "weight": ["light"] },
         "weaponProficiencies": { "kind": ["blade", "staff", "dart", "sling"], "weight": ["light"] },
         "itemProficiencies": { "all": true },
-        "traitChoices": ["abjurer", "conjurer", "diviner", "enchanter", "evoker", "illusionist", "necromancer", "transmuter", "generalist"]
+        "traitChoices": ["abjurer", "conjurer", "diviner", "enchanter", "evoker", "illusionist", "necromancer", "transmuter"]
       },
       "thief": {
         "dex": 2,
@@ -146,12 +146,17 @@
     "groups": {
       "human": { "str": 1, "dex": 1, "con": 1, "int": 1, "wis": 1, "cha": 1, "occupationOptions": ["all"] },
       "orc": { "str": 2, "con": 1, "int": -1, "cha": -1, "occupationOptions": ["warrior", "thief", "ranger"] },
-      "elf": { "dex": 2, "int": 1, "con": -1, "str": -1, "occupationOptions": ["warrior", "thief", "ranger", "bard", "mage"] },
+      "elf": { "dex": 2, "int": 1, "con": -1, "str": -1, "occupationOptions": ["warrior", "thief", "ranger", "bard", "mage"], "forbiddenTraits": ["necromancer"] },
       "dwarf": { "con": 2, "str": 1, "cha": -1, "dex": -1, "occupationOptions": ["warrior", "cleric"] },
       "halfling": { "dex": 2, "cha": 1, "str": -1, "con": -1, "occupationOptions": ["warrior", "thief", "bard"] },
-      "gnome": { "int": 2, "wis": 1, "str": -1, "con": -1, "occupationOptions": ["thief", "bard", "mage"] },
+      "gnome": { "int": 2, "wis": 1, "str": -1, "con": -1, "occupationOptions": ["thief", "bard", "mage"], "forbiddenTraits": ["necromancer", "abjurer", "conjurer", "diviner", "enchanter", "evoker"] },
+      "fae": { "cha": 3, "int": 2, "wis": 1, "str": -1, "con": -2, "occupationOptions": ["cleric", "thief", "bard", "mage" ], "forbiddenTraits": ["deathspeaker", "warbringer", "necromancer", "abjurer", "conjurer", "diviner", "evoker"]}
+    }
+  },
 
-      "fae": { "cha": 3, "int": 2, "wis": 1, "str": -1, "con": -2, "occupationOptions": ["cleric", "thief", "bard", "mage" ] },
+  "expandedRacialModifier": {
+    "discriminator": "race",
+    "groups": {
       "lizardfolk": { "con": 2, "str": 1, "int": -1, "cha": -1, "occupationOptions": ["warrior", "ranger", "thief"] },
       "half_orc": { "str": 2, "con": 1, "dex": -1, "int": -1, "occupationOptions": ["warrior", "thief", "ranger"] },
       "half_elf": { "cha": 2, "dex": 1, "int": 1, "occupationOptions": ["all"] },
@@ -361,8 +366,8 @@
       "Cult Master": { "str": 4,  "con": 5, "dex": 2, "int": 6, "wis": 4, "cha": 4, "abilities": [ "hex", "obscuring_mist", "ghost_touch", "life_drain",  "terror", "poison_cloud", "mass_curse", "deathtouch" ], "traits": ["fiendish"] },
       "Poxmonger":   { "str": -2, "dex": -2, "con": -1, "int": 2, "wis": 1, "cha": 2, "abilities": [ "hex", "terror", "poison_cloud", "inflict_disease", "deathtouch" ] },
       "Archaeologist": { "str": 1,  "con": 2, "dex": 2, "int": 3, "wis": 2, "cha": 1, "abilities": [ "prepare_charge", "charge", "hide", "rapid_strike", "cure_minor", "cure" ] },
-      "Wizard":      { "str": -1, "dex": -1, "int": 3, "con": 1, "abilities": [ "dancing_lights", "minor_ward", "shock_pulse", "frostbite", "spark", "firebolt", "missile", "shocking_grasp", "sleep", "lightning_bolt", "slow", "armor", "acid_arrow", "chaos_bolt", "warp" ] },
-      "Necromancer":  { "str": 3,  "con": 4, "dex": 2, "int": 8, "abilities": [ "minor_ward", "life_drain", "curse", "scourge", "terror", "weakness", "insanity", "poison_cloud", "deathtouch", "summon_undead", "resurrect", "animate_dead", "harm" ], "traits": ["fiendish"] },
+      "Wizard":      { "str": -1, "dex": -1, "int": 3, "con": 1, "abilities": [ "trickfire", "pain" ], "traits": ["evoker"] },
+      "Necromancer":  { "str": 3,  "con": 4, "dex": 2, "int": 8, "abilities": [ "hex", "obscuring_mist", "poison_cloud", "dirty_trick", "rapid_strike" ], "traits": ["fiendish", "necromancer"] },
 
       "Mendicant":    { "str": -2, "dex": -2, "con": -2, "int": 1, "wis": 2, "cha": 2, "abilities": [
         "cure_minor", "cure", "bless", "meditate", "chant"
@@ -483,7 +488,7 @@
       "draconic": [ "bite", "claws", "tail_swipe", "fire_breath" ],
       "insectoid": [ "mandibles", "claws", "stinger" ],
       "birdfolk": [ "talons", "shortsword", "spear" ],
-      "lizardfolk": [ "bite", "claws", "spear", "tail_swipe" ],
+      "lizardfolk": [ "bite", "claws", "spear", "tail" ],
       "duergar": [ "warhammer", "battleaxe", "heavy_crossbow" ]
     }
   },
@@ -1109,14 +1114,14 @@
   "roomOverlays": {
     "discriminator": "guide_type",
     "groups": {
-      "entrance": { "_encounterChance": 0.1, "_puzzleChance": 0,    "_trapChance": 0.8,  "_treasureChance": 0.2 },
-      "empty":    { "_encounterChance": 0,   "_puzzleChance": 0.05, "_trapChance": 0,    "_treasureChance": 0, "_wonderChance": 0.1 },
-      "trap":     { "_encounterChance": 0.2, "_puzzleChance": 0.1,  "_trapChance": 1,    "_treasureChance": 0.1 },
-      "mob":      { "_encounterChance": 1,   "_puzzleChance": 0,    "_trapChance": 0.1,  "_treasureChance": 0.2 },
-      "elite":    { "_encounterChance": 1,   "_puzzleChance": 0,    "_trapChance": 0.05, "_treasureChance": 0.3, "challenging": true },
-      "special":  { "_encounterChance": 0,   "_puzzleChance": 0.1,  "_trapChance": 0.1,  "_treasureChance": 0.4, "_wonderChance": 0.2 },
-      "treasure": { "_encounterChance": 0.2, "_puzzleChance": 0.2,  "_trapChance": 0.2,  "_treasureChance": 0.8 },
-      "wonder":   { "_encounterChance": 0,   "_puzzleChance": 0.1,  "_trapChance": 0,    "_treasureChance": 0, "_wonderChance": 1 },
+      "entrance": { "_encounterChance": 0.1, "_puzzleChance": 1,    "_trapChance": 0.8,  "_treasureChance": 0.2 },
+      "empty":    { "_encounterChance": 0,   "_puzzleChance": 1.05, "_trapChance": 0,    "_treasureChance": 0, "_wonderChance": 0.1 },
+      "trap":     { "_encounterChance": 0.2, "_puzzleChance": 1.1,  "_trapChance": 1,    "_treasureChance": 0.1 },
+      "mob":      { "_encounterChance": 1,   "_puzzleChance": 1,    "_trapChance": 0.1,  "_treasureChance": 0.2 },
+      "elite":    { "_encounterChance": 1,   "_puzzleChance": 1,    "_trapChance": 0.05, "_treasureChance": 0.3, "challenging": true },
+      "special":  { "_encounterChance": 0,   "_puzzleChance": 1.1,  "_trapChance": 0.1,  "_treasureChance": 0.4, "_wonderChance": 0.2 },
+      "treasure": { "_encounterChance": 0.2, "_puzzleChance": 1.2,  "_trapChance": 0.2,  "_treasureChance": 0.8 },
+      "wonder":   { "_encounterChance": 0,   "_puzzleChance": 1.1,  "_trapChance": 0,    "_treasureChance": 0, "_wonderChance": 1 },
       "puzzle":   { "_encounterChance": 0,   "_puzzleChance": 1,    "_trapChance": 0.1,  "_treasureChance": 0.2 }
     }
   },
@@ -2424,39 +2429,39 @@
   "riddleAnswerGroups": {
     "discriminator": "answer_type",
     "groups": {
-      "instrument": ["Piano", "Guitar", "Violin", "Drum", "Flute", "Harp", "Trumpet", "Lute", "Cello", "Horn"],
-      "food": [
+      "instrument": [["Piano", "Guitar", "Violin", "Drum", "Flute", "Harp", "Trumpet", "Lute", "Cello", "Horn"]],
+      "food": [[
         "Artichoke", "Egg", "Bread", "Cheese", "Apple", "Salted Pork", "Halibut", "Brussel Sprout",
         "Mushroom", "Carrot", "Potato", "Onion", "Garlic", "Peach", "Pear", "Grapes", "Chicken"
-      ],
-      "element": [
+      ]],
+      "element": [[
         "Fire", "Water", "Earth", "Air", "Ice", "Metal", "Lightning", "Steam", "Smoke", "Ash", "Lava", "Mud", "Crystal", "Sand", "Salt", "Dust", "Lead", "Gold", "Silver", "Copper", "Bronze", "Iron", "Steel"
-      ],
-      "large_object": [
+      ]],
+      "large_object": [[
         "House", "Barn", "Boat", "Tower", "Menhir", "Gate", "Wall", "Ship",
         "Coffin", "Carriage", "Chariot", "Catapult", "Statue", "Bridge", "Castle"
-      ],
-      "small_object": [
+      ]],
+      "small_object": [[
         "Teapot", "Key", "Candle", "Feather", "Map", "Clock", "Stamp", "Ring", "Book", "Knife",
         "Coin", "Cup", "Bottle", "Brush", "Comb", "Lock", "Needle", "Pin", "Spoon", "Fork", "Plate",
         "Glove", "Hat", "Boot", "Bag", "Box", "Lamp", "Bell", "Cloak", "Fan", "Pocket"
-      ],
-      "phenomenon": [
+      ]],
+      "phenomenon": [[
         "Echo", "Darkness", "Light", "Wind", "Rain", "Footsteps", "Cloud", "Hurricane", "Earthquake",
         "Starlight", "Thunder", "Fog", "Rainbow", "Sunrise"
-      ],
-      "natural_feature": [
+      ]],
+      "natural_feature": [[
         "River", "Mountain", "Forest", "Desert", "Ocean", "Valley", "Canyon", "Glacier", "Volcano", "Waterfall",
         "Island", "Swamp", "Cave", "Cliff", "Beach"
-      ],
-      "letter": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"],
-      "abstract_concept": [
+      ]],
+      "letter": [["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]],
+      "abstract_concept": [[
         "Memory", "Age", "Death", "Silence", "Love", "Time", "Fear", "Hope", "Dream", "Truth",
         "Word", "Song", "Dance", "Hot", "Cold", "Joy", "Sorrow", "Courage", "Wisdom", "Power", "Freedom", "Peace",
         "Day", "Tomorrow", "Fate", "Luck", "Honor", "Glory", "Strength", "Beauty", "Never"
-      ],
-      "plant": ["Cactus", "Rose", "Oak", "Tulip", "Sunflower", "Daisy", "Fern", "Moss", "Ivy", "Lily"],
-      "body_part": ["Legs", "Arms", "Eyes", "Ears", "Heart", "Hands", "Feet", "Head", "Mouth", "Nose"]
+      ]],
+      "plant": [["Cactus", "Rose", "Oak", "Tulip", "Sunflower", "Daisy", "Fern", "Moss", "Ivy", "Lily"]],
+      "body_part": [["Legs", "Arms", "Eyes", "Ears", "Heart", "Hands", "Feet", "Head", "Mouth", "Nose"]]
     }
   },
 

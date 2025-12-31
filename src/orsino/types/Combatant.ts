@@ -130,6 +130,7 @@ export interface Combatant {
 
   activeSummonings?: Combatant[];
   traitChoices?: string[];
+  forbiddenTraits?: string[];
   dead?: boolean;
 
 }

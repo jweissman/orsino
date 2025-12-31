@@ -202,10 +202,8 @@ export class Commands {
       events.push({ type: "damageBonus", subject: attacker, target: defender, amount: extra, damageKind, reason: `a ${multiplier}x multiplier from ${Words.humanizeList(sources)}` } as Omit<DamageBonus, "turn">);
     }
 
-    // what if they're immune to this damage kind? isn't that different from resistance?
-
     // Apply resistances FIRST
-    if (damageKind) {
+    if (damageKind && damageKind !== "true") {
       const defEffects = Fighting.gatherEffectsWithNames(defender);
       const resistanceName = `resist${damageKind.charAt(0).toUpperCase() + damageKind.slice(1)}`;
       const resistance: number = (((defEffects.resistAll?.value) ?? 0) as number)
@@ -230,7 +228,7 @@ export class Commands {
       }
     }
 
-    if (defenderEffects.damageReduction) {
+    if (defenderEffects.damageReduction && damageKind !== "true") {
       const reduction = defenderEffects.damageReduction || 0;
       damage = Math.max(0, damage - reduction);
       if (reduction !== 0) {
@@ -239,7 +237,7 @@ export class Commands {
       }
     }
 
-    if (defenderEffects.reflectDamagePercent && attacker !== defender) {
+    if (defenderEffects.reflectDamagePercent && attacker !== defender && damageKind !== "true") {
       const reflectPercent = defenderEffects.reflectDamagePercent || 0;
       const reflectedDamage = Math.floor(damage * reflectPercent);
       if (reflectedDamage > 0) {

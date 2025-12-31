@@ -22,6 +22,7 @@ import TraitHandler from "./Trait";
 import Words from "./tui/Words";
 import { CombatContext, pseudocontextFor } from "./types/CombatContext";
 import Sample from "./util/Sample";
+import User from "./tui/User";
 
 export type ChoiceSelector<T extends Answers> = (description: string, options: Choice<T>[], combatant?: Combatant) => Promise<T>;
 
@@ -50,7 +51,7 @@ export default class Combat {
   public winner: string | null = null;
   public _teams: Team[] = [];
   public abilityHandler = AbilityHandler.instance;
-  private combatantsByInitiative: { combatant: any; initiative: number }[] = [];
+  private combatantsByInitiative: { combatantId: string; initiative: number }[] = [];
   private environmentName: string = "Unknown Location";
 
   protected roller: Roll;
@@ -125,14 +126,13 @@ export default class Combat {
     }
   }
 
-  private determineInitiative(): { combatant: Combatant; initiative: number }[] {
-    const initiativeOrder = [];
+  private determineInitiative(): { combatantId: string; initiative: number }[] {
+    const initiativeOrder: { combatantId: string; initiative: number }[] = [];
     for (const c of this.allCombatants) {
       const effective = Fighting.effectiveStats(c);
       const initBonus = (Fighting.turnBonus(c, ["initiative"])).initiative || 0;
       const initiative = (Commands.roll(c, "for initiative", 20)).amount + Fighting.statMod(effective.dex) + initBonus;
-      // (await this.roller(c, "for initiative", 20)).amount + Fighting.statMod(effective.dex) + initBonus;
-      initiativeOrder.push({ combatant: c, initiative });
+      initiativeOrder.push({ combatantId: c.id, initiative });
     }
     return initiativeOrder.sort((a, b) => b.initiative - a.initiative);
   }
@@ -373,8 +373,8 @@ export default class Combat {
 
   contextForCombatant(combatant: Combatant): CombatContext {
     const team = this.teamFor(combatant);
-    const allySide = team?.combatants ?? [combatant];
-    const enemySide = this._teams.filter(t => t !== team).flatMap(t => t.combatants ?? []);
+    const allySide = [combatant, ...this.alliesOf(combatant)];
+    const enemySide = this.enemiesOf(combatant);
 
     const allies = allySide.filter(c => c.id !== combatant.id);
     const enemies = enemySide;
@@ -679,7 +679,6 @@ export default class Combat {
       const succeed = Math.random() < 0.5;
       if (succeed) {
         this.winner = "Enemy";
-        // this.combatantsByInitiative = [];
         await this.emit({ type: "flee", subject: combatant } as Omit<FleeEvent, "turn">);
         return { haltRound: true };
       }
@@ -862,7 +861,20 @@ export default class Combat {
       return { haltRound: false };
     }
 
-    await this.emit({ type: "turnStart", subject: combatant, combatants: this.allCombatants } as Omit<CombatEvent, "turn">);
+    if (!this.dry) {
+      await User.waitForEnter("Press Enter to begin the next turn...");
+    }
+    process.stdout.write('\x1Bc');
+
+    await this.emit({
+      type: "turnStart", subject: combatant, combatants: this.allCombatants,
+      parties: [
+        { name: "Player", combatants: this.playerCombatants },
+        { name: this.enemyTeam.name, combatants: this.enemyCombatants }
+      ],
+      environment: this.environmentName,
+      auras: this.auras
+    } as Omit<CombatEvent, "turn">);
 
     // Tick down cooldowns
     if (combatant.abilityCooldowns) {
@@ -944,36 +956,29 @@ export default class Combat {
     if (this.isOver()) {
       throw new Error('Combat is already over');
     }
-    this.combatantsByInitiative = await this.determineInitiative();
+    this.combatantsByInitiative = this.determineInitiative();
     this.turnNumber++;
     // check for escape conditions (if 'flee' status is active, remove the combatant from combat)
     for (const combatant of this.enemyCombatants) {
       if (combatant.activeEffects?.some(e => e.effect?.flee)) {
         // remove from combatants / teams
-        this.enemyTeam.combatants = this.enemyTeam.combatants.filter(c => c !== combatant);
-        this.combatantsByInitiative = this.combatantsByInitiative.filter(c => c.combatant !== combatant);
+        this.enemyTeam.combatants = this.enemyTeam.combatants.filter(c => c.id !== combatant.id);
+        for (const c of this.enemyTeam.combatants) {
+          if (c.activeSummonings?.some(s => s.id === combatant.id)) {
+            c.activeSummonings = c.activeSummonings.filter(s => s.id !== combatant.id);
+          }
+        }
+
+        this.combatantsByInitiative = this.combatantsByInitiative.filter(c => c.combatantId !== combatant.id);
         await this.emit({ type: "flee", subject: combatant } as Omit<FleeEvent, "turn">);
 
         await creatureFlees(combatant);
       }
     }
 
-    // ask to press enter
-    if (!this.dry) {
-      process.stdin.setRawMode(true);
-      process.stdin.resume();
-      await new Promise<void>(resolve => {
-        process.stdin.once("data", () => {
-          process.stdin.setRawMode(false);
-          resolve();
-        });
-      });
-    }
-    process.stdout.write('\x1Bc');
-
     await this.emit({
       type: "roundStart",
-      combatants: Combat.living(this.combatantsByInitiative.map(c => ({ ...c.combatant }))),
+      combatants: Combat.living(this.combatantsByInitiative.map(c => ({ ...this.allCombatants.find(ac => ac.id === c.combatantId)! }))),
       parties: [
         { name: "Player", combatants: (this.playerCombatants) },
         { name: this.enemyTeam.name, combatants: (this.enemyCombatants) }
@@ -983,7 +988,14 @@ export default class Combat {
     } as Omit<RoundStartEvent, "turn">);
 
     const netHp = this.allCombatants.reduce((sum, c) => sum + c.hp, 0);
-    for (const { combatant } of this.combatantsByInitiative) {
+    for (const { combatantId } of this.combatantsByInitiative) {
+      const combatant = this.allCombatants.find(ac => ac.id === combatantId);
+      if (!combatant) {
+        // throw new Error(`Could not find combatant with ID ${combatantId} during round processing.`);
+        console.warn(`Could not find combatant with ID ${combatantId} during round processing. Skipping.`);
+        continue;
+      }
+
       if (this.enemyTeam.combatants.every(c => c.hp <= 0)) {
         this.winner = "Player";
 
@@ -992,27 +1004,36 @@ export default class Combat {
       if (combatant.hp <= 0) { continue; } // Skip defeated combatants
       if ((combatant.activeEffects || []).some((e: StatusEffect) => e.effect?.flee)) { continue; } // Skip fleeing combatants
 
+      console.log(`\n-- Round ${this.turnNumber}, ${Presenter.minimalCombatant(combatant)}'s turn --`);
+
       // tick down status
       const expiryEvents: Omit<GameEvent, "turn">[] = [];
       const noStatusExpiry = combatant.activeEffects?.some((se: StatusEffect) => se.effect?.noStatusExpiry);
       if (noStatusExpiry) {
         const sources = combatant.activeEffects?.filter((se: StatusEffect) => se.effect?.noStatusExpiry).map((se: StatusEffect) => se.name) || [];
-        await this.emit({ type: "statusExpiryPrevented", subject: combatant, reason: Words.humanize(sources) } as Omit<StatusExpiryPreventedEvent, "turn">);
+        await this.emit({ type: "statusExpiryPrevented", subject: combatant, reason: Words.humanize(sources.join(", ")) } as Omit<StatusExpiryPreventedEvent, "turn">);
       } else if (combatant.activeEffects) {
-        combatant.activeEffects.forEach((it: StatusEffect) => {
+        // combatant.activeEffects.forEach((it: StatusEffect) => {
+        for (const it of combatant.activeEffects) {
           if (it.duration !== undefined && it.duration !== Infinity) {
-            it.duration = Math.max(0, it.duration - 1);
+            let newDuration = Math.max(0, it.duration - 1);
+            console.log(`Status effect ${it.name} on ${combatant.forename} ticks down from ${it.duration} to ${newDuration}`);
+            it.duration = newDuration;
           }
-        });
+        }
 
         const activeFx: StatusEffect[] = combatant.activeEffects ?? [];
         const expired = activeFx.filter(s => s.duration === 0);
         const ctx = this.contextForCombatant(combatant);
 
-        for (const status of expired) {
+        // for (const status of expired) {
+        if (expired.length > 0) {
           const expiryHookEvents = await AbilityHandler.performHooks("onExpire", combatant, ctx, Commands.handlers(this.roller), "status expire hook");
           expiryEvents.push(...expiryHookEvents);
-          expiryEvents.push(...(await Commands.handleRemoveStatusEffect(combatant, status.name)));
+          for (const status of expired) {
+            console.log(`Status effect ${status.name} on ${combatant.forename} has expired.`);
+            expiryEvents.push(...(await Commands.handleRemoveStatusEffect(combatant, status.name)));
+          }
         }
       }
 

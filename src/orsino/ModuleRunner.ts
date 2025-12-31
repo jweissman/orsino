@@ -72,7 +72,7 @@ export class ModuleRunner {
   private moduleGen: (
     options?: GeneratorOptions
   ) => CampaignModule;
-  private state: GameState;
+  private _state: GameState;
 
   private gen: (type: GenerationTemplateType, options?: GeneratorOptions) => GeneratedValue | GeneratedValue[];
 
@@ -86,11 +86,11 @@ export class ModuleRunner {
     this.moduleGen = options.moduleGen || this.defaultModuleGen.bind(this);
     this.gen = options.gen || (() => { throw new Error("No gen function provided") });
 
-    this.state = newGameState({ ...ModuleRunner.configuration, party: options.pcs || [], inventory: options.inventory || [] });
+    this._state = newGameState({ ...ModuleRunner.configuration, party: options.pcs || [], inventory: options.inventory || [] });
   }
 
-  get pcs() { return this.state.party; }
-  get sharedGold() { return this.state.sharedGold; }
+  get pcs() { return this._state.party; }
+  get sharedGold() { return this._state.sharedGold; }
   get mod(): CampaignModule {
     if (!this.activeModule) {
       throw new Error("No active module!");
@@ -99,7 +99,11 @@ export class ModuleRunner {
   }
 
   get inventory() {
-    return this.state.inventory;
+    return this._state.inventory;
+  }
+
+  get state() {
+    return this._state;
   }
 
   private note(message: string): void {
@@ -113,7 +117,6 @@ export class ModuleRunner {
     await Events.appendToLogfile(event);
   }
 
-
   markDungeonCompleted(dungeonIndex: number) {
     if (!this.state.completedDungeons.includes(dungeonIndex)) {
       this.state.completedDungeons.push(dungeonIndex);
@@ -121,7 +124,7 @@ export class ModuleRunner {
   }
 
   get availableDungeons(): Dungeon[] {
-    if (!this.activeModule) {return [];}
+    if (!this.activeModule) { return []; }
     return this.activeModule.dungeons.filter(d => !this.state.completedDungeons.includes(d.dungeonIndex!));
   }
 
@@ -286,7 +289,7 @@ export class ModuleRunner {
       } else if (action === "magicShop") {
         await this.shop('equipment');
       } else if (action === "armory") {
-        const weaponsOrArmor = await this.select("What would you like to buy?", [ 'Weapons', 'Armor' ]) as string;
+        const weaponsOrArmor = await this.select("What would you like to buy?", ['Weapons', 'Armor']) as string;
         if (weaponsOrArmor.toLowerCase() === 'weapons') {
           await this.shop('weapons');
         } else {
@@ -296,58 +299,58 @@ export class ModuleRunner {
         await this.shop('loot');
       } else if (action === "blacksmith") {
         await this.shop('enhancements');
-      // } else if (action === "jeweler") {
-      //   const gems = this.pcs.flatMap(pc => pc.gems || []);
-      //   if (gems.length === 0) {
-      //     console.log("You have no gems to sell.");
-      //   } else {
-      //     const totalValue = gems.reduce((sum, gem) => sum + gem.value, 0);
-      //     for (const gem of gems) {
-      //       await this.emit({ type: "sale", itemName: `${gem.name} (${gem.type})`, revenue: gem.value, seller: this.pcs.find(pc => (pc.gems || []).includes(gem))!, day: this.days });
-      //     }
-      //     console.log(`You sold your gems for a total of ${totalValue}g`);
-      //     this.state.sharedGold += totalValue;
-      //     this.pcs.forEach(pc => pc.gems = []);
-      //   }
-      // } else if (action === "blacksmith") {
-      //   const improvementCost = 50;
-      //     const actor = await this.select("Who will improve their weapon?", this.pcs.map(pc => ({
-      //       short: pc.name, value: pc, name: pc.name, disabled: !pc.equipment?.weapon
-      //     }))) as Combatant;
-      //     // console.log("Current weapon:", actor.weapon, actor.attackDie);
-      //   if (this.sharedGold > improvementCost) {
-      //     const originalAttackDie = actor.attackDie;
-      //     const alreadyImproved = actor.attackDie.includes("+");
-      //     if (alreadyImproved) {
-      //       // rewrite to improve further
-      //       const [baseDie, plusPart] = actor.attackDie.split("+");
-      //       let plusAmount = parseInt(plusPart);
-      //       if (plusAmount <= 5) {
-      //         plusAmount += 1;
-      //         actor.attackDie = `${baseDie}+${plusAmount}`;
-      //       } else {
-      //         // could add a trait instead but for now improve the base die
-      //         const [dieNumber, dieSides] = baseDie.split("d");
-      //         const dieClasses = [2, 3, 4, 6, 8, 10, 12, 20, 100];
-      //         const currentIndex = dieClasses.indexOf(parseInt(dieSides));
-      //         if (currentIndex < dieClasses.length - 1) {
-      //           const newDieSides = dieClasses[currentIndex + 1];
-      //           actor.attackDie = `${dieNumber}d${newDieSides}+${plusAmount}`;
-      //         } else {
-      //           const newDieNumber = parseInt(dieNumber) + 1;
-      //           actor.attackDie = `${newDieNumber}d${dieSides}+${plusAmount}`;
-      //         }
-      //       }
-      //     } else {
-      //       // improve weapon
-      //       actor.attackDie += "+1";
-      //     }
-      //     // console.log(`🛠️ ${actor.name}'s weapon has been improved to ${actor.attackDie}!`);
-      //     await this.emit({ type: "purchase", itemName: `${Words.humanize(actor.weapon)} Improvement (${originalAttackDie} -> ${actor.attackDie})`, cost: improvementCost, buyer: actor, day: this.days });
-      //     this.state.sharedGold -= improvementCost;
-      //   } else {
-      //     console.log(`You need at least ${improvementCost}g to improve a weapon.`);
-      //   }
+        // } else if (action === "jeweler") {
+        //   const gems = this.pcs.flatMap(pc => pc.gems || []);
+        //   if (gems.length === 0) {
+        //     console.log("You have no gems to sell.");
+        //   } else {
+        //     const totalValue = gems.reduce((sum, gem) => sum + gem.value, 0);
+        //     for (const gem of gems) {
+        //       await this.emit({ type: "sale", itemName: `${gem.name} (${gem.type})`, revenue: gem.value, seller: this.pcs.find(pc => (pc.gems || []).includes(gem))!, day: this.days });
+        //     }
+        //     console.log(`You sold your gems for a total of ${totalValue}g`);
+        //     this.state.sharedGold += totalValue;
+        //     this.pcs.forEach(pc => pc.gems = []);
+        //   }
+        // } else if (action === "blacksmith") {
+        //   const improvementCost = 50;
+        //     const actor = await this.select("Who will improve their weapon?", this.pcs.map(pc => ({
+        //       short: pc.name, value: pc, name: pc.name, disabled: !pc.equipment?.weapon
+        //     }))) as Combatant;
+        //     // console.log("Current weapon:", actor.weapon, actor.attackDie);
+        //   if (this.sharedGold > improvementCost) {
+        //     const originalAttackDie = actor.attackDie;
+        //     const alreadyImproved = actor.attackDie.includes("+");
+        //     if (alreadyImproved) {
+        //       // rewrite to improve further
+        //       const [baseDie, plusPart] = actor.attackDie.split("+");
+        //       let plusAmount = parseInt(plusPart);
+        //       if (plusAmount <= 5) {
+        //         plusAmount += 1;
+        //         actor.attackDie = `${baseDie}+${plusAmount}`;
+        //       } else {
+        //         // could add a trait instead but for now improve the base die
+        //         const [dieNumber, dieSides] = baseDie.split("d");
+        //         const dieClasses = [2, 3, 4, 6, 8, 10, 12, 20, 100];
+        //         const currentIndex = dieClasses.indexOf(parseInt(dieSides));
+        //         if (currentIndex < dieClasses.length - 1) {
+        //           const newDieSides = dieClasses[currentIndex + 1];
+        //           actor.attackDie = `${dieNumber}d${newDieSides}+${plusAmount}`;
+        //         } else {
+        //           const newDieNumber = parseInt(dieNumber) + 1;
+        //           actor.attackDie = `${newDieNumber}d${dieSides}+${plusAmount}`;
+        //         }
+        //       }
+        //     } else {
+        //       // improve weapon
+        //       actor.attackDie += "+1";
+        //     }
+        //     // console.log(`🛠️ ${actor.name}'s weapon has been improved to ${actor.attackDie}!`);
+        //     await this.emit({ type: "purchase", itemName: `${Words.humanize(actor.weapon)} Improvement (${originalAttackDie} -> ${actor.attackDie})`, cost: improvementCost, buyer: actor, day: this.days });
+        //     this.state.sharedGold -= improvementCost;
+        //   } else {
+        //     console.log(`You need at least ${improvementCost}g to improve a weapon.`);
+        //   }
       } else if (action === "tavern") {
         // let spend = 5;
         // if (this.sharedGold < spend) {
@@ -359,47 +362,7 @@ export class ModuleRunner {
         await this.showRumors();
         await this.presentHireling();
       } else if (action === "temple") {
-        this.state.sharedGold -= 10;
-        const blessingsGranted: string[] = [];
-        const effect = mod.town.deity.blessing;
-        const duration = 10;
-        const deityName = mod.town.deity.name;
-        const blessingName = `${mod.town.deity.forename}'s Favor`;
-        const blessing: StatusEffect = {
-          name: blessingName,
-          description: "Blessed by " + Words.capitalize(deityName),
-          duration, effect, aura: false
-        };
-        blessing.description = Presenter.describeStatusWithName(blessing);
-        // this.outputSink(`You pray to ${Words.capitalize(mod.town.deity)}.`);
-        this.pcs.forEach(pc => {
-          pc.activeEffects = pc.activeEffects || [];
-          if (!pc.activeEffects.some(e => e.name === blessingName)) {
-            // this.outputSink(`The priest blesses ${pc.name}.`);
-            pc.activeEffects.push(
-              // { name: `Blessing of ${deityName}`, duration, effect, description }
-              blessing
-            );
-            blessingsGranted.push(`Blessings of ${deityName} upon ${pc.name}`);
-            // this.outputSink(`${pc.name} gains ${Words.humanizeList(
-            //   Object.entries(blessing).map(([k, v]) => `${v > 0 ? "+" : ""}${v} ${k}`)
-            // )} for ${duration} turns!`)
-          }
-        });
-        // recharge wands/staves
-        for (const item of this.state.inventory) {
-          if (item.maxCharges !== undefined) {
-            item.charges = item.maxCharges;
-            // this.outputSink(`Your ${Words.humanize(item.name)} is fully recharged.`);
-          }
-        }
-        await this.emit({
-          type: "templeVisited", templeName: `${mod.town.name} Temple of ${Words.capitalize(deityName)}`, day: this.days,
-          blessingsGranted,
-          itemsRecharged: this.state.inventory
-            .filter(i => i.maxCharges !== undefined)
-            .map(i => i.name),
-        });
+        await this.temple();
       } else if (action === "mirror") {
         await this.emit({
           type: "partyOverview",
@@ -470,7 +433,7 @@ export class ModuleRunner {
       temple: `Pray to ${Words.capitalize(this.mod.town.deity.name)}`,
       mirror: "Show Party Inventory/Character Records",
     }
-    
+
     let shops = { ...basicShops };
     if (!dry) {
       shops = { ...shops, ...advancedShops };
@@ -494,13 +457,96 @@ export class ModuleRunner {
   }
 
   private rest(party: Combatant[]) {
+    const cost = 10;
+    if (this.sharedGold < cost) {
+      console.log(`You need at least ${cost}g to rest at the inn.`);
+      return;
+    }
+    this.state.sharedGold -= cost;
     party.forEach(pc => {
-      const effective = Fighting.effectiveStats(pc);
-      pc.hp = effective.maxHp;
-      pc.spellSlotsUsed = 0;
-      pc.activeEffects = []; // Clear status effects!
+      if (!pc.dead) {
+        const effective = Fighting.effectiveStats(pc);
+        pc.hp = effective.maxHp;
+        pc.spellSlotsUsed = 0;
+        pc.activeEffects = []; // Clear status effects!
+      } else {
+        console.warn(`${pc.name} is dead and must seek resurrection.`);
+      }
     });
     // this.outputSink("💤 Your party rests and recovers fully.");
+  }
+
+  private async temple() {
+    const mod = this.mod;
+    const offerDonation = await this.select(
+      `The Temple of ${Words.capitalize(mod.town.deity.name)} offers blessings for 10g. Wands will also be recharged. Would you like to make a donation?`,
+      [
+        { short: "Yes", value: true, name: `Donate to ${mod.town.deity.name} Temple`, disabled: this.sharedGold < 10 },
+        { short: "No", value: false, name: "Decline", disabled: false },
+      ]
+    ) as unknown as boolean;
+
+    if (offerDonation) {
+      this.state.sharedGold -= 10;
+      const blessingsGranted: string[] = [];
+      const effect = mod.town.deity.blessing;
+      const duration = 10;
+      const deityName = mod.town.deity.name;
+      const blessingName = `${mod.town.deity.forename}'s Favor`;
+      const blessing: StatusEffect = {
+        name: blessingName,
+        description: "Blessed by " + Words.capitalize(deityName),
+        duration, effect, aura: false
+      };
+      blessing.description = Presenter.describeStatusWithName(blessing);
+      // this.outputSink(`You pray to ${Words.capitalize(mod.town.deity)}.`);
+      this.pcs.forEach(pc => {
+        pc.activeEffects = pc.activeEffects || [];
+        if (!pc.activeEffects.some(e => e.name === blessingName)) {
+          pc.activeEffects.push(blessing);
+          blessingsGranted.push(`Blessings of ${deityName} upon ${pc.name}`);
+        }
+      });
+      // recharge wands/staves
+      for (const item of this.state.inventory) {
+        if (item.maxCharges !== undefined) {
+          item.charges = item.maxCharges;
+        }
+      }
+    }
+
+    let anyDead = this.pcs.some(pc => pc.dead);
+    const rezCost = 100;
+    if (anyDead) {
+      for (const pc of this.pcs) {
+        if (pc.dead) {
+          const choice = await this.select(
+            `${pc.name} is dead. Would you like to be resurrected for ${rezCost}g?`,
+            [
+              { short: "Yes", value: true, name: `Resurrect ${pc.forename}`, disabled: this.sharedGold < rezCost },
+              { short: "No", value: false, name: "Decline resurrection", disabled: false },
+            ]
+          ) as unknown as boolean;
+
+          if (choice) {
+            this.state.sharedGold -= rezCost;
+            pc.dead = false;
+            pc.hp = Math.max(1, Math.floor(Fighting.effectiveStats(pc).maxHp * 0.5));
+            pc.spellSlotsUsed = 0;
+            pc.activeEffects = [];
+            blessingsGranted.push(`${pc.name} was resurrected by ${deityName}`);
+          }
+        }
+      };
+    }
+
+    await this.emit({
+      type: "templeVisited", templeName: `${mod.town.name} Temple of ${Words.capitalize(deityName)}`, day: this.days,
+      blessingsGranted,
+      itemsRecharged: this.state.inventory
+        .filter(i => i.maxCharges !== undefined)
+        .map(i => i.name),
+    });
   }
 
   private async shop(category: ShopType) {
@@ -550,9 +596,9 @@ export class ModuleRunner {
       // "A hireling is available to join your party. Would you like to consider their merits?",
       `A ${hireling.class} named ${hireling.name} is looking for work. Would you like to interview them?`,
       [
-      { short: "Yes", value: true, name: `Interview ${hireling.forename}`, disabled: false },
-      { short: "No", value: false, name: "Decline", disabled: false },
-    ]);
+        { short: "Yes", value: true, name: `Interview ${hireling.forename}`, disabled: false },
+        { short: "No", value: false, name: "Decline", disabled: false },
+      ]);
 
     if (!wouldLikeHireling) {
       return;
@@ -587,7 +633,7 @@ export class ModuleRunner {
 
   private async selectDungeon(): Promise<Dungeon | null> {
     const dungeonChoices = this.availableDungeons.filter(d => this.state.discoveredDungeons.includes(d.dungeonIndex!));
-    if (dungeonChoices.length === 0) {return null;}
+    if (dungeonChoices.length === 0) { return null; }
 
     const reasonableCr = Math.round(1.5 * this.pcs.map(pc => pc.level).reduce((a, b) => a + b, 0) / this.pcs.length) + 2;
     // console.log(`(Reasonable CR for party level ${this.pcs.map(pc => pc.level).join(", ")} is approx. ${reasonableCr})`);

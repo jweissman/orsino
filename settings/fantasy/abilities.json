@@ -1716,11 +1716,8 @@
   },
   "detonation": {
     "name": "Detonation",
-    "type": "spell",
+    "type": "skill",
     "alignment": "evil",
-    "level": 0,
-    "aspect": "arcane",
-    "school": "evocation",
     "description": "Countdown to a fiery explosion.",
     "target": [ "self" ],
     "condition": {
@@ -3705,7 +3702,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d6",
+        "amount": "=1d3",
         "kind": "sonic",
         "saveForHalf": true
       },

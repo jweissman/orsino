@@ -26,7 +26,7 @@ export type CombatantEngagedEvent = BaseEvent & { type: "engage" };
 export type CombatEndEvent = BaseEvent & { type: "combatEnd"; winner: string };
 
 export type RoundStartEvent = BaseEvent & { type: "roundStart", combatants: Combatant[], parties: Team[]; environment?: string, auras: StatusEffect[] };
-export type TurnStartEvent = BaseEvent & { type: "turnStart", combatants: Combatant[] };
+export type TurnStartEvent = BaseEvent & { type: "turnStart", combatants: Combatant[], parties: Team[]; environment?: string, auras: StatusEffect[] };
 
 export type HitEvent = BaseEvent & { type: "hit"; damage: number; success: boolean; critical: boolean; by: string; damageKind: DamageKind };
 export type DamageBonus = BaseEvent & { type: "damageBonus"; amount: number; damageKind: DamageKind; reason: string };
@@ -175,7 +175,7 @@ export type EquipmentEvent = BaseModuleEvent & { type: "equip"; itemName: string
 export type AcquireItemEvent = BaseModuleEvent & { type: "acquire"; itemName: string; quantity: number; acquirer: Combatant; };
 export type WieldEvent = BaseModuleEvent & { type: "wield"; weaponName: string; wielderId: string; wielderName: string; };
 
-export type EnhanceWeaponEvent = BaseModuleEvent & { type: "enhanceWeapon"; weaponName: string; weaponId: string;  wielderId: string; wielderName: string; enhancement: string; cost: number; oldDamage: string; newDamage: string; };
+export type EnhanceWeaponEvent = BaseModuleEvent & { type: "enhanceWeapon"; weaponName: string; weaponId: string; wielderId: string; wielderName: string; enhancement: string; cost: number; oldDamage: string; newDamage: string; };
 
 export type RumorHeardEvent = BaseModuleEvent & { type: "rumorHeard"; rumor: string; };
 export type TempleVisitedEvent = BaseModuleEvent & { type: "templeVisited"; templeName: string; blessingsGranted: string[]; itemsRecharged: string[]; };
@@ -207,6 +207,8 @@ export type ModuleEvent =
 export type GameEvent = CombatEvent | DungeonEvent | ModuleEvent
 
 export default class Events {
+
+
   static async present(event: GameEvent): Promise<string> {
     let subjectName = event.subject ? event.subject.forename : null;
     if (event.subject) {
@@ -288,13 +290,9 @@ export default class Events {
       case "initiate":
         return '';
       case "roundStart":
-        const roundLabel = ("Round " + event.turn.toString()).padEnd(20) + Stylist.colorize(event.environment?.padStart(60) || "Unknown Location", 'cyan');
-        const parties = Presenter.parties(event.parties || []);
-        const hr = "=".repeat(80);
-        const auras = event.auras?.length > 0 ? "\n\nAuras:\n" + event.auras.map(aura => `- ${Stylist.colorize(aura.name, 'magenta')} (${Presenter.analyzeStatus(aura)})`).join("\n") : ""; 
-        return `${hr}\n${roundLabel}\n${hr}\n${parties}${auras}`;
+        return Events.presentRound(event);
       case "turnStart":
-        return '';
+        return Events.presentTurn(event);
       case "combatEnd": return '';
 
       case "upgrade":
@@ -412,7 +410,7 @@ export default class Events {
 
       case "trapTriggered":
         return `${subjectName} accidentally triggers ${Words.a_an(Words.humanize(event.trigger))}! ${event.punishmentDescription}.`;
-        
+
       case "trapDisarmed":
         if (event.success) {
           return `${subjectName} successfully disarms ${Words.a_an(Words.humanize(event.trigger))}.`;
@@ -438,7 +436,7 @@ export default class Events {
         return `${event.seller.forename} sold ${Words.a_an(event.itemName)} for ${event.revenue} gold.`;
       case "equip":
         return `${event.wearerName} equips ${Words.a_an(event.itemName)} as their ${event.slot}.`;
-      case "wield": 
+      case "wield":
         return `${event.wielderName} wields ${Words.a_an(event.weaponName)}!`;
       case "acquire":
         if (event.quantity === 1) {
@@ -474,8 +472,8 @@ export default class Events {
           overview += Stylist.bold("Shared Inventory: ") + Presenter.aggregateList(sharedItems.sort((a, b) => a.name.localeCompare(b.name)).map(i => i.name)) + "\n";
         }
         // if (event.itemQuantities && Object.keys(event.itemQuantities).length > 0) {
-          // overview += `Inventory:\n${Object.entries(event.itemQuantities).map(([itemName, qty]) => `- ${qty} x ${Words.humanize(itemName)}`).join("\n")
-            // }`
+        // overview += `Inventory:\n${Object.entries(event.itemQuantities).map(([itemName, qty]) => `- ${qty} x ${Words.humanize(itemName)}`).join("\n")
+        // }`
         // }
         return overview;
       case "hirelingOffered":
@@ -510,5 +508,22 @@ export default class Events {
     }
 
     await Files.append(logFilename, logMessage + '\n');
+  }
+
+  private static presentRound(event: RoundStartEvent): string {
+    return '';
+    // const roundLabel = ("Round " + event.turn.toString()).padEnd(20) + Stylist.colorize(event.environment?.padStart(60) || "Unknown Location", 'cyan');
+    // const parties = Presenter.parties(event.parties || []);
+    // const hr = "=".repeat(80);
+    // const auras = event.auras?.length > 0 ? "\n\nAuras:\n" + event.auras.map(aura => `- ${Stylist.colorize(aura.name, 'magenta')} (${Presenter.analyzeStatus(aura)})`).join("\n") : "";
+    // return `${hr}\n${roundLabel}\n${hr}\n${parties}${auras}`;
+  }
+
+  private static presentTurn(event: TurnStartEvent): string {
+    const roundLabel = ("Round " + event.turn.toString()).padEnd(20) + Stylist.colorize(event.environment?.padStart(60) || "Unknown Location", 'cyan');
+    const parties = Presenter.parties(event.parties || []);
+    const hr = "=".repeat(80);
+    const auras = event.auras?.length > 0 ? "\n\nAuras:\n" + event.auras.map(aura => `- ${Stylist.colorize(aura.name, 'magenta')} (${Presenter.analyzeStatus(aura)})`).join("\n") : "";
+    return `${hr}\n${roundLabel}\n${hr}\n${parties}${auras}\n\n${Stylist.bold(`It's ${event.subject?.forename}'s turn!`)}`;
   }
 }

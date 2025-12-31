@@ -37,7 +37,7 @@ export default class User {
     // const options = choices as readonly (Separator | Choice<Answers>)[];
     const selection = await select({
       message,
-      choices
+      choices: choices as any
     }) as string | Answers;
     return selection;
   }
@@ -59,5 +59,18 @@ export default class User {
     const result = Commands.roll(subject, description, sides);
     // console.log(result.description);
     return result;
+  }
+
+  static async waitForEnter(message: string): Promise<void> {
+    process.stdout.write(message);
+    // ask to press enter
+      process.stdin.setRawMode(true);
+      process.stdin.resume();
+      await new Promise<void>(resolve => {
+        process.stdin.once("data", () => {
+          process.stdin.setRawMode(false);
+          resolve();
+        });
+      });
   }
 }

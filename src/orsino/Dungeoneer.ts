@@ -50,9 +50,10 @@ interface RoomFeature {
 interface Riddle {
   difficulty: "easy" | "medium" | "hard" | "deadly";
   form: string;
-  challenge: { question: string; answer: string; };
+  challenge: {
+    answer_type: string; question: string; answer: string; 
+};
   reward: ItemInstance;
-  answer_type: string;
 }
 
 interface Wonder {
@@ -570,7 +571,11 @@ export default class Dungeoneer {
 
         for (const item of items) {
           const it = Inventory.genLoot(item);
-          await this.emit({ type: "itemFound", subject: check.actor, itemName: Words.humanize(item), itemDescription: it.description || Words.a_an(Words.humanize(item)), quantity: 1, where: `in the hidden compartment of ${room.decor}` });
+          let description = it.description || Words.a_an(Words.humanize(item));
+          if (description.endsWith('.')) {
+            description = description.slice(0, -1);
+          }
+          await this.emit({ type: "itemFound", subject: check.actor, itemName: Words.humanize(item), itemDescription: description, quantity: 1, where: `in the hidden compartment of ${room.decor}` });
           this.playerTeam.inventory.push(it);
         }
         examinedDecor = true;
@@ -682,7 +687,7 @@ export default class Dungeoneer {
   private async solveRiddle(riddle: Riddle) {
     const check = await this.skillCheck("examine", `to understand the ${Words.humanize(riddle.form)}`, "int", (riddle.difficulty === "easy") ? 10 : (riddle.difficulty === "medium") ? 15 : (riddle.difficulty === "hard") ? 20 : 25);
     if (check.success) {
-      const wrongAnswerPool = Deem.evaluate(`lookup(riddleAnswerGroups, ${riddle.answer_type})`) as string[];
+      const wrongAnswerPool = Deem.evaluate(`lookup(riddleAnswerGroups, ${riddle.challenge.answer_type})`) as string[];
       await this.emit({ type: "riddlePosed", subject: check.actor, challenge: riddle.challenge.question });
       const answer = await this.select(`The ${Words.humanize(riddle.form)} awaits your answer...`, [
         ...Sample.shuffle(...[
@@ -778,7 +783,11 @@ export default class Dungeoneer {
         for (const item of room.gear) {
           const it = Inventory.genLoot(item);
           this.playerTeam.inventory.push(it);
-          await this.emit({ type: "itemFound", subject: actor, itemName: Words.humanize(item), itemDescription: it.description || Words.a_an(Words.humanize(item)), quantity: 1, where: "in the hidden stash" });
+          let description = it.description || Words.a_an(Words.humanize(item));
+          if (description.endsWith('.')) {
+            description = description.slice(0, -1);
+          }
+          await this.emit({ type: "itemFound", subject: actor, itemName: Words.humanize(item), itemDescription: description, quantity: 1, where: "in the hidden stash" });
         }
       }
 
@@ -790,15 +799,18 @@ export default class Dungeoneer {
         const lootItems = Deem.evaluate(`sample(gather(consumables, -1, 'dig(#__it, rarity) == common'), ${lootBonus})`) as string[];
         for (const item of lootItems) {
           const it = Inventory.genLoot(item);
-          await this.emit({ type: "itemFound", subject: actor, itemName: Words.humanize(item), itemDescription: it.description || Words.a_an(Words.humanize(item)), quantity: 1, where: "in the hidden stash" });
           this.playerTeam.inventory.push(it);
+          let description = it.description || Words.a_an(Words.humanize(item));
+          if (description.endsWith('.')) {
+            description = description.slice(0, -1);
+          }
+          await this.emit({ type: "itemFound", subject: actor, itemName: Words.humanize(item), itemDescription: description, quantity: 1, where: "in the hidden stash" });
         }
       }
 
       if (room.treasure) {
         for (const item of room.treasure) {
           const it = Inventory.genLoot(item);
-
           await this.acquireItem(actor, it, "in the hidden stash")
         }
         const xpReward = 10 + Math.floor(Math.random() * 20) + 5 * room.treasure.length;
@@ -832,6 +844,7 @@ export default class Dungeoneer {
           } else {
             this.note(`${c.name} failed their System Shock save (${systemShockRoll.amount} + ${conMod} = ${total} < ${systemShockDc}) and has bled out!`);
             c.dead = true;
+            c.hp = -10;
             continue; // remains unconscious
           }
           c.hp = 1;
@@ -922,7 +935,11 @@ export default class Dungeoneer {
     const isWeapon = it.itemClass === "weapon";
     const isArmor = it.itemClass === "armor";
 
-    await this.emit({ type: "itemFound", subject: actor, itemName: Words.humanize(it.name), itemDescription: it.description || Words.a_an(Words.humanize(it.key)), quantity: 1, where });
+    let description = it.description || Words.a_an(Words.humanize(it.key));
+    if (description.endsWith('.')) {
+      description = description.slice(0, -1);
+    }
+    await this.emit({ type: "itemFound", subject: actor, itemName: Words.humanize(it.name), itemDescription: description, quantity: 1, where });
 
     if (isEquipment || isWeapon || isArmor) {
       const choice = await this.select(`Equip ${Words.humanize(it.name)} now?`, [
