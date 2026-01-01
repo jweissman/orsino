@@ -167,6 +167,16 @@
       "saveVersusAll": 1
     }
   },
+  "major_wisdom": {
+    "name": "Sage's Wisdom",
+    "type": "buff",
+    "description": "Possesses extraordinary insight and perception.",
+    "effect": {
+      "wis": 4,
+      "allRolls": 2,
+      "saveVersusAll": 2
+    }
+  },
   "strength": {
     "name": "Bull's Strength",
     "type": "buff",
@@ -202,6 +212,15 @@
       "allRolls": 1
     }
   },
+  "major_cunning": {
+    "name": "Raven's Cunning",
+    "type": "buff",
+    "description": "Attains exceptional intellect and wit.",
+    "effect": {
+      "int": 4,
+      "allRolls": 2
+    }
+  },
   "endurance": {
     "name": "Bear's Endurance",
     "type": "buff",
@@ -209,6 +228,15 @@
     "effect": {
       "con": 2,
       "tempHp": 15
+    }
+  },
+  "major_endurance": {
+    "name": "Mammoth's Endurance",
+    "type": "buff",
+    "description": "Greatly enhances health and stamina.",
+    "effect": {
+      "con": 6,
+      "tempHp": 40
     }
   },
   "splendor": {
@@ -220,12 +248,33 @@
       "toHit": 1
     }
   },
+  "major_splendor": {
+    "name": "Phoenix's Splendor",
+    "type": "buff",
+    "description": "Exudes an extraordinary aura of charisma and influence.",
+    "effect": {
+      "cha": 4,
+      "toHit": 2,
+      "bonusDamage": 1
+    }
+  },
   "courage": {
     "name": "Courage",
     "type": "buff",
     "description": "Bolsters bravery and resolve.",
     "effect": {
       "saveVersusAll": 2,
+      "immuneFear": true
+    }
+  },
+  "major_courage": {
+    "name": "Heroism",
+    "type": "buff",
+    "description": "Fills with heroic valor.",
+    "effect": {
+      "toHit": 2,
+      "bonusDamage": 2,
+      "saveVersusAll": 3,
       "immuneFear": true
     }
   },
@@ -236,6 +285,18 @@
     "effect": {
       "allRolls": 2,
       "immuneCharm": true
+    }
+  },
+  "major_clarity": {
+    "name": "Perfect Clarity",
+    "type": "buff",
+    "description": "Achieves unparalleled mental sharpness and focus.",
+    "effect": {
+      "int": 2,
+      "allRolls": 3,
+      "saveVersusAll": 2,
+      "immuneCharm": true,
+      "immuneInsanity": true
     }
   },
   "focus": {
@@ -249,13 +310,47 @@
       "bonusSpellSlots": 1
     }
   },
-  "insight": {
+  "major_focus": {
+    "name": "Greater Focus",
+    "type": "buff",
+    "description": "Greatly enhances concentration and spellcasting.",
+    "effect": {
+      "toHit": 4,
+      "saveVersusMagic": 5,
+      "bonusSpellDC": 4,
+      "bonusSpellSlots": 2
+    }
+  },
+  "minor_insight": {
     "name": "Insight",
     "type": "buff",
     "description": "Gains deep understanding and intuition.",
     "effect": {
       "saveVersusAll": 2,
       "bonusSpellDC": 1
+    }
+  },
+  "insight": {
+    "name": "Sage's Insight",
+    "type": "buff",
+    "description": "Attains profound wisdom and clarity.",
+    "effect": {
+      "int": 4,
+      "allRolls": 2,
+      "saveVersusAll": 3,
+      "bonusSpellDC": 2
+    }
+  },
+  "major_insight": {
+    "name": "Archmage's Insight",
+    "type": "buff",
+    "description": "Achieves unparalleled understanding and foresight.",
+    "effect": {
+      "int": 6,
+      "allRolls": 3,
+      "saveVersusAll": 5,
+      "bonusSpellDC": 4,
+      "bonusSpellSlots": 1
     }
   },
   "mage_armored": {
@@ -364,6 +459,29 @@
     "effect": {
       "resistForce": 0.5,
       "saveVersusMagic": 2
+    }
+  },
+  "darkproof": {
+    "name": "Darkproof",
+    "type": "buff",
+    "description": "Resistant to necrotic damage and control effects.",
+    "effect": {
+      "resistNecrotic": 0.5,
+      "immuneCharm": true,
+      "immuneFear": true,
+      "immuneSleep": true
+    }
+  },
+  "mindproof": {
+    "name": "Mindproof",
+    "type": "buff",
+    "description": "Resistant to psychic damage and mental influence.",
+    "effect": {
+      "resistPsychic": 0.5,
+      "immuneCharm": true,
+      "immuneInsanity": true,
+      "immuneFear": true,
+      "immuneSleep": true
     }
   },
   "oiled": {
@@ -525,6 +643,24 @@
       "tempHp": "=14 + 2 * #level"
     }
   },
+  "major_warded": {
+    "name": "Major Warded",
+    "type": "buff",
+    "description": "A powerful magical ward providing significant protection.",
+    "effect": {
+      "saveVersusMagic": 2,
+      "saveVersusAll": 1,
+      "resistFire": 0.25,
+      "resistCold": 0.25,
+      "resistLightning": 0.25,
+      "resistForce": 0.75,
+      "resistAcid": 0.25,
+      "resistSonic": 0.25,
+      "resistNecrotic": 0.25,
+      "tempHp": "=21 + 3 * #level"
+    }
+  },
+
   "blurred": {
     "name": "Blurred",
     "type": "buff",
@@ -545,6 +681,14 @@
       "evasion": 15
     }
   },
+  "minor_reflect": {
+    "name": "Minor Reflect",
+    "type": "buff",
+    "description": "Reflecting a small portion of damage back to attackers.",
+    "effect": {
+      "reflectDamagePercent": 0.25
+    }
+  },
   "reflect": {
     "name": "Reflect",
     "type": "buff",
@@ -553,12 +697,46 @@
       "reflectDamagePercent": 0.5
     }
   },
+  "major_reflect": {
+    "name": "Major Reflect",
+    "type": "buff",
+    "description": "Reflecting a large portion of damage back to attackers.",
+    "effect": {
+      "reflectDamagePercent": 0.75
+    }
+  },
   "spellturn": {
     "name": "Spellturn",
     "type": "buff",
     "description": "Reflecting spells back at their casters.",
     "effect": {
       "reflectSpellChance": 0.5
+    }
+  },
+  "major_spellturn": {
+    "name": "Major Spellturn",
+    "type": "buff",
+    "description": "Greatly increases chance to reflect spells back at their casters.",
+    "effect": {
+      "reflectSpellChance": 0.75
+    }
+  },
+  "deflection": {
+    "name": "Deflection",
+    "type": "buff",
+    "description": "Magically deflecting incoming attacks.",
+    "effect": {
+      "ac": -3,
+      "evasion": 10
+    }
+  },
+  "major_deflection": {
+    "name": "Major Deflection",
+    "type": "buff",
+    "description": "Greatly enhances ability to deflect attacks.",
+    "effect": {
+      "ac": -5,
+      "evasion": 15
     }
   },
   "invulnerable": {
@@ -772,6 +950,18 @@
       "toHit": -1,
       "bonusDamage": -1,
       "evasion": -5
+    },
+    "saveKind": "will"
+  },
+  "major_distracted": {
+    "name": "Severely Distracted",
+    "type": "condition",
+    "description": "Extremely unfocused and unable to concentrate.",
+    "effect": {
+      "toHit": -2,
+      "bonusDamage": -2,
+      "evasion": -10,
+      "allRolls": -1
     },
     "saveKind": "will"
   },
@@ -1020,6 +1210,7 @@
       ]
     }
   },
+
   "invisible": {
     "name": "Invisible",
     "type": "buff",
@@ -1120,6 +1311,16 @@
       "tempHp": "=10d6 + 2 * #level"
     }
   },
+  "major_false_life": {
+    "name": "Major False Life",
+    "type": "buff",
+    "description": "Greatly bolstered by unnatural vitality.",
+    "effect": {
+      "tempHp": "=20d6 + 4 * #level",
+      "resistNecrotic": 0.5,
+      "saveVersusDeath": 2
+    }
+  },
   "agony": {
     "name": "Agony",
     "type": "condition",
@@ -1137,6 +1338,18 @@
     },
     "saveKind": "will"
   },
+  "despair": {
+    "name": "Despair",
+    "type": "condition",
+    "description": "Overcome with hopelessness.",
+    "effect": {
+      "cha": -2,
+      "toHit": -2,
+      "bonusDamage": -2,
+      "saveVersusAll": -2
+    },
+    "saveKind": "will"
+  },
   "weakened": {
     "name": "Weakened",
     "type": "condition",
@@ -1144,6 +1357,16 @@
     "effect": {
       "str": -2,
       "bonusDamage": -2
+    },
+    "saveKind": "fortitude"
+  },
+  "major_weakened": {
+    "name": "Major Weakened",
+    "type": "condition",
+    "description": "Severely sapped of strength and power.",
+    "effect": {
+      "str": -4,
+      "bonusDamage": -4
     },
     "saveKind": "fortitude"
   },
@@ -1218,6 +1441,120 @@
       "allRolls": 2,
       "saveVersusAll": 2,
       "initiative": 5
+    }
+  },
+  "major_augured": {
+    "name": "Major Augured",
+    "type": "buff",
+    "description": "Greatly enhanced foresight and mental clarity.",
+    "effect": {
+      "int": 4,
+      "wis": 4,
+      "allRolls": 3,
+      "saveVersusAll": 3,
+      "initiative": 10
+    }
+  },
+  "enlightened": {
+    "name": "Enlightened",
+    "type": "buff",
+    "description": "Possessing profound understanding and insight.",
+    "effect": {
+      "int": 4,
+      "wis": 4,
+      "allRolls": 2,
+      "bonusSpellDC": 2
+    }
+  },
+  "wildheart": {
+    "name": "Wildheart",
+    "type": "buff",
+    "description": "In tune with nature, gaining its resilience.",
+    "effect": {
+      "toHit": 2,
+      "bonusDamage": 2,
+      "con": 4,
+      "resistPoison": 0.5,
+      "resistAcid": 0.25,
+      "immuneDisease": true
+    }
+  },
+  "rallied": {
+    "name": "Rallied",
+    "type": "buff",
+    "description": "Bolstered by determination and courage.",
+    "effect": {
+      "con": 2,
+      "toHit": 1,
+      "saveVersusAll": 1
+    }
+  },
+  "death_ward": {
+    "name": "Death Ward",
+    "type": "buff",
+    "description": "Protected from death.",
+    "effect": {
+      "saveVersusDeath": 5
+    }
+  },
+  "vital_boost": {
+    "name": "Vital Boost",
+    "type": "buff",
+    "description": "Enhanced vitality and life force.",
+    "effect": {
+      "con": 4,
+      "tempHp": 20,
+      "saveVersusAll": 2
+    }
+  },
+  "keen": {
+    "name": "Keen Weapon",
+    "type": "buff",
+    "description": "Weapons are sharper and more precise.",
+    "effect": {
+      "toHit": 2,
+      "bonusDamage": 2,
+      "criticalRangeIncrease": 2
+    }
+  },
+  "divine_champion": {
+    "name": "Divine Champion",
+    "type": "buff",
+    "description": "Empowered by divine favor in combat.",
+    "effect": {
+      "toHit": 3,
+      "bonusDamage": 3,
+      "saveVersusAll": 3,
+      "immuneFear": true
+    }
+  },
+  "pure_strike": {
+    "name": "Pure Strike",
+    "type": "buff",
+    "description": "Attacks are precise and unerring.",
+    "effect": {
+      "toHit": 4,
+      "bonusDamage": 4,
+      "onAttackHit": [
+        {
+          "type": "damage",
+          "amount": "=2d6",
+          "kind": "true",
+          "target": "target"
+        }
+      ]
+    }
+  },
+  "enlarged": {
+    "name": "Enlarged",
+    "type": "buff",
+    "description": "Increased in size, gaining strength and power.",
+    "effect": {
+      "str": 4,
+      "bonusDamage": "=1d4",
+      "toHit": 1,
+      "ac": 1,
+      "evasion": -5
     }
   }
 }

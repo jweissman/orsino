@@ -17,6 +17,7 @@ export type ShopType
   | 'equipment'
   | 'armor'
   | 'enhancements'
+  // | 'gems'
 
 type ShopStepResult =
   | { done: true; events: ModuleEvent[] }
@@ -36,6 +37,8 @@ export default class Shop {
         return "Magician";
       case 'loot':
         return "Provisioner";
+      // case 'gems':
+        // return "Jeweler";
       default:
         return never(type);
     }
@@ -108,10 +111,11 @@ export default class Shop {
       this.leaving = true;
       return events;
     }
-    const item = choice as Equipment;
+    const item = choice as Equipment & ItemInstance;
 
     if (this.currentGold >= item.value) {
-      const { oldItemRef: maybeOldItem } = Inventory.equipmentSlotAndExistingItem(item.key, wearer);
+      const inventory = this.gameState.inventory;
+      const { oldItemRef: maybeOldItem } = Inventory.equipmentSlotAndExistingItem(item, wearer, inventory);
       if (maybeOldItem) {
         const oldItem = materializeItem(maybeOldItem, this.gameState.inventory);
         events.push({
@@ -338,15 +342,17 @@ export default class Shop {
       this.leaving = true;
       return events;
     }
-    const item = choice as Equipment;
+    const item = choice as Equipment & ItemInstance;
 
     if (this.currentGold >= item.value) {
-      const { oldItemRef: maybeOldItem } = Inventory.equipmentSlotAndExistingItem(item.key, wearer);
+      const inventory = this.gameState.inventory;
+      const { oldItemRef: maybeOldItem } = Inventory.equipmentSlotAndExistingItem(item, wearer, inventory);
       if (maybeOldItem) {
-        const oldItem = materializeItem(maybeOldItem, this.gameState.inventory);
+        // const oldItem = materializeItem(maybeOldItem, this.gameState.inventory);
+        const oldItem = Inventory.materializeRef(maybeOldItem, this.gameState.inventory);
         events.push({
           type: "sale",
-          itemName: maybeOldItem,
+          itemName: oldItem.name,
           revenue: oldItem.value,
           seller: wearer,
           day: this.day,

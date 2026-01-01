@@ -37,8 +37,10 @@ export interface Gem {
   value: number;
 }
 
+export type CombatantID = string;
+
 export interface Combatant {
-  id: string;
+  id: CombatantID;
   description?: string;
   kind?: string;
   armorProficiencies?: {

@@ -17,6 +17,7 @@ import Automatic from "../tui/Automatic";
 import { Select } from "../types/Select";
 import { Answers } from "inquirer";
 import Deem from "../../deem";
+import Generator from "../Generator";
 
 type PlayerCharacterRace = string; // "human" | "elf" | "dwarf" | "halfling" | "orc" | "fae" | "gnome";
 
@@ -32,8 +33,12 @@ export default class CharacterRecord {
     return Math.max(1, Math.round(totalLevels / 3));
   }
 
+  static get goodRaces(): PlayerCharacterRace[] {
+    return Deem.evaluate("gather(racialModifier, -1, '!dig(#__it, evil)')") as PlayerCharacterRace[];
+  }
+
   static get pcRaces(): PlayerCharacterRace[] {
-    return Deem.evaluate("gather(racialModifier)") as PlayerCharacterRace[];
+    return Deem.evaluate("gather(racialModifier, -1, 'dig(#__it, pcRace)')") as PlayerCharacterRace[];
   }
 
   static validClassesForRace(race: PlayerCharacterRace): string[] {
@@ -51,27 +56,28 @@ export default class CharacterRecord {
     selectionMethod: Select<Answers> = User.selection.bind(User),
     schoolOrDomainRestriction: string = 'all'
   ): Promise<string | boolean> {
+    // console.log(`Picking level ${spellLevel} ${aspect} spell for restriction: ${schoolOrDomainRestriction} (already known: ${alreadyKnown.join(", ")})`);
 
     const abilityHandler = AbilityHandler.instance;
     await abilityHandler.loadAbilities();
     let spellChoices = abilityHandler.spellKeysByLevel(aspect, spellLevel, false);
     spellChoices = spellChoices.filter(spell => alreadyKnown.indexOf(spell) === -1);
+    // console.log(`Found ${spellChoices.length} level ${spellLevel} ${aspect} spells before filtering: ${spellChoices.join(", ")}`);
     const spellChoicesDetailed = spellChoices.map(spellName => {
       const spell = abilityHandler.getAbility(spellName);
+      const matchesRestriction = (spell.school === schoolOrDomainRestriction || spell.domain === schoolOrDomainRestriction || schoolOrDomainRestriction === 'all');
+      // console.log(`Considering spell ${spell.name} (school: ${spell.school}, domain: ${spell.domain}) -- matches restriction (${schoolOrDomainRestriction}): ${matchesRestriction}`);
       return {
         name: Words.capitalize(spell.name.padEnd(20)) + ' | ' +
           Stylist.colorize(spell.description, 'brightBlack'),
         value: spellName,
         short: spell.name,
-        disabled: !!(schoolOrDomainRestriction && schoolOrDomainRestriction !== 'all' && (
-          (aspect === 'arcane' && spell.school !== schoolOrDomainRestriction) ||
-          (aspect === 'divine' && spell.domain !== schoolOrDomainRestriction)
-        ))
+        disabled: !matchesRestriction
       };
 
     });
     const available = spellChoicesDetailed.filter(s => !s.disabled);
-    console.warn(`Picking level ${spellLevel} ${aspect} spell (already known: ${alreadyKnown.join(", ")}) with restriction: ${schoolOrDomainRestriction} -- available: ${available.map(s => s.value).join(", ")}`);
+    // console.warn(`Picking level ${spellLevel} ${aspect} spell (already known: ${alreadyKnown.join(", ")}) with restriction: ${schoolOrDomainRestriction} -- available: ${available.map(s => s.value).join(", ")}`);
     if (available.length === 0) {
       console.warn(`No available level ${spellLevel} ${aspect} spells to choose from for restriction: ${schoolOrDomainRestriction}`);
       return false;
@@ -85,7 +91,7 @@ export default class CharacterRecord {
 
   static async chargen(
     prompt: string,
-    pcGenerator: (options?: any) => Combatant,
+    pcGenerator: (options?: any) => Combatant = (options) => Generator.gen("pc", options) as unknown as Combatant,
     selectionMethod: Select<Answers> = User.selection.bind(User)
   ): Promise<Combatant> {
 
@@ -118,16 +124,8 @@ export default class CharacterRecord {
         );
         accepted = confirm === 'Yes';
       } else {
-        const race = this.pcRaces[Math.floor(Math.random() * this.pcRaces.length)];
-        const validClasses = this.validClassesForRace(race);
-        const occupation = validClasses[Math.floor(Math.random() * validClasses.length)];
-        pc = pcGenerator({
-          setting: 'fantasy',
-          race,
-          class: occupation
 
-        });
-        await this.chooseTraits(pc, Automatic.randomSelect.bind(Automatic));
+        pc = await this.autogen(this.pcRaces, pcGenerator);
         // await this.pickInitialSpells(pc, Automatic.randomSelect.bind(Automatic));
 
         await Presenter.printCharacterRecord(pc, []);
@@ -138,6 +136,23 @@ export default class CharacterRecord {
 
       }
     }
+    return pc;
+  }
+
+  static async autogen(
+    racePool: PlayerCharacterRace[] = this.pcRaces,
+    pcGenerator: (options?: any) => Combatant = (options) => Generator.gen("pc", options) as unknown as Combatant,
+  ) {
+    // const race = this.pcRaces[Math.floor(Math.random() * this.pcRaces.length)];
+    const race = racePool![Math.floor(Math.random() * racePool!.length)];
+    const validClasses = this.validClassesForRace(race);
+    const occupation = validClasses[Math.floor(Math.random() * validClasses.length)];
+    const pc = pcGenerator({
+      setting: 'fantasy',
+      race,
+      class: occupation
+    });
+    await this.chooseTraits(pc, Automatic.randomSelect.bind(Automatic));
     return pc;
   }
 
@@ -176,7 +191,7 @@ export default class CharacterRecord {
           selectionMethod);
       }
       console.log(`${Presenter.minimalCombatant(pc)} gained the trait: ${Words.capitalize((selectedTrait as Trait).name)}.`);
-      
+
       delete pc.traitChoices;
     }
   }
@@ -191,7 +206,7 @@ export default class CharacterRecord {
 
     const cantrips = [];
     for (const spellbook of spellbooks) {
-      cantrips.push(...AbilityHandler.instance.allSpellKeys(spellbook as 'arcane' | 'divine', 0, false));
+      cantrips.push(...AbilityHandler.instance.allSpellKeys(spellbook as 'arcane' | 'divine', 0, false, (spell) => spell.school === schoolOrDomain || spell.domain === schoolOrDomain || schoolOrDomain === 'all'));
     }
     pcSpells.push(...cantrips);
 
@@ -199,11 +214,22 @@ export default class CharacterRecord {
     for (const spellbook of spellbooks) {
       for (const levelStr of Object.keys(spellLevelsToPick)) {
         const level = parseInt(levelStr, 10);
-        console.warn(`Picking ${spellLevelsToPick[level]} level ${level} spells for ${pc.name} from ${spellbook} with restriction: ${schoolOrDomain}`);
-        for (let i = 0; i < spellLevelsToPick[level]; i++) {
-            const spell = await this.pickSpell(level, spellbook as 'arcane' | 'divine', pcSpells, selectionMethod, schoolOrDomain);
+        // console.warn(`Picking ${spellLevelsToPick[level]} level ${level} spells for ${pc.name} from ${spellbook} with restriction: ${schoolOrDomain}`);
+
+        // first spell must match restriction
+        const firstSpell = await this.pickSpell(level, spellbook as 'arcane' | 'divine', pcSpells, selectionMethod, schoolOrDomain);
+        if (typeof firstSpell === 'string') {
+          pcSpells.push(firstSpell);
+        } else {
+          throw new Error(`No level ${level} ${spellbook} spells available to choose for ${pc.name} matching restriction: ${schoolOrDomain}`);
+        }
+
+        for (let i = 1; i < spellLevelsToPick[level]; i++) {
+          const spell = await this.pickSpell(level, spellbook as 'arcane' | 'divine', pcSpells, selectionMethod);
           if (typeof spell === 'string') {
             pcSpells.push(spell);
+          } else {
+            console.warn(`No more level ${level} ${spellbook} spells available to choose for ${pc.name}!`);
           }
         }
       }

@@ -29,7 +29,7 @@ export class Table {
     let options = [];
     if (groupName === 'default') {
       const allItems = Object.values(this.groups).flat();
-      options = allItems[Math.floor(Math.random() * allItems.length)];
+      options = allItems[Math.floor(Math.random() * allItems.length)] as DeemValue[];
     }
 
     if (groupName === null) {

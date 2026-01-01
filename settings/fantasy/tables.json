@@ -52,7 +52,7 @@
         "gp": 15,
         "startingGear": ["holy_symbol"],
         "armorProficiencies": { "kind": ["cloth", "leather", "metal"], "weight": ["light", "medium"] },
-        "weaponProficiencies": { "kind": ["flail", "mace", "warhammer", "staff", "club"], "weight": ["light", "medium", "heavy"] },
+        "weaponProficiencies": { "kind": ["flail", "mace", "light_warhammer", "staff", "club"], "weight": ["light", "medium", "heavy"] },
         "itemProficiencies": { "kind": ["kit", "potion", "flask", "wand", "scroll"], "withoutAspect": "arcane" },
         "traitChoices": ["vitalist", "deathspeaker", "lightbringer", "shadowmancer", "oathkeeper", "wildcaller", "chaotician", "warbringer"]
       },
@@ -92,12 +92,17 @@
   "backgroundModifier": {
     "discriminator": "background",
     "groups": {
+      "hireling": { "str": 1, "con": 1, "dex": 1, "gp": 0 },
       "acolyte": { "wis": 2, "int": 1, "gp": 5 },
       "advisor": { "int": 3, "wis": 3, "cha": 2, "gp": 100 },
       "alchemist": { "int": 2, "dex": 1, "gp": 30 },
+      "animal_handler": { "wis": 2, "dex": 1, "gp": 15 },
       "apothecary": { "int": 3, "wis": 3, "gp": 30 },
+      "archaeologist": { "int": 3, "wis": 2, "gp": 30 },
+      "artificer": { "int": 4, "dex": 3, "wis": 2, "gp": 60 },
       "artisan": { "int": 1, "wis": 1, "cha": 1, "gp": 20 },
       "artistocrat": { "cha": 2, "int": 1, "str": -1, "gp": 400 },
+      "assassin": { "dex": 4, "int": 2, "wis": 2, "cha": 3, "gp": 100 },
       "astronomer": { "int": 4, "wis": 2, "gp": 15 },
       "athlete": { "str": 2, "dex": 2, "con": 1, "gp": 10 },
       "baker": { "con": 2, "wis": 1, "gp": 15 },
@@ -105,29 +110,40 @@
       "beadle": { "wis": 2, "cha": 1, "gp": 10 },
       "blacksmith": { "str": 2, "con": 1, "dex": 1, "gp": 25 },
       "boatman": { "str": 2, "con": 1, "gp": 10 },
+      "botanist": { "int": 3, "wis": 2, "gp": 15 },
       "bounty_hunter": { "dex": 2, "wis": 2, "gp": 25 },
       "brewer": { "con": 2, "int": 1, "gp": 20 },
       "caitiff": { "dex": 3, "con": 2, "gp": 10 },
+      "caravaner": { "wis": 2, "con": 1, "gp": 15 },
       "cartographer": { "int": 2, "wis": 2, "dex": 1, "gp": 20 },
+      "champion": { "str": 4, "con": 3, "dex": 2, "wis": 1, "cha": 2, "gp": 50 },
       "chef": { "con": 2, "wis": 1, "gp": 15 },
       "comedian": { "cha": 4, "dex": 2, "gp": 25 },
       "courtier": { "cha": 2, "int": 1, "gp": 50 },
       "craftsman": { "dex": 3, "int": 2, "wis": 1, "gp": 40 },
       "criminal": { "dex": 2, "cha": 1, "int": -1, "gp": 15 },
       "cultist": { "int": 2, "wis": 1, "cha": -1, "gp": 5 },
+      "dancer": { "dex": 4, "cha": 3, "int": 2, "gp": 80 },
       "demagogue": { "cha": 5, "wis": 2, "gp": 75 },
       "deserter": { "dex": 2, "con": 1, "gp": 10 },
       "diplomat": { "cha": 3, "int": 1, "gp": 75 },
       "doctor": { "int": 2, "wis": 2, "gp": 20 },
+      "drifter": { "dex": 2, "cha": 1, "gp": 10 },
+      "drone": { "con": 2, "wis": 1, "gp": 0 },
       "dungeon_delver": { "str": 1, "dex": 2, "con": 2, "gp": 20 },
+      "engineer": { "int": 3, "dex": 2, "gp": 40 },
       "entertainer": { "cha": 2, "dex": 1, "gp": 30 },
+      "escaped_slave": { "str": 2, "con": 2, "gp": 0 },
+      "experimental_subject": { "int": 2, "dex": 1, "gp": 0 },
       "explorer": { "dex": 2, "wis": 1, "gp": 15 },
       "factotum": { "int": 2, "dex": 1, "wis": 1, "gp": 10 },
       "farmer": { "con": 2, "str": 1, "wis": 1, "gp": 10 },
       "fisherman": { "dex": 2, "con": 1, "wis": 1, "gp": 10 },
+      "fletcher": { "dex": 3, "int": 1, "gp": 25 },
       "folk_hero": { "str": 2, "con": 1, "cha": 1, "gp": 10 },
       "fortuneteller": { "cha": 3, "int": 1, "gp": 40 },
       "gardener": { "wis": 2, "con": 1, "gp": 15 },
+      "geologist": { "int": 3, "wis": 2, "gp": 20 },
       "gladiator": { "str": 3, "con": 2, "dex": 1, "gp": 30 },
       "guard": { "str": 2, "con": 1, "gp": 10 },
       "herald": { "cha": 2, "wis": 1, "gp": 15 },
@@ -136,9 +152,11 @@
       "historian": { "int": 3, "wis": 2, "gp": 20 },
       "hunter": { "dex": 2, "wis": 1, "con": 1, "gp": 15 },
       "innkeeper": { "cha": 2, "wis": 1, "gp": 25 },
+      "inquisitor": { "int": 3, "wis": 4, "cha": 3, "gp": 70 },
       "inventor": { "int": 4, "dex": 2, "gp": 50 },
       "jester": { "cha": 3, "dex": 1, "gp": 30 },
       "jewelcrafter": { "dex": 3, "int": 1, "gp": 50 },
+      "judge": { "wis": 4, "int": 3, "cha": 2, "gp": 70 },
       "juggler": { "dex": 3, "cha": 1, "gp": 20 },
       "knight": { "str": 2, "int": 3, "wis": 2, "cha": 1, "gp": 75 },
       "laborer": { "str": 2, "con": 1, "gp": 5 },
@@ -148,22 +166,38 @@
       "merchant": { "wis": 1, "cha": 2, "int": 1, "gp": 100 },
       "messenger": { "dex": 2, "wis": 1, "gp": 10 },
       "miner": { "con": 2, "str": 1, "gp": 15 },
+      "monk": { "wis": 4, "dex": 3, "con": 2, "gp": 30 },
+      "mutant": { "str": 2, "con": 2, "gp": 0 },
       "navigator": { "int": 2, "wis": 1, "gp": 20 },
       "noble": { "str": 1, "int": 1, "cha": 2, "con": -1, "gp": 50 },
+      "nomad": { "dex": 2, "wis": 1, "gp": 10 },
+      "orator": { "cha": 5, "int": 3, "gp": 90  },
       "outlander": { "str": 1, "dex": 1, "con": 1, "gp": 10 },
+      "outlaw": { "dex": 3, "str": 1, "gp": 15 },
       "peon": { "str": 1, "con": 1, "gp": 5 },
       "philosopher": { "int": 3, "wis": 2, "gp": 20 },
+      "pirate": { "dex": 2, "cha": 1, "gp": 20 },
       "plague_doctor": { "int": 2, "wis": 3, "gp": 15 },
       "plague_survivor": { "con": 3, "wis": 1, "gp": 5 },
       "poet": { "cha": 3, "int": 1, "gp": 25 },
+      "poisoner": { "dex": 3, "int": 4, "wis": 2, "gp": 70 },
       "politician": { "cha": 4, "int": 2, "gp": 100 },
+      "priest": { "wis": 3, "cha": 2, "gp": 30 },
+      "prisoner": { "con": 2, "wis": 1, "gp": 0 },
       "prospector": { "con": 2, "wis": 1, "gp": 15 },
+      "quaestor": { "int": 3, "wis": 2, "cha": 2, "gp": 50 },
+      "quartermaster": { "int": 2, "wis": 2, "gp": 20 },
+      "raider": { "str": 3, "con": 2, "gp": 15 },
       "refugee": { "wis": 2, "cha": 1, "gp": 5 },
+      "revolutionary": { "cha": 3, "wis": 1, "gp": 25 },
+      "rhetorician": { "cha": 4, "int": 4, "wis": 2, "gp": 80 },
       "royal_guard": { "str": 3, "con": 3, "dex": 2, "gp": 50 },
       "royalist": { "cha": 3, "str": 1, "gp": 50 },
+      "sage": { "int": 4, "wis": 3, "gp": 25 },
       "sailor": { "dex": 2, "con": 1, "str": 1, "gp": 20 },
       "scavenger": { "dex": 2, "wis": 1, "gp": 10 },
       "scholar": { "int": 2, "wis": 1, "cha": -1, "gp": 5 },
+      "scout": { "dex": 2, "wis": 2, "gp": 15 },
       "sellsword": { "str": 2, "dex": 2, "con": 1, "gp": 25 },
       "shipwright": { "int": 2, "wis": 1, "con": 1, "gp": 30 },
       "singer": { "cha": 2, "wis": 1, "gp": 25 },
@@ -172,29 +206,36 @@
       "spy": { "cha": 2, "dex": 2, "int": 1, "gp": 50 },
       "squire": { "str": 2, "con": 1, "dex": 1, "gp": 30 },
       "swashbuckler": { "dex": 3, "cha": 2, "gp": 30 },
+      "templar": { "str": 3, "con": 3, "wis": 3, "cha": 2, "gp": 80 },
+      "thrall": { "str": 2, "con": 2, "gp": 0 },
+      "trader": { "wis": 2, "cha": 4, "int": 3, "gp": 120 },
       "tragedian": { "cha": 4, "wis": 2, "gp": 25 },
+      "tribesman": { "str": 2, "con": 1, "wis": 1, "gp": 10 },
+      "tribune": { "str": 2, "con": 2, "int": 2, "wis": 2, "cha": 2, "gp": 100  },
       "vagabond": { "dex": 2, "con": 1, "gp": 5 },
+      "vizier": { "int": 5, "wis": 3, "cha": 4, "gp": 150 },
+      "warden": { "str": 3, "con": 3, "dex": 2, "int": 1, "wis": 1, "cha": 2, "gp": 60 },
+      "warlord": { "str": 3, "con": 3, "dex": 2, "int": 2, "wis": 2, "cha": 3, "gp": 75 },
+      "witch_hunter": { "str": 2, "dex": 2, "con": 2, "int": 2, "wis": 3, "cha": 1, "gp": 40 },
       "woodcutter": { "str": 2, "con": 2, "dex": -1, "gp": 15 },
       "wretch": { "con": 2, "wis": 1, "gp": 0 },
       "yeoman": { "wis": 2, "dex": 1, "gp": 20 },
-
-      "hireling": { "str": 1, "con": 1, "dex": 1, "gp": 0 }
+      "zoologist": { "int": 3, "wis": 2, "gp": 20 }
     }
   },
   "racialModifier": {
     "discriminator": "race",
     "groups": {
-      "human": { "str": 1, "dex": 1, "con": 1, "int": 1, "wis": 1, "cha": 1, "occupationOptions": ["all"] },
-      "orc": { "str": 2, "dex": 1, "con": 1, "int": -1, "wis": -2, "cha": -1, "occupationOptions": ["warrior", "thief", "ranger"] },
-      "elf": { "str": -1, "dex": 2, "con": -1, "int": 1, "wis": 2, "cha": 1, "occupationOptions": ["warrior", "thief", "ranger", "bard", "mage"], "forbiddenTraits": ["necromancer"] },
-      "dwarf": { "str": 1, "dex": -1, "con": 2, "int": 1, "wis": 2, "cha": -1, "occupationOptions": ["warrior", "cleric"] },
-      "halfling": { "str": -1, "dex": 2, "con": -2, "int": 1, "wis": -1, "cha": 1, "occupationOptions": ["warrior", "thief", "bard"] },
-      "gnome": { "str": -1, "dex": 1, "con": -1, "int": 2, "wis": 1, "cha": 0, "occupationOptions": ["thief", "bard", "mage"], "forbiddenTraits": ["necromancer", "abjurer", "conjurer", "diviner", "enchanter", "evoker"] },
-      "fae": { "str": -2, "dex": 2, "con": -2, "int": 2, "wis": 1, "cha": 3, "occupationOptions": ["cleric", "thief", "bard", "mage" ], "forbiddenTraits": ["deathspeaker", "warbringer", "necromancer", "abjurer", "conjurer", "diviner", "evoker"]},
+      "human": { "str": 1, "dex": 1, "con": 1, "int": 1, "wis": 1, "cha": 1, "occupationOptions": ["all"], "pcRace": true },
+      "elf": { "str": -1, "dex": 2, "con": -1, "int": 1, "wis": 2, "cha": 1, "occupationOptions": ["warrior", "thief", "ranger", "bard", "mage"], "forbiddenTraits": ["necromancer"], "pcRace": true },
+      "dwarf": { "str": 1, "dex": -1, "con": 2, "int": 1, "wis": 2, "cha": -1, "occupationOptions": ["warrior", "cleric"], "pcRace": true },
+      "halfling": { "str": -1, "dex": 2, "con": -2, "int": 1, "wis": -1, "cha": 1, "occupationOptions": ["warrior", "thief", "bard"], "pcRace": true },
+      "gnome": { "str": -1, "dex": 1, "con": -1, "int": 2, "wis": 1, "cha": 0, "occupationOptions": ["thief", "bard", "mage"], "forbiddenTraits": ["necromancer", "abjurer", "conjurer", "diviner", "enchanter", "evoker"], "pcRace": true },
+      "fae": { "str": -2, "dex": 2, "con": -2, "int": 2, "wis": 1, "cha": 3, "occupationOptions": ["cleric", "thief", "bard", "mage" ], "forbiddenTraits": ["deathspeaker", "warbringer", "necromancer", "abjurer", "conjurer", "diviner", "evoker"], "pcRace": true },
+      "half_elf": { "str": 0, "dex": 1, "con": 0, "int": 1, "wis": 1, "cha": 2, "occupationOptions": ["all"], "pcRace": true },
     
       "lizardfolk": { "str": 1, "dex": 1, "con": 2, "int": -1, "wis": -1, "cha": -1, "occupationOptions": ["warrior", "ranger", "thief"] },
       "half_orc": { "str": 2, "dex": -1, "con": 1, "int": -1, "wis": 2, "cha": 1, "occupationOptions": ["warrior", "thief", "ranger"] },
-      "half_elf": { "str": 0, "dex": 1, "con": 0, "int": 1, "wis": 1, "cha": 2, "occupationOptions": ["all"] },
       "gnoll": { "str": 2, "dex": 1, "con": 1, "int": -2, "wis": -3, "cha": -1, "occupationOptions": ["warrior", "ranger", "thief"] },
       "catfolk": { "str": -1, "dex": 4, "con": -1, "int": 1, "wis": 1, "cha": 1, "occupationOptions": ["thief", "ranger", "bard"] },
       "sylph": {  "str": -2, "dex": 3,  "con": -2, "int": 2, "wis": 1, "cha": 2, "occupationOptions": ["mage", "cleric"] },
@@ -204,7 +245,15 @@
       "duergar": { "str": 2, "dex": -2, "con": 3, "int": -2, "wis": -2, "cha": -2, "occupationOptions": ["warrior", "cleric"] },
       "draconic": { "str": 2, "dex": 1, "con": 1, "int": -1, "wis": 2, "cha": -1, "occupationOptions": ["warrior", "cleric", "mage"] },
       "insectoid": { "str": -3, "dex": 2, "con": 1, "int": -1, "wis": 1, "cha": -1, "occupationOptions": ["warrior", "thief", "ranger"] },
-      "birdfolk": { "str": -2, "dex": 2, "con": -1, "int": 2, "wis": 1, "cha": 2,  "occupationOptions": ["warrior", "ranger", "mage"] }
+      "birdfolk": { "str": -2, "dex": 2, "con": -1, "int": 2, "wis": 1, "cha": 2,  "occupationOptions": ["warrior", "ranger", "mage"] },
+
+      "orc": { "str": 2, "dex": 1, "con": 1, "int": -1, "wis": -2, "cha": -1, "occupationOptions": ["warrior", "thief", "ranger"], "evil": true },
+      "goblin": { "str": -2, "dex": 2, "con": -1, "int": 1, "wis": -1, "cha": -2, "occupationOptions": ["thief", "ranger"], "evil": true },
+      "kobold": { "str": -3, "dex": 2, "con": -1, "int": 1, "wis": -1, "cha": -2, "occupationOptions": ["thief", "ranger"], "evil": true },
+      "ogre": { "str": 3, "dex": -2, "con": 2, "int": -2, "wis": -2, "cha": -3, "occupationOptions": ["warrior"], "evil": true },
+      "troll": { "str": 3, "dex": -1, "con": 3, "int": -2, "wis": -2, "cha": -3, "occupationOptions": ["warrior"], "evil": true },
+      "giant": { "str": 4, "dex": -2, "con": 4, "int": -3, "wis": -2, "cha": -4, "occupationOptions": ["warrior"], "evil": true },
+      "bugbear": { "str": 3, "dex": 1, "con": 2, "int": -2, "wis": -2, "cha": -2, "occupationOptions": ["warrior", "thief"], "evil": true }
     }
   },
 
@@ -213,23 +262,29 @@
     "groups": {
       "human": "Humans are the most adaptable and ambitious people of Imbar.",
       "orc": "Orcs are brutish and aggressive, often living in tribal societies.",
-      "elf": "Elves are graceful and wise, known for their affinity with nature and magic.",
+      "elf": "Elves are graceful and wise, having deep affinities with nature and with magic.",
       "dwarf": "Dwarves are stout and hardy, renowned for their craftsmanship and resilience.",
       "halfling": "Halflings are small and nimble, often living in pastoral communities.",
       "gnome": "Gnomes are inventive and curious, with a knack for tinkering and illusion magic.",
       "fae": "Fae are mystical beings connected to the magical energies of the world, often enigmatic and whimsical.",
       "half_elf": "Half-elves combine the traits of humans and elves, often acting as bridges between the two cultures.",
       "half_orc": "Half-orcs inherit the strength and toughness of their orcish heritage, often facing prejudice in human societies.",
-      "gnoll": "Gnolls are savage humanoids with hyena-like features, known for their ferocity in battle.",
+      "gnoll": "Gnolls are savage humanoids with hyena-like features, ferocious in battle.",
       "lizardfolk": "Lizardfolk are reptilian humanoids adapted to swampy and aquatic environments.",
       "catfolk": "Catfolk are agile and stealthy humanoids with feline traits, often skilled hunters and thieves.",
       "sylph": "Sylphs are airy and elusive beings, often associated with the winds and skies.",
       "undine": "Undines are aquatic humanoids, deeply connected to water and its mysteries.",
       "tiefling": "Tieflings are beings with infernal heritage, often marked by their fiendish appearance and magical abilities.",
-      "duergar": "Duergar are dark dwarves, known for their grim demeanor and mastery of subterranean life.",
+      "duergar": "Duergar are dark dwarves with grim demeanors and mastery of subterranean life.",
       "draconic": "Draconic humanoids possess traits of dragons, often exhibiting strength and elemental affinities.",
       "insectoid": "Insectoids are humanoid insects, often living in hive societies and exhibiting unique biological traits.",
-      "birdfolk": "Birdfolk are avian humanoids, known for their keen eyesight and ability to glide or fly."
+      "birdfolk": "Birdfolk are avian humanoids with keen eyesight and ability to glide or fly.",
+      "bugbear": "Bugbears are large, hairy goblinoids with exception strength and stealth, often serving as mercenaries or raiders.",
+      "giant": "Giants are towering humanoids of immense strength, often dwelling in remote mountainous regions.",
+      "goblin": "Goblins are small, cunning humanoids known for their trickery and resourcefulness.",
+      "kobold": "Kobolds are small reptilian humanoids, often dwelling in underground warrens and skilled in trap-making.",
+      "ogre": "Ogres are large, brutish humanoids known for their strength and aggression.",
+      "troll": "Trolls are regenerative giants, feared for their ferocity and ability to heal from wounds quickly."
     }
   },
 
@@ -403,10 +458,10 @@
   "npcTypeModifier": {
     "discriminator": "type",
     "groups": {
-      "Adventurer":  { "str": 2,  "con": 2, "dex": 2, "int": 2, "wis": 2, "cha": 2, "abilities": [ "prepare_charge", "charge", "second_wind", "heal", "cure_minor", "cure", "missile", "shocking_grasp" ] },
+      "Adventurer":  { "str": 2,  "con": 2, "dex": 2, "int": 2, "wis": 2, "cha": 2, "abilities": [ "prepare_charge", "charge", "second_wind", "heal", "cure_minor", "cure", "magic_missile", "shocking_grasp" ] },
       "Blackguard": { "str": 4,  "con": 4, "dex": 2, "int": 2, "wis": 2, "cha": 2, "abilities": [ "smite", "prepare_charge", "charge", "second_wind", "curse", "life_drain", "paralyzing_touch" ], "traits": ["fiendish"] },
       "Chirurgeon": { "str": 1,  "con": 2, "dex": 2, "int": 3, "wis": 4, "cha": 1, "abilities": [ "cure_minor", "cure", "cure_moderate", "heal", "remove_fear", "resist_fire", "infect", "weakness" ] },
-      "Doomsman":  { "str": 3,  "con": 4, "dex": 2, "int": 4, "wis": 3, "cha": 2, "abilities": [ "curse", "terror", "life_drain", "firebolt", "burning_hands", "summon_undead", "animate_dead", "insanity" ], "traits": ["fiendish"] },
+      "Doomsman":  { "str": 3,  "con": 4, "dex": 2, "int": 4, "wis": 3, "cha": 2, "abilities": [ "curse", "terror", "life_drain", "firebolt", "burning_hands", "animate_dead", "insanity" ], "traits": ["fiendish"] },
       "Funerarian": { "str": 2,  "con": 3, "dex": 2, "int": 3, "wis": 4, "cha": 2, "abilities": [ "cure_minor", "cure", "curse", "terror", "life_drain", "resurrect", "raise_dead", "animate_dead" ] },
 
       "Novice":       { "str": -1, "con": 0, "dex": -2, "int": 1, "wis": 1, "cha": -1, "abilities": ["rapid_strike", "trickfire", "pain", "paralyzing_touch", "life_drain", "ghost_touch" ] },
@@ -442,16 +497,16 @@
       "Primate":      { "str": 4, "con": 4, "int": 6, "dex": 2, "wis": 8, "cha": 6, "abilities": [ "cure_minor", "cure", "minor_ward", "smite", "bless", "curse", "inspire", "cure_serious", "judgment", "holy", "mass_curse", "prayer" ] },
       "Hierophant":   { "str": 2, "con": 4, "int": 3, "dex": 2, "wis": 5, "cha": 5, "abilities": [ "prepare_charge", "charge", "minor_ward", "sleep", "curse", "fear", "life_drain", "poison_cloud", "resist_fire", "cure", "cure_serious", "blade_barrier" ] },
 
-      "Apprentice":   { "str": -1, "dex": -1, "int": 2, "wis": 1, "cha": -1, "abilities": [ "spark", "firebolt", "missile" ] },
+      "Apprentice":   { "str": -1, "dex": -1, "int": 2, "wis": 1, "cha": -1, "abilities": [ "spark", "firebolt", "magic_missile" ] },
       "Captain":    { "str": 3,  "con": 3, "dex": 2, "abilities": [ "prepare_charge", "charge", "second_wind", "taunt", "rally" ] },
       "Whelp":        { "str": -1, "dex": -1, "abilities": [] },
       "Runt":         { "str": -2, "abilities": ["hide"] },
       "Creep":        { "str": -1, "dex": 1, "abilities": ["hide"] },
       "Peasant":      { "str": 1, "dex": 1, "con": 1, "cha": -1, "abilities": [ "prepare_charge", "charge" ] },
       "Loser":        { "str": -1, "dex": -1, "con": -1, "cha": 2, "abilities": [ "prepare_charge", "charge" ] },
-      "Magelet":      { "int": 2, "con": 1, "abilities": [ "missile", "shocking_grasp" ] },
+      "Magelet":      { "int": 2, "con": 1, "abilities": [ "magic_missile", "shocking_grasp" ] },
 
-      "Magician":     { "int": 3, "con": 2, "abilities": [ "missile", "shocking_grasp", "sleep" ] },
+      "Magician":     { "int": 3, "con": 2, "abilities": [ "magic_missile", "shocking_grasp", "sleep" ] },
       "Criminal":     { "dex": 2, "cha": 1, "abilities": [ "hide" ] },
       "Shaman":       { "int": 2, "wis": 1, "abilities": [ "heal" ] },
       "Slinger":      { "dex": 3, "abilities": [] },
@@ -468,7 +523,7 @@
 
       "Warrior":      { "str": 3, "dex": 2, "con": 2, "abilities": [ "second_wind", "prepare_charge", "charge" ] },
       "Thief":        { "dex": 2, "cha": 1, "abilities": [ "hide", "backstab" ] },
-      "Mage":         { "int": 6, "con": 4, "dex": 2, "str": 2, "abilities": [ "missile", "shocking_grasp", "sleep" ] },
+      "Mage":         { "int": 6, "con": 4, "dex": 2, "str": 2, "abilities": [ "magic_missile", "shocking_grasp", "sleep" ] },
       "Ranger":       { "str": 4, "dex": 4, "con": 2, "abilities": [ "heal", "set_spear", "prepare_charge", "charge" ] },
       "Bard":         { "cha": 4, "dex": 2, "int": 2, "abilities": [ "cure", "inspire", "charm" ] },
 
@@ -476,7 +531,7 @@
       "Soldier":      { "str": 1, "con": 1, "abilities": [ "prepare_charge", "charge" ] },
       "Brute":        { "str": 4, "abilities": [ "enrage", "prepare_charge", "charge" ] },
       "Berserker":    { "str": 6, "abilities": [ "enrage", "prepare_charge", "charge" ] },
-      "Scholar":      { "int": 4, "abilities": [ "missile", "sleep", "shocking_grasp" ] },
+      "Scholar":      { "int": 4, "abilities": [ "magic_missile", "sleep", "shocking_grasp" ] },
       "Fury":         { "str": 8, "con": 6, "abilities": [ "enrage", "prepare_charge", "charge" ] },
       "Princeling":   { "str": 6, "con": 4, "int": 4, "dex": 2, "abilities": [ "inspire", "terror", "prepare_charge", "charge" ] },
 
@@ -488,7 +543,7 @@
       "Chosen One":   { "str": 5, "con": 5, "int": 5, "dex": 5, "wis": 5, "abilities": [ "enrage", "heal", "inspire", "curse", "fear", "inspire", "charm", "prepare_charge", "charge" ] },
       "Destroyer":    { "str": 8, "con": 6, "int": 2, "dex": 2, "abilities": [ "fear", "maul", "curse", "enrage", "prepare_charge", "charge" ] },
 
-      "Archmage":     { "int": 8, "con": 4, "dex": 2, "str": -2, "abilities": [ "armor", "missile", "life_drain", "shocking_grasp", "sleep" ] },
+      "Archmage":     { "int": 8, "con": 4, "dex": 2, "str": -2, "abilities": [ "armor", "magic_missile", "life_drain", "shocking_grasp", "sleep" ] },
       "King":         { "str": 6, "con": 6, "int": 4, "dex": 2, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ] },
       "Lord":         { "str": 8, "con": 8, "int": 6, "wis": 6, "dex": 4, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ] },
       "Monarch":      { "str": 10, "con": 10, "int": 6, "wis": 6, "dex": 4, "abilities": [ "inspire", "enrage", "prepare_charge", "charge", "heal" ] }
@@ -535,11 +590,11 @@
       "gnome": [ "dagger", "staff", "heavy_crossbow" ],
       "fae": [ "staff", "dagger", "shortsword" ],
 
-      "draconic": [ "bite", "claws", "tail_swipe", "fire_breath" ],
+      "draconic": [ "bite", "claws", "tail" ],
       "insectoid": [ "mandibles", "claws", "stinger" ],
       "birdfolk": [ "talons", "shortsword", "spear" ],
       "lizardfolk": [ "bite", "claws", "spear", "tail" ],
-      "duergar": [ "warhammer", "battleaxe", "heavy_crossbow" ]
+      "duergar": [ "heavy_warhammer", "battleaxe", "heavy_crossbow" ]
     }
   },
   "npcArmor": {
@@ -667,7 +722,7 @@
       "barrier": [[]],
       "turret": [["arrow_volley"]],
       "bomb": [["detonation"]],
-      "phylactery": [["summon_undead", "life_drain", "black_ritual"]]
+      "phylactery": [["animate_dead", "life_drain", "black_ritual"]]
     }
   },
   "combatEntityTraits": {
@@ -1017,7 +1072,9 @@
         "offer": 1,
         "effects": [
           { "type": "damage", "kind": "necrotic", "amount": "1d2" },
-          { "type": "gold", "amount": "10+3d10" }
+          { "type": "gold", "amount": "40+3d10" },
+          { "type": "acquireItem", "itemName": "diamond" },
+          { "type": "acquireItem", "itemName": "ancient_crown" }
         ]
       },
       "pure_fountain": {
@@ -1744,12 +1801,7 @@
   "companionType": {
     "discriminator": "race",
     "groups": {
-      "kobold": [ "spider", "rat", "bat" ],
-      "goblin": [ "rat", "wolf", "spider" ],
       "human": [ "hound", "falcon", "wolf" ],
-      "orc": [ "wolf", "bear", "boar" ],
-      "ogre": [ "bear", "boar", "wolf", "eagle" ],
-      "troll": [ "bear", "tiger", "panther", "lion" ],
       "dragon": [ "wyrm", "snake", "pseudodragon" ],
       "elf": [ "deer", "owl", "fox", "hawk" ],
       "dwarf": [ "badger", "ram", "mole", "raven" ],
@@ -1768,7 +1820,14 @@
       "duergar": [ "badger", "mole", "raven", "stoat" ],
       "draconic": [ "wyrm", "pseudodragon", "snake" ],
       "insectoid": [ "beetle", "spider", "centipede" ],
-      "birdfolk": [ "crow", "raven", "hawk", "eagle" ]
+      "birdfolk": [ "crow", "raven", "hawk", "eagle" ],
+
+      "orc": [ "wolf", "bear", "boar" ],
+      "ogre": [ "bear", "boar", "wolf", "eagle" ],
+      "troll": [ "bear", "tiger", "panther", "lion" ],
+      "kobold": [ "spider", "rat", "bat" ],
+      "goblin": [ "rat", "wolf", "spider" ],
+      "bugbear": [ "wolf", "badger", "bat", "boar" ]
 
     }
   },
@@ -1905,7 +1964,8 @@
         "cursed",
         "blessed",
         "noble",
-        "majestic"
+        "majestic",
+        "phantasmal"
       ],
       "epic": [
         "dauntless",
@@ -1948,6 +2008,7 @@
       "blessed":    { "cha": 2 },
       "noble":      { "str": 2, "cha": 3 },
       "majestic":   { "str": 3, "con": 2, "cha": 3 },
+      "phantasmal":  { "int": 3, "wis": 2, "str": -2, "con": -3, "dex": -4, "traits": [ "illusory" ] },
 
       "dauntless":  { "str": 3, "con": 2, "wis": 1, "cha": 1 },
       "primal":     { "str": 4, "dex": 1, "con": 2, "wis": 1 },
@@ -1991,7 +2052,8 @@
       "sovereign": ["inspire", "fear", "confuse"],
       "ancient": ["second_wind", "inspire", "ward"],
       "warped": ["charm", "enrage", "maul", "fear", "poison_bite"],
-      "giant": ["maul"]
+      "giant": ["maul"],
+      "phantasmal": ["confuse", "ghost_touch"]
     }
   },
 
@@ -2119,7 +2181,7 @@
       "Titan": [ "earthquake", "maul" ],
       "Behemoth": [ "stomp", "dig_in", "maul" ],
       "Colossus": [ "smash", "maul" ],
-      "Lich": [ "life_drain", "curse", "fear", "summon_undead", "death" ],
+      "Lich": [ "life_drain", "curse", "fear", "animate_dead", "death" ],
       "Vampire": [ "charm", "life_drain" ],
       "Wraith": [ "fear", "curse" ],
       "Banshee": [ "fear", "curse" ],
@@ -2128,7 +2190,7 @@
       "Balor": [ "mass_curse", "curse" ],
       "Marilith": [ "rapid_strike", "curse" ],
       "Fiend": [ "curse" ],
-      "Sprite": [ "hide", "missile" ],
+      "Sprite": [ "hide", "magic_missile" ],
       "Spirit": [ "slow", "paralyzing_touch", "hide" ],
       "Ifrit": [ "fireball", "burning_hands" ],
       "Ooze": [ "engulf"],
@@ -2479,6 +2541,11 @@
   "riddleAnswerGroups": {
     "discriminator": "answer_type",
     "groups": {
+      "animal": [[
+        "Dog", "Cat", "Wolf", "Bear", "Eagle", "Lion", "Tiger", "Fox", "Deer", "Rabbit",
+        "Hawk", "Owl", "Frog", "Snake", "Horse", "Sheep", "Goat", "Pig", "Cow", "Chicken",
+        "Goose", "Crocodile", "Alligator", "Turtle", "Lizard", "Ant", "Bee", "Butterfly", "Spider", "Crab", "Fish"
+      ]],
       "instrument": [["Piano", "Guitar", "Violin", "Drum", "Flute", "Harp", "Trumpet", "Lute", "Cello", "Horn"]],
       "food": [[
         "Artichoke", "Egg", "Bread", "Cheese", "Apple", "Salted Pork", "Halibut", "Brussel Sprout",
@@ -2494,24 +2561,45 @@
       "small_object": [[
         "Teapot", "Key", "Candle", "Feather", "Map", "Clock", "Stamp", "Ring", "Book", "Knife",
         "Coin", "Cup", "Bottle", "Brush", "Comb", "Lock", "Needle", "Pin", "Spoon", "Fork", "Plate",
-        "Glove", "Hat", "Boot", "Bag", "Box", "Lamp", "Bell", "Cloak", "Fan", "Pocket"
+        "Bag", "Box", "Lamp", "Bell", "Fan", "Pocket", "Quill", "Vial", "Watch", "Whistle",
+        "Arrow", "Bolt", "Dart", "Flask", "Hook", "Ladle", "Oar", "Rope", "Sail", "Tongs",
+        "Chain", "Drum", "Flute", "Horn", "Lute", "Pipe", "Staff", "Wand", "Yarn",
+        "Brush", "Chisel", "File", "Hammer", "Nail", "Saw", "Shovel", "Sword", "Trowel", "Wheel"
       ]],
       "phenomenon": [[
         "Echo", "Darkness", "Light", "Wind", "Rain", "Footsteps", "Cloud", "Hurricane", "Earthquake",
-        "Starlight", "Thunder", "Fog", "Rainbow", "Sunrise"
+        "Starlight", "Thunder", "Fog", "Rainbow", "Sunrise", "Sunset", "Avalanche", "Comet", "Meteor",
+        "Shadow", "Reflection", "Mirage"
       ]],
       "natural_feature": [[
         "River", "Mountain", "Forest", "Desert", "Ocean", "Valley", "Canyon", "Glacier", "Volcano", "Waterfall",
-        "Island", "Swamp", "Cave", "Cliff", "Beach"
+        "Island", "Swamp", "Cave", "Cliff", "Beach", "Oasis", "Lagoon", "Reef", "Dune", "Plateau", "Prairie",
+        "Hill", "Geyser", "Fjord", "Marsh", "Tundra", "Delta", "Estuary", "Creek", "Brook", "Pond", "Spring",
+        "Path", "Grove", "Thicket", "Meadow", "Field", "Woods", "Jungle", "Rainforest", "Savanna", "Steppe", "Badlands"
       ]],
       "letter": [["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]],
       "abstract_concept": [[
         "Memory", "Age", "Death", "Silence", "Love", "Time", "Fear", "Hope", "Dream", "Truth",
         "Word", "Song", "Dance", "Hot", "Cold", "Joy", "Sorrow", "Courage", "Wisdom", "Power", "Freedom", "Peace",
-        "Day", "Tomorrow", "Fate", "Luck", "Honor", "Glory", "Strength", "Beauty", "Never"
+        "Day", "Tomorrow", "Fate", "Luck", "Honor", "Glory", "Strength", "Beauty", "Never",
+        "Grudge", "Valor", "Faith", "Charity", "Justice", "Mercy", "Pride", "Envy", "Wrath", "Sloth",
+        "Hole", "Infinity", "Eternity", "Chaos", "Order", "Balance", "Unity", "Diversity", "Change", "Constancy"
       ]],
-      "plant": [["Cactus", "Rose", "Oak", "Tulip", "Sunflower", "Daisy", "Fern", "Moss", "Ivy", "Lily"]],
-      "body_part": [["Legs", "Arms", "Eyes", "Ears", "Heart", "Hands", "Feet", "Head", "Mouth", "Nose"]]
+      "plant": [[
+        "Cactus", "Rose", "Oak", "Tulip", "Sunflower", "Daisy", "Fern", "Moss", "Ivy", "Lily",
+        "Maple", "Pine", "Birch", "Cactus", "Vine", "Willow", "Dandelion", "Clover", "Bamboo", "Holly", "Lavender"
+      ]],
+      "body_part": [["Legs", "Arms", "Eyes", "Ears", "Heart", "Hands", "Feet", "Head", "Mouth", "Nose", "Fingers", "Toes", "Back", "Shoulders", "Left Elbow", "Right Knee"]],
+      "clothing": [[
+        "Glove", "Hat", "Boot", "Cloak", "Shirt", "Pants", "Belt", "Scarf", "Socks", "Jacket",
+        "Dress", "Skirt", "Vest", "Tie", "Coat", "Sweater", "Tunic", "Cap", "Mittens", "Overalls"
+       ]],
+      "rotated_tee": [[ "T", "Ʇ", "⊢", "⊣" ]],
+      "social_role": [[
+        "King", "Queen", "Knight", "Peasant", "Merchant", "Soldier", "Farmer", "Priest", "Thief", "Bard",
+        "Blacksmith", "Healer", "Guard", "Noble", "Sailor", "Hunter", "Alchemist", "Scholar", "Jester", "Cook",
+        "Prisoner", "Carpenter", "Fisherman", "Tailor", "Weaver", "Miner", "Butcher", "Brewer", "Dancer", "Artist", "Scribe", "Messenger"
+      ]]
     }
   },
 
@@ -2519,44 +2607,47 @@
     "discriminator": "riddle_type",
     "groups": {
       "easy": [
+        { "question": "T Ʇ ⊢ ?", "answer": "⊣", "answer_type": "rotated_tee" },
+        { "question": "⊢ ⊣ ⊢ ?", "answer": "⊣", "answer_type": "rotated_tee" },
+        { "question": "Ʇ T Ʇ T ⊣ ⊣ ⊢ ?", "answer": "⊢", "answer_type": "rotated_tee" },
         { "question": "What has keys but can't open locks?", "answer": "Piano", "answer_type": "instrument" },
         { "question": "What has a heart that doesn't beat?", "answer": "Artichoke", "answer_type": "food" },
-        { "question": "I am not alive, but I grow; I don't have lungs, but I need air; I don't have a mouth, but water kills me. What am I?", "answer": "Fire", "answer_type": "element" },
-        { "question": "I am always hungry, I must always be fed. The finger I touch will soon turn red. What am I?", "answer": "Fire", "answer_type": "element" },
-        { "question": "The person who makes it, sells it. The person who buys it never uses it. The person who uses it never knows they're using it. What is it?", "answer": "Coffin", "answer_type": "large_object" },
+        { "question": "I am not alive, but I grow; I don't have lungs, but I need air; I don't have a mouth, but water kills me.", "answer": "Fire", "answer_type": "element" },
+        { "question": "I am always hungry, I must always be fed. The finger I touch will soon turn red.", "answer": "Fire", "answer_type": "element" },
+        { "question": "The person who buys it never uses it. The person who uses it never knows they're using it.", "answer": "Coffin", "answer_type": "large_object" },
         { "question": "What has to be broken before you can use it?", "answer": "Egg", "answer_type": "food" },
-        { "question": "What begins with T, ends with T, and has T in it?", "answer": "Teapot", "answer_type": "small_object" }
-      ],
-      "medium": [
-        { "question": "I speak without a mouth and hear without ears. I have nobody, but I come alive with wind. What am I?", "answer": "Echo", "answer_type": "phenomenon" },
-        { "question": "The more of this there is, the less you see. What is it?", "answer": "Darkness", "answer_type": "phenomenon" },
-        { "question": "I have cities, but no houses; forests, but no trees; and rivers, but no water. What am I?", "answer": "Map", "answer_type": "small_object" },
+        { "question": "What begins with T, ends with T, and has T in it?", "answer": "Teapot", "answer_type": "small_object" },
+        { "question": "I speak without a mouth and hear without ears. I have no body, but I come alive with wind.", "answer": "Echo", "answer_type": "phenomenon" },
+        { "question": "The more of this there is, the less you see.", "answer": "Darkness", "answer_type": "phenomenon" },
+        { "question": "I have cities, but no houses; forests, but no trees; and rivers, but no water.", "answer": "Map", "answer_type": "small_object" },
         { "question": "What can run but never walks, has a mouth but never talks, has a head but never weeps, has a bed but never sleeps?", "answer": "River", "answer_type": "natural_feature" },
         { "question": "What comes once in a minute, twice in a moment, but never in a thousand years?", "answer": "M", "answer_type": "letter" },
         { "question": "What can bring back the dead; make us cry, make us laugh, make us young; is born in an instant, yet lasts a lifetime?", "answer": "Memory", "answer_type": "abstract_concept" },
-        { "question": "What has many needles but doesn't sew?", "answer": "Cactus", "answer_type": "plant" },
+        { "question": "I have many needles but never sew.", "answer": "Cactus", "answer_type": "plant" },
         { "question": "What goes up but never comes down?", "answer": "Age", "answer_type": "abstract_concept" },
-        { "question": "What begins without ending and is the ending of all beginnings?", "answer": "Death", "answer_type": "abstract_concept" },
-        { "question": "What is easy to lift but hard to throw?", "answer": "Feather", "answer_type": "small_object" }
+        { "question": "I begin without ending and am the ending of all beginnings.", "answer": "Death", "answer_type": "abstract_concept" },
+        { "question": "Easy to lift and hard to throw.", "answer": "Feather", "answer_type": "small_object" }
       ],
-      "hard": [
-        { "question": "I turn once, what is out will not get in. I turn again, what is in will not get out. What am I?", "answer": "Key", "answer_type": "small_object" },
+      "medium": [
+        { "question": "What has a neck but no head, two arms but no hands?", "answer": "Shirt", "answer_type": "clothing" },
+        { "question": "What comes once in a year, twice in a week, but never in a day?", "answer": "E", "answer_type": "letter" },
+        { "question": "I am not alive, but I grow; I don't have lungs, but I need air; I don't have a mouth, but water kills me.", "answer": "Fire", "answer_type": "element" },
+        { "question": "Once I am caught, you only want to be rid of me.", "answer": "Cold", "answer_type": "abstract_concept" },
+        { "question": "I turn once, what is out will not get in. I turn again, what is in will not get out.", "answer": "Key", "answer_type": "small_object" },
         { "question": "What can fill a room but takes up no space?", "answer": "Light", "answer_type": "phenomenon" },
         { "question": "What is seen in the middle of March and April that can't be seen at the beginning or end of either month?", "answer": "R", "answer_type": "letter" },
         { "question": "What flies without wings and cries without eyes?", "answer": "Cloud", "answer_type": "phenomenon" },
-        { "question": "The more you take, the more you leave behind. What am I?", "answer": "Footsteps", "answer_type": "phenomenon" },
+        { "question": "The more you take, the more you leave behind.", "answer": "Footsteps", "answer_type": "phenomenon" },
         { "question": "What has roots as nobody sees, Is taller than trees, Up, up it goes, And yet it never grows?", "answer": "Mountain", "answer_type": "natural_feature" },
-        { "question": "Voiceless it cries, Wingless flutters, Toothless bites, Mouthless mutters.", "answer": "Wind", "answer_type": "phenomenon" },
+        { "question": "Voiceless it cries / Wingless flutters / Toothless bites / Mouthless mutters.", "answer": "Wind", "answer_type": "phenomenon" },
         { "question": "What has a bottom at the top?", "answer": "Legs", "answer_type": "body_part" },
         { "question": "I'm quick when I'm thin and slow when I'm fat. The wind is my enemy.", "answer": "Candle", "answer_type": "small_object" },
         { "question": "I disappear when you say my name.", "answer": "Silence", "answer_type": "abstract_concept" },
         { "question": "I lie behind the stars and underneath the ancient hills. I always come first and yet follow after, end every life and silence laughter.", "answer": "Darkness", "answer_type": "phenomenon" },
         { "question": "What has four fingers and a thumb but is not alive?", "answer": "Glove", "answer_type": "clothing" },
-        { "question": "You can keep me only once you give me away.", "answer": "Word", "answer_type": "abstract_concept" }
-      ],
-      "deadly": [
+        { "question": "You can keep me only once you give me away.", "answer": "Word", "answer_type": "abstract_concept" },
         { "question": "What has a head, a tail, is brown, and has no legs?", "answer": "Coin", "answer_type": "small_object" },
-        { "question": "I am taken from a mine and shut up in a wooden case, from which I am never released, and yet I am used by almost every person. What am I?", "answer": "Lead", "answer_type": "element" },
+        { "question": "I am taken from a mine and shut up in a wooden case, from which I am never released, and yet I am used by almost every person.", "answer": "Lead", "answer_type": "element" },
         { "question": "What is so fragile that saying its name breaks it?", "answer": "Silence", "answer_type": "abstract_concept" },
         { "question": "What can travel around the world while staying in the same spot?", "answer": "Stamp", "answer_type": "small_object" },
         { "question": "What has one eye but can't see?", "answer": "Needle", "answer_type": "small_object" },
@@ -2569,6 +2660,29 @@
         { "question": "What goes through cities and fields, but never moves?", "answer": "Road", "answer_type": "natural_feature" },
         { "question": "I always was, yet never will be.", "answer": "Tomorrow", "answer_type": "abstract_concept" },
         { "question": "I travel the world, yet stay in a corner.", "answer": "Stamp", "answer_type": "small_object" }
+      ],
+      "hard": [
+        { "question": "You can hold me in your left right, but never your right.", "answer": "Right Elbow", "answer_type": "body_part" },
+        { "question": "What comes down but never goes up?", "answer": "Rain", "answer_type": "phenomenon" },
+        { "question": "I look through walls but never see. I sanctify when stained.", "answer": "Window", "answer_type": "large_object" },
+        { "question": "What can you break, even if you never pick it up or touch it?", "answer": "Promise", "answer_type": "abstract_concept" },
+        { "question": "What has a tongue that cannot taste, eyes that cannot see, and a soul that cannot die?", "answer": "Shoe", "answer_type": "clothing" },
+        { "question": "My roots nobody sees / up and up I go / stand taller than trees / yet you never see me grow.", "answer": "Mountain", "answer_type": "natural_feature" },
+        { "question": "I am always in front of you but can never be seen.", "answer": "Future", "answer_type": "abstract_concept" },
+        { "question": "I fill a room but take up no space.", "answer": "Light", "answer_type": "phenomenon" },
+        { "question": "Sometimes narrow, sometimes wide, wind or rain, I stay outside", "answer": "Path", "answer_type": "natural_feature" },
+        { "question": "The more you take from me, the bigger I become. What am I?", "answer": "Hole", "answer_type": "abstract_concept" },
+        { "question": "There is one in every corner and two in every room.", "answer": "O", "answer_type": "letter" }
+      ],
+      "deadly": [
+        { "question": "I am full of holes but stronger than a bull.", "answer": "Chain", "answer_type": "small_object" },
+        { "question": "I am tough as nails yet cannot endure the sun.", "answer": "Ice", "answer_type": "element" },
+        { "question": "I have a spine but no bones.", "answer": "Book", "answer_type": "small_object" },
+        { "question": "I grow up while growing down.", "answer": "Goose", "answer_type": "animal"},
+        { "question": "I connect two, but touch only one.", "answer": "Ring", "answer_type": "small_object" },
+        { "question": "You carry me without arms; I may be harbored but hold no water.", "answer": "Grudge", "answer_type": "abstract_concept" },
+        { "question": "I may finish a book without finishing a sentence.", "answer": "Prisoner", "answer_type": "social_role" },
+        { "question": "I am the beginning of every end and the end of time and space.", "answer": "E", "answer_type": "letter" }
       ]
     }
   }

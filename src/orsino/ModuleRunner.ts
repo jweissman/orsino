@@ -128,6 +128,17 @@ export class ModuleRunner {
     return this.activeModule.dungeons.filter(d => !this.state.completedDungeons.includes(d.dungeonIndex!));
   }
 
+  async gatherStartingGear(pc: Combatant): Promise<ItemInstance[]> {
+      const itemNames: string[] = pc.startingGear || [];
+      const items: ItemInstance[] = [];
+      for (const itemName of itemNames) {
+        const item = { ...Inventory.genLoot(itemName), ownerId: pc.id, ownerSlot: 'backpack' };
+        item.shared = item.itemClass === 'consumable';
+        items.push(item);
+      }
+      return items;
+  }
+
   async run(dry = false) {
     if (this.pcs.length === 0) {
       throw new Error("No PCs provided!");
@@ -139,12 +150,14 @@ export class ModuleRunner {
 
     // gather inventory from PC starting gear
     for (const pc of this.pcs) {
-      const itemNames: string[] = pc.startingGear || [];
-      for (const itemName of itemNames) {
-        const item = { ...Inventory.genLoot(itemName), ownerId: pc.id, ownerSlot: 'backpack' };
-        item.shared = item.itemClass === 'consumable';
-        this.state.inventory.push(item);
-      }
+      const items = await this.gatherStartingGear(pc);
+      this.state.inventory.push(...items);
+      // const itemNames: string[] = pc.startingGear || [];
+      // for (const itemName of itemNames) {
+      //   const item = { ...Inventory.genLoot(itemName), ownerId: pc.id, ownerSlot: 'backpack' };
+      //   item.shared = item.itemClass === 'consumable';
+      //   this.state.inventory.push(item);
+      // }
     }
 
     await this.emit({
@@ -180,6 +193,7 @@ export class ModuleRunner {
       pc.passiveEffects = pc.passiveEffects?.filter(e => !e.planar);
       if (this.activeModule!.globalEffects) {
         pc.passiveEffects.push({
+          type: "condition",
           name: this.activeModule!.plane + " Residency",
           description: `Effects granted by residing on the plane of ${this.activeModule!.plane}`,
           effect: this.activeModule!.globalEffects || {},
@@ -364,13 +378,24 @@ export class ModuleRunner {
       } else if (action === "temple") {
         await this.temple();
       } else if (action === "mirror") {
+        // await this.emit({
+        //   type: "partyOverview",
+        //   pcs: this.pcs,
+        //   day: this.days,
+        //   inventory: this.state.inventory,
+        //   // itemQuantities: Inventory.quantities(this.state.inventory),
+        // });
+        const pc = await this.select("Whose character record would you like to view?", this.pcs.map(pc => ({
+          short: pc.name, value: pc, name: Presenter.combatant(pc), disabled: !!pc.dead
+        }))) as unknown as Combatant;
         await this.emit({
-          type: "partyOverview",
-          pcs: this.pcs,
+          type: "characterOverview",
+          pc,
           day: this.days,
-          inventory: this.state.inventory,
+          inventory: this.state.inventory.filter(item => item.ownerId === pc.id),
           // itemQuantities: Inventory.quantities(this.state.inventory),
         });
+        // await CharacterRecord.present(pc, this.state.inventory, this.days, this.emit.bind(this));
       } else {
         throw new Error(`Unknown action selected: ${action}`);
       }
@@ -589,12 +614,13 @@ export class ModuleRunner {
       return;
     }
     // gen a level 1 PC as hireling
-    const hireling = this.gen("pc", { background: "hireling", setting: "fantasy" }) as unknown as Combatant;
+    // const hireling = this.gen("pc", { background: "hireling", setting: "fantasy" }) as unknown as Combatant;
+    const hireling = await CharacterRecord.autogen(CharacterRecord.goodRaces, (options) => this.gen("pc", { ...options, background: "hireling" }) as unknown as Combatant) as Combatant;
     // await CharacterRecord.pickInitialSpells(hireling, Automatic.randomSelect);
     await CharacterRecord.chooseTraits(hireling, Automatic.randomSelect.bind(Automatic));
     const wouldLikeHireling = await this.select(
       // "A hireling is available to join your party. Would you like to consider their merits?",
-      `A ${hireling.class} named ${hireling.name} is looking for work. Would you like to interview them?`,
+      `A ${Words.humanize(hireling.race!)} ${Words.humanize(hireling.class!)} named ${hireling.name} is looking for work. Would you like to interview them?`,
       [
         { short: "Yes", value: true, name: `Interview ${hireling.forename}`, disabled: false },
         { short: "No", value: false, name: "Decline", disabled: false },
@@ -619,6 +645,7 @@ export class ModuleRunner {
     if (choice) {
       this.state.sharedGold -= cost;
       this.state.party.push(hireling);
+      this.state.inventory.push(...await this.gatherStartingGear(hireling));
       // this.outputSink(`✅ You have hired ${hireling.name} into your party!`);
       await this.emit({
         type: "hirelingHired",

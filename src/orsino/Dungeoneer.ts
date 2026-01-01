@@ -2,7 +2,7 @@ import Combat from "./Combat";
 import { CombatContext, pseudocontextFor } from "./types/CombatContext";
 import { Team } from "./types/Team";
 import Presenter from "./tui/Presenter";
-import { Combatant, Gem } from "./types/Combatant";
+import { Combatant, CombatantID, Gem } from "./types/Combatant";
 import { Select } from "./types/Select";
 import Words from "./tui/Words";
 import Deem from "../deem";
@@ -51,8 +51,8 @@ interface Riddle {
   difficulty: "easy" | "medium" | "hard" | "deadly";
   form: string;
   challenge: {
-    answer_type: string; question: string; answer: string; 
-};
+    answer_type: string; question: string; answer: string;
+  };
   reward: ItemInstance;
 }
 
@@ -93,6 +93,9 @@ interface RoomBase {
   wonder?: Wonder;
   // gems?: Gemstone[];
   trap?: Trap;
+
+  completedFeatures?: string[];
+  inspectedFeatures?: { [feature: string]: CombatantID[]; }
 }
 
 export interface Room extends RoomBase {
@@ -240,9 +243,9 @@ export default class Dungeoneer {
     // assign dungeon environment to each combatants currentEnvironment
     this.playerTeam.combatants.forEach(c => c.currentEnvironment = this.dungeon.terrain);
     // for (const c of this.playerTeam.combatants) {
-      // acquire any testing items
-      // await this.acquireItem(c, Inventory.materialize("robe_of_the_archmagi", []));
-      // await this.acquireItem(c, Inventory.materialize("censer_of_consecration", []));
+    // acquire any testing items
+    // await this.acquireItem(c, Inventory.materialize("robe_of_the_archmagi", []));
+    // await this.acquireItem(c, Inventory.materialize("censer_of_consecration", []));
     // };
 
     while (!this.isOver()) {
@@ -487,12 +490,30 @@ export default class Dungeoneer {
     }
   }
 
+  private featureInspectedByAllMembers(room: RoomBase, feature: string): boolean {
+    room.inspectedFeatures = room.inspectedFeatures || {};
+    const inspectedBy = room.inspectedFeatures[feature] || [];
+    const standingIds = Combat.living(this.playerTeam.combatants).map(c => c.id);
+    return standingIds.every(id => inspectedBy.includes(id));
+  }
+
+  private featureDone(room: RoomBase, feature: string): boolean {
+    const completedBy = room.completedFeatures || [];
+    return completedBy.includes(feature) || this.featureInspectedByAllMembers(room, feature);
+  }
+
+  private memberHasNotInspectedFeature(room: RoomBase, feature: string, c: Combatant): boolean {
+    room.inspectedFeatures = room.inspectedFeatures || {};
+    const inspectedBy = room.inspectedFeatures[feature] || [];
+    return !inspectedBy.includes(c.id);
+  }
+
   // After clearing room
-  private async roomActions(room: Room | BossRoom): Promise<{
+  private async roomActions(room: RoomBase): Promise<{
     leaving: boolean, newPlane?: string, newLocation?: string
   }> {
-    let searched = false, examinedDecor = false;
-    const inspectedFeatures: string[] = [];
+    // let searched = false, examinedDecor = false;
+    // const inspectedFeatures: string[] = room.inspectedFeatures || [];
     let done = false;
 
     while (
@@ -501,31 +522,44 @@ export default class Dungeoneer {
       const options = [
         { name: "Move to next room", value: "move", short: 'Continue', disabled: false }, //room === this.dungeon!.bossRoom },
         { name: "Rest (stabilize unconscious party members, chance to use healing items, 30% encounter)", value: "rest", short: 'Rest', disabled: false },
-        { name: "Search the room", value: "search", short: 'Search', disabled: searched },
+        { name: "Search the room", value: "search", short: 'Search', disabled: this.featureDone(room, 'search') },
         { name: "Review party status", value: "status", short: 'Status', disabled: false },
       ];
       if (room.decor && room.decor !== "nothing") {
-        options.push({ name: `Examine ${Words.remove_article(room.decor)}`, value: "examine", short: 'Examine', disabled: examinedDecor });
+        options.push({
+          name: `Examine ${Words.remove_article(room.decor)}`, value: "examine", short: 'Examine', disabled: this.featureDone(room, 'examine')
+        });
       }
       if (room.trap) {
-        options.push({ name: `Examine ${Words.remove_article(room.trap.lure)}`, value: `trap`, short: 'Examine', disabled: inspectedFeatures.includes('trap') });
+        options.push({
+          name: `Examine ${Words.remove_article(room.trap.lure)}`, value: `trap`, short: 'Examine',
+          disabled: this.featureDone(room, 'trap')
+        });
       }
       if (room.features && room.features.length > 0) {
         room.features.forEach(feature => {
           // if (!inspectedFeatures.includes(feature)) {
-          options.push({ name: `Inspect ${Words.humanize(feature)}`, value: `feature:${feature}`, short: 'Inspect', disabled: inspectedFeatures.includes(feature) });
+          options.push({
+            name: `Inspect ${Words.humanize(feature)}`, value: `feature:${feature}`, short: 'Inspect',
+            disabled: this.featureDone(room, feature)
+          });
           // }
         });
       }
 
       if (room.shrine) {
-        options.push({ name: `Pay respects to the shrine of ${Words.humanize(room.shrine.deity?.forename ?? 'a forgotten deity')}`, value: `feature:shrine`, short: 'Visit Shrine', disabled: inspectedFeatures.includes('shrine') });
+        options.push({
+          name: `Pay respects to the shrine of ${Words.humanize(room.shrine.deity?.forename ?? 'a forgotten deity')}`, value: `feature:shrine`, short: 'Visit Shrine',
+          disabled: this.featureDone(room, 'shrine')
+        });
       }
       if (room.riddle) {
-        options.push({ name: `Inspect the curious ${Words.humanize(room.riddle.form)}`, value: "riddle", short: 'Solve Riddle', disabled: inspectedFeatures.includes('riddle') || this.dry });
+        options.push({
+          name: `Inspect the curious ${Words.humanize(room.riddle.form)}`, value: "riddle", short: 'Solve Riddle', disabled: this.dry || this.featureDone(room, 'riddle')
+        });
       }
       if (room.wonder) {
-        options.push({ name: `Behold wondrous ${Words.humanize(room.wonder.appearance)}`, value: `feature:wonder`, short: 'Behold Wonder', disabled: inspectedFeatures.includes('wonder') });
+        options.push({ name: `Behold wondrous ${Words.humanize(room.wonder.appearance)}`, value: `feature:wonder`, short: 'Behold Wonder', disabled: this.featureDone(room, 'wonder') });
       }
 
       options.push({ name: "Leave the dungeon", value: "leave", short: 'Leave', disabled: this.dry });
@@ -548,8 +582,17 @@ export default class Dungeoneer {
         }
         this.outputSink("Gold: " + this.playerTeam.combatants.reduce((sum, c) => sum + (c.gp || 0), 0) + " gp");
       } else if (choice === "search") {
-        await this.search(room);
-        searched = true;
+        const { searcherId, searchSuccessful } = await this.search(room);
+
+        // searched = true;
+        if (searchSuccessful) {
+          room.completedFeatures = room.completedFeatures || [];
+          room.completedFeatures.push('search');
+        } else {
+          room.inspectedFeatures = room.inspectedFeatures || {};
+          room.inspectedFeatures['search'] = room.inspectedFeatures['search'] || [];
+          room.inspectedFeatures['search'].push(searcherId);
+        }
       } else if (choice === "rest") {
         const result = await this.rest(room);
         if (!result.survived) {
@@ -559,7 +602,7 @@ export default class Dungeoneer {
           return { leaving: true, newPlane: result.newPlane };
         }
       } else if (choice === "examine") {
-        const check = await this.skillCheck("examine", `to examine ${room.decor}`, "int", 15);
+        const check = await this.skillCheck("examine", `to examine ${room.decor}`, "int", 15, (c) => this.memberHasNotInspectedFeature(room, 'examine', c));
         let gp = 0;
         let items: string[] = [];
         if (check.success) {
@@ -578,25 +621,51 @@ export default class Dungeoneer {
           await this.emit({ type: "itemFound", subject: check.actor, itemName: Words.humanize(item), itemDescription: description, quantity: 1, where: `in the hidden compartment of ${room.decor}` });
           this.playerTeam.inventory.push(it);
         }
-        examinedDecor = true;
+        // examinedDecor = true;
+        if (check.success) {
+          room.completedFeatures = room.completedFeatures || [];
+          room.completedFeatures.push('examine');
+        } else {
+          room.inspectedFeatures = room.inspectedFeatures || {};
+          room.inspectedFeatures['examine'] = room.inspectedFeatures['examine'] || [];
+          room.inspectedFeatures['examine'].push(check.actor.id);
+        }
       } else if (typeof choice === "string" && choice.startsWith("feature:")) {
         const featureName = choice.split(":")[1];
-        const { leaving, newPlane, newLocation } = await this.interactWithFeature(featureName);
-        inspectedFeatures.push(featureName);
+        const { leaving, newPlane, newLocation, interactorId, interactionDiscovered } = await this.interactWithFeature(featureName);
+        // inspectedFeatures.push(featureName);
+
+        room.inspectedFeatures = room.inspectedFeatures || {};
+        room.inspectedFeatures[featureName] = room.inspectedFeatures[featureName] || [];
+        room.inspectedFeatures[featureName].push(interactorId);
+
+        if (interactionDiscovered) {
+          room.completedFeatures = room.completedFeatures || [];
+          room.completedFeatures.push(featureName);
+        }
+
         if (leaving) {
           return { leaving, ...(newPlane ? { newPlane } : {}), ...(newLocation ? { newLocation } : {}) };
         }
       } else if (choice === "riddle") {
         const riddle = room.riddle;
         if (riddle) {
-          await this.solveRiddle(riddle);
-          inspectedFeatures.push('riddle');
+          const { solverId, riddleSolved } = await this.solveRiddle(riddle);
+          room.inspectedFeatures = room.inspectedFeatures || {};
+          room.inspectedFeatures['riddle'] = room.inspectedFeatures['riddle'] || [];
+          room.inspectedFeatures['riddle'].push(solverId);
+          if (riddleSolved) {
+            room.completedFeatures = room.completedFeatures || [];
+            room.completedFeatures.push('riddle');
+          }
         }
       } else if (choice === "trap") {
         const trap = room.trap;
         if (trap) {
           await this.handleTrap(trap);
-          inspectedFeatures.push('trap');
+          // inspectedFeatures.push('trap');
+          room.completedFeatures = room.completedFeatures || [];
+          room.completedFeatures.push('trap');
         }
       }
 
@@ -684,10 +753,20 @@ export default class Dungeoneer {
     }
   }
 
-  private async solveRiddle(riddle: Riddle) {
-    const check = await this.skillCheck("examine", `to understand the ${Words.humanize(riddle.form)}`, "int", (riddle.difficulty === "easy") ? 10 : (riddle.difficulty === "medium") ? 15 : (riddle.difficulty === "hard") ? 20 : 25);
+  private async solveRiddle(riddle: Riddle): Promise<{
+    solverId: CombatantID,
+    riddleSolved: boolean,
+  }> {
+    const dc = (riddle.difficulty === "easy") ? 10 : (riddle.difficulty === "medium") ? 15 : (riddle.difficulty === "hard") ? 20 : 25
+    const check = await this.skillCheck("examine",
+      `to understand the ${Words.humanize(riddle.form)}`, "int", dc,
+      (c) => this.memberHasNotInspectedFeature(this.currentRoom as RoomBase, 'riddle', c)
+    );
+    let solved = false;
+
     if (check.success) {
       const wrongAnswerPool = Deem.evaluate(`lookup(riddleAnswerGroups, ${riddle.challenge.answer_type})`) as string[];
+      wrongAnswerPool.splice(wrongAnswerPool.indexOf(riddle.challenge.answer), 1); // remove correct answer from wrong answer pool
       await this.emit({ type: "riddlePosed", subject: check.actor, challenge: riddle.challenge.question });
       const answer = await this.select(`The ${Words.humanize(riddle.form)} awaits your answer...`, [
         ...Sample.shuffle(...[
@@ -697,26 +776,36 @@ export default class Dungeoneer {
         { name: "Remain silent", value: "silent", short: 'Silent', disabled: false },
       ]) as string;
       if (answer === "correct") {
+        solved = true;
         await this.emit({ type: "riddleSolved", subject: check.actor, challenge: riddle.challenge.question, reward: riddle.reward, solution: riddle.challenge.answer });
         // this.playerTeam.inventory.push(riddle.reward);
         await this.acquireItem(check.actor, riddle.reward, `as a reward for solving the ${Words.humanize(riddle.form)}`);
+
+        // xp gain
+        const xpGain = (riddle.difficulty === "easy") ? 100 : (riddle.difficulty === "medium") ? 250 : (riddle.difficulty === "hard") ? 500 : 1000;
+        await this.reward(xpGain, 0);
       } else {
         this.note(`${check.actor.forename} answered incorrectly.`);
       }
     } else {
       this.note(`${check.actor.forename} could not make sense of the ${Words.humanize(riddle.form)}.`);
     }
+    return { solverId: check.actor.id, riddleSolved: solved };
   }
 
   private async interactWithFeature(featureName: string): Promise<{
+    interactorId: CombatantID,
+    interactionDiscovered?: boolean,
     leaving: boolean,
     newLocation?: string,
     newPlane?: string
   }> {
     // console.log(`Interacting with feature: ${featureName}`);
-    const check = await this.skillCheck("examine", `to inspect ${Words.a_an(Words.humanize(featureName))}`, "int", 10);
+    let successful = false;
+    const check = await this.skillCheck("examine", `to inspect ${Words.a_an(Words.humanize(featureName))}`, "int", 10, (c) => this.memberHasNotInspectedFeature(this.currentRoom as RoomBase, featureName, c));
     await this.emit({ type: "investigate", subject: check.actor, clue: `the ${Words.humanize(featureName)}`, discovery: check.success ? `an interesting feature` : `nothing of interest` });
     if (check.success) {
+      successful = true;
       let interaction = null;
       if (featureName === 'shrine' && this.currentRoom?.shrine) {
         interaction = this.currentRoom.shrine;
@@ -758,9 +847,9 @@ export default class Dungeoneer {
               for (const event of events) {
                 await this.emit(event as DungeonEvent);
                 if (event.type === "teleport") {
-                  return { leaving: false, newLocation: (event as TeleportEvent).location };
+                  return { interactorId: check.actor.id, leaving: false, newLocation: (event as TeleportEvent).location, interactionDiscovered: true };
                 } else if (event.type === "planeshift") {
-                  return { leaving: true, newPlane: (event as PlaneshiftEvent).plane };
+                  return { interactorId: check.actor.id, leaving: true, newPlane: (event as PlaneshiftEvent).plane, interactionDiscovered: true };
                 }
               }
             }
@@ -772,11 +861,16 @@ export default class Dungeoneer {
     } else {
       this.note(`${check.actor.forename} inspected ${Words.humanize(featureName)}, but could find nothing of interest.`);
     }
-    return { leaving: false };
+    return { interactorId: check.actor.id, leaving: false, interactionDiscovered: successful };
   }
 
-  private async search(room: Room | BossRoom): Promise<void> {
-    const { actor, success } = await this.skillCheck("search", `to search the ${room.room_type.replaceAll("_", " ")}`, "wis", 15);
+  private async search(room: RoomBase): Promise<{
+    searcherId: CombatantID,
+    searchSuccessful: boolean
+  }> {
+    const { actor, success } = await this.skillCheck("search", `to search the ${room.room_type.replaceAll("_", " ")}`, "wis", 15,
+      (c) => this.memberHasNotInspectedFeature(room, 'search', c)
+    );
     await this.emit({ type: "investigate", subject: actor, clue: `the ${room.room_type.replaceAll("_", " ")}`, discovery: success ? `a hidden stash` : `nothing of interest` });
     if (success) {
       if (room.gear) {
@@ -818,9 +912,10 @@ export default class Dungeoneer {
         await this.reward(xpReward, 0);
       }
     }
+    return { searcherId: actor.id, searchSuccessful: success };
   }
 
-  private async rest(_room: Room | BossRoom): Promise<{
+  private async rest(_room: RoomBase): Promise<{
     survived: boolean,
     newPlane?: string
   }> {

@@ -178,6 +178,9 @@ export interface StatusModifications {
     maxHp?: number;
   };
   effectiveAbilities?: string[];
+  effectiveWeapon?: string;
+  effectiveArmor?: string;
+  effectiveSize?: 'tiny' | 'small' | 'medium' | 'large' | 'huge' | 'gargantuan';
   mayUseItems?: boolean;
 
   // noncombat
@@ -195,9 +198,14 @@ export interface StatusModifications {
 
   // do we actually use this anywhere??? we need it for poly now though
   // maxHp?: number;
-  attackDie?: string;
+  attackDie?: string; // should be 'effectiveAttackDie' probably?
 
   hasPrimaryAttack?: boolean;
+
+  criticalRangeIncrease?: number; // crit on X+ instead of 20
+
+  // show next move plan (should be obscured first)
+  readThoughts?: boolean;
 }
 
 export interface StatusEffect {

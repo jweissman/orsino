@@ -181,6 +181,7 @@ export type RumorHeardEvent = BaseModuleEvent & { type: "rumorHeard"; rumor: str
 export type TempleVisitedEvent = BaseModuleEvent & { type: "templeVisited"; templeName: string; blessingsGranted: string[]; itemsRecharged: string[]; };
 export type CampaignStopEvent = BaseModuleEvent & { type: "campaignStop"; reason: string; at: Timestamp; };
 export type PartyOverviewEvent = BaseModuleEvent & { type: "partyOverview"; pcs: Combatant[]; inventory: ItemInstance[] } //itemQuantities: { [itemName: string]: number }; };
+export type CharacterOverviewEvent = BaseModuleEvent & { type: "characterOverview"; pc: Combatant; inventory: ItemInstance[] } //itemQuantities: { [itemName: string]: number }; };
 export type HirelingOfferedEvent = BaseModuleEvent & { type: "hirelingOffered"; hireling: Combatant; cost: number; };
 export type HirelingHiredEvent = BaseModuleEvent & { type: "hirelingHired"; hireling: Combatant; cost: number; };
 
@@ -200,6 +201,7 @@ export type ModuleEvent =
   | RumorHeardEvent
   | TempleVisitedEvent
   | PartyOverviewEvent
+  | CharacterOverviewEvent
   | HirelingOfferedEvent
   | HirelingHiredEvent
   | CampaignStopEvent
@@ -461,6 +463,8 @@ export default class Events {
           templeMessage += `Items recharged: ${event.itemsRecharged.join(", ")}.`;
         }
         return templeMessage;
+      case "characterOverview":
+        return await Presenter.characterRecord(event.pc, event.inventory);
       case "partyOverview":
         const records = [];
         for (const pc of event.pcs) {

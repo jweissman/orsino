@@ -785,7 +785,8 @@
       "duergar": [ "Argrim", "Baldur", "Dain", "Durin", "Eberk", "Fargrim", "Gimgen", "Harbek", "Kildrak", "Morgran", "Orsik", "Rangrim", "Rurik", "Taklinn", "Thoradin", "Traubon", "Ulfgar", "Veit" ],
       "draconic": [ "Alduin", "Bahamut", "Calder", "Drogon", "Emberwing", "Fafnir", "Firetongue", "Gei-Zar", "Glaurung", "Goldenheart", "Mirmulnir", "Nidhogg", "Norbert", "Paarthurnax", "Rhaegal", "Silverscale", "Smaug", "Vermithrax", "Viserion", "Whitefang", "Zarathustra" ],
       "insectoid": [ "Antar", "Beetix", "Chitin", "Dorsal", "Exo", "Flicker", "Gleam", "Hive", "Jewel", "Karat", "Larva", "Mandible", "Nectar", "Ocelli", "Pincer", "Quiver", "Rex", "Segment", "Thorax", "Umbra", "Venom" ],
-      "birdfolk": [ "Aquila", "Beak", "Caw", "Dart", "Ember", "Feather", "Gale", "Hawk", "Iris", "Jewel", "Kestrel", "Lark", "Maddie", "Nectar", "Orion", "Plume", "Quill", "Raven", "Soren", "Talons" ]
+      "birdfolk": [ "Aquila", "Beak", "Caw", "Dart", "Ember", "Feather", "Gale", "Hawk", "Iris", "Jewel", "Kestrel", "Lark", "Maddie", "Nectar", "Orion", "Plume", "Quill", "Raven", "Soren", "Talons" ],
+      "bugbear": [ "Brug", "Drog", "Gruk", "Harg", "Krag", "Lug", "Mog", "Rug", "Thok", "Zug" ]
     }
   },
   "companionName": {

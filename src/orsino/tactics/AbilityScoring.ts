@@ -85,6 +85,15 @@ export class AbilityScoring {
   static HARD_CONTROL = new Set(["asleep", "paralyzed", "prone", "stun", "confused", "charmed", "dominated", "fear", "silence"]);
 
   static scoreAbility(ability: Ability, context: CombatContext): number {
+    // evaluate the setup ability based on the ability it sets up for
+    if (ability.setupFor) {
+      const setupTargetAbility = AbilityHandler.instance.getAbility(ability.setupFor);
+      if (!setupTargetAbility) {
+        throw new Error(`Ability ${ability.name} sets up for unknown ability ${ability.setupFor}`);
+      }
+      return this.scoreAbility(setupTargetAbility, context);
+    }
+
     const { subject: user, allies, enemies } = context;
     const livingEnemies = enemies.filter(e => e.hp > 0).length;
     const analysis = this.analyzeAbility(ability);
@@ -188,7 +197,7 @@ export class AbilityScoring {
       if (user.hp / user.maximumHitPoints <= 0.5) {
         score += good;
       } else {
-        score += bad;
+        score += poor;
       }
 
       if (livingEnemies === 1 && user.hp / user.maximumHitPoints >= 0.35) {
@@ -265,17 +274,17 @@ export class AbilityScoring {
     // note: ideally these shouldn't be valid actions in the first place!!
     // they really should be disabled at other layers if not usable
     // if a skill and already used, give -10 penalty
-    if (ability.type === "skill" && user.abilitiesUsed?.includes(ability.name)) {
-      score = impossible;
-    }
+    // if (ability.type === "skill" && user.abilitiesUsed?.includes(ability.name)) {
+    //   score = impossible;
+    // }
 
-    // if a spell and no spell slots remaining, give -10 penalty
-    if (ability.type === "spell") {
-      const spellSlotsRemaining = (Combat.maxSpellSlotsForCombatant(user) || 0) - (user.spellSlotsUsed || 0);
-      if (spellSlotsRemaining <= 0) {
-        score = impossible;
-      }
-    }
+    // // if a spell and no spell slots remaining, give -10 penalty
+    // if (ability.type === "spell") {
+    //   const spellSlotsRemaining = (Combat.maxSpellSlotsForCombatant(user) || 0) - (user.spellSlotsUsed || 0);
+    //   if (spellSlotsRemaining <= 0) {
+    //     score = impossible;
+    //   }
+    // }
 
     return Math.round(score);
   }
@@ -284,7 +293,9 @@ export class AbilityScoring {
     const attack = ability.effects.some(e => e.type === "attack");
     const damage = ability.effects.some(e => e.type === "damage" || e.type === "attack");
     const heal = ability.effects.some(e => e.type === "heal");
-    const aoe = ability.target.includes("enemies") || (ability.target[0] === "randomEnemies" && ability.target.length === 2);
+    const aoe = ability.target.includes("enemies") || (ability.target[0] === "randomEnemies" && ability.target.length === 2)
+      || ability.effects.some(e => e.type === "attack" && e.spillover)
+      || ability.effects.some(e => e.type === "damage" && e.cascade);
     const buff = ability.effects.some(e => e.type === "buff");
     const debuff = ability.effects.some(e => e.type === "debuff");
     const defense = ability.effects.some(e => e.type === "buff" && this.abilityBoostsAC(e));

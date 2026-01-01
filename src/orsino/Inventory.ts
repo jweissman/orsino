@@ -192,6 +192,22 @@ export class Inventory {
     return Inventory.reifyFromKey(itemKey);
   }
 
+  static materializeRef = (itemRef: { key: string; kind: "key" } | { id: string; kind: "id" }, inventory: ItemInstance[]): ItemInstance => {
+    if (itemRef.kind === "key") {
+      const item = inventory.find(i => i.key === itemRef.key);
+      if (!item) {
+        throw new Error(`Item with key ${itemRef.key} not found in inventory`);
+      }
+      return item;
+    } else {
+      const item = inventory.find(i => i.id === itemRef.id);
+      if (!item) {
+        throw new Error(`Item with id ${itemRef.id} not found in inventory`);
+      }
+      return item;
+    }
+  }
+
   static genLoot(name: string): ItemInstance {
     const it = Generator.gen("loot", { _name: name }) as unknown as ItemInstance;
     if (it.charges) {

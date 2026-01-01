@@ -3,13 +3,19 @@
 ## Bugs
 - [ ] Bombs should not be heal-able (maybe there is some 'repair/mending' skill for inanimate objects though)
 - [ ] Weird interaction with absorption (temp Hp) and trap descriptions [it was saying the _trap_ absorbed damage?]
+- [ ] Traps with planeshift effects don't seem to work
 
 ## Features
+- [ ] Make effective weapon/armor/size work for shapechange
+- [ ] Make read thoughts telegraph next moves (we may have to _obscure_ compelled moves like charge first?)
+- [ ] Make criticalRangeIncrease work
 - [ ] Flight should make you actually _untargetable_ by melee
 - [ ] Show current gold before purchasing potions
 - [ ] Remind players to rest if they're not at full health going into boss battle
 - [ ] Unify search/examine (should both have chance to find potions/loot and both grant XP on success)
 - [ ] All mage schools should have enough low-level spells to pick from
+- [ ] Traps should remember if they've been triggered (ie if you return to the dungeon again)
+- [ ] Rooms should remember in general if you've searched/examined things 
 
 ## Ideas
 - [ ] Rest could reset status effects? (would be nice to do this _before_ persisting PCs?)
@@ -150,7 +156,6 @@
 ---
 - [ ] Would be interesting to restrict domain/school by _race_ too (only gnome illusionists etc)
 - [ ] Inn should not heal the dead (need temple rez)
-- [ ] Traps should remember if they've been triggered (ie if you return to the dungeon again)
 - [ ] Extraneous period in item description on acquisition ('Found some nice gloves. in the secret stash.')
 - [ ] Maybe you should be able to use consumables between rooms / cast noncombat spells + buffs
 - [ ] Could autocast healing spells on stabilize also
@@ -162,6 +167,9 @@
 - [ ] Rez even at temple should have a chance to fail
 - [ ] Can't equip multiple rings from the shop anymore? (They all go to a 'ring' slot and don't differentiate 'ring1', 'ring2')
 - [ ] Should only offer to equip found items if you're proficient in them
+---
+- [ ] Really make sure default loadout only gives armor/weapons users are proficient in
+- [ ] Nat 1 on examine riddle should prevent further inspection (could 'break' the puzzle box/make glyphs disappear etc)
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing
@@ -308,7 +316,7 @@
 - [x] Describe colors of prismatic spray/multiplicity cards (done for normal damage fx, but spell beams don't hint their description clearly)
 - [x] Bring back status displays on the per turn overview... (we currently have per-round overview) -- now per turn displayed
 - [x] Seems fixed but really make sure we're handling gold transition between town hub/dungeon correctly -- think this is okay now??
+- [x] Hirelings should get starting gear (should be working!)
 
 ## Not really issues atm
-- "Rooms should remember if you've searched/examined things (ie not reset on wandering monster)" [maybe this is fixed but would be good to actually write down searched/examinedItems on the room?]
 - Load all PCs on party select so we can show their race/class (no longer even letting you load PCs from file but we're still persisting them every room...) (we don't even persist PC records anymore)

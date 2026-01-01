@@ -1,0 +1,2222 @@
+{
+  "sunmark": {
+    "name": "Sunmark",
+    "type": "spell",
+    "level": 0,
+    "aspect": "divine",
+    "domain": "light",
+    "description": "Light up an enemy with a radiant mark.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d3",
+        "kind": "radiant"
+      },
+      {
+        "type": "debuff",
+        "status": "sunmarked"
+      }
+    ]
+  },
+  "luminous_touch": {
+    "name": "Luminous Touch",
+    "type": "spell",
+    "level": 0,
+    "aspect": "divine",
+    "domain": "light",
+    "description": "Heal a small amount of damage with a touch.",
+    "target": [
+      "self",
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "heal",
+        "amount": "=1d2 + #level"
+      }
+    ]
+  },
+  "pure_beam": {
+    "name": "Pure Beam",
+    "type": "spell",
+    "level": 1,
+    "aspect": "divine",
+    "domain": "light",
+    "description": "A beam of pure radiant energy that damages undead and evil creatures.",
+    "target": [ "enemy" ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d4",
+        "kind": "radiant",
+        "saveForHalf": true
+      },
+      {
+        "type": "damage",
+        "amount": "=3d4",
+        "kind": "radiant",
+        "saveForHalf": true,
+        "condition": {
+          "trait": "undead"
+        }
+      }
+    ]
+  },
+  "chant": {
+    "name": "Chant",
+    "type": "skill",
+    "aspect": "divine",
+    "domain": "light",
+    "level": 1,
+    "description": "Bolster yourself with a holy chant.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "chanting"
+      }
+    ]
+  },
+  "protection_from_darkness": {
+    "name": "Protection from Darkness",
+    "type": "spell",
+    "level": 2,
+    "aspect": "divine",
+    "domain": "light",
+    "description": "Ward yourself or an ally against dark forces.",
+    "target": [
+      "self",
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "darkproof"
+      }
+    ]
+  },
+  "meditate": {
+    "name": "Meditate",
+    "type": "skill",
+    "aspect": "divine",
+    "domain": "light",
+    "level": 2,
+    "description": "Enter a meditative state.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "meditating"
+      }
+    ]
+  },
+  "turn_undead": {
+    "name": "Turn Undead",
+    "level": 3,
+    "type": "spell",
+    "aspect": "divine",
+    "domain": "light",
+    "description": "The dead recoil from your holy presence.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "flee",
+        "succeedDC": 25,
+        "succeedType": "will",
+        "condition": {
+          "trait": "undead"
+        }
+      }
+    ]
+  },
+  "daylight": {
+    "name": "Daylight",
+    "type": "spell",
+    "level": 4,
+    "aspect": "divine",
+    "domain": "light",
+    "description": "Create a sphere of bright light.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d4",
+        "kind": "radiant",
+        "saveForHalf": true
+      },
+      {
+        "type": "removeStatus",
+        "statusName": "Hidden"
+      }
+    ]
+  },
+  "sunburst": {
+    "name": "Sunburst",
+    "type": "spell",
+    "level": 5,
+    "aspect": "divine",
+    "domain": "light",
+    "description": "A brilliant burst of solar energy injures your foes.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=4d6",
+        "kind": "radiant",
+        "saveForHalf": true
+      }
+    ]
+  },
+  "solar_flare": {
+    "name": "Solar Flare",
+    "type": "spell",
+    "level": 6,
+    "aspect": "divine",
+    "domain": "light",
+    "description": "Blaze a searing flare of sunlight at an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=6d6",
+        "kind": "radiant",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "blinded",
+        "saveDC": 30,
+        "saveType": "will"
+      }
+    ]
+  },
+  "radiant_beam": {
+    "name": "Radiant Beam",
+    "type": "spell",
+    "level": 7,
+    "aspect": "divine",
+    "domain": "light",
+    "description": "Unleash a concentrated beam of radiant energy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=8d6",
+        "kind": "radiant",
+        "saveForHalf": true
+      }
+    ]
+  },
+  "enlightenment": {
+    "name": "Enlightenment",
+    "type": "spell",
+    "level": 8,
+    "aspect": "divine",
+    "domain": "light",
+    "description": "Grant profound insight to yourself or an ally.",
+    "target": [
+      "self",
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "enlightened"
+      }
+    ]
+  },
+  "sunsphere": {
+    "name": "Sunsphere",
+    "type": "spell",
+    "level": 9,
+    "aspect": "divine",
+    "domain": "light",
+    "description": "Create a massive sphere of sunlight that damages enemies.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=10d6",
+        "kind": "radiant",
+        "saveForHalf": true
+      }
+    ]
+  },
+
+  "shadow_mote": {
+    "name": "Shadow Mote",
+    "type": "spell",
+    "level": 0,
+    "aspect": "divine",
+    "domain": "darkness",
+    "description": "Hurl a mote of shadowy energy at an enemy.",
+    "target": [ "enemy" ],
+    "effects": [
+      { "type": "damage", "amount": "=1d4", "kind": "necrotic" },
+      { "type": "damage", "amount": "=1d3", "kind": "psychic" },
+      { "type": "damage", "amount": "=1d2", "kind": "cold" }
+    ]
+  },
+  "gloom": {
+    "name": "Gloom",
+    "type": "spell",
+    "level": 0,
+    "aspect": "divine",
+    "domain": "darkness",
+    "description": "Envelop an area in magical darkness.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      { "type": "debuff", "status": "despair", "saveDC": 15, "saveType": "will" }
+    ]
+  },
+  "heat_drain": {
+    "name": "Heat Drain",
+    "type": "spell",
+    "level": 1,
+    "aspect": "divine",
+    "domain": "darkness",
+    "description": "Drain heat from an enemy, causing damage and slowing them.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=2d4",
+        "kind": "cold"
+      },
+      {
+        "type": "debuff",
+        "status": "slow"
+      }
+    ]
+  },
+  "shadow_cloak": {
+    "name": "Shadow Cloak",
+    "type": "spell",
+    "level": 1,
+    "aspect": "divine",
+    "domain": "darkness",
+    "description": "Wrap yourself in shadows, increasing your stealth and cunning.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      { "type": "buff", "status": "hidden" },
+      { "type": "buff", "status": "cunning" }
+    ]
+  },
+  "shadow_bind": {
+    "name": "Shadow Bind",
+    "type": "spell",
+    "level": 2,
+    "aspect": "divine",
+    "domain": "darkness",
+    "description": "Bind an enemy with shadowy tendrils.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      { "type": "debuff", "status": "entangled" },
+      {
+        "type": "debuff",
+        "status": "slow",
+        "saveDC": 18,
+        "saveType": "will"
+      }
+    ]
+  },
+  "create_darkness": {
+    "name": "Create Darkness",
+    "type": "spell",
+    "level": 2,
+    "aspect": "divine",
+    "domain": "darkness",
+    "description": "Create an area of magical darkness that obscures vision.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": "blinded"
+      }
+    ]
+  },
+  "snuff": {
+    "name": "Snuff Life",
+    "type": "spell",
+    "level": 3,
+    "aspect": "divine",
+    "domain": "darkness",
+    "description": "Attempt to snuff out the life force of an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=3d6",
+        "kind": "cold",
+        "saveForHalf": true
+      }
+    ]
+  },
+  "cold_embrace": {
+    "name": "Cold Embrace",
+    "type": "spell",
+    "level": 3,
+    "aspect": "divine",
+    "domain": "darkness",
+    "description": "Produce a chilling aura that damages nearby enemies.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=2d6",
+        "kind": "cold"
+      },
+      {
+        "type": "debuff",
+        "status": "slow"
+      }
+    ]
+  },
+  "nightmare": {
+    "name": "Nightmare",
+    "type": "spell",
+    "level": 4,
+    "aspect": "divine",
+    "domain": "darkness",
+    "description": "Induce terrifying waking nightmares in an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      { "type": "debuff", "status": "fear", "saveDC": 22, "saveType": "will" },
+      { "type": "debuff", "status": "insane", "saveDC": 20, "saveType": "will" },
+      { "type": "debuff", "status": "confused", "saveDC": 18, "saveType": "will" }
+    ]
+  },
+  "abyssal_shield": {
+    "name": "Abyssal Shield",
+    "type": "spell",
+    "level": 5,
+    "aspect": "divine",
+    "domain": "darkness",
+    "description": "Surround yourself with a shield of dark energy.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      { "type": "buff", "status": "shielded" },
+      { "type": "buff", "status": "endurance" },
+      { "type": "buff", "status": "minor_warded" }
+    ]
+  },
+  "shadowfire": {
+    "name": "Shadowfire",
+    "type": "spell",
+    "level": 6,
+    "aspect": "divine",
+    "domain": "darkness",
+    "description": "Unleash a blast of dark energy at an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      { "type": "damage", "amount": "=3d6", "kind": "cold", "saveForHalf": true },
+      { "type": "damage", "amount": "=2d6", "kind": "necrotic", "saveForHalf": true },
+      { "type": "damage", "amount": "=1d6", "kind": "psychic", "saveForHalf": true }
+    ]
+  },
+  "cruel_will": {
+    "name": "Cruel Will",
+    "type": "spell",
+    "level": 7,
+    "aspect": "divine",
+    "domain": "darkness",
+    "description": "Overwhelm the mind of an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": "dominated",
+        "duration": 10,
+        "saveDC": 28,
+        "saveType": "will"
+      }
+    ]
+  },
+  "shadow_form": {
+    "name": "Shadow Form",
+    "type": "spell",
+    "level": 8,
+    "aspect": "divine",
+    "domain": "darkness",
+    "description": "Transform into a being of shadow.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      { "type": "buff", "status": "blurred" },
+      { "type": "buff", "status": "spellturn" },
+      { "type": "buff", "status": "mind_blank" }
+    ]
+  },
+  "black_hole": {
+    "name": "Black Hole",
+    "type": "spell",
+    "level": 9,
+    "aspect": "divine",
+    "domain": "darkness",
+    "description": "Create a devastating black hole that damages and pulls in enemies.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=12d6",
+        "kind": "cold",
+        "saveForHalf": true
+      }
+    ]
+  },
+
+  "thorn_whip": {
+    "name": "Thorn Whip",
+    "type": "spell",
+    "level": 0,
+    "aspect": "divine",
+    "domain": "nature",
+    "description": "Create a whip of thorns to strike an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d3",
+        "kind": "piercing"
+      },
+      {
+        "type": "debuff",
+        "status": "entangled"
+      }
+    ]
+  },
+  "goodberry": {
+    "name": "Goodberry",
+    "type": "spell",
+    "level": 0,
+    "aspect": "divine",
+    "domain": "nature",
+    "description": "Create magical berries that heal when eaten.",
+    "target": [
+      "self",
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "acquireItem",
+        "itemName": "goodberry",
+        "quantity": "=1d4 + 1"
+      }
+    ]
+  },
+  "entangle": {
+    "name": "Tangling Vines",
+    "type": "spell",
+    "level": 1,
+    "aspect": "divine",
+    "domain": "nature",
+    "description": "Summon vines to entangle your foes.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": "entangled"
+      }
+    ]
+  },
+  "barkskin": {
+    "name": "Barkskin",
+    "type": "spell",
+    "level": 1,
+    "aspect": "divine",
+    "domain": "nature",
+    "description": "Your skin stiffens into tree-bark.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "barkskin"
+      }
+    ]
+  },
+  "calm_emotions": {
+    "name": "Calm Emotions",
+    "type": "spell",
+    "level": 2,
+    "aspect": "divine",
+    "domain": "nature",
+    "description": "Soothe strong emotions in a group of creatures.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": "calm"
+      }
+    ]
+  },
+  "spike_growth": {
+    "name": "Spike Growth",
+    "type": "spell",
+    "level": 2,
+    "aspect": "divine",
+    "domain": "nature",
+    "description": "Cause the ground to sprout painful spikes.",
+    "target": [ "enemies" ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=2d6",
+        "kind": "piercing"
+      },
+      {
+        "type": "debuff",
+        "status": "slow"
+      }
+    ]
+  },
+  "healing_touch": {
+    "name": "Healing Touch",
+    "type": "spell",
+    "level": 2,
+    "aspect": "divine",
+    "domain": "nature",
+    "description": "Heal yourself or an ally with a touch.",
+    "target": [
+      "self",
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "heal",
+        "amount": "=1d8 + #level"
+      }
+    ]
+  },
+  "stoneskin": {
+    "name": "Stoneskin",
+    "type": "spell",
+    "level": 3,
+    "aspect": "divine",
+    "domain": "nature",
+    "description": "Your skin hardens like stone.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "stoneskin"
+      }
+    ]
+  },
+  "summon_natural_guardian": {
+    "name": "Summon Natural Guardian",
+    "type": "spell",
+    "level": 3,
+    "aspect": "divine",
+    "domain": "nature",
+    "description": "Summon a powerful natural guardian to aid you in battle.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "summon",
+        "creature": "animal",
+        "options": {
+          "animal_type": "=oneOf(bear, wolf, eagle, stag)"
+        }
+      }
+    ]
+  },
+  "storm_wind": {
+    "name": "Storm Wind",
+    "type": "spell",
+    "level": 4,
+    "aspect": "divine",
+    "domain": "nature",
+    "description": "Summon a fierce wind to buffet your enemies.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=3d6",
+        "kind": "bludgeoning",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "prone"
+      }
+    ]
+  },
+  "ironskin": {
+    "name": "Ironskin",
+    "type": "spell",
+    "level": 5,
+    "aspect": "divine",
+    "domain": "nature",
+    "description": "Your skin becomes as hard as iron.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "ironskin"
+      }
+    ]
+  },
+  "summon_elemental": {
+    "name": "Summon Elemental",
+    "type": "spell",
+    "level": 6,
+    "aspect": "divine",
+    "domain": "nature",
+    "description": "Summon a powerful elemental to fight by your side.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "summon",
+        "creature": "monster",
+        "options": {
+          "_class": "elemental",
+          "element": "=oneOf(earth, air, fire, water)"
+        }
+      }
+    ]
+  },
+  "heart_of_the_wild": {
+    "name": "Heart of the Wild",
+    "type": "spell",
+    "level": 7,
+    "aspect": "divine",
+    "domain": "nature",
+    "description": "Tap into the primal power of nature to bolster your abilities.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "wildheart"
+      }
+    ]
+  },
+  "scaleskin": {
+    "name": "Scaleskin",
+    "type": "spell",
+    "level": 8,
+    "aspect": "divine",
+    "domain": "nature",
+    "description": "Your skin takes on the qualities of dragon scales.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "scaleskin"
+      }
+    ]
+  },
+  "steelskin": {
+    "name": "Steelskin",
+    "type": "spell",
+    "level": 9,
+    "aspect": "divine",
+    "domain": "nature",
+    "description": "Your skin becomes as tough as steel.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "steelskin"
+      }
+    ]
+  },
+
+  "sanctify": {
+    "name": "Sanctify",
+    "type": "spell",
+    "level": 0,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Cleanse the party of minor wounds.",
+    "target": [ "allies" ],
+    "effects": [
+      {
+        "type": "heal",
+        "amount": "=1d3 + #level"
+      }
+    ]
+  },
+  "cure_minor": {
+    "name": "Cure Minor Wounds",
+    "type": "spell",
+    "level": 0,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Bind minor injuries.",
+    "target": [
+      "self",
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "heal",
+        "amount": "=1d4"
+      }
+    ]
+  },
+  "bless": {
+    "name": "Bless",
+    "level": 1,
+    "type": "spell",
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Bless an ally, granting them a divine boon.",
+    "target": [
+      "self",
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "blessed"
+      }
+    ]
+  },
+  "anoint": {
+    "name": "Anoint",
+    "type": "spell",
+    "level": 1,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "You mark your allies with a holy symbol, granting them protection.",
+    "target": [
+      "allies"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "anointed",
+        "duration": 5
+      }
+    ]
+  },
+  "remove_fear": {
+    "name": "Remove Fear",
+    "type": "spell",
+    "level": 1,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Calm a frightened ally.",
+    "target": [
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "removeStatus",
+        "statusName": "fear"
+      }
+    ]
+  },
+  "cure": {
+    "name": "Cure Light Wounds",
+    "type": "spell",
+    "level": 1,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Bind moderate injuries.",
+    "target": [
+      "self",
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "heal",
+        "amount": "=1d8"
+      }
+    ]
+  },
+  "resist_fire": {
+    "name": "Resist Fire",
+    "type": "spell",
+    "level": 2,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Grant an ally resistance to fire damage for 5 rounds.",
+    "target": [
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "fireproof"
+      }
+    ]
+  },
+  "prayer": {
+    "name": "Prayer",
+    "level": 2,
+    "type": "spell",
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Bolster your team with a prayer.",
+    "target": [
+      "party"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "praying"
+      }
+    ]
+  },
+  "death_ward": {
+    "name": "Deathward",
+    "type": "spell",
+    "level": 2,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Ward yourself or an ally against death.",
+    "target": [
+      "self",
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "death_ward"
+      }
+    ]
+  },
+  "minor_restoration": {
+    "name": "Minor Restoration",
+    "type": "spell",
+    "level": 2,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Cure minor ailments.",
+    "target": [
+      "self",
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "removeStatus",
+        "statusName": "poisoned|cursed|blinded"
+      }
+    ]
+  },
+  
+  "cure_disease": {
+    "name": "Cure Disease",
+    "type": "spell",
+    "level": 3,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Cure an ally of disease.",
+    "target": [
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "removeStatus",
+        "statusName": "Diseased"
+      }
+    ]
+  },
+  "cure_moderate": {
+    "name": "Cure Moderate Wounds",
+    "type": "spell",
+    "level": 3,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Bind moderate injuries.",
+    "target": [
+      "self",
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "heal",
+        "amount": "=2d8"
+      }
+    ]
+  },
+  "rally": {
+    "name": "Rally the Faithful",
+    "type": "spell",
+    "level": 3,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Restore your team's spirit.",
+    "target": [
+      "allies"
+    ],
+    "effects": [
+      {
+        "type": "heal",
+        "amount": "=1d6"
+      },
+      {
+        "type": "buff",
+        "status": "rallied"
+      }
+    ]
+  },
+  "raise_dead": {
+    "name": "Raise Dead",
+    "level": 4,
+    "type": "spell",
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Restore life to the dead.",
+    "target": [
+      "deadAlly"
+    ],
+    "effects": [
+      {
+        "type": "resurrect",
+        "hpPercent": 50
+      }
+    ]
+  },
+  "cure_serious": {
+    "name": "Cure Serious Wounds",
+    "type": "spell",
+    "level": 4,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Bind serious injuries.",
+    "target": [
+      "self",
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "heal",
+        "amount": "=3d8"
+      }
+    ]
+  },
+  "heal": {
+    "name": "Heal Ally",
+    "level": 5,
+    "type": "spell",
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Offer restoration and cure ailments.",
+    "target": [ "self", "ally" ],
+    "effects": [
+      {
+        "type": "heal",
+        "amount": "=4d8 + #level"
+      },
+      {
+        "type": "removeStatus",
+        "statusName": "diseased|poisoned|cursed|blinded|slow|paralyzed"
+      }
+    ]
+  },
+  "vital_boost": {
+    "name": "Vital Boost",
+    "type": "spell",
+    "level": 6,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Temporarily enhance the vitality of an ally.",
+    "target": [
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "vital_boost"
+      }
+    ]
+  },
+  "cure_critical": {
+    "name": "Cure Critical Wounds",
+    "type": "spell",
+    "level": 6,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Bind critical injuries.",
+    "target": [
+      "self",
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "heal",
+        "amount": "=4d8"
+      }
+    ]
+  },
+  "resurrect": {
+    "name": "Resurrection",
+    "type": "spell",
+    "aspect": "divine",
+    "domain": "life",
+    "level": 7,
+    "description": "It's alive!",
+    "target": [
+      "deadAlly"
+    ],
+    "effects": [
+      {
+        "type": "resurrect",
+        "hpPercent": 100
+      }
+    ]
+  },
+  "mass_heal": {
+    "name": "Mass Heal",
+    "type": "spell",
+    "level": 8,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Heal multiple allies at once.",
+    "target": [
+      "allies"
+    ],
+    "effects": [
+      {
+        "type": "heal",
+        "amount": "=3d8 + #level"
+      },
+      {
+        "type": "removeStatus",
+        "statusName": "diseased|poisoned|cursed|blinded|slow|paralyzed"
+      }
+    ]
+  },
+  "major_restoration": {
+    "name": "Major Restoration",
+    "type": "spell",
+    "level": 9,
+    "aspect": "divine",
+    "domain": "life",
+    "description": "Completely cure an ally of all ailments and restore vitality.",
+    "target": [
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "heal",
+        "amount": "=10d8 + #level"
+      },
+      {
+        "type": "removeStatus",
+        "statusName": "diseased|poisoned|cursed|blinded|slow|paralyzed|fatigued|deafened"
+      }
+    ]
+  },
+
+  "curse": {
+    "name": "Curse",
+    "type": "spell",
+    "level": 0,
+    "aspect": "divine",
+    "domain": "death",
+    "description": "Curse an enemy.",
+    "target": [ "enemy" ],
+    "effects": [
+      {
+        "type": "debuff",
+        "saveKind": "will",
+        "saveDC": 10,
+        "status": "cursed"
+      }
+    ]
+  },
+  "minor_life_drain": {
+    "name": "Minor Drain",
+    "type": "spell",
+    "level": 0,
+    "aspect": "divine",
+    "domain": "death",
+    "description": "Drain a small amount of life from an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "drain",
+        "amount": "=1d4",
+        "kind": "necrotic",
+        "saveNegates": true
+      }
+    ]
+  },
+  "deathbolt": {
+    "name": "Deathbolt",
+    "type": "spell",
+    "level": 1,
+    "aspect": "divine",
+    "domain": "death",
+    "description": "Hurl a bolt of shadowy energy at an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=2d6",
+        "kind": "necrotic",
+        "saveForHalf": true
+      }
+    ]
+  },
+  "life_drain": {
+    "name": "Life Drain",
+    "type": "spell",
+    "level": 2,
+    "aspect": "divine",
+    "domain": "death",
+    "description": "Drain life from an enemy, healing yourself for damage dealt.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "drain",
+        "amount": "=1d6",
+        "kind": "necrotic",
+        "saveNegates": true
+      }
+    ]
+  },
+  "terror": {
+    "name": "Terror",
+    "type": "spell",
+    "aspect": "divine",
+    "level": 2,
+    "domain": "death",
+    "alignment": "evil",
+    "description": "Frighten an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": "fear",
+        "saveKind": "fear",
+        "saveDC": 15
+      }
+    ]
+  },
+  "dirge": {
+    "name": "Dirge",
+    "type": "spell",
+    "level": 3,
+    "aspect": "divine",
+    "domain": "death",
+    "description": "A mournful song that weakens your enemies.",
+    "target": [ "enemies" ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": "weakened",
+        "saveKind": "will",
+        "saveDC": 15
+      }
+    ]
+  },
+  "mass_curse": {
+    "name": "Mass Curse",
+    "type": "spell",
+    "level": 3,
+    "aspect": "divine",
+    "domain": "death",
+    "description": "Your venomous words fill your enemies with a sense of doom.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "saveKind": "will",
+        "saveDC": 15,
+        "status": "cursed"
+      }
+    ]
+  },
+  "deathtouch": {
+    "name": "Death Touch",
+    "description": "Touch an enemy to curse them.",
+    "type": "spell",
+    "aspect": "divine",
+    "level": 4,
+    "domain": "death",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=3d6",
+        "kind": "necrotic",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "saveKind": "will",
+        "saveDC": 15,
+        "status": "cursed"
+      }
+    ]
+  },
+  "major_life_drain": {
+    "name": "Major Drain",
+    "type": "spell",
+    "level": 4,
+    "aspect": "divine",
+    "domain": "death",
+    "description": "Drain a significant amount of life from an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "drain",
+        "amount": "=3d6",
+        "kind": "necrotic",
+        "saveNegates": true
+      }
+    ]
+  },
+  "cold_fire": {
+    "name": "Cold Fire",
+    "type": "spell",
+    "level": 5,
+    "aspect": "divine",
+    "domain": "death",
+    "description": "Unleash a blast of chilling energy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=4d6",
+        "kind": "necrotic",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "slow",
+        "saveKind": "fortitude",
+        "saveDC": 18
+      },
+      {
+        "type": "debuff",
+        "status": "frozen",
+        "saveKind": "fortitude",
+        "saveDC": 18
+      }
+    ]
+  },
+  "harm": {
+    "name": "Harm",
+    "type": "spell",
+    "level": 6,
+    "aspect": "divine",
+    "domain": "death",
+    "description": "Inflict severe necrotic damage on an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=6d6 + #level * 2",
+        "kind": "necrotic",
+        "saveForHalf": true
+      }
+    ]
+  },
+  "summon_lich": {
+    "name": "Summon Lich",
+    "type": "spell",
+    "aspect": "divine",
+    "domain": "death",
+    "level": 7,
+    "description": "Summon a powerful lich to fight for you.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "summon",
+        "creature": "monster",
+        "options": {
+          "monster_type": "Lich",
+          "level": 10
+        }
+      }
+    ]
+  },
+  "death": {
+    "name": "Death",
+    "type": "spell",
+    "level": 8,
+    "aspect": "divine",
+    "domain": "death",
+    "description": "Utter a power word in the blackest of tongues.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "kill",
+        "saveKind": "fortitude",
+        "saveDC": 20
+      }
+    ]
+  },
+  "apocalypse": {
+    "name": "Apocalypse",
+    "type": "spell",
+    "level": 9,
+    "aspect": "divine",
+    "domain": "death",
+    "description": "Unleash a cataclysmic storm of elemental fury upon all enemies.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=6d6",
+        "kind": "fire",
+        "saveForHalf": true
+      },
+      {
+        "type": "damage",
+        "amount": "=6d6",
+        "kind": "cold",
+        "saveForHalf": true
+      },
+      {
+        "type": "damage",
+        "amount": "=6d6",
+        "kind": "lightning",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "doom"
+      }
+    ]
+  },
+
+  "hold_animal": {
+    "name": "Hold Animal",
+    "type": "spell",
+    "level": 0,
+    "aspect": "divine",
+    "domain": "law",
+    "description": "Paralyze a small animal for a short duration.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": "paralyzed",
+        "duration": 3,
+        "condition": {
+          "trait": "animal"
+        }
+      }
+    ]
+  },
+  "protection_from_evil": {
+    "name": "Protection from Evil",
+    "type": "spell",
+    "level": 1,
+    "aspect": "divine",
+    "domain": "law",
+    "description": "Grant immunity to charm and fear for 6 rounds.",
+    "target": [
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "protected"
+      },
+      {
+        "type": "buff",
+        "status": "courage"
+      }
+    ]
+  },
+  "shield": {
+    "name": "Shield of Faith",
+    "level": 2,
+    "type": "spell",
+    "aspect": "divine",
+    "domain": "law",
+    "description": "Divine power protects you or an ally with a shimmering shield.",
+    "target": [
+      "self",
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "shielded",
+        "duration": 10
+      }
+    ]
+  },
+  "hold_person": {
+    "name": "Hold Person",
+    "level": 2,
+    "type": "spell",
+    "aspect": "divine",
+    "domain": "law",
+    "description": "Paralyze an enemy for 4 rounds.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "condition": {
+          "trait": "humanoid"
+        },
+        "status": "paralyzed",
+        "saveKind": "paralyze",
+        "saveDC": 20
+      }
+    ]
+  },
+  "consecrated_ground": {
+    "name": "Consecrated Ground",
+    "type": "spell",
+    "level": 3,
+    "aspect": "divine",
+    "domain": "law",
+    "description": "Consecrate the ground, damaging enemies who attack or cast spells near you.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "duration": 25,
+        "status": {
+          "name": "Consecrated",
+          "effect": {
+            "onEnemyOffensiveCasting": [
+              {
+                "type": "removeStatus",
+                "statusName": "Consecrated",
+                "target": "self"
+              },
+              {
+                "type": "damage",
+                "amount": "=2d6",
+                "kind": "radiant",
+                "target": "caster"
+              }
+            ],
+            "onEnemyAttack": [
+              {
+                "type": "removeStatus",
+                "statusName": "Consecrated",
+                "target": "self"
+              },
+              {
+                "type": "damage",
+                "amount": "=2d6",
+                "kind": "radiant",
+                "target": "attacker"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "blade_barrier": {
+    "name": "Blade Barrier",
+    "type": "spell",
+    "level": 4,
+    "aspect": "divine",
+    "domain": "law",
+    "description": "Create a wall of spinning blades that damages enemies passing through it.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Blade Barrier",
+          "duration": 5,
+          "effect": {
+            "onEnemyMelee": [
+              {
+                "type": "damage",
+                "amount": "=3d6",
+                "kind": "slashing",
+                "target": "attacker",
+                "description": "blade barrier attack"
+              },
+              {
+                "type": "removeStatus",
+                "statusName": "Blade Barrier"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "command": {
+    "name": "Command",
+    "level": 5,
+    "type": "spell",
+    "aspect": "divine",
+    "domain": "law",
+    "description": "Give an instruction.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "flee",
+        "succeedDC": 20,
+        "succeedType": "will"
+      }
+    ]
+  },
+  "judgment": {
+    "name": "Judgment",
+    "type": "spell",
+    "level": 6,
+    "aspect": "divine",
+    "domain": "law",
+    "description": "Call down divine judgment on an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=6d6",
+        "kind": "radiant",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "blinded",
+        "saveNegates": true
+      },
+      {
+        "type": "debuff",
+        "status": {
+          "name": "Marked for Judgment",
+          "duration": 5,
+          "effect": {
+            "onHeal": [
+              {
+                "type": "damage",
+                "amount": "=1d6",
+                "kind": "radiant",
+                "target": "self",
+                "description": "being healed while marked for judgment"
+              }
+            ]
+          }
+        },
+        "saveKind": "will",
+        "saveDC": 14
+      }
+    ]
+  },
+  "holy": {
+    "name": "Holy",
+    "type": "spell",
+    "level": 7,
+    "aspect": "divine",
+    "domain": "law",
+    "description": "Smite your foes with holy energy.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=3d6 + #wis",
+        "kind": "radiant"
+      },
+      {
+        "type": "debuff",
+        "status": "deafened",
+        "saveKind": "fortitude",
+        "saveDC": 18
+      }
+    ]
+  },
+  "aegis": {
+    "name": "Aegis of Faith",
+    "type": "spell",
+    "level": 8,
+    "aspect": "divine",
+    "domain": "law",
+    "description": "Ward against all effects.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "invulnerable"
+      }
+    ]
+  },
+  "divine_power": {
+    "name": "Divine Power",
+    "type": "spell",
+    "level": 8,
+    "aspect": "divine",
+    "domain": "law",
+    "description": "Empower yourself with divine attributes.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "major_strength"
+      },
+      {
+        "type": "buff",
+        "status": "major_endurance"
+      },
+      {
+        "type": "buff",
+        "status": "major_courage"
+      },
+      {
+        "type": "buff",
+        "status": "major_insight"
+      }
+    ]
+  },
+  "implosion": {
+    "name": "Implosion",
+    "type": "spell",
+    "level": 9,
+    "aspect": "divine",
+    "domain": "law",
+    "description": "Cause an enemy to implode from within.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=10d6",
+        "kind": "force",
+        "saveForHalf": true
+      }
+    ]
+  },
+
+
+  "divine_favor": {
+    "name": "Divine Favor",
+    "type": "spell",
+    "level": 0,
+    "aspect": "divine",
+    "domain": "war",
+    "description": "Empower your weapon with divine energy.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "blessed"
+      },
+      {
+        "type": "buff",
+        "status": "keen"
+      }
+    ]
+  },
+  "smite": {
+    "name": "Smite Evil",
+    "level": 1,
+    "type": "spell",
+    "aspect": "divine",
+    "domain": "war",
+    "description": "Smite an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=#level + 1d8",
+        "kind": "radiant"
+      }
+    ]
+  },
+  "holy_wrath": {
+    "name": "Holy Wrath",
+    "type": "spell",
+    "level": 2,
+    "aspect": "divine",
+    "domain": "war",
+    "description": "Unleash a burst of holy energy that damages and stuns enemies.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=2d6",
+        "kind": "radiant",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "stun",
+        "saveKind": "will",
+        "saveDC": 16
+      }
+    ]
+  },
+  "battle_cry": {
+    "name": "Battle Cry",
+    "type": "spell",
+    "level": 3,
+    "aspect": "divine",
+    "domain": "war",
+    "description": "Inspire your allies with a mighty battle cry.",
+    "target": [
+      "allies"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "inspired"
+      },
+      {
+        "type": "buff",
+        "status": "courage"
+      },
+      {
+        "type": "buff",
+        "status": "battlecry"
+      }
+    ]
+  },
+  "minor_deflection": {
+    "name": "Minor Deflection",
+    "type": "spell",
+    "level": 4,
+    "aspect": "divine",
+    "domain": "war",
+    "description": "Create a magical barrier that deflects incoming attacks and reflects a portion of damage back to attackers.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "deflection"
+      },
+      {
+        "type": "buff",
+        "status": "minor_reflect"
+      }
+    ]
+  },
+  "pure_strike": {
+    "name": "Pure Strike",
+    "type": "spell",
+    "level": 5,
+    "aspect": "divine",
+    "domain": "war",
+    "description": "Empower your weapon strikes with divine energy, increasing accuracy and damage.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "pure_strike"
+      }
+    ]
+  },
+  "major_deflection": {
+    "name": "Major Deflection",
+    "type": "spell",
+    "level": 6,
+    "aspect": "divine",
+    "domain": "war",
+    "description": "Create a powerful magical barrier that greatly deflects incoming attacks and reflects a significant portion of damage back to attackers.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "major_deflection"
+      },
+      {
+        "type": "buff",
+        "status": "reflect"
+      }
+    ]
+  },
+  "destroy_undead": {
+    "name": "Destroy Undead",
+    "type": "spell",
+    "level": 7,
+    "aspect": "divine",
+    "domain": "war",
+    "description": "Channel divine energy to destroy undead creatures.",
+    "target": [ "enemies" ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=5d6",
+        "kind": "radiant",
+        "saveForHalf": true,
+        "condition": {
+          "trait": "undead"
+        }
+      }
+    ]
+  },
+  "divine_champion": {
+    "name": "Divine Champion",
+    "type": "spell",
+    "level": 8,
+    "aspect": "divine",
+    "domain": "war",
+    "description": "Transform into a divine champion, greatly enhancing your combat abilities.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      { "type": "buff", "status": "major_cunning" },
+      { "type": "buff", "status": "major_wisdom" },
+      { "type": "buff", "status": "major_strength" },
+      { "type": "buff", "status": "major_endurance" },
+      { "type": "buff", "status": "major_courage" },
+      { "type": "buff", "status": "major_splendor" },
+      { "type": "buff", "status": "divine_champion" }
+    ]
+  },
+  "dust_to_dust": {
+    "name": "Dust to Dust",
+    "type": "spell",
+    "level": 9,
+    "aspect": "divine",
+    "domain": "war",
+    "description": "Call upon the gods to strike down your enemies with overwhelming force.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=10d6",
+        "kind": "radiant",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "stun",
+        "saveKind": "will",
+        "saveDC": 20
+      }
+    ]
+  },
+
+  "ire": {
+    "name": "Ire",
+    "type": "spell",
+    "level": 0,
+    "aspect": "divine",
+    "domain": "chaos",
+    "description": "Deal a tiny amount of damage and mock an enemy.",
+    "target": [ "enemy" ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d4",
+        "kind": "psychic",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "mocked",
+        "duration": 2
+      }
+    ]
+  },
+  "confuse": {
+    "name": "Confuse",
+    "type": "spell",
+    "level": 1,
+    "aspect": "divine",
+    "domain": "chaos",
+    "description": "Confuse an enemy, causing them to act erratically.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": "confused",
+        "saveKind": "will",
+        "saveDC": 15
+      }
+    ]
+  },
+  "chaotic_surge": {
+    "name": "Chaotic Surge",
+    "type": "spell",
+    "level": 2,
+    "aspect": "divine",
+    "domain": "chaos",
+    "description": "Unleash a surge of chaotic energy that damages and disorients enemies.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      { "type": "damage", "amount": "=1d8", "kind": "psychic", "saveForHalf": true },
+      {
+        "type": "randomEffect",
+        "randomEffects": [
+          { "type": "debuff", "status": "confused", "duration": 3, "saveKind": "will", "saveDC": 14 },
+          { "type": "debuff", "status": "slow", "duration": 3, "saveKind": "fortitude", "saveDC": 14 },
+          { "type": "debuff", "status": "distracted", "saveKind": "will", "saveDC": 16 }
+        ]
+      }
+    ]
+  },
+  "mad_whispers": {
+    "name": "Mad Whispers",
+    "type": "spell",
+    "level": 3,
+    "aspect": "divine",
+    "domain": "chaos",
+    "description": "Whisper maddening secrets to an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      { "type": "damage", "amount": "=1d12", "kind": "psychic", "saveForHalf": true },
+      { "type": "debuff", "status": "confused", "saveKind": "will", "saveDC": 18 },
+      { "type": "debuff", "status": "slow", "saveKind": "fortitude", "saveDC": 18 },
+      { "type": "debuff", "status": "stun", "saveKind": "will", "saveDC": 18 },
+      { "type": "debuff", "status": "distracted", "saveKind": "will", "saveDC": 18 }
+    ]
+  },
+  "agony": {
+    "name": "Agony",
+    "type": "spell",
+    "level": 4,
+    "aspect": "divine",
+    "domain": "chaos",
+    "description": "Inflict intense pain on an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=2d6",
+        "kind": "psychic",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "agony",
+        "saveKind": "will",
+        "saveDC": 20
+      }
+    ]
+  },
+  "heartrend": {
+    "name": "Heartrend",
+    "type": "spell",
+    "level": 5,
+    "aspect": "divine",
+    "domain": "chaos",
+    "description": "Tear at the very soul of an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=3d6",
+        "kind": "psychic",
+        "saveForHalf": true
+      },
+      { "type": "debuff", "status": "despair", "saveKind": "will", "saveDC": 22 },
+      { "type": "debuff", "status": "weakened", "saveKind": "will", "saveDC": 18 },
+      { "type": "debuff", "status": "distracted", "saveKind": "will", "saveDC": 15 },
+      { "type": "debuff", "status": "stun", "saveKind": "will", "saveDC": 13 }
+    ]
+  },
+  "overwhelming_chaos": {
+    "name": "Overwhelming Chaos",
+    "type": "spell",
+    "level": 6,
+    "aspect": "divine",
+    "domain": "chaos",
+    "description": "Unleash a torrent of chaotic energy that damages and confuses enemies.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=4d6",
+        "kind": "psychic",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "confused",
+        "saveKind": "will",
+        "saveDC": 22
+      }
+    ]
+  },
+  "madness": {
+    "name": "Madness",
+    "type": "spell",
+    "level": 7,
+    "aspect": "divine",
+    "domain": "chaos",
+    "description": "Drive an enemy insane.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": "insane",
+        "saveDC": 25
+      }
+    ]
+  },
+  "doom_spiral": {
+    "name": "Doom Spiral",
+    "type": "spell",
+    "level": 8,
+    "aspect": "divine",
+    "domain": "chaos",
+    "description": "Trap an enemy in a spiraling vortex of chaos.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=6d6",
+        "kind": "psychic",
+        "saveForHalf": true
+      },
+      { "type": "debuff", "status": "entangled", "saveKind": "strength", "saveDC": 24 },
+      { "type": "debuff", "status": "confused", "saveKind": "strength", "saveDC": 22 },
+      { "type": "debuff", "status": "fatigue", "saveKind": "strength", "saveDC": 20 }
+    ]
+  },
+  "discordant_wave": {
+    "name": "Discordant Wave",
+    "type": "spell",
+    "level": 9,
+    "aspect": "divine",
+    "domain": "chaos",
+    "description": "Release a wave of chaotic energy that wreaks havoc on all enemies.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=8d6",
+        "kind": "psychic",
+        "saveForHalf": true
+      },
+      { "type": "debuff", "status": "insane", "saveKind": "will", "saveDC": 28 },
+      { "type": "debuff", "status": "confused", "saveKind": "will", "saveDC": 25 },
+      { "type": "debuff", "status": "stun", "saveKind": "will", "saveDC": 23 },
+      { "type": "debuff", "status": "distracted", "saveKind": "will", "saveDC": 20 },
+      { "type": "debuff", "status": "doom", "saveKind": "will", "saveDC": 18 }
+    ]
+  }
+}

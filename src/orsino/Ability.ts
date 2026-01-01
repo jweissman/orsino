@@ -15,6 +15,7 @@ import { SaveKind } from "./types/SaveKind";
 import Files from "./util/Files";
 import { never } from "./util/never";
 import { DeemValue } from "../deem/stdlib";
+import { Inventory } from "./Inventory";
 
 export type TargetKind
   = "self"
@@ -49,7 +50,8 @@ export type AbilityType
   | "grantPassive"
   | "teleport"
   | "planeshift"
-  | "recalculateHp";
+  | "recalculateHp"
+  | "acquireItem";
 
 export interface AbilityEffect {
   description?: string;
@@ -68,7 +70,8 @@ export interface AbilityEffect {
   succeedDC?: number;
   succeedType?: SaveKind;
   chance?: number; // 0.0-1.0
-  item?: string;
+  // item?: string;
+
 
   condition?: {
     trait?: string; // traits the target must have
@@ -110,6 +113,10 @@ export interface AbilityEffect {
 
   // for teleport/planeshift
   location?: string;
+
+  // for item acquisition
+  // template?: GenerationTemplateType;
+  itemName?: string;
 }
 
 export interface Ability {
@@ -138,6 +145,9 @@ export interface Ability {
   // for consumables/inventory items
   key?: any;
   charges?: number;
+
+  // for setup abilities
+  setupFor?: string;
 }
 
 type AbilityDictionary = { [key: string]: Ability };
@@ -157,6 +167,14 @@ export default class AbilityHandler {
 
     const data = await Files.readJSON<AbilityDictionary>("./settings/fantasy/abilities.json");
     this.abilities = data;
+
+    for (const file of await Files.listFiles("./settings/fantasy/abilities")) {
+      console.log(`Loading abilities from ${file}...`);
+      const moreData = await Files.readJSON<AbilityDictionary>(`./settings/fantasy/abilities/${file}`);
+      console.log(`Loaded ${Object.keys(moreData).length} abilities from ${file}.`);
+      Object.assign(this.abilities, moreData);
+    }
+
     await this.validateAbilities();
     this.loadedAbilities = true;
   }
@@ -209,9 +227,10 @@ export default class AbilityHandler {
     return Object.values(this.abilities).filter(ab => ab.type === 'spell');
   }
 
-  allSpellKeys(aspect: string, maxLevel = Infinity, excludeEvilSpells = true): string[] {
+  allSpellKeys(aspect: string, maxLevel = Infinity, excludeEvilSpells = true, abilityFilter: (ab: Ability) => boolean = () => true): string[] {
     return Object.entries(this.abilities)
       .filter(([_key, ab]) => ab.aspect === aspect && ab.type === 'spell' && (ab.level ?? 0) <= maxLevel && (!excludeEvilSpells || ab.alignment !== 'evil'))
+      .filter(([_key, ab]) => abilityFilter(ab))
       .map(([key, _ab]) => key);
   }
 
@@ -607,8 +626,9 @@ export default class AbilityHandler {
         // todo handle applied traits + reify (and maybe update type???)
         if (effect.applyTraits) {
           targetCombatant.traits = Array.from(new Set([...(targetCombatant.traits || []), ...effect.applyTraits]));
-          // reify traits
-          await Combat.reifyTraits(targetCombatant);
+          let isPlayerTeam = false;
+          // reify traits (we don't actually know if player team here, but safest to assume not -- note this only governs whether we give spells from spellbooks for caster traits which really shouldn't be too relevant here afaict?)
+          await Combat.reifyTraits(targetCombatant, isPlayerTeam);
         }
         events.push({ type: "resurrect", subject: targetCombatant, amount } as Omit<ResurrectEvent, "turn">);
         rezzed = true;
@@ -696,6 +716,21 @@ export default class AbilityHandler {
     } else if (effect.type === "recalculateHp") {
       const effectiveTarget = Fighting.effectiveStats(targetCombatant);
       targetCombatant.hp = Math.min(targetCombatant.hp, effectiveTarget.maxHp || targetCombatant.hp);
+      success = true;
+    } else if (effect.type === "acquireItem") {
+      if (!effect.itemName) {
+        throw new Error(`acquireItem effect must specify an itemName`);
+      }
+      // let it = Generator.gen(effect.template, effect.options as unknown as GeneratorOptions || {}) as unknown as ItemInstance;
+      let it = Inventory.genLoot(effect.itemName);
+      context.inventory = context.inventory || [];
+      // it.itemClass ||= "junk";
+      it.ownerId = user.id;
+      it.shared = it.itemClass === "consumable";
+      console.log(`${user.name} acquires item: ${it.name}`, JSON.stringify(it));
+      context.inventory.push(it);
+      // console.log(`${user.name} acquires item: ${it.name}`);
+      events.push({ type: "acquire", subject: user, acquirer: user, itemName: it.name, quantity: 1 } as Omit<GameEvent, "turn">);
       success = true;
     }
 

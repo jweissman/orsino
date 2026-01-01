@@ -502,12 +502,7 @@
         "name": "Herbal Remedies",
         "description": "Whenever you heal, add an additional 1d4 HP.",
         "effect": {
-          "onHeal": [
-            {
-              "type": "heal",
-              "amount": "=1d4"
-            }
-          ]
+          "bonusHealing": "=1d4"
         }
       }
     ]
@@ -854,6 +849,29 @@
         "description": "Difficult to detect and hit.",
         "effect": {
           "invisible": true
+        }
+      }
+    ]
+  },
+  "illusory": {
+    "type": "template",
+    "description": "Phantasmal",
+    "statuses": [
+      {
+        "name": "Mind Over Matter",
+        "description": "Resistant to mental attacks and biological effects, but vulnerable to being dispelled when attacked.",
+        "effect": {
+          "resistPsychic": 0.5,
+          "immunePoison": true,
+          "immuneDisease": true,
+          "immuneSleep": true,
+          "immuneParalyze": true,
+          "onAttacked": [
+            {
+              "type": "kill",
+              "target": "self"
+            }
+          ]
         }
       }
     ]
@@ -1318,7 +1336,6 @@
         "name": "Humanoid Traits",
         "description": "Humankind is known for its versatility, resilience, and stubbornness.",
         "effect": {
-          "resistAll": 0.05,
           "saveVersusCharm": 1,
           "saveVersusFear": 1
         }
@@ -1538,69 +1555,108 @@
     "school": "all"
   },
 
-  "vitalist": {
-    "type": "domain",
-    "description": "Specialist in divine life magic",
-    "spellbooks": [
-      "divine"
-    ],
-    "domain": "life"
-  },
-  "deathspeaker": {
-    "type": "domain",
-    "description": "Focus on the grave and what lies beyond",
-    "spellbooks": [
-      "divine"
-    ],
-    "domain": "death"
-  },
   "lightbringer": {
     "type": "domain",
     "description": "Illumination specialist",
-    "spellbooks": [
-      "divine"
-    ],
-    "domain": "light"
+    "spellbooks": [ "divine" ],
+    "domain": "light",
+    "statuses": [
+      {
+        "name": "Lightbringer",
+        "description": "You are a beacon of light and hope.",
+        "effect": { "displayClass": "Lightbringer" }
+      }
+    ]
   },
   "shadowmancer": {
     "type": "domain",
     "description": "Darkness and shadow specialist",
-    "spellbooks": [
-      "divine"
-    ],
-    "domain": "darkness"
-  },
-  "oathkeeper": {
-    "type": "domain",
-    "description": "Protection of the wronged and punishment of the wicked",
-    "spellbooks": [
-      "divine"
-    ],
-    "domain": "law"
+    "spellbooks": [ "divine" ],
+    "domain": "darkness",
+    "statuses": [
+      {
+        "name": "Shadowmancer",
+        "description": "You are a master of shadows and darkness.",
+        "effect": { "displayClass": "Shadowmancer" }
+      }
+    ]
   },
   "wildcaller": {
     "type": "domain",
     "description": "Nature and wilderness specialist",
-    "spellbooks": [
-      "divine"
-    ],
-    "domain": "nature"
+    "spellbooks": [ "divine" ],
+    "domain": "nature",
+    "statuses": [
+      {
+        "name": "Wildcaller",
+        "description": "You are attuned to the forces of nature.",
+        "effect": { "displayClass": "Wildcaller" }
+      }
+    ]
   },
-  "chaotician": {
+  "vitalist": {
     "type": "domain",
-    "description": "Trickery, chaos and mischief specialist",
-    "spellbooks": [
-      "divine"
-    ],
-    "domain": "chaos"
+    "description": "Specialist in divine life magic",
+    "spellbooks": [ "divine" ],
+    "domain": "life",
+    "statuses": [
+      {
+        "name": "Vitalist",
+        "description": "You are a conduit of divine life energy.",
+        "effect": { "displayClass": "Vitalist" }
+      }
+    ]
+  },
+  "deathspeaker": {
+    "type": "domain",
+    "description": "Focus on the grave and what lies beyond",
+    "spellbooks": [ "divine" ],
+    "domain": "death",
+    "statuses": [
+      {
+        "name": "Deathspeaker",
+        "description": "You are a herald of death and the afterlife.",
+        "effect": { "displayClass": "Deathspeaker" }
+      }
+    ]
+  },
+  "oathkeeper": {
+    "type": "domain",
+    "description": "Protection of the wronged and punishment of the wicked",
+    "spellbooks": [ "divine" ],
+    "domain": "law",
+    "statuses": [
+      {
+        "name": "Oathkeeper",
+        "description": "You are a champion of justice and order.",
+        "effect": { "displayClass": "Oathkeeper" }
+      }
+    ]
   },
   "warbringer": {
     "type": "domain",
     "description": "Focus on combat and conflict",
-    "spellbooks": [
-      "divine"
-    ],
-    "domain": "war"
+    "spellbooks": [ "divine" ],
+    "domain": "war",
+    "statuses": [
+      {
+        "name": "Warbringer",
+        "description": "You are a master of warfare and strategy.",
+        "effect": { "displayClass": "Warbringer" }
+      }
+    ]
+  },
+  "chaotician": {
+    "type": "domain",
+    "description": "Trickery, chaos and mischief specialist",
+    "spellbooks": [ "divine" ],
+    "domain": "chaos",
+    "statuses": [
+      {
+        "name": "Chaotician",
+        "description": "You are a harbinger of chaos and unpredictability.",
+        "effect": { "displayClass": "Chaotician" }
+      }
+    ]
   }
-
 }

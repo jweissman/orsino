@@ -582,6 +582,9 @@ export default class Presenter {
         case "bonusMeleeDamage":
           parts.push(this.increaseDecrease('bonus melee damage', value as number));
           break;
+        case "criticalRangeIncrease":
+          parts.push(this.increaseDecrease('critical range', value as number));
+          break;
         case "ac":
           parts.push(this.increaseDecrease('AC', -value));
           break;
@@ -871,6 +874,32 @@ export default class Presenter {
             }
           }
           break;
+        
+        case "effectiveWeapon":
+          if (value) {
+            parts.push(`Weapon set to ${value}`);
+          }
+          break;
+        
+        case "effectiveArmor":
+          if (value) {
+            parts.push(`Armor set to ${value}`);
+          }
+          break;
+        
+        case "effectiveSize":
+          if (value) {
+            parts.push(`Size set to ${Words.humanize(value as string)}`);
+          }
+          break;
+
+        case "effectiveAbilities":
+          if (value) {
+            const abilities = value as string[];
+            parts.push(`Abilities set to: ${abilities.map(a => Words.humanize(a)).join(', ')}`);
+          }
+          break;
+
 
         // case "maxHp":
         //   parts.push("max HP set to " + value);
@@ -883,14 +912,6 @@ export default class Presenter {
         case "controlledActions":
           if (value) {
             parts.push(`Actions are controlled`);
-          }
-          break;
-
-
-        case "effectiveAbilities":
-          if (value) {
-            const abilities = value as string[];
-            parts.push(`Abilities set to: ${abilities.map(a => Words.humanize(a)).join(', ')}`);
           }
           break;
 
@@ -907,6 +928,12 @@ export default class Presenter {
             parts.push(`Has primary attack`);
           } else {
             parts.push(`No primary attack`);
+          }
+          break;
+
+        case "readThoughts":
+          if (value) {
+            parts.push(`Can read surface thoughts of others`);
           }
           break;
 
@@ -989,6 +1016,7 @@ export default class Presenter {
         if (effect.status) {
           description = (`Grant ${targetDescription} ${this.describeStatusWithName(effect.status)}`);
         } else {
+          console.warn(`Buff effect missing status: ${JSON.stringify(effect)}`);
           throw new Error(`Buff effect must have a status defined`);
         }
         break;
@@ -1057,6 +1085,8 @@ export default class Presenter {
         description = (`Planeshift ${targetDescription} to ${effect.location}`); break;
       case "recalculateHp":
         description = (`Recalculate HP for ${targetDescription}`); break;
+      case "acquireItem":
+        description = (`Acquire item ${effect.itemName} for ${targetDescription}`); break;
       default:
         console.warn(`Unknown effect type: ${effect.type} for effect ${JSON.stringify(effect)}`);
         return never(effect.type);

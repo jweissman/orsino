@@ -35,7 +35,8 @@
     "_baseValue": "=#rank == 'common' ? 50 : (#rank == 'uncommon' ? 200 : (#rank == 'rare' ? 1000 : (#rank == 'very_rare' ? 5000 : 20000)))",
     "_sizeModifier": "=#size == 'tiny' ? 0.5 : (#size == 'small' ? 0.75 : (#size == 'medium' ? 1 : (#size == 'large' ? 1.5 : 2)))",
     "value": "=round(#_baseValue * #_sizeModifier)",
-    "description": "=humanize(\"#{a_an(#rank)} gemstone\")"
+    "description": "=humanize(\"#{a_an(#rank)} gemstone\")",
+    "itemClass": "gem"
   },
   "deity": {
     "domain": "=oneOf(light, darkness, nature, war, knowledge, trickery, life, death, magic, order, chaos, oceans, love, storms)",
@@ -258,6 +259,7 @@
     "*terrainModifier": "=lookup(terrainModifier, #terrain)",
     "*typeModifier": "=lookup(npcTypeModifier, #npc_type)",
     "*aspectModifier": "=lookup(creatureAspects, #npc_aspect)",
+    "*raceModifier": "=lookup(racialModifier, #race)",
     "*template": "=#npc_template != nihil ? lookup(creatureTemplateModifiers, #npc_template) : nihil",
     "hitDie": "=dig(#_statLine, 'hitDie')",
     "_maximumHitPoints": "=max(2, round(#hitDie + ((#level-1) * #hitDie/2) + statMod(#con)))",
