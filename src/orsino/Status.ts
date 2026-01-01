@@ -201,6 +201,7 @@ export interface StatusModifications {
 }
 
 export interface StatusEffect {
+  type: 'buff' | 'condition';
   name: string;
   description?: string;
   effect: StatusModifications;  //{ [key: string]: any };

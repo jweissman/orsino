@@ -478,20 +478,20 @@ export class ModuleRunner {
 
   private async temple() {
     const mod = this.mod;
+    const deityName = mod.town.deity.name;
+    const blessingsGranted: string[] = [];
     const offerDonation = await this.select(
-      `The Temple of ${Words.capitalize(mod.town.deity.name)} offers blessings for 10g. Wands will also be recharged. Would you like to make a donation?`,
+      `The Temple of ${Words.capitalize(deityName)} offers blessings for 10g. Wands will also be recharged. Would you like to make a donation?`,
       [
-        { short: "Yes", value: true, name: `Donate to ${mod.town.deity.name} Temple`, disabled: this.sharedGold < 10 },
+        { short: "Yes", value: true, name: `Donate to ${deityName} Temple`, disabled: this.sharedGold < 10 },
         { short: "No", value: false, name: "Decline", disabled: false },
       ]
     ) as unknown as boolean;
 
     if (offerDonation) {
       this.state.sharedGold -= 10;
-      const blessingsGranted: string[] = [];
       const effect = mod.town.deity.blessing;
       const duration = 10;
-      const deityName = mod.town.deity.name;
       const blessingName = `${mod.town.deity.forename}'s Favor`;
       const blessing: StatusEffect = {
         name: blessingName,
@@ -557,7 +557,7 @@ export class ModuleRunner {
       await this.emit({ type: "goldStatus", amount: this.sharedGold, day: this.days });
       const { events, done: newDone } = await shop.interact(category, this.state);
       for (const event of events) { await this.emit(event); }
-      this.state = processEvents(this.state, events);
+      this._state = processEvents(this.state, events);
       done = newDone;
     }
   }

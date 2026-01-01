@@ -938,7 +938,7 @@
   },
   "formidable": {
     "name": "Formidable",
-    "type": "trait",
+    "type": "character",
     "description": "Formidable",
     "statuses": [
       {
@@ -957,7 +957,7 @@
   },
   "favored": {
     "name": "Favored",
-    "type": "trait",
+    "type": "character",
     "description": "Favored",
     "statuses": [
       {
@@ -974,7 +974,7 @@
   },
   "radiant": {
     "name": "Radiant",
-    "type": "trait",
+    "type": "divine",
     "description": "Radiant",
     "statuses": [
       {
@@ -1012,7 +1012,7 @@
   },
   "disciplined": {
     "name": "Disciplined",
-    "type": "trait",
+    "type": "character",
     "description": "Disciplined",
     "statuses": [
       {
@@ -1081,7 +1081,7 @@
   },
   "wild": {
     "name": "Wild",
-    "type": "trait",
+    "type": "template",
     "description": "Wild",
     "statuses": [
       {
@@ -1098,7 +1098,7 @@
     ]
   },
   "air_affinity": {
-    "type": "template",
+    "type": "elemental",
     "description": "Air Affinity",
     "statuses": [
       {
@@ -1114,7 +1114,7 @@
     ]
   },
   "fire_affinity": {
-    "type": "template",
+    "type": "elemental",
     "description": "Fire Affinity",
     "statuses": [
       {
@@ -1129,7 +1129,7 @@
     ]
   },
   "earth_affinity": {
-    "type": "template",
+    "type": "elemental",
     "description": "Earth Affinity",
     "statuses": [
       {
@@ -1144,7 +1144,7 @@
     ]
   },
   "water_affinity": {
-    "type": "template",
+    "type": "elemental",
     "description": "Water Affinity",
     "statuses": [
       {
@@ -1160,7 +1160,7 @@
     ]
   },
   "air_vulnerability": {
-    "type": "template",
+    "type": "elemental",
     "description": "Air Vulnerability",
     "statuses": [
       {
@@ -1174,7 +1174,7 @@
     ]
   },
   "fire_vulnerability": {
-    "type": "template",
+    "type": "elemental",
     "description": "Fire Vulnerability",
     "statuses": [
       {
@@ -1187,7 +1187,7 @@
     ]
   },
   "earth_vulnerability": {
-    "type": "template",
+    "type": "elemental",
     "description": "Earth Vulnerability",
     "statuses": [
       {
@@ -1200,7 +1200,7 @@
     ]
   },
   "water_vulnerability": {
-    "type": "template",
+    "type": "elemental",
     "description": "Water Vulnerability",
     "statuses": [
       {
@@ -1215,7 +1215,7 @@
 
   "firekissed": {
     "name": "Firekissed",
-    "type": "trait",
+    "type": "divine",
     "description": "Firekissed",
     "statuses": [
       {
@@ -1228,9 +1228,10 @@
       }
     ]
   },
+
   "wall": {
     "name": "Wall",
-    "type": "trait",
+    "type": "template",
     "description": "Wall",
     "statuses": [
       {
@@ -1247,7 +1248,7 @@
   },
   "counter_arcane": {
     "name": "Counter Arcane",
-    "type": "trait",
+    "type": "template",
     "description": "Counter Arcane",
     "statuses": [
       {
@@ -1277,7 +1278,7 @@
   },
   "automatic_fire": {
     "name": "Automatic Fire",
-    "type": "trait",
+    "type": "template",
     "description": "Automatic Fire",
     "statuses": [
       {
@@ -1308,54 +1309,7 @@
       }
     ]
   },
-  "toughness": {
-    "name": "Toughness",
-    "type": "trait",
-    "description": "Toughness",
-    "statuses": [
-      {
-        "name": "Toughness",
-        "description": "This creature has an exceptional constitution, granting it increased durability and resilience.",
-        "effect": {
-          "resistAll": 0.1,
-          "saveVersusDeath": 2,
-          "ac": -1
-        }
-      }
-    ]
-  },
-  "brave": {
-    "name": "Brave",
-    "type": "trait",
-    "description": "Brave",
-    "statuses": [
-      {
-        "name": "Bravery",
-        "description": "This creature possesses unwavering courage, granting it enhanced resilience against fear and mind-affecting effects.",
-        "effect": {
-          "saveVersusFear": 3,
-          "saveVersusCharm": 2,
-          "evasion": 2
-        }
-      }
-    ]
-  },
-  "strong_willed": {
-    "name": "Strong Willed",
-    "type": "trait",
-    "description": "Strong Willed",
-    "statuses": [
-      {
-        "name": "Strong Willed",
-        "description": "This creature has a formidable mind, granting it increased resistance to mental manipulation and magical effects.",
-        "effect": {
-          "saveVersusMagic": 3,
-          "saveVersusInsanity": 2,
-          "toHit": 1
-        }
-      }
-    ]
-  },
+  
   "humanoid": {
     "type": "template",
     "description": "Humanoid",
@@ -1387,8 +1341,57 @@
     ]
   },
 
+  "toughness": {
+    "name": "Toughness",
+    "type": "character",
+    "description": "Toughness",
+    "statuses": [
+      {
+        "name": "Toughness",
+        "description": "This creature has an exceptional constitution, granting it increased durability and resilience.",
+        "effect": {
+          "resistAll": 0.1,
+          "saveVersusDeath": 2,
+          "ac": -1
+        }
+      }
+    ]
+  },
+  "brave": {
+    "name": "Brave",
+    "type": "character",
+    "description": "Brave",
+    "statuses": [
+      {
+        "name": "Bravery",
+        "description": "This creature possesses unwavering courage, granting it enhanced resilience against fear and mind-affecting effects.",
+        "effect": {
+          "saveVersusFear": 3,
+          "saveVersusCharm": 2,
+          "evasion": 2
+        }
+      }
+    ]
+  },
+  "strong_willed": {
+    "name": "Strong Willed",
+    "type": "character",
+    "description": "Strong Willed",
+    "statuses": [
+      {
+        "name": "Strong Willed",
+        "description": "This creature has a formidable mind, granting it increased resistance to mental manipulation and magical effects.",
+        "effect": {
+          "saveVersusMagic": 3,
+          "saveVersusInsanity": 2,
+          "toHit": 1
+        }
+      }
+    ]
+  },
+
   "abjurer": {
-    "type": "template",
+    "type": "school",
     "description": "Protective specialist",
     "requirements": {
       "classes": [
@@ -1409,7 +1412,7 @@
     "school": "abjuration"
   },
   "conjurer": {
-    "type": "template",
+    "type": "school",
     "description": "Summoning and teleportation focus",
     "requirements": {
       "classes": [
@@ -1430,7 +1433,7 @@
     "school": "conjuration"
   },
   "diviner": {
-    "type": "template",
+    "type": "school",
     "description": "Information-gathering specialist",
     "spellbooks": [
       "arcane"
@@ -1445,7 +1448,7 @@
     "school": "divination"
   },
   "evoker": {
-    "type": "template",
+    "type": "school",
     "description": "Focus on damage dealing",
     "spellbooks": [
       "arcane"
@@ -1460,7 +1463,7 @@
     "school": "evocation"
   },
   "illusionist": {
-    "type": "template",
+    "type": "school",
     "description": "Specialist in deception and trickery",
     "spellbooks": [
       "arcane"
@@ -1475,7 +1478,7 @@
     "school": "illusion"
   },
   "necromancer": {
-    "type": "template",
+    "type": "school",
     "description": "Death and life manipulation",
     "spellbooks": [
       "arcane"
@@ -1490,7 +1493,7 @@
     "school": "necromancy"
   },
   "transmuter": {
-    "type": "template",
+    "type": "school",
     "description": "Transformation and alteration specialist",
     "spellbooks": [
       "arcane"
@@ -1505,7 +1508,7 @@
     "school": "transmutation"
   },
   "enchanter": {
-    "type": "template",
+    "type": "school",
     "description": "Specialist in enchantments and mind-affecting magic",
     "spellbooks": [
       "arcane"
@@ -1520,7 +1523,7 @@
     "school": "enchantment"
   },
   "generalist": {
-    "type": "template",
+    "type": "school",
     "description": "Generalist familiar with all schools of arcane magic",
     "spellbooks": [
       "arcane"
@@ -1536,7 +1539,7 @@
   },
 
   "vitalist": {
-    "type": "template",
+    "type": "domain",
     "description": "Specialist in divine life magic",
     "spellbooks": [
       "divine"
@@ -1544,7 +1547,7 @@
     "domain": "life"
   },
   "deathspeaker": {
-    "type": "template",
+    "type": "domain",
     "description": "Focus on the grave and what lies beyond",
     "spellbooks": [
       "divine"
@@ -1552,7 +1555,7 @@
     "domain": "death"
   },
   "lightbringer": {
-    "type": "template",
+    "type": "domain",
     "description": "Illumination specialist",
     "spellbooks": [
       "divine"
@@ -1560,7 +1563,7 @@
     "domain": "light"
   },
   "shadowmancer": {
-    "type": "template",
+    "type": "domain",
     "description": "Darkness and shadow specialist",
     "spellbooks": [
       "divine"
@@ -1568,7 +1571,7 @@
     "domain": "darkness"
   },
   "oathkeeper": {
-    "type": "template",
+    "type": "domain",
     "description": "Protection of the wronged and punishment of the wicked",
     "spellbooks": [
       "divine"
@@ -1576,7 +1579,7 @@
     "domain": "law"
   },
   "wildcaller": {
-    "type": "template",
+    "type": "domain",
     "description": "Nature and wilderness specialist",
     "spellbooks": [
       "divine"
@@ -1584,7 +1587,7 @@
     "domain": "nature"
   },
   "chaotician": {
-    "type": "template",
+    "type": "domain",
     "description": "Trickery, chaos and mischief specialist",
     "spellbooks": [
       "divine"
@@ -1592,29 +1595,12 @@
     "domain": "chaos"
   },
   "warbringer": {
-    "type": "template",
+    "type": "domain",
     "description": "Focus on combat and conflict",
     "spellbooks": [
       "divine"
     ],
     "domain": "war"
-  },
-  "divine_caster": {
-    "type": "template",
-    "description": "Divine Caster",
-    "spellbooks": [
-      "divine"
-    ],
-    "domain": "all"
-  },
-  "universal_caster": {
-    "type": "template",
-    "description": "Universal Caster",
-    "spellbooks": [
-      "arcane",
-      "divine"
-    ],
-    "school": "all",
-    "domain": "all"
   }
+
 }

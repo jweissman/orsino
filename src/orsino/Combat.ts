@@ -784,16 +784,21 @@ export default class Combat {
       return { haltRound: false };
     }
 
+    const ctx = this.contextForCombatant(combatant);
+    // console.log("Assembled context for NPC turn:", ctx);
     let scoredAbilities = validAbilities.map(ability => ({
       ability,
-      score: AbilityScoring.scoreAbility(ability, combatant, allies, enemies)
+      score: AbilityScoring.scoreAbility(ability, ctx)
+        ///combatant, allies, enemies)
     }));
 
     scoredAbilities = scoredAbilities.filter(sa => sa.score > 0);
 
     scoredAbilities.sort((a, b) => b.score - a.score);
+    console.log(`NPC ${Presenter.minimalCombatant(combatant)} scored abilities:`, scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`));
     let action = scoredAbilities[
-      Math.floor(Math.random() * Math.min(2, scoredAbilities.length))
+      // Math.floor(Math.random() * Math.min(2, scoredAbilities.length))
+      0
     ]?.ability;
 
     // if randomActions enabled, pick randomly from valid actions
@@ -809,7 +814,7 @@ export default class Combat {
       this.emit({ type: "wait", subject: combatant } as Omit<WaitEvent, "turn">);
       return { haltRound: false };
     }
-    const targetOrTargets: Combatant | Combatant[] = AbilityScoring.bestAbilityTarget(action, combatant, allies, enemies);
+    const targetOrTargets: Combatant | Combatant[] | null = AbilityScoring.bestAbilityTarget(action, combatant, allies, enemies);
 
     if (targetOrTargets === null || targetOrTargets === undefined) {
       this.emit({ type: "wait", subject: combatant } as Omit<WaitEvent, "turn">);
@@ -830,7 +835,7 @@ export default class Combat {
     }
 
     // invoke the action
-    const ctx = this.contextForCombatant(combatant);
+    // const ctx = this.contextForCombatant(combatant);
 
     const { events } = await AbilityHandler.perform(action, combatant, targetOrTargets, ctx, Commands.handlers(this.roller));
     await this.emitAll(events, Combat.describeAbility(action), combatant);

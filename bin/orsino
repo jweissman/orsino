@@ -46,6 +46,8 @@ program.command('book <type>')
       trap: Books.trapbook.bind(Books),
       weapon: Books.weaponbook.bind(Books), armor: Books.armorbook.bind(Books),
       gear: Books.gearbook.bind(Books), treasure: Books.treasurebook.bind(Books),
+      class: Books.classbook.bind(Books), race: Books.racebook.bind(Books),
+      classe: Books.classbook.bind(Books),
     }
 
     let book = bookshelf[type] || bookshelf[type.slice(0, -1)];

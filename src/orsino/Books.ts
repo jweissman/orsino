@@ -155,6 +155,26 @@ export default class Books {
     traits.sort((a, b) => a.localeCompare(b));
 
     this.write(`## Traits\n`);
+    let traitGroups: { [key: string]: string[] } = {};
+    traits.forEach(traitName => {
+      const trait = TraitHandler.instance.getTrait(traitName);
+      if (trait) {
+        const group = trait.type || "General";
+        if (!traitGroups[group]) {
+          traitGroups[group] = [];
+        }
+        traitGroups[group].push(traitName);
+      }
+    });
+
+    Object.keys(traitGroups).forEach(groupName => {
+      this.write(`\n### ${Words.capitalize(groupName)} Traits\n`);
+      this._writeTraitTable(traitGroups[groupName]);
+    });
+  }
+
+  private static _writeTraitTable(traits: string[]) {
+
     this.write("| Trait | Description | Abilities/Statuses |");
     this.write("|-------|-------------|--------------------|");
 
@@ -346,6 +366,24 @@ export default class Books {
     this.write(`## Status Effects\n`);
 
     const statuses = StatusHandler.instance.statusList;
+    const statusGroups: {
+      [key: string]: StatusEffect[];
+    } = {};
+    for (const status of statuses) {
+      const group = status.type || "General";
+      if (!statusGroups[group]) {
+        statusGroups[group] = [];
+      }
+      statusGroups[group].push(status);
+    }
+
+    Object.keys(statusGroups).forEach(groupName => {
+      this.write(`\n### ${Words.capitalize(groupName)} Status Effects\n`);
+      this._writeStatusTable(statusGroups[groupName]);
+    });
+  }
+
+  private static _writeStatusTable(statuses: StatusEffect[]) {
     statuses.sort((a, b) => a.name.localeCompare(b.name));
     this.write("| Status Effect | Description | Details |");
     this.write("|---------------|-------------|---------|");
@@ -503,4 +541,103 @@ export default class Books {
       }
     }
   }
+
+  static async racebook(_options: Record<string, any> = {}) {
+    await this.bootstrap();
+
+    this.write(`## Races\n`);
+
+    const raceNames = Deem.evaluate("gather(racialModifier)") as string[];
+    raceNames.sort((a: string, b) => a.localeCompare(b));
+
+    for (const raceName of raceNames) {
+      this.write(`\n### ${Words.humanize(raceName)}\n`);
+      const race = Deem.evaluate('lookup(racialModifier, "' + raceName + '")') as unknown as {
+        str?: number;
+        dex?: number;
+        con?: number;
+        int?: number;
+        wis?: number;
+        cha?: number;
+        occupationOptions?: string[];
+        forbiddenTraits?: string[];
+      };
+      const description = Deem.evaluate('lookup(raceDescriptions, "' + raceName + '")') as string;
+      this.write("_" + description + "_\n");
+      this.write("| Attribute | Modifier |");
+      this.write("|-----------|----------|");
+      let modTotal = 0;
+      ['str', 'dex', 'con', 'int', 'wis', 'cha'].forEach(attr => {
+        const modifier = (race as any)[attr];
+        if (modifier) {
+          this.write(`| ${Words.capitalize(attr)} | ${modifier >= 0 ? "+" : ""}${modifier} |`);
+        }
+        modTotal += modifier || 0;
+      });
+      this.write(`| **Total** | ${modTotal >= 0 ? "+" : ""}${modTotal} |\n`);
+      if (race.occupationOptions) {
+        this.write(`\n**Occupation Options:** ${race.occupationOptions.map(opt => Words.capitalize(opt)).join(", ")}\n`);
+      }
+      if (race.forbiddenTraits) {
+        this.write(`\n**Forbidden Traits:** ${race.forbiddenTraits.map(opt => Words.capitalize(opt)).join(", ")}\n`);
+      }
+    }
+  }
+
+  static async classbook(_options: Record<string, any> = {}) {
+    await this.bootstrap();
+
+    this.write(`## Classes\n`);
+
+    const classNames = Deem.evaluate("gather(classModifier)") as string[];
+    classNames.sort((a: string, b) => a.localeCompare(b));
+
+    for (const className of classNames) {
+      this.write(`\n### ${Words.capitalize(className)}\n`);
+      const classMod = Deem.evaluate('lookup(classModifier, "' + className + '")') as unknown as {
+        str: number;
+        dex: number;
+        con: number;
+        int: number;
+        wis: number;
+        cha: number;
+        gp: number;
+        startingGear: string[];
+        weaponProficiencies: { all?: boolean; kind?: string[]; weight?: string[] };
+        armorProficiencies: { all?: boolean; kind?: string[]; weight?: string[] };
+        itemProficiencies: { all?: boolean; kind?: string[]; };
+        hitDie?: string;
+      };
+      const description = Deem.evaluate('lookup(classDescriptions, "' + className + '")') as string;
+      this.write("_" + description + "_\n");
+      this.write("| Attribute | Modifier |");
+      this.write("|-----------|----------|");
+      let modTotal = 0;
+      ['str', 'dex', 'con', 'int', 'wis', 'cha'].forEach(attr => {
+        const modifier = (classMod as any)[attr];
+        if (modifier) {
+          this.write(`| ${Words.capitalize(attr)} | ${modifier >= 0 ? "+" : ""}${modifier} |`);
+        }
+        modTotal += modifier || 0;
+      });
+      this.write(`| **Total** | ${modTotal >= 0 ? "+" : ""}${modTotal} |\n`);
+      this.write(`\n**Starting Gold:** ${classMod.gp} gp\n`);
+      if (classMod.hitDie) {
+        this.write(`\n**Hit Die:** d${classMod.hitDie}\n`);
+      }
+      this.write("\n**Starting Gear:** " + classMod.startingGear.map(gear => Words.humanize(gear)).join(", ") + "\n");
+
+      const wp = classMod.weaponProficiencies;
+      this.write("\n**Weapon Proficiencies:** " + (wp.all ? "All weapons" : `${wp.kind ? wp.kind.map(k => Words.humanize(k)).join(", ") : ""} ${wp.weight ? `of ${wp.weight.join(", ")} weight` : ""}`) + "\n");
+
+      const ap = classMod.armorProficiencies;
+      this.write("\n**Armor Proficiencies:** " + (ap.all ? "All armor" : `${ap.kind ? ap.kind.map(k => Words.humanize(k)).join(", ") : ""} ${ap.weight ? `of ${ap.weight.join(", ")} weight` : ""}`) + "\n");
+
+      const ip = classMod.itemProficiencies;
+      if (ip) {
+        this.write("\n**Item Proficiencies:** " + (ip.all ? "All items" : `${ip.kind ? ip.kind.map(k => Words.humanize(k)).join(", ") : ""}`) + "\n");
+      }
+    }
+  }
+
 }

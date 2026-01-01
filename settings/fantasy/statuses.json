@@ -1,6 +1,7 @@
 {
   "rage": {
     "name": "Raging",
+    "type": "buff",
     "description": "Utterly overcome with fury.",
     "effect": {
       "toHit": 1,
@@ -10,6 +11,7 @@
   },
   "battlecry": {
     "name": "Battlecry",
+    "type": "buff",
     "description": "Letting out a fierce battlecry to intimidate foes.",
     "effect": {
       "bonusDamage": "=1d3"
@@ -17,6 +19,7 @@
   },
   "bloodfrenzy": {
     "name": "Blood Frenzy",
+    "type": "buff",
     "description": "Entering a frenzied state after slaying an enemy.",
     "effect": {
       "toHit": 2,
@@ -26,6 +29,7 @@
   },
   "defending": {
     "name": "Defending",
+    "type": "buff",
     "description": "Adapting a defensive stance.",
     "effect": {
       "ac": -2
@@ -33,6 +37,7 @@
   },
   "dodge": {
     "name": "Dodging",
+    "type": "buff",
     "description": "Focusing on avoiding attacks.",
     "effect": {
       "ac": -2,
@@ -41,6 +46,7 @@
   },
   "dug_in": {
     "name": "Dug In",
+    "type": "buff",
     "description": "Taking a fortified position.",
     "effect": {
       "ac": -2,
@@ -50,6 +56,7 @@
   },
   "overwatch": {
     "name": "Overwatching",
+    "type": "buff",
     "description": "Ready to strike at any enemy that comes close.",
     "effect": {
       "bonusDamage": 2,
@@ -68,6 +75,7 @@
   },
   "riposte": {
     "name": "Riposting",
+    "type": "buff",
     "description": "Punishing missed attacks.",
     "effect": {
       "evasion": 3,
@@ -83,6 +91,7 @@
   },
   "hidden": {
     "name": "Hidden",
+    "type": "buff",
     "description": "Concealed from enemies.",
     "effect": {
       "ac": -4,
@@ -97,6 +106,7 @@
   },
   "haste": {
     "name": "Haste",
+    "type": "buff",
     "description": "Moving with supernatural speed.",
     "effect": {
       "dex": 4,
@@ -107,24 +117,32 @@
   },
   "barkskin": {
     "name": "Barkskin",
+    "type": "buff",
+    "description": "Skin hardened like bark.",
     "effect": {
       "ac": -2
     }
   },
   "stoneskin": {
     "name": "Stoneskin",
+    "type": "buff",
+    "description": "Skin as hard as stone.",
     "effect": {
       "ac": -3
     }
   },
   "ironskin": {
     "name": "Ironskin",
+    "type": "buff",
+    "description": "Skin as tough as iron.",
     "effect": {
       "ac": -5
     }
   },
   "scaleskin": {
     "name": "Scaleskin",
+    "type": "buff",
+    "description": "Skin as impervious as dragon scales.",
     "effect": {
       "ac": -8,
       "resistFire": 0.25
@@ -132,6 +150,8 @@
   },
   "steelskin": {
     "name": "Steelskin",
+    "type": "buff",
+    "description": "Skin as impenetrable as steel.",
     "effect": {
       "ac": -10,
       "resistPiercing": 0.5,
@@ -140,6 +160,8 @@
   },
   "wisdom": {
     "name": "Owl's Wisdom",
+    "type": "buff",
+    "description": "Has keen insight and perception.",
     "effect": {
       "wis": 2,
       "saveVersusAll": 1
@@ -147,12 +169,16 @@
   },
   "strength": {
     "name": "Bull's Strength",
+    "type": "buff",
+    "description": "Gains massive strength.",
     "effect": {
       "str": 2
     }
   },
   "major_strength": {
     "name": "Giant's Strength",
+    "type": "buff",
+    "description": "Becomes mightily strong.",
     "effect": {
       "str": 6,
       "bonusMeleeDamage": "=1d3"
@@ -160,6 +186,8 @@
   },
   "grace": {
     "name": "Cat's Grace",
+    "type": "buff",
+    "description": "Acquires finesse and agility.",
     "effect": {
       "dex": 2,
       "evasion": 5
@@ -167,6 +195,8 @@
   },
   "cunning": {
     "name": "Fox's Cunning",
+    "type": "buff",
+    "description": "Becomes incredibly clever and quick-thinking.",
     "effect": {
       "int": 2,
       "allRolls": 1
@@ -174,6 +204,8 @@
   },
   "endurance": {
     "name": "Bear's Endurance",
+    "type": "buff",
+    "description": "Bolsters health and stamina.",
     "effect": {
       "con": 2,
       "tempHp": 15
@@ -181,6 +213,8 @@
   },
   "splendor": {
     "name": "Eagle's Splendor",
+    "type": "buff",
+    "description": "Has a radiant presence and charm.",
     "effect": {
       "cha": 2,
       "toHit": 1
@@ -188,6 +222,8 @@
   },
   "courage": {
     "name": "Courage",
+    "type": "buff",
+    "description": "Bolsters bravery and resolve.",
     "effect": {
       "saveVersusAll": 2,
       "immuneFear": true
@@ -195,6 +231,8 @@
   },
   "clarity": {
     "name": "Clarity",
+    "type": "buff",
+    "description": "Sharpens the mind and focus.",
     "effect": {
       "allRolls": 2,
       "immuneCharm": true
@@ -202,6 +240,8 @@
   },
   "focus": {
     "name": "Focus",
+    "type": "buff",
+    "description": "Enhances concentration and spellcasting.",
     "effect": {
       "toHit": 2,
       "saveVersusMagic": 3,
@@ -211,6 +251,8 @@
   },
   "insight": {
     "name": "Insight",
+    "type": "buff",
+    "description": "Gains deep understanding and intuition.",
     "effect": {
       "saveVersusAll": 2,
       "bonusSpellDC": 1
@@ -218,6 +260,8 @@
   },
   "mage_armored": {
     "name": "Mage-Armored",
+    "type": "buff",
+    "description": "Protected by magical armor.",
     "effect": {
       "ac": -4,
       "tempHp": 20
@@ -225,6 +269,8 @@
   },
   "inspired": {
     "name": "Inspired",
+    "type": "buff",
+    "description": "Filled with inspiration and vigor.",
     "effect": {
       "toHit": 2,
       "tempHp": 5,
@@ -233,6 +279,8 @@
   },
   "naturality": {
     "name": "Naturality",
+    "type": "buff",
+    "description": "In harmony with the world and its forces.",
     "effect": {
       "resistPoison": 0.5,
       "resistAcid": 0.25,
@@ -242,6 +290,8 @@
   },
   "anointed": {
     "name": "Anointed",
+    "type": "buff",
+    "description": "Anointed with favor from above.",
     "effect": {
       "resistRadiant": 0.5,
       "bonusDamage": 1,
@@ -251,6 +301,8 @@
   },
   "shielded": {
     "name": "Shielded",
+    "type": "buff",
+    "description": "Protected by a magical shield.",
     "effect": {
       "ac": -1,
       "tempHp": 10,
@@ -259,42 +311,56 @@
   },
   "fireproof": {
     "name": "Fireproof",
+    "type": "buff",
+    "description": "Resistant to fire damage.",
     "effect": {
       "resistFire": 0.5
     }
   },
   "waterproof": {
     "name": "Waterproof",
+    "type": "buff",
+    "description": "Resistant to cold damage.",
     "effect": {
       "resistCold": 0.5
     }
   },
   "stormproof": {
     "name": "Stormproof",
+    "type": "buff",
+    "description": "Resistant to lightning damage.",
     "effect": {
       "resistLightning": 0.5
     }
   },
   "acidproof": {
     "name": "Acidproof",
+    "type": "buff",
+    "description": "Resistant to corrosion.",
     "effect": {
       "resistAcid": 0.5
     }
   },
   "soundproof": {
     "name": "Soundproof",
+    "type": "buff",
+    "description": "Resistant to sound.",
     "effect": {
       "resistSonic": 0.5
     }
   },
   "lightproof": {
     "name": "Lightproof",
+    "type": "buff",
+    "description": "Resistant to radiant damage.",
     "effect": {
       "resistRadiant": 0.5
     }
   },
   "mageproof": {
     "name": "Mageproof",
+    "type": "buff",
+    "description": "Resistant to force damage and magic.",
     "effect": {
       "resistForce": 0.5,
       "saveVersusMagic": 2
@@ -302,18 +368,24 @@
   },
   "oiled": {
     "name": "Oiled",
+    "type": "condition",
+    "description": "Covered in a flammable oil.",
     "effect": {
       "resistFire": -2
     }
   },
   "slimed": {
     "name": "Slimed",
+    "type": "condition",
+    "description": "Covered in a slimy substance.",
     "effect": {
       "resistAcid": -2
     }
   },
   "drenched": {
     "name": "Drenched",
+    "type": "condition",
+    "description": "Soaked with water.",
     "effect": {
       "toHit": -2,
       "resistLightning": -1,
@@ -322,6 +394,8 @@
   },
   "migraine": {
     "name": "Migraine",
+    "type": "condition",
+    "description": "Suffering from a severe headache.",
     "effect": {
       "resistRadiant": -2,
       "resistSonic": -2
@@ -332,6 +406,8 @@
   },
   "thirst": {
     "name": "Thirst",
+    "type": "condition",
+    "description": "Dehydrated and weakened.",
     "effect": {
       "con": -2,
       "saveVersusAll": -1,
@@ -340,6 +416,8 @@
   },
   "mind_blank": {
     "name": "Mind Blank",
+    "type": "buff",
+    "description": "Protected from mental influence and psychic damage.",
     "effect": {
       "resistPsychic": 0.5,
       "saveVersusWill": 2,
@@ -351,6 +429,8 @@
   },
   "keensense": {
     "name": "Keen Senses",
+    "type": "buff",
+    "description": "Heightened awareness and perception.",
     "effect": {
       "toHit": 2,
       "evasion": 5,
@@ -360,6 +440,8 @@
   },
   "protected": {
     "name": "Protected",
+    "type": "buff",
+    "description": "Protected from necrotic damage and charm effects.",
     "effect": {
       "resistNecrotic": 0.5,
       "immuneCharm": true
@@ -367,6 +449,8 @@
   },
   "praying": {
     "name": "Praying",
+    "type": "buff",
+    "description": "Engaged in a prayer, gaining divine favor.",
     "effect": {
       "toHit": 1,
       "saveVersusAll": 2,
@@ -376,6 +460,8 @@
   },
   "meditating": {
     "name": "Meditating",
+    "type": "buff",
+    "description": "Gaining mental clarity and resistance.",
     "effect": {
       "noActions": true,
       "saveVersusMagic": 2,
@@ -391,6 +477,8 @@
   },
   "chanting": {
     "name": "Chanting",
+    "type": "buff",
+    "description": "Singing to invoke magical prowess and healing.",
     "effect": {
       "saveVersusAll": 1,
       "bonusSpellDC": 1,
@@ -407,6 +495,8 @@
   },
   "blessed": {
     "name": "Blessed",
+    "type": "buff",
+    "description": "Favored by divine forces, gaining enhanced combat abilities.",
     "effect": {
       "toHit": 1,
       "bonusDamage": 1
@@ -414,6 +504,8 @@
   },
   "minor_warded": {
     "name": "Minor Warded",
+    "type": "buff",
+    "description": "A minor magical ward providing protection.",
     "effect": {
       "saveVersusMagic": 1,
       "resistForce": 0.25,
@@ -422,6 +514,8 @@
   },
   "warded": {
     "name": "Warded",
+    "type": "buff",
+    "description": "A magical ward providing protection.",
     "effect": {
       "saveVersusMagic": 1,
       "resistFire": 0.15,
@@ -433,6 +527,8 @@
   },
   "blurred": {
     "name": "Blurred",
+    "type": "buff",
+    "description": "A shimmering distortion makes you harder to hit.",
     "effect": {
       "saveVersusMagic": 2,
       "ac": -1,
@@ -441,6 +537,8 @@
   },
   "mirror_images": {
     "name": "Mirror Images",
+    "type": "buff",
+    "description": "Illusory duplicates make you harder to hit.",
     "effect": {
       "ac": -2,
       "saveVersusAll": 2,
@@ -449,12 +547,15 @@
   },
   "reflect": {
     "name": "Reflect",
+    "type": "buff",
+    "description": "Reflecting a portion of damage back to attackers.",
     "effect": {
       "reflectDamagePercent": 0.5
     }
   },
   "spellturn": {
     "name": "Spellturn",
+    "type": "buff",
     "description": "Reflecting spells back at their casters.",
     "effect": {
       "reflectSpellChance": 0.5
@@ -462,6 +563,7 @@
   },
   "invulnerable": {
     "name": "Invulnerable",
+    "type": "buff",
     "description": "Temporarily immune to harm.",
     "effect": {
       "untargetable": true
@@ -469,6 +571,7 @@
   },
   "prone": {
     "name": "Prone",
+    "type": "condition",
     "description": "Lying on the ground, vulnerable to attacks.",
     "effect": {
       "noActions": true,
@@ -477,6 +580,7 @@
   },
   "reckless": {
     "name": "Reckless",
+    "type": "condition",
     "description": "Throwing caution to the wind.",
     "effect": {
       "toHit": -2,
@@ -485,6 +589,7 @@
   },
   "asleep": {
     "name": "Asleep",
+    "type": "condition",
     "description": "In a deep slumber, unaware of surroundings.",
     "effect": {
       "noActions": true
@@ -493,6 +598,7 @@
   },
   "scalded": {
     "name": "Scalded",
+    "type": "condition",
     "effect": {
       "allRolls": -1
     },
@@ -500,6 +606,7 @@
   },
   "charmed": {
     "name": "Charmed",
+    "type": "condition",
     "description": "Exuding an aura of helpfulness.",
     "effect": {
       "changeAllegiance": true
@@ -508,6 +615,7 @@
   },
   "dominated": {
     "name": "Dominated",
+    "type": "condition",
     "description": "Completely under another's control.",
     "effect": {
       "changeAllegiance": true,
@@ -517,6 +625,7 @@
   },
   "mocked": {
     "name": "Mocked",
+    "type": "condition",
     "description": "Distracted by jeers and taunts.",
     "effect": {
       "toHit": -1,
@@ -527,6 +636,7 @@
   },
   "taunted": {
     "name": "Taunted",
+    "type": "condition",
     "description": "Compelled to attack the taunter if able.",
     "effect": {
       "forceTarget": "you"
@@ -535,6 +645,7 @@
   },
   "fear": {
     "name": "Frightened",
+    "type": "condition",
     "description": "Overcome with fear and hesitation.",
     "effect": {
       "toHit": -2,
@@ -546,6 +657,7 @@
   },
   "hexed": {
     "name": "Hexed",
+    "type": "condition",
     "description": "Cursed with misfortune.",
     "effect": {
       "allRolls": -2,
@@ -554,6 +666,7 @@
   },
   "cursed": {
     "name": "Cursed",
+    "type": "condition",
     "description": "Afflicted by a malevolent doom.",
     "effect": {
       "str": -1,
@@ -567,6 +680,8 @@
   },
   "doom": {
     "name": "Doomed",
+    "type": "condition",
+    "description": "Marked for inevitable demise.",
     "duration": 3,
     "effect": {
       "str": -4,
@@ -579,6 +694,8 @@
   },
   "prey": {
     "name": "Hunting Prey",
+    "type": "condition",
+    "description": "Marked as a favored target.",
     "effect": {
       "ac": 2,
       "onAttacked": [
@@ -594,6 +711,8 @@
   },
   "entangled": {
     "name": "Entangled",
+    "type": "condition",
+    "description": "Restricted movement due to entangling effects.",
     "effect": {
       "dex": -5,
       "toHit": -2,
@@ -604,6 +723,8 @@
   },
   "silence": {
     "name": "Silence",
+    "type": "condition",
+    "description": "Unable to cast spells.",
     "effect": {
       "noSpellcasting": true
     },
@@ -611,6 +732,8 @@
   },
   "slow": {
     "name": "Slow",
+    "type": "condition",
+    "description": "Movement and actions are severely hindered.",
     "effect": {
       "dex": -5,
       "initiative": -10,
@@ -620,6 +743,8 @@
   },
   "petrified": {
     "name": "Petrified",
+    "type": "condition",
+    "description": "Turned to stone, completely immobile.",
     "effect": {
       "noActions": true,
       "immuneFear": true,
@@ -632,6 +757,8 @@
   },
   "disabled": {
     "name": "Disabled",
+    "type": "condition",
+    "description": "Completely unable to act.",
     "effect": {
       "noActions": true,
       "noStatusExpiry": true
@@ -639,6 +766,8 @@
   },
   "distracted": {
     "name": "Distracted",
+    "type": "condition",
+    "description": "Easily diverted and unfocused.",
     "effect": {
       "toHit": -1,
       "bonusDamage": -1,
@@ -648,6 +777,8 @@
   },
   "infected": {
     "name": "Infected",
+    "type": "condition",
+    "description": "Afflicted with a harmful infection.",
     "effect": {
       "con": -1,
       "saveVersusAll": -2,
@@ -661,6 +792,8 @@
   },
   "poison": {
     "name": "Poison",
+    "type": "condition",
+    "description": "Poisoned and suffering its effects.",
     "effect": {
       "onTurnEnd": [
         {
@@ -677,6 +810,8 @@
   },
   "confused": {
     "name": "Confused",
+    "type": "condition",
+    "description": "Unable to act rationally due to mental disturbance.",
     "effect": {
       "randomActions": true
     },
@@ -687,6 +822,8 @@
   },
   "insane": {
     "name": "Insane",
+    "type": "condition",
+    "description": "Mentally unstable and unpredictable.",
     "effect": {
       "randomActions": true,
       "allRolls": -1,
@@ -699,6 +836,8 @@
   },
   "paralyzed": {
     "name": "Paralyzed",
+    "type": "condition",
+    "description": "Unable to move or act.",
     "effect": {
       "noActions": true,
       "str": -5,
@@ -711,6 +850,8 @@
   },
   "burning": {
     "name": "Burning",
+    "type": "condition",
+    "description": "Engulfed in flames.",
     "effect": {
       "onTurnEnd": [
         {
@@ -727,6 +868,8 @@
   },
   "frozen": {
     "name": "Frozen",
+    "type": "condition",
+    "description": "Encased in ice.",
     "effect": {
       "noActions": true,
       "dex": -5
@@ -738,6 +881,8 @@
   },
   "stun": {
     "name": "Stunned",
+    "type": "condition",
+    "description": "Dazed and unable to act.",
     "effect": {
       "noActions": true,
       "allRolls": -2
@@ -749,6 +894,8 @@
   },
   "bleed": {
     "name": "Bleeding",
+    "type": "condition",
+    "description": "Suffering from a grievous wound.",
     "effect": {
       "onTurnEnd": [
         {
@@ -765,6 +912,8 @@
   },
   "shred": {
     "name": "Armor Shred",
+    "type": "condition",
+    "description": "Armor compromised and less effective.",
     "effect": {
       "ac": 2
     },
@@ -775,6 +924,8 @@
   },
   "fatigue": {
     "name": "Fatigued",
+    "type": "condition",
+    "description": "Exhausted and weakened.",
     "effect": {
       "str": -1,
       "dex": -1,
@@ -788,6 +939,8 @@
   },
   "blinded": {
     "name": "Blinded",
+    "type": "condition",
+    "description": "Unable to see.",
     "effect": {
       "toHit": -4,
       "evasion": -10,
@@ -800,6 +953,8 @@
   },
   "disease": {
     "name": "Diseased",
+    "type": "condition",
+    "description": "Afflicted with a debilitating disease.",
     "effect": {
       "con": -2,
       "saveVersusAll": -2,
@@ -818,6 +973,8 @@
   },
   "acid_burn": {
     "name": "Acid Burn",
+    "type": "condition",
+    "description": "Suffering from corrosive acid damage.",
     "effect": {
       "onTurnEnd": [
         {
@@ -834,6 +991,8 @@
   },
   "deafened": {
     "name": "Deafened",
+    "type": "condition",
+    "description": "Unable to hear.",
     "effect": {
       "resistSonic": 0.5,
       "bonusDamage": -2,
@@ -848,6 +1007,8 @@
   },
   "ghost_touch": {
     "name": "Ghost Touch",
+    "type": "buff",
+    "description": "Attacks pass through physical armor.",
     "effect": {
       "onAttackHit": [
         {
@@ -861,6 +1022,7 @@
   },
   "invisible": {
     "name": "Invisible",
+    "type": "buff",
     "description": "Unable to be seen by enemies.",
     "effect": {
       "invisible": true,
@@ -880,6 +1042,7 @@
   },
   "truesight": {
     "name": "True Sight",
+    "type": "buff",
     "description": "Seeing through illusions and invisibility.",
     "effect": {
       "seeInvisible": true
@@ -887,6 +1050,7 @@
   },
   "timewalk": {
     "name": "Time Walk",
+    "type": "buff",
     "description": "Temporarily stepping outside the flow of time.",
     "effect": {
       "untargetable": true,
@@ -897,6 +1061,7 @@
   },
   "timestopped": {
     "name": "Time Stopped",
+    "type": "buff",
     "description": "Completely outside the flow of time.",
     "effect": {
       "extraTurns": 3,
@@ -905,6 +1070,8 @@
   },
   "mazed": {
     "name": "In Maze",
+    "type": "condition",
+    "description": "Trapped in a labyrinthine dimension.",
     "effect": {
       "noActions": true,
       "untargetable": true
@@ -912,6 +1079,8 @@
   },
   "sunmarked": {
     "name": "Sunmarked",
+    "type": "condition",
+    "description": "Marked by radiant energy, vulnerable to sunlight.",
     "effect": {
       "saveVersusMagic": -1,
       "resistFire": -0.25,
@@ -929,6 +1098,8 @@
   },
   "engulfed": {
     "name": "Engulfed",
+    "type": "condition",
+    "description": "Surrounded by a harmful substance.",
     "effect": {
       "onTurnEnd": [
         {
@@ -943,12 +1114,16 @@
   },
   "false_life": {
     "name": "False Life",
+    "type": "buff",
+    "description": "Bolstered by unnatural vitality.",
     "effect": {
       "tempHp": "=10d6 + 2 * #level"
     }
   },
   "agony": {
     "name": "Agony",
+    "type": "condition",
+    "description": "Wracked with intense pain.",
     "effect": {
       "int": -1,
       "wis": -1,
@@ -964,6 +1139,8 @@
   },
   "weakened": {
     "name": "Weakened",
+    "type": "condition",
+    "description": "Sapped of strength and power.",
     "effect": {
       "str": -2,
       "bonusDamage": -2
@@ -972,6 +1149,8 @@
   },
   "calm": {
     "name": "Calm",
+    "type": "buff",
+    "description": "At peace and untroubled by fear or madness.",
     "effect": {
       "immuneFear": true,
       "immuneInsanity": true,
@@ -981,6 +1160,7 @@
   },
   "flight": {
     "name": "Flight",
+    "type": "buff",
     "description": "Soaring through the air with ease.",
     "effect": {
       "evasion": 20,
@@ -989,6 +1169,7 @@
   },
   "agility": {
     "name": "Agility",
+    "type": "buff",
     "description": "Enhanced reflexes and nimbleness.",
     "effect": {
       "dex": 4,
@@ -998,6 +1179,7 @@
   },
   "oathbound": {
     "name": "Oathbound",
+    "type": "buff",
     "description": "Bound by a sacred oath to protect allies.",
     "effect": {
       "ac": -2,
@@ -1014,6 +1196,7 @@
   },
   "feebleminded": {
     "name": "Feebleminded",
+    "type": "condition",
     "description": "Suffering from severe cognitive impairment.",
     "effect": {
       "int": -4,
@@ -1029,6 +1212,7 @@
   },
   "augured": {
     "name": "Augured",
+    "type": "buff",
     "description": "Blessed with foresight and clarity of mind.",
     "effect": {
       "allRolls": 2,

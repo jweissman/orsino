@@ -3139,7 +3139,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d4",
+        "amount": "=1d3",
         "kind": "fire",
         "saveForHalf": true
       },
