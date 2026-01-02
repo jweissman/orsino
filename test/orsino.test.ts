@@ -91,7 +91,7 @@ describe('Orsino', () => {
   });
 
   it('dungeon generator', async () => {
-    const crawler = new Dungeoneer({ dungeonGen: () => Generator.gen("dungeon") });
+    const crawler = new Dungeoneer({ dungeonGen: () => Generator.gen("dungeon") as unknown as Dungeon });
     crawler.setUp();
     expect(crawler.isOver()).toBe(false);
     expect(crawler.dungeon).toBeDefined();
@@ -172,7 +172,8 @@ describe('Orsino', () => {
     const party = await CharacterRecord.chooseParty(
       (options?: GeneratorOptions) => (Generator.gen("pc", { setting: "fantasy", ...options }) as unknown as Combatant),
       3,
-      Automatic.randomSelect.bind(Automatic)
+      Automatic.randomSelect.bind(Automatic),
+      (message: string) => Promise.resolve(true)
     );
     for (const pc of party) {
       // await CharacterRecord.pickInitialSpells(pc, Automatic.randomSelect.bind(Automatic));
