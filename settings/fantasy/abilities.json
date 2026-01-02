@@ -261,7 +261,7 @@
             ]
           }
         },
-        "duration": 1
+        "duration": 2
       }
     ]
   },
@@ -662,7 +662,7 @@
   },
   "engulf": {
     "name": "Engulf",
-    "type": "spell",
+    "type": "skill",
     "level": 4,
     "aspect": "ooze",
     "description": "Absorb an enemy into the ooze, dealing 6d6 acid damage over 3 rounds.",
@@ -730,24 +730,7 @@
       }
     ]
   },
-  "inflict_disease": {
-    "name": "Inflict Disease",
-    "type": "spell",
-    "level": 2,
-    "aspect": "dark",
-    "description": "Inflict a debilitating disease on a foe.",
-    "target": [
-      "enemy"
-    ],
-    "effects": [
-      {
-        "type": "debuff",
-        "status": "disease",
-        "saveKind": "fortitude",
-        "saveDC": 16
-      }
-    ]
-  },
+  
   "black_ritual": {
     "name": "Black Ritual",
     "type": "skill",
@@ -811,6 +794,40 @@
       {
         "type": "cast",
         "spellName": "inflict_disease"
+      }
+    ]
+  },
+  "inflict_disease": {
+    "name": "Inflict Disease",
+    "type": "skill",
+    "aspect": "dark",
+    "description": "Inflict a debilitating disease on a foe.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": "disease",
+        "saveKind": "fortitude",
+        "saveDC": 20
+      }
+    ]
+  },
+  "spread_disease": {
+    "name": "Spread Disease",
+    "type": "skill",
+    "alignment": "evil",
+    "description": "Spread a debilitating disease to all nearby enemies.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": "disease",
+        "saveKind": "fortitude",
+        "saveDC": 16
       }
     ]
   },

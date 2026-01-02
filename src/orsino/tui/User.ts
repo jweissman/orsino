@@ -74,4 +74,9 @@ export default class User {
         });
       });
   }
+
+  static async confirmation(message: string): Promise<boolean> {
+    const input = await User.selection(message + " (y/n):", ["yes", "no"]);
+    return String(input).toLowerCase().startsWith("y");
+  }
 }

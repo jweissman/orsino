@@ -155,13 +155,13 @@ export default class Presenter {
     const armor = combatant.equipment?.body ? materializeItem(combatant.equipment?.body, inventory) : { name: 'None' };
 
     const basics = {
-      weapon: weapon.name,
+      weapon: `${weapon.name} (slot value: ${combatant.equipment?.weapon})`,
       armor: armor.name,
       xp: combatant.xp,
       gp: combatant.gp,
     }
     record += ("\n" + Object.entries(basics).map(([key, value]) => {
-      return this.padLiteralEnd(`${Stylist.bold(Words.capitalize(key))} ${Words.humanize(value.toString())}`, 25);
+      return this.padLiteralEnd(`${Stylist.bold(Words.capitalize(key))} ${value.toString()}`, 25);
     }).join('   ')) + "\n";
 
     let pseudocontext: CombatContext = pseudocontextFor(combatant, inventory);

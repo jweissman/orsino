@@ -547,7 +547,7 @@ export default class Books {
 
     this.write(`## Races\n`);
 
-    const raceNames = Deem.evaluate("gather(racialModifier)") as string[];
+    const raceNames = Deem.evaluate("gather(racialModifier, -1, 'dig(#__it, pcRace)')") as string[];
     raceNames.sort((a: string, b) => a.localeCompare(b));
 
     for (const raceName of raceNames) {

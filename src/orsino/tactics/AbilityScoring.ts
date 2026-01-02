@@ -84,14 +84,19 @@ export class AbilityScoring {
 
   static HARD_CONTROL = new Set(["asleep", "paralyzed", "prone", "stun", "confused", "charmed", "dominated", "fear", "silence"]);
 
-  static scoreAbility(ability: Ability, context: CombatContext): number {
+  static scoreAbility(ability: Ability, context: CombatContext, depth: number = 0): number {
+    if (depth > 3) { // prevent infinite recursion
+      return -1000;
+    }
+
     // evaluate the setup ability based on the ability it sets up for
     if (ability.setupFor) {
       const setupTargetAbility = AbilityHandler.instance.getAbility(ability.setupFor);
       if (!setupTargetAbility) {
         throw new Error(`Ability ${ability.name} sets up for unknown ability ${ability.setupFor}`);
       }
-      return this.scoreAbility(setupTargetAbility, context);
+      const setupTax = 0.7; // penalize setup abilities by 30%
+      return Math.round(this.scoreAbility(setupTargetAbility, context, depth + 1) * setupTax);
     }
 
     const { subject: user, allies, enemies } = context;
@@ -108,11 +113,11 @@ export class AbilityScoring {
 
     let score = Math.min(expectedDamage, perfect); // base score on expected damage, capped at 'perfect'
     if (attack) {
-      score += good;
-      // for each attack effect add +excellent
+      // score += good;
+      // for each attack effect add +average
       ability.effects.forEach(e => {
         if (e.type === "attack") {
-          score += excellent;
+          score += average;
         }
       });
 

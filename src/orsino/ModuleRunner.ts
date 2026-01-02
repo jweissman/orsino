@@ -2,7 +2,7 @@ import Dungeoneer, { Dungeon } from "./Dungeoneer";
 import { Combatant } from "./types/Combatant";
 import { Roll } from "./types/Roll";
 import { Select } from "./types/Select";
-import Choice from "inquirer/lib/objects/choice";
+// import Choice from "inquirer/lib/objects/choice";
 import { GenerationTemplateType } from "./types/GenerationTemplateType";
 import Stylist from "./tui/Style";
 import Words from "./tui/Words";
@@ -56,6 +56,8 @@ export interface CampaignModule {
 type RunnerOptions = {
   roller?: Roll;
   select?: Select<Answers>;
+  pause?: (message: string) => Promise<void>;
+  clear?: () => void;
   outputSink?: (message: string) => void;
   moduleGen?: (options?: GeneratorOptions) => CampaignModule;
   pcs?: Combatant[];
@@ -64,10 +66,12 @@ type RunnerOptions = {
 }
 
 export class ModuleRunner {
-  static configuration = { sharedGold: 100 }
+  static configuration = { sharedGold: 10000 }
 
   private roller: Roll;
   private select: Select<Answers>;
+  private pause: (message: string) => Promise<void> = async (message: string) => { };
+  private clear: () => void = () => { };
   private _outputSink: (message: string) => void;
   private moduleGen: (
     options?: GeneratorOptions
@@ -82,6 +86,8 @@ export class ModuleRunner {
   constructor(options: RunnerOptions = {}) {
     this.roller = options.roller || Commands.roll.bind(Commands);
     this.select = options.select || Automatic.randomSelect.bind(Automatic);
+    this.pause = options.pause || (async (message: string) => { });
+    this.clear = options.clear || (() => { });
     this._outputSink = options.outputSink || Orsino.outputSink;
     this.moduleGen = options.moduleGen || this.defaultModuleGen.bind(this);
     this.gen = options.gen || (() => { throw new Error("No gen function provided") });
@@ -258,6 +264,8 @@ export class ModuleRunner {
             dry,
             roller: this.roller,
             select: this.select,
+            pause: this.pause,
+            clear: this.clear,
             outputSink: this._outputSink,
             dungeonGen: () => dungeon,
             gen: this.gen, //.bind(this),
@@ -313,78 +321,12 @@ export class ModuleRunner {
         await this.shop('loot');
       } else if (action === "blacksmith") {
         await this.shop('enhancements');
-        // } else if (action === "jeweler") {
-        //   const gems = this.pcs.flatMap(pc => pc.gems || []);
-        //   if (gems.length === 0) {
-        //     console.log("You have no gems to sell.");
-        //   } else {
-        //     const totalValue = gems.reduce((sum, gem) => sum + gem.value, 0);
-        //     for (const gem of gems) {
-        //       await this.emit({ type: "sale", itemName: `${gem.name} (${gem.type})`, revenue: gem.value, seller: this.pcs.find(pc => (pc.gems || []).includes(gem))!, day: this.days });
-        //     }
-        //     console.log(`You sold your gems for a total of ${totalValue}g`);
-        //     this.state.sharedGold += totalValue;
-        //     this.pcs.forEach(pc => pc.gems = []);
-        //   }
-        // } else if (action === "blacksmith") {
-        //   const improvementCost = 50;
-        //     const actor = await this.select("Who will improve their weapon?", this.pcs.map(pc => ({
-        //       short: pc.name, value: pc, name: pc.name, disabled: !pc.equipment?.weapon
-        //     }))) as Combatant;
-        //     // console.log("Current weapon:", actor.weapon, actor.attackDie);
-        //   if (this.sharedGold > improvementCost) {
-        //     const originalAttackDie = actor.attackDie;
-        //     const alreadyImproved = actor.attackDie.includes("+");
-        //     if (alreadyImproved) {
-        //       // rewrite to improve further
-        //       const [baseDie, plusPart] = actor.attackDie.split("+");
-        //       let plusAmount = parseInt(plusPart);
-        //       if (plusAmount <= 5) {
-        //         plusAmount += 1;
-        //         actor.attackDie = `${baseDie}+${plusAmount}`;
-        //       } else {
-        //         // could add a trait instead but for now improve the base die
-        //         const [dieNumber, dieSides] = baseDie.split("d");
-        //         const dieClasses = [2, 3, 4, 6, 8, 10, 12, 20, 100];
-        //         const currentIndex = dieClasses.indexOf(parseInt(dieSides));
-        //         if (currentIndex < dieClasses.length - 1) {
-        //           const newDieSides = dieClasses[currentIndex + 1];
-        //           actor.attackDie = `${dieNumber}d${newDieSides}+${plusAmount}`;
-        //         } else {
-        //           const newDieNumber = parseInt(dieNumber) + 1;
-        //           actor.attackDie = `${newDieNumber}d${dieSides}+${plusAmount}`;
-        //         }
-        //       }
-        //     } else {
-        //       // improve weapon
-        //       actor.attackDie += "+1";
-        //     }
-        //     // console.log(`🛠️ ${actor.name}'s weapon has been improved to ${actor.attackDie}!`);
-        //     await this.emit({ type: "purchase", itemName: `${Words.humanize(actor.weapon)} Improvement (${originalAttackDie} -> ${actor.attackDie})`, cost: improvementCost, buyer: actor, day: this.days });
-        //     this.state.sharedGold -= improvementCost;
-        //   } else {
-        //     console.log(`You need at least ${improvementCost}g to improve a weapon.`);
-        //   }
       } else if (action === "tavern") {
-        // let spend = 5;
-        // if (this.sharedGold < spend) {
-        //   console.log(`You need at least ${spend}g to gather rumors and hirelings at the tavern.`);
-        //   continue;
-        // }
-        // this.state.sharedGold -= spend;
-        // console.log("You spend time at the tavern gathering rumors...");
         await this.showRumors();
         await this.presentHireling();
       } else if (action === "temple") {
         await this.temple();
       } else if (action === "mirror") {
-        // await this.emit({
-        //   type: "partyOverview",
-        //   pcs: this.pcs,
-        //   day: this.days,
-        //   inventory: this.state.inventory,
-        //   // itemQuantities: Inventory.quantities(this.state.inventory),
-        // });
         const pc = await this.select("Whose character record would you like to view?", this.pcs.map(pc => ({
           short: pc.name, value: pc, name: Presenter.combatant(pc), disabled: !!pc.dead
         }))) as unknown as Combatant;
@@ -393,9 +335,7 @@ export class ModuleRunner {
           pc,
           day: this.days,
           inventory: this.state.inventory.filter(item => item.ownerId === pc.id),
-          // itemQuantities: Inventory.quantities(this.state.inventory),
         });
-        // await CharacterRecord.present(pc, this.state.inventory, this.days, this.emit.bind(this));
       } else {
         throw new Error(`Unknown action selected: ${action}`);
       }
@@ -464,7 +404,7 @@ export class ModuleRunner {
       shops = { ...shops, ...advancedShops };
     }
 
-    const options: Choice<Answers>[] =
+    const options = //: Choice<Answers>[] =
       Object.entries(shops).map(([value, desc]) => ({
         short: Words.capitalize(value),
         value,
@@ -520,6 +460,7 @@ export class ModuleRunner {
       const blessingName = `${mod.town.deity.forename}'s Favor`;
       const blessing: StatusEffect = {
         name: blessingName,
+        type: "buff",
         description: "Blessed by " + Words.capitalize(deityName),
         duration, effect, aura: false
       };

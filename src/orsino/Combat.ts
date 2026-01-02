@@ -37,6 +37,8 @@ interface CombatOptions {
   roller?: Roll;
   select?: ChoiceSelector<any>;
   outputSink?: (message: string) => void;
+  pause?: (message: string) => Promise<void>;
+  clear?: () => void;
 }
 
 export default class Combat {
@@ -58,6 +60,8 @@ export default class Combat {
   protected select: ChoiceSelector<any>;
   protected journal: CombatEvent[] = [];
   protected outputSink: (message: string) => void;
+  protected pause: (message: string) => Promise<void>;
+  protected clear: () => void;
   public dry: boolean = false;
 
   private auras: StatusEffect[] = [];
@@ -68,6 +72,8 @@ export default class Combat {
     this.roller = options.roller || Commands.roll.bind(Commands);
     this.select = options.select || Automatic.randomSelect.bind(Automatic);
     this.outputSink = options.outputSink || console.debug;
+    this.pause = options.pause || (async (_message: string) => { });
+    this.clear = options.clear || (() => { });
   }
 
   protected _note(message: string) { this.outputSink(message); }
@@ -181,7 +187,6 @@ export default class Combat {
     return combatants.filter(c => {
       const fx = Fighting.effectList(c);
       const invisibleEffect = fx.find(e => e.effect.invisible);
-      //c.activeEffects?.find(e => e.effect.invisible);
       return !invisibleEffect;
     });
   }
@@ -192,19 +197,10 @@ export default class Combat {
   ): void {
     const equipmentList: StatusEffect[] = [];
     for (const [slot, equipmentKey] of Object.entries(combatant.equipment || {})) {
-      // if (slot === 'weapon' || slot === 'body') {
       const weapon = materializeItem(equipmentKey, inventory) as ItemInstance;
       if (weapon.effect) {
-
         equipmentList.push({ ...weapon, sourceKey: slot } as unknown as StatusEffect);
       }
-      // } else {
-      //   const eq = materializeItem(equipmentKey, inventory) as ItemInstance;
-      //     //Deem.evaluate(`lookup(masterEquipment, '${equipmentKey}')`) as unknown as StatusEffect;
-      //   if (eq.effect) {
-      //     equipmentList.push({ ...eq, sourceKey: slot } as StatusEffect);
-      //   }
-      // }
     }
 
     combatant.passiveEffects ||= [];
@@ -248,15 +244,6 @@ export default class Combat {
               .filter(spellKey => !combatant.abilities.includes(spellKey));
             combatant.abilities.push(...cantrips);
 
-            // if caster _already_ has spells from this aspect we could skip
-            // const hasKnown = combatant.abilities.some(abKey => {
-            //   const ab = abilityHandler.getAbility(abKey);
-            //   return ab.aspect === spellbook;
-            // });
-            // if (hasKnown) {
-            //   continue;
-            // }
-
             const allSpellKeys = abilityHandler.allSpellKeys(
               spellbook as 'arcane' | 'divine',
               Math.ceil(combatant.level / 2),
@@ -281,7 +268,6 @@ export default class Combat {
             let spellSelection = Sample.count(preparedN, ...newSpellKeys.filter(
               spellKey => !combatant.abilities.includes(spellKey)
             ));
-            console.warn(`!!! Reifying spells for NPC combatant ${combatant.name}: adding spells ${spellSelection.join(", ")}`);
             combatant.abilities.push(...spellSelection);
           }
 
@@ -785,17 +771,15 @@ export default class Combat {
     }
 
     const ctx = this.contextForCombatant(combatant);
-    // console.log("Assembled context for NPC turn:", ctx);
     let scoredAbilities = validAbilities.map(ability => ({
       ability,
       score: AbilityScoring.scoreAbility(ability, ctx)
-        ///combatant, allies, enemies)
     }));
 
     scoredAbilities = scoredAbilities.filter(sa => sa.score > 0);
 
     scoredAbilities.sort((a, b) => b.score - a.score);
-    console.log(`NPC ${Presenter.minimalCombatant(combatant)} scored abilities:`, scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`));
+    this.outputSink(`NPC ${Presenter.minimalCombatant(combatant)} scored abilities:`+ scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`));
     let action = scoredAbilities[
       // Math.floor(Math.random() * Math.min(2, scoredAbilities.length))
       0
@@ -867,9 +851,11 @@ export default class Combat {
     }
 
     if (!this.dry) {
-      await User.waitForEnter("Press Enter to begin the next turn...");
+      // await User.waitForEnter("Press Enter to begin the next turn...");
+      await this.pause("Press Enter to begin the next turn...");
     }
-    process.stdout.write('\x1Bc');
+    // process.stdout.write('\x1Bc');
+    this.clear();
 
     await this.emit({
       type: "turnStart", subject: combatant, combatants: this.allCombatants,

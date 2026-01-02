@@ -386,19 +386,32 @@
     "discriminator": "rank",
     "groups": {
       "peasant":   { "maximumHitPoints": 0,    "ac": 3 },
-      "grunt":     { "maximumHitPoints": 1,    "ac": 2 },
+      "grunt":     { "maximumHitPoints": 0,    "ac": 2 },
       "untested":  { "maximumHitPoints": 1,    "ac": 2 },
-      "rookie":    { "maximumHitPoints": 2,    "ac": 1 },
-      "seargeant": { "maximumHitPoints": 3,    "ac": 1 },
-      "captain":   { "maximumHitPoints": 5,   "ac": 0 },
-      "veteran":   { "maximumHitPoints": 8,   "ac": 0 },
-      "champion":  { "maximumHitPoints": 13,   "ac": -1, "traits": ["fierce"] },
-      "elite":     { "maximumHitPoints": 21,   "ac": -1, "traits": ["fierce", "formidable"] },
-      "paragon":   { "maximumHitPoints": 34,   "ac": -2, "traits": ["fierce", "formidable", "disciplined"] },
-      "epic":      { "maximumHitPoints": 55,  "ac": -2, "traits": ["fierce", "formidable", "disciplined", "resilient"] },
-      "legendary": { "maximumHitPoints": 89,  "ac": -3, "traits": ["fierce", "formidable", "disciplined", "resilient", "favored"] }
+      "rookie":    { "maximumHitPoints": 1,    "ac": 1 },
+      "seargeant": { "maximumHitPoints": 2,    "ac": 1 },
+      "captain":   { "maximumHitPoints": 3,   "ac": 0 },
+      "veteran":   { "maximumHitPoints": 5,   "ac": 0 },
+      "champion":  { "maximumHitPoints": 8,   "ac": -1, "traits": ["fierce"] },
+      "elite":     { "maximumHitPoints": 13,   "ac": -1, "traits": ["fierce", "formidable"] },
+      "paragon":   { "maximumHitPoints": 21,   "ac": -2, "traits": ["fierce", "formidable", "disciplined"] },
+      "epic":      { "maximumHitPoints": 34,  "ac": -2, "traits": ["fierce", "formidable", "disciplined", "resilient"] },
+      "legendary": { "maximumHitPoints": 55,  "ac": -3, "traits": ["fierce", "formidable", "disciplined", "resilient", "favored"] }
     }
   },
+
+  "difficultyTierRanks": {
+    "discriminator": "tier",
+    "groups": {
+      "0": [ "peasant", "grunt", "untested" ],
+      "1": [ "untested", "rookie" ],
+      "2": [ "seargeant", "captain" ],
+      "3": [ "veteran", "champion" ],
+      "4": [ "elite", "paragon" ],
+      "5": [ "epic", "legendary" ]
+    }
+  },
+
   "npcType": {
     "discriminator": "race",
     "groups": {
@@ -469,7 +482,7 @@
       "Bandit":       { "str": 2,  "con": 3, "dex": 2, "abilities": [ "prepare_charge", "charge", "hide", "backstab", "rapid_strike", "trickfire", "dirty_trick" ], "traits": ["imperceptible"] },
       "Tombrobber":   { "str": 2,  "con": 3, "dex": 1, "int": -1, "wis": -1, "cha": 2, "abilities": ["rapid_strike", "hide"] },
       "Cult Master": { "str": 4,  "con": 5, "dex": 2, "int": 6, "wis": 4, "cha": 4, "abilities": [ "hex", "obscuring_mist", "ghost_touch", "life_drain",  "terror", "poison_cloud", "mass_curse", "deathtouch" ], "traits": ["fiendish"] },
-      "Poxmonger":   { "str": -2, "dex": -2, "con": -1, "int": 2, "wis": 1, "cha": 2, "abilities": [ "hex", "terror", "poison_cloud", "inflict_disease", "deathtouch" ] },
+      "Poxmonger":   { "str": -2, "dex": -2, "con": -1, "int": 2, "wis": 1, "cha": 2, "abilities": [ "infect", "spread_disease", "hex", "terror", "poison_cloud", "inflict_disease", "deathtouch" ] },
       "Archaeologist": { "str": 1,  "con": 2, "dex": 2, "int": 3, "wis": 2, "cha": 1, "abilities": [ "prepare_charge", "charge", "hide", "rapid_strike", "cure_minor", "cure" ] },
       "Wizard":      { "str": -1, "dex": -1, "int": 3, "con": 1, "abilities": [ "trickfire", "pain" ], "traits": ["evoker"] },
       "Necromancer":  { "str": 3,  "con": 4, "dex": 2, "int": 8, "abilities": [ "hex", "obscuring_mist", "poison_cloud", "dirty_trick", "rapid_strike" ], "traits": ["fiendish", "necromancer"] },
@@ -483,7 +496,7 @@
       "Benefactor":   { "str": -1, "dex": -1, "int": 2, "wis": -1, "cha": 2, "abilities": ["cure_minor", "cure"] },
       "Devotee":      { "str": -1, "dex": -1, "int": 1, "wis": 2, "cha": 1, "abilities": ["cure_minor", "cure"] },
       "Preacher":     { "str": -1, "dex": -1, "int": 2, "wis": 2, "cha": 2, "abilities": ["sunmark", "rally", "inspire", "bless", "remove_fear"] },
-      "Adept":       { "str": 1,  "con": 2, "wis": 3, "int": 2, "abilities": [ "cure_minor", "cure", "cure_moderate", "bless", "shocking_grasp", "paralyzing_touch", "raise_dead", "resist_fire" ], "traits": ["piety"] },
+      "Adept":       { "str": 1,  "con": 2, "wis": 3, "int": 2, "abilities": [ "dirty_trick", "cure_minor", "cure", "cure_moderate", "bless", "shocking_grasp", "paralyzing_touch", "raise_dead", "resist_fire" ], "traits": ["piety"] },
       "Acolyte":      { "str": 0,  "con": 1, "wis": 2, "int": 1, "abilities": [ "heal", "bless", "paralyzing_touch" ], "traits": ["piety"] },
       
       "Cultist":      { "str": 1,  "con": 2, "int": 2, "abilities": [ "heal", "cure_minor", "ghost_touch", "curse", "terror", "paralyzing_touch", "silence", "animate_dead" ], "traits": ["piety", "radiant"] },
@@ -1200,20 +1213,20 @@
     "discriminator": "flavor",
     "groups": {
       "standard": [
-        [ "entrance", "empty", "trap", "mob", "special", "treasure", "elite" ],
-        [ "entrance", "mob", "empty", "treasure", "trap", "mob", "elite" ]
+        [ "entrance", "empty", "trap", "mob", "special", "treasure", "elite", "mob", "trap", "treasure" ],
+        [ "entrance", "mob", "empty", "treasure", "trap", "mob", "elite", "special", "puzzle", "elite", "treasure" ]
       ],
       "dangerous": [
-        [ "entrance", "trap", "mob", "trap", "elite", "treasure", "mob", "special", "wonder", "trap" ],
-        [ "entrance", "special", "mob", "trap", "mob", "treasure", "elite", "trap", "puzzle" ]
+        [ "entrance", "trap", "mob", "trap", "elite", "treasure", "mob", "special", "wonder", "trap", "puzzle" ],
+        [ "entrance", "special", "mob", "trap", "mob", "treasure", "elite", "trap", "puzzle", "mob" ]
       ],
       "lucrative": [
-        [ "entrance", "puzzle", "mob", "treasure", "trap", "mob", "elite", "treasure" ],
-        [ "entrance", "treasure", "mob", "trap", "treasure", "mob", "elite", "wonder" ]
+        [ "entrance", "puzzle", "mob", "treasure", "trap", "mob", "elite", "treasure", "special", "wonder" ],
+        [ "entrance", "treasure", "mob", "trap", "treasure", "mob", "elite", "wonder", "special", "puzzle" ]
       ],
       "balanced": [
-        [ "entrance", "mob", "trap", "treasure", "special", "elite", "treasure", "puzzle" ],
-        [ "entrance", "trap", "treasure", "mob", "special", "mob", "treasure", "puzzle" ]
+        [ "entrance", "mob", "trap", "treasure", "special", "elite", "treasure", "puzzle", "mob", "trap" ],
+        [ "entrance", "trap", "treasure", "mob", "special", "mob", "treasure", "puzzle", "elite", "trap" ]
       ]
     }
   },
@@ -1221,14 +1234,14 @@
   "roomOverlays": {
     "discriminator": "guide_type",
     "groups": {
-      "entrance": { "_encounterChance": 0.1, "_puzzleChance": 1,    "_trapChance": 0.8,  "_treasureChance": 0.2 },
-      "empty":    { "_encounterChance": 0,   "_puzzleChance": 1.05, "_trapChance": 0,    "_treasureChance": 0, "_wonderChance": 0.1 },
-      "trap":     { "_encounterChance": 0.2, "_puzzleChance": 1.1,  "_trapChance": 1,    "_treasureChance": 0.1 },
-      "mob":      { "_encounterChance": 1,   "_puzzleChance": 1,    "_trapChance": 0.1,  "_treasureChance": 0.2 },
-      "elite":    { "_encounterChance": 1,   "_puzzleChance": 1,    "_trapChance": 0.05, "_treasureChance": 0.3, "challenging": true },
-      "special":  { "_encounterChance": 0,   "_puzzleChance": 1.1,  "_trapChance": 0.1,  "_treasureChance": 0.4, "_wonderChance": 0.2 },
-      "treasure": { "_encounterChance": 0.2, "_puzzleChance": 1.2,  "_trapChance": 0.2,  "_treasureChance": 0.8 },
-      "wonder":   { "_encounterChance": 0,   "_puzzleChance": 1.1,  "_trapChance": 0,    "_treasureChance": 0, "_wonderChance": 1 },
+      "entrance": { "_encounterChance": 0.1, "_puzzleChance": 0,    "_trapChance": 0.8,  "_treasureChance": 0.2 },
+      "empty":    { "_encounterChance": 0,   "_puzzleChance": 0.05, "_trapChance": 0,    "_treasureChance": 0, "_wonderChance": 0.1 },
+      "trap":     { "_encounterChance": 0.2, "_puzzleChance": 0.1,  "_trapChance": 1,    "_treasureChance": 0.1 },
+      "mob":      { "_encounterChance": 1,   "_puzzleChance": 0,    "_trapChance": 0.1,  "_treasureChance": 0.2 },
+      "elite":    { "_encounterChance": 1,   "_puzzleChance": 0,    "_trapChance": 0.05, "_treasureChance": 0.3, "challenging": true },
+      "special":  { "_encounterChance": 0,   "_puzzleChance": 0.1,  "_trapChance": 0.1,  "_treasureChance": 0.4, "_wonderChance": 0.2 },
+      "treasure": { "_encounterChance": 0.2, "_puzzleChance": 0.2,  "_trapChance": 0.2,  "_treasureChance": 0.8 },
+      "wonder":   { "_encounterChance": 0,   "_puzzleChance": 0.1,  "_trapChance": 0,    "_treasureChance": 0, "_wonderChance": 1 },
       "puzzle":   { "_encounterChance": 0,   "_puzzleChance": 1,    "_trapChance": 0.1,  "_treasureChance": 0.2 }
     }
   },
@@ -1827,7 +1840,8 @@
       "troll": [ "bear", "tiger", "panther", "lion" ],
       "kobold": [ "spider", "rat", "bat" ],
       "goblin": [ "rat", "wolf", "spider" ],
-      "bugbear": [ "wolf", "badger", "bat", "boar" ]
+      "bugbear": [ "wolf", "badger", "bat", "boar" ],
+      "giant": [ "eagle", "hawk", "bear", "wolf" ]
 
     }
   },
@@ -2662,7 +2676,7 @@
         { "question": "I travel the world, yet stay in a corner.", "answer": "Stamp", "answer_type": "small_object" }
       ],
       "hard": [
-        { "question": "You can hold me in your left right, but never your right.", "answer": "Right Elbow", "answer_type": "body_part" },
+        { "question": "You can hold me in your left hand, but never your right.", "answer": "Right Elbow", "answer_type": "body_part" },
         { "question": "What comes down but never goes up?", "answer": "Rain", "answer_type": "phenomenon" },
         { "question": "I look through walls but never see. I sanctify when stained.", "answer": "Window", "answer_type": "large_object" },
         { "question": "What can you break, even if you never pick it up or touch it?", "answer": "Promise", "answer_type": "abstract_concept" },

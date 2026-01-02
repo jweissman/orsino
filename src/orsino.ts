@@ -1,6 +1,6 @@
 import { loadSetting } from "./orsino/loader";
 import { Combatant } from "./orsino/types/Combatant";
-import Dungeoneer from "./orsino/Dungeoneer";
+import Dungeoneer, { Dungeon } from "./orsino/Dungeoneer";
 import { CampaignModule, ModuleRunner } from "./orsino/ModuleRunner";
 import Interactive from "./orsino/tui/User";
 import CharacterRecord from "./orsino/rules/CharacterRecord";
@@ -13,16 +13,15 @@ import Presenter from "./orsino/tui/Presenter";
 import Automatic from "./orsino/tui/Automatic";
 import { never } from "./orsino/util/never";
 import { ItemInstance } from "./orsino/types/ItemInstance";
-
-export type Prompt = (message: string) => Promise<string>;
+import StatusHandler from "./orsino/Status";
+import { Template } from "./orsino/Template";
+import { ConsoleDriver, InquirerDriver } from "./orsino/Driver";
 
 type PlaygroundType = "dungeon" | "module";  // TODO "world";
 
 type CommandLineOptions = {
   partySize?: number;
 }
-
-// const outputSink = console.log;
 
 export default class Orsino {
   static environment: 'production' | 'development' | 'test' = 'production';
@@ -31,6 +30,7 @@ export default class Orsino {
       process.stdout.write(message + "\n");
     }
   }
+  useInquirer: boolean = true;
 
   constructor(public settingName?: string) {
     Generator.setting = settingName ? loadSetting(settingName) : Generator.defaultSetting;
@@ -40,22 +40,27 @@ export default class Orsino {
     type: PlaygroundType,
     options: CommandLineOptions = {}
   ) {
+    const driver = this.useInquirer ? new InquirerDriver() : new ConsoleDriver();
+    Orsino.outputSink = driver.writeLn.bind(driver);
+
     const partySize = options.partySize || 3;
     const pcs = await CharacterRecord.chooseParty(
       (opts: GeneratorOptions) => Generator.gen("pc", { setting: 'fantasy', ...opts }) as unknown as Combatant,
-      partySize
+      partySize,
+      driver.select.bind(driver),
+      driver.confirm.bind(driver)
     );
     
     if (type === "dungeon") {
       const averageLevel = Math.round(pcs.reduce((sum, pc) => sum + pc.level, 0) / pcs.length);
       const targetCr = Math.round(averageLevel * 0.75);
-      // console.log(`Selected party of ${pcs.length} PCs (average level ${averageLevel}), targeting CR ${targetCr}`);
-      // this.genList("pc", { setting: 'fantasy', ...options }, partySize);
       const dungeoneer = new Dungeoneer({
         roller: Interactive.roll.bind(Interactive),
-        select: Interactive.selection.bind(Interactive),
+        pause: driver.pause.bind(driver),
+        select: driver.select.bind(driver),
+        clear: driver.clear.bind(driver),
         outputSink: Orsino.outputSink,
-        dungeonGen: () => Generator.gen("dungeon", { setting: 'fantasy', ...options, _targetCr: targetCr }),
+        dungeonGen: () => Generator.gen("dungeon", { setting: 'fantasy', ...options, _targetCr: targetCr }) as unknown as Dungeon,
         gen: Generator.gen.bind(Generator), //.bind(this),
         playerTeam: ({
           name: "Heroes", combatants: pcs.map(pc => ({ ...pc, playerControlled: true }))
@@ -66,8 +71,9 @@ export default class Orsino {
     } else if (type === "module") {
       const moduleRunner = new ModuleRunner({
         roller: Interactive.roll.bind(Interactive),
-        select: Interactive.selection.bind(Interactive),
-        // prompt: Interactive.prompt.bind(Interactive),
+        select: driver.select.bind(driver),
+        pause: driver.pause.bind(driver),
+        clear: driver.clear.bind(driver),
         outputSink: Orsino.outputSink,
         moduleGen: (opts?: GeneratorOptions) => Generator.gen("module", { setting: 'fantasy', ...options, ...opts }) as unknown as CampaignModule,
         gen: Generator.gen.bind(Generator), //.bind(this),
@@ -76,7 +82,6 @@ export default class Orsino {
       await moduleRunner.run();
     }
     else {
-      // throw new Error('Unsupported playground type: ' + type);
       return never(type);
     }
   }
@@ -84,13 +89,17 @@ export default class Orsino {
   async autoplay(options: Record<string, any> = {}) {
     await AbilityHandler.instance.loadAbilities();
     await TraitHandler.instance.loadTraits();
-    const pcs = [
-      Generator.gen("pc", { setting: 'fantasy', class: 'warrior' }) as unknown as Combatant,
-      Generator.gen("pc", { setting: 'fantasy', class: 'thief'   }) as unknown as Combatant,
-      Generator.gen("pc", { setting: 'fantasy', class: 'mage'    }) as unknown as Combatant,
-      Generator.gen("pc", { setting: 'fantasy', class: 'cleric'  }) as unknown as Combatant,
-      Generator.gen("pc", { setting: 'fantasy', class: 'ranger'  }) as unknown as Combatant,
-      Generator.gen("pc", { setting: 'fantasy', class: 'bard'    }) as unknown as Combatant,
+    await StatusHandler.instance.loadStatuses();
+    Template.bootstrapDeem({ setting: 'fantasy' });
+
+    const pcGen = (pcClass: string) => (options: GeneratorOptions) => Generator.gen("pc", { ...options, setting: 'fantasy', class: pcClass }) as unknown as Combatant
+    const pcs: Combatant[] = [
+      await CharacterRecord.autogen(CharacterRecord.pcRaces, pcGen("warrior")),
+      await CharacterRecord.autogen(CharacterRecord.pcRaces, pcGen("thief")),
+      await CharacterRecord.autogen(CharacterRecord.pcRaces, pcGen("mage")),
+      await CharacterRecord.autogen(CharacterRecord.pcRaces, pcGen("cleric")),
+      await CharacterRecord.autogen(CharacterRecord.pcRaces, pcGen("ranger")),
+      await CharacterRecord.autogen(CharacterRecord.pcRaces, pcGen("bard")),
     ].map(pc => ({ ...pc, playerControlled: true }))
     for (const pc of pcs) {
       await CharacterRecord.chooseTraits(pc, Automatic.randomSelect.bind(Automatic));

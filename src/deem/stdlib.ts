@@ -169,6 +169,7 @@ export default class StandardLibrary {
       if (!path.every(p => typeof p === 'string' || typeof p === 'number')) {
         throw new Error(`dig() expects path elements to be strings or numbers, got: [${path.map(p => typeof p).join(', ')}]`);
       }
+      // @ts-expect-error -- dynamic prop access
       return path.reduce((acc, key) => {
         // return (acc && acc[key] !== undefined) ? acc[key] : null
         if (acc && typeof acc === 'object' && key in acc) {

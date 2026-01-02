@@ -117,10 +117,11 @@ export default class Shop {
       const inventory = this.gameState.inventory;
       const { oldItemRef: maybeOldItem } = Inventory.equipmentSlotAndExistingItem(item, wearer, inventory);
       if (maybeOldItem) {
-        const oldItem = materializeItem(maybeOldItem, this.gameState.inventory);
+        // const oldItem = materializeItem(maybeOldItem, this.gameState.inventory);
+        const oldItem = Inventory.materializeRef(maybeOldItem, this.gameState.inventory);
         events.push({
           type: "sale",
-          itemName: maybeOldItem,
+          itemName: oldItem.name,
           revenue: oldItem.value,
           seller: wearer,
           day: this.day,

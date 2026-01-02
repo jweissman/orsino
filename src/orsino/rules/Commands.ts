@@ -439,7 +439,9 @@ export class Commands {
   }
 
   static async handleStatusEffect(
-    user: Combatant, target: Combatant, name: string, effect: StatusModifications, duration?: number, source?: string
+    user: Combatant, target: Combatant, name: string, effect: StatusModifications, duration?: number,
+    source?: string,
+    type?: "buff" | "condition"
   ): Promise<TimelessEvent[]> {
     if (target.activeEffects) {
       const existingEffectIndex = target.activeEffects.findIndex(e => e.name === name);
@@ -455,7 +457,7 @@ export class Commands {
     }
 
     target.activeEffects = target.activeEffects || [];
-    target.activeEffects.push({ name, effect, duration, by: user });
+    target.activeEffects.push({ name, type: type || 'condition', effect, duration, by: user });
     if (effect.tempHp) {
       const pool = Deem.evaluate(effect.tempHp.toString(), { ...user } as any) as number || 0;
       target.tempHpPools = target.tempHpPools || {};

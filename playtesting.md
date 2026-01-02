@@ -162,7 +162,6 @@
 - [ ] Trap rate seems _really_ high (like every examine item is trapped?)
 - [ ] Barriers/walls should not have 'fists' (maybe 'impact')
 - [ ] Damage type effects (ie infected status trigger on bleed) should not trigger on 0 damage events
-- [ ] An _extra_ lich got summoned by _black ritual_...? (Something weird with tickdown?)
 - [ ] You could attempt stabilization of less-than-zero hp members at the Inn (and have to rez at temple if failed) -- ie this already is what happens on short rest in the dungeon (and if it fails you have to rez)
 - [ ] Rez even at temple should have a chance to fail
 - [ ] Can't equip multiple rings from the shop anymore? (They all go to a 'ring' slot and don't differentiate 'ring1', 'ring2')
@@ -170,6 +169,10 @@
 ---
 - [ ] Really make sure default loadout only gives armor/weapons users are proficient in
 - [ ] Nat 1 on examine riddle should prevent further inspection (could 'break' the puzzle box/make glyphs disappear etc)
+---
+- [ ] Offer to rez before asking for blessing donations (temple flow)
+- [ ] Restrict hard/lethal riddles to later dungeons (or lower DC overall)
+- [ ] Docbooks/ability description could now distinguish between buffs/conditions?
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing
@@ -317,6 +320,7 @@
 - [x] Bring back status displays on the per turn overview... (we currently have per-round overview) -- now per turn displayed
 - [x] Seems fixed but really make sure we're handling gold transition between town hub/dungeon correctly -- think this is okay now??
 - [x] Hirelings should get starting gear (should be working!)
+- [x] An _extra_ lich got summoned by _black ritual_...? (Something weird with tickdown?) -- should be fixed now
 
 ## Not really issues atm
 - Load all PCs on party select so we can show their race/class (no longer even letting you load PCs from file but we're still persisting them every room...) (we don't even persist PC records anymore)

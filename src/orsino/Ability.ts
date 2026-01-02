@@ -169,9 +169,7 @@ export default class AbilityHandler {
     this.abilities = data;
 
     for (const file of await Files.listFiles("./settings/fantasy/abilities")) {
-      console.log(`Loading abilities from ${file}...`);
       const moreData = await Files.readJSON<AbilityDictionary>(`./settings/fantasy/abilities/${file}`);
-      console.log(`Loaded ${Object.keys(moreData).length} abilities from ${file}.`);
       Object.assign(this.abilities, moreData);
     }
 

@@ -62,7 +62,7 @@
     "school": "abjuration",
     "description": "Create an aura that harms enemy spellcasters when they cast spells.",
     "target": [
-      "enemy"
+      "self"
     ],
     "effects": [
       {
@@ -189,8 +189,9 @@
     ],
     "effects": [
       {
-        "type": "buff",
+        "type": "debuff",
         "status": "silence",
+        "saveDC": 25,
         "duration": 10
       }
     ]
@@ -726,7 +727,7 @@
     "school": "divination",
     "description": "Read the surface thoughts of a target creature for a short duration.",
     "target": [
-      "enemy"
+      "self"
     ],
     "effects": [
       {

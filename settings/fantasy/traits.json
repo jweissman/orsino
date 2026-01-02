@@ -309,13 +309,7 @@
         "name": "Moral Economy",
         "description": "When you heal an ally, heal yourself for 1d3 as well.",
         "effect": {
-          "onHeal": [
-            {
-              "type": "heal",
-              "target": "self",
-              "amount": "=1d3"
-            }
-          ]
+          "bonusHealing": "=1d3"
         }
       }
     ]
@@ -1010,7 +1004,7 @@
   },
   "regeneration": {
     "name": "Regeneration",
-    "type": "trait",
+    "type": "template",
     "description": "Regeneration",
     "statuses": [
       {

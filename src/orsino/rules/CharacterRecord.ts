@@ -92,17 +92,21 @@ export default class CharacterRecord {
   static async chargen(
     prompt: string,
     pcGenerator: (options?: any) => Combatant = (options) => Generator.gen("pc", options) as unknown as Combatant,
-    selectionMethod: Select<Answers> = User.selection.bind(User)
+    selectionMethod: Select<Answers> = User.selection.bind(User),
+    confirmMethod: (message: string) => Promise<boolean> = User.confirmation.bind(User)
   ): Promise<Combatant> {
 
     let pc: Combatant = pcGenerator({ setting: 'fantasy' });
     let accepted = false;
     while (!accepted) {
-      const shouldWizard = await selectionMethod(
-        'Would you like to customize this PC? ' + prompt,
-        ['Yes', 'No']
-      );
-      if (shouldWizard === 'Yes') {
+      // const shouldWizard = await selectionMethod(
+      //   'Would you like to customize this PC? ' + prompt,
+      //   ['Yes', 'No']
+      // );
+      // if (shouldWizard === 'Yes') {
+      const doWizard = await confirmMethod("Would you like to customize this PC? (yes/no)");
+      console.warn(`Character creation wizard: ${doWizard}`);
+      if (doWizard) {
         const raceSelect = await selectionMethod(
           'Select a race for this PC: ' + prompt,
           this.pcRaces
@@ -118,21 +122,21 @@ export default class CharacterRecord {
         // await this.pickInitialSpells(pc, selectionMethod);
 
         await Presenter.printCharacterRecord(pc, []);
-        const confirm = await selectionMethod(
+        const confirm = await confirmMethod(
           'Do you want to use this PC? ' + prompt,
-          ['Yes', 'No']
+          // ['Yes', 'No']
         );
-        accepted = confirm === 'Yes';
+        accepted = confirm; // === 'Yes';
       } else {
 
         pc = await this.autogen(this.pcRaces, pcGenerator);
         // await this.pickInitialSpells(pc, Automatic.randomSelect.bind(Automatic));
 
         await Presenter.printCharacterRecord(pc, []);
-        accepted = await selectionMethod(
-          'Do you want to use this PC? ' + prompt,
-          ['Yes', 'No']
-        ) === 'Yes';
+        accepted = await confirmMethod(
+          'Do you want to use this PC? ' + prompt
+          // ['Yes', 'No']
+        ); // === 'Yes';
 
       }
     }
@@ -241,26 +245,35 @@ export default class CharacterRecord {
   static async chooseParty(
     pcGenerator: (options?: any) => Combatant,
     partySize: number,
-    selectionMethod: Select<Answers> = User.selection.bind(User)
+    select: Select<Answers> = User.selection.bind(User),
+    confirm: (message: string) => Promise<boolean> = User.confirmation.bind(User)
   ): Promise<Combatant[]> {
     const abilityHandler = AbilityHandler.instance;
     await abilityHandler.loadAbilities();
     await TraitHandler.instance.loadTraits();
 
-    const doChoose = await selectionMethod(
-      `Would you like to customize PCs using the wizard?`,
-      ['Yes', 'No']
-    );
-    if (doChoose === 'No') {
-      return this.chooseParty(pcGenerator, partySize, Automatic.randomSelect.bind(Automatic));
+    const doChoose = await confirm("Would you like to customize PCs using the wizard?");
+    console.warn(`Party creation wizard: ${doChoose}`);
+    if (!doChoose) {
+      return this.chooseParty(
+        pcGenerator, partySize, Automatic.randomSelect.bind(Automatic), () => Promise.resolve(true)
+      );
     }
+
+    // const doChoose = await selectionMethod(
+    //   `Would you like to customize PCs using the wizard?`,
+    //   ['Yes', 'No']
+    // );
+    // if (doChoose === 'No') {
+    //   return this.chooseParty(pcGenerator, partySize, Automatic.randomSelect.bind(Automatic));
+    // }
 
     const party: Combatant[] = [];
 
     let pc: Combatant | null = null;
     while (party.length < partySize) {
       const whichPc = '(' + (party.length + 1) + '/' + partySize + ')';
-      pc = await this.chargen(whichPc, pcGenerator, selectionMethod);
+      pc = await this.chargen(whichPc, pcGenerator, select, confirm);
       // }
 
       if (pc) {

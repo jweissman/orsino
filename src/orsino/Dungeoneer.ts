@@ -2,7 +2,7 @@ import Combat from "./Combat";
 import { CombatContext, pseudocontextFor } from "./types/CombatContext";
 import { Team } from "./types/Team";
 import Presenter from "./tui/Presenter";
-import { Combatant, CombatantID, Gem } from "./types/Combatant";
+import { Combatant, CombatantID } from "./types/Combatant";
 import { Select } from "./types/Select";
 import Words from "./tui/Words";
 import Deem from "../deem";
@@ -18,7 +18,9 @@ import Orsino from "../orsino";
 import { StatusEffect, StatusModifications } from "./Status";
 import Sample from "./util/Sample";
 import Automatic from "./tui/Automatic";
-import { ItemInstance, materializeItem } from "./types/ItemInstance";
+import { ItemInstance } from "./types/ItemInstance";
+import { GenerationTemplateType } from "./types/GenerationTemplateType";
+import { GeneratedValue } from "./Generator";
 
 type SkillType = "search" | "examine" | "disarm"; // | "pickLock" | "climb" | "swim" | "jump" | "listen" | "spot";
 
@@ -91,7 +93,6 @@ interface RoomBase {
   shrine: RoomFeature | null;
   riddle?: Riddle;
   wonder?: Wonder;
-  // gems?: Gemstone[];
   trap?: Trap;
 
   completedFeatures?: string[];
@@ -104,11 +105,6 @@ export interface Room extends RoomBase {
 
 export interface BossRoom extends RoomBase {
   boss_encounter: Encounter | null;
-}
-
-interface Gemstone {
-  name: string;
-  value: number;
 }
 
 export interface Dungeon {
@@ -131,32 +127,26 @@ export interface Dungeon {
   goal?: string;
 }
 
-export default class Dungeoneer {
-  static defaultTeam(): Team {
-    return {
-      name: "Party",
-      combatants: [{
-        id: "pc:hero",
-        forename: "Hero",
-        name: "Hero",
-        alignment: 'good',
-        hp: 14, maximumHitPoints: 14, level: 1, // ac: 10,
-        dex: 11, str: 12, int: 10, wis: 10, cha: 10, con: 12,
-        equipment: { weapon: "shortsword", body: "chainmail" },
-        hitDie: 8,
-        playerControlled: true, xp: 0, gp: 0,
-        abilities: ["melee", "defend"],
-        traits: ["lucky"]
-      }],
-      inventory: []
-    };
-  }
+interface DungeoneerOptions {
+  dry?: boolean;
+  roller?: Roll;
+  select?: Select<any>;
+  outputSink?: (message: string) => void;
+  dungeonGen?: () => Dungeon;
+  gen?: (type: GenerationTemplateType, options?: Record<string, any>) => GeneratedValue | GeneratedValue[];
+  playerTeam?: Team;
+  pause?: (message: string) => Promise<void>;
+  clear?: () => void;
+}
 
+export default class Dungeoneer {
   static dungeonIcons = { temple: "🏛️", fortress: "🏯", library: "📚", tomb: "⚰️", mine: "⛏️", cave: "🕳️", crypt: "⚰️", tower: "🗼", }
 
   private dry: boolean = false;
   private roller: Roll;
   private select: Select<any>;
+  private pause: (message: string) => Promise<void>;
+  private clear: () => void = () => { };
   // protected select: ChoiceSelector<any>;
   private outputSink: (message: string) => void;
   private currentRoomIndex: number = 0;
@@ -172,7 +162,8 @@ export default class Dungeoneer {
   }
 
   constructor(
-    options: Record<string, any> = {}
+    // options: Record<string, any> = {}
+    options: DungeoneerOptions = {}
   ) {
     this.dry = options.dry || Orsino.environment === 'test';
     this.roller = options.roller || Commands.roll.bind(Commands);
@@ -180,6 +171,8 @@ export default class Dungeoneer {
     this.outputSink = options.outputSink || console.log;
     this.dungeonGen = options.dungeonGen || Dungeoneer.defaultGen;
     this.playerTeam = options.playerTeam || Dungeoneer.defaultTeam();
+    this.pause = options.pause || (async (_message: string) => { });
+    this.clear = options.clear || (() => { });
 
     if (!this.dungeonGen) {
       throw new Error('dungeonGen is required');
@@ -189,7 +182,7 @@ export default class Dungeoneer {
 
     this.encounterGen = (cr: number) => {
       if (options.gen) {
-        return options.gen("encounter", { race: this.dungeon.race, terrain: this.dungeon.terrain, targetCr: cr }) as Encounter;
+        return options.gen("encounter", { race: this.dungeon.race, terrain: this.dungeon.terrain, targetCr: cr }) as unknown as Encounter;
       } else {
         return {
           creatures: [
@@ -387,6 +380,8 @@ export default class Dungeoneer {
     const combat = new Combat({
       roller: this.roller,
       select: this.select,
+      pause: this.pause,
+      clear: this.clear,
       // note: this.outputSink
     });
 
@@ -1072,6 +1067,7 @@ export default class Dungeoneer {
         }
       }
       actor.equipment = actor.equipment || {};
+      this.outputSink(`${actor.forename} equips ${Words.a_an(it.name)} (id: ${it.id}).`);
       actor.equipment[slot] = it.id;
     }
   }
@@ -1233,5 +1229,23 @@ export default class Dungeoneer {
     }
   }
 
-
+  static defaultTeam(): Team {
+    return {
+      name: "Party",
+      combatants: [{
+        id: "pc:hero",
+        forename: "Hero",
+        name: "Hero",
+        alignment: 'good',
+        hp: 14, maximumHitPoints: 14, level: 1, // ac: 10,
+        dex: 11, str: 12, int: 10, wis: 10, cha: 10, con: 12,
+        equipment: { weapon: "shortsword", body: "chainmail" },
+        hitDie: 8,
+        playerControlled: true, xp: 0, gp: 0,
+        abilities: ["melee", "defend"],
+        traits: ["lucky"]
+      }],
+      inventory: []
+    };
+  }
 }
