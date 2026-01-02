@@ -115,6 +115,7 @@ export default class Orsino {
       try {
       const moduleRunner: ModuleRunner = new ModuleRunner({
         outputSink,
+        clear: () => process.stdout.write('\x1Bc'),
         moduleGen: () => Generator.gen("module", { setting: 'fantasy', ...options, _moduleLevel: averagePartyLevel }) as unknown as CampaignModule,
         gen: Generator.gen.bind(Generator),
         pcs,

@@ -725,7 +725,7 @@ export default class AbilityHandler {
       // it.itemClass ||= "junk";
       it.ownerId = user.id;
       it.shared = it.itemClass === "consumable";
-      console.log(`${user.name} acquires item: ${it.name}`, JSON.stringify(it));
+      // console.log(`${user.name} acquires item: ${it.name}`, JSON.stringify(it));
       context.inventory.push(it);
       // console.log(`${user.name} acquires item: ${it.name}`);
       events.push({ type: "acquire", subject: user, acquirer: user, itemName: it.name, quantity: 1 } as Omit<GameEvent, "turn">);
