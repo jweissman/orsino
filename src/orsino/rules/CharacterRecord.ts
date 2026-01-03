@@ -104,8 +104,8 @@ export default class CharacterRecord {
       //   ['Yes', 'No']
       // );
       // if (shouldWizard === 'Yes') {
-      const doWizard = await confirmMethod("Would you like to customize this PC? (yes/no)");
-      console.warn(`Character creation wizard: ${doWizard}`);
+      const doWizard = await confirmMethod(`Customize PC ${prompt}?`);
+      // console.warn(`Character creation wizard: ${doWizard}`);
       if (doWizard) {
         const raceSelect = await selectionMethod(
           'Select a race for this PC: ' + prompt,
@@ -123,7 +123,7 @@ export default class CharacterRecord {
 
         await Presenter.printCharacterRecord(pc, []);
         const confirm = await confirmMethod(
-          'Do you want to use this PC? ' + prompt,
+          'Use this PC? ' + prompt,
           // ['Yes', 'No']
         );
         accepted = confirm; // === 'Yes';
@@ -134,7 +134,7 @@ export default class CharacterRecord {
 
         await Presenter.printCharacterRecord(pc, []);
         accepted = await confirmMethod(
-          'Do you want to use this PC? ' + prompt
+          'Use this PC? ' + prompt
           // ['Yes', 'No']
         ); // === 'Yes';
 
@@ -252,7 +252,7 @@ export default class CharacterRecord {
     await abilityHandler.loadAbilities();
     await TraitHandler.instance.loadTraits();
 
-    const doChoose = await confirm("Would you like to customize PCs using the wizard?");
+    const doChoose = await confirm("Customize PCs using the wizard?");
     console.warn(`Party creation wizard: ${doChoose}`);
     if (!doChoose) {
       return this.chooseParty(

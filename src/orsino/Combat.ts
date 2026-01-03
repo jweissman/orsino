@@ -185,9 +185,11 @@ export default class Combat {
   }
   static visible(combatants: Combatant[]): Combatant[] {
     return combatants.filter(c => {
-      const fx = Fighting.effectList(c);
-      const invisibleEffect = fx.find(e => e.effect.invisible);
-      return !invisibleEffect;
+      // const fx = Fighting.effectList(c);
+      // const invisibleEffect = fx.find(e => e.effect.invisible);
+      // return !invisibleEffect;
+      const fx = Fighting.gatherEffects(c);
+      return !fx.invisible;
     });
   }
 
@@ -396,25 +398,39 @@ export default class Combat {
   }
 
   validateAction(ability: Ability, combatant: Combatant, allies: Combatant[], enemies: Combatant[]): boolean {
-    const valid = this._actionIsValid(ability, combatant, allies, enemies);
+    const activeFx = Fighting.gatherEffects(combatant);
+    const { valid, reason } = this._actionIsValid(ability, combatant, allies, enemies);
+    // console.log(`Action ${ability.name} for ${combatant.name} is ${valid ? "valid" : "not valid"} against ${enemies.length} opponents (${enemies.map(e => e.name).join(", ")})`);
+    if (ability.name.match(/melee|ranged/i) && (!activeFx.compelNextMove)) {
+      if (!valid) {
+        console.warn(`Melee/ranged attack is NOT valid for ${combatant.name} against ${enemies.map(e => e.name).join(", ")}: ${reason}`);
+        throw new Error(`Melee/ranged attack should ALWAYS be valid for ${combatant.name} against ${enemies.map(e => e.name).join(", ")}`);
+      }
+    }
     return valid;
   }
 
-  _actionIsValid(ability: Ability, combatant: Combatant, allies: Combatant[], enemies: Combatant[]): boolean {
+  _actionIsValid(ability: Ability, combatant: Combatant, allies: Combatant[], enemies: Combatant[]): {
+    valid: boolean;
+    reason?: string;
+  } {
     const activeFx = Fighting.gatherEffects(combatant);
+
     if (activeFx.compelNextMove) {
       const compelledAbility = this.abilityHandler.getAbility(activeFx.compelNextMove);
       const validTargets = AbilityHandler.validTargets(compelledAbility, combatant, allies, enemies);
       if (compelledAbility && validTargets.length > 0) {
-        return ability.name === compelledAbility.name;
+        // return ability.name === compelledAbility.name;
+        return { valid: ability.name === compelledAbility.name, reason: "Compelled to use specific ability" }
       }
     }
 
     const maxSpellLevel = Math.ceil(combatant.level / 2);
-    if (ability.level && ability.level > maxSpellLevel) { return false; }
+    if (ability.level && ability.level > maxSpellLevel) { return { valid: false, reason: "Ability level too high" }; }
 
     const validTargets = AbilityHandler.validTargets(ability, combatant, allies, enemies);
     let disabled = validTargets.length === 0;
+    let reason = disabled ? "No valid targets" : undefined;
     if (ability.target.includes("randomEnemies") && Combat.living(enemies).length > 0) {
       // note we need a special case here since randomEnemies doesn't have valid targets until we select them
       disabled = false;
@@ -424,10 +440,13 @@ export default class Combat {
     const effectiveCombatant = Fighting.effectiveStats(combatant);
     if (!disabled && ability.effects.every(e => e.type === "heal") && ability.effects.length > 0) {
       if (Combat.wounded([...allies, combatant]).length === 0) {
+        reason = "No wounded allies to heal";
         disabled = true;
       } else if (ability.target.includes("self") && combatant.hp === effectiveCombatant.maxHp) {
+        reason = "Self is not wounded";
         disabled = ability.target.length === 1; // if only self-targeting, disable; if also allies, allow
       } else if ((ability.target.includes("allies") || ability.target.includes("ally")) && Combat.wounded(allies).length === 0) {
+        reason = "No wounded allies";
         disabled = ability.target.length === 1; // if only allies-targeting, disable; if also self, allow
       }
     }
@@ -438,11 +457,13 @@ export default class Combat {
       if (condition.status) {
         if (!combatant.activeEffects?.map(e => e.name).includes(condition.status)) {
           disabled = true;
+          reason = `Requires status: ${condition.status}`;
         }
       }
       if (condition.notStatus) {
         if (combatant.activeEffects?.map(e => e.name).includes(condition.notStatus)) {
           disabled = true;
+          reason = `Cannot have status: ${condition.notStatus}`;
         }
       }
 
@@ -451,6 +472,7 @@ export default class Combat {
           const targetAllies = allies.filter(a => a.hp <= 0);
           if (targetAllies.length === 0) {
             disabled = true;
+            reason = "No dead allies to target";
           }
         }
       }
@@ -461,6 +483,7 @@ export default class Combat {
       //this.teamFor(combatant)?.inventory || []);
       // disabled = !combatant.hasInterceptWeapon;
       disabled = effectiveWeapon.intercept !== true;
+      reason = "Requires intercept weapon";
     }
 
     if (!disabled) {
@@ -471,6 +494,7 @@ export default class Combat {
           spellSlotsRemaining = 0;
         }
         disabled = spellSlotsRemaining === 0;
+        reason = disabled ? "No spell slots remaining" : undefined;
       } else if (ability.type === "skill") {
         if (!ability.name.match(/melee|ranged|wait/i)) {
           const cooldownRemaining = combatant.abilityCooldowns?.[ability.name] || 0;
@@ -480,8 +504,7 @@ export default class Combat {
         }
       }
     }
-    return !disabled;
-
+    return { valid: !disabled, reason };
   }
 
   validActions(combatant: Combatant, allies: Combatant[], enemies: Combatant[]): Ability[] {
@@ -507,6 +530,7 @@ export default class Combat {
       if (activeFx.hasPrimaryAttack !== false) {
         const weapon = Fighting.effectiveWeapon(combatant, this.contextForCombatant(combatant));
         //this.teamFor(combatant)?.inventory || []);
+        console.log(`Effective weapon for ${combatant.name} is ${weapon.name}`);
         if (weapon) {
           if (weapon.missile) {
             if (!uniqAbilities.includes("ranged")) {
@@ -524,6 +548,7 @@ export default class Combat {
       const abilities = uniqAbilities.map(a => this.abilityHandler.getAbility(a)); //.filter(a => a);
       for (const ability of abilities) {
         const disabled = !(this.validateAction(ability, combatant, allies, enemies));
+        // console.log(`Ability ${ability.name} for ${combatant.name} is ${disabled ? "not valid" : "valid"}`);
         if (!disabled) {
           validAbilities.push(ability);
         }
@@ -746,7 +771,7 @@ export default class Combat {
     }
 
     const ctx = this.contextForCombatant(combatant);
-    const numTargets = Array.isArray(targetOrTargets) ? targetOrTargets.length : 1;
+    // const numTargets = Array.isArray(targetOrTargets) ? targetOrTargets.length : 1;
     const { events } = await AbilityHandler.perform(action, combatant, targetOrTargets, ctx, Commands.handlers(this.roller));
     await this.emitAll(events, Combat.describeAbility(action), combatant);
 
@@ -891,15 +916,10 @@ export default class Combat {
     // do we have an effect changing our allegiance? in which case -- flip our allies/enemies
     const allegianceEffect = combatant.activeEffects?.find(e => e.effect.changeAllegiance);
     const playerControlled = Fighting.effectivelyPlayerControlled(combatant);
-    // let controlEffect = combatant.activeEffects?.find(e => e.effect.controlledActions);
     if (allegianceEffect) {
       this.emit({ type: "allegianceChange", subject: combatant, statusName: allegianceEffect.name } as Omit<AllegianceChangeEvent, "turn">);
 
       [allies, livingEnemies] = [enemies, livingAllies];
-
-      // if (controlEffect) {
-      //   playerControlled = !playerControlled;
-      // }
     }
 
     let attacksPerTurn = combatant.attacksPerTurn || 1;
@@ -931,6 +951,7 @@ export default class Combat {
 
     const events = await AbilityHandler.performHooks("onTurnEnd", combatant, ctx, Commands.handlers(this.roller), "turn end effects");
     await this.emitAll(events, `ends their turn`, combatant);
+
     return { haltRound: false };
   }
 
@@ -1008,7 +1029,7 @@ export default class Combat {
         for (const it of combatant.activeEffects) {
           if (it.duration !== undefined && it.duration !== Infinity) {
             let newDuration = Math.max(0, it.duration - 1);
-            console.log(`Status effect ${it.name} on ${combatant.forename} ticks down from ${it.duration} to ${newDuration}`);
+            // console.log(`Status effect ${it.name} on ${combatant.forename} ticks down from ${it.duration} to ${newDuration}`);
             it.duration = newDuration;
           }
         }
@@ -1035,7 +1056,7 @@ export default class Combat {
 
       if (result.haltCombat) {
         return { haltCombat: true, newPlane: result.newPlane };
-      } else if (result.haltRound) {
+      } else if (result.haltRound || Combat.living(this.enemyCombatants).length === 0 || Combat.living(this.playerCombatants).length === 0) {
         break;
       }
     }

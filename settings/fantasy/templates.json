@@ -172,7 +172,7 @@
     "body_type": "=oneOf(slim, average, bulky, towering)",
     "hair": "=oneOf(dark, light, no, matted, spiky, sleek)",
     "building_type": "=oneOf(mine, fortress, temple, tomb, library)",
-    "_class": "=if(#building_type == 'tomb', undead, oneOf(giant, demon, elemental, beast, aberration, celestial, construct, fey, dragon))",
+    "_class": "=#building_type == 'tomb' ? undead : oneOf(giant, demon, elemental, beast, aberration, celestial, construct, fey, dragon)",
     "monster_type": "=pick(lookup(monsterKind, #_class))",
     "class": "=lookup(monsterTypeClass, #monster_type)",
     "_isOutsider": "=#class == 'elemental' || #class == 'celestial' || #class == 'demon' || #class == 'aberration'",
@@ -334,7 +334,7 @@
     "_shrine_type": "=oneOf(altar, statue, fountain, obelisk, mural, relic)",
     "name": "=capitalize(#_shrine_type) + ' of ' + dig(#deity, 'name')",
     "description": "=\"#_appearance #_shrine_type dedicated to #_deityName\"",
-    "offer": "=1d4 + 1"
+    "offer": "=1d4+1"
   },
   "riddle": {
     "difficulty": "=oneOf(easy, medium, hard, deadly)",
@@ -381,7 +381,7 @@
     "_encounterChance": 0.1,
     "_puzzleChance": 0.1,
     "_wonderChance": 0.1,
-    "_treasureChance": 0.1,
+    "_treasureChance": 1,
     "_trapChance": 0.1,
     "_shrineChance": 0.1,
     "room_guide": null,
@@ -466,7 +466,7 @@
     "*planeModifier": "=lookup(planeModifiers, #_plane_name)",
     "town": "=gen(town)",
     "_townName": "=dig(#town, 'name')",
-    "dungeons": "=genList(dungeon, 4)",
+    "dungeons": "=genList(dungeon, 3)",
     "_moduleLevel": 0,
     "name": "=oneOf('Adventure', 'Saga', 'Reckoning', 'Quest', 'Expedition') + ' ' + oneOf('in the ' + capitalize(#terrain), 'at ' + capitalize(#_townName), 'for the ' + capitalize(#terrain))"
   }

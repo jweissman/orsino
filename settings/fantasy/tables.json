@@ -274,7 +274,7 @@
       "catfolk": "Catfolk are agile and stealthy humanoids with feline traits, often skilled hunters and thieves.",
       "sylph": "Sylphs are airy and elusive beings, often associated with the winds and skies.",
       "undine": "Undines are aquatic humanoids, deeply connected to water and its mysteries.",
-      "tiefling": "Tieflings are beings with infernal heritage, often marked by their fiendish appearance and magical abilities.",
+      "tiefling": "Tieflings are beings with infernal heritage, often marked by their fiendish appearance and magical talents.",
       "duergar": "Duergar are dark dwarves with grim demeanors and mastery of subterranean life.",
       "draconic": "Draconic humanoids possess traits of dragons, often exhibiting strength and elemental affinities.",
       "insectoid": "Insectoids are humanoid insects, often living in hive societies and exhibiting unique biological traits.",
@@ -373,7 +373,7 @@
   "abilities": {
     "discriminator": "class",
     "groups": {
-      "warrior": [[ "cleave", "prepare_charge", "charge", "set_spear", "second_wind", "roundhouse" ]],
+      "warrior": [[ "vigor_up", "cleave", "prepare_charge", "charge", "set_spear", "second_wind", "roundhouse" ]],
       "mage": [[]],
       "cleric": [[ ]],
       "ranger": [ [ "heal", "summon_animal", "set_spear", "hunters_mark", "ensnare" ] ],
@@ -1234,15 +1234,15 @@
   "roomOverlays": {
     "discriminator": "guide_type",
     "groups": {
-      "entrance": { "_encounterChance": 0.1, "_puzzleChance": 0,    "_trapChance": 0.8,  "_treasureChance": 0.2 },
-      "empty":    { "_encounterChance": 0,   "_puzzleChance": 0.05, "_trapChance": 0,    "_treasureChance": 0, "_wonderChance": 0.1 },
-      "trap":     { "_encounterChance": 0.2, "_puzzleChance": 0.1,  "_trapChance": 1,    "_treasureChance": 0.1 },
-      "mob":      { "_encounterChance": 1,   "_puzzleChance": 0,    "_trapChance": 0.1,  "_treasureChance": 0.2 },
-      "elite":    { "_encounterChance": 1,   "_puzzleChance": 0,    "_trapChance": 0.05, "_treasureChance": 0.3, "challenging": true },
-      "special":  { "_encounterChance": 0,   "_puzzleChance": 0.1,  "_trapChance": 0.1,  "_treasureChance": 0.4, "_wonderChance": 0.2 },
-      "treasure": { "_encounterChance": 0.2, "_puzzleChance": 0.2,  "_trapChance": 0.2,  "_treasureChance": 0.8 },
-      "wonder":   { "_encounterChance": 0,   "_puzzleChance": 0.1,  "_trapChance": 0,    "_treasureChance": 0, "_wonderChance": 1 },
-      "puzzle":   { "_encounterChance": 0,   "_puzzleChance": 1,    "_trapChance": 0.1,  "_treasureChance": 0.2 }
+      "entrance": { "_encounterChance": 0.1, "_puzzleChance": 0,    "_trapChance": 0.8,  "_treasureChance": 1.2, "_wonderChance": 0 },
+      "empty":    { "_encounterChance": 0,   "_puzzleChance": 0.05, "_trapChance": 0,    "_treasureChance": 1,   "_wonderChance": 0.1 },
+      "trap":     { "_encounterChance": 0.2, "_puzzleChance": 0.1,  "_trapChance": 1,    "_treasureChance": 1.1, "_wonderChance": 0 },
+      "mob":      { "_encounterChance": 1,   "_puzzleChance": 0,    "_trapChance": 0.1,  "_treasureChance": 1.2, "_wonderChance": 0 },
+      "elite":    { "_encounterChance": 1,   "_puzzleChance": 0,    "_trapChance": 0.05, "_treasureChance": 1.3, "challenging": true },
+      "special":  { "_encounterChance": 0,   "_puzzleChance": 0.1,  "_trapChance": 0.1,  "_treasureChance": 1.4, "_wonderChance": 0.2 },
+      "treasure": { "_encounterChance": 0.2, "_puzzleChance": 0.2,  "_trapChance": 0.2,  "_treasureChance": 1.8, "_wonderChance": 0.1 },
+      "wonder":   { "_encounterChance": 0,   "_puzzleChance": 0.1,  "_trapChance": 0,    "_treasureChance": 1, "_wonderChance": 1 },
+      "puzzle":   { "_encounterChance": 0,   "_puzzleChance": 1,    "_trapChance": 0.1,  "_treasureChance": 1.2, "_wonderChance": 0.1  }
     }
   },
 

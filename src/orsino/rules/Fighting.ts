@@ -46,10 +46,6 @@ export class Fighting {
     const allegianceEffect = combatant.activeEffects?.find(e => e.effect.changeAllegiance);
     const controlEffect = combatant.activeEffects?.find(e => e.effect.controlledActions);
     let playerControlled = combatant.playerControlled && !allegianceEffect;
-
-    // if (allegianceEffect) {
-    //   playerControlled = !playerControlled;
-    // }
     if (controlEffect) {
       playerControlled = !playerControlled;
     }
@@ -69,8 +65,13 @@ export class Fighting {
           }
           if (typeof value === "number") {
             const theKey = key as keyof StatusModifications;
-            if (keys.length === 0 || keys.includes(key)) {
-              if (typeof bonuses[theKey] === "number") {
+            const matching = keys.length === 0 || keys.includes(key)
+            // console.log(`Checking turn bonus key ${theKey} on effect ${it.name} for combatant ${combatant.name}: matching=${matching}`);
+            if (matching) {
+              // const type = typeof value
+              const type = typeof bonuses[theKey]; // === "number"
+              // console.log(`  Found matching turn bonus ${theKey} = ${value} (with type ${type})`);
+              if (type === "number" || bonuses[theKey] === undefined) {
                 // @ts-ignore
                 bonuses[theKey] = ((bonuses[theKey] || 0) + value);
               }
@@ -79,6 +80,7 @@ export class Fighting {
         });
       }
     });
+    // console.log(`Turn bonuses for ${combatant.name} [checked ${keys}]:`, bonuses);
     return bonuses;
   }
 
@@ -297,7 +299,9 @@ export class Fighting {
     const strMod = this.statMod(effectiveAttacker.str || 10);
     const dexMod = this.statMod(effectiveAttacker.dex || 10);
 
-    const toHitTurnBonus = (this.turnBonus(attacker, ["toHit"])).toHit || 0;
+    const bonuses = this.turnBonus(attacker, ["toHit", "criticalRangeIncrease"]);
+
+    const toHitTurnBonus = bonuses.toHit || 0;
     const attackerWeapon = this.effectiveWeapon(attacker, attackerContext);
     const isMissile = attackerWeapon.missile === true;
     const toHitBonus = (isMissile ? dexMod : strMod)  // DEX affects accuracy for missiles
@@ -325,7 +329,8 @@ export class Fighting {
       };
     }
 
-    if (attackRoll.amount >= 20) {
+    const critThreshold = 20 - (bonuses.criticalRangeIncrease || 0);
+    if (attackRoll.amount >= critThreshold) {
       critical = true;
       description += " Critical hit! ";
     } else {

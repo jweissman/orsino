@@ -28,5 +28,6 @@ export interface ItemInstance {
 
 
 export const materializeItem = (itemKey: string, inventory: ItemInstance[]): ItemInstance => {
+  // console.log(`Materializing item ${itemKey} from inventory of ${inventory.length} items`);
   return Inventory.materialize(itemKey, inventory);
 }

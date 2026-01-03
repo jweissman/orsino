@@ -92,14 +92,14 @@ export default class Shop {
 
     const options = [];
     for (let index = 0; index < armorItemNames.length; index++) {
-      const itemName = armorItemNames[index];
+      const itemKey = armorItemNames[index];
       // const item = Deem.evaluate(`lookup(masterArmor, "${itemName}")`) as unknown as Equipment;
-      const item = materializeItem(itemName, []) as Armor & ItemInstance;
-      item.key = itemName;
+      const item = materializeItem(itemKey, []) as Armor & ItemInstance;
+      item.key = itemKey;
       options.push({
-        short: Words.humanize(itemName) + ` (${item.value}g)`,
+        short: Words.humanize(itemKey) + ` (${item.value}g)`,
         value: item,
-        name: `${Words.humanize(itemName)} - ${item.description} (${item.value}g)`,
+        name: `${Words.humanize(itemKey)} - ${item.description} (${item.value}g)`,
         disabled: this.currentGold < item.value || (wearer.armorProficiencies ? !Inventory.isArmorProficient(item, wearer.armorProficiencies) : true),
         // disabled: this.currentGold < item.value || (wielder.weaponProficiencies ? !Inventory.isWeaponProficient(item, wielder.weaponProficiencies) : true),
       })

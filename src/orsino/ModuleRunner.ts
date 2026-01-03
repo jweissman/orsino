@@ -20,6 +20,7 @@ import Orsino from "../orsino";
 import { GameState, newGameState, processEvents } from "./types/GameState";
 import Shop, { ShopType } from "../Shop";
 import { ItemInstance } from "./types/ItemInstance";
+import { Driver } from "./Driver";
 
 type TownSize = 'hamlet' | 'village' | 'town' | 'city' | 'metropolis' | 'capital';
 type Race = 'human' | 'elf' | 'dwarf' | 'halfling' | 'gnome' | 'orc' | 'fae';
@@ -63,12 +64,16 @@ type RunnerOptions = {
   pcs?: Combatant[];
   gen?: (type: GenerationTemplateType, options?: GeneratorOptions) => GeneratedValue | GeneratedValue[];
   inventory?: ItemInstance[];
+
+  // would be nice to replace io method clutter with the driver abstraction
+  // driver?: Driver;
 }
 
 export class ModuleRunner {
   static configuration = { sharedGold: 10000 }
 
   private roller: Roll;
+  // private driver: Driver;
   private select: Select<Answers>;
   private pause: (message: string) => Promise<void> = async (message: string) => { };
   private clear: () => void = () => { };
@@ -87,7 +92,9 @@ export class ModuleRunner {
     this.roller = options.roller || Commands.roll.bind(Commands);
     this.select = options.select || Automatic.randomSelect.bind(Automatic);
     this.pause = options.pause || (async (message: string) => { });
-    this.clear = options.clear || (() => { });
+    this.clear = options.clear || (() => {
+      process.stdout.write('\x1Bc');
+    });
     this._outputSink = options.outputSink || Orsino.outputSink;
     this.moduleGen = options.moduleGen || this.defaultModuleGen.bind(this);
     this.gen = options.gen || (() => { throw new Error("No gen function provided") });

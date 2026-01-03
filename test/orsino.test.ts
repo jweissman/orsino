@@ -173,7 +173,7 @@ describe('Orsino', () => {
       (options?: GeneratorOptions) => (Generator.gen("pc", { setting: "fantasy", ...options }) as unknown as Combatant),
       3,
       Automatic.randomSelect.bind(Automatic),
-      (message: string) => Promise.resolve(true)
+      (_message: string) => Promise.resolve(true)
     );
     for (const pc of party) {
       // await CharacterRecord.pickInitialSpells(pc, Automatic.randomSelect.bind(Automatic));

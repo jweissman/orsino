@@ -264,7 +264,6 @@ export default class AbilityHandler {
 
       default:
         // return never(targetName);
-        // console.warn(`Unknown target type: ${targetName}`);
         break;
     }
     return targets;
@@ -274,6 +273,7 @@ export default class AbilityHandler {
     const healing = ability.effects.every(fx => fx.type === "heal") && ability.effects.length > 0;
     const targets: (Combatant | Combatant[])[] = [];
     const effectiveUser = Fighting.effectiveStats(user);
+    const userFx = Fighting.gatherEffects(user);
     for (const t of [...ability.target]) {
       switch (t) {
         case "self":
@@ -287,20 +287,17 @@ export default class AbilityHandler {
           break;
         case "ally":
           if (healing) {
-            targets.push(...Combat.wounded(allies));
+            targets.push(Combat.wounded(allies));
           } else {
-            targets.push(...Combat.living(allies));
+            targets.push(Combat.living(allies));
           }
           break;
         case "deadAlly": targets.push(...(allies.filter(a => a.hp <= 0))); break;
         case "enemy":
-          // n.b. really need to make all this async so we can gather effects properly?
-          // can't make a ring of true seeing work this way otherwise
-          // or we could pre-process equipment to active effects (would be nicer overall and could make some other things _not_ async)
-          if ([...(user.activeEffects || []), ...(user.passiveEffects || [])].some(e => e.effect.seeInvisible)) {
-            targets.push(...enemies);
+          if (userFx.seeInvisible) {
+            targets.push(enemies);
           } else {
-            targets.push(...Combat.visible(enemies));
+            targets.push(Combat.visible(enemies));
           }
           break;
         case "allies":
@@ -396,7 +393,6 @@ export default class AbilityHandler {
           return re.test(t);
         });
         if (!traitMatch) {
-          console.warn(`${targetCombatant.name} does not have required trait ${effectCondition.trait} for effect ${effect.type} of ability ${name}, skipping effect.`);
           return { success, events };
         }
       }
@@ -536,7 +532,6 @@ export default class AbilityHandler {
 
       const saved = successful;
       if (saved || targetCombatant._savedVersusSpell) {
-        // console.log(`${targetCombatant.name} resists the urge to flee!`);
         return { success: false, events };
       }
 
@@ -544,8 +539,6 @@ export default class AbilityHandler {
         const statusEvents = await status(user, targetCombatant, "Fleeing", { flee: true }, 2);
         events.push(...statusEvents);
         success = true;
-      } else {
-        // console.log(`${targetCombatant.name} wanted to flee but resisted!`);
       }
     } else if (effect.type === "removeStatus") {
       if (!effect.statusName) {
@@ -560,10 +553,7 @@ export default class AbilityHandler {
         throw new Error(`upgrade effect must specify a stat`);
       }
 
-      // console.log("Upgrading stat", stat, "for", user.name, "with effect:", JSON.stringify(effect));
-
       const amount = Deem.evaluate(effect.amount?.toString() || "1", { subject: user, ...user, description: name } as any);
-      // console.log(`${user.name} upgrades ${stat} by ${amount}!`);
       // @ts-expect-error
       user[stat] = (user[stat] || 0) + (amount || 0);
       const upgradeEvent = { type: "upgrade", subject: user, stat, amount, newValue: user[stat] } as UpgradeEvent;
@@ -573,20 +563,16 @@ export default class AbilityHandler {
     else if (effect.type === "gold") {
       const amount = AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
       user.gp = (user.gp || 0) + amount;
-      // console.log(`${user.name} gains ${amount} gold!`);
       events.push({ type: "gold", subject: user, amount } as GoldEvent);
       success = true;
     }
     else if (effect.type === "xp") {
       const amount = AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
       user.xp = (user.xp || 0) + amount;
-      // console.log(`${user.name} gains ${amount} XP!`);
       events.push({ type: "xp", subject: user, amount } as ExperienceEvent);
       success = true;
     } else if (effect.type === "summon") {
-      console.warn(`Handling summon effect: ${JSON.stringify(effect)}`);
       let amount = Deem.evaluate(effect.amount || "1", { subject: user, ...user, description: name } as unknown as GeneratorOptions) as number;
-      console.log(`${user.name} summons ${amount} creature(s)!`);
       const summoned: Combatant[] = [];
       for (let i = 0; i < amount; i++) {
         const options: Record<string, any> = effect.options || {};
@@ -602,22 +588,16 @@ export default class AbilityHandler {
           _targetCr: Math.max(1, Math.floor((user.level || 1) / 2)),
           ...options
         }) as unknown as Combatant;
-        console.log(`Summoned ${summon.forename}`);
         summoned.push(summon as unknown as Combatant);
       }
       const summonEvents = await summon(user, summoned, effect.description || name);
-      console.log(`Summon events: ${summonEvents.length}`);
       events.push(...summonEvents);
       success = amount > 0;
     }
     else if (effect.type === "resurrect") {
       let rezzed = false;
       const targetFx = Fighting.gatherEffects(targetCombatant);
-      if (targetCombatant.hp > 0) {
-        console.warn(`${targetCombatant.name} is not dead and cannot be resurrected.`);
-      } else if (targetFx.resurrectable === false) {
-        console.warn(`${targetCombatant.name} cannot be resurrected.`);
-      } else {
+      if (targetCombatant.hp <= 0 && targetFx.resurrectable !== false) {
         const effectiveTarget = Fighting.effectiveStats(targetCombatant);
         const amount = effect.hpPercent ? Math.floor((effect.hpPercent / 100) * (effectiveTarget.maxHp || 10)) : 1;
         targetCombatant.hp = Math.max(1, amount);
@@ -634,10 +614,9 @@ export default class AbilityHandler {
       success = rezzed;
     }
     else if (effect.type === "kill") {
-      if (targetCombatant.hp <= 0) {
-        console.warn(`${targetCombatant.name} is already dead.`);
-      } else {
+      if (targetCombatant.hp > 0) {
         targetCombatant.hp = 0;
+        targetCombatant.dead = true;
         events.push({ type: "fall", subject: targetCombatant } as Omit<GameEvent, "turn">);
         success = true;
       }
@@ -683,7 +662,6 @@ export default class AbilityHandler {
       }
       if (!user.abilities.includes(abilityName)) {
         user.abilities.push(abilityName);
-        // console.log(`${user.name} learns ability ${abilityName}!`);
         events.push({ type: "learnAbility", subject: user, abilityName } as Omit<GameEvent, "turn">);
       }
       success = true;
@@ -697,18 +675,15 @@ export default class AbilityHandler {
       }
       if (!user.traits.includes(traitName)) {
         user.traits.push(traitName);
-        // console.log(`${user.name} gains passive trait ${traitName}!`);
         events.push({ type: "gainTrait", subject: user, traitName } as Omit<GameEvent, "turn">);
       }
       success = true;
     } else if (effect.type === "planeshift") {
       const location = Deem.evaluate(effect.location || 'Arcadia', { subject: user, ...user, description: name } as any);
-      // console.warn("You are being plane shifted to", location);
       events.push({ type: "planeshift", subject: user, plane: location } as Omit<GameEvent, "turn">);
       success = true;
     } else if (effect.type === "teleport") {
       const location = Deem.evaluate(effect.location || 'firstRoom', { subject: user, ...user, description: name } as any);
-      // console.warn("You are being teleported to", location);
       events.push({ type: "teleport", subject: user, location } as Omit<GameEvent, "turn">);
       success = true;
     } else if (effect.type === "recalculateHp") {
@@ -719,22 +694,16 @@ export default class AbilityHandler {
       if (!effect.itemName) {
         throw new Error(`acquireItem effect must specify an itemName`);
       }
-      // let it = Generator.gen(effect.template, effect.options as unknown as GeneratorOptions || {}) as unknown as ItemInstance;
       let it = Inventory.genLoot(effect.itemName);
       context.inventory = context.inventory || [];
-      // it.itemClass ||= "junk";
       it.ownerId = user.id;
       it.shared = it.itemClass === "consumable";
-      // console.log(`${user.name} acquires item: ${it.name}`, JSON.stringify(it));
       context.inventory.push(it);
-      // console.log(`${user.name} acquires item: ${it.name}`);
       events.push({ type: "acquire", subject: user, acquirer: user, itemName: it.name, quantity: 1 } as Omit<GameEvent, "turn">);
       success = true;
     }
 
     else {
-      // throw new Error(`Unknown effect type: ${effect.type}`);
-      // console.warn(`Unknown effect type: ${effect.type} in ability ${name}`);
       return never(effect.type);
     }
 
@@ -901,7 +870,6 @@ export default class AbilityHandler {
     if (hookFx[hookKey]) {
       const hookEffects = hookFx[hookKey] as Array<AbilityEffect>;
       for (const hookEffect of hookEffects) {
-        // console.log("Handling hook effect", hookKey, "for", user.name, ": ", JSON.stringify(hookEffect));
         let target: Combatant | Combatant[] = prevTarget || user;
         if (hookEffect.target && !prevTarget) {
           if (hookEffect.target === "self") {
@@ -913,13 +881,11 @@ export default class AbilityHandler {
             }
           }
         }
-        // console.log("Hook effect target resolved to:", Array.isArray(target) ? target.map(t => t.name).join(", ") : target.name);
         const { success: _ignored, events: hookEvents } = await this.handleEffect(
           (label) + " due to " + Words.humanizeList(hookFxWithNames[hookKey].sources),
           hookEffect, user, target, context, handlers
         );
         events.push(...hookEvents);
-        // console.log("hook effect events:", hookEvents, "success:", success);
       }
     }
 
@@ -951,7 +917,6 @@ export default class AbilityHandler {
       if (reactionFx[reactionKey]) {
         const sources = Words.humanizeList(reactionFxWithNames[reactionKey].sources);
         const reactionEffects = reactionFx[reactionKey] as Array<AbilityEffect>;
-        console.log(`${reactor.name} has reaction ${reactionKey} from ${sources}`);
         for (const reactionEffect of reactionEffects) {
           let target: (Combatant | Combatant[]) = user;
           if (reactionEffect.target) {

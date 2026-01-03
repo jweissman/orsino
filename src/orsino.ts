@@ -43,7 +43,7 @@ export default class Orsino {
     const driver = this.useInquirer ? new InquirerDriver() : new ConsoleDriver();
     Orsino.outputSink = driver.writeLn.bind(driver);
 
-    const partySize = options.partySize || 3;
+    const partySize = options.partySize || 1;
     const pcs = await CharacterRecord.chooseParty(
       (opts: GeneratorOptions) => Generator.gen("pc", { setting: 'fantasy', ...opts }) as unknown as Combatant,
       partySize,

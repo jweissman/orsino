@@ -1,5 +1,6 @@
 import Deem from "../deem";
 import Generator from "./Generator";
+import Words from "./tui/Words";
 import { Combatant, EquipmentSlot } from "./types/Combatant";
 import { DamageKind } from "./types/DamageKind";
 import { ItemInstance, materializeItem } from "./types/ItemInstance";
@@ -107,33 +108,33 @@ export class Inventory {
   static reifyFromKey(itemKey: string): ItemInstance {
     const hasMasterWeaponEntry = Deem.evaluate(`hasEntry(masterWeapon, "${itemKey}")`) as boolean;
     if (hasMasterWeaponEntry) {
-      const masterWeapon = Deem.evaluate(`lookup(masterWeapon, "${itemKey}")`) as unknown as Weapon;
+      const masterWeapon = Deem.evaluate(`lookup(masterWeapon, "${itemKey}")`) as unknown as Weapon & ItemInstance;
       if (!masterWeapon) {
         throw new Error(`Could not find itemName ${itemKey} in masterWeapon table`);
       }
       // note: straight lookup from master will actually be missing a bunch of true ItemInstance fields like id etc
-      return {
+      let weapon = {
         id: this.genId('weapon'),
-        name: itemKey,
         ...masterWeapon,
         key: itemKey,
-        itemClass: 'weapon',
       };
+      weapon.itemClass = 'weapon';
+      weapon.name = masterWeapon.name || Words.humanize(itemKey);
+      return weapon;
     }
 
     const hasMasterEquipmentEntry = Deem.evaluate(`hasEntry(masterEquipment, "${itemKey}")`) as boolean;
     if (hasMasterEquipmentEntry) {
-      const masterEquipment = Deem.evaluate(`lookup(masterEquipment, "${itemKey}")`) as unknown as Equipment;
+      const masterEquipment = Deem.evaluate(`lookup(masterEquipment, "${itemKey}")`) as unknown as Equipment & ItemInstance;
       if (!masterEquipment) {
         throw new Error(`Could not find equipment ${itemKey} in masterEquipment table`);
       }
 
       return {
         id: this.genId('equipment'),
-        name: itemKey,
-        itemClass: 'equipment',
         ...masterEquipment,
-        key: itemKey
+        key: itemKey,
+        itemClass: 'equipment',
       };
     }
 
@@ -175,8 +176,9 @@ export class Inventory {
     const byId = inventory.find(i => i.id === ref);
     if (byId) return byId;
 
-    const byKey = inventory.find(i => i.key === ref);
-    if (byKey) return byKey;
+    // this can cause 'weapon sharing' bugs if two pcs have same weapon key (they will still need different ids so go ahead and spawn new instances)
+    // const byKey = inventory.find(i => i.key === ref);
+    // if (byKey) return byKey;
 
     // If it looks like an id, don't try to treat it like a key
     if (ref.includes(":")) {
@@ -187,6 +189,10 @@ export class Inventory {
         `Missing item instance ${ref} in provided inventory (len=${inventory.length}). ` +
         `This ref looks like an id, not a key.`
       );
+    }
+
+    if (itemKey !== itemKey.toLowerCase()) {
+      throw new Error(`Item key ${itemKey} must be all lowercase`);
     }
 
     return Inventory.reifyFromKey(itemKey);

@@ -119,7 +119,7 @@ export class InquirerDriver extends ConsoleDriver implements Driver {
   }
 
   async confirm(message: string): Promise<boolean> {
-    const input = await User.selection(message + " (y/n):", ["y", "n"]);
+    const input = await User.selection(message + " (y/n):", ["yes", "no"]);
     return String(input).toLowerCase().startsWith("y");
   }
 }

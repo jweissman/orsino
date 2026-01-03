@@ -1,4 +1,17 @@
 {
+  "vigor": {
+    "name": "Vigorous",
+    "type": "buff",
+    "description": "Filled with vitality and energy.",
+    "effect": {
+      "toHit": 1,
+      "criticalRangeIncrease": 2,
+      "con": 2,
+      "tempHp": 10,
+      "saveVersusAll": 1,
+      "bonusDamage": 1
+    }
+  },
   "rage": {
     "name": "Raging",
     "type": "buff",

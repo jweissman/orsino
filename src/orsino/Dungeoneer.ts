@@ -444,9 +444,11 @@ export default class Dungeoneer {
       if (consumablesFound < 0.2) {
         const consumableRarity = (consumablesFound < 0.05) ? 'rare' : (consumablesFound < 0.1) ? 'uncommon' : 'common';
         const consumable = Deem.evaluate(`pick(gather(consumables, -1, 'dig(#__it, rarity) == ${consumableRarity}'))`) as string;
-        const consumableName = Words.humanize(consumable);
         const it = Inventory.genLoot(consumable);
-        await this.emit({ type: "itemFound", subject: this.playerTeam.combatants[0], itemName: Words.humanize(consumableName), itemDescription: it.description || Words.a_an(Words.humanize(consumableName)), quantity: 1, where: "in the remains of your foes" });
+        const consumableName = Words.humanize(consumable);
+        await this.emit(
+          { type: "itemFound", subject: this.playerTeam.combatants[0], itemName: Words.humanize(consumableName), itemDescription: it.description || Words.a_an(Words.humanize(consumableName)), quantity: 1, where: "in the remains of your foes" } as ItemFoundEvent
+        );
         this.playerTeam.inventory.push(it);
       }
 
@@ -1069,6 +1071,7 @@ export default class Dungeoneer {
       actor.equipment = actor.equipment || {};
       this.outputSink(`${actor.forename} equips ${Words.a_an(it.name)} (id: ${it.id}).`);
       actor.equipment[slot] = it.id;
+      console.log(`!!! Equipping ${it.id} to ${actor.name} in slot ${slot}`);
     }
   }
 

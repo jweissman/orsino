@@ -1,21 +1,22 @@
 # Notes from Playtesting
 
 ## Bugs
+- [ ] Crashing bug with hireling inventory (literal "Longsword" object name instead of key on equipment slot...)
+  - [ ] Enhancing a dagger for a hireling mage also seems broken somehow (doesn't actually apply upgrade?)
 - [ ] Bombs should not be heal-able (maybe there is some 'repair/mending' skill for inanimate objects though)
 - [ ] Weird interaction with absorption (temp Hp) and trap descriptions [it was saying the _trap_ absorbed damage?]
 - [ ] Traps with planeshift effects don't seem to work
+- [ ] Sometimes dragons don't have valid abilities? (no melee attack?)
 
 ## Features
 - [ ] Make effective weapon/armor/size work for shapechange
 - [ ] Make read thoughts telegraph next moves (we may have to _obscure_ compelled moves like charge first?)
-- [ ] Make criticalRangeIncrease work
 - [ ] Flight should make you actually _untargetable_ by melee
 - [ ] Show current gold before purchasing potions
 - [ ] Remind players to rest if they're not at full health going into boss battle
 - [ ] Unify search/examine (should both have chance to find potions/loot and both grant XP on success)
 - [ ] All mage schools should have enough low-level spells to pick from
 - [ ] Traps should remember if they've been triggered (ie if you return to the dungeon again)
-- [ ] Rooms should remember in general if you've searched/examined things 
 
 ## Ideas
 - [ ] Rest could reset status effects? (would be nice to do this _before_ persisting PCs?)
@@ -172,7 +173,11 @@
 ---
 - [ ] Offer to rez before asking for blessing donations (temple flow)
 - [ ] Restrict hard/lethal riddles to later dungeons (or lower DC overall)
-- [ ] Docbooks/ability description could now distinguish between buffs/conditions?
+- [ ] Restrict more powerful traps / rank trap punishments (minor, major at least)
+- [ ] Present status description instead of simple name
+---
+- [ ] Customize name/appearance/background
+- [ ] Single-combat sandbox where we can specify party formation and enemy list
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing
@@ -321,6 +326,9 @@
 - [x] Seems fixed but really make sure we're handling gold transition between town hub/dungeon correctly -- think this is okay now??
 - [x] Hirelings should get starting gear (should be working!)
 - [x] An _extra_ lich got summoned by _black ritual_...? (Something weird with tickdown?) -- should be fixed now
+- [x] Docbooks/ability description could now distinguish between buffs/conditions?
+- [x] Rooms should remember in general if you've searched/examined things 
+- [x] Make criticalRangeIncrease work (need something low-level to test it.. -- added _vigor up_ as part of warrior default action set)
 
 ## Not really issues atm
 - Load all PCs on party select so we can show their race/class (no longer even letting you load PCs from file but we're still persisting them every room...) (we don't even persist PC records anymore)

@@ -686,18 +686,17 @@
         "type": "bludgeoning"
       },
 
-      "fire_breath": { "damage": "4d6", "natural": true, "type": "fire", "aoe": true },
-      "ice_breath": { "damage": "4d6", "natural": true, "type": "cold", "aoe": true },
-      "poison_breath": { "damage": "4d6", "natural": true, "type": "poison", "aoe": true },
-      "acid_breath": { "damage": "4d6", "natural": true, "type": "acid", "aoe": true },
-      "lightning_breath": { "damage": "4d6", "natural": true, "type": "electric", "aoe": true },
-      "doom_breath": { "damage": "4d6", "natural": true, "type": "necrotic", "aoe": true },
-
-      "holy_breath": { "damage": "6d6", "natural": true, "type": "true", "aoe": true },
-      "maddening_breath": { "damage": "5d6", "natural": true, "type": "psychic", "aoe": true },
-      "blinding_breath": { "damage": "4d6", "natural": true, "type": "radiant", "aoe": true },
-      "deafening_breath": { "damage": "4d6", "natural": true, "type": "sonic", "aoe": true },
-      "disintegrating_breath": { "damage": "4d6", "natural": true, "type": "force", "aoe": true }
+      "fire_breath": { "damage": "4d6", "natural": true, "type": "fire", "breath": true },
+      "ice_breath": { "damage": "4d6", "natural": true, "type": "cold", "breath": true },
+      "poison_breath": { "damage": "4d6", "natural": true, "type": "poison", "breath": true },
+      "acid_breath": { "damage": "4d6", "natural": true, "type": "acid", "breath": true },
+      "lightning_breath": { "damage": "4d6", "natural": true, "type": "electric", "breath": true },
+      "doom_breath": { "damage": "4d6", "natural": true, "type": "necrotic", "breath": true },
+      "holy_breath": { "damage": "6d6", "natural": true, "type": "true", "breath": true },
+      "maddening_breath": { "damage": "5d6", "natural": true, "type": "psychic", "breath": true },
+      "blinding_breath": { "damage": "4d6", "natural": true, "type": "radiant", "breath": true },
+      "deafening_breath": { "damage": "4d6", "natural": true, "type": "sonic", "breath": true },
+      "disintegrating_breath": { "damage": "4d6", "natural": true, "type": "force", "breath": true }
     }
   },
   "masterGear": {
@@ -2482,7 +2481,14 @@
   "treasure": {
     "discriminator": "tier",
     "groups": {
-      "basic": [
+      "basic": [[ "dagger" ]],
+      "negligible": [[ "longsword" ]],
+      "minor": [[ "rapier" ]],
+      "major": [[ "bolt_blade" ]],
+      "grand": [[ "wakizashi" ]],
+      "legendary": [[ "katana" ]],
+
+      "_basic": [
         [
           "wooden_bowl", "cloth_pouch", "broken_dagger", "tattered_map", "wooden_figurine",
           "minor_healing_potion", "firewood", "shoes", "candle", "manacles",
@@ -2490,7 +2496,7 @@
           "soap", "fish_hook", "needle_and_thread", "skillet", "whetstone"
         ]
       ],
-      "negligible": [
+      "_negligible": [
         [
           "simple_ring", "small_statue", "bronze_bracelet", "faded_painting", "faded_tome",
           "crowbar", "dice", "lantern", "oil_flask", "pouch",
@@ -2499,7 +2505,7 @@
           "healing_potion"
         ]
       ],
-      "minor": [
+      "_minor": [
         [
           "dagger", "longsword", "shortbow", "chainmail", 
           "major_healing_potion",
@@ -2511,7 +2517,7 @@
           "canvas", "lock", "hammer", "ladder", "musical_instrument", "rope"
         ]
       ],
-      "major": [
+      "_major": [
         [
           "amethyst", "tourmaline", "bolt_blade", "potion_of_barkskin", "scroll_of_domination",
           "ancient_orrery", "ancient_crown", "sacred_idol", "lost_tome",
@@ -2520,7 +2526,7 @@
           "longsword_of_flames", "wardstone", "gloves_of_dexterity", "amulet_of_vitality", "helm_of_intellect", "mantle_of_charisma"
         ]
       ],
-      "grand": [
+      "_grand": [
         [
           "emerald", "sapphire",
           "crown_of_insight", "helm_of_the_stars", "ring_of_strength", "ring_of_major_protection", "amulet_of_focus",
@@ -2530,7 +2536,7 @@
           "sword_of_ages", "robe_of_elvenkind", "darkwood_staff", "angelmail", "dragonhelm"
         ]
       ],
-      "legendary": [
+      "_legendary": [
         [
           "black_diamond", "diamond", "black_opal", "fire_opal", "star_ruby",
           "scroll_of_apocalypse",

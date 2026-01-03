@@ -30,9 +30,7 @@
     "type": "skill",
     "aspect": "physical",
     "description": "Use your primary weapon.",
-    "target": [
-      "enemy"
-    ],
+    "target": [ "enemy" ],
     "effects": [
       {
         "type": "attack"
@@ -186,7 +184,7 @@
     "name": "Roundhouse Kick",
     "type": "skill",
     "aspect": "physical",
-    "description": "Make a powerful kick that strikes all enemies for 1d4 + 1 + level/3 bludgeoning damage.",
+    "description": "Make a powerful kick that strikes all enemies.",
     "target": [
       "enemies"
     ],
@@ -232,6 +230,20 @@
         "status": "stun",
         "saveNegates": true,
         "saveDC": 20
+      }
+    ]
+  },
+  "vigor_up": {
+    "name": "Vigor Up",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Boost your vitality, granting +2 to all healing received for the next 5 rounds.",
+    "target": [ "self" ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "vigor",
+        "duration": 5
       }
     ]
   },

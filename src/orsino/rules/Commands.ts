@@ -69,7 +69,7 @@ export class Commands {
       result = Math.max(1, result);
       rollDescription += ` ${subject.name} adds ${effectStack.allRolls} to all rolls, so the total is now ${result}.`;
     }
-    console.warn(rollDescription);
+    // console.warn(rollDescription);
     return { amount: result, description: rollDescription };
   }
 
@@ -439,7 +439,9 @@ export class Commands {
   }
 
   static async handleStatusEffect(
-    user: Combatant, target: Combatant, name: string, effect: StatusModifications, duration?: number,
+    user: Combatant, target: Combatant,
+    name: string, effect: StatusModifications,
+    duration?: number,
     source?: string,
     type?: "buff" | "condition"
   ): Promise<TimelessEvent[]> {
@@ -470,6 +472,7 @@ export class Commands {
         type: "statusEffect",
         subject: target,
         effectName: name,
+        // effectDescription: description,
         effect,
         duration,
         source: source || user.forename

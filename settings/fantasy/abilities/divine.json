@@ -546,7 +546,7 @@
       {
         "type": "acquireItem",
         "itemName": "goodberry",
-        "quantity": "=1d4 + 1"
+        "quantity": "=1d4+1"
       }
     ]
   },
