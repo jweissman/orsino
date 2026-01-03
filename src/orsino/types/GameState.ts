@@ -71,8 +71,8 @@ const processEvent = (state: GameState, event: GameEvent): GameState => {
       let weaponId = event.weaponId;
       const wielder = newState.party.find(pc => pc.id === event.wielderId);
       if (!wielder?.equipment?.weapon?.includes(":")) {
-        console.warn(`!!! Reifying weapon ${event.weaponName} for wielderId ${event.wielderId} on day ${event.day}`);
-        const weaponInstance = materializeItem(event.weaponName, newState.inventory);
+        console.warn(`!!! Reifying weapon ${event.weaponName} for wielderId ${event.wielderId} on day ${event.day} -- currently uninstantiated weapon key ${wielder?.equipment?.weapon}`);
+        const weaponInstance = materializeItem(event.weaponKey, newState.inventory);
         if (!weaponInstance.id) {
           throw new Error(`Could not reify weapon ${event.weaponName} for wielderId ${event.wielderId} on day ${event.day} -- no id`);
         }

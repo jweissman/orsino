@@ -616,6 +616,7 @@ export default class Shop {
         const newAttackDie = `${baseDie} + ${newModifier}`;
         events.push({
           type: "enhanceWeapon",
+          weaponKey: currentWeaponInstance.key,
           weaponName: currentWeaponInstance.name,
           weaponId: currentWeaponInstance.id!,
           wielderId: improver.id,
@@ -632,6 +633,7 @@ export default class Shop {
         const newAttackDie = `${dieNumber}d${upgradedAttackDie}` + (modifier ? ` + ${modifierNumber}` : '');
         events.push({
           type: "enhanceWeapon",
+          weaponKey: currentWeaponInstance.key,
           weaponName: currentWeaponInstance.name,
           weaponId: currentWeaponInstance.id!,
           wielderId: improver.id,
@@ -649,6 +651,7 @@ export default class Shop {
         const newAttackDie = `${newDieNumber}d${dieSides}` + (modifier ? ` + ${modifierNumber}` : '');
         events.push({
           type: "enhanceWeapon",
+          weaponKey: currentWeaponInstance.key,
           weaponName: currentWeaponInstance.name,
           weaponId: currentWeaponInstance.id!,
           wielderId: improver.id,

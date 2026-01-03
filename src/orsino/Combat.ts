@@ -944,13 +944,16 @@ export default class Combat {
         } else {
           await this.npcTurn(combatant, livingEnemies, allies);
         }
+
+        if (this.enemyCombatants.every(c => c.hp <= 0) || this.playerCombatants.every(c => c.hp <= 0)) {
+          return { haltRound: true };
+        }
       }
+
+      const ctx = this.contextForCombatant(combatant);
+      const events = await AbilityHandler.performHooks("onTurnEnd", combatant, ctx, Commands.handlers(this.roller), "turn end effects");
+      await this.emitAll(events, `ends their turn`, combatant);
     }
-
-    const ctx = this.contextForCombatant(combatant);
-
-    const events = await AbilityHandler.performHooks("onTurnEnd", combatant, ctx, Commands.handlers(this.roller), "turn end effects");
-    await this.emitAll(events, `ends their turn`, combatant);
 
     return { haltRound: false };
   }

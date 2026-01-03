@@ -178,6 +178,9 @@
 ---
 - [ ] Customize name/appearance/background
 - [ ] Single-combat sandbox where we can specify party formation and enemy list
+- [ ] 'Mystical whetstone' wonder that upgrades weapons?
+- [ ] Split bomb ability into 'countdown(_to_detonate)' and 'detonation' as separate abilities?
+- [ ] Disable PCs from blacksmith list if you can't afford any enhancements for that PC (could also give option to return to town _at_ PC list?)
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing

@@ -295,9 +295,9 @@ export default class AbilityHandler {
         case "deadAlly": targets.push(...(allies.filter(a => a.hp <= 0))); break;
         case "enemy":
           if (userFx.seeInvisible) {
-            targets.push(enemies);
+            targets.push(...Combat.living(enemies));
           } else {
-            targets.push(Combat.visible(enemies));
+            targets.push(...Combat.visible(Combat.living(enemies)));
           }
           break;
         case "allies":
@@ -314,8 +314,8 @@ export default class AbilityHandler {
             targets.push([user, ...Combat.living(allies)]);
           }
           break;
-        case "enemies": targets.push((enemies)); break;
-        case "all": targets.push(([user, ...allies, ...enemies])); break;
+        case "enemies": targets.push(Combat.living(enemies)); break;
+        case "all": targets.push(Combat.living([user, ...allies, ...enemies])); break;
 
         // we need to special case randomEnemies since we need to select them ourselves
         case "randomEnemies": break;

@@ -373,7 +373,7 @@
   "abilities": {
     "discriminator": "class",
     "groups": {
-      "warrior": [[ "vigor_up", "cleave", "prepare_charge", "charge", "set_spear", "second_wind", "roundhouse" ]],
+      "warrior": [[ "taunt", "vigor_up", "cleave", "prepare_charge", "charge", "set_spear", "second_wind", "roundhouse" ]],
       "mage": [[]],
       "cleric": [[ ]],
       "ranger": [ [ "heal", "summon_animal", "set_spear", "hunters_mark", "ensnare" ] ],

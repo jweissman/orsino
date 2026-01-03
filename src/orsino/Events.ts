@@ -175,7 +175,7 @@ export type EquipmentEvent = BaseModuleEvent & { type: "equip"; itemName: string
 export type AcquireItemEvent = BaseModuleEvent & { type: "acquire"; itemName: string; quantity: number; acquirer: Combatant; };
 export type WieldEvent = BaseModuleEvent & { type: "wield"; weaponName: string; wielderId: string; wielderName: string; };
 
-export type EnhanceWeaponEvent = BaseModuleEvent & { type: "enhanceWeapon"; weaponName: string; weaponId: string; wielderId: string; wielderName: string; enhancement: string; cost: number; oldDamage: string; newDamage: string; };
+export type EnhanceWeaponEvent = BaseModuleEvent & { type: "enhanceWeapon"; weaponName: string; weaponKey: string;  weaponId?: string; wielderId: string; wielderName: string; enhancement: string; cost: number; oldDamage: string; newDamage: string; };
 
 export type RumorHeardEvent = BaseModuleEvent & { type: "rumorHeard"; rumor: string; };
 export type TempleVisitedEvent = BaseModuleEvent & { type: "templeVisited"; templeName: string; blessingsGranted: string[]; itemsRecharged: string[]; };
