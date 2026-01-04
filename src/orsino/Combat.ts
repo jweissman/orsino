@@ -199,9 +199,10 @@ export default class Combat {
   ): void {
     const equipmentList: StatusEffect[] = [];
     for (const [slot, equipmentKey] of Object.entries(combatant.equipment || {})) {
-      const weapon = materializeItem(equipmentKey, inventory) as ItemInstance;
-      if (weapon.effect) {
-        equipmentList.push({ ...weapon, sourceKey: slot } as unknown as StatusEffect);
+      const item = materializeItem(equipmentKey, inventory) as ItemInstance;
+      if (item.effect) {
+        console.log(`Applying equipment effect from ${item.name} to ${combatant.name}`);
+        equipmentList.push({ ...item, sourceKey: slot } as unknown as StatusEffect);
       }
     }
 
@@ -264,7 +265,7 @@ export default class Combat {
               }
               return true;
             });
-            
+
             const preparedN = Math.min(6, 2 + Math.ceil((combatant.level || 1) / 2));
 
             let spellSelection = Sample.count(preparedN, ...newSpellKeys.filter(
@@ -402,7 +403,7 @@ export default class Combat {
     const { valid, reason } = this._actionIsValid(ability, combatant, allies, enemies);
     // console.log(`Action ${ability.name} for ${combatant.name} is ${valid ? "valid" : "not valid"} against ${enemies.length} opponents (${enemies.map(e => e.name).join(", ")})`);
     if (ability.name.match(/melee|ranged/i) && (!activeFx.compelNextMove)) {
-      if (!valid) {
+      if (!valid && Combat.visible(enemies).length > 0) {
         console.warn(`Melee/ranged attack is NOT valid for ${combatant.name} against ${enemies.map(e => e.name).join(", ")}: ${reason}`);
         throw new Error(`Melee/ranged attack should ALWAYS be valid for ${combatant.name} against ${enemies.map(e => e.name).join(", ")}`);
       }
@@ -647,17 +648,13 @@ export default class Combat {
     let pips = "";
     pips += "⚡".repeat((Combat.maxSpellSlotsForCombatant(combatant) || 0) - ((combatant.spellSlotsUsed || 0))) + "⚫".repeat(combatant.spellSlotsUsed || 0);
     const choices = [];
-    // allAbilities.map(ability => {
-    //   return ({
     for (const ability of allAbilities) {
-      // if (await this.validateAction(ability, combatant, allies, enemies)) {
       choices.push({
         value: ability,
         name: `${ability.name.padEnd(15)} (${ability.description}/${ability.type === "spell" ? pips : "skill"})`,
         short: ability.name,
         disabled: !this.validateAction(ability, combatant, allies, enemies)
       })
-      // }
     }
 
     const waitAction: Ability = { name: "Wait", type: "skill", description: "Skip your turn to wait and see what happens.", aspect: "physical", target: ["self"], effects: [] };
@@ -804,7 +801,7 @@ export default class Combat {
     scoredAbilities = scoredAbilities.filter(sa => sa.score > 0);
 
     scoredAbilities.sort((a, b) => b.score - a.score);
-    this.outputSink(`NPC ${Presenter.minimalCombatant(combatant)} scored abilities:`+ scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`));
+    this.outputSink(`NPC ${Presenter.minimalCombatant(combatant)} scored abilities:` + scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`));
     let action = scoredAbilities[
       // Math.floor(Math.random() * Math.min(2, scoredAbilities.length))
       0
@@ -906,21 +903,7 @@ export default class Combat {
       return { haltRound: false };
     }
 
-    const enemies = this.enemiesOf(combatant);
-    let livingEnemies = Combat.living(enemies);
 
-    let allies = this.alliesOf(combatant);
-    allies = allies.filter(c => c !== combatant);
-    const livingAllies = Combat.living(allies);
-
-    // do we have an effect changing our allegiance? in which case -- flip our allies/enemies
-    const allegianceEffect = combatant.activeEffects?.find(e => e.effect.changeAllegiance);
-    const playerControlled = Fighting.effectivelyPlayerControlled(combatant);
-    if (allegianceEffect) {
-      this.emit({ type: "allegianceChange", subject: combatant, statusName: allegianceEffect.name } as Omit<AllegianceChangeEvent, "turn">);
-
-      [allies, livingEnemies] = [enemies, livingAllies];
-    }
 
     let attacksPerTurn = combatant.attacksPerTurn || 1;
 
@@ -936,6 +919,21 @@ export default class Combat {
     }
     for (let j = 0; j < turns; j++) {
       for (let i = 0; i < attacksPerTurn; i++) {
+        const enemies = this.enemiesOf(combatant);
+        let livingEnemies = Combat.living(enemies);
+
+        let allies = this.alliesOf(combatant);
+        allies = allies.filter(c => c !== combatant);
+        const livingAllies = Combat.living(allies);
+
+        // do we have an effect changing our allegiance? in which case -- flip our allies/enemies
+        const allegianceEffect = combatant.activeEffects?.find(e => e.effect.changeAllegiance);
+        const playerControlled = Fighting.effectivelyPlayerControlled(combatant);
+        if (allegianceEffect) {
+          this.emit({ type: "allegianceChange", subject: combatant, statusName: allegianceEffect.name } as Omit<AllegianceChangeEvent, "turn">);
+
+          [allies, livingEnemies] = [enemies, livingAllies];
+        }
         if (playerControlled) {
           const result = await this.pcTurn(combatant, livingEnemies, allies);
           if (result.haltRound) {

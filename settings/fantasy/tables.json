@@ -479,7 +479,7 @@
 
       "Novice":       { "str": -1, "con": 0, "dex": -2, "int": 1, "wis": 1, "cha": -1, "abilities": ["rapid_strike", "trickfire", "pain", "paralyzing_touch", "life_drain", "ghost_touch" ] },
       "Gravedigger":  { "str": 0,  "con": 2, "dex": 2, "abilities": [ "rapid_strike", "hide", "dig_in" ] },
-      "Bandit":       { "str": 2,  "con": 3, "dex": 2, "abilities": [ "prepare_charge", "charge", "hide", "backstab", "rapid_strike", "trickfire", "dirty_trick" ], "traits": ["imperceptible"] },
+      "Bandit":       { "str": 2,  "con": 3, "dex": 2, "abilities": [ "prepare_charge", "charge", "hide", "backstab", "rapid_strike", "trickfire", "dirty_trick" ] },
       "Tombrobber":   { "str": 2,  "con": 3, "dex": 1, "int": -1, "wis": -1, "cha": 2, "abilities": ["rapid_strike", "hide"] },
       "Cult Master": { "str": 4,  "con": 5, "dex": 2, "int": 6, "wis": 4, "cha": 4, "abilities": [ "hex", "obscuring_mist", "ghost_touch", "life_drain",  "terror", "poison_cloud", "mass_curse", "deathtouch" ], "traits": ["fiendish"] },
       "Poxmonger":   { "str": -2, "dex": -2, "con": -1, "int": 2, "wis": 1, "cha": 2, "abilities": [ "infect", "spread_disease", "hex", "terror", "poison_cloud", "inflict_disease", "deathtouch" ] },
@@ -880,7 +880,7 @@
         "_npcCount": 3,
         "_npc_types": ["Priest", "Herald", "Preacher"],
         "_companionCount": 0,
-        "_treasureItems": ["holy symbol", "blessed water"],
+        "_treasureItems": ["holy_symbol", "holy_water"],
         "bonusGold": "1d20"
       }
     }

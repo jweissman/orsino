@@ -70,7 +70,9 @@ type RunnerOptions = {
 }
 
 export class ModuleRunner {
-  static configuration = { sharedGold: 10000 }
+  static configuration = {
+    sharedGold: 100000
+  }
 
   private roller: Roll;
   // private driver: Driver;

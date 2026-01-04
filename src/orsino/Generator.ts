@@ -12,6 +12,9 @@ export type GeneratorOptions = {
   setting?: string;
   background?: string;
 
+  key?: string;
+  _key?: string;
+
   name?: string;
   _name?: string;
 

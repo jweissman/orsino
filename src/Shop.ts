@@ -140,7 +140,8 @@ export default class Shop {
       const slot = equipment.kind;
       events.push({
         type: "equip",
-        itemName: item.key,
+        itemName: item.name,
+        itemKey: item.key,
         slot,
         wearerId: wearer.id,
         wearerName: wearer.forename,
@@ -217,7 +218,7 @@ export default class Shop {
       return events;
     }
 
-    const item = choice as Equipment;
+    const item = choice as Equipment & ItemInstance;
 
     if (this.currentGold >= item.value) {
       const firstPc = this.party[0];
@@ -232,7 +233,8 @@ export default class Shop {
       
       events.push({
         type: "acquire",
-        itemName: item.key,
+        itemName: item.name,
+        itemKey: item.key,
         quantity: 1,
         acquirer: firstPc,
         day: this.day,
@@ -372,7 +374,8 @@ export default class Shop {
       const slot = equipment.kind;
       events.push({
         type: "equip",
-        itemName: item.key,
+        itemName: item.name,
+        itemKey: item.key,
         slot,
         wearerId: wearer.id,
         wearerName: wearer.forename,
@@ -433,7 +436,8 @@ export default class Shop {
 
       events.push({
         type: "acquire",
-        itemName: item.key,
+        itemKey: item.key,
+        itemName: item.name,
         quantity: 1,
         acquirer: firstPc,
         day: this.day,
@@ -444,8 +448,8 @@ export default class Shop {
 
   private async weaponsShop(): Promise<ModuleEvent[]> {
     const events: ModuleEvent[] = [];
-    const weaponItemNames = Deem.evaluate(`gather(masterWeapon, -1, '!dig(#__it, "natural")')`) as string[];
-    weaponItemNames.sort();
+    const weaponItemKeys = Deem.evaluate(`gather(masterWeapon, -1, '!dig(#__it, "natural")')`) as string[];
+    weaponItemKeys.sort();
     const pcWeapon = (combatant: Combatant) => {
       return combatant.equipment && combatant.equipment.weapon ? materializeItem(combatant.equipment.weapon, this.gameState.inventory).name : 'unarmed';
     } 
@@ -461,15 +465,16 @@ export default class Shop {
       return `${combatant.name} (${pcWeapon(combatant)})`;
     });
 
-    const options: Choice<Weapon>[] = [];
-    for (let index = 0; index < weaponItemNames.length; index++) {
-      const itemName = weaponItemNames[index];
-      const item = Deem.evaluate(`lookup(masterWeapon, "${itemName}")`) as unknown as Weapon;
-      item.key = itemName;
+    const options: Choice<Weapon & ItemInstance>[] = [];
+    for (let index = 0; index < weaponItemKeys.length; index++) {
+      const itemKey = weaponItemKeys[index];
+      const item = Inventory.reifyFromKey(itemKey) as Weapon & ItemInstance;
+        //Deem.evaluate(`lookup(masterWeapon, "${itemKey}")`) as unknown as Weapon & ItemInstance;
+      item.key = itemKey;
       options.push({
-        short: Words.humanize(itemName) + ` (${item.value}g)`,
+        short: Words.humanize(itemKey) + ` (${item.value}g)`,
         value: item,
-        name: `${Words.humanize(itemName)} - ${item.damage} ${item.weight} ${item.kind} (${item.value}g)`,
+        name: `${Words.humanize(itemKey)} - ${item.damage} ${item.weight} ${item.kind} (${item.value}g)`,
         disabled: this.currentGold < item.value || (wielder.weaponProficiencies ? !Inventory.isWeaponProficient(item, wielder.weaponProficiencies) : true),
       })
     }
@@ -480,7 +485,7 @@ export default class Shop {
       this.leaving = true;
       return events;
     }
-    const item = choice as Weapon & { key: string };
+    const item = choice as Weapon & ItemInstance;
     if (this.currentGold >= item.value) {
       events.push({
         type: "purchase",
@@ -492,7 +497,8 @@ export default class Shop {
       this.currentGold -= item.value;
       events.push({
         type: "wield",
-        weaponName: item.key,
+        weaponKey: item.key,
+        weaponName: item.name,
         wielderId: wielder.id,
         wielderName: wielder.forename,
         day: this.day,
@@ -525,19 +531,6 @@ export default class Shop {
       console.log(`${improver.name} is unarmed and cannot have their weapon enhanced.`);
       return events;
     }
-
-    // if (!improver.equipment?.weapon?.includes(":")) {
-    //   console.log(`Reifying ${improver.name}'s weapon ${currentWeaponInstance.name} for enhancement...`);
-    //   events.push({
-    //     type: "reifyWeapon",
-    //     weaponName: currentWeaponInstance.name,
-    //     weaponId: currentWeaponInstance.id!,
-    //     wielderId: improver.id,
-    //     weaponInstance: currentWeaponInstance,
-    //     day: this.day,
-    //   });
-      
-    // }
 
     const originalAttackDie = currentWeaponInstance.damage;
     let [baseDie, modifier] = originalAttackDie.split('+').map(s => s.trim());

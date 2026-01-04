@@ -393,6 +393,9 @@ export default class Presenter {
     return padChar.repeat(padLength) + text;
   }
 
+  static presentableEffects = (combatant: Combatant) => {
+  }
+
   static parties = (parties: { name: string; combatants: Combatant[] }[]) => {
     let partyDisplay = "";
     const lines = Math.max(...parties.map(p => p.combatants.length))
@@ -420,7 +423,10 @@ export default class Presenter {
 
       // traits / statuses
       const ignoreStatuses = ['humanoid']
-      let lhsStatuses = lhs?.activeEffects?.map(e => e.duration ? `${e.name}(${e.duration})` : e.name)
+      let lhsStatuses = [
+        ...(lhs?.activeEffects || []),
+        // ...(lhs?.passiveEffects?.filter(e => (e.equipment)) || [])
+      ].map(e => e.duration ? `${e.name}(${e.duration})` : e.name)
         || [];
       // console.log("Rendering statuses for line", i, lhsStatuses);
       lhsStatuses = lhsStatuses

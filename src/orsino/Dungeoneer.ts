@@ -1016,10 +1016,15 @@ export default class Dungeoneer {
     return { survived: true };
   }
 
+
   private async acquireItem(actor: Combatant, it: ItemInstance, where: string = "found"): Promise<void> {
     if (!it.id) {
       throw new Error(`acquireItem got item without id: ${it.key}`);
+    } else if (!it.id.includes(':')) {
+      throw new Error(`acquireItem got item with non-id id: ${it.id}`);
     }
+
+    Inventory.assertItemRef(it.id, "acquireItem " + it.name + " for " + actor.name);
 
     this.playerTeam.inventory.push(it);
 

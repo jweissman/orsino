@@ -68,6 +68,7 @@ program
   // .option('-g, --graph', 'Assign generated items in a topology with connected edges (implies --count >= 2)')
   .option('-s, --setting <setting>', 'Specify the setting to use', 'fantasy')
   // .option('--config <config:value>')
+  .option('--key <key>', 'Specify the key to use')
   .option('--name <name>', 'Specify the name to use')
   .option('--race <race>', 'Specify the racial group to use')
   .option('--class <class>', 'Specify the class to use')
@@ -89,6 +90,10 @@ program
     }
     if (options.class !== null) {
       options._class = options.class;
+    }
+
+    if (options.key !== null) {
+      options._key = options.key;
     }
     
     // let t0 = Date.now();

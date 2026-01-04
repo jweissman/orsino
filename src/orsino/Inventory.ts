@@ -3,7 +3,7 @@ import Generator from "./Generator";
 import Words from "./tui/Words";
 import { Combatant, EquipmentSlot } from "./types/Combatant";
 import { DamageKind } from "./types/DamageKind";
-import { ItemInstance, materializeItem } from "./types/ItemInstance";
+import { ItemInstance } from "./types/ItemInstance";
 
 export interface Weapon {
   key?: string;
@@ -101,7 +101,7 @@ export class Inventory {
     return true;
   }
 
-  private static genId = (prefix: string): string => {
+  static genId = (prefix: string): string => {
     return prefix + ':' + Math.random().toString(36).substring(2, 9);
   }
 
@@ -200,11 +200,14 @@ export class Inventory {
 
   static materializeRef = (itemRef: { key: string; kind: "key" } | { id: string; kind: "id" }, inventory: ItemInstance[]): ItemInstance => {
     if (itemRef.kind === "key") {
-      const item = inventory.find(i => i.key === itemRef.key);
-      if (!item) {
-        throw new Error(`Item with key ${itemRef.key} not found in inventory`);
-      }
-      return item;
+      // const item = inventory.find(i => i.key === itemRef.key);
+      // if (!item) {
+      //   throw new Error(`Item with key ${itemRef.key} not found in inventory`);
+      // }
+      // return item;
+      // throw new Error(`materializeRef does not support key refs; got key=${itemRef.key}`);
+      console.warn(`materializeRef called with key=${itemRef.key}; reifying new instance from master tables.`);
+      return Inventory.reifyFromKey(itemRef.key);
     } else {
       const item = inventory.find(i => i.id === itemRef.id);
       if (!item) {
@@ -214,8 +217,9 @@ export class Inventory {
     }
   }
 
-  static genLoot(name: string): ItemInstance {
-    const it = Generator.gen("loot", { _name: name }) as unknown as ItemInstance;
+  static genLoot(key: string): ItemInstance {
+    this.assertItemRef(key, `genLoot for key=${key}`);
+    const it = Generator.gen("loot", { _key: key }) as unknown as ItemInstance;
     if (it.charges) {
       console.warn(`Setting maxCharges for item ${it.name} to ${it.charges}.`);
       it.maxCharges = Math.max(1, it.charges);
@@ -274,5 +278,14 @@ export class Inventory {
 
   static sharedItems(inventory: ItemInstance[]): ItemInstance[] {
     return inventory.filter(item => !item.ownerId);
+  }
+
+  static ID_RE = /^[a-z]+:[a-z0-9]+$/;     // weapon:abc1234
+  static KEY_RE = /^[a-z0-9_]+$/;          // longsword, chain_mail
+
+  static assertItemRef(ref: string, ctx: string) {
+    if (this.ID_RE.test(ref)) return;
+    if (this.KEY_RE.test(ref)) return;
+    throw new Error(`Invalid item ref "${ref}" in ${ctx}. Expected id (x:y) or key (snake_case).`);
   }
 }

@@ -171,9 +171,9 @@ export type ShopEnteredEvent = BaseModuleEvent & { type: "shopEntered"; shopName
 export type GoldStatusEvent = BaseModuleEvent & { type: "goldStatus"; amount: number; };
 export type PurchaseEvent = BaseModuleEvent & { type: "purchase"; itemName: string; cost: number; buyer: Combatant; };
 export type SaleEvent = BaseModuleEvent & { type: "sale"; itemName: string; revenue: number; seller: Combatant; };
-export type EquipmentEvent = BaseModuleEvent & { type: "equip"; itemName: string; slot: EquipmentSlot; wearerId: string; wearerName: string };
-export type AcquireItemEvent = BaseModuleEvent & { type: "acquire"; itemName: string; quantity: number; acquirer: Combatant; };
-export type WieldEvent = BaseModuleEvent & { type: "wield"; weaponName: string; wielderId: string; wielderName: string; };
+export type EquipmentEvent = BaseModuleEvent & { type: "equip"; itemName: string; itemKey: string; slot: EquipmentSlot; wearerId: string; wearerName: string };
+export type AcquireItemEvent = BaseModuleEvent & { type: "acquire"; itemName: string; itemKey: string; quantity: number; acquirer: Combatant; };
+export type WieldEvent = BaseModuleEvent & { type: "wield"; weaponName: string; weaponKey: string; wielderId: string; wielderName: string; };
 
 export type EnhanceWeaponEvent = BaseModuleEvent & { type: "enhanceWeapon"; weaponName: string; weaponKey: string;  weaponId?: string; wielderId: string; wielderName: string; enhancement: string; cost: number; oldDamage: string; newDamage: string; };
 

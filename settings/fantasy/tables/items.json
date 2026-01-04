@@ -1461,6 +1461,23 @@
           }
         ]
       },
+      "scroll_of_shapechange": {
+        "name": "Scroll of Shapechange",
+        "description": "A powerful scroll that allows the caster to transform into a fearsome dragon.",
+        "type": "consumable",
+        "kind": "scroll",
+        "rarity": "legendary",
+        "value": 1500,
+        "target": [
+          "self"
+        ],
+        "effects": [
+          {
+            "type": "cast",
+            "spellName": "shapechange"
+          }
+        ]
+      },
       "deck_of_multiplicity": {
         "name": "Deck of Multiplicity",
         "description": "A magical deck of cards with many uses.",
@@ -2152,7 +2169,13 @@
         "rarity": "legendary",
         "value": 25000,
         "effect": {
-          "invisible": true
+          "onCombatStart": [
+            {
+              "type": "buff",
+              "status": "invisible",
+              "target": "self"
+            }
+          ]
         },
         "itemClass": "armor"
       },

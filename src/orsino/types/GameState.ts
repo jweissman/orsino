@@ -50,14 +50,15 @@ const processEvent = (state: GameState, event: GameEvent): GameState => {
     case "acquire":
       return processAcquireEvent(newState, event);
     case 'equip':
+      Inventory.assertItemRef(event.itemKey, `processEvent equip for ${event.wearerId} on day ${event.day}`);
       newState.party = (newState.party ?? []).map((pc: Combatant) => {
         if (pc.id === event.wearerId) {
-          console.warn(`!!! Equipping ${event.itemName} to ${pc.name} in slot ${event.slot} on day ${event.day} [pcId=${pc.id}, wearerId=${event.wearerId}]`);
+          console.warn(`!!! Equipping ${event.itemKey} to ${pc.name} in slot ${event.slot} on day ${event.day} [pcId=${pc.id}, wearerId=${event.wearerId}]`);
           return {
             ...pc,
             equipment: {
               ...(pc.equipment || {}),
-              [event.slot]: event.itemName,
+              [event.slot]: event.itemKey,
             }
           };
         } else {
@@ -72,11 +73,13 @@ const processEvent = (state: GameState, event: GameEvent): GameState => {
       const wielder = newState.party.find(pc => pc.id === event.wielderId);
       if (!wielder?.equipment?.weapon?.includes(":")) {
         console.warn(`!!! Reifying weapon ${event.weaponName} for wielderId ${event.wielderId} on day ${event.day} -- currently uninstantiated weapon key ${wielder?.equipment?.weapon}`);
-        const weaponInstance = materializeItem(event.weaponKey, newState.inventory);
+        const weaponInstance = Inventory.reifyFromKey(event.weaponKey);
+          //materializeItem(event.weaponKey, newState.inventory);
         if (!weaponInstance.id) {
           throw new Error(`Could not reify weapon ${event.weaponName} for wielderId ${event.wielderId} on day ${event.day} -- no id`);
         }
         weaponId = weaponInstance.id;
+        Inventory.assertItemRef(weaponId, `processEvent enhanceWeapon for ${event.wielderId} on day ${event.day}`);
         newState.inventory.push({ ...weaponInstance, ownerId: event.wielderId, ownerSlot: 'weapon' });
         newState.party = newState.party.map((pc: Combatant) => {
           if (pc.id === event.wielderId) {
@@ -117,21 +120,25 @@ const processEvent = (state: GameState, event: GameEvent): GameState => {
 
 const processAcquireEvent = (state: GameState, event: AcquireItemEvent): GameState => {
   const it = {
-    ...Inventory.genLoot(event.itemName),
+    ...Inventory.genLoot(event.itemKey),
     ownerId: event.acquirer.id,
     ownerSlot: 'backpack',
   };
   it.shared = it.itemClass === 'consumable';
-  console.warn(`Acquired item ${it.name} for ${event.acquirer.name} (shared: ${it.shared})`);
+  console.warn(`Acquired ${event.quantity} x ${it.name} for ${event.acquirer.name} (shared: ${it.shared})`);
+  const items = Array(event.quantity).fill(it) as ItemInstance[];
   state.inventory = [
     ...(state.inventory ?? []),
-    ...(Array(event.quantity).fill(it) as ItemInstance[]),
+    ...items.map(i => ({ ...i, id: Inventory.genId("item") })),
   ];
   return state;
 }
 
 const processWieldEvent = (state: GameState, event: WieldEvent): GameState => {
-  const weapon = materializeItem(event.weaponName, state.inventory);
+  Inventory.assertItemRef(event.weaponKey, `processWieldEvent for ${event.wielderId} on day ${event.day}`);
+  const weapon = Inventory.reifyFromKey(event.weaponKey);
+  console.warn(`Wielding weapon ${weapon.name} for ${event.wielderName} on day ${event.day}`);
+    //materializeItem(event.weaponName, state.inventory);
   state.inventory.push({ ...weapon, ownerId: event.wielderId, ownerSlot: 'weapon' });
   state.party = state.party.map((pc: Combatant) => {
     if (pc.id === event.wielderId) {
