@@ -15,7 +15,7 @@ import { never } from "./orsino/util/never";
 import { ItemInstance } from "./orsino/types/ItemInstance";
 import StatusHandler from "./orsino/Status";
 import { Template } from "./orsino/Template";
-import { ConsoleDriver, InquirerDriver, NullDriver } from "./orsino/Driver";
+import { AutomaticPlayDriver, ConsoleDriver, InquirerDriver, NullDriver } from "./orsino/Driver";
 
 type PlaygroundType = "dungeon" | "module";  // TODO "world";
 
@@ -112,7 +112,7 @@ export default class Orsino {
 
     let inventory: ItemInstance[] = [];
 
-    const driver = new NullDriver();
+    const driver = new AutomaticPlayDriver();
 
     while (true) {
       const averagePartyLevel = Math.round(pcs.reduce((sum, pc) => sum + pc.level, 0) / pcs.length);

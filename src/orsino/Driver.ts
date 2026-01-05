@@ -154,20 +154,12 @@ export class NullDriver implements Driver {
   async readKey(): Promise<string> { return "\n"; }
 }
 
-export class TestDriver extends NullDriver implements Driver {
-  get description(): string { return "TestDriver that logs actions for testing"; }
-  public log: string[] = [];
+export class AutomaticPlayDriver extends NullDriver implements Driver {
+  get description(): string { return "Automatic play driver that logs actions for testing"; }
 
-  write(text: string): void {
-    process.stdout.write(text);
-    this.log.push(text);
-  }
-  writeLn(text: string): void {
-    process.stdout.write(text + "\n");
-    this.log.push(text + "\n");
-  }
-
-  get output(): string {
-    return this.log.join("");
+  write(text: string): void { process.stdout.write(text); }
+  writeLn(text: string): void { process.stdout.write(text + "\n"); }
+  clear(): void {
+    process.stdout.write('\x1Bc');
   }
 }

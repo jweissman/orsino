@@ -13,7 +13,7 @@ import Events, { GameEvent } from '../src/orsino/Events';
 import { Team } from '../src/orsino/types/Team';
 import Orsino from '../src/orsino';
 import Automatic from '../src/orsino/tui/Automatic';
-import { NullDriver, TestDriver } from '../src/orsino/Driver';
+import { NullDriver, AutomaticPlayDriver } from '../src/orsino/Driver';
 
 describe('Orsino', () => {
   Orsino.environment = 'test';
