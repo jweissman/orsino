@@ -8,6 +8,8 @@ type Choice<T> = {
 };
 
 export interface Driver {
+  description: string;
+
   write(text: string): void;
   writeLn(text: string): void;
   clear(): void;
@@ -19,6 +21,8 @@ export interface Driver {
 }
 
 export class ConsoleDriver implements Driver {
+  get description(): string { return "ConsoleDriver with stdin/stdout"; }
+
   write(text: string): void { process.stdout.write(text); }
   writeLn(text: string): void { process.stdout.write(text + "\n"); }
   clear(): void {
@@ -114,6 +118,7 @@ export class ConsoleDriver implements Driver {
 }
 
 export class InquirerDriver extends ConsoleDriver implements Driver {
+  get description(): string { return "InquirerDriver using inquirer for prompts"; }
   async select<T>(message: string, choices: (readonly string[] | readonly Choice<T>[])): Promise<T> {
     return User.selection(message, choices as any) as Promise<T>;
   }
@@ -125,6 +130,7 @@ export class InquirerDriver extends ConsoleDriver implements Driver {
 }
 
 export class NullDriver implements Driver {
+  get description(): string { return "NullDriver that performs no I/O"; }
   write(_text: string): void { }
   writeLn(_text: string): void { }
   clear(): void { }
@@ -133,15 +139,35 @@ export class NullDriver implements Driver {
     if (choices.length === 0) {
       throw new Error("No choices provided to NullDriver.select");
     }
-    const enabled = choices.find(c => typeof c === "string" || !c.disabled);
+    const enabled = choices.filter(c => typeof c === "string" || !c.disabled);
     if (!enabled) {
       throw new Error("No enabled choices provided to NullDriver.select");
     }
-    return (typeof enabled === "string" ? enabled : enabled.value) as T;
+    // return (typeof enabled === "string" ? enabled : enabled.value) as T;
+    let chosen = enabled[Math.floor(Math.random() * enabled.length)];
+    return (typeof chosen === "string" ? chosen : chosen.value) as T;
   }
 
   async confirm(_message: string): Promise<boolean> { return true; }
   async input(_message: string): Promise<string> { return ""; }
   async pause(_message: string): Promise<void> { }
   async readKey(): Promise<string> { return "\n"; }
+}
+
+export class TestDriver extends NullDriver implements Driver {
+  get description(): string { return "TestDriver that logs actions for testing"; }
+  public log: string[] = [];
+
+  write(text: string): void {
+    process.stdout.write(text);
+    this.log.push(text);
+  }
+  writeLn(text: string): void {
+    process.stdout.write(text + "\n");
+    this.log.push(text + "\n");
+  }
+
+  get output(): string {
+    return this.log.join("");
+  }
 }

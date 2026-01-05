@@ -181,6 +181,7 @@ export default class CharacterRecord {
           };
         }
         ));
+      console.log(`${pc.forename} chose the trait: ${(selectedTrait as Trait).name}.`);
       pc.traits.push((selectedTrait as Trait).name);
       pc.passiveEffects ||= [];
       const trait = traitHandler.getTrait((selectedTrait as Trait).name);
@@ -194,7 +195,13 @@ export default class CharacterRecord {
         await this.pickInitialSpells(pc, trait.spellbooks, trait.school || trait.domain || 'all',
           selectionMethod);
       }
-      console.log(`${Presenter.minimalCombatant(pc)} gained the trait: ${Words.capitalize((selectedTrait as Trait).name)}.`);
+      if (trait.school) {
+        pc.school = trait.school;
+      }
+      if (trait.domain) {
+        pc.domain = trait.domain;
+      }
+      // console.log(`${Presenter.minimalCombatant(pc)} gained the trait: ${Words.capitalize((selectedTrait as Trait).name)}.`);
 
       delete pc.traitChoices;
     }
@@ -239,6 +246,7 @@ export default class CharacterRecord {
       }
     }
 
+    // console.log(`${pc.forename} learned the following spells: ${pcSpells.map(s => Stylist.bold(AbilityHandler.instance.getAbility(s).name)).join(", ")}.`);
     pc.abilities.push(...pcSpells);
   }
 
@@ -326,9 +334,9 @@ export default class CharacterRecord {
     const events: DungeonEvent[] = [];
     let nextLevelXp = CharacterRecord.xpForLevel(pc.level + 1);
 
-    if (pc.xp < nextLevelXp) {
-      console.warn(`${pc.name} needs to gain ${nextLevelXp - pc.xp} more experience for level ${pc.level + 1} (currently at ${pc.xp}/${nextLevelXp}).`);
-    }
+    // if (pc.xp < nextLevelXp) {
+    //   console.warn(`${pc.name} needs to gain ${nextLevelXp - pc.xp} more experience for level ${pc.level + 1} (currently at ${pc.xp}/${nextLevelXp}).`);
+    // }
     while (pc.xp >= nextLevelXp) {
       pc.level++;
       nextLevelXp = CharacterRecord.xpForLevel(pc.level + 1);
@@ -383,6 +391,7 @@ export default class CharacterRecord {
 
       // }
 
+      // should try to check for domain/school here instead?
       if (pc.class === "mage") {
         // gain spells
         const abilityHandler = AbilityHandler.instance;
@@ -431,12 +440,12 @@ export default class CharacterRecord {
             };
           });
           if (spellChoices.every(choice => choice.disabled)) {
-            console.log(`${pc.name} has learned all available spells for their domain at this time.`);
+            console.log(`${pc.name} has learned all available spells for their domain (${pc.domain}) at this time (level ${pc.level}).`);
           } else {
             const chosenSpellKey = await select(`Select a new spell for ${pc.name}:`, spellChoices);
-            console.log(chosenSpellKey);
-            const chosenSpell = abilityHandler.getAbility(chosenSpellKey);
-            console.log(`${(pc.forename)} learned the spell: ${chosenSpell.name}`);
+            // console.log(chosenSpellKey);
+            // const chosenSpell = abilityHandler.getAbility(chosenSpellKey);
+            // console.log(`${(pc.forename)} learned the spell: ${chosenSpell.name}`);
             pc.abilities.push(chosenSpellKey);
           }
         }
@@ -446,12 +455,12 @@ export default class CharacterRecord {
         // epic feats...
       } else if (pc.level % 5 === 0) {
         // feat selection
-        console.log(`${Presenter.minimalCombatant(pc)} can select a new feat!`);
+        // console.log(`${Presenter.minimalCombatant(pc)} can select a new feat!`);
         const traitHandler = TraitHandler.instance;
         await traitHandler.loadTraits();
         const availableFeats = traitHandler.featsForCombatant(pc);
         if (availableFeats.length === 0) {
-          console.log(`But there are no available feats for ${Presenter.minimalCombatant(pc)} at this time.`);
+          console.log(`There are no available feats for ${Presenter.minimalCombatant(pc)} at this time.`);
           continue;
         }
 

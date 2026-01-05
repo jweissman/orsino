@@ -209,8 +209,6 @@ export type ModuleEvent =
 export type GameEvent = CombatEvent | DungeonEvent | ModuleEvent
 
 export default class Events {
-
-
   static async present(event: GameEvent): Promise<string> {
     let subjectName = event.subject ? event.subject.forename : null;
     if (event.subject) {
@@ -279,7 +277,7 @@ export default class Events {
         }
       case "miss": return `${subjectName} attacks ${targetName} but misses.`;
       case "defend": return `${subjectName} takes a defensive stance, preparing to block incoming attacks.`;
-      case "fall": return '';  //`${subjectName} falls.`;
+      case "fall": return `${subjectName} is defeated.`;
       case "flee": return `${subjectName} flees from combat.`;
 
       case "statusEffect":

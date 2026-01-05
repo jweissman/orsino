@@ -15,7 +15,7 @@ import { never } from "./orsino/util/never";
 import { ItemInstance } from "./orsino/types/ItemInstance";
 import StatusHandler from "./orsino/Status";
 import { Template } from "./orsino/Template";
-import { ConsoleDriver, InquirerDriver } from "./orsino/Driver";
+import { ConsoleDriver, InquirerDriver, NullDriver } from "./orsino/Driver";
 
 type PlaygroundType = "dungeon" | "module";  // TODO "world";
 
@@ -56,10 +56,11 @@ export default class Orsino {
       const targetCr = Math.round(averageLevel * 0.75);
       const dungeoneer = new Dungeoneer({
         roller: Interactive.roll.bind(Interactive),
-        pause: driver.pause.bind(driver),
-        select: driver.select.bind(driver),
-        clear: driver.clear.bind(driver),
-        outputSink: Orsino.outputSink,
+        driver,
+        // pause: driver.pause.bind(driver),
+        // select: driver.select.bind(driver),
+        // clear: driver.clear.bind(driver),
+        // outputSink: Orsino.outputSink,
         dungeonGen: () => Generator.gen("dungeon", { setting: 'fantasy', ...options, _targetCr: targetCr }) as unknown as Dungeon,
         gen: Generator.gen.bind(Generator), //.bind(this),
         playerTeam: ({
@@ -71,10 +72,11 @@ export default class Orsino {
     } else if (type === "module") {
       const moduleRunner = new ModuleRunner({
         roller: Interactive.roll.bind(Interactive),
-        select: driver.select.bind(driver),
-        pause: driver.pause.bind(driver),
-        clear: driver.clear.bind(driver),
-        outputSink: Orsino.outputSink,
+        driver,
+        // select: driver.select.bind(driver),
+        // pause: driver.pause.bind(driver),
+        // clear: driver.clear.bind(driver),
+        // outputSink: Orsino.outputSink,
         moduleGen: (opts?: GeneratorOptions) => Generator.gen("module", { setting: 'fantasy', ...options, ...opts }) as unknown as CampaignModule,
         gen: Generator.gen.bind(Generator), //.bind(this),
         pcs: pcs.map(pc => ({ ...pc, playerControlled: true })),
@@ -110,12 +112,15 @@ export default class Orsino {
 
     let inventory: ItemInstance[] = [];
 
+    const driver = new NullDriver();
+
     while (true) {
       const averagePartyLevel = Math.round(pcs.reduce((sum, pc) => sum + pc.level, 0) / pcs.length);
       try {
       const moduleRunner: ModuleRunner = new ModuleRunner({
-        outputSink,
-        clear: () => process.stdout.write('\x1Bc'),
+        driver,
+        // outputSink,
+        // clear: () => process.stdout.write('\x1Bc'),
         moduleGen: () => Generator.gen("module", { setting: 'fantasy', ...options, _moduleLevel: averagePartyLevel }) as unknown as CampaignModule,
         gen: Generator.gen.bind(Generator),
         pcs,

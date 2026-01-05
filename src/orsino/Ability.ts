@@ -327,6 +327,50 @@ export default class AbilityHandler {
     return targets;
   }
 
+  static async resolveTargetOrTargets(ability: Ability, user: Combatant, context: CombatContext): Promise<Combatant | Combatant[]> {
+    const allies = context.allies || [];
+    const enemies = context.enemies || [];
+
+    // randomEnemies special-case
+    if (ability.target[0] === "randomEnemies") {
+      const living = Combat.living(enemies);
+      if (living.length === 0) throw new Error("No living enemies");
+
+      const nRaw = ability.target[1];
+      const n =
+        typeof nRaw === "number" ? nRaw :
+          typeof nRaw === "string" ? parseInt(nRaw, 10) :
+            1;
+
+      // sample distinct
+      const picked: Combatant[] = [];
+      const pool = [...living];
+      while (picked.length < Math.min(n, pool.length)) {
+        const idx = Math.floor(Math.random() * pool.length);
+        picked.push(pool[idx]);
+        pool.splice(idx, 1);
+      }
+      return picked;
+    }
+
+    const options = AbilityHandler.validTargets(ability, user, allies, enemies);
+    if (options.length === 0) throw new Error(`No valid targets for ${ability.name}`);
+    if (options.length === 1) return options[0] as any;
+
+    // interactive vs fallback
+    if (context.driver) {
+      return await context.driver.select("Which target?", options.map(t => ({
+        name: Array.isArray(t) ? t.map(c => c.name).join(", ") : t.name,
+        short: Array.isArray(t) ? t.map(c => c.forename).join(", ") : t.forename,
+        value: t as (Combatant | Combatant[]),
+        disabled: false
+      })));
+    }
+
+    // non-interactive fallback
+    return options[0] as (Combatant | Combatant[]);
+  }
+
   static rollAmount(name: string, amount: string, roll: Roll, user: Combatant): number {
     let result = 0;
     const isNumber = !isNaN(parseInt(amount));
@@ -351,6 +395,10 @@ export default class AbilityHandler {
     // normalize target and pass to handleSingleEffect
     let success = false;
     const events: Omit<GameEvent, "turn">[] = [];
+    if (effect.target) {
+      target = AbilityHandler.resolveTarget(effect.target as TargetKind, user, context.allies || [], context.enemies || []);
+      // console.log(`Resolved effect target for effect '${effect.type}' of ability '${name}' to: ${Array.isArray(target) ? target.map(t => t.name).join(", ") : target.name}`);
+    }
     if (Array.isArray(target)) {
       for (const t of target) {
         const result = await this.handleSingleEffect(name, effect, user, t, context, handlers);
@@ -367,6 +415,7 @@ export default class AbilityHandler {
       success = result.success;
       events.push(...result.events);
     }
+    // console.log(`Completed handling effect '${effect.type}' of ability '${name}' -- overall success? ${success} -- events generated: ${events.length} (${events.map(e => e.type).join(", ")})`);
     return { success, events };
   }
 
@@ -378,6 +427,7 @@ export default class AbilityHandler {
   ): Promise<{
     success: boolean, events: Omit<GameEvent, "turn">[]
   }> {
+    // console.log(`Handling effect '${effect.type}' of ability '${name}' from ${user.name} to ${targetCombatant.name}`);
     const { roll, attack, hit, heal, status, removeStatus, save, summon } = handlers;
 
     let success = false;
@@ -449,21 +499,46 @@ export default class AbilityHandler {
         context, handlers.roll
       );
       events.push(...hitEvents);
-      success = hitEvents.some(e => e.type === "hit" && (e as HitEvent).damage > 0 && (e as HitEvent).success)
-
+      success = hitEvents.some(e => e.type === "hit" && (e as HitEvent).success)
+      // console.log(`Damage effect '${name}' dealt ${hitEvents.filter(e => e.type === "hit").map(e => (e as HitEvent).damage).reduce((a, b) => a + b, 0)} damage to ${targetCombatant.name} -- success? ${success}`);
     } else if (effect.type === "cast") {
       // lookup spell by name and process its effects
       const spellName = effect.spellName || name;
       const spell = AbilityHandler.instance.getAbility(spellName);
       events.push({ type: "cast", subject: user, spellName: spell.name, source: effect.description } as Omit<CastEvent, "turn">);
-      for (const spellEffect of spell.effects) {
-        const result = await this.handleEffect(effect.description || spellName, spellEffect, user, targetCombatant, context, handlers);
-        success ||= result.success;
-        events.push(...result.events);
-        if (!success) {
-          return { success: false, events };
-        }
-      }
+      const spellTargetOrTargets = await AbilityHandler.resolveTargetOrTargets(spell, user, context);
+
+      let { success: spellSuccess, events: spellEvents } =
+        await AbilityHandler.perform(spell, user, spellTargetOrTargets, context, handlers);
+
+      success = spellSuccess;
+      events.push(...spellEvents);
+      // return { success, events };
+      // success = success;
+
+      // need to adjust targets based on spell targetting?
+      // let needsNewTarget = effect.target && JSON.stringify(effect.target) !== JSON.stringify(spell.target);
+      // if (needsNewTarget) {
+      //   // recalc target based on spell target
+      //   targetCombatant = await this.resolveAbilityTarget(spell, user, context) as Combatant;
+      // }
+      // let newTarget = await this.resolveAbilityTarget(spell, user, context);
+      // let spellTargets: (Combatant | Combatant[])[] = AbilityHandler.validTargets(spell, user, context.allies || [], context.enemies || []);
+      // if (spellTargets.length === 0) {
+      //   console.warn(`No valid targets for spell ${spell.name} used by ${user.forename} (targets: ${spell.target.join(", ")})`);
+      //   return { success: false, events };
+      // } else if (spellTargets.length > 1) {
+      //   // if multiple target groups, we need to prompt the caster to select one...?
+      // }
+
+      // for (const spellEffect of spell.effects) {
+      //   const result = await this.handleEffect(effect.description || spellName, spellEffect, user, targetCombatant, context, handlers);
+      //   success ||= result.success;
+      //   events.push(...result.events);
+      //   if (!success) {
+      //     return { success: false, events };
+      //   }
+      // }
     } else if (effect.type === "heal") {
       const amount = AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
       const healEvents = await heal(user, targetCombatant, amount, context);
@@ -614,11 +689,14 @@ export default class AbilityHandler {
       success = rezzed;
     }
     else if (effect.type === "kill") {
+      // console.log(`Killing target ${targetCombatant.name} via kill effect of ability ${name}`);
       if (targetCombatant.hp > 0) {
         targetCombatant.hp = 0;
         targetCombatant.dead = true;
         events.push({ type: "fall", subject: targetCombatant } as Omit<GameEvent, "turn">);
         success = true;
+      } else {
+        // console.log(`Target ${targetCombatant.name} is already dead, cannot kill again`);
       }
     } else if (effect.type === "randomEffect") {
       if (!effect.randomEffects || effect.randomEffects.length === 0) {
@@ -628,6 +706,7 @@ export default class AbilityHandler {
       const randomEffect = effect.randomEffects[randomIndex];
 
       let nestedTarget = targetCombatant;
+      // try to replace with corrected target based on randomEffect.target resolution
       if (randomEffect.target === "self" && targetCombatant.id !== user.id) {
         nestedTarget = user;
       }
@@ -816,6 +895,7 @@ export default class AbilityHandler {
       result = result || success;
       events.push(...effectEvents);
       if (success === false) {
+        // console.log(`Ability '${ability.name}' effect '${effect.type}' failed, stopping further effects.`);
         break;
       }
     }
@@ -851,6 +931,8 @@ export default class AbilityHandler {
         ability.name
       ));
     }
+
+    // console.log(`Completed performing ability '${ability.name}' by ${user.name} -- overall success? ${result} -- events generated: ${events.length} (${events.map(e => e.type).join(", ")})`);
 
     return { success: result, events };
   }
@@ -888,6 +970,8 @@ export default class AbilityHandler {
         events.push(...hookEvents);
       }
     }
+
+    // console.log(`Performed hooks for ${hookKey} on ${user.name} -- events generated: ${events.length} (${events.map(e => e.type).join(", ")})`);
 
     return events;
   }

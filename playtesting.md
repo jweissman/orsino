@@ -12,14 +12,13 @@
 - [ ] Make effective weapon/armor/size work for shapechange
 - [ ] Make read thoughts telegraph next moves (we may have to _obscure_ compelled moves like charge first?)
 - [ ] Flight should make you actually _untargetable_ by melee
-- [ ] Show current gold before purchasing potions
 - [ ] Remind players to rest if they're not at full health going into boss battle
 - [ ] Unify search/examine (should both have chance to find potions/loot and both grant XP on success)
 - [ ] All mage schools should have enough low-level spells to pick from
 - [ ] Traps should remember if they've been triggered (ie if you return to the dungeon again)
 
 ## Ideas
-- [ ] Rest could reset status effects? (would be nice to do this _before_ persisting PCs?)
+- [ ] Rest could reset status effects? (would be nice to do this _before_ persisting PCs?) [could _only_ reset negative effects too?]
 - [ ] Healing potion could cure poison status too? [maybe better to have a dedicated consumable for it though]
 - [ ] Poisoned blade still has weird expiration message actually? ("X is no longer poisoned blade"; a bit awkward to fix since a standard message would be ideal here)
 - [ ] A cage could have a chance to have a prisoner (who could become ally); incidentally would be nice for it to be more likely within a 'cell' room
@@ -336,6 +335,7 @@
 - [x] Rooms should remember in general if you've searched/examined things 
 - [x] Make criticalRangeIncrease work (need something low-level to test it.. -- added _vigor up_ as part of warrior default action set)
 - [x] _Cloak of Invisibility_ didn't confer invisibility passive at start? (Maybe we don't display PC passives?) -- we just don't display it but it does confer the passive (would be cleaner maybe as 'cast _invisibility_ at combat start?') 
+- [x] Show current gold before purchasing potions (should be the case now)
 
 ## Not really issues atm
 - Load all PCs on party select so we can show their race/class (no longer even letting you load PCs from file but we're still persisting them every room...) (we don't even persist PC records anymore)

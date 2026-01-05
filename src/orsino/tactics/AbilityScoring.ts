@@ -35,7 +35,7 @@ export class AbilityScoring {
     const tauntEffect = user.activeEffects?.find(e => e.effect.forceTarget);
     if (tauntEffect) {
       if (tauntEffect.by && validTargets.flat().some(t => t.id === tauntEffect.by?.id)) {
-        console.warn(`${(user.forename)} is taunted by ${Presenter.combatant(tauntEffect.by)} and must target them!`);
+        // console.warn(`${(user.forename)} is taunted by ${Presenter.combatant(tauntEffect.by)} and must target them!`);
         return tauntEffect.by;
       }
     }

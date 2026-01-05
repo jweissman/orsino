@@ -107,10 +107,10 @@ export default class Presenter {
   }
 
 
-  static async printCharacterRecord(combatant: Combatant, inventory: ItemInstance[]) {
-    console.log("\n" + "=".repeat(40) + "\n");
-    console.log(await this.characterRecord(combatant, inventory));
-    console.log("\n" + "=".repeat(40) + "\n");
+  static async printCharacterRecord(combatant: Combatant, inventory: ItemInstance[], sink: (text: string) => void = console.log) {
+    sink("\n" + "=".repeat(40) + "\n");
+    sink(await this.characterRecord(combatant, inventory));
+    sink("\n" + "=".repeat(40) + "\n");
   }
 
   static describeCharacter(combatant: Combatant) {

@@ -221,7 +221,7 @@ export class Inventory {
     this.assertItemRef(key, `genLoot for key=${key}`);
     const it = Generator.gen("loot", { _key: key }) as unknown as ItemInstance;
     if (it.charges) {
-      console.warn(`Setting maxCharges for item ${it.name} to ${it.charges}.`);
+      // console.warn(`Setting maxCharges for item ${it.name} to ${it.charges}.`);
       it.maxCharges = Math.max(1, it.charges);
     }
     return it;

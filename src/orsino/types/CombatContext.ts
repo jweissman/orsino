@@ -1,3 +1,4 @@
+import { Driver, NullDriver } from "../Driver";
 import { Combatant } from "./Combatant";
 import { ItemInstance } from "./ItemInstance";
 
@@ -14,11 +15,14 @@ export interface CombatContext {
 
   allyIds: Set<string>;
   enemyIds: Set<string>;
+
+  driver: Driver;
 }
 
 export const pseudocontextFor = (subject: Combatant, inventory: ItemInstance[]): CombatContext => {
   return {
     subject,
+    driver: new NullDriver(),
     allies: [],
     enemies: [],
     inventory,
@@ -41,6 +45,7 @@ export const translateContext = (context: CombatContext, newSubject: Combatant):
 
   return {
     subject: reactor,
+    driver: context.driver,
     allies: allySide.filter(c => c.id !== reactor.id),
     enemies: enemySide,
     allySide,

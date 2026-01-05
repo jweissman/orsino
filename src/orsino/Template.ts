@@ -17,6 +17,12 @@ export class Template {
   static bootstrapDeem(context: Record<string, DeemValue> = {}) {
     Deem.stdlib = Deem.stdlib || {};
     Deem.stdlib.eval = (expr: DeemValue) => Deem.evaluate(expr as string, context);
+    Deem.stdlib.defined = (varName: DeemValue) => {
+      if (typeof varName !== 'string') {
+        throw new Error(`defined() expects a string, got: ${typeof varName}`);
+      }
+      return context[varName] !== undefined;
+    }
     Deem.stdlib.lookup = ((tableName: GenerationTemplateType, groupName: string) => {
       return Generator.lookupInTable(tableName, groupName);
     }) as DeemFunc;
@@ -86,8 +92,6 @@ export class Template {
   ): Record<string, any> {
     const localContext = { ...options };
     const assembled: Record<string, DeemValue> = {};
-
-    // this.props.id ||= `${this.type}:${Math.random().toString(36).substring(2, 8)}`;
 
     // Object.entries(this.props).forEach(([key, value]) => {
     for (const [key, value] of Object.entries(this.props)) {

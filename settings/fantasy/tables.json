@@ -451,7 +451,7 @@
       "tomb": [[
         "Novice", "Acolyte", "Gravedigger", "Cultist", "Bandit", "Tombrobber", "Wizard",
         "Archaeologist", "Adventurer", "Blackguard", "Chirurgeon", "Doomsman",
-        "Funerarian"
+        "Funerarian", "Gloomstalker", "Hexmaster", "Idol Worshipper", "Jestermage"
       ]],
       "library": [[ "Scholar", "Sage", "Mage", "Apprentice" ]]
     }
@@ -471,11 +471,15 @@
   "npcTypeModifier": {
     "discriminator": "type",
     "groups": {
-      "Adventurer":  { "str": 2,  "con": 2, "dex": 2, "int": 2, "wis": 2, "cha": 2, "abilities": [ "prepare_charge", "charge", "second_wind", "heal", "cure_minor", "cure", "magic_missile", "shocking_grasp" ] },
-      "Blackguard": { "str": 4,  "con": 4, "dex": 2, "int": 2, "wis": 2, "cha": 2, "abilities": [ "smite", "prepare_charge", "charge", "second_wind", "curse", "life_drain", "paralyzing_touch" ], "traits": ["fiendish"] },
+      "Adventurer":  { "str": 2,  "con": 2, "dex": 2, "int": 2, "wis": 2, "cha": 2, "abilities": [ "prepare_charge", "charge", "second_wind", "heal", "cure_minor", "cure", "magic_missile", "shocking_grasp" ], "traits": [ "brave" ] },
+      "Blackguard": { "str": 4,  "con": 4, "dex": 2, "int": 2, "wis": 2, "cha": 2, "abilities": [ "smite", "prepare_charge", "charge", "second_wind", "curse", "life_drain", "paralyzing_touch" ], "traits": ["fiendish", "strong_willed"] },
       "Chirurgeon": { "str": 1,  "con": 2, "dex": 2, "int": 3, "wis": 4, "cha": 1, "abilities": [ "cure_minor", "cure", "cure_moderate", "heal", "remove_fear", "resist_fire", "infect", "weakness" ] },
       "Doomsman":  { "str": 3,  "con": 4, "dex": 2, "int": 4, "wis": 3, "cha": 2, "abilities": [ "curse", "terror", "life_drain", "firebolt", "burning_hands", "animate_dead", "insanity" ], "traits": ["fiendish"] },
       "Funerarian": { "str": 2,  "con": 3, "dex": 2, "int": 3, "wis": 4, "cha": 2, "abilities": [ "cure_minor", "cure", "curse", "terror", "life_drain", "resurrect", "raise_dead", "animate_dead" ] },
+      "Gloomstalker": { "str": 2,  "con": 3, "dex": 3, "int": 2, "wis": 2, "cha": 1, "abilities": [ "prepare_charge", "charge", "hide", "backstab", "rapid_strike" ] ,"traits": [ "toughness" ] },
+      "Hexmaster":  { "str": -1, "con": 0, "dex": -1, "int": 4, "wis": 3, "cha": 2, "abilities": [ "vexate", "hex", "obscuring_mist", "poison_cloud", "dirty_trick", "rapid_strike" ], "traits": ["fiendish"] },
+      "Idol Worshipper": { "str": -1, "dex": -1, "con": 0, "int": 2, "wis": 3, "cha": 2, "abilities": [ "cure_minor", "cure", "bless", "meditate", "chant", "terror", "mass_curse" ] },
+      "Jestermage": { "str": -2, "dex": 2, "con": -1, "int": 4, "wis": 1, "cha": 3, "abilities": [ "vexate", "magic_missile", "shocking_grasp", "firebolt", "burning_hands", "charm", "confusion", "mirror_image" ] },
 
       "Novice":       { "str": -1, "con": 0, "dex": -2, "int": 1, "wis": 1, "cha": -1, "abilities": ["rapid_strike", "trickfire", "pain", "paralyzing_touch", "life_drain", "ghost_touch" ] },
       "Gravedigger":  { "str": 0,  "con": 2, "dex": 2, "abilities": [ "rapid_strike", "hide", "dig_in" ] },
@@ -734,7 +738,7 @@
       "antimagic_ward": [["silence", "pure_beam", "dispel_magic", "magebane"]],
       "barrier": [[]],
       "turret": [["arrow_volley"]],
-      "bomb": [["detonation"]],
+      "bomb": [["countdown"]],
       "phylactery": [["animate_dead", "life_drain", "black_ritual"]]
     }
   },

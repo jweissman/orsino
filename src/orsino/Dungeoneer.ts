@@ -21,6 +21,7 @@ import Automatic from "./tui/Automatic";
 import { ItemInstance } from "./types/ItemInstance";
 import { GenerationTemplateType } from "./types/GenerationTemplateType";
 import { GeneratedValue } from "./Generator";
+import { Driver, NullDriver } from "./Driver";
 
 type SkillType = "search" | "examine" | "disarm"; // | "pickLock" | "climb" | "swim" | "jump" | "listen" | "spot";
 
@@ -130,13 +131,14 @@ export interface Dungeon {
 interface DungeoneerOptions {
   dry?: boolean;
   roller?: Roll;
-  select?: Select<any>;
-  outputSink?: (message: string) => void;
+  driver?: Driver;
+  // select?: Select<any>;
+  // outputSink?: (message: string) => void;
   dungeonGen?: () => Dungeon;
   gen?: (type: GenerationTemplateType, options?: Record<string, any>) => GeneratedValue | GeneratedValue[];
   playerTeam?: Team;
-  pause?: (message: string) => Promise<void>;
-  clear?: () => void;
+  // pause?: (message: string) => Promise<void>;
+  // clear?: () => void;
 }
 
 export default class Dungeoneer {
@@ -144,11 +146,12 @@ export default class Dungeoneer {
 
   private dry: boolean = false;
   private roller: Roll;
-  private select: Select<any>;
-  private pause: (message: string) => Promise<void>;
-  private clear: () => void = () => { };
-  // protected select: ChoiceSelector<any>;
-  private outputSink: (message: string) => void;
+  private driver: Driver;
+  // private select: Select<any>;
+  // private pause: (message: string) => Promise<void>;
+  // private clear: () => void = () => { };
+  // // protected select: ChoiceSelector<any>;
+  // private outputSink: (message: string) => void;
   private currentRoomIndex: number = 0;
   private journal: DungeonEvent[] = [];
 
@@ -162,17 +165,15 @@ export default class Dungeoneer {
   }
 
   constructor(
-    // options: Record<string, any> = {}
     options: DungeoneerOptions = {}
   ) {
     this.dry = options.dry || Orsino.environment === 'test';
     this.roller = options.roller || Commands.roll.bind(Commands);
-    this.select = options.select || Automatic.randomSelect.bind(Automatic);
-    this.outputSink = options.outputSink || console.log;
     this.dungeonGen = options.dungeonGen || Dungeoneer.defaultGen;
     this.playerTeam = options.playerTeam || Dungeoneer.defaultTeam();
-    this.pause = options.pause || (async (_message: string) => { });
-    this.clear = options.clear || (() => { });
+    this.driver = options.driver || new NullDriver();
+
+    // console.log(`Using driver: ${this.driver.description}`);
 
     if (!this.dungeonGen) {
       throw new Error('dungeonGen is required');
@@ -192,6 +193,13 @@ export default class Dungeoneer {
       }
     }
   }
+
+  protected get outputSink(): (message: string) => void { return this.driver.writeLn.bind(this.driver); }
+  protected pause(message: string): void { this.driver.pause(message); }
+  protected async select(message: string, choices: (readonly string[] | readonly { name: string; value: any; disabled?: boolean; short: string }[])): Promise<any> {
+    return this.driver.select(message, choices);
+  }
+  protected clear(): void { this.driver.clear(); }
 
   private note(message: string): void {
     this.outputSink(message);
@@ -268,11 +276,16 @@ export default class Dungeoneer {
         return { newPlane: result.newPlane };
       } else if (result.newLocation) {
         // we are moving to a new location within the dungeon (firstRoom, lastRoom, bossRoom, etc.)
+        let newRoomIndex = -1;
         switch (result.newLocation) {
-          case "firstRoom": this.currentRoomIndex = 0; break;
-          case "lastRoom": this.currentRoomIndex = this.dungeon.rooms.length - 1; break;
-          case "randomRoom": this.currentRoomIndex = Math.floor(Math.random() * this.dungeon.rooms.length); break;
-          default: this.currentRoomIndex = Math.min(Math.max(0, parseInt(result.newLocation)), this.dungeon.rooms.length - 1); break;
+          case "firstRoom": newRoomIndex = 0; break;
+          case "lastRoom": newRoomIndex = this.dungeon.rooms.length - 1; break;
+          case "randomRoom": newRoomIndex = Math.floor(Math.random() * this.dungeon.rooms.length); break;
+          default: newRoomIndex = Math.min(Math.max(0, parseInt(result.newLocation)), this.dungeon.rooms.length - 1); break;
+        }
+        if (newRoomIndex >= 0) {
+          console.warn(`Moving to room index ${newRoomIndex} as per teleportation effect (was ${this.currentRoomIndex}).`);
+          this.currentRoomIndex = newRoomIndex;
         }
       } else {
         this.moveToNextRoom();
@@ -335,7 +348,7 @@ export default class Dungeoneer {
 
   async presentCharacterRecords(): Promise<void> {
     for (const c of this.playerTeam.combatants) {
-      await Presenter.printCharacterRecord(c, this.playerTeam.inventory);
+      await Presenter.printCharacterRecord(c, this.playerTeam.inventory, this.outputSink);
     }
   }
 
@@ -379,9 +392,10 @@ export default class Dungeoneer {
     }
     const combat = new Combat({
       roller: this.roller,
-      select: this.select,
-      pause: this.pause,
-      clear: this.clear,
+      driver: this.driver,
+      // select: this.select,
+      // pause: this.pause,
+      // clear: this.clear,
       // note: this.outputSink
     });
 
@@ -479,7 +493,7 @@ export default class Dungeoneer {
       await this.emit({ type: "gold", subject: c, amount: goldGain });
 
       if (xp > 0) {
-        const events = await CharacterRecord.levelUp(c, this.playerTeam, this.roller, this.select);
+        const events = await CharacterRecord.levelUp(c, this.playerTeam, this.roller.bind(this), this.select.bind(this));
         for (const event of events) {
           await this.emit({ ...event } as DungeonEvent);
         }
@@ -565,7 +579,7 @@ export default class Dungeoneer {
       if (choice === "status") {
         for (const c of this.playerTeam.combatants) {
           let playerGear = Inventory.propertyOf(c, this.playerTeam.inventory);
-          await Presenter.printCharacterRecord(c, playerGear);
+          await Presenter.printCharacterRecord(c, playerGear, this.outputSink);
         }
         if (Object.keys(Inventory.quantities(this.playerTeam.inventory.filter(ii => ii.shared))).length > 0) {
           this.outputSink(`Inventory:`);
@@ -593,7 +607,7 @@ export default class Dungeoneer {
       } else if (choice === "rest") {
         const result = await this.rest(room);
         if (!result.survived) {
-          console.warn("The party was ambushed during their rest and defeated...");
+          // console.warn("The party was ambushed during their rest and defeated...");
           return { leaving: true };
         } else if (result.newPlane) {
           return { leaving: true, newPlane: result.newPlane };
@@ -1076,7 +1090,7 @@ export default class Dungeoneer {
       actor.equipment = actor.equipment || {};
       this.outputSink(`${actor.forename} equips ${Words.a_an(it.name)} (id: ${it.id}).`);
       actor.equipment[slot] = it.id;
-      console.log(`!!! Equipping ${it.id} to ${actor.name} in slot ${slot}`);
+      // console.log(`!!! Equipping ${it.id} to ${actor.name} in slot ${slot}`);
     }
   }
 

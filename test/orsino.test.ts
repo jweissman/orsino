@@ -13,6 +13,7 @@ import Events, { GameEvent } from '../src/orsino/Events';
 import { Team } from '../src/orsino/types/Team';
 import Orsino from '../src/orsino';
 import Automatic from '../src/orsino/tui/Automatic';
+import { NullDriver, TestDriver } from '../src/orsino/Driver';
 
 describe('Orsino', () => {
   Orsino.environment = 'test';
@@ -65,6 +66,24 @@ describe('Orsino', () => {
     expect(pc.equipment).toHaveProperty('weapon');
     expect(pc.equipment).toHaveProperty('body');
   });
+
+  it('spellcaster gen', async () => {
+    let mage = Generator.gen("pc", { setting: 'fantasy', class: 'mage', }) as unknown as Combatant;
+    await CharacterRecord.chooseTraits(mage, Automatic.randomSelect.bind(Automatic));
+    expect(mage.traits).toBeInstanceOf(Array);
+    expect(mage.traits.length).toBeGreaterThan(0);
+    // console.log(`Mage traits: ${mage.traits.join(", ")}`);
+    expect(mage.abilities.length).toBeGreaterThan(2);
+    // console.log(`Mage abilities: ${mage.abilities.join(", ")}`);
+
+    let cleric = Generator.gen("pc", { setting: 'fantasy', class: 'cleric', }) as unknown as Combatant;
+    await CharacterRecord.chooseTraits(cleric, Automatic.randomSelect.bind(Automatic));
+    expect(cleric.traits).toBeInstanceOf(Array);
+    expect(cleric.traits.length).toBeGreaterThan(0);
+    // console.log(`Cleric traits: ${cleric.traits.join(", ")}`);
+    expect(cleric.abilities.length).toBeGreaterThan(2);
+    // console.log(`Cleric abilities: ${cleric.abilities.join(", ")}`);
+  })
 
   it('combat generator', async () => {
     const combat = new Combat();
@@ -185,6 +204,7 @@ describe('Orsino', () => {
 
     const explorer = new ModuleRunner({
       gen: Generator.gen.bind(Generator),
+      // driver: new TestDriver(),
       moduleGen: () => mod,
       pcs: party
     });
@@ -209,7 +229,7 @@ describe('Orsino', () => {
 
   it('autoplay', async () => {
     Combat.statistics = { combats: 0, victories: 0, totalRounds: 0, defeats: 0 };
-    const party: Combatant[] = [];
+    // const party: Combatant[] = [];
     await AbilityHandler.instance.loadAbilities();
     await TraitHandler.instance.loadTraits();
     const mod: CampaignModule = Generator.gen("module", { setting: "fantasy" }) as unknown as CampaignModule;
@@ -221,10 +241,10 @@ describe('Orsino', () => {
       Generator.gen("pc", { setting: 'fantasy', class: 'ranger', }) as unknown as Combatant,
       Generator.gen("pc", { setting: 'fantasy', class: 'bard', }) as unknown as Combatant,
     ].map(pc => ({ ...pc, playerControlled: true }))
-    for (const pc of party) {
+    for (const pc of pcs) {
       await CharacterRecord.chooseTraits(pc, Automatic.randomSelect.bind(Automatic));
     }
-    await CharacterRecord.assignPartyPassives(party);
+    await CharacterRecord.assignPartyPassives(pcs);
 
     // console.log("Generated party:", party.map(p => p.name));
 

@@ -11,7 +11,6 @@ import { Roll } from "./types/Roll";
 import { StatusEffect } from "./Status";
 import { Team } from "./types/Team";
 import AbilityHandler, { Ability } from "./Ability";
-import Automatic from "./tui/Automatic";
 import Bark from "./Bark";
 import Deem from "../deem";
 import Events, { CombatEvent, RoundStartEvent, CombatEndEvent, FleeEvent, GameEvent, CombatantEngagedEvent, WaitEvent, NoActionsForCombatant, AllegianceChangeEvent, ItemUsedEvent, ActionEvent, ActedRandomly, StatusExpiryPreventedEvent, HealEvent, HitEvent, UnsummonEvent, PlaneshiftEvent } from "./Events";
@@ -22,7 +21,7 @@ import TraitHandler from "./Trait";
 import Words from "./tui/Words";
 import { CombatContext, pseudocontextFor } from "./types/CombatContext";
 import Sample from "./util/Sample";
-import User from "./tui/User";
+import { Driver, NullDriver } from "./Driver";
 
 export type ChoiceSelector<T extends Answers> = (description: string, options: Choice<T>[], combatant?: Combatant) => Promise<T>;
 
@@ -34,6 +33,7 @@ type CombatStats = {
 }
 
 interface CombatOptions {
+  driver?: Driver;
   roller?: Roll;
   select?: ChoiceSelector<any>;
   outputSink?: (message: string) => void;
@@ -56,24 +56,26 @@ export default class Combat {
   private combatantsByInitiative: { combatantId: string; initiative: number }[] = [];
   private environmentName: string = "Unknown Location";
 
+  private driver: Driver;
+
   protected roller: Roll;
-  protected select: ChoiceSelector<any>;
   protected journal: CombatEvent[] = [];
-  protected outputSink: (message: string) => void;
-  protected pause: (message: string) => Promise<void>;
-  protected clear: () => void;
   public dry: boolean = false;
 
   private auras: StatusEffect[] = [];
 
   constructor(
-    options: CombatOptions = {} //Record<string, any> = {},
+    options: CombatOptions = {}
   ) {
     this.roller = options.roller || Commands.roll.bind(Commands);
-    this.select = options.select || Automatic.randomSelect.bind(Automatic);
-    this.outputSink = options.outputSink || console.debug;
-    this.pause = options.pause || (async (_message: string) => { });
-    this.clear = options.clear || (() => { });
+    this.driver = options.driver || new NullDriver();
+  }
+
+  protected get outputSink() { return this.driver.writeLn.bind(this.driver); }
+  protected async pause(message: string): Promise<void> { return this.driver.pause(message); }
+  protected clear(): void { return this.driver.clear(); }
+  protected async select<T extends Answers>(message: string, choices: (readonly string[] | readonly Choice<T>[]), subject?: Combatant): Promise<T> {
+    return this.driver.select<T>(message, choices);
   }
 
   protected _note(message: string) { this.outputSink(message); }
@@ -117,6 +119,8 @@ export default class Combat {
       return true;
     })
     if (events.length === 0) { return; }
+
+    // console.log(`Emitting ${events.length} events for action '${message}' by ${subject.name}: ${events.map(e => e.type).join(", ")}`); 
 
     await this.emit({ type: "action", subject, actionName: message } as Omit<ActionEvent, "turn">);
     if (message) {
@@ -201,7 +205,7 @@ export default class Combat {
     for (const [slot, equipmentKey] of Object.entries(combatant.equipment || {})) {
       const item = materializeItem(equipmentKey, inventory) as ItemInstance;
       if (item.effect) {
-        console.log(`Applying equipment effect from ${item.name} to ${combatant.name}`);
+        // console.log(`Applying equipment effect from ${item.name} to ${combatant.name}`);
         equipmentList.push({ ...item, sourceKey: slot } as unknown as StatusEffect);
       }
     }
@@ -369,6 +373,7 @@ export default class Combat {
     const enemies = enemySide;
 
     return {
+      driver: this.driver, // Fighting.effectivelyPlayerControlled(combatant) ? this.driver : new NullDriver(),
       subject: combatant,
       allies,
       enemies,
@@ -531,7 +536,7 @@ export default class Combat {
       if (activeFx.hasPrimaryAttack !== false) {
         const weapon = Fighting.effectiveWeapon(combatant, this.contextForCombatant(combatant));
         //this.teamFor(combatant)?.inventory || []);
-        console.log(`Effective weapon for ${combatant.name} is ${weapon.name}`);
+        // console.log(`Effective weapon for ${combatant.name} is ${weapon.name}`);
         if (weapon) {
           if (weapon.missile) {
             if (!uniqAbilities.includes("ranged")) {
@@ -1017,7 +1022,7 @@ export default class Combat {
       if (combatant.hp <= 0) { continue; } // Skip defeated combatants
       if ((combatant.activeEffects || []).some((e: StatusEffect) => e.effect?.flee)) { continue; } // Skip fleeing combatants
 
-      console.log(`\n-- Round ${this.turnNumber}, ${Presenter.minimalCombatant(combatant)}'s turn --`);
+      // console.log(`\n-- Round ${this.turnNumber}, ${Presenter.minimalCombatant(combatant)}'s turn --`);
 
       // tick down status
       const expiryEvents: Omit<GameEvent, "turn">[] = [];
@@ -1044,21 +1049,26 @@ export default class Combat {
           const expiryHookEvents = await AbilityHandler.performHooks("onExpire", combatant, ctx, Commands.handlers(this.roller), "status expire hook");
           expiryEvents.push(...expiryHookEvents);
           for (const status of expired) {
-            console.log(`Status effect ${status.name} on ${combatant.forename} has expired.`);
+            // console.log(`Status effect ${status.name} on ${combatant.forename} has expired.`);
             expiryEvents.push(...(await Commands.handleRemoveStatusEffect(combatant, status.name)));
           }
         }
       }
 
       if (expiryEvents.length > 0) {
+        // console.log(`Emitting ${expiryEvents.length} expiry events for ${combatant.forename} - ${expiryEvents.map(e => e.type).join(", ")}`);
+
         await this.emitAll(expiryEvents, "effects expire", combatant);
       }
-      const result = await this.turn(combatant);
 
-      if (result.haltCombat) {
-        return { haltCombat: true, newPlane: result.newPlane };
-      } else if (result.haltRound || Combat.living(this.enemyCombatants).length === 0 || Combat.living(this.playerCombatants).length === 0) {
-        break;
+      if (combatant.hp > 0) {
+        const result = await this.turn(combatant);
+
+        if (result.haltCombat) {
+          return { haltCombat: true, newPlane: result.newPlane };
+        } else if (result.haltRound || Combat.living(this.enemyCombatants).length === 0 || Combat.living(this.playerCombatants).length === 0) {
+          break;
+        }
       }
     }
 

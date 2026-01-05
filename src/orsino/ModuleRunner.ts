@@ -1,8 +1,6 @@
 import Dungeoneer, { Dungeon } from "./Dungeoneer";
 import { Combatant } from "./types/Combatant";
 import { Roll } from "./types/Roll";
-import { Select } from "./types/Select";
-// import Choice from "inquirer/lib/objects/choice";
 import { GenerationTemplateType } from "./types/GenerationTemplateType";
 import Stylist from "./tui/Style";
 import Words from "./tui/Words";
@@ -14,13 +12,11 @@ import Presenter from "./tui/Presenter";
 import CharacterRecord from "./rules/CharacterRecord";
 import Automatic from "./tui/Automatic";
 import { Fighting } from "./rules/Fighting";
-import { Answers } from "inquirer";
 import { GeneratedValue, GeneratorOptions } from "./Generator";
-import Orsino from "../orsino";
 import { GameState, newGameState, processEvents } from "./types/GameState";
 import Shop, { ShopType } from "../Shop";
 import { ItemInstance } from "./types/ItemInstance";
-import { Driver } from "./Driver";
+import { Driver, NullDriver } from "./Driver";
 
 type TownSize = 'hamlet' | 'village' | 'town' | 'city' | 'metropolis' | 'capital';
 type Race = 'human' | 'elf' | 'dwarf' | 'halfling' | 'gnome' | 'orc' | 'fae';
@@ -35,6 +31,7 @@ export interface Deity {
 }
 
 export interface Town {
+  tavern: { hirelings: Combatant[] };
   name: string;
   adjective: string;
   population: number;
@@ -56,17 +53,11 @@ export interface CampaignModule {
 
 type RunnerOptions = {
   roller?: Roll;
-  select?: Select<Answers>;
-  pause?: (message: string) => Promise<void>;
-  clear?: () => void;
-  outputSink?: (message: string) => void;
+  driver?: Driver;
   moduleGen?: (options?: GeneratorOptions) => CampaignModule;
   pcs?: Combatant[];
   gen?: (type: GenerationTemplateType, options?: GeneratorOptions) => GeneratedValue | GeneratedValue[];
   inventory?: ItemInstance[];
-
-  // would be nice to replace io method clutter with the driver abstraction
-  // driver?: Driver;
 }
 
 export class ModuleRunner {
@@ -75,11 +66,7 @@ export class ModuleRunner {
   }
 
   private roller: Roll;
-  // private driver: Driver;
-  private select: Select<Answers>;
-  private pause: (message: string) => Promise<void> = async (message: string) => { };
-  private clear: () => void = () => { };
-  private _outputSink: (message: string) => void;
+  private driver: Driver;
   private moduleGen: (
     options?: GeneratorOptions
   ) => CampaignModule;
@@ -92,16 +79,17 @@ export class ModuleRunner {
 
   constructor(options: RunnerOptions = {}) {
     this.roller = options.roller || Commands.roll.bind(Commands);
-    this.select = options.select || Automatic.randomSelect.bind(Automatic);
-    this.pause = options.pause || (async (message: string) => { });
-    this.clear = options.clear || (() => {
-      process.stdout.write('\x1Bc');
-    });
-    this._outputSink = options.outputSink || Orsino.outputSink;
+    this.driver = options.driver || new NullDriver();
     this.moduleGen = options.moduleGen || this.defaultModuleGen.bind(this);
     this.gen = options.gen || (() => { throw new Error("No gen function provided") });
-
     this._state = newGameState({ ...ModuleRunner.configuration, party: options.pcs || [], inventory: options.inventory || [] });
+  }
+
+  protected clear(): void { this.driver.clear(); }
+  protected _outputSink(message: string): void { this.driver.writeLn(message); }
+  protected pause(message: string): void { this.driver.pause(message); }
+  protected async select(message: string, choices: (readonly string[] | readonly { name: string; value: any; disabled?: boolean; short: string }[])): Promise<any> {
+    return this.driver.select(message, choices);
   }
 
   get pcs() { return this._state.party; }
@@ -272,10 +260,11 @@ export class ModuleRunner {
           const dungeoneer = new Dungeoneer({
             dry,
             roller: this.roller,
-            select: this.select,
-            pause: this.pause,
-            clear: this.clear,
-            outputSink: this._outputSink,
+            // select: this.select,
+            // pause: this.pause,
+            // clear: this.clear,
+            // outputSink: this._outputSink,
+            driver: this.driver,
             dungeonGen: () => dungeon,
             gen: this.gen, //.bind(this),
             playerTeam: {
@@ -310,8 +299,8 @@ export class ModuleRunner {
             pc.spellSlotsUsed = 0;
             pc.activeEffects = [];
           });
-        } else {
-          console.warn("No available dungeons!");
+        // } else {
+        //   console.warn("No available dungeons!");
         }
       } else if (action === "inn") {
         this.rest(this.pcs);
@@ -443,8 +432,8 @@ export class ModuleRunner {
         pc.hp = effective.maxHp;
         pc.spellSlotsUsed = 0;
         pc.activeEffects = []; // Clear status effects!
-      } else {
-        console.warn(`${pc.name} is dead and must seek resurrection.`);
+      // } else {
+      //   console.warn(`${pc.name} is dead and must seek resurrection.`);
       }
     });
     // this.outputSink("💤 Your party rests and recovers fully.");
@@ -526,7 +515,7 @@ export class ModuleRunner {
 
   private async shop(category: ShopType) {
     await this.emit({ type: "shopEntered", shopName: Shop.name(category), day: this.days });
-    const shop = new Shop(this.select);
+    const shop = new Shop(this.select.bind(this));
     let done = false;
     while (!done) {
       await this.emit({ type: "goldStatus", amount: this.sharedGold, day: this.days });
@@ -563,9 +552,16 @@ export class ModuleRunner {
     if (partySize >= 6 || this.sharedGold < cost) {
       return;
     }
+    const hirelings = this.mod.town.tavern?.hirelings || [];
+    if (hirelings.length === 0) {
+      return;
+    }
     // gen a level 1 PC as hireling
     // const hireling = this.gen("pc", { background: "hireling", setting: "fantasy" }) as unknown as Combatant;
-    const hireling = await CharacterRecord.autogen(CharacterRecord.goodRaces, (options) => this.gen("pc", { ...options, background: "hireling" }) as unknown as Combatant) as Combatant;
+    const hireling = hirelings[Math.floor(Math.random() * hirelings.length)];
+    hireling.level = 1;
+    hireling.gp = 0;
+      //await CharacterRecord.autogen(CharacterRecord.goodRaces, (options) => this.gen("pc", { ...options, background: "hireling" }) as unknown as Combatant) as Combatant;
     // await CharacterRecord.pickInitialSpells(hireling, Automatic.randomSelect);
     await CharacterRecord.chooseTraits(hireling, Automatic.randomSelect.bind(Automatic));
     const wouldLikeHireling = await this.select(
@@ -593,6 +589,7 @@ export class ModuleRunner {
     ]);
 
     if (choice) {
+      this.mod.town.tavern!.hirelings = this.mod.town.tavern!.hirelings.filter(h => h.id !== hireling.id);
       this.state.sharedGold -= cost;
       this.state.party.push(hireling);
       this.state.inventory.push(...await this.gatherStartingGear(hireling));

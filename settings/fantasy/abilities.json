@@ -30,7 +30,9 @@
     "type": "skill",
     "aspect": "physical",
     "description": "Use your primary weapon.",
-    "target": [ "enemy" ],
+    "target": [
+      "enemy"
+    ],
     "effects": [
       {
         "type": "attack"
@@ -238,7 +240,9 @@
     "type": "skill",
     "aspect": "physical",
     "description": "Boost your vitality, granting +2 to all healing received for the next 5 rounds.",
-    "target": [ "self" ],
+    "target": [
+      "self"
+    ],
     "effects": [
       {
         "type": "buff",
@@ -690,17 +694,45 @@
       }
     ]
   },
-  "detonation": {
-    "name": "Detonation",
+
+  "chaos_hammer": {
+    "name": "Chaotic Hammer",
     "type": "skill",
     "alignment": "evil",
-    "description": "Countdown to a fiery explosion.",
+    "description": "Give yourself radiant status and deal damage to two enemies.",
+    "target": [ "self" ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "radiant"
+      },
+      {
+        "type": "damage",
+        "amount": "=2d4",
+        "kind": "psychic",
+        "target": "enemy"
+      },
+      {
+        "type": "damage",
+        "amount": "=2d4",
+        "kind": "poison",
+        "target": "enemy"
+      }
+    ]
+  },
+
+  "countdown": {
+    "name": "Countdown",
+    "type": "skill",
+    "alignment": "evil",
+    "description": "Start a countdown that will detonate after 3 rounds.",
     "target": [
       "self"
     ],
     "condition": {
-      "notStatus": "ticking"
+      "notStatus": "Ticking"
     },
+    "setupFor": "detonation",
     "effects": [
       {
         "type": "buff",
@@ -710,18 +742,34 @@
           "effect": {
             "onExpire": [
               {
-                "type": "damage",
-                "amount": "=2d6",
-                "kind": "fire",
-                "target": "enemies"
-              },
-              {
-                "type": "kill",
-                "target": "self"
+                "type": "cast",
+                "spellName": "detonation",
+                "description": "The countdown reaches zero, causing a fiery explosion."
               }
             ]
           }
         }
+      }
+    ]
+  },
+  "detonation": {
+    "name": "Detonation",
+    "type": "skill",
+    "alignment": "evil",
+    "description": "A fiery explosion.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=2d6",
+        "kind": "fire",
+        "target": "enemies"
+      },
+      {
+        "type": "kill",
+        "target": "self"
       }
     ]
   },
@@ -742,7 +790,6 @@
       }
     ]
   },
-  
   "black_ritual": {
     "name": "Black Ritual",
     "type": "skill",
@@ -877,6 +924,20 @@
         "type": "damage",
         "amount": 1,
         "kind": "sonic"
+      }
+    ]
+  },
+  "vexate": {
+    "name": "Vexate",
+    "type": "skill",
+    "description": "Cast a minor hex that irritates and distracts an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "cast",
+        "spellName": "hex"
       }
     ]
   }

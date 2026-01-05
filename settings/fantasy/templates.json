@@ -47,11 +47,33 @@
     "title": "=#gender == 'male' ? oneOf('God', 'Lord') : oneOf('Goddess')",
     "name": "=\"#forename, #title of #{capitalize(#domain)}\""
   },
+  "hamlet": {
+    "terrain": "=lookup(terrains, 1d6)",
+    "size": "=oneOf(hamlet, village, town, city)",
+    "race": "=oneOf(human, elf, dwarf, halfling, gnome, fae, orc)",
+    "_aspect": "=lookup(terrainFeatures, #terrain)",
+    "_suffix": "=oneOf(ford, haven, burg, port, dale, keep, watch, gate, rest, fall, ridge, wood, field, pass, hold, stead, view, point, hill, bay, cliff, cross, run, land, bridge, shore, town, ville, ton, mouth, burg, bury, bold, wick, ton, ham, worth, edge, bay, vale)",
+    "name": "=capitalize(#_aspect + #_suffix)",
+    "adjective": "=oneOf(peaceful, bustling, prosperous, decaying, ancient, vibrant, sleepy, lively, fair, grim, quaint, thriving, quiet, rustic, quaint, noble, humble, proud)"
+  },
+  "tavern": {
+    "_about": "=oneOf(cozy, bustling, rickety, grand, lively, quiet, rowdy, quaint, rustic, elegant, smoky, cheerful, dimly_lit, spacious, cramped, lively, welcoming)",
+    "_hirelingCount": "=1d4",
+    "_town": "=defined(town) ? #town : gen(hamlet)",
+    "_hometown": "=#_town",
+    "hirelings": "=genList(pc, #_hirelingCount)",
+    "_adjective": "=oneOf(red, blue, green, golden, silver, black, white, merry, sleepy, roaring, shining, hidden, lucky, brave, fierce, gentle)",
+    "_object": "=oneOf(lion, dragon, sword, shield, crown, harp, axe, stag, goblet, pixie, tankard, willow, wolf, eagle, rose, lantern)",
+    "_name": "=\"the #_adjective #_object\"",
+    "name": "=humanize(#_name)",
+    "description": "=\"The #_about tavern of #name\""
+  },
   "town": {
     "terrain": "=lookup(terrains, 1d6)",
     "size": "=oneOf(hamlet, village, town, city, metropolis, capital)",
     "race": "=oneOf(human, elf, dwarf, halfling, gnome, fae, orc)",
     "deity": "=gen(deity)",
+    "tavern": "=gen(tavern)",
     "capital": "=#size == 'capital'",
     "population": "=eval(lookup(townPop, #size))",
     "_aspect": "=lookup(terrainFeatures, #terrain)",
@@ -319,7 +341,7 @@
     "_companionBudget": "=floor(#_levelBudget * #_companionCount/(#_monsterCount + #_companionCount + #_npcCount))",
     "_companionLevelDistribution": "=distribute(#_companionBudget, #_companionCount)",
     "_companions": "=mapGenList(animal, #_companionLevelDistribution, level)",
-    "_otherCombatEntityCount": "=1d10 > 2 ? 1 : 0",
+    "_otherCombatEntityCount": "=1d10 > 8 ? 2 : 1",
     "_otherCombatEntityTypes": "=sample(lookup(otherCombatEntityTypes, #building_type), #_otherCombatEntityCount)",
     "_otherCombatEntities": "=mapGenList(combatEntity, #_otherCombatEntityTypes, 'entity_type')",
     "creatures": "=concat(#_npcs, #_companions, #_monsters, #_otherCombatEntities)",
@@ -468,7 +490,7 @@
     "*planeModifier": "=lookup(planeModifiers, #_plane_name)",
     "town": "=gen(town)",
     "_townName": "=dig(#town, 'name')",
-    "dungeons": "=genList(dungeon, 3)",
+    "dungeons": "=genList(dungeon, 4)",
     "_moduleLevel": 0,
     "name": "=oneOf('Adventure', 'Saga', 'Reckoning', 'Quest', 'Expedition') + ' ' + oneOf('in the ' + capitalize(#terrain), 'at ' + capitalize(#_townName), 'for the ' + capitalize(#terrain))"
   }

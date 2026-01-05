@@ -811,10 +811,7 @@
     "aspect": "divine",
     "domain": "life",
     "description": "Bind minor injuries.",
-    "target": [
-      "self",
-      "ally"
-    ],
+    "target": [ "self", "ally" ],
     "effects": [
       {
         "type": "heal",
