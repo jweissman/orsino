@@ -1805,6 +1805,38 @@
       }
     ]
   },
+  "luminous_blade": {
+    "name": "Luminous Blade",
+    "type": "spell",
+    "level": 0,
+    "aspect": "divine",
+    "domain": "war",
+    "description": "Your weapon glows with radiant light, dealing extra damage to undead creatures.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Luminous Blade",
+          "duration": 10,
+          "effect": {
+            "onAttackHit": [
+              {
+                "type": "damage",
+                "amount": "=1d3",
+                "kind": "radiant",
+                "condition": {
+                  "trait": "undead"
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
   "smite": {
     "name": "Smite Evil",
     "level": 1,

@@ -265,7 +265,6 @@
       }
     ]
   },
-
   "soot_cloud": {
     "name": "Soot Cloud",
     "type": "spell",
@@ -589,6 +588,9 @@
     "target": [
       "enemy"
     ],
+    "condition": {
+      "notTrait": "inanimate"
+    },
     "effects": [
       {
         "type": "debuff",
@@ -643,7 +645,6 @@
       }
     ]
   },
-
   "minor_foretelling": {
     "name": "Minor Foretelling",
     "type": "spell",
@@ -656,7 +657,10 @@
       "ally"
     ],
     "effects": [
-      { "type": "buff", "status": "focus" }
+      {
+        "type": "buff",
+        "status": "focus"
+      }
     ]
   },
   "second_sight": {
@@ -715,8 +719,14 @@
       "self"
     ],
     "effects": [
-      { "type": "buff", "status": "augured" },
-      { "type": "buff", "status": "insight" }
+      {
+        "type": "buff",
+        "status": "augured"
+      },
+      {
+        "type": "buff",
+        "status": "insight"
+      }
     ]
   },
   "mind_reading": {
@@ -754,8 +764,14 @@
       "ally"
     ],
     "effects": [
-      { "type": "buff", "status": "major_focus" },
-      { "type": "buff", "status": "major_insight" }
+      {
+        "type": "buff",
+        "status": "major_focus"
+      },
+      {
+        "type": "buff",
+        "status": "major_insight"
+      }
     ]
   },
   "true_sight": {
@@ -783,7 +799,9 @@
     "aspect": "arcane",
     "school": "divination",
     "description": "Unveil hidden truths, revealing invisible or disguised creatures and objects.",
-    "target": [ "enemies" ],
+    "target": [
+      "enemies"
+    ],
     "effects": [
       {
         "type": "removeStatus",
@@ -819,9 +837,18 @@
       "self"
     ],
     "effects": [
-      { "type": "buff", "status": "major_augured" },
-      { "type": "buff", "status": "major_focus" },
-      { "type": "buff", "status": "major_insight" }
+      {
+        "type": "buff",
+        "status": "major_augured"
+      },
+      {
+        "type": "buff",
+        "status": "major_focus"
+      },
+      {
+        "type": "buff",
+        "status": "major_insight"
+      }
     ]
   },
   "mass_mind_blank": {
@@ -831,7 +858,9 @@
     "aspect": "arcane",
     "school": "divination",
     "description": "Protect your mind from all forms of mental intrusion and detection for 1 hour.",
-    "target": [ "allies" ],
+    "target": [
+      "allies"
+    ],
     "effects": [
       {
         "type": "buff",
@@ -852,14 +881,28 @@
       "ally"
     ],
     "effects": [
-      { "type": "buff", "status": "major_focus" },
-      { "type": "buff", "status": "major_insight" },
-      { "type": "buff", "status": "major_clarity" },
-      { "type": "buff", "status": "major_cunning" },
-      { "type": "buff", "status": "major_wisdom" }
+      {
+        "type": "buff",
+        "status": "major_focus"
+      },
+      {
+        "type": "buff",
+        "status": "major_insight"
+      },
+      {
+        "type": "buff",
+        "status": "major_clarity"
+      },
+      {
+        "type": "buff",
+        "status": "major_cunning"
+      },
+      {
+        "type": "buff",
+        "status": "major_wisdom"
+      }
     ]
   },
-
   "frostbite": {
     "name": "Frostbite",
     "type": "spell",
@@ -1215,7 +1258,9 @@
     "aspect": "arcane",
     "school": "evocation",
     "description": "A concentrated blast of noise explodes from your hand.",
-    "target": [ "enemy" ],
+    "target": [
+      "enemy"
+    ],
     "effects": [
       {
         "type": "damage",
@@ -1268,7 +1313,7 @@
       }
     ]
   },
- "fireball": {
+  "fireball": {
     "name": "Fireball",
     "type": "spell",
     "level": 4,
@@ -1286,7 +1331,7 @@
         "saveForHalf": true
       }
     ]
-  }, 
+  },
   "earthquake": {
     "name": "Earthquake",
     "type": "spell",
@@ -1387,12 +1432,42 @@
       {
         "type": "randomEffect",
         "randomEffects": [
-          { "type": "damage", "amount": "=4d6", "kind": "fire", "saveForHalf": true },
-          { "type": "damage", "amount": "=3d12", "kind": "cold", "saveForHalf": true },
-          { "type": "damage", "amount": "=4d8", "kind": "lightning", "saveForHalf": true },
-          { "type": "damage", "amount": "=2d10", "kind": "acid", "saveForHalf": true },
-          { "type": "damage", "amount": "=3d4", "kind": "poison", "saveForHalf": true },
-          { "type": "damage", "amount": "=5d6", "kind": "force", "saveForHalf": true }
+          {
+            "type": "damage",
+            "amount": "=4d6",
+            "kind": "fire",
+            "saveForHalf": true
+          },
+          {
+            "type": "damage",
+            "amount": "=3d12",
+            "kind": "cold",
+            "saveForHalf": true
+          },
+          {
+            "type": "damage",
+            "amount": "=4d8",
+            "kind": "lightning",
+            "saveForHalf": true
+          },
+          {
+            "type": "damage",
+            "amount": "=2d10",
+            "kind": "acid",
+            "saveForHalf": true
+          },
+          {
+            "type": "damage",
+            "amount": "=3d4",
+            "kind": "poison",
+            "saveForHalf": true
+          },
+          {
+            "type": "damage",
+            "amount": "=5d6",
+            "kind": "force",
+            "saveForHalf": true
+          }
         ]
       }
     ]
@@ -1519,12 +1594,42 @@
       {
         "type": "randomEffect",
         "randomEffects": [
-          { "type": "damage", "amount": "=6d6", "kind": "fire", "saveForHalf": true },
-          { "type": "damage", "amount": "=5d12", "kind": "cold", "saveForHalf": true },
-          { "type": "damage", "amount": "=6d8", "kind": "lightning", "saveForHalf": true },
-          { "type": "damage", "amount": "=4d10", "kind": "acid", "saveForHalf": true },
-          { "type": "damage", "amount": "=5d4", "kind": "poison", "saveForHalf": true },
-          { "type": "damage", "amount": "=7d6", "kind": "force", "saveForHalf": true }
+          {
+            "type": "damage",
+            "amount": "=6d6",
+            "kind": "fire",
+            "saveForHalf": true
+          },
+          {
+            "type": "damage",
+            "amount": "=5d12",
+            "kind": "cold",
+            "saveForHalf": true
+          },
+          {
+            "type": "damage",
+            "amount": "=6d8",
+            "kind": "lightning",
+            "saveForHalf": true
+          },
+          {
+            "type": "damage",
+            "amount": "=4d10",
+            "kind": "acid",
+            "saveForHalf": true
+          },
+          {
+            "type": "damage",
+            "amount": "=5d4",
+            "kind": "poison",
+            "saveForHalf": true
+          },
+          {
+            "type": "damage",
+            "amount": "=7d6",
+            "kind": "force",
+            "saveForHalf": true
+          }
         ]
       }
     ]
@@ -1548,7 +1653,6 @@
       }
     ]
   },
-  
   "dancing_lights": {
     "name": "Dancing Lights",
     "type": "spell",
@@ -1714,7 +1818,7 @@
               "saveKind": "will",
               "saveDC": 16
             },
-            { 
+            {
               "type": "removeStatus",
               "statusName": "Warding Glyph"
             }
@@ -1786,7 +1890,9 @@
     "aspect": "arcane",
     "school": "illusion",
     "description": "Create phantasmal creatures that frighten enemies within range.",
-    "target": [ "self" ],
+    "target": [
+      "self"
+    ],
     "effects": [
       {
         "type": "summon",
@@ -1801,7 +1907,6 @@
       }
     ]
   },
- 
   "animate_animal": {
     "name": "Animate Animal",
     "type": "spell",
@@ -2305,7 +2410,6 @@
       }
     ]
   },
-
   "ghost_touch": {
     "name": "Ghost Touch",
     "type": "spell",
@@ -2388,7 +2492,8 @@
     "school": "transmutation",
     "description": "Increase an ally's size and strength.",
     "target": [
-      "self", "ally"
+      "self",
+      "ally"
     ],
     "effects": [
       {
@@ -2606,7 +2711,6 @@
       }
     ]
   },
-
   "minor_distract": {
     "name": "Minor Distraction",
     "type": "spell",
@@ -2725,7 +2829,10 @@
       "ally"
     ],
     "effects": [
-      { "type": "buff", "status": "mindproof" }
+      {
+        "type": "buff",
+        "status": "mindproof"
+      }
     ]
   },
   "mass_distraction": {

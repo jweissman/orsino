@@ -13,7 +13,7 @@ import Events, { GameEvent } from '../src/orsino/Events';
 import { Team } from '../src/orsino/types/Team';
 import Orsino from '../src/orsino';
 import Automatic from '../src/orsino/tui/Automatic';
-import { NullDriver, AutomaticPlayDriver } from '../src/orsino/Driver';
+// import { NullDriver, AutomaticPlayDriver } from '../src/orsino/Driver';
 
 describe('Orsino', () => {
   Orsino.environment = 'test';
@@ -256,14 +256,15 @@ describe('Orsino', () => {
 
     await explorer.run(true);
 
-    let module: CampaignModule = explorer.activeModule!;
+    const module: CampaignModule = explorer.activeModule!;
     expect(module).toBeDefined();
     expect(module.name).toBe(mod.name);
     expect(module.terrain).toBe(mod.terrain);
     expect(module.town).toEqual(mod.town);
     expect(module.dungeons).toEqual(mod.dungeons);
 
-    for (const pc in explorer.pcs) {
+    // for (const pc in explorer.pcs) {
+    for (let pc = 0; pc < explorer.pcs.length; pc++) {
       await Presenter.printCharacterRecord(explorer.pcs[pc], explorer.inventory);
     }
 

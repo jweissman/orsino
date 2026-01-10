@@ -1,3 +1,4 @@
+import LanguageManager, { Concept } from '../orsino/Language';
 import { Fighting } from '../orsino/rules/Fighting';
 import Words from '../orsino/tui/Words';
 
@@ -196,5 +197,14 @@ export default class StandardLibrary {
       }
       return distribution.filter(x => x > 0) as DeemValue;
     },
+
+    translate: (languageName: DeemValue, ...concepts: DeemValue[]) => {
+      // use default language (westron)
+      const lang = LanguageManager.instance.getDictionary(languageName as string);
+      if (!lang) {
+        throw new Error(`translate() could not find default language 'westron'`);
+      }
+      return lang.translate(...concepts as Concept[]);
+    }
   };
 }

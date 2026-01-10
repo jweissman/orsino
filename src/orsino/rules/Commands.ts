@@ -76,6 +76,11 @@ export class Commands {
   static async handleHeal(
     healer: Combatant, target: Combatant, amount: number, combatContext: CombatContext
   ): Promise<TimelessEvent[]> {
+    const targetFx = Fighting.gatherEffects(target);
+    if (targetFx.mayBeHealed === false) {
+      return [];
+    }
+
     const healerFx = Fighting.gatherEffects(healer);
     if (healerFx.bonusHealing) {
       amount += Deem.evaluate(healerFx.bonusHealing.toString()) as number || 0;

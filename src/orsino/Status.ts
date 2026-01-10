@@ -181,7 +181,9 @@ export interface StatusModifications {
   effectiveWeapon?: string;
   effectiveArmor?: string;
   effectiveSize?: 'tiny' | 'small' | 'medium' | 'large' | 'huge' | 'gargantuan';
+
   mayUseItems?: boolean;
+  mayBeHealed?: boolean;
 
   // noncombat
   examineBonus?: number;

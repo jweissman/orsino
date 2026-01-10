@@ -33,6 +33,7 @@ export interface Deity {
 export interface Town {
   tavern: { hirelings: Combatant[] };
   name: string;
+  translatedName: string;
   adjective: string;
   population: number;
   size: TownSize;
@@ -232,6 +233,7 @@ export class ModuleRunner {
     await this.emit({
       type: "townVisited",
       townName: mod.town.name, day: 0,
+      translatedTownName: mod.town.translatedName,
       plane: mod.plane,
       weather: mod.weather,
       race: mod.town.race, size: mod.town.size,
@@ -369,6 +371,7 @@ export class ModuleRunner {
       type: "townVisited",
       plane: mod.plane,
       townName: mod.town.name,
+      translatedTownName: mod.town.translatedName,
       weather: mod.weather,
       race: mod.town.race,
       size: mod.town.size,

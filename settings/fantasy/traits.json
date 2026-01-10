@@ -1055,7 +1055,8 @@
           "immuneDisease": true,
           "immuneBleed": true,
           "resurrectable": false,
-          "hasPrimaryAttack": false
+          "hasPrimaryAttack": false,
+          "mayBeHealed": false
         }
       }
     ]
@@ -1650,6 +1651,58 @@
         "name": "Chaotician",
         "description": "You are a harbinger of chaos and unpredictability.",
         "effect": { "displayClass": "Chaotician" }
+      }
+    ]
+  },
+  "oceanist": {
+    "type": "domain",
+    "description": "Sea and water specialist",
+    "spellbooks": [ "divine" ],
+    "domain": "ocean",
+    "statuses": [
+      {
+        "name": "Oceanist",
+        "description": "You are a guardian of the seas and all its creatures.",
+        "effect": { "displayClass": "Oceanist" }
+      }
+    ]
+  },
+  "cherubist": {
+    "type": "domain",
+    "description": "Love and beauty specialist",
+    "spellbooks": [ "divine" ],
+    "domain": "love",
+    "statuses": [
+      {
+        "name": "Cherubist",
+        "description": "You embody the ideals of love and beauty.",
+        "effect": { "displayClass": "Cherubist" }
+      }
+    ]
+  },
+  "stormcaller": {
+    "type": "domain",
+    "description": "Storms and weather specialist",
+    "spellbooks": [ "divine" ],
+    "domain": "storms",
+    "statuses": [
+      {
+        "name": "Stormcaller",
+        "description": "You command the power of storms and tempests.",
+        "effect": { "displayClass": "Stormcaller" }
+      }
+    ]
+  },
+  "veneficium": {
+    "type": "domain",
+    "description": "Poison and toxins specialist",
+    "spellbooks": [ "divine" ],
+    "domain": "poison",
+    "statuses": [
+      {
+        "name": "Veneficium",
+        "description": "You are a master of poisons and toxins.",
+        "effect": { "displayClass": "Veneficium" }
       }
     ]
   }

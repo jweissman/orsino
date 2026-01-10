@@ -7,6 +7,7 @@
 - [ ] Weird interaction with absorption (temp Hp) and trap descriptions [it was saying the _trap_ absorbed damage?]
 - [ ] Traps with planeshift effects don't seem to work
 - [ ] Sometimes dragons don't have valid abilities? (no melee attack?) [maybe fixed with targeting improvements...??]
+- [ ] Planeshift ability is basically a soft-lock for autoplay (since constantly restarting/regenerating modules when cast, which is seemingly a lot at high levels...)
 
 ## Features
 - [ ] Make effective weapon/armor/size work for shapechange
@@ -181,8 +182,13 @@
 - [ ] Split bomb ability into 'countdown(_to_detonate)' and 'detonation' as separate abilities?
 - [ ] Disable PCs from blacksmith list if you can't afford any enhancements for that PC (could also give option to return to town _at_ PC list?)
 - [ ] Maze for 100 turns _feels_ like a lock if it's on the last living opponent -- we could maybe just call it a defeat for the enemies at that point? (But do we do this for petrify/sleep/etc as well??)
-- [ ] Template for shops/tavern (so we can gen a stable list of pcs to be found there)
-- [ ] It should not be possible to 'unsummon' a creature we've _just_ summoned as part of the same summoning (should at least make sure we don't print the event)
+- [ ] It should not be possible to 'unsummon' a creature we've _just_ summoned as part of the same summoning (should at least make sure we don't print the event) - or at least not display it
+---
+- [ ] Would be nice to _compute_ effective gold value of items based on some baseline
+- [ ] Normalize treasure values across ranks (move pricier things up to rarer tiers...)
+---
+- [ ] Linguistically derive given names...
+- [ ] Make planeshift traps _very_ rare (similar for wonders that grant planeshift -- or travel you involuntarily -- but that should be the case already?)
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing
@@ -336,6 +342,9 @@
 - [x] Make criticalRangeIncrease work (need something low-level to test it.. -- added _vigor up_ as part of warrior default action set)
 - [x] _Cloak of Invisibility_ didn't confer invisibility passive at start? (Maybe we don't display PC passives?) -- we just don't display it but it does confer the passive (would be cleaner maybe as 'cast _invisibility_ at combat start?') 
 - [x] Show current gold before purchasing potions (should be the case now)
+- [x] Template for shops/tavern (so we can gen a stable list of pcs to be found there)
+- [x] Maze + disable is a lock we should try to prevent somehow (maze should now have 'not inanimate' requirement for target)
+- [x] Language support (simple toponyms for towns)
 
 ## Not really issues atm
-- Load all PCs on party select so we can show their race/class (no longer even letting you load PCs from file but we're still persisting them every room...) (we don't even persist PC records anymore)
+- Load all PCs on party select so we can show their race/class (no longer even letting you load PCs from file but we're still persisting them every room...) (we do persist PC records and could bring this back?)

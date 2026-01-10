@@ -48,19 +48,22 @@
     "name": "=\"#forename, #title of #{capitalize(#domain)}\""
   },
   "hamlet": {
+    "__no_id": true,
     "terrain": "=lookup(terrains, 1d6)",
     "size": "=oneOf(hamlet, village, town, city)",
-    "race": "=oneOf(human, elf, dwarf, halfling, gnome, fae, orc)",
+    "population": "=eval(lookup(townPop, #size))",
+    "race": "=oneOf(human, elf, dwarf, halfling, gnome, fae)",
     "_aspect": "=lookup(terrainFeatures, #terrain)",
-    "_suffix": "=oneOf(ford, haven, burg, port, dale, keep, watch, gate, rest, fall, ridge, wood, field, pass, hold, stead, view, point, hill, bay, cliff, cross, run, land, bridge, shore, town, ville, ton, mouth, burg, bury, bold, wick, ton, ham, worth, edge, bay, vale)",
-    "name": "=capitalize(#_aspect + #_suffix)",
-    "adjective": "=oneOf(peaceful, bustling, prosperous, decaying, ancient, vibrant, sleepy, lively, fair, grim, quaint, thriving, quiet, rustic, quaint, noble, humble, proud)"
+    "_suffix": "=pick(concat(lookup(townAffixes, #terrain), lookup(townAffixes, 'any')))",
+    "translatedName": "=capitalize(#_aspect + #_suffix)",
+    "_languageKey": "=(#race == 'elf' || #race == 'fae') ? 'quenya' : 'westron'",
+    "name": "=translate(#_languageKey, #_aspect, #_suffix)",
+    "adjective": "=oneOf(peaceful, bustling, prosperous, decaying, ancient, vibrant, sleepy, lively, fair, grim, quaint, thriving, quiet, rustic, quaint, noble, humble, proud)",
+    "description": "=\"The #adjective #size of #name, which is #translatedName, #{oneOf(nestled, situated, located)} in the #terrain.\""
   },
   "tavern": {
     "_about": "=oneOf(cozy, bustling, rickety, grand, lively, quiet, rowdy, quaint, rustic, elegant, smoky, cheerful, dimly_lit, spacious, cramped, lively, welcoming)",
-    "_hirelingCount": "=1d4",
-    "_town": "=defined(town) ? #town : gen(hamlet)",
-    "_hometown": "=#_town",
+    "_hirelingCount": "=2d4",
     "hirelings": "=genList(pc, #_hirelingCount)",
     "_adjective": "=oneOf(red, blue, green, golden, silver, black, white, merry, sleepy, roaring, shining, hidden, lucky, brave, fierce, gentle)",
     "_object": "=oneOf(lion, dragon, sword, shield, crown, harp, axe, stag, goblet, pixie, tankard, willow, wolf, eagle, rose, lantern)",
@@ -69,17 +72,10 @@
     "description": "=\"The #_about tavern of #name\""
   },
   "town": {
-    "terrain": "=lookup(terrains, 1d6)",
-    "size": "=oneOf(hamlet, village, town, city, metropolis, capital)",
-    "race": "=oneOf(human, elf, dwarf, halfling, gnome, fae, orc)",
+    "^hamlet": "=gen(hamlet)",
     "deity": "=gen(deity)",
     "tavern": "=gen(tavern)",
-    "capital": "=#size == 'capital'",
-    "population": "=eval(lookup(townPop, #size))",
-    "_aspect": "=lookup(terrainFeatures, #terrain)",
-    "_suffix": "=oneOf(ford, haven, burg, port, dale, keep, watch, gate, rest, fall, ridge, wood, field, pass, hold, stead, view, point, hill, bay, cliff, cross, run, land, bridge, shore, town, ville, ton, mouth, burg, bury, bold, wick, ton, ham, worth, edge, bay, vale)",
-    "name": "=capitalize(#_aspect + #_suffix)",
-    "adjective": "=oneOf(peaceful, bustling, prosperous, decaying, ancient, vibrant, sleepy, lively, fair, grim, quaint, thriving, quiet, rustic, quaint, noble, humble, proud)"
+    "capital": "=#size == 'capital'"
   },
   "equipment": {
     "__no_id": true,
@@ -101,8 +97,8 @@
     "archetype": "=lookup(alignmentArchetypes, #order + ' ' + #alignment)",
     "background": "=pick(gather(backgroundModifier))",
     "personality": "=(#background == 'noble' || #background == 'aristocrat') ? oneOf(proud, haughty, dignified, commanding) : oneOf(grim, bold, cunning, loyal, compassionate, ruthless, cheerful, brooding, curious, jovial, acerbic, stoic, wary)",
-    "_hometown": "=gen(town)",
-    "hometown": "=capitalize(dig(#_hometown, 'size')) + ' of ' + dig(#_hometown, 'name')",
+    "_hometown": "=gen(hamlet)",
+    "hometown": "=capitalize(dig(#_hometown, 'size')) + ' of ' + dig(#_hometown, 'name') + ', which is ' + dig(#_hometown, 'translatedName')",
     "gender": "=oneOf(male, female, androgynous)",
     "body_type": "=gender == 'female' ? oneOf(petite, slim, average, athletic, svelte, curvy, robust) : oneOf(slim, average, athletic, stocky, burly, outsized)",
     "race": "=pick(gather(racialModifier, -1, '!dig(#__it, evil)'))",
@@ -458,10 +454,8 @@
     "_roomBias": "=lookup(roomBias, #building_type)",
     "dungeon_type": "=lookup(dungeonTypes, #building_type)",
     "race": "=if(#_targetCr <= 5, oneOf(goblin, kobold), if(#_targetCr <= 10, oneOf(orc, human, lizardfolk), if(#_targetCr <= 15, oneOf(ogre, troll, duergar), oneOf(draconic, insectoid))))",
-    "theme": "=oneOf(pain, power, darkness, nature, fire, ice, shadow, light, chaos, order, water, air, earth, lightning, death, life, time, mystery)",
-    "domain": "=oneOf(light, darkness, nature, war, knowledge, trickery, life, death, magic, order, chaos, oceans, love, storms)",
+    "domain": "=oneOf(light, darkness, nature, war, knowledge, trickery, life, death, magic, order, chaos, oceans, love, storms, poison)",
     "dungeon_aspect": "=lookup(dungeonAspect, #building_type)",
-    "_dungeon_name": "=capitalize(#dungeon_aspect) + \" \" + capitalize(#race) + \" \" + capitalize(#dungeon_type) + \" of \" + capitalize(#theme)",
     "dungeon_name": "=\"#{capitalize(#dungeon_aspect)} #{capitalize(#race)} #{capitalize(#dungeon_type)} of #{capitalize(#domain)}\"",
     "dungeonIndex": "=#_index",
     "intendedCr": "=#_targetCr",
@@ -480,8 +474,8 @@
   },
   "module": {
     "_plane_name": "Prime Material",
-    "order": "neutral",
-    "alignment": "neutral",
+    "_order": "neutral",
+    "_alignment": "neutral",
     "_domain": "=oneOf(light, darkness, nature, war, knowledge, trickery, life, death, magic, order, chaos, oceans, love, storms)",
     "weather": "fair",
     "terrain": "=lookup(terrains, 1d6)",

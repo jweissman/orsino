@@ -108,6 +108,7 @@ export default class Generator {
   }
 
   public static gatherKeysFromTable(tableName: GenerationTemplateType, count: number, condition?: string): DeemValue[] {
+    Generator.setting = Generator.setting || loadSetting('fantasy');
     const table = Generator.generationSource(tableName);
     if (!table || !(table instanceof Table)) {
       throw new Error(`Table not found: ${tableName}`);

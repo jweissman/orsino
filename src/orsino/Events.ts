@@ -165,7 +165,10 @@ export type TownVisitedEvent = BaseModuleEvent & {
   type: "townVisited";
   plane: string;
   weather: string;
-  townName: string; race: string; size: string; population: number; adjective: string; season: "spring" | "summer" | "autumn" | "winter";
+  townName: string;
+  race: string; size: string; population: number; adjective: string;
+  season: "spring" | "summer" | "autumn" | "winter";
+  translatedTownName: string;
 };
 export type ShopEnteredEvent = BaseModuleEvent & { type: "shopEntered"; shopName: string; };
 export type GoldStatusEvent = BaseModuleEvent & { type: "goldStatus"; amount: number; };
@@ -429,7 +432,7 @@ export default class Events {
       case "goldStatus":
         return `Current gold: ${Words.humanizeNumber(event.amount)} gp.`;
       case "townVisited":
-        return (`It is the ${Words.ordinal(1 + (event.day % 90))} day of ${event.season} in the ${event.adjective} ${Words.capitalize(event.race)} ${event.size} of ${Stylist.bold(event.townName)} on the plane of ${Words.capitalize(event.plane)} (Population: ${Words.humanizeNumber(event.population)}). The weather is currently ${event.weather}.`);
+        return (`It is the ${Words.ordinal(1 + (event.day % 90))} day of ${event.season} in the ${event.adjective} ${Words.capitalize(event.race)} ${event.size} of ${Stylist.bold(event.townName)}, which is ${event.translatedTownName}, on the plane of ${Words.capitalize(event.plane)} (Population: ${Words.humanizeNumber(event.population)}). The weather is currently ${event.weather}.`);
       case "purchase":
         return `${event.buyer.forename} purchased ${Words.a_an(event.itemName)} for ${event.cost} gold.`;
       case "sale":

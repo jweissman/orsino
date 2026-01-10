@@ -131,7 +131,7 @@ export default class Orsino {
 
       // show pc records
       for (const pc of pcs) {
-        outputSink(await Presenter.characterRecord(pc as Combatant, inventory));
+        outputSink(await Presenter.characterRecord(pc, inventory));
       }
 
       outputSink("\n----\nCombat statistics: " + JSON.stringify(Combat.statistics));

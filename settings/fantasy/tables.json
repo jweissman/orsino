@@ -1719,25 +1719,39 @@
   "terrains": {
     "discriminator": "d6",
     "groups": {
-      "1": "forest",
-      "2": "cave",
-      "3": "swamp",
-      "4": "mountain",
-      "5": "snow",
-      "6": "desert"
+      "1": "forest", "2": "cave", "3": "swamp", "4": "mountain", "5": "snow", "6": "desert",
+      "7": "island", "8": "jungle", "9": "plains", "10": "volcano"
     }
   },
+
   "terrainFeatures": {
     "discriminator": "terrain",
     "groups": {
-      "forest": [ "acorn", "bark", "bush", "fern", "flower", "green", "leaf", "sap", "tree", "wood" ],
-      "cave": [ "deep", "hollow", "dark", "rock", "gloom", "damp" ],
-      "swamp": [ "marsh", "bog", "mire", "fen", "wash", "slough", "wet", "moss", "black" ],
-      "mountain": [ "hill", "mont", "peak", "iron", "cold", "stone", "high", "red" ],
-      "snow": [ "snow", "ice", "frost", "white", "chill", "cold" ],
-      "desert": [ "dune", "sand", "ember", "grit", "dry" ]
+      "any": [ "day", "morning", "autumn", "golden", "beautiful", "splendid", "love", "dream", "music" ],
+      "forest": [ "acorn", "bark", "bush", "fern", "flower", "green", "leaf", "tree", "wood", "thorn", "rose", "lily", "willow", "elm", "birds" ],
+      "cave": [ "deep", "hollow", "dark", "rock", "gloom", "damp", "dusty", "ash" ],
+      "swamp": [ "marsh", "mire", "wet", "moss", "black", "gloom", "fen" ],
+      "mountain": [ "hill", "mountain", "peak", "iron", "cold", "stone", "high", "red", "tall", "lofty", "lonely", "high", "tin", "iron", "silver", "gold" ],
+      "snow": [ "snow", "ice", "frost", "white", "cold", "needle", "pale", "bitter", "cloudy", "sharp", "cloud" ],
+      "desert": [ "sand", "ember", "dry", "heat", "wide", "lonely", "salt" ],
+      "island": [ "palm", "sea", "blue", "wave", "pearl", "shell" ]
     }
   },
+
+  "townAffixes": {
+    "discriminator": "terrain",
+    "groups": {
+      "any": [ "borough", "town", "village", "stead", "hold", "view", "land", "keep", "watch", "rest", "run", "fast", "field" ],
+      "forest": [ "wood", "grove", "lake", "glade", "glen", "vale", "mere" ],
+      "cave": [ "mouth", "ford", "cross", "bridge" ],
+      "swamp": [ "dale", "mire", "water" ],
+      "mountain": [ "hill", "rock", "crest", "point", "fall", "ridge", "pass" ],
+      "snow": [ "wind" ],
+      "desert": [ "edge" ],
+      "island": [ "bay", "port", "shore", "haven", "beach" ]
+    }
+  },
+
   "townPop": {
     "discriminator": "size",
     "groups": {
@@ -1890,6 +1904,7 @@
       "snake":        { "hp": 3, "str": 4, "dex": 3, "con": 4, "int": 3, "wis": 3, "cha": 3, "weapon": "bite",      "body": "scale", "description": "A legless reptile of profound stealth and, in some species, venomous bite." },
       "spider":       { "hp": 2, "str": 2, "dex": 4, "con": 2, "int": 2, "wis": 2, "cha": 2, "weapon": "bite",      "body": "chitin", "description": "An eight-legged arachnid with a unique web-spinning ability and very stealthy movement." },
       "squirrel":     { "hp": 1, "str": 1, "dex": 4, "con": 2, "int": 3, "wis": 3, "cha": 2, "weapon": "bite",      "body": "fur", "description": "A small rodent of great agility and bushy tail. It is an excellent climber." },
+      "stag":         { "hp": 4, "str": 4, "dex": 3, "con": 4, "int": 2, "wis": 3, "cha": 3, "weapon": "antlers",   "body": "hide", "description": "A majestic herbivore with impressive antlers and graceful movements." },
       "stoat":        { "hp": 3, "str": 2, "dex": 4, "con": 3, "int": 3, "wis": 3, "cha": 3, "weapon": "bite",      "body": "fur", "description": "A small carnivorous mammal with exceptional agility and clever hunting techniques." },
       "tiger":        { "hp": 5, "str": 4, "dex": 4, "con": 4, "int": 3, "wis": 3, "cha": 3, "weapon": "claws",     "body": "fur", "description": "A powerful big cat with great strength, agility, and striking striped coat." },
       "turtle":       { "hp": 4, "str": 2, "dex": 1, "con": 5, "int": 2, "wis": 3, "cha": 2, "weapon": "bite",      "body": "shell", "description": "A slow-moving reptile with a hard protective shell and long lifespan." },

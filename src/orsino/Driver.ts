@@ -148,10 +148,10 @@ export class NullDriver implements Driver {
     return (typeof chosen === "string" ? chosen : chosen.value) as T;
   }
 
-  async confirm(_message: string): Promise<boolean> { return true; }
-  async input(_message: string): Promise<string> { return ""; }
+  confirm(_message: string): Promise<boolean> { return Promise.resolve(true); }
+  input(_message: string): Promise<string> { return Promise.resolve(""); }
   async pause(_message: string): Promise<void> { }
-  async readKey(): Promise<string> { return "\n"; }
+  readKey(): Promise<string> { return Promise.resolve("\n"); }
 }
 
 export class AutomaticPlayDriver extends NullDriver implements Driver {
@@ -160,6 +160,7 @@ export class AutomaticPlayDriver extends NullDriver implements Driver {
   write(text: string): void { process.stdout.write(text); }
   writeLn(text: string): void { process.stdout.write(text + "\n"); }
   clear(): void {
-    process.stdout.write('\x1Bc');
+    // process.stdout.write('\x1Bc');
+    console.clear();
   }
 }

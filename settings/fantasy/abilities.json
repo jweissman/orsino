@@ -704,7 +704,7 @@
     "effects": [
       {
         "type": "buff",
-        "status": "radiant"
+        "status": "enlightened"
       },
       {
         "type": "damage",

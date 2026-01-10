@@ -75,6 +75,7 @@ export interface AbilityEffect {
 
   condition?: {
     trait?: string; // traits the target must have
+    notTrait?: string; // traits the target must not have
   }
 
   // for summoning
@@ -443,6 +444,14 @@ export default class AbilityHandler {
           return re.test(t);
         });
         if (!traitMatch) {
+          return { success, events };
+        }
+      } else if (effectCondition.notTrait) {
+        const traitMatch = (targetCombatant.traits || []).some(t => {
+          const re = new RegExp(`^${effectCondition.notTrait}$`, 'i');
+          return re.test(t);
+        });
+        if (traitMatch) {
           return { success, events };
         }
       }

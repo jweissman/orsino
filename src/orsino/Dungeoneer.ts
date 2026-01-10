@@ -673,10 +673,19 @@ export default class Dungeoneer {
       } else if (choice === "trap") {
         const trap = room.trap;
         if (trap) {
-          await this.handleTrap(trap);
           // inspectedFeatures.push('trap');
           room.completedFeatures = room.completedFeatures || [];
           room.completedFeatures.push('trap');
+
+          let result = await this.handleTrap(trap);
+          if (!result.survived) {
+            // console.warn("The party was defeated by the trap...");
+            return { leaving: true };
+          } else if (result.newLocation) {
+            return { leaving: false, newLocation: result.newLocation };
+          } else if (result.newPlane) {
+            return { leaving: true, newPlane: result.newPlane };
+          }
         }
       }
 
@@ -699,7 +708,13 @@ export default class Dungeoneer {
   }
 
 
-  private async handleTrap(trap: Trap): Promise<void> {
+  private async handleTrap(trap: Trap): Promise<{
+    interactorId?: CombatantID;
+    survived: boolean;
+    newPlane?: string;
+    newLocation?: string;
+    leaving?: boolean;
+  }> {
     let activated = false;
     const alertCheck = await this.skillCheck("examine", `to examine ${trap.lure}`, "int", trap.detect_dc);
     if (alertCheck.success) {
@@ -714,7 +729,7 @@ export default class Dungeoneer {
       // const hasTools = this.playerTeam.combatants.some(c => c.gear?.includes('thieves_tools'));
       if (!toolsAvailable) {
         this.note(`But no one has thieves' tools to disarm it! You carefully avoid the ${Words.humanize(trap.trigger)} and move on.`);
-        return;
+        return { survived: true };
       }
 
       const disarmCheck = await this.skillCheck("disarm", `to disarm the trap`, "dex", trap.disarm_dc); //, (c) => c.gear?.includes('thieves_tools') || false);
@@ -745,23 +760,21 @@ export default class Dungeoneer {
       };
       for (const pc of this.playerTeam.combatants) {
         const context: CombatContext = pseudocontextFor(pc, this.playerTeam.inventory);
-        //   subject: pc, //alertCheck.actor,
-        //   allies: this.playerTeam.combatants.filter(c => c !== pc),
-        //   enemies: [],
-        //   inventory: this.playerTeam.inventory,
-        //   enemyInventory: [],
-        //   allyIds: new Set(this.playerTeam.combatants.map(c => c.id)),
-        //   enemyIds: new Set(),
-        // };
         const source = Words.a_an(Words.humanize(trap.punishment));
         for (const effect of fx) {
           const { events } = await AbilityHandler.handleEffect(source, effect, trapPseudocombatant, pc, context, Commands.handlers(this.roller));
           for (const event of events) {
             await this.emit({ ...event, source: trap.name } as DungeonEvent);
+            if (event.type === "teleport") {
+              return { interactorId: alertCheck.actor.id, leaving: false, newLocation: (event as TeleportEvent).location, survived: true };
+            } else if (event.type === "planeshift") {
+              return { interactorId: alertCheck.actor.id, leaving: true, newPlane: (event as PlaneshiftEvent).plane, survived: true};
+            }
           }
         }
       }
     }
+    return { survived: Combat.living(this.playerTeam.combatants).length > 0 };
   }
 
   private async solveRiddle(riddle: Riddle): Promise<{

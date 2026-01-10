@@ -24,6 +24,26 @@ export class Table {
     return keys;
   }
 
+  gatherEntries(groupName: string, count: number = -1): DeemValue[] {
+    const group = this.groups[groupName];
+    if (group === undefined) {
+      throw new Error(`Group not found in table ${this.discriminator} (group: ${groupName})`);
+      // console.warn(`Group '${groupName}' not found in table '${this.name}'`);
+      return [];
+    }
+    if (count <= 0 || count >= group.length) {
+      return group;
+    }
+
+    const entries: DeemValue[] = [];
+    const groupCopy = [...group];
+    for (let i = 0; i < count; i++) {
+      const index = Math.floor(Math.random() * groupCopy.length);
+      entries.push(groupCopy.splice(index, 1)[0]);
+    }
+    return entries;
+  }
+
   pickedOptions: Set<DeemValue> = new Set();
   pick(groupName: string, globallyUnique: boolean = false): DeemValue {
     let options = [];

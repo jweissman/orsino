@@ -928,6 +928,14 @@ export default class Presenter {
             parts.push(`May not use items`);
           }
           break;
+
+        case "mayBeHealed":
+          if (value) {
+            parts.push(`May be healed`);
+          } else {
+            parts.push(`May not be healed`);
+          }
+          break;
         
         case "hasPrimaryAttack":
           if (value) {
