@@ -1684,7 +1684,7 @@
     "type": "domain",
     "description": "Storms and weather specialist",
     "spellbooks": [ "divine" ],
-    "domain": "storms",
+    "domain": "storm",
     "statuses": [
       {
         "name": "Stormcaller",

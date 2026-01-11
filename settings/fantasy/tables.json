@@ -54,7 +54,7 @@
         "armorProficiencies": { "kind": ["cloth", "leather", "metal"], "weight": ["light", "medium"] },
         "weaponProficiencies": { "kind": ["flail", "mace", "light_warhammer", "staff", "club"], "weight": ["light", "medium", "heavy"] },
         "itemProficiencies": { "kind": ["kit", "potion", "flask", "wand", "scroll"], "withoutAspect": "arcane" },
-        "traitChoices": ["vitalist", "deathspeaker", "lightbringer", "shadowmancer", "oathkeeper", "wildcaller", "chaotician", "warbringer"]
+        "traitChoices": ["vitalist", "deathspeaker", "lightbringer", "shadowmancer", "oathkeeper", "wildcaller", "chaotician", "warbringer", "oceanist", "cherubist", "stormcaller", "veneficium"]
       },
       "bard": {
         "hitDie": 6,
@@ -656,17 +656,7 @@
       "draconic": "200 + 2d100", "insectoid": "2d10", "birdfolk": "1d8", "lizardfolk": "2d10", "duergar": "3d10"
     }
   },
-  "terrainModifier": {
-    "discriminator": "terrain",
-    "groups": {
-      "forest": { "str": -1, "dex": 1, "con": 1 },
-      "swamp": { "con": -1, "dex": 1, "int": 1 },
-      "mountain": { "str": 2, "con": 1, "dex": -1 },
-      "cave": { "str": 1, "con": 1, "dex": 1 },
-      "snow": { "con": 1, "dex": -1, "str": -1 },
-      "desert": { "str": 1, "con": -2 }
-    }
-  },
+  
   "dungeonAspect": {
     "discriminator": "building_type",
     "groups": {
@@ -1716,39 +1706,22 @@
     }
   },
 
-  "terrains": {
-    "discriminator": "d6",
-    "groups": {
-      "1": "forest", "2": "cave", "3": "swamp", "4": "mountain", "5": "snow", "6": "desert",
-      "7": "island", "8": "jungle", "9": "plains", "10": "volcano"
-    }
-  },
-
-  "terrainFeatures": {
-    "discriminator": "terrain",
-    "groups": {
-      "any": [ "day", "morning", "autumn", "golden", "beautiful", "splendid", "love", "dream", "music" ],
-      "forest": [ "acorn", "bark", "bush", "fern", "flower", "green", "leaf", "tree", "wood", "thorn", "rose", "lily", "willow", "elm", "birds" ],
-      "cave": [ "deep", "hollow", "dark", "rock", "gloom", "damp", "dusty", "ash" ],
-      "swamp": [ "marsh", "mire", "wet", "moss", "black", "gloom", "fen" ],
-      "mountain": [ "hill", "mountain", "peak", "iron", "cold", "stone", "high", "red", "tall", "lofty", "lonely", "high", "tin", "iron", "silver", "gold" ],
-      "snow": [ "snow", "ice", "frost", "white", "cold", "needle", "pale", "bitter", "cloudy", "sharp", "cloud" ],
-      "desert": [ "sand", "ember", "dry", "heat", "wide", "lonely", "salt" ],
-      "island": [ "palm", "sea", "blue", "wave", "pearl", "shell" ]
-    }
-  },
-
   "townAffixes": {
     "discriminator": "terrain",
     "groups": {
-      "any": [ "borough", "town", "village", "stead", "hold", "view", "land", "keep", "watch", "rest", "run", "fast", "field" ],
+      "any": [
+        "borough", "town", "village", "stead", "hold", "view", "land", "keep", "watch", "rest", "run", "fast", "field"
+      ],
       "forest": [ "wood", "grove", "lake", "glade", "glen", "vale", "mere" ],
       "cave": [ "mouth", "ford", "cross", "bridge" ],
       "swamp": [ "dale", "mire", "water" ],
       "mountain": [ "hill", "rock", "crest", "point", "fall", "ridge", "pass" ],
       "snow": [ "wind" ],
       "desert": [ "edge" ],
-      "island": [ "bay", "port", "shore", "haven", "beach" ]
+      "island": [ "bay", "port", "shore", "haven", "beach" ],
+      "jungle": [ "path" ],
+      "plains": [ "field", "mead", "brook" ],
+      "volcano": [ "dread", "giant", "fell", "dragons" ]
     }
   },
 
@@ -1768,6 +1741,65 @@
   "deityName": {
     "discriminator": "domain",
     "groups": {
+      "life": [ "Brigid", "Dagda", "Aengus", "Flidais" ],
+      "light": [ "Lugh", "Belenus", "Grannus", "Aine", "Danu" ],
+      "darkness": [ "Morrigan", "Balor", "Cailleach" ],
+      "war": [ "Nuada", "Camulus", "Badb" ],
+      "nature": [ "Cernunnos", "Coventina", "Epona", "Nodens",  "Rhiannon" ],
+      "death": [ "Donn", "Arawn", "Gwyn ap Nudd" ],
+      "knowledge": [ "Ogma", "Lugh", "Brigid", "Macha", "Ceridwen" ],
+      "trickery": [ "Gwydion", "Aengus", "Badb" ],
+      "magic": [ "Ceridwen", "Aengus" ],
+      "oceans": [ "Lir", "Nechtan", "Boann" ],
+      "love": [ "Aine", "Brigid", "Cliodhna", "Rhiannon" ],
+      "storms": [ "Taranis", "Lugh", "Nuada" ],
+      "order": [ "Dagda", "Brigid", "Lugh",  "Danu"],
+      "chaos": [ "Morrigan",  "Cailleach" ],
+      "poison": [ "Airmid", "Ceridwen" ]
+    }
+  },
+  "deityGender": {
+    "discriminator": "name",
+    "groups": {
+      "Aengus": "male",
+      "Aine": "female",
+      "Airmid": "female",
+      "Arawn": "male",
+      "Badb": "female",
+      "Balor": "male",
+      "Belenus": "male",
+      "Boann": "female",
+      "Brigid": "female",
+      "Cailleach": "female",
+      "Camulus": "male",
+      "Ceridwen": "female",
+      "Cernunnos": "male",
+      "Cliodhna": "female",
+      "Coventina": "female",
+      "Dagda": "male",
+      "Danu": "female",
+      "Donn": "male",
+      "Epona": "female",
+      "Flidais": "female",
+      "Grannus": "male",
+      "Gwydion": "male",
+      "Gwyn ap Nudd": "male",
+      "Lir": "male",
+      "Lugh": "male",
+      "Macha": "female",
+      "Morrigan": "female",
+      "Nechtan": "male",
+      "Nodens": "male",
+      "Nuada": "male",
+      "Ogma": "male",
+      "Rhiannon": "female",
+      "Taranis": "male"
+    }
+  },
+
+  "_deityName": {
+    "discriminator": "domain",
+    "groups": {
       "life": [ "Eir", "Xipe Totec", "Danu", "Vaire" ],
       "light": [ "Lathander", "Apollo", "Sol Invictus", "Ra", "Amaterasu", "Eru Ilúvatar" ],
       "darkness": [ "Nyx", "Erebus", "Apophis" ],
@@ -1784,7 +1816,7 @@
       "chaos": [ "Eris", "Set", "Kali", "Melkor" ]
     }
   },
-  "deityGender": {
+  "_deityGender": {
     "discriminator": "name",
     "groups": {
       "Eir": "female", "Xipe Totec": "male", "Danu": "female", "Vaire": "female",
@@ -1825,7 +1857,8 @@
       "love": { "cha": 2, "immuneCharm": true },
       "storms": { "str": 1, "dex": 1, "bonusDamage": 1 },
       "order": { "wis": 2, "ac": -1, "immuneFear": true },
-      "chaos": { "cha": 2, "bonusDamage": "=1d6" }
+      "chaos": { "cha": 2, "bonusDamage": "=1d6" },
+      "poison": { "resistPoison": 0.5, "immuneDisease": true }
     }
   },
 
@@ -2455,18 +2488,6 @@
       "bronze": { "weapon": "deafening_breath", "description": "Its scales gleam like polished metal." },
       "copper": { "weapon": "blinding_breath", "description": "Its scales glow like embers in a fire." },
       "brass":  { "weapon": "disintegrating_breath", "description": "Its polished scales reflect like burnished steel." }
-    }
-  },
-
-  "terrainElements": {
-    "discriminator": "terrain",
-    "groups": {
-      "forest": ["earth", "water", "air", "wood", "jewel", "mud"],
-      "cave": ["earth", "ash", "air", "jewel", "smoke", "dust"],
-      "swamp": ["water", "earth", "mud", "steam", "smoke", "salt"],
-      "mountain": ["earth", "crystal", "smoke", "storm", "lava", "sand"],
-      "snow": ["water", "ice", "air", "crystal", "steam", "dust"],
-      "desert": ["fire", "sand", "air", "salt", "ash", "dust"]
     }
   },
 

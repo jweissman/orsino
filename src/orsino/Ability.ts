@@ -65,7 +65,6 @@ export interface AbilityEffect {
   statusName?: string;
   status?: StatusEffect | string;
   saveDC?: number;
-  // saveType?: SaveKind;
   saveKind?: SaveKind;
   succeedDC?: number;
   succeedType?: SaveKind;

@@ -182,7 +182,7 @@ describe('Orsino', () => {
     expect(mod).toHaveProperty('name');
     expect(mod).toHaveProperty('terrain');
     expect(mod).toHaveProperty('town');
-    expect(mod.town).toHaveProperty('name');
+    expect(mod.town).toHaveProperty('townName');
     expect(mod.town).toHaveProperty('population');
     expect(mod.town).toHaveProperty('deity');
     expect(mod).toHaveProperty('dungeons');

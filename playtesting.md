@@ -5,7 +5,6 @@
   - [ ] Enhancing a dagger for a hireling mage also seems broken somehow (doesn't actually apply upgrade?)
 - [ ] Bombs should not be heal-able (maybe there is some 'repair/mending' skill for inanimate objects though)
 - [ ] Weird interaction with absorption (temp Hp) and trap descriptions [it was saying the _trap_ absorbed damage?]
-- [ ] Traps with planeshift effects don't seem to work
 - [ ] Sometimes dragons don't have valid abilities? (no melee attack?) [maybe fixed with targeting improvements...??]
 - [ ] Planeshift ability is basically a soft-lock for autoplay (since constantly restarting/regenerating modules when cast, which is seemingly a lot at high levels...)
 
@@ -184,11 +183,13 @@
 - [ ] Maze for 100 turns _feels_ like a lock if it's on the last living opponent -- we could maybe just call it a defeat for the enemies at that point? (But do we do this for petrify/sleep/etc as well??)
 - [ ] It should not be possible to 'unsummon' a creature we've _just_ summoned as part of the same summoning (should at least make sure we don't print the event) - or at least not display it
 ---
-- [ ] Would be nice to _compute_ effective gold value of items based on some baseline
+- [ ] Would be nice to _compute_ effective gold value of items based on some baseline (ie this invokes three low-level buffs (3 times 10) and deals an average X damage (+X times 5 GP))
 - [ ] Normalize treasure values across ranks (move pricier things up to rarer tiers...)
 ---
-- [ ] Linguistically derive given names...
+- [ ] Linguistically derive given names (maybe just for elves/quenya and humans/westron for now though?)...
 - [ ] Make planeshift traps _very_ rare (similar for wonders that grant planeshift -- or travel you involuntarily -- but that should be the case already?)
+---
+- [ ] Armor upgrades?
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing
@@ -345,6 +346,7 @@
 - [x] Template for shops/tavern (so we can gen a stable list of pcs to be found there)
 - [x] Maze + disable is a lock we should try to prevent somehow (maze should now have 'not inanimate' requirement for target)
 - [x] Language support (simple toponyms for towns)
+- [x] Traps with planeshift effects don't seem to work -- should be working now
 
 ## Not really issues atm
 - Load all PCs on party select so we can show their race/class (no longer even letting you load PCs from file but we're still persisting them every room...) (we do persist PC records and could bring this back?)

@@ -118,7 +118,7 @@ export default class Presenter {
       male: "He is", female: "She is", androgynous: "They are"
     }[(combatant.gender || 'androgynous').toLowerCase()] || "They are";
 
-    const what = `${Words.humanize(combatant.archetype || 'neutral')} ${(Words.capitalize(combatant.background || 'adventurer'))}`;
+    const what = `${Words.humanize(combatant.archetype || 'neutral')} ${(Words.humanize(combatant.background || 'adventurer'))}`;
 
     return `${Words.capitalize(combatant.referenceName || combatant.forename)} is ${Words.a_an(what)} from the ${combatant.hometown || 'unknown'}, ${combatant.age || 'unknown'} years old. ${descriptor} of ${combatant.body_type || 'average'} build with ${combatant.hair || 'unknown color'} hair, ${combatant.eye_color || 'dark'} eyes and ${Words.a_an(combatant.personality || 'unreadable')} disposition.`
   }
@@ -155,7 +155,7 @@ export default class Presenter {
     const armor = combatant.equipment?.body ? materializeItem(combatant.equipment?.body, inventory) : { name: 'None' };
 
     const basics = {
-      weapon: `${weapon.name} (slot value: ${combatant.equipment?.weapon})`,
+      weapon: weapon.name, //`${weapon.name} (slot value: ${combatant.equipment?.weapon})`,
       armor: armor.name,
       xp: combatant.xp,
       gp: combatant.gp,
@@ -587,6 +587,9 @@ export default class Presenter {
           break;
         case "bonusMeleeDamage":
           parts.push(this.increaseDecrease('bonus melee damage', value as number));
+          break;
+        case "bonusPoisonDamage":
+          parts.push(this.increaseDecrease('bonus poison damage', value as number));
           break;
         case "criticalRangeIncrease":
           parts.push(this.increaseDecrease('critical range', value as number));

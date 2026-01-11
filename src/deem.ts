@@ -322,6 +322,7 @@ export default class Deem {
       }
       return ret;
     } else {
+      // @ts-expect-error types are incomplete?
       throw new Error('Failed to parse expression: ' + expression + '\n' + match.message);
     }
   }

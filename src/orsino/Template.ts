@@ -29,7 +29,7 @@ export class Template {
     Deem.stdlib.lookupUnique = ((tableName: GenerationTemplateType, groupName: string) => Generator.lookupInTable(tableName, groupName, true)) as DeemFunc;
 
     Deem.stdlib.gatherEntries = ((tableName: GenerationTemplateType, groupName: string, count: number = -1) => {
-      console.log(`Gathering entries for table '${tableName}' and group '${groupName}'`);
+      // console.log(`Gathering entries for table '${tableName}' and group '${groupName}'`);
       const table = Generator.generationSource(tableName);
       if (!table || !(table instanceof Table)) {
         throw new Error(`Table not found: ${tableName}`);
@@ -75,6 +75,9 @@ export class Template {
     }) as DeemFunc;
     Deem.stdlib.genList = ((type: GenerationTemplateType, count: number = 1) => {
       return Generator.genList(type, { ...context }, count);
+    }) as DeemFunc;
+    Deem.stdlib.genListIsolated = ((type: GenerationTemplateType, count: number = 1) => {
+      return Generator.genList(type, {}, count);
     }) as DeemFunc;
 
     Deem.stdlib.mapGenList = ((type: GenerationTemplateType, items: any[], property: string) => {

@@ -32,7 +32,7 @@ export interface Deity {
 
 export interface Town {
   tavern: { hirelings: Combatant[] };
-  name: string;
+  townName: string;
   translatedName: string;
   adjective: string;
   population: number;
@@ -63,7 +63,7 @@ type RunnerOptions = {
 
 export class ModuleRunner {
   static configuration = {
-    sharedGold: 100000
+    sharedGold: 100
   }
 
   private roller: Roll;
@@ -232,7 +232,7 @@ export class ModuleRunner {
     // this.outputSink(`You arrive at the ${mod.town.adjective} ${Words.capitalize(mod.town.race)} ${mod.town.size} of ${Stylist.bold(mod.town.name)}.`);
     await this.emit({
       type: "townVisited",
-      townName: mod.town.name, day: 0,
+      townName: mod.town.townName, day: 0,
       translatedTownName: mod.town.translatedName,
       plane: mod.plane,
       weather: mod.weather,
@@ -370,7 +370,7 @@ export class ModuleRunner {
     await this.emit({
       type: "townVisited",
       plane: mod.plane,
-      townName: mod.town.name,
+      townName: mod.town.townName,
       translatedTownName: mod.town.translatedName,
       weather: mod.weather,
       race: mod.town.race,
@@ -508,7 +508,7 @@ export class ModuleRunner {
     }
 
     await this.emit({
-      type: "templeVisited", templeName: `${mod.town.name} Temple of ${Words.capitalize(deityName)}`, day: this.days,
+      type: "templeVisited", templeName: `${mod.town.townName} Temple of ${Words.capitalize(deityName)}`, day: this.days,
       blessingsGranted,
       itemsRecharged: this.state.inventory
         .filter(i => i.maxCharges !== undefined)
@@ -645,11 +645,13 @@ export class ModuleRunner {
       name: "The Lost City of Eldoria",
       terrain: "Jungle",
       town: {
-        name: "Port Vesper",
+        townName: "Port Vesper",
         population: 5000,
         deity: { name: "The Serpent Queen" }
       },
-      dungeons: [Dungeoneer.defaultGen()]
+      dungeons: [Dungeoneer.defaultGen()],
+      plane: "Prime Material",
+      weather: "Tropical",
     }
     return module as CampaignModule;
   }

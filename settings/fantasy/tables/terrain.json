@@ -1,0 +1,60 @@
+{
+
+  "terrains": {
+    "discriminator": "d10",
+    "groups": {
+      "1": "forest", "2": "cave", "3": "swamp", "4": "mountain", "5": "snow", "6": "desert",
+      "7": "island", "8": "jungle", "9": "plains", "10": "volcano"
+    }
+  },
+
+  "terrainFeatures": {
+    "discriminator": "terrain",
+    "groups": {
+      "any": [ "day", "morning", "autumn", "golden", "beautiful", "splendid", "love", "dream", "music" ],
+      "forest": [ "acorn", "bark", "bush", "fern", "flower", "green", "leaf", "tree", "wood", "thorn", "rose", "lily", "willow", "elm", "birds" ],
+      "cave": [ "deep", "hollow", "dark", "rock", "gloom", "damp", "dusty", "ash" ],
+      "swamp": [ "marsh", "wet", "moss", "black", "gloom", "fen" ],
+      "mountain": [ "hill", "mountain", "peak", "iron", "cold", "stone", "high", "red", "tall", "lofty", "lonely", "high", "tin", "iron", "silver", "gold" ],
+      "snow": [ "snow", "ice", "frost", "white", "cold", "needle", "pale", "bitter", "cloudy", "sharp", "cloud" ],
+      "desert": [ "sand", "ember", "dry", "heat", "wide", "lonely", "salt" ],
+      "island": [ "palm", "sea", "blue", "wave", "pearl", "shell", "fish" ],
+      "jungle": [ "vine", "wild", "elephants", "freedom" ],
+      "plains": [ "fortunate", "grass", "elderberry", "dandelion" ],
+      "volcano": [ "ash", "magma", "fire", "smoke", "soot" ]
+    }
+  },
+  "terrainElements": {
+    "discriminator": "terrain",
+    "groups": {
+      "forest": ["earth", "water", "air", "wood", "jewel", "mud"],
+      "cave": ["earth", "ash", "air", "jewel", "smoke", "dust"],
+      "swamp": ["water", "earth", "mud", "steam", "smoke", "salt"],
+      "mountain": ["earth", "crystal", "smoke", "storm", "lava", "sand"],
+      "snow": ["water", "ice", "air", "crystal", "steam", "dust"],
+      "desert": ["fire", "sand", "air", "salt", "ash", "dust"],
+      "island": ["water", "air", "earth", "jewel", "salt", "sand"],
+      "jungle": ["water", "earth", "air", "wood", "mud", "jewel"],
+      "plains": ["earth", "air", "water", "grass", "jewel", "salt"],
+      "volcano": ["fire", "earth", "lava", "smoke", "ash", "crystal" ]
+    }
+  },
+  "terrainModifier": {
+    "discriminator": "terrain",
+    "groups": {
+      "forest": { "str": -1, "dex": 1, "con": 1 },
+      "swamp": { "con": -1, "dex": 1, "int": 1 },
+      "mountain": { "str": 2, "con": 1, "dex": -1 },
+      "cave": { "str": 1, "con": 1, "dex": 1 },
+      "snow": { "con": 1, "dex": -1, "str": -1 },
+      "desert": { "str": 1, "con": -2 },
+      "plains": { "dex": 1, "wis": 1 },
+      "island": { "dex": 1, "con": 1, "wis": -1 },
+      "jungle": { "dex": 1, "con": 1, "str": -1 },
+      "volcano": { "con": 2, "dex": -1 },
+
+      "urban": { "dex": 1, "cha": 2 }
+    }
+  }
+
+}

@@ -49,7 +49,7 @@
   },
   "hamlet": {
     "__no_id": true,
-    "terrain": "=lookup(terrains, 1d6)",
+    "terrain": "=lookup(terrains, 1d10)",
     "size": "=oneOf(hamlet, village, town, city)",
     "population": "=eval(lookup(townPop, #size))",
     "race": "=oneOf(human, elf, dwarf, halfling, gnome, fae)",
@@ -57,14 +57,14 @@
     "_suffix": "=pick(concat(lookup(townAffixes, #terrain), lookup(townAffixes, 'any')))",
     "translatedName": "=capitalize(#_aspect + #_suffix)",
     "_languageKey": "=(#race == 'elf' || #race == 'fae') ? 'quenya' : 'westron'",
-    "name": "=translate(#_languageKey, #_aspect, #_suffix)",
+    "townName": "=translate(#_languageKey, #_aspect, #_suffix)",
     "adjective": "=oneOf(peaceful, bustling, prosperous, decaying, ancient, vibrant, sleepy, lively, fair, grim, quaint, thriving, quiet, rustic, quaint, noble, humble, proud)",
-    "description": "=\"The #adjective #size of #name, which is #translatedName, #{oneOf(nestled, situated, located)} in the #terrain.\""
+    "description": "=\"The #adjective #size of #townName, which is #translatedName, #{oneOf(nestled, situated, located)} in the #terrain.\""
   },
   "tavern": {
     "_about": "=oneOf(cozy, bustling, rickety, grand, lively, quiet, rowdy, quaint, rustic, elegant, smoky, cheerful, dimly_lit, spacious, cramped, lively, welcoming)",
     "_hirelingCount": "=2d4",
-    "hirelings": "=genList(pc, #_hirelingCount)",
+    "hirelings": "=genListIsolated(pc, #_hirelingCount)",
     "_adjective": "=oneOf(red, blue, green, golden, silver, black, white, merry, sleepy, roaring, shining, hidden, lucky, brave, fierce, gentle)",
     "_object": "=oneOf(lion, dragon, sword, shield, crown, harp, axe, stag, goblet, pixie, tankard, willow, wolf, eagle, rose, lantern)",
     "_name": "=\"the #_adjective #_object\"",
@@ -88,7 +88,6 @@
     "_season_of_birth": "=oneOf(spring, summer, autumn, winter)",
     "sign": "=#_annual_element + ' ' + #_zodiac_animal",
     "auspicious": "=#_zodiac_animal == 'dragon' || #_zodiac_animal == 'rabbit' || #_season_of_birth == 'spring' || #_season_of_birth == 'autumn'",
-
     "skin": "=oneOf(pale, fair, tan, olive, brown, dark, ebony, ruddy, sallow)",
     "hair": "=oneOf(black, brown, blonde, red, gray, white, no, sandy, auburn, chestnut, silver, golden)",
     "eye_color": "=oneOf(brown, blue, green, gray, hazel, amber, violet, olive, gold)",
@@ -98,7 +97,7 @@
     "background": "=pick(gather(backgroundModifier))",
     "personality": "=(#background == 'noble' || #background == 'aristocrat') ? oneOf(proud, haughty, dignified, commanding) : oneOf(grim, bold, cunning, loyal, compassionate, ruthless, cheerful, brooding, curious, jovial, acerbic, stoic, wary)",
     "_hometown": "=gen(hamlet)",
-    "hometown": "=capitalize(dig(#_hometown, 'size')) + ' of ' + dig(#_hometown, 'name') + ', which is ' + dig(#_hometown, 'translatedName')",
+    "hometown": "=capitalize(dig(#_hometown, 'size')) + ' of ' + dig(#_hometown, 'townName') + ', which is ' + dig(#_hometown, 'translatedName')",
     "gender": "=oneOf(male, female, androgynous)",
     "body_type": "=gender == 'female' ? oneOf(petite, slim, average, athletic, svelte, curvy, robust) : oneOf(slim, average, athletic, stocky, burly, outsized)",
     "race": "=pick(gather(racialModifier, -1, '!dig(#__it, evil)'))",
@@ -478,12 +477,12 @@
     "_alignment": "neutral",
     "_domain": "=oneOf(light, darkness, nature, war, knowledge, trickery, life, death, magic, order, chaos, oceans, love, storms)",
     "weather": "fair",
-    "terrain": "=lookup(terrains, 1d6)",
+    "terrain": "=lookup(terrains, 1d10)",
     "plane": "=#_plane_name",
     "globalEffects": {},
     "*planeModifier": "=lookup(planeModifiers, #_plane_name)",
     "town": "=gen(town)",
-    "_townName": "=dig(#town, 'name')",
+    "_townName": "=dig(#town, 'townName')",
     "dungeons": "=genList(dungeon, 4)",
     "_moduleLevel": 0,
     "name": "=oneOf('Adventure', 'Saga', 'Reckoning', 'Quest', 'Expedition') + ' ' + oneOf('in the ' + capitalize(#terrain), 'at ' + capitalize(#_townName), 'for the ' + capitalize(#terrain))"

@@ -19,7 +19,7 @@ const concepts = [
   
   'edge',
 
-  'river', 'glen', 'stream', 'mere', 'mouth', 'cross', 'bridge', 'dale', 'ford',
+  'river', 'glen', 'stream', 'mere', 'mouth', 'cross', 'bridge', 'dale', 'ford', 'brook',
   // barrow, downs, gulch ...
 
   'town', 'borough', 'village', 'stead', 'hold', 'view', 'keep', 'watch', 'rest', 'run', 'fast',
@@ -74,7 +74,7 @@ const concepts = [
 
   // quasi-elements...
   'embers', 'steam', 'magma', 'radiance',
-  'soot', 'ash', 'salt', 'void',
+  'soot', 'ash', 'salt', 'void', 'smoke',
 
   // ...times of day
   'morning', 'evening', 'dusk', 'noon', 'afternoon', 'midnight',
@@ -85,6 +85,7 @@ const concepts = [
   'rose', 'daisy', 'poppy', 'dandelion', 'lily',
   // foliage
   'tree', 'bark', 'leaf', 'root', 'bush', 'thorn', 'flower', 'moss',
+  'vine', 'grass', 
   // jasmine/jessamine, violet
   // lotus
 
@@ -169,8 +170,10 @@ const concepts = [
 
   'any',
 
-  'vale',
-  'field',
+  'jungle', 'volcano', 'plains',
+  'vale', 'field', 'mead',
+
+  'wild', 'spray',
 
 ] as const;
 

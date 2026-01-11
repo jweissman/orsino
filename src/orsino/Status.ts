@@ -20,10 +20,13 @@ export interface StatusModifications {
 
   initiative?: number;
   toHit?: number;
-  bonusDamage?: number;
-  bonusMeleeDamage?: number;
   ac?: number;
   evasion?: number;
+
+  bonusDamage?: number;
+  bonusMeleeDamage?: number;
+  bonusPoisonDamage?: number;
+  // bonusPsychicDamage?: number;
 
   bonusHealing?: number;
 

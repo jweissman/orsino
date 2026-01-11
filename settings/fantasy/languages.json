@@ -271,7 +271,26 @@
       "wave": "éþ",
       "pearl": "mere-grot",
       "shell": "scilliht",
-      "beach": "bæc"
+      "beach": "bæc",
+      "jungle": "wuduweald",
+      "volcano": "fyr-byrgen",
+      "grass": "græs",
+      "mead": "medu",
+      "brook": "brōc",
+      "vine": "wín",
+      "wild": "untemed",
+      "plains": "wang",
+      "smoke": "smoca",
+      "spray": "spræġ"
+    },
+    "replacements": {
+      "ǣ": "ae",
+      "æ": "ae",
+      "þ": "th",
+      "ð": "d",
+      "ċ": "ch",
+      "ġ": "g",
+      "cw": "qu"
     }
   },
   "quenya": {
@@ -543,7 +562,17 @@
       "palm": "nindornë",
       "wave": "solmë",
       "pearl": "marilla",
-      "shell": "hyalma"
+      "shell": "hyalma",
+      "jungle": "rostaur",
+      "volcano": "nárdor",
+      "grass": "glae",
+      "mead": "lairë",
+      "brook": "nellë",
+      "vine": "liantassë",
+      "wild": "rhaw",
+      "plains": "wilda",
+      "smoke": "osp",
+      "spray": "vingë"
     },
     "replacements": {
       "dc": "g",
@@ -562,7 +591,8 @@
       "loss": "lossë",
       "ered": "ered ",
       "amon": "amon ",
-      "ondol": "Gondol"
+      "ondol": "Gondol",
+      "ëelen": "elot"
     }
   }
 }

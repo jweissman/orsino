@@ -33,7 +33,7 @@ describe('Language features', () => {
     expect(westron).not.toBeNull();
 
     expect(westron.translate('silver', 'river')).toEqual('Seolforex');
-    expect(westron.translate('at-', 'divine')).toEqual('Ættýr');
+    expect(westron.translate('at-', 'divine')).toEqual('Aettýr');
     expect(westron.translate('swans', 'haven')).toEqual('Ilfetuhaff');
     expect(westron.translate('dream', 'island')).toEqual('Drēamīegland');
     expect(westron.translate('lonely', 'isle')).toEqual('Syndrigyle');
@@ -74,6 +74,7 @@ describe('Language features', () => {
     expect(quenya.translate("holly", "land")).toEqual("Eregion");
     expect(quenya.translate("hill", "fate")).toEqual("Amon Amarth");
     expect(quenya.translate("rock", "song")).toEqual("Gondolindë");
+    expect(quenya.translate("spray", "star")).toEqual("Vingelot");
   });
 
   it('should handle existing terrain features', () => {

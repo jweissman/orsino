@@ -46,7 +46,9 @@
     "aspect": "divine",
     "domain": "light",
     "description": "A beam of pure radiant energy that damages undead and evil creatures.",
-    "target": [ "enemy" ],
+    "target": [
+      "enemy"
+    ],
     "effects": [
       {
         "type": "damage",
@@ -201,7 +203,7 @@
         "type": "debuff",
         "status": "blinded",
         "saveDC": 30,
-        "saveType": "will"
+        "saveKind": "will"
       }
     ]
   },
@@ -261,7 +263,6 @@
       }
     ]
   },
-
   "shadow_mote": {
     "name": "Shadow Mote",
     "type": "spell",
@@ -269,11 +270,25 @@
     "aspect": "divine",
     "domain": "darkness",
     "description": "Hurl a mote of shadowy energy at an enemy.",
-    "target": [ "enemy" ],
+    "target": [
+      "enemy"
+    ],
     "effects": [
-      { "type": "damage", "amount": "=1d4", "kind": "necrotic" },
-      { "type": "damage", "amount": "=1d3", "kind": "psychic" },
-      { "type": "damage", "amount": "=1d2", "kind": "cold" }
+      {
+        "type": "damage",
+        "amount": "=1d4",
+        "kind": "necrotic"
+      },
+      {
+        "type": "damage",
+        "amount": "=1d3",
+        "kind": "psychic"
+      },
+      {
+        "type": "damage",
+        "amount": "=1d2",
+        "kind": "cold"
+      }
     ]
   },
   "gloom": {
@@ -287,7 +302,12 @@
       "enemies"
     ],
     "effects": [
-      { "type": "debuff", "status": "despair", "saveDC": 15, "saveType": "will" }
+      {
+        "type": "debuff",
+        "status": "despair",
+        "saveDC": 15,
+        "saveKind": "will"
+      }
     ]
   },
   "heat_drain": {
@@ -323,8 +343,14 @@
       "self"
     ],
     "effects": [
-      { "type": "buff", "status": "hidden" },
-      { "type": "buff", "status": "cunning" }
+      {
+        "type": "buff",
+        "status": "hidden"
+      },
+      {
+        "type": "buff",
+        "status": "cunning"
+      }
     ]
   },
   "shadow_bind": {
@@ -338,12 +364,15 @@
       "enemy"
     ],
     "effects": [
-      { "type": "debuff", "status": "entangled" },
+      {
+        "type": "debuff",
+        "status": "entangled"
+      },
       {
         "type": "debuff",
         "status": "slow",
         "saveDC": 18,
-        "saveType": "will"
+        "saveKind": "will"
       }
     ]
   },
@@ -416,9 +445,24 @@
       "enemy"
     ],
     "effects": [
-      { "type": "debuff", "status": "fear", "saveDC": 22, "saveType": "will" },
-      { "type": "debuff", "status": "insane", "saveDC": 20, "saveType": "will" },
-      { "type": "debuff", "status": "confused", "saveDC": 18, "saveType": "will" }
+      {
+        "type": "debuff",
+        "status": "fear",
+        "saveDC": 22,
+        "saveKind": "will"
+      },
+      {
+        "type": "debuff",
+        "status": "insane",
+        "saveDC": 20,
+        "saveKind": "will"
+      },
+      {
+        "type": "debuff",
+        "status": "confused",
+        "saveDC": 18,
+        "saveKind": "will"
+      }
     ]
   },
   "abyssal_shield": {
@@ -432,9 +476,18 @@
       "self"
     ],
     "effects": [
-      { "type": "buff", "status": "shielded" },
-      { "type": "buff", "status": "endurance" },
-      { "type": "buff", "status": "minor_warded" }
+      {
+        "type": "buff",
+        "status": "shielded"
+      },
+      {
+        "type": "buff",
+        "status": "endurance"
+      },
+      {
+        "type": "buff",
+        "status": "minor_warded"
+      }
     ]
   },
   "shadowfire": {
@@ -448,9 +501,24 @@
       "enemy"
     ],
     "effects": [
-      { "type": "damage", "amount": "=3d6", "kind": "cold", "saveForHalf": true },
-      { "type": "damage", "amount": "=2d6", "kind": "necrotic", "saveForHalf": true },
-      { "type": "damage", "amount": "=1d6", "kind": "psychic", "saveForHalf": true }
+      {
+        "type": "damage",
+        "amount": "=3d6",
+        "kind": "cold",
+        "saveForHalf": true
+      },
+      {
+        "type": "damage",
+        "amount": "=2d6",
+        "kind": "necrotic",
+        "saveForHalf": true
+      },
+      {
+        "type": "damage",
+        "amount": "=1d6",
+        "kind": "psychic",
+        "saveForHalf": true
+      }
     ]
   },
   "cruel_will": {
@@ -469,7 +537,7 @@
         "status": "dominated",
         "duration": 10,
         "saveDC": 28,
-        "saveType": "will"
+        "saveKind": "will"
       }
     ]
   },
@@ -484,9 +552,18 @@
       "self"
     ],
     "effects": [
-      { "type": "buff", "status": "blurred" },
-      { "type": "buff", "status": "spellturn" },
-      { "type": "buff", "status": "mind_blank" }
+      {
+        "type": "buff",
+        "status": "blurred"
+      },
+      {
+        "type": "buff",
+        "status": "spellturn"
+      },
+      {
+        "type": "buff",
+        "status": "mind_blank"
+      }
     ]
   },
   "black_hole": {
@@ -508,7 +585,6 @@
       }
     ]
   },
-
   "thorn_whip": {
     "name": "Thorn Whip",
     "type": "spell",
@@ -608,7 +684,9 @@
     "aspect": "divine",
     "domain": "nature",
     "description": "Cause the ground to sprout painful spikes.",
-    "target": [ "enemies" ],
+    "target": [
+      "enemies"
+    ],
     "effects": [
       {
         "type": "damage",
@@ -788,7 +866,6 @@
       }
     ]
   },
-
   "sanctify": {
     "name": "Sanctify",
     "type": "spell",
@@ -796,7 +873,9 @@
     "aspect": "divine",
     "domain": "life",
     "description": "Cleanse the party of minor wounds.",
-    "target": [ "allies" ],
+    "target": [
+      "allies"
+    ],
     "effects": [
       {
         "type": "heal",
@@ -811,7 +890,10 @@
     "aspect": "divine",
     "domain": "life",
     "description": "Bind minor injuries.",
-    "target": [ "self", "ally" ],
+    "target": [
+      "self",
+      "ally"
+    ],
     "effects": [
       {
         "type": "heal",
@@ -956,11 +1038,10 @@
     "effects": [
       {
         "type": "removeStatus",
-        "statusName": "poisoned|cursed|blinded"
+        "statusName": "poison|cursed|blinded"
       }
     ]
   },
-  
   "cure_disease": {
     "name": "Cure Disease",
     "type": "spell",
@@ -974,7 +1055,7 @@
     "effects": [
       {
         "type": "removeStatus",
-        "statusName": "Diseased"
+        "statusName": "disease"
       }
     ]
   },
@@ -1059,7 +1140,10 @@
     "aspect": "divine",
     "domain": "life",
     "description": "Offer restoration and cure ailments.",
-    "target": [ "self", "ally" ],
+    "target": [
+      "self",
+      "ally"
+    ],
     "effects": [
       {
         "type": "heal",
@@ -1067,7 +1151,7 @@
       },
       {
         "type": "removeStatus",
-        "statusName": "diseased|poisoned|cursed|blinded|slow|paralyzed"
+        "statusName": "diseased|poison|cursed|blinded|slow|paralyzed"
       }
     ]
   },
@@ -1140,7 +1224,7 @@
       },
       {
         "type": "removeStatus",
-        "statusName": "diseased|poisoned|cursed|blinded|slow|paralyzed"
+        "statusName": "diseased|poison|cursed|blinded|slow|paralyzed"
       }
     ]
   },
@@ -1161,11 +1245,10 @@
       },
       {
         "type": "removeStatus",
-        "statusName": "diseased|poisoned|cursed|blinded|slow|paralyzed|fatigued|deafened"
+        "statusName": "diseased|poison|cursed|blinded|slow|paralyzed|fatigued|deafened"
       }
     ]
   },
-
   "curse": {
     "name": "Curse",
     "type": "spell",
@@ -1173,7 +1256,9 @@
     "aspect": "divine",
     "domain": "death",
     "description": "Curse an enemy.",
-    "target": [ "enemy" ],
+    "target": [
+      "enemy"
+    ],
     "effects": [
       {
         "type": "debuff",
@@ -1267,7 +1352,9 @@
     "aspect": "divine",
     "domain": "death",
     "description": "A mournful song that weakens your enemies.",
-    "target": [ "enemies" ],
+    "target": [
+      "enemies"
+    ],
     "effects": [
       {
         "type": "debuff",
@@ -1464,7 +1551,6 @@
       }
     ]
   },
-
   "hold_animal": {
     "name": "Hold Animal",
     "type": "spell",
@@ -1782,8 +1868,6 @@
       }
     ]
   },
-
-
   "divine_favor": {
     "name": "Divine Favor",
     "type": "spell",
@@ -1971,7 +2055,9 @@
     "aspect": "divine",
     "domain": "war",
     "description": "Channel divine energy to destroy undead creatures.",
-    "target": [ "enemies" ],
+    "target": [
+      "enemies"
+    ],
     "effects": [
       {
         "type": "damage",
@@ -1995,13 +2081,34 @@
       "self"
     ],
     "effects": [
-      { "type": "buff", "status": "major_cunning" },
-      { "type": "buff", "status": "major_wisdom" },
-      { "type": "buff", "status": "major_strength" },
-      { "type": "buff", "status": "major_endurance" },
-      { "type": "buff", "status": "major_courage" },
-      { "type": "buff", "status": "major_splendor" },
-      { "type": "buff", "status": "divine_champion" }
+      {
+        "type": "buff",
+        "status": "major_cunning"
+      },
+      {
+        "type": "buff",
+        "status": "major_wisdom"
+      },
+      {
+        "type": "buff",
+        "status": "major_strength"
+      },
+      {
+        "type": "buff",
+        "status": "major_endurance"
+      },
+      {
+        "type": "buff",
+        "status": "major_courage"
+      },
+      {
+        "type": "buff",
+        "status": "major_splendor"
+      },
+      {
+        "type": "buff",
+        "status": "divine_champion"
+      }
     ]
   },
   "dust_to_dust": {
@@ -2029,7 +2136,6 @@
       }
     ]
   },
-
   "ire": {
     "name": "Ire",
     "type": "spell",
@@ -2037,7 +2143,9 @@
     "aspect": "divine",
     "domain": "chaos",
     "description": "Deal a tiny amount of damage and mock an enemy.",
-    "target": [ "enemy" ],
+    "target": [
+      "enemy"
+    ],
     "effects": [
       {
         "type": "damage",
@@ -2082,13 +2190,35 @@
       "enemies"
     ],
     "effects": [
-      { "type": "damage", "amount": "=1d8", "kind": "psychic", "saveForHalf": true },
+      {
+        "type": "damage",
+        "amount": "=1d8",
+        "kind": "psychic",
+        "saveForHalf": true
+      },
       {
         "type": "randomEffect",
         "randomEffects": [
-          { "type": "debuff", "status": "confused", "duration": 3, "saveKind": "will", "saveDC": 14 },
-          { "type": "debuff", "status": "slow", "duration": 3, "saveKind": "fortitude", "saveDC": 14 },
-          { "type": "debuff", "status": "distracted", "saveKind": "will", "saveDC": 16 }
+          {
+            "type": "debuff",
+            "status": "confused",
+            "duration": 3,
+            "saveKind": "will",
+            "saveDC": 14
+          },
+          {
+            "type": "debuff",
+            "status": "slow",
+            "duration": 3,
+            "saveKind": "fortitude",
+            "saveDC": 14
+          },
+          {
+            "type": "debuff",
+            "status": "distracted",
+            "saveKind": "will",
+            "saveDC": 16
+          }
         ]
       }
     ]
@@ -2104,11 +2234,36 @@
       "enemy"
     ],
     "effects": [
-      { "type": "damage", "amount": "=1d12", "kind": "psychic", "saveForHalf": true },
-      { "type": "debuff", "status": "confused", "saveKind": "will", "saveDC": 18 },
-      { "type": "debuff", "status": "slow", "saveKind": "fortitude", "saveDC": 18 },
-      { "type": "debuff", "status": "stun", "saveKind": "will", "saveDC": 18 },
-      { "type": "debuff", "status": "distracted", "saveKind": "will", "saveDC": 18 }
+      {
+        "type": "damage",
+        "amount": "=1d12",
+        "kind": "psychic",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "confused",
+        "saveKind": "will",
+        "saveDC": 18
+      },
+      {
+        "type": "debuff",
+        "status": "slow",
+        "saveKind": "fortitude",
+        "saveDC": 18
+      },
+      {
+        "type": "debuff",
+        "status": "stun",
+        "saveKind": "will",
+        "saveDC": 18
+      },
+      {
+        "type": "debuff",
+        "status": "distracted",
+        "saveKind": "will",
+        "saveDC": 18
+      }
     ]
   },
   "agony": {
@@ -2153,10 +2308,30 @@
         "kind": "psychic",
         "saveForHalf": true
       },
-      { "type": "debuff", "status": "despair", "saveKind": "will", "saveDC": 22 },
-      { "type": "debuff", "status": "weakened", "saveKind": "will", "saveDC": 18 },
-      { "type": "debuff", "status": "distracted", "saveKind": "will", "saveDC": 15 },
-      { "type": "debuff", "status": "stun", "saveKind": "will", "saveDC": 13 }
+      {
+        "type": "debuff",
+        "status": "despair",
+        "saveKind": "will",
+        "saveDC": 22
+      },
+      {
+        "type": "debuff",
+        "status": "weakened",
+        "saveKind": "will",
+        "saveDC": 18
+      },
+      {
+        "type": "debuff",
+        "status": "distracted",
+        "saveKind": "will",
+        "saveDC": 15
+      },
+      {
+        "type": "debuff",
+        "status": "stun",
+        "saveKind": "will",
+        "saveDC": 13
+      }
     ]
   },
   "overwhelming_chaos": {
@@ -2219,9 +2394,24 @@
         "kind": "psychic",
         "saveForHalf": true
       },
-      { "type": "debuff", "status": "entangled", "saveKind": "strength", "saveDC": 24 },
-      { "type": "debuff", "status": "confused", "saveKind": "strength", "saveDC": 22 },
-      { "type": "debuff", "status": "fatigue", "saveKind": "strength", "saveDC": 20 }
+      {
+        "type": "debuff",
+        "status": "entangled",
+        "saveKind": "strength",
+        "saveDC": 24
+      },
+      {
+        "type": "debuff",
+        "status": "confused",
+        "saveKind": "strength",
+        "saveDC": 22
+      },
+      {
+        "type": "debuff",
+        "status": "fatigue",
+        "saveKind": "strength",
+        "saveDC": 20
+      }
     ]
   },
   "discordant_wave": {
@@ -2241,11 +2431,1070 @@
         "kind": "psychic",
         "saveForHalf": true
       },
-      { "type": "debuff", "status": "insane", "saveKind": "will", "saveDC": 28 },
-      { "type": "debuff", "status": "confused", "saveKind": "will", "saveDC": 25 },
-      { "type": "debuff", "status": "stun", "saveKind": "will", "saveDC": 23 },
-      { "type": "debuff", "status": "distracted", "saveKind": "will", "saveDC": 20 },
-      { "type": "debuff", "status": "doom", "saveKind": "will", "saveDC": 18 }
+      {
+        "type": "debuff",
+        "status": "insane",
+        "saveKind": "will",
+        "saveDC": 28
+      },
+      {
+        "type": "debuff",
+        "status": "confused",
+        "saveKind": "will",
+        "saveDC": 25
+      },
+      {
+        "type": "debuff",
+        "status": "stun",
+        "saveKind": "will",
+        "saveDC": 23
+      },
+      {
+        "type": "debuff",
+        "status": "distracted",
+        "saveKind": "will",
+        "saveDC": 20
+      },
+      {
+        "type": "debuff",
+        "status": "doom",
+        "saveKind": "will",
+        "saveDC": 18
+      }
+    ]
+  },
+  "salt_spray": {
+    "name": "Salt Spray",
+    "type": "spell",
+    "level": 0,
+    "aspect": "divine",
+    "domain": "ocean",
+    "description": "Spray a burst of salty water at an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d3",
+        "kind": "cold",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "drenched",
+        "duration": 3
+      }
+    ]
+  },
+  "cleanse": {
+    "name": "Cleanse",
+    "type": "spell",
+    "level": 0,
+    "aspect": "divine",
+    "domain": "ocean",
+    "description": "Purify an ally, removing toxins and pollutants.",
+    "target": [
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "removeStatus",
+        "statusName": "poison|diseased"
+      }
+    ]
+  },
+  "aqua_bolt": {
+    "name": "Aquatic Bolt",
+    "type": "spell",
+    "level": 1,
+    "aspect": "divine",
+    "domain": "ocean",
+    "description": "Hurl a bolt of water at an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d6",
+        "kind": "cold",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "drenched",
+        "duration": 3
+      }
+    ]
+  },
+  "protection_from_fire": {
+    "name": "Protection from Fire",
+    "type": "spell",
+    "level": 2,
+    "aspect": "divine",
+    "domain": "ocean",
+    "description": "Create a watery shield that reduces fire damage.",
+    "target": [
+      "self",
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "fireproof"
+      }
+    ]
+  },
+  "tidal_wave": {
+    "name": "Tidal Wave",
+    "type": "spell",
+    "level": 3,
+    "aspect": "divine",
+    "domain": "ocean",
+    "description": "Summon a massive wave to crash down on your enemies.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d10",
+        "kind": "cold",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "drenched",
+        "duration": 6
+      },
+      {
+        "type": "debuff",
+        "status": "prone",
+        "saveKind": "fortitude",
+        "saveDC": 18
+      }
+    ]
+  },
+  "neptunes_blessing": {
+    "name": "Neptune's Blessing",
+    "type": "spell",
+    "level": 4,
+    "aspect": "divine",
+    "domain": "ocean",
+    "description": "Bless an ally with the power of the ocean.",
+    "target": [
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "courage"
+      },
+      {
+        "type": "buff",
+        "status": "endurance"
+      },
+      {
+        "type": "buff",
+        "status": "blessed"
+      }
+    ]
+  },
+  "ice_shard": {
+    "name": "Ice Shard",
+    "type": "spell",
+    "level": 5,
+    "aspect": "divine",
+    "domain": "ocean",
+    "description": "Launch a shard of ice that damages and slows an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=2d10",
+        "kind": "cold",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "slow",
+        "saveKind": "fortitude",
+        "saveDC": 18
+      }
+    ]
+  },
+  "flood": {
+    "name": "Flood",
+    "type": "spell",
+    "level": 6,
+    "aspect": "divine",
+    "domain": "ocean",
+    "description": "Summon a flood that engulfs your enemies, dealing damage and hindering their movement.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=3d10",
+        "kind": "cold",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "drenched",
+        "duration": 6
+      },
+      {
+        "type": "debuff",
+        "status": "slow",
+        "saveKind": "fortitude",
+        "saveDC": 18
+      }
+    ]
+  },
+  "tempest": {
+    "name": "Tempest",
+    "type": "spell",
+    "level": 7,
+    "aspect": "divine",
+    "domain": "ocean",
+    "description": "Unleash a violent storm that damages and hinders your enemies.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=4d10+#level",
+        "kind": "cold",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "drenched",
+        "duration": 8
+      },
+      {
+        "type": "debuff",
+        "status": "slow",
+        "saveKind": "fortitude",
+        "saveDC": 20
+      }
+    ]
+  },
+  "zephyrwild": {
+    "name": "Zephyrwild",
+    "type": "spell",
+    "level": 8,
+    "aspect": "divine",
+    "domain": "ocean",
+    "description": "Summon a swift wind to carry you and your allies swiftly across the battlefield.",
+    "target": [
+      "self",
+      "allies"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "haste"
+      },
+      {
+        "type": "buff",
+        "status": "flight"
+      },
+      {
+        "type": "buff",
+        "status": "enlightened"
+      }
+    ]
+  },
+  "oceans_wrath": {
+    "name": "Ocean's Wrath",
+    "type": "spell",
+    "level": 9,
+    "aspect": "divine",
+    "domain": "ocean",
+    "description": "Call upon the full fury of the ocean to devastate your enemies.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=6d10+#level*2",
+        "kind": "cold",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "drenched",
+        "duration": 10
+      },
+      {
+        "type": "debuff",
+        "status": "prone",
+        "saveKind": "fortitude",
+        "saveDC": 22
+      }
+    ]
+  },
+  "kindle": {
+    "name": "Kindle",
+    "type": "spell",
+    "level": 0,
+    "aspect": "divine",
+    "domain": "love",
+    "description": "Heal for a small amount of health.",
+    "target": [
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "heal",
+        "amount": "=1d3 + #wis"
+      }
+    ]
+  },
+  "touch_of_serenity": {
+    "name": "Touch of Serenity",
+    "type": "spell",
+    "level": 0,
+    "aspect": "divine",
+    "domain": "love",
+    "description": "Calm an ally, removing minor negative effects.",
+    "target": [
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "removeStatus",
+        "statusName": "frightened|distracted|weakened|fatigued|slow"
+      }
+    ]
+  },
+  "rejuvenate": {
+    "name": "Rejuvenate",
+    "type": "spell",
+    "level": 1,
+    "aspect": "divine",
+    "domain": "love",
+    "description": "Heal a small amount of health for an ally.",
+    "target": [
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "heal",
+        "amount": "=1d8 + #wis"
+      }
+    ]
+  },
+  "sweet_whisper": {
+    "name": "Sweet Whisper",
+    "type": "spell",
+    "level": 2,
+    "aspect": "divine",
+    "domain": "love",
+    "description": "Soothe an enemy, reducing their aggression.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": "distracted",
+        "duration": 4,
+        "condition": {
+          "trait": "humanoid"
+        },
+        "saveKind": "will",
+        "saveDC": 14
+      }
+    ]
+  },
+  "charming_glance": {
+    "name": "Charming Glance",
+    "type": "spell",
+    "level": 3,
+    "aspect": "divine",
+    "domain": "love",
+    "description": "Charm a humanoid enemy for a short duration.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": "charmed",
+        "duration": 3,
+        "condition": {
+          "trait": "humanoid"
+        },
+        "saveKind": "will",
+        "saveDC": 15
+      }
+    ]
+  },
+  "flirt": {
+    "name": "Flirt",
+    "type": "spell",
+    "level": 4,
+    "aspect": "divine",
+    "domain": "love",
+    "description": "Distract an enemy with a playful flirtation.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": "distracted",
+        "duration": 6,
+        "condition": {
+          "trait": "humanoid"
+        },
+        "saveKind": "will",
+        "saveDC": 18
+      }
+    ]
+  },
+  "greater_rejuvenate": {
+    "name": "Greater Rejuvenate",
+    "type": "spell",
+    "level": 5,
+    "aspect": "divine",
+    "domain": "love",
+    "description": "Heal a large amount of health.",
+    "target": [
+      "ally"
+    ],
+    "effects": [
+      {
+        "type": "heal",
+        "amount": "=2d8 + #wis"
+      }
+    ]
+  },
+  "charm_aura": {
+    "name": "Charm Aura",
+    "type": "spell",
+    "level": 5,
+    "aspect": "divine",
+    "domain": "love",
+    "description": "Create an aura that and charms enemies who enter it.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Charming",
+          "duration": 10,
+          "effect": {
+            "cha": 3,
+            "int": 2,
+            "wis": 1,
+            "onEnemyAttack": [
+              {
+                "type": "debuff",
+                "status": "charmed",
+                "duration": 4,
+                "condition": {
+                  "trait": "humanoid"
+                },
+                "saveKind": "will",
+                "saveDC": 16
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "heteraeos": {
+    "name": "Heteraeos",
+    "type": "spell",
+    "level": 6,
+    "aspect": "divine",
+    "domain": "love",
+    "description": "Transform an enemy into a harmless creature.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "cast",
+        "spellName": "polymorph",
+        "condition": { "trait": "humanoid" },
+        "saveKind": "will",
+        "saveDC": 22
+      }
+    ]
+  },
+  "domination": {
+    "name": "Domination",
+    "type": "spell",
+    "level": 7,
+    "aspect": "divine",
+    "domain": "love",
+    "description": "Take control of an enemy's mind.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": "dominated",
+        "saveKind": "will",
+        "saveDC": 25
+      }
+    ]
+  },
+  "mass_rejuvenate": {
+    "name": "Mass Rejuvenate",
+    "type": "spell",
+    "level": 8,
+    "aspect": "divine",
+    "domain": "love",
+    "description": "Heal a massive amount of health for all allies.",
+    "target": [
+      "allies"
+    ],
+    "effects": [
+      {
+        "type": "heal",
+        "amount": "=4d8 + #wis"
+      }
+    ]
+  },
+  "lovebomb": {
+    "name": "Lovebomb",
+    "type": "spell",
+    "level": 9,
+    "aspect": "divine",
+    "domain": "love",
+    "description": "Explode with overwhelming affection, incapacitating enemies.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=5d6",
+        "kind": "psychic",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "charmed",
+        "duration": 5,
+        "condition": {
+          "trait": "humanoid"
+        },
+        "saveKind": "will",
+        "saveDC": 30
+      },
+      {
+        "type": "debuff",
+        "status": "distracted",
+        "duration": 5,
+        "saveKind": "will",
+        "saveDC": 25
+      }
+    ]
+  },
+
+  "static_shock": {
+    "name": "Static Shock",
+    "type": "spell",
+    "level": 0,
+    "aspect": "divine",
+    "domain": "storm",
+    "description": "Deal a small amount of electric damage to an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d4+#level",
+        "kind": "electric",
+        "saveForHalf": true,
+        "cascade": {
+          "count": "=1+floor(#level/2)",
+          "damageRatio": 0.5
+        }
+      }
+    ]
+  },
+  "gust": {
+    "name": "Gust",
+    "type": "spell",
+    "level": 0,
+    "aspect": "divine",
+    "domain": "storm",
+    "description": "Create a strong gust of wind that knocks back an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d3+#level",
+        "kind": "sonic",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "prone",
+        "saveKind": "strength",
+        "saveDC": 12
+      }
+    ]
+  },
+  "bolt": {
+    "name": "Bolt",
+    "type": "spell",
+    "level": 1,
+    "aspect": "divine",
+    "domain": "storm",
+    "description": "Hurl a bolt of lightning at an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "cast",
+        "spellName": "thunderclap"
+      },
+      {
+        "type": "damage",
+        "amount": "=2d6+#level",
+        "kind": "electric",
+        "saveForHalf": true,
+        "cascade": {
+          "count": "=1+floor(#level/2)",
+          "damageRatio": 0.5
+        }
+      }
+    ]
+  },
+  "ion_shield": {
+    "name": "Ion Shield",
+    "type": "spell",
+    "level": 2,
+    "aspect": "divine",
+    "domain": "storm",
+    "description": "Create a shield of ionized air that damages attackers.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Ion Shield",
+          "duration": 10,
+          "effect": {
+            "onAttacked": [
+              {
+                "type": "damage",
+                "amount": "=1d6+#level",
+                "target": "attacker",
+                "kind": "electric",
+                "description": "attacking the ion shield"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "cloudburst": {
+    "name": "Cloudburst",
+    "type": "spell",
+    "level": 3,
+    "aspect": "divine",
+    "domain": "storm",
+    "description": "Summon a storm cloud that drenches enemies in an area.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": "drenched",
+        "duration": 8
+      }
+    ]
+  },
+  "thunderstorm": {
+    "name": "Thunderstorm",
+    "type": "spell",
+    "level": 4,
+    "aspect": "divine",
+    "domain": "storm",
+    "description": "Create a thunderstorm that damages and deafens enemies in an area.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=2d8+#level",
+        "kind": "electric",
+        "saveForHalf": true
+      },
+      {
+        "type": "damage",
+        "amount": "=1d4+#level",
+        "kind": "sonic",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "deafened",
+        "saveKind": "fortitude",
+        "saveDC": 16
+      }
+    ]
+  },
+  "ion_burst": {
+    "name": "Ion Burst",
+    "type": "spell",
+    "level": 5,
+    "aspect": "divine",
+    "domain": "storm",
+    "description": "Release a burst of ionized energy that damages and stuns an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=2d8+#level",
+        "kind": "electric",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "stun",
+        "saveKind": "will",
+        "saveDC": 18
+      }
+    ]
+  },
+  "thors_fury": {
+    "name": "Thor's Fury",
+    "type": "spell",
+    "level": 6,
+    "aspect": "divine",
+    "domain": "storm",
+    "description": "Call down a massive lightning strike on an enemy.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=3d8+#level",
+        "kind": "electric",
+        "saveForHalf": true
+      }
+    ]
+  },
+  "electrostatic_field": {
+    "name": "Electrostatic Field",
+    "type": "spell",
+    "level": 7,
+    "aspect": "divine",
+    "domain": "storm",
+    "description": "Surround yourself with an electrostatic field that damages nearby enemies.",
+    "target": [
+      "self"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Electrostatic Field",
+          "duration": 10,
+          "effect": {
+            "onEnemyEnter": [
+              {
+                "type": "damage",
+                "amount": "=3d8+#level",
+                "kind": "electric",
+                "description": "entering the electrostatic field"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "stormsurge": {
+    "name": "Storm Surge",
+    "type": "spell",
+    "level": 8,
+    "aspect": "divine",
+    "domain": "storm",
+    "description": "Unleash a powerful surge of storm energy that damages all enemies in an area.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=4d8+#level*2",
+        "kind": "electric",
+        "saveForHalf": true
+      }
+    ]
+  },
+  "maelstrom": {
+    "name": "Maelstrom",
+    "type": "spell",
+    "level": 9,
+    "aspect": "divine",
+    "domain": "storm",
+    "description": "Create a devastating maelstrom of storm energy that damages and stuns all enemies in an area.",
+    "target": [
+      "enemies"
+    ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=5d8+#level*3",
+        "kind": "electric",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "stun",
+        "saveKind": "will",
+        "saveDC": 24
+      }
+    ]
+  },
+
+  "toxic_spray": {
+    "name": "Toxic Spray",
+    "type": "spell",
+    "level": 0,
+    "aspect": "divine",
+    "domain": "poison",
+    "description": "Spray a small amount of poison at an enemy.",
+    "target": [ "enemy" ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d4",
+        "kind": "poison",
+        "saveForHalf": true
+      }
+    ]
+  },
+  "venomous_bite": {
+    "name": "Venomous Bite",
+    "type": "spell",
+    "level": 1,
+    "aspect": "divine",
+    "domain": "poison",
+    "description": "Deal poison damage to an enemy with a venomous strike.",
+    "target": [ "enemy" ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d6",
+        "kind": "poison",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "poison",
+        "saveKind": "fortitude",
+        "saveDC": 12
+      }
+    ]
+  },
+  "create_poison": {
+    "name": "Create Poison",
+    "type": "spell",
+    "level": 2,
+    "aspect": "divine",
+    "domain": "poison",
+    "description": "Create a vial of potent poison that can be applied to weapons.",
+    "target": [ "self" ],
+    "effects": [
+      {
+        "type": "acquireItem",
+        "itemName": "poison_vial"
+      }
+    ]
+  },
+  "inflict_disease": {
+    "name": "Inflict Disease",
+    "type": "spell",
+    "level": 3,
+    "aspect": "divine",
+    "domain": "poison",
+    "description": "Inflict a minor disease on an enemy.",
+    "target": [ "enemy" ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=2d6",
+        "kind": "poison",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "disease",
+        "saveKind": "fortitude",
+        "saveDC": 15
+      }
+    ]
+  },
+  "toxicity": {
+    "name": "Toxicity",
+    "type": "spell",
+    "level": 4,
+    "aspect": "divine",
+    "domain": "poison",
+    "description": "Increase the potency of poisons.",
+    "target": [ "self" ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Toxicity",
+          "duration": 10,
+          "effect": {
+            "bonusPoisonDamage": "=1d6",
+            "resistPoison": 3
+          }
+        }
+      }
+    ]
+  },
+  "cloudkill": {
+    "name": "Cloudkill",
+    "type": "spell",
+    "level": 5,
+    "aspect": "divine",
+    "domain": "poison",
+    "description": "Create a cloud of poisonous gas that damages enemies within it.",
+    "target": [ "enemies" ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=1d8",
+        "kind": "poison",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "poison",
+        "saveKind": "fortitude",
+        "saveDC": 14
+      }
+    ]
+  },
+  "venom_burst": {
+    "name": "Venom Burst",
+    "type": "spell",
+    "level": 6,
+    "aspect": "divine",
+    "domain": "poison",
+    "description": "Explode with venomous energy, damaging nearby enemies.",
+    "target": [ "enemies" ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=2d8",
+        "kind": "poison",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "poison",
+        "saveKind": "fortitude",
+        "saveDC": 18
+      }
+    ]
+  },
+  "plague_wave": {
+    "name": "Plague Wave",
+    "type": "spell",
+    "level": 7,
+    "aspect": "divine",
+    "domain": "poison",
+    "description": "Send out a wave of plague that infects enemies.",
+    "target": [ "enemies" ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=4d8",
+        "kind": "poison",
+        "saveForHalf": true
+      },
+      {
+        "type": "debuff",
+        "status": "disease",
+        "saveKind": "fortitude",
+        "saveDC": 20
+      }
+    ]
+  },
+  "greater_toxicity": {
+    "name": "Greater Toxicity",
+    "type": "spell",
+    "level": 8,
+    "aspect": "divine",
+    "domain": "poison",
+    "description": "Greatly increase the potency of poisons.",
+    "target": [ "self" ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": {
+          "name": "Greater Toxicity",
+          "duration": 10,
+          "effect": {
+            "bonusPoisonDamage": "=2d8",
+            "resistPoison": 5
+          }
+        }
+      }
+    ]
+  },
+  "death_fog": {
+    "name": "Death Fog",
+    "type": "spell",
+    "level": 9,
+    "aspect": "divine",
+    "domain": "poison",
+    "description": "Create a deadly fog that severely poisons enemies within it.",
+    "target": [ "enemies" ],
+    "effects": [
+      {
+        "type": "damage",
+        "amount": "=6d8",
+        "kind": "poison",
+        "saveForHalf": true
+      },
+      {
+        "type": "kill",
+        "saveKind": "fortitude",
+        "saveDC": 22
+      }
     ]
   }
+  
 }

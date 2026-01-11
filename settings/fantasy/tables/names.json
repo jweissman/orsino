@@ -795,7 +795,7 @@
     "discriminator": "animal_type",
     "groups": {
       "badger": [ "Badges", "Bramble", "Bracken", "Bumble", "Burrow" ],
-      "bat": [ "Vlad", "Nosferatu", "Drack", "Sanguine", "Von" ],
+      "bat": [ "Vlad", "Nosferatu", "Drack", "Sanguine", "Von", "Echo", "Flitter", "Gotham", "Midnight", "Shadow" ],
       "bear": [ "Arsen", "Armand", "Baloo", "Bruno", "Cetus", "Clant", "Doran", "Eddy", "Gruzz", "Grizzly", "Kodiak", "King", "Lurch", "Maximus", "Paddington", "Smokey", "Teddy", "Ursus", "Winnie", "Yogi", "Zeke" ],
       "beetle": [ "Scarab", "Dungy", "Hercules", "Staggy", "Titan" ],
       "boar": [ "Tusker", "Gore", "Snout", "Bristle", "Porker" ],
