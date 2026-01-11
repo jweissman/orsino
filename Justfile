@@ -17,7 +17,10 @@ dmg:
 
 books: phb mm dmg
 
-pub: books
+copy-index:
+	cp index.docs.md docs/index.md
+
+pub: books copy-index
   mkdocs gh-deploy --clean
 
 test:

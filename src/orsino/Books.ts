@@ -228,6 +228,12 @@ export default class Books {
       "chaos": "🎲",
       "nature": "🍃",
       "war": "⚔️",
+      // "knowledge": "📚",
+      // "trickery": "🃏",
+      "ocean": "🌊",
+      "love": "❤️",
+      "storm": "🌩️",
+      "poison": "☠️",
     }
     this.write("\n### Legend")
     this.write("\n| Icon | School/Domain |");
@@ -270,6 +276,9 @@ export default class Books {
             const ability = AbilityHandler.instance.getAbility(spellLevels[level][i]);
             const category = ability?.school || ability?.domain || "";
             const icon = category ? ` ${categoryIcons[category] || category}` : "";
+            if (!categoryIcons[category]) {
+              throw new Error(`No icon found for spell category '${category}' (spell: '${ability?.name}')`);
+            }
             row += `[<small>${icon} ${Words.capitalize(spellLevels[level][i])}</small>](#${spellLevels[level][i]}) | `;
           } else {
             row += " | ";

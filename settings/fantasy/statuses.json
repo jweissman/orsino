@@ -385,6 +385,17 @@
       "saveVersusAll": 1
     }
   },
+  "major_inspired": {
+    "name": "Greatly Inspired",
+    "type": "buff",
+    "description": "Overcome with powerful inspiration.",
+    "effect": {
+      "toHit": 4,
+      "bonusDamage": 2,
+      "tempHp": 15,
+      "saveVersusAll": 2
+    }
+  },
   "naturality": {
     "name": "Naturality",
     "type": "buff",

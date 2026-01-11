@@ -3,6 +3,7 @@ import { Combatant } from "./types/Combatant";
 import Files from "./util/Files";
 
 export interface Trait {
+  incompatibleWith: string[];
   name: string;
   type: "party" | "racial" | "class" | "feat";
   description: string;
@@ -102,7 +103,16 @@ export default class TraitHandler {
 
     const feats: Trait[] = [];
     for (const feat of this.classFeatures(pc.class, pc.level)) {
-      if (!pc.traits.includes(feat.name)) {
+      let incompatibleWithExisting = false;
+      if (feat.incompatibleWith) {
+        for (const incompatibleTraitName of feat.incompatibleWith) {
+          if (pc.traits.includes(incompatibleTraitName)) {
+            incompatibleWithExisting = true;
+            break;
+          }
+        }
+      }
+      if (!pc.traits.includes(feat.name) && !incompatibleWithExisting) {
         feats.push(feat);
       }
     }

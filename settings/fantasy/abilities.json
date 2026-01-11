@@ -182,6 +182,24 @@
       }
     ]
   },
+  "sweep": {
+    "name": "Sweeping Strike",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Attempt to knock an enemy prone with a wide swing of your weapon.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      { "type": "attack" },
+      {
+        "type": "debuff",
+        "status": "prone",
+        "saveKind": "reflex",
+        "saveDC": 15
+      }
+    ]
+  },
   "roundhouse": {
     "name": "Roundhouse Kick",
     "type": "skill",
@@ -404,7 +422,7 @@
     "type": "skill",
     "aspect": "social",
     "cooldown": 8,
-    "description": "Inspire your allies, granting them a +2 bonus to attack rolls for the next 3 rounds.",
+    "description": "Inspire your allies.",
     "target": [
       "allies"
     ],
@@ -412,6 +430,22 @@
       {
         "type": "buff",
         "status": "inspired"
+      }
+    ]
+  },
+  "major_inspire": {
+    "name": "Major Inspire",
+    "type": "skill",
+    "aspect": "social",
+    "cooldown": 12,
+    "description": "Greatly inspire your allies.",
+    "target": [
+      "allies"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "major_inspired"
       }
     ]
   },
@@ -639,7 +673,7 @@
       {
         "type": "debuff",
         "status": "blinded",
-        "saveKind": "magic",
+        "saveKind": "reflex",
         "saveDC": 14
       }
     ]
@@ -938,6 +972,38 @@
       {
         "type": "cast",
         "spellName": "hex"
+      }
+    ]
+  },
+  "hymn_of_valor": {
+    "name": "Hymn of Valor",
+    "type": "skill",
+    "aspect": "social",
+    "description": "Sing a stirring hymn that bolsters your allies' courage.",
+    "target": [
+      "allies"
+    ],
+    "effects": [
+      {
+        "type": "buff",
+        "status": "major_courage"
+      }
+    ]
+  },
+  "confound": {
+    "name": "Confound",
+    "type": "skill",
+    "aspect": "dark",
+    "description": "Confuse an enemy, causing them to act erratically.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      {
+        "type": "debuff",
+        "status": "confused",
+        "saveKind": "will",
+        "saveDC": 18
       }
     ]
   }

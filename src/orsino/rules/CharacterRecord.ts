@@ -392,7 +392,8 @@ export default class CharacterRecord {
       // }
 
       // should try to check for domain/school here instead?
-      if (pc.class === "mage") {
+      // if (pc.class === "mage") {
+      if (pc.school !== undefined) {
         // gain spells
         const abilityHandler = AbilityHandler.instance;
         await abilityHandler.loadAbilities();
@@ -419,7 +420,9 @@ export default class CharacterRecord {
         } else {
           console.log(`${(pc.forename)} has learned all available spells for their level.`);
         }
-      } else if (pc.class === "cleric") {
+      }
+      // if (pc.class === "cleric") {
+      if (pc.domain !== undefined) {
         // gain spells
         const abilityHandler = AbilityHandler.instance;
         await abilityHandler.loadAbilities();
@@ -452,7 +455,7 @@ export default class CharacterRecord {
       }
 
       if (pc.level >= 20) {
-        // epic feats...
+        // epic feats...?
       } else if (pc.level % 5 === 0) {
         // feat selection
         // console.log(`${Presenter.minimalCombatant(pc)} can select a new feat!`);

@@ -745,10 +745,29 @@
       "level": 3,
       "class": "warrior"
     },
+    "incompatibleWith": [
+      "knight"
+    ],
     "abilities": [
       "enrage",
       "whirlwind",
       "reckless_attack"
+    ],
+    "statuses": [
+      {
+        "name": "Savage Attacker",
+        "description": "You fight with primal fury.",
+        "condition": {
+          "weapon": {
+            "type": "melee"
+          }
+        },
+        "effect": {
+          "toHit": 2,
+          "bonusMeleeDamage": "=1d4",
+          "displayClass": "Barbarian"
+        }
+      }
     ]
   },
   "knight": {
@@ -763,7 +782,19 @@
       "shield_bash",
       "overwatch"
     ],
+    "incompatibleWith": [
+      "barbarian"
+    ],
     "statuses": [
+      {
+        "name": "Order of the Shield",
+        "description": "You are a disciplined defender.",
+        "effect": {
+          "ac": -2,
+          "saveVersusMagic": 2,
+          "displayClass": "Knight"
+        }
+      },
       {
         "name": "Heavy Handed",
         "description": "You are proficient with heavy weaponry.",
@@ -773,12 +804,66 @@
           }
         },
         "effect": {
-          "toHit": 1,
-          "bonusDamage": 2
+          "toHit": 5,
+          "bonusDamage": 1
         }
       }
     ]
   },
+  "skald": {
+    "type": "feat",
+    "description": "Skald",
+    "requirements": {
+      "level": 3,
+      "class": "bard"
+    },
+    "abilities": [
+      "dirge",
+      "battle_cry",
+      "hymn_of_valor"
+    ],
+    "incompatibleWith": [ "jester" ],
+    "statuses": [
+      {
+        "name": "Warlord's Presence",
+        "description": "Your inspiring presence bolsters your allies.",
+        "effect": {
+          "displayClass": "Skald",
+          "onCombatStart": [
+            {
+              "type": "cast",
+              "spellName": "major_inspire"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "jester": {
+    "type": "feat",
+    "description": "Jester",
+    "requirements": {
+      "level": 3,
+      "class": "bard"
+    },
+    "abilities": [
+      "vicious_mockery",
+      "confound",
+      "dirty_trick"
+    ],
+    "incompatibleWith": [ "skald" ],
+    "statuses": [
+      {
+        "name": "Jester",
+        "description": "You use humor to disarm and confuse your foes.",
+        "effect": {
+          "displayClass": "Jester",
+          "cha": 2
+        }
+      }
+    ]
+  },
+
   "undead": {
     "type": "template",
     "description": "Brought Back",

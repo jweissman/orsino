@@ -105,6 +105,7 @@
       "assassin": { "dex": 4, "int": 2, "wis": 2, "cha": 3, "gp": 100 },
       "astronomer": { "int": 4, "wis": 2, "gp": 15 },
       "athlete": { "str": 2, "dex": 2, "con": 1, "gp": 10 },
+      "badger": { "con": 3, "str": 1, "gp": 5 },
       "baker": { "con": 2, "wis": 1, "gp": 15 },
       "bandit": { "dex": 2, "str": 1, "gp": 15 },
       "beadle": { "wis": 2, "cha": 1, "gp": 10 },
@@ -154,13 +155,14 @@
       "innkeeper": { "cha": 2, "wis": 1, "gp": 25 },
       "inquisitor": { "int": 3, "wis": 4, "cha": 3, "gp": 70 },
       "inventor": { "int": 4, "dex": 2, "gp": 50 },
-      "jester": { "cha": 3, "dex": 1, "gp": 30 },
+      "jacanape": { "cha": 3, "dex": 1, "gp": 30 },
       "jewelcrafter": { "dex": 3, "int": 1, "gp": 50 },
       "judge": { "wis": 4, "int": 3, "cha": 2, "gp": 70 },
       "juggler": { "dex": 3, "cha": 1, "gp": 20 },
       "knight": { "str": 2, "int": 3, "wis": 2, "cha": 1, "gp": 75 },
       "laborer": { "str": 2, "con": 1, "gp": 5 },
       "librarian": { "int": 2, "wis": 2, "gp": 10 },
+      "mealman": { "con": 2, "wis": 1, "gp": 10 },
       "medic": { "wis": 2, "int": 2, "gp": 20 },
       "mercenary": { "str": 2, "con": 1, "dex": 1, "gp": 20 },
       "merchant": { "wis": 1, "cha": 2, "int": 1, "gp": 100 },
@@ -373,12 +375,12 @@
   "abilities": {
     "discriminator": "class",
     "groups": {
-      "warrior": [[ "taunt", "vigor_up", "cleave", "prepare_charge", "charge", "set_spear", "second_wind", "roundhouse" ]],
+      "warrior": [[ "taunt", "vigor_up", "cleave", "prepare_charge", "charge", "set_spear", "second_wind", "sweep" ]],
       "mage": [[]],
       "cleric": [[ ]],
       "ranger": [ [ "heal", "summon_animal", "set_spear", "hunters_mark", "ensnare" ] ],
       "thief": [ [ "dodge", "poison_weapon", "smoke_screen", "backstab", "dirty_trick", "disable" ] ],
-      "bard": [[ "cure", "inspire", "charm", "taunt", "riposte", "vicious_mockery" ]]
+      "bard": [[ "cure", "inspire", "charm", "taunt", "riposte" ]]
     }
   },
 

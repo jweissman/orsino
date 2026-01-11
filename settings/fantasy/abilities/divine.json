@@ -2397,19 +2397,19 @@
       {
         "type": "debuff",
         "status": "entangled",
-        "saveKind": "strength",
+        "saveKind": "reflex",
         "saveDC": 24
       },
       {
         "type": "debuff",
         "status": "confused",
-        "saveKind": "strength",
+        "saveKind": "will",
         "saveDC": 22
       },
       {
         "type": "debuff",
         "status": "fatigue",
-        "saveKind": "strength",
+        "saveKind": "sleep",
         "saveDC": 20
       }
     ]
@@ -3045,14 +3045,20 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d3+#level",
+        "amount": "=1d2+#level",
         "kind": "sonic",
+        "saveForHalf": true
+      },
+      {
+        "type": "damage",
+        "amount": "=1d2+#level",
+        "kind": "bludgeoning",
         "saveForHalf": true
       },
       {
         "type": "debuff",
         "status": "prone",
-        "saveKind": "strength",
+        "saveKind": "reflex",
         "saveDC": 12
       }
     ]

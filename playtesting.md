@@ -1,11 +1,8 @@
 # Notes from Playtesting
 
 ## Bugs
-- [ ] Crashing bug with hireling inventory (literal "Longsword" object name instead of key on equipment slot...)
-  - [ ] Enhancing a dagger for a hireling mage also seems broken somehow (doesn't actually apply upgrade?)
-- [ ] Bombs should not be heal-able (maybe there is some 'repair/mending' skill for inanimate objects though)
 - [ ] Weird interaction with absorption (temp Hp) and trap descriptions [it was saying the _trap_ absorbed damage?]
-- [ ] Sometimes dragons don't have valid abilities? (no melee attack?) [maybe fixed with targeting improvements...??]
+- [ ] Sometimes dragons don't have valid abilities? (no melee attack?) [maybe fixed with targeting improvements...?? couldn't repro anymore anyway]
 - [ ] Planeshift ability is basically a soft-lock for autoplay (since constantly restarting/regenerating modules when cast, which is seemingly a lot at high levels...)
 
 ## Features
@@ -33,7 +30,7 @@
 - [ ] Should at least be a _chance_ for AI to pick on someone other than weakest enemy
 - ---
 - [ ] Better adventure module names (not just quest/saga/adventure of the $terrain...)
-- [ ] Should only be able to visit temple _once_ per long rest/visit in town
+- [ ] Should only be able to visit temple _once_ per long rest/visit in town [or at least not get blessed again?]
 - [ ] Found "letter" and "wanted poster" items could have clues about the dungeon boss (if not other bosses etc) [wanted poster could have pictures of your party!]
 - ---
 - [ ] Poison damage should indicate who _inflicted_ it (this is sort of tracked but not surfaced...)
@@ -44,26 +41,23 @@
 - [ ] Losing a wandering monster battle should not leave you in the room waiting to decide what to do!
 - [ ] You should be able to visit the Inn even if at full HP?
 - ---
-- ---
 - [ ] Show full enemy name more often (we often default to just the forename ie 'minimal' combatant view with forename + HP but this is ... not very much information)
 - ---
-- [ ] They should also have a chance to flee 'involuntarily' if they fail a save vs fear? (don't necessarily want to model 'splitting the party' but ... they could find individually-flown characters in previous rooms of the dungeon?)
+- [ ] PCs should also have a chance to flee 'involuntarily' if they fail a save vs fear? (don't necessarily want to model 'splitting the party' but ... they could find individually-flown characters in previous rooms of the dungeon? alternatively it could just run you out of the dungeon?)
 - [ ] Some statuses still sound weird ("[defender] is Chaos by [inflicter]" - odd)
 - ---
-- [ ] AI should not use buffs that only target allies if all allies are dead
+- [ ] AI should not use buffs that only target allies if all allies are dead [maybe fixed with improvements?]
 - [ ] Dungeons with multiple floors (levels in principle seem relatively straightforward but we'd need to adapt dungeoneer to handle them...)
 - ---
 - [ ] Wildnerness: Collect herbs, hear birdcalls (at least when not winter? but there are winter birds aren't there?)
 - ---
 - [ ] Track playerAligned as _well_ as playerControlled (sort of captured by being on the team of the player but this isn't passed along with combatant in all cases... -- we can always check for allegiance effects but a little subtle i guess?)
 - ---
-- [ ] Would be nice to let _all_ PCs attempt to interact/examine/search (as opposed to one and done for the action)
 - [ ] Maybe charm is dispelled if the charmer dies??
 - ---
 - [ ] Would be nice to have more narrow utilty-cleric abilities (neutralize poison, remove paralysis, ultimately a high-level 'heal' which fixes status effects AND brings health back...)
 - [ ] Should permit player to _leave_ the dungeon (they _can_ but would have to flee and even that's disabled now, maybe to focus autoplay -- but anyway seems to be entirely disabled in fact rn)
 - ---
-- [ ] Dirty trick should not give a save vs magic? (maybe vs will or even specifically vs blinding?)
 - [ ] Should say 'leave the dungeon' instead of 'move to next room' for last room
 - ---
 - [ ] Summon creature should display a _little_ more information about the summon than the forename (type/class at least)
@@ -347,6 +341,11 @@
 - [x] Maze + disable is a lock we should try to prevent somehow (maze should now have 'not inanimate' requirement for target)
 - [x] Language support (simple toponyms for towns)
 - [x] Traps with planeshift effects don't seem to work -- should be working now
+- [x] Crashing bug with hireling inventory (literal "Longsword" object name instead of key on equipment slot...)
+- [x] Enhancing a dagger for a hireling mage also seems broken somehow (doesn't actually apply upgrade?)
+- [x] Bombs should not be heal-able (maybe there is some 'repair/mending' skill for inanimate objects though)
+- [x] Would be nice to let _all_ PCs attempt to interact/examine/search (as opposed to one and done for the action)
+- [x] Dirty trick should not give a save vs magic? (maybe vs will or even specifically vs blinding?) [reflex now]
 
 ## Not really issues atm
 - Load all PCs on party select so we can show their race/class (no longer even letting you load PCs from file but we're still persisting them every room...) (we do persist PC records and could bring this back?)
