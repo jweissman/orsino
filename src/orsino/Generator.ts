@@ -176,10 +176,22 @@ export default class Generator {
           .group('minor', ['a powerful potion', 'a bag of gems', 'a magical scroll', 'a rare artifact', 'a golden amulet'])
           .group('major', ['a magical staff', 'a chest of gold', 'an ultra-rare gem', 'an enchanted armor', 'a powerful artifact'])
           .group('legendary', ['a legendary sword', 'a chest of ancient treasures', 'the crown of a lost king', 'a mythical artifact', 'a powerful arcane relic']),
-        name: new Table('gender', 'sex')
-          .group('male', ['John', 'Michael', 'David', 'James', 'Robert'])
-          .group('female', ['Jane', 'Emily', 'Sarah', 'Jessica', 'Lisa'])
-          .group('neutral', ['Alex', 'Taylor', 'Jordan', 'Morgan', 'Casey']),
+        maleName: new Table('maleName', 'race')
+          .group('human', ['John', 'Michael', 'David', 'James', 'Robert'])
+          .group('elf', ['Eldarion', 'Faelar', 'Theren', 'Aelar', 'Caladrel'])
+          .group('dwarf', ['Thorin', 'Balin', 'Dwalin', 'Gimli', 'Durin']),
+        femaleName: new Table('femaleName', 'race')
+          .group('human', ['Jane', 'Emily', 'Sarah', 'Jessica', 'Lisa'])
+          .group('elf', ['Aelene', 'Lia', 'Sylvara', 'Fayeth', 'Mythra'])
+          .group('dwarf', ['Dis', 'Hilda', 'Gerta', 'Sigrid', 'Astrid']),
+        androgynousName: new Table('androgynousName', 'race')
+          .group('human', ['Alex', 'Taylor', 'Jordan', 'Morgan', 'Casey'])
+          .group('elf', ['Rynn', 'Sage', 'Quinn', 'Aeris', 'Lior'])
+          .group('dwarf', ['Kari', 'Runa', 'Tora', 'Vala', 'Eira']),
+        // name: new Table('gender', 'sex')
+        //   .group('male', ['John', 'Michael', 'David', 'James', 'Robert'])
+        //   .group('female', ['Jane', 'Emily', 'Sarah', 'Jessica', 'Lisa'])
+        //   .group('neutral', ['Alex', 'Taylor', 'Jordan', 'Morgan', 'Casey']),
         surname: new Table('occupation', 'category')
           .group('Artist', ['Fletcher', 'Shoesmith', 'Baker', 'Tailor', 'Mason', 'Smith', 'Carpenter'])
           .group('Engineer', ['Leach', 'Wright', 'Turner'])

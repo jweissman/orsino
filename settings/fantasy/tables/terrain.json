@@ -21,7 +21,7 @@
       "island": [ "palm", "sea", "blue", "wave", "pearl", "shell", "fish" ],
       "jungle": [ "vine", "wild", "elephants", "freedom" ],
       "plains": [ "fortunate", "grass", "elderberry", "dandelion" ],
-      "volcano": [ "ash", "magma", "fire", "smoke", "soot" ]
+      "volcano": [ "ash", "magma", "smoke", "soot", "point" ]
     }
   },
   "terrainElements": {
@@ -35,7 +35,7 @@
       "desert": ["fire", "sand", "air", "salt", "ash", "dust"],
       "island": ["water", "air", "earth", "jewel", "salt", "sand"],
       "jungle": ["water", "earth", "air", "wood", "mud", "jewel"],
-      "plains": ["earth", "air", "water", "grass", "jewel", "salt"],
+      "plains": ["earth", "air", "water", "jewel", "salt"],
       "volcano": ["fire", "earth", "lava", "smoke", "ash", "crystal" ]
     }
   },

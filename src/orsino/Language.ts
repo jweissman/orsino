@@ -1,6 +1,7 @@
 import Words from "./tui/Words";
 // import Files from "./util/Files";
 import importedLanguages from "../../settings/fantasy/languages.json";
+import { never } from "./util/never";
 
 const concepts = [
   'earth', 'sky',
@@ -108,21 +109,25 @@ const concepts = [
   'tall', 'deep', 'lofty', 'lonely', 'high',
   'great', 'large', 'small', 'tiny',
   'narrow', 'wide', 'sharp', 'giant',
-  'quick', 'pale', 'bitter',
-
+  'quick', 'pale', 'bitter', 'wild', 
   'golden', 'holy', 'fortunate', 'dusty', 'beautiful',
   'fell', 'cloudy', 'secret', 'sweet', 'bold',
   'splendid', 'abundant', 'sparkling',
 
   // animal aspects...
-  'horns', 'fangs', 'claws',
+  'horns', 'fangs', 'claws', 'wings',
+
+  // body parts...
+  'hand', 'foot', 'head', 'eye', 'ear', 'heart',
 
   // gemstones...
   // 'emerald', 'ruby',
 
   // more abstract things...
   'love', 'dream',
-  'music', 'silence', 'divine',
+  'song', 'music', 'silence',
+  
+  'divine',
 
   'fate', 'thought', 'speech', 'skill',
   'tomorrow',
@@ -166,16 +171,78 @@ const concepts = [
   'hollow', 'damp',
   'ember',
 
-  'song',
 
   'any',
 
   'jungle', 'volcano', 'plains',
   'vale', 'field', 'mead',
 
-  'wild', 'spray',
+  'spray',
+
 
 ] as const;
+
+type ConceptKind = "color" | "animal" | "element" | "nature" | "place" | "object" | "abstract" | "modifier" | "adjective" | "timeOfDay" | "bodyPart" | "animalPart";
+
+export type ConceptTemplate = 'personalName';
+
+export class Conceptory {
+  static conceptKinds: { [key in ConceptKind]: Concept[] } = {
+    color: ['white', 'black', 'gray', 'red', 'blue', 'green', 'orange'],
+    animal: ['dragons', 'elephants', 'bears', 'birds', 'horses', 'snakes', 'wolves', 'hounds', 'swans', 'eagles', 'nightingales'],
+    element: ['ice', 'fire', 'earth', 'water', 'embers', 'steam', 'magma', 'radiance', 'soot', 'ash', 'salt', 'void', 'smoke'],
+    nature: ['forest', 'grove', 'glade', 'cave', 'marsh', 'swamp', 'fen', 'gyre', 'desert', 'river', 'glen', 'stream', 'mere', 'mountain', 'hill', 'valley', 'peak', 'mound', 'point', 'mountain-chain', 'crest', 'fall', 'ridge', 'pass', 'island', 'isle', 'sea', 'lake', 'bay', 'pool', 'harbor', 'shore', 'port', 'beach', 'wave', 'tree', 'bark', 'leaf', 'root', 'bush', 'thorn', 'flower', 'moss', 'vine', 'grass'],
+    place: ['town', 'borough', 'village', 'stead', 'hold', 'view', 'keep', 'watch', 'rest', 'run', 'land', 'place', 'realm', 'region', 'road', 'path', 'haven', 'fortress', 'prison', 'citadel', 'stronghold', 'tower', 'garden'],
+    object: ['jewel', 'ship', 'needle', 'bell', 'candle', 'mantle', 'veil'],
+    abstract: ['love', 'dream', 'song', 'music', 'silence', 'divine', 'fate', 'thought', 'speech', 'skill', 'tomorrow', 'spirit', 'tyranny', 'freedom', 'magic'],
+    modifier: ['ever-', '-less', 'at-', '-person', '-man', '-son', '-woman', '-maid', '-daughter'],
+    adjective: ['tall', 'deep', 'lofty', 'lonely', 'high', 'great', 'large', 'small', 'tiny', 'narrow', 'wide', 'sharp', 'giant', 'quick', 'pale', 'bitter', 'golden', 'holy', 'fortunate', 'dusty', 'beautiful', 'fell', 'cloudy', 'secret', 'sweet', 'bold', 'splendid', 'abundant', 'sparkling'],
+    timeOfDay: ['morning', 'evening', 'dusk', 'noon', 'afternoon', 'midnight'],
+    bodyPart: ['hand', 'foot', 'head', 'eye', 'ear', 'heart'],
+    animalPart: ['horns', 'fangs', 'claws', 'wings'],
+  }
+
+  static getConceptsByKind(kind: ConceptKind): Concept[] {
+    return this.conceptKinds[kind];
+  }
+
+  static assemble(...kinds: ConceptKind[]): Concept[] {
+    let results: Concept[] = [];
+    for (const kind of kinds) {
+      const choices = this.getConceptsByKind(kind);
+      const pick = choices[Math.floor(Math.random() * choices.length)];
+      results = results.concat(pick)
+    }
+    return results;
+  }
+
+  static personalNameTemplates: { [key: string]: ConceptKind[] } = {
+    'adjectivePart': ['adjective', 'bodyPart'],
+    'colorPart': ['color', 'bodyPart'],
+    'elementAbstract': ['element', 'abstract'],
+    'adjectiveAbstract': ['adjective', 'abstract'],
+    'adjectiveElement': ['adjective', 'element'],
+  }
+
+  static generatePersonalName(templateKey: string): Concept[] {
+    const template = this.personalNameTemplates[templateKey];
+    if (!template) {
+      throw new Error(`Template "${templateKey}" not found.`);
+    }
+    return this.assemble(...template);
+  }
+
+  static generate(conceptTemplate: ConceptTemplate): Concept[] {
+    if (conceptTemplate === 'personalName') {
+      // pick a random personal name template
+      const templateKeys = Object.keys(this.personalNameTemplates);
+      const randomKey = templateKeys[Math.floor(Math.random() * templateKeys.length)];
+      return this.generatePersonalName(randomKey);
+    } else {
+      return never(conceptTemplate);
+    }
+  }
+}
 
 export type Concept = typeof concepts[number];
 
@@ -202,6 +269,8 @@ class Dictionary {
   }
 
   translateDirect(...concepts: Concept[]): string {
+    concepts = concepts.flat();
+    // console.log(`Dictionary.translateDirect(): concepts=`, concepts);
     let translation = concepts.reduce((acc, concept) => {
       if (!(concept in this.vocabulary)) {
         throw new Error(`Concept "${concept}" not found in language "${this.name}"`);

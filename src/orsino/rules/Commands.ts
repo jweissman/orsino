@@ -533,7 +533,7 @@ export class Commands {
     // Now enforce cap against existing summons by removing oldest (or newest) deterministically.
     while (user.activeSummonings.length + summoned.length > max) {
       const removed = user.activeSummonings.shift(); // or pop()
-      if (!removed) break; // defensive
+      if (!removed) {break;} // defensive
       summoningEvents.push({ type: "unsummon", subject: user, target: removed } as Omit<UnsummonEvent, "turn">);
     }
 

@@ -7,16 +7,17 @@ import Words from "./tui/Words";
 import { Commands } from "./rules/Commands";
 import { Inventory } from "./Inventory";
 import Events, { ModuleEvent } from "./Events";
-import { StatusEffect, StatusModifications } from "./Status";
+import { StatusModifications } from "./Status";
 import Presenter from "./tui/Presenter";
 import CharacterRecord from "./rules/CharacterRecord";
 import Automatic from "./tui/Automatic";
 import { Fighting } from "./rules/Fighting";
 import { GeneratedValue, GeneratorOptions } from "./Generator";
-import { GameState, newGameState, processEvents } from "./types/GameState";
-import Shop, { ShopType } from "../Shop";
+import { GameState, GameStateReducer, newGameState } from "./types/GameState";
+import Shop, { ShopType } from "./campaign/Shop";
 import { ItemInstance } from "./types/ItemInstance";
 import { Driver, NullDriver } from "./Driver";
+import Temple from "./campaign/Temple";
 
 type TownSize = 'hamlet' | 'village' | 'town' | 'city' | 'metropolis' | 'capital';
 type Race = 'human' | 'elf' | 'dwarf' | 'halfling' | 'gnome' | 'orc' | 'fae';
@@ -63,7 +64,7 @@ type RunnerOptions = {
 
 export class ModuleRunner {
   static configuration = {
-    sharedGold: 100
+    sharedGold: 10000
   }
 
   private roller: Roll;
@@ -71,7 +72,7 @@ export class ModuleRunner {
   private moduleGen: (
     options?: GeneratorOptions
   ) => CampaignModule;
-  private _state: GameState;
+  private gameState: GameState;
 
   private gen: (type: GenerationTemplateType, options?: GeneratorOptions) => GeneratedValue | GeneratedValue[];
 
@@ -83,18 +84,18 @@ export class ModuleRunner {
     this.driver = options.driver || new NullDriver();
     this.moduleGen = options.moduleGen || this.defaultModuleGen.bind(this);
     this.gen = options.gen || (() => { throw new Error("No gen function provided") });
-    this._state = newGameState({ ...ModuleRunner.configuration, party: options.pcs || [], inventory: options.inventory || [] });
+    this.gameState = newGameState({ ...ModuleRunner.configuration, party: options.pcs || [], inventory: options.inventory || [] });
   }
 
   protected clear(): void { this.driver.clear(); }
   protected _outputSink(message: string): void { this.driver.writeLn(message); }
-  protected pause(message: string): void { this.driver.pause(message); }
-  protected async select(message: string, choices: (readonly string[] | readonly { name: string; value: any; disabled?: boolean; short: string }[])): Promise<any> {
+  protected async pause(message: string) { await this.driver.pause(message); }
+  protected async select<T>(message: string, choices: (readonly string[] | readonly { name: string; value: T; disabled?: boolean; short: string }[])): Promise<T> {
     return this.driver.select(message, choices);
   }
 
-  get pcs() { return this._state.party; }
-  get sharedGold() { return this._state.sharedGold; }
+  get pcs() { return this.gameState.party; }
+  get sharedGold() { return this.gameState.sharedGold; }
   get mod(): CampaignModule {
     if (!this.activeModule) {
       throw new Error("No active module!");
@@ -102,13 +103,8 @@ export class ModuleRunner {
     return this.activeModule;
   }
 
-  get inventory() {
-    return this._state.inventory;
-  }
-
-  get state() {
-    return this._state;
-  }
+  get inventory() { return this.gameState.inventory; }
+  get state() { return this.gameState; }
 
   private note(message: string): void {
     this._outputSink(message);
@@ -117,6 +113,7 @@ export class ModuleRunner {
   protected async emit(event: ModuleEvent) {
     this.journal.push(event);
     this.note(await Events.present(event));
+    this.gameState = GameStateReducer.processEvent(this.state, event);
 
     await Events.appendToLogfile(event);
   }
@@ -132,7 +129,7 @@ export class ModuleRunner {
     return this.activeModule.dungeons.filter(d => !this.state.completedDungeons.includes(d.dungeonIndex!));
   }
 
-  async gatherStartingGear(pc: Combatant): Promise<ItemInstance[]> {
+  gatherStartingGear(pc: Combatant): ItemInstance[] {
       const itemNames: string[] = pc.startingGear || [];
       const items: ItemInstance[] = [];
       for (const itemName of itemNames) {
@@ -150,23 +147,16 @@ export class ModuleRunner {
 
     // give initial gold to party
     this.state.sharedGold += this.pcs.reduce((sum, pc) => sum + (pc.gp || 0), 0);
-    this.pcs.forEach(pc => pc.gp = 0);
 
     // gather inventory from PC starting gear
     for (const pc of this.pcs) {
-      const items = await this.gatherStartingGear(pc);
+      pc.gp = 0;
+      const items = this.gatherStartingGear(pc);
       this.state.inventory.push(...items);
-      // const itemNames: string[] = pc.startingGear || [];
-      // for (const itemName of itemNames) {
-      //   const item = { ...Inventory.genLoot(itemName), ownerId: pc.id, ownerSlot: 'backpack' };
-      //   item.shared = item.itemClass === 'consumable';
-      //   this.state.inventory.push(item);
-      // }
     }
 
     await this.emit({
       type: "campaignStart",
-      // moduleName: this.mod.name,
       pcs: this.pcs,
       at: new Date().toISOString(),
       day: 0
@@ -290,28 +280,29 @@ export class ModuleRunner {
           this.pcs.forEach(pc => pc.gp = 0);
           // this.logGold("after dungeoneer");
 
-          // stabilize unconscious PC to 1 HP
-          this.pcs.forEach(pc => {
-            if (pc.hp <= 0) {
+          // do NOT stabilize unconscious PC to 1 HP here - leave that to the inn or temple
+          // this.pcs.forEach(pc => {
+          for (const pc of this.pcs) {
+            if (pc.hp <= 0 && dry) {
               pc.hp = 1;
             }
-            const effective = Fighting.effectiveStats(pc);
-            const healAmount = Math.floor(effective.maxHp * 0.5);
-            pc.hp = Math.max(1, Math.min(effective.maxHp, pc.hp + healAmount));
+            // const effective = Fighting.effectiveStats(pc);
+            // const healAmount = Math.floor(effective.maxHp * 0.5);
+            // pc.hp = Math.max(1, Math.min(effective.maxHp, pc.hp + healAmount));
             pc.spellSlotsUsed = 0;
             pc.activeEffects = [];
-          });
+          };
         // } else {
         //   console.warn("No available dungeons!");
         }
       } else if (action === "inn") {
-        this.rest(this.pcs);
+        await this.rest(this.pcs);
       } else if (action === "itemShop") {
         await this.shop('consumables');
       } else if (action === "magicShop") {
         await this.shop('equipment');
       } else if (action === "armory") {
-        const weaponsOrArmor = await this.select("What would you like to buy?", ['Weapons', 'Armor']) as string;
+        const weaponsOrArmor: string = await this.select("What would you like to buy?", ['Weapons', 'Armor']);
         if (weaponsOrArmor.toLowerCase() === 'weapons') {
           await this.shop('weapons');
         } else {
@@ -329,7 +320,7 @@ export class ModuleRunner {
       } else if (action === "mirror") {
         const pc = await this.select("Whose character record would you like to view?", this.pcs.map(pc => ({
           short: pc.name, value: pc, name: Presenter.combatant(pc), disabled: !!pc.dead
-        }))) as unknown as Combatant;
+        })));
         await this.emit({
           type: "characterOverview",
           pc,
@@ -387,22 +378,22 @@ export class ModuleRunner {
   private async menu(dry = false): Promise<string> {
     const basicShops = {
       tavern: "Gather hirelings, hear rumors about the region",
-      inn: "Restore HP/slots"
+      inn: "Restore HP/slots",
+      temple: `Pray to ${Words.capitalize(this.mod.town.deity.name)}`,
     }
     const advancedShops = {
-      general: "Sell loot and other items",
-      armory: "Buy weapons",
+      general: "Buy gear and sell loot",
+      armory: "Buy weapons and armor",
       blacksmith: "Improve weapons",
       magicShop: "Buy equipment",
       itemShop: "Buy consumables",
-      // jeweler: "Sell gems and jewelry",
-      temple: `Pray to ${Words.capitalize(this.mod.town.deity.name)}`,
+      // jeweler: "Improve gems and jewelry",
       mirror: "Show Party Inventory/Character Records",
     }
 
     let shops = { ...basicShops };
     if (!dry) {
-      shops = { ...shops, ...advancedShops };
+      shops = { ...basicShops, ...advancedShops };
     }
 
     const options = //: Choice<Answers>[] =
@@ -419,101 +410,59 @@ export class ModuleRunner {
     }
 
     this.note("You have " + Stylist.bold(this.sharedGold + "g") + " available.");
-    return await this.select("What would you like to do?", options) as string;
+    return await this.select("What would you like to do?", options);
   }
 
-  private rest(party: Combatant[]) {
+  private async rest(party: Combatant[]) {
     const cost = 10;
     if (this.sharedGold < cost) {
-      console.log(`You need at least ${cost}g to rest at the inn.`);
+      console.warn(`You need at least ${cost}g to rest at the inn.`);
       return;
     }
     this.state.sharedGold -= cost;
-    party.forEach(pc => {
-      if (!pc.dead) {
+    // party.forEach(pc => {
+    for (const pc of party) {
+      pc.spellSlotsUsed = 0;
+      pc.activeEffects = []; // Clear status effects!
+      if (pc.hp <= 0) {
+        const tryStabilize = await this.driver.confirm(`Would you like to attempt to stabilize ${pc.name}?`);
+        if (tryStabilize) {
+          let systemShockDc = 10;
+          const conMod = Fighting.statMod(pc.con);
+          systemShockDc += conMod;
+          const systemShockRoll = this.roller(pc, `System Shock Save (DC ${systemShockDc})`, 20);
+          if (systemShockRoll.amount >= systemShockDc) {
+            pc.hp = 1;
+            console.warn(`${pc.name} has been stabilized and regains consciousness with 1 HP.`);
+          } else {
+            console.warn(`${pc.name} failed to stabilize and has died!`);
+            pc.dead = true;
+          }
+        } else {
+          console.warn(`${pc.name} remains alive but still unconscious...`);
+        }
+      } else if (!pc.dead) {
+        console.warn(`${pc.name} rests and recovers to full health.`);
         const effective = Fighting.effectiveStats(pc);
         pc.hp = effective.maxHp;
-        pc.spellSlotsUsed = 0;
-        pc.activeEffects = []; // Clear status effects!
       // } else {
       //   console.warn(`${pc.name} is dead and must seek resurrection.`);
       }
-    });
+    }
     // this.outputSink("💤 Your party rests and recovers fully.");
   }
 
   private async temple() {
-    const mod = this.mod;
-    const deityName = mod.town.deity.name;
-    const blessingsGranted: string[] = [];
-    const offerDonation = await this.select(
-      `The Temple of ${Words.capitalize(deityName)} offers blessings for 10g. Wands will also be recharged. Would you like to make a donation?`,
-      [
-        { short: "Yes", value: true, name: `Donate to ${deityName} Temple`, disabled: this.sharedGold < 10 },
-        { short: "No", value: false, name: "Decline", disabled: false },
-      ]
-    ) as unknown as boolean;
-
-    if (offerDonation) {
-      this.state.sharedGold -= 10;
-      const effect = mod.town.deity.blessing;
-      const duration = 10;
-      const blessingName = `${mod.town.deity.forename}'s Favor`;
-      const blessing: StatusEffect = {
-        name: blessingName,
-        type: "buff",
-        description: "Blessed by " + Words.capitalize(deityName),
-        duration, effect, aura: false
-      };
-      blessing.description = Presenter.describeStatusWithName(blessing);
-      // this.outputSink(`You pray to ${Words.capitalize(mod.town.deity)}.`);
-      this.pcs.forEach(pc => {
-        pc.activeEffects = pc.activeEffects || [];
-        if (!pc.activeEffects.some(e => e.name === blessingName)) {
-          pc.activeEffects.push(blessing);
-          blessingsGranted.push(`Blessings of ${deityName} upon ${pc.name}`);
-        }
-      });
-      // recharge wands/staves
-      for (const item of this.state.inventory) {
-        if (item.maxCharges !== undefined) {
-          item.charges = item.maxCharges;
-        }
-      }
+    const templeName = `${this.mod.town.townName} Temple of ${Words.capitalize(this.mod.town.deity.name)}`;
+    await this.emit({ type: "templeEntered", templeName, day: this.days });
+    const temple = new Temple(this.mod.town.deity, this.driver);
+    let done = false;
+    while (!done) {
+      await this.emit({ type: "goldStatus", amount: this.sharedGold, day: this.days });
+      const { events, done: newDone } = await temple.interact(this.state);
+      for (const event of events) { await this.emit(event); }
+      done = newDone;
     }
-
-    let anyDead = this.pcs.some(pc => pc.dead);
-    const rezCost = 100;
-    if (anyDead) {
-      for (const pc of this.pcs) {
-        if (pc.dead) {
-          const choice = await this.select(
-            `${pc.name} is dead. Would you like to be resurrected for ${rezCost}g?`,
-            [
-              { short: "Yes", value: true, name: `Resurrect ${pc.forename}`, disabled: this.sharedGold < rezCost },
-              { short: "No", value: false, name: "Decline resurrection", disabled: false },
-            ]
-          ) as unknown as boolean;
-
-          if (choice) {
-            this.state.sharedGold -= rezCost;
-            pc.dead = false;
-            pc.hp = Math.max(1, Math.floor(Fighting.effectiveStats(pc).maxHp * 0.5));
-            pc.spellSlotsUsed = 0;
-            pc.activeEffects = [];
-            blessingsGranted.push(`${pc.name} was resurrected by ${deityName}`);
-          }
-        }
-      };
-    }
-
-    await this.emit({
-      type: "templeVisited", templeName: `${mod.town.townName} Temple of ${Words.capitalize(deityName)}`, day: this.days,
-      blessingsGranted,
-      itemsRecharged: this.state.inventory
-        .filter(i => i.maxCharges !== undefined)
-        .map(i => i.name),
-    });
   }
 
   private async shop(category: ShopType) {
@@ -524,7 +473,7 @@ export class ModuleRunner {
       await this.emit({ type: "goldStatus", amount: this.sharedGold, day: this.days });
       const { events, done: newDone } = await shop.interact(category, this.state);
       for (const event of events) { await this.emit(event); }
-      this._state = processEvents(this.state, events);
+      // this.gameState = processEvents(this.state, events);
       done = newDone;
     }
   }
@@ -567,13 +516,19 @@ export class ModuleRunner {
       //await CharacterRecord.autogen(CharacterRecord.goodRaces, (options) => this.gen("pc", { ...options, background: "hireling" }) as unknown as Combatant) as Combatant;
     // await CharacterRecord.pickInitialSpells(hireling, Automatic.randomSelect);
     await CharacterRecord.chooseTraits(hireling, Automatic.randomSelect.bind(Automatic));
-    const wouldLikeHireling = await this.select(
+    const race = hireling.race;
+    const charClass = hireling.class;
+    if (!race || !charClass) {
+      throw new Error("Hireling generation failed!");
+    }
+    const wouldLikeHireling = await this.driver.confirm(
       // "A hireling is available to join your party. Would you like to consider their merits?",
-      `A ${Words.humanize(hireling.race!)} ${Words.humanize(hireling.class!)} named ${hireling.name} is looking for work. Would you like to interview them?`,
-      [
-        { short: "Yes", value: true, name: `Interview ${hireling.forename}`, disabled: false },
-        { short: "No", value: false, name: "Decline", disabled: false },
-      ]);
+      `A ${Words.humanize(race)} ${Words.humanize(charClass)} named ${hireling.name} is looking for work. Would you like to interview them?`,
+    );
+      // [
+      //   { short: "Yes", value: true, name: `Interview ${hireling.forename}`, disabled: false },
+      //   { short: "No", value: false, name: "Decline", disabled: false },
+      // ]);
 
     if (!wouldLikeHireling) {
       return;
@@ -586,16 +541,13 @@ export class ModuleRunner {
       day: this.days,
     });
 
-    const choice = await this.select(`Would you like to hire ${hireling.name} for ${cost}?`, [
-      { short: "Yes", value: true, name: `Hire ${hireling.forename}`, disabled: this.sharedGold < cost },
-      { short: "No", value: false, name: "Decline the offer", disabled: false },
-    ]);
+    const choice: boolean = await this.driver.confirm(`Would you like to hire ${hireling.name} for ${cost}?`);
 
     if (choice) {
-      this.mod.town.tavern!.hirelings = this.mod.town.tavern!.hirelings.filter(h => h.id !== hireling.id);
+      this.mod.town.tavern.hirelings = this.mod.town.tavern.hirelings.filter(h => h.id !== hireling.id);
       this.state.sharedGold -= cost;
       this.state.party.push(hireling);
-      this.state.inventory.push(...await this.gatherStartingGear(hireling));
+      this.state.inventory.push(...this.gatherStartingGear(hireling));
       // this.outputSink(`✅ You have hired ${hireling.name} into your party!`);
       await this.emit({
         type: "hirelingHired",
@@ -626,12 +578,12 @@ export class ModuleRunner {
       disabled: d.intendedCr > reasonableCr, // Disable if CR is too high
     }))
 
-    options.push({ short: "Cancel", value: null as any, name: "Cancel and return to town", disabled: false });
+    options.push({ short: "Cancel", value: -1, name: "Cancel and return to town", disabled: false });
 
-    const choice = await this.select("Which dungeon?", options);
+    const choice: number = await this.select("Which dungeon?", options);
     // console.log("Chosen dungeon index:", choice, available[choice].dungeon_name);
 
-    return dungeonChoices[choice as unknown as number];
+    return choice !== -1 ? dungeonChoices[choice] : null;
   }
 
   // private logGold(tag: string) {

@@ -142,7 +142,7 @@ export class Fighting {
     combatant: Combatant,
     context: CombatContext
   ): string {
-    let weapon = this.effectiveWeapon(combatant, context);
+    const weapon = this.effectiveWeapon(combatant, context);
     let baseAttackDie = weapon.damage || "1d2";
     const effectList = this.effectList(combatant);
     effectList.forEach(it => {
@@ -160,7 +160,7 @@ export class Fighting {
     context: CombatContext
   ): (Weapon & ItemInstance) {
     const weapon = combatant.equipment?.weapon || 'fist';
-    let inventory = Fighting.inventoryFor(combatant, context);
+    const inventory = Fighting.inventoryFor(combatant, context);
     const materializedWeapon = materializeItem(weapon, inventory);
     if (materializedWeapon && materializedWeapon.itemClass === 'weapon') {
       return materializedWeapon as unknown as (Weapon & ItemInstance);
@@ -183,7 +183,7 @@ export class Fighting {
     if (!armor) {
       return null;
     }
-    let inventory = Fighting.inventoryFor(combatant, context);
+    const inventory = Fighting.inventoryFor(combatant, context);
     const materializedArmor = materializeItem(armor, inventory);
     if (materializedArmor && materializedArmor.itemClass === 'armor') {
       return materializedArmor as unknown as (Armor & ItemInstance);
@@ -263,7 +263,7 @@ export class Fighting {
   };
 
   static inventoryFor(c: Combatant, ctx: CombatContext): ItemInstance[] {
-    if (c.id === ctx.subject.id) return ctx.inventory ?? [];
+    if (c.id === ctx.subject.id) {return ctx.inventory ?? [];}
 
     // if c is on subject's side, use ctx.inventory; if opposing, use ctx.enemyInventory
     // const onAlliesSide = (ctx.allies ?? []).some(a => a.id === c.id);
@@ -271,8 +271,8 @@ export class Fighting {
     const onAlliesSide = ctx.allyIds.has(c.id);
     const onEnemySide = ctx.enemyIds.has(c.id);
 
-    if (onAlliesSide) return ctx.inventory ?? [];
-    if (onEnemySide) return ctx.enemyInventory ?? [];
+    if (onAlliesSide) {return ctx.inventory ?? [];}
+    if (onEnemySide) {return ctx.enemyInventory ?? [];}
 
     // fallback: safest is ctx.inventory (or empty), but I'd rather throw in dev
     console.warn("inventoryFor: combatant not in allies/enemies lists", c.name);

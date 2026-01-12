@@ -55,7 +55,7 @@ export class ConsoleDriver implements Driver {
       if (typeof choices[index] === "string") {
         return choices[index] as unknown as T;
       }
-      if ((choices[index] as Choice<T>).disabled) {
+      if ((choices[index]).disabled) {
         this.write("That option is disabled. Please choose another.\n");
         continue;
       }
@@ -102,11 +102,11 @@ export class ConsoleDriver implements Driver {
       const wasRaw = (stdin as any).isRaw;
 
       const cleanup = () => {
-        try { if (stdin.isTTY) stdin.setRawMode(!!wasRaw); } catch { }
+        try { if (stdin.isTTY) {stdin.setRawMode(!!wasRaw);} } catch { }
         stdin.pause();
       };
 
-      try { if (stdin.isTTY) stdin.setRawMode(true); } catch { }
+      try { if (stdin.isTTY) {stdin.setRawMode(true);} } catch { }
       stdin.resume();
 
       stdin.once("data", (data: Buffer) => {
@@ -144,7 +144,7 @@ export class NullDriver implements Driver {
       throw new Error("No enabled choices provided to NullDriver.select");
     }
     // return (typeof enabled === "string" ? enabled : enabled.value) as T;
-    let chosen = enabled[Math.floor(Math.random() * enabled.length)];
+    const chosen = enabled[Math.floor(Math.random() * enabled.length)];
     return (typeof chosen === "string" ? chosen : chosen.value) as T;
   }
 

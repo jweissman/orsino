@@ -1,4 +1,4 @@
-import LanguageManager, { Concept } from '../orsino/Language';
+import LanguageManager, { Concept, Conceptory, ConceptTemplate } from '../orsino/Language';
 import { Fighting } from '../orsino/rules/Fighting';
 import Words from '../orsino/tui/Words';
 
@@ -205,6 +205,26 @@ export default class StandardLibrary {
         throw new Error(`translate() could not find default language 'westron'`);
       }
       return lang.translate(...concepts as Concept[]);
+    },
+
+    conceptory: (conceptTemplate: DeemValue) => {
+      if (typeof conceptTemplate !== 'string') {
+        throw new Error(`conceptory() expects a string, got: ${typeof conceptTemplate}`);
+      }
+      return Conceptory.generate(conceptTemplate as ConceptTemplate);
+    },
+
+    join: (arr: DeemValue[], separator: DeemValue) => {
+      if (!Array.isArray(arr)) {
+        throw new Error(`join() expects an array, got: ${typeof arr}`);
+      }
+      if (typeof separator !== 'string') {
+        throw new Error(`join() expects separator to be a string, got: ${typeof separator}`);
+      }
+      return arr
+        .map(item => typeof item === "string" ? Words.humanize(item) : item)
+          .join(separator);
     }
+
   };
 }

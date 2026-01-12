@@ -170,18 +170,26 @@ export type TownVisitedEvent = BaseModuleEvent & {
   season: "spring" | "summer" | "autumn" | "winter";
   translatedTownName: string;
 };
-export type ShopEnteredEvent = BaseModuleEvent & { type: "shopEntered"; shopName: string; };
+
 export type GoldStatusEvent = BaseModuleEvent & { type: "goldStatus"; amount: number; };
+
+export type TempleEnteredEvent = BaseModuleEvent & { type: "templeEntered"; templeName: string; };
+export type DonationEvent = BaseModuleEvent & { type: "donation"; amount: number; deityName: string; description: string; };
+export type RezServiceEvent = BaseModuleEvent & { type: "resurrectionService"; cost: number; };
+export type BlessServiceEvent = BaseModuleEvent & { type: "blessingGranted"; blessing: StatusEffect; };
+export type ItemRechargedEvent = BaseModuleEvent & { type: "itemRecharged"; itemName: string; itemId: string; chargesBefore: number; chargesAfter: number };
+
+export type ShopEnteredEvent = BaseModuleEvent & { type: "shopEntered"; shopName: string; };
 export type PurchaseEvent = BaseModuleEvent & { type: "purchase"; itemName: string; cost: number; buyer: Combatant; };
 export type SaleEvent = BaseModuleEvent & { type: "sale"; itemName: string; revenue: number; seller: Combatant; };
 export type EquipmentEvent = BaseModuleEvent & { type: "equip"; itemName: string; itemKey: string; slot: EquipmentSlot; wearerId: string; wearerName: string };
-export type AcquireItemEvent = BaseModuleEvent & { type: "acquire"; itemName: string; itemKey: string; quantity: number; acquirer: Combatant; };
+export type AcquireItemEvent = BaseModuleEvent & { type: "acquire"; itemName: string; itemKey: string; quantity: number }; //; acquirer: Combatant; };
 export type WieldEvent = BaseModuleEvent & { type: "wield"; weaponName: string; weaponKey: string; wielderId: string; wielderName: string; };
 
 export type EnhanceWeaponEvent = BaseModuleEvent & { type: "enhanceWeapon"; weaponName: string; weaponKey: string;  weaponId?: string; wielderId: string; wielderName: string; enhancement: string; cost: number; oldDamage: string; newDamage: string; };
 
 export type RumorHeardEvent = BaseModuleEvent & { type: "rumorHeard"; rumor: string; };
-export type TempleVisitedEvent = BaseModuleEvent & { type: "templeVisited"; templeName: string; blessingsGranted: string[]; itemsRecharged: string[]; };
+// export type TempleVisitedEvent = BaseModuleEvent & { type: "templeVisited"; templeName: string; };
 export type CampaignStopEvent = BaseModuleEvent & { type: "campaignStop"; reason: string; at: Timestamp; };
 export type PartyOverviewEvent = BaseModuleEvent & { type: "partyOverview"; pcs: Combatant[]; inventory: ItemInstance[] } //itemQuantities: { [itemName: string]: number }; };
 export type CharacterOverviewEvent = BaseModuleEvent & { type: "characterOverview"; pc: Combatant; inventory: ItemInstance[] } //itemQuantities: { [itemName: string]: number }; };
@@ -193,6 +201,12 @@ export type ModuleEvent =
   | CampaignStartEvent
   | TownVisitedEvent
   | ShopEnteredEvent
+  | TempleEnteredEvent
+  | DonationEvent
+  | RezServiceEvent
+  | BlessServiceEvent
+  | ItemRechargedEvent
+
   | GoldStatusEvent
   | PurchaseEvent
   | SaleEvent
@@ -202,7 +216,7 @@ export type ModuleEvent =
   | EnhanceWeaponEvent
   | AcquireItemEvent
   | RumorHeardEvent
-  | TempleVisitedEvent
+  // | TempleVisitedEvent
   | PartyOverviewEvent
   | CharacterOverviewEvent
   | HirelingOfferedEvent
@@ -228,276 +242,386 @@ export default class Events {
       }
     }
 
+    let message: string;
+
     switch (event.type) {
       case "engage":
-        return '';
+        message = '';
+        break;
+
       case "enterDungeon":
-        return `
+        message = `
         ${"=".repeat(80)}
         ${event.dungeonIcon}  ${Stylist.colorize(event.dungeonName.toUpperCase(), 'yellow')} (${event.depth} rooms)
 
           Your Goal: ${event.goal || "Unknown"}!
         ${"=".repeat(80)}
         `;
+        break;
+
       case "leaveDungeon":
-        return `You leave the dungeon.`;
+        message = `You leave the dungeon.`;
+        break;
+
       case "enterRoom":
-        return Stylist.italic(event.roomDescription);
+        message = Stylist.italic(event.roomDescription);
+        break;
 
       case "roomCleared":
         if (event.combat) {
-          return `The ${Words.humanize(event.room.room_type)} is pacified after combat. You have defeated ${Words.humanizeList(event.combat.enemyCombatants.map(c => c.referenceName || c.name))}.`;
+          message = `The ${Words.humanize(event.room.room_type)} is pacified after combat. You have defeated ${Words.humanizeList(event.combat.enemyCombatants.map(c => c.referenceName || c.name))}.`;
+        } else {
+          message = `The ${Words.humanize(event.room.room_type)} is pacified.`;
         }
-        return `The ${Words.humanize(event.room.room_type)} is pacified.`;
+        break;
+
       case "investigate":
-        return `${subjectName} examines ${event.clue} and discovers ${event.discovery}`;
+        message = `${subjectName} examines ${event.clue} and discovers ${event.discovery}`;
+        break;
+
+        // i think we still need this?
       case "itemFound":
         if (event.quantity > 1) {
-          return `${subjectName} found ${event.quantity} x ${Words.a_an(event.itemName)} ${event.where}.`;
+          message = `${subjectName} found ${event.quantity} x ${Words.a_an(event.itemName)} ${event.where}.`;
+        } else {
+          message = `${subjectName} found ${event.itemName.toLocaleLowerCase()} ${event.where}.`;
         }
-        return `${subjectName} found ${event.itemDescription.toLocaleLowerCase()} ${event.where}.`;
+        break;
+
+      case "acquire":
+        if (event.quantity === 1) {
+          message = `${subjectName} receives ${Words.a_an(event.itemName)}.`;
+        } else {
+          message = `${subjectName} receives ${event.quantity} x ${Words.a_an(event.itemName)}.`;
+        }
+        break;
+
       case "equipmentWorn":
-        return `${subjectName} is now wearing ${Words.a_an(event.itemName)} as their ${event.slot}.`;
+        message = `${subjectName} is now wearing ${Words.a_an(event.itemName)} as their ${event.slot}.`;
+        break;
+
       case "rest":
         if (event.stabilizedCombatants.length > 0) {
-          return `Your party rests (${Words.humanizeList(event.stabilizedCombatants)} stabilized).`;
+          message = `Your party rests (${Words.humanizeList(event.stabilizedCombatants)} stabilized).`;
+        } else {
+          message = `Your party rests.`;
         }
-        return `Your party rests.`;
+        break;
+
       case "dungeonCleared":
         if (event.macguffin) {
-          return `🎉 Victory! You have cleared the dungeon and secured ${Stylist.bold(event.macguffin)}!`;
+          message = `🎉 Victory! You have cleared the dungeon and secured ${Stylist.bold(event.macguffin)}!`;
+        } else {
+          message = `Victory! You have cleared the dungeon!`;
         }
-        return `Victory! You have cleared the dungeon!`;
+        break;
 
       case "dungeonFailed":
-        return `You have failed to cleanse ${event.dungeonName} of evil. ${event.reason}`;
+        message = `You have failed to cleanse ${event.dungeonName} of evil. ${event.reason}`;
+        break;
 
       case "heal":
         if (subjectName === targetName) {
-          return `${subjectName} heals themselves for ${event.amount} HP.`;
+          message = `${subjectName} heals themselves for ${event.amount} HP.`;
         } else {
-          return `${subjectName} heals ${targetName} for ${event.amount} HP.`;
+          message = `${subjectName} heals ${targetName} for ${event.amount} HP.`;
         }
-      case "miss": return `${subjectName} attacks ${targetName} but misses.`;
-      case "defend": return `${subjectName} takes a defensive stance, preparing to block incoming attacks.`;
-      case "fall": return `${subjectName} is defeated.`;
-      case "flee": return `${subjectName} flees from combat.`;
+        break;
+
+      case "miss": message = `${subjectName} attacks ${targetName} but misses.`; break;
+      case "defend": message = `${subjectName} takes a defensive stance, preparing to block incoming attacks.`; break;
+      case "fall": message = `${subjectName} is defeated.`; break;
+      case "flee": message = `${subjectName} flees from combat.`; break;
 
       case "statusEffect":
-        return `${subjectName} is ${event.effectName} (${Presenter.describeModifications(event.effect)}) by ${event.source}.`
+        message = `${subjectName} is ${event.effectName} (${Presenter.describeModifications(event.effect)}) by ${event.source}.`
+        break;
 
       case "statusExpire":
-        return `${subjectName} no longer has ${event.effectName}.`;
+        message = `${subjectName} no longer has ${event.effectName}.`;
+        break;
+
       case "statusExpiryPrevented":
-        return `${subjectName}'s status effects do not expire (${event.reason}).`;
+        message = `${subjectName}'s status effects do not expire (${event.reason}).`;
+        break;
+
       case "initiate":
-        return '';
+        message = '';
+        break;
+
       case "roundStart":
-        return Events.presentRound(event);
+        message = ''; // Events.presentRound(event);
+        break;
+
       case "turnStart":
-        return Events.presentTurn(event);
-      case "combatEnd": return '';
+        message = Events.presentTurn(event);
+        break;
+
+      case "combatEnd": message = ''; break;
 
       case "upgrade":
-        return `${subjectName} upgrades ${event.stat} by ${event.amount} (now ${event.newValue}).`;
+        message = `${subjectName} upgrades ${event.stat} by ${event.amount} (now ${event.newValue}).`;
+        break;
 
       case "learnAbility":
-        return `${subjectName} learns the ability ${Words.a_an(event.abilityName)}.`;
+        message = `${subjectName} learns the ability ${Words.a_an(event.abilityName)}.`;
+        break;
+
       case "gainTrait":
-        return `${subjectName} gains the trait ${Words.a_an(event.traitName)}.`;
+        message = `${subjectName} gains the trait ${Words.a_an(event.traitName)}.`;
+        break;
 
       case "hit":
-        let message = `${targetName} takes ${event.damage.toString()} ${event.damageKind} damage from ${event.by}.`;
+        message = `${targetName} takes ${event.damage.toString()} ${event.damageKind} damage from ${event.by}.`;
         if (event.critical) { message += " Critical hit!"; }
         if (event.target?.playerControlled) {
           message = Stylist.colorize(message, 'red');
         } else if (event.subject?.playerControlled) {
           message = Stylist.colorize(message, 'green');
         }
-        return message;
+        break;
 
       case "cast":
-        return `${subjectName} casts ${event.spellName} ${event.source ? `from ${event.source}` : ""}.`;
+        message = `${subjectName} casts ${event.spellName} ${event.source ? `from ${event.source}` : ""}.`;
+        break;
 
       case "damageBonus":
-        return `${targetName} takes an additional ${event.amount} damage from ${subjectName} due to ${event.reason}.`;
+        message = `${targetName} takes an additional ${event.amount} damage from ${subjectName} due to ${event.reason}.`;
+        break;
 
       case "damageReduction":
-        return `${subjectName} reduces damage taken by ${event.amount} due to ${event.reason}.`;
+        message = `${subjectName} reduces damage taken by ${event.amount} due to ${event.reason}.`;
+        break;
 
       case "tempHpAbsorb":
-        return `${subjectName}'s ${event.source} absorbs ${event.amount} damage.`;
+        message = `${subjectName}'s ${event.source} absorbs ${event.amount} damage.`;
+        break;
 
       case "reaction":
-        return `${subjectName} reacts ${(event.reactionName)} from ${event.target?.forename}.`;
+        message = `${subjectName} reacts ${(event.reactionName)} from ${event.target?.forename}.`;
+        break;
+
       case "summon":
-        return `${subjectName} summons ${event.target?.referenceName || event.target?.forename} ${event.source ? `from ${event.source}` : ""}.`;
+        message = `${subjectName} summons ${event.target?.referenceName || event.target?.forename} ${event.source ? `from ${event.source}` : ""}.`;
+        break;
+
       case "unsummon":
-        return `${subjectName} unsummons ${event.target?.referenceName || event.target?.forename}.`;
+        message = `${subjectName} unsummons ${event.target?.referenceName || event.target?.forename}.`;
+        break;
+
       case "save":
         if (event.immune) {
-          return `${subjectName} is immune to ${event.versus}.`; // and automatically succeeds on their Save vs ${event.versus} (DC ${event.dc}).`;
+          message = `${subjectName} is immune to ${event.versus}.`;
         } else if (event.success) {
-          // return '';  //`${subjectName} succeeds on their Save vs ${event.versus} (DC ${event.dc}).`;
-          return `${subjectName} resists the ${event.versus} effect.`;
+          message = `${subjectName} resists the ${event.versus} effect.`;
         } else {
-          // return `${subjectName} fails their Save vs ${event.versus} (DC ${event.dc}).`;
-          return '';
+          message = '';
         }
+        break;
 
       case "resurrect":
-        return `${subjectName} is resurrected with ${event.amount} HP.`;
+        message = `${subjectName} is resurrected with ${event.amount} HP.`;
+        break;
 
       case "gold":
         if (event.amount === 0) {
-          return '';
+          message = '';
         } else {
           if (event.amount === 1) {
-            return `${subjectName} acquires 1 gold piece.`;
+            message = `${subjectName} acquires 1 gold piece.`;
+          } else {
+            message = `${subjectName} acquires ${event.amount} gold pieces.`;
           }
-          return `${subjectName} acquires ${event.amount} gold pieces.`;
         }
+        break;
 
       case "xp":
         if (event.amount === 0) {
-          return '';
+          message = '';
+        } else {
+          message = `${subjectName} gains ${event.amount} experience points.`;
         }
-        return `${subjectName} gains ${event.amount} experience points.`;
+        break;
+
       case "kill":
         if (subjectName === targetName || !targetName) {
-          return `${subjectName} has been defeated!`;
+          message = `${subjectName} has been defeated!`;
+        } else {
+          message = `${subjectName} has defeated ${targetName}!`;
         }
-        return `${subjectName} has defeated ${targetName}!`;
+        break;
+
       case "crit":
-        return "";
+        message = "";
+        break;
 
       case "spellTurned":
-        return `${subjectName} turns the spell ${event.spellName} cast by ${targetName}.`;
+        message = `${subjectName} turns the spell ${event.spellName} cast by ${targetName}.`;
+        break;
 
       case "untargetable":
-        return `${subjectName} is untargetable by ${targetName}'s ${event.abilityName}.`;
+        message = `${subjectName} is untargetable by ${targetName}'s ${event.abilityName}.`;
+        break;
 
       case "resist":
-        return `${subjectName} resists, taking ${event.finalDamage} ${event.damageKind} damage (originally ${event.originalDamage}) due to ${event.sources.join(", ")}.`;
+        message = `${subjectName} resists, taking ${event.finalDamage} ${event.damageKind} damage (originally ${event.originalDamage}) due to ${event.sources.join(", ")}.`;
+        break;
 
       case "vulnerable":
-        return `${subjectName} is vulnerable and takes ${event.finalDamage} ${event.damageKind} damage (originally ${event.originalDamage}) due to ${event.sources.join(", ")}.`;
+        message = `${subjectName} is vulnerable and takes ${event.finalDamage} ${event.damageKind} damage (originally ${event.originalDamage}) due to ${event.sources.join(", ")}.`;
+        break;
+
       case "wait":
-        return `${subjectName} waits and watches.`;
+        message = `${subjectName} waits and watches.`;
+        break;
+
       case "inactive":
-        return `${subjectName} is ${event.statusName} and skips their turn! (${event.duration !== undefined ? event.duration + " turns left" : "duration unknown"})`;
+        message = `${subjectName} is ${event.statusName} and skips their turn! (${event.duration !== undefined ? event.duration + " turns left" : "duration unknown"})`;
+        break;
+
       case "allegianceChange":
-        return `${subjectName} is under the effect of ${event.statusName} and has switched sides.`;
+        message = `${subjectName} is under the effect of ${event.statusName} and has switched sides.`;
+        break;
       case "itemUsed":
         if (event.chargesLeft !== undefined) {
-          return `${subjectName} uses ${Words.a_an(event.itemName)}. (${event.chargesLeft} charges left)`;
+          message = `${subjectName} uses ${Words.a_an(event.itemName)}. (${event.chargesLeft} charges left)`;
         } else if (event.countLeft !== undefined) {
-          return `${subjectName} uses ${Words.a_an(event.itemName)}. (${event.countLeft} remaining)`;
+          message = `${subjectName} uses ${Words.a_an(event.itemName)}. (${event.countLeft} remaining)`;
         } else {
-          return `${subjectName} uses ${Words.a_an(event.itemName)}.`;
+          message = `${subjectName} uses ${Words.a_an(event.itemName)}.`;
         }
+        break;
+
       case "action":
-        return Stylist.bold(`\n${subjectName} ${event.actionName}.`);
+        message = Stylist.bold(`\n${subjectName} ${event.actionName}.`);
+        break;
 
       case "actedRandomly":
-        return `${subjectName} is acting erratically.`;
+        message = `${subjectName} is acting erratically.`;
+        break;
 
       case "riddlePosed":
-        return `${subjectName} is posed the riddle: "${event.challenge}".`;
+        message = `${subjectName} is posed the riddle: "${event.challenge}".`;
+        break;
 
       case "riddleSolved":
-        return `${subjectName} has solved the riddle: "${event.challenge}" (answer: ${event.solution}) and receives ${Words.a_an(event.reward.name)}.`;
+        message = `${subjectName} has solved the riddle: "${event.challenge}" (answer: ${event.solution}) and receives ${Words.a_an(event.reward.name)}.`;
+        break;
 
       case "trapDetected":
-        return `${subjectName} detects ${Words.a_an(event.trapDescription)}.`;
+        message = `${subjectName} detects ${Words.a_an(event.trapDescription)}.`;
+        break;
 
       case "trapTriggered":
-        return `${subjectName} accidentally triggers ${Words.a_an(Words.humanize(event.trigger))}! ${event.punishmentDescription}.`;
+        message = `${subjectName} accidentally triggers ${Words.a_an(Words.humanize(event.trigger))}! ${event.punishmentDescription}.`;
+        break;
 
       case "trapDisarmed":
         if (event.success) {
-          return `${subjectName} successfully disarms ${Words.a_an(Words.humanize(event.trigger))}.`;
+          message = `${subjectName} successfully disarms ${Words.a_an(Words.humanize(event.trigger))}.`;
         } else {
-          return `${subjectName} fails to disarm ${Words.a_an(Words.humanize(event.trigger))}.`;
+          message = `${subjectName} fails to disarm ${Words.a_an(Words.humanize(event.trigger))}.`;
         }
+        break;
 
       case "campaignStart":
-        return Stylist.bold(`You embark on a new campaign!\nParty Members: ${event.pcs.map(pc => Presenter.combatant(pc)).join("\n")
+        message = Stylist.bold(`You embark on a new campaign!\nParty Members: ${event.pcs.map(pc => Presenter.combatant(pc)).join("\n")
           }`);
+        break;
+
       case "moduleStart":
-        return Stylist.bold(`You embark on the module '${event.moduleName}' with ${Words.humanizeList(event.pcs.map(pc => pc.forename))
+        message = Stylist.bold(`You embark on the module '${event.moduleName}' with ${Words.humanizeList(event.pcs.map(pc => pc.forename))
           }`);
+        break;
       case "shopEntered":
-        return Stylist.bold(`Entered ${event.shopName}'s shop.`);
+        message = Stylist.bold(`Entered ${event.shopName}'s shop.`);
+        break;
+
+      case "templeEntered":
+        message = Stylist.bold(`Entered the temple of ${event.templeName}.`);
+        break;
+
+      case "donation":
+        message = `${subjectName} donates ${event.amount} gold to ${event.deityName} (${event.description}).`;
+        break;
+
+      case "resurrectionService":
+        message = `${subjectName} uses a resurrection service for ${event.cost} gold.`;
+        break;
+
+      case "blessingGranted":
+        message = `${subjectName} is granted the blessing: ${event.blessing.name}.`;
+        break;
+
+      case "itemRecharged":
+        message = `${subjectName}'s ${event.itemName} is recharged from ${event.chargesBefore} to ${event.chargesAfter} charges.`;
+        break;
+
       case "goldStatus":
-        return `Current gold: ${Words.humanizeNumber(event.amount)} gp.`;
+        message = `Current gold: ${Words.humanizeNumber(event.amount)} gp.`;
+        break;
+
       case "townVisited":
-        return (`It is the ${Words.ordinal(1 + (event.day % 90))} day of ${event.season} in the ${event.adjective} ${Words.capitalize(event.race)} ${event.size} of ${Stylist.bold(event.townName)}, which is ${event.translatedTownName}, on the plane of ${Words.capitalize(event.plane)} (Population: ${Words.humanizeNumber(event.population)}). The weather is currently ${event.weather}.`);
+        message = (`It is the ${Words.ordinal(1 + (event.day % 90))} day of ${event.season} in the ${event.adjective} ${Words.capitalize(event.race)} ${event.size} of ${Stylist.bold(event.townName)}, which is ${event.translatedTownName}, on the plane of ${Words.capitalize(event.plane)} (Population: ${Words.humanizeNumber(event.population)}). The weather is currently ${event.weather}.`);
+        break;
+
       case "purchase":
-        return `${event.buyer.forename} purchased ${Words.a_an(event.itemName)} for ${event.cost} gold.`;
+        message = `${event.buyer.forename} purchased ${Words.a_an(event.itemName)} for ${event.cost} gold.`;
+        break;
+
       case "sale":
-        return `${event.seller.forename} sold ${Words.a_an(event.itemName)} for ${event.revenue} gold.`;
+        message = `${event.seller.forename} sold ${Words.a_an(event.itemName)} for ${event.revenue} gold.`;
+        break;
+
       case "equip":
-        return `${event.wearerName} equips ${Words.a_an(event.itemName)} as their ${event.slot}.`;
+        message = `${event.wearerName} equips ${Words.a_an(event.itemName)} as their ${event.slot}.`;
+        break;
+
       case "wield":
-        return `${event.wielderName} wields ${Words.a_an(event.weaponName)}!`;
-      case "acquire":
-        if (event.quantity === 1) {
-          return `${event.acquirer.forename} acquires ${Words.a_an(event.itemName)}.`;
-        } else {
-          return `${event.acquirer.forename} acquires ${event.quantity} x ${Words.a_an(event.itemName)}.`;
-        }
+        message = `${event.wielderName} wields ${Words.a_an(event.weaponName)}!`;
+        break;
+      
       case "enhanceWeapon":
-        return `${event.wielderName} ${event.enhancement}s their ${Words.a_an(event.weaponName)}! Damage changed from ${event.oldDamage} to ${event.newDamage}).`;
+        message = `${event.wielderName} ${event.enhancement}s their ${Words.a_an(event.weaponName)}! Damage changed from ${event.oldDamage} to ${event.newDamage}).`;
+        break;
 
       case "rumorHeard":
-        return `The tavern buzzes with news: "${event.rumor}"`;
-      case "templeVisited":
-        if (event.blessingsGranted.length === 0 && event.itemsRecharged.length === 0) {
-          return `You pray at ${event.templeName}, but receive no blessings or item recharges.`;
-        }
-        let templeMessage = "You pray at " + event.templeName + ". ";
-        if (event.blessingsGranted.length > 0) {
-          templeMessage += `Blessings granted: ${event.blessingsGranted.join(", ")}. `;
-        }
-        if (event.itemsRecharged.length > 0) {
-          templeMessage += `Items recharged: ${event.itemsRecharged.join(", ")}.`;
-        }
-        return templeMessage;
+        message = `The tavern buzzes with news: "${event.rumor}"`;
+        break;
+      
       case "characterOverview":
-        return await Presenter.characterRecord(event.pc, event.inventory);
-      case "partyOverview":
-        const records = [];
-        for (const pc of event.pcs) {
-          records.push(await Presenter.characterRecord(pc, Inventory.propertyOf(pc, event.inventory) || []));
-        }
-        let overview = Stylist.bold(`Party Overview:\n${records.join("\n\n")}\n\n`);
-        const sharedItems = Inventory.sharedItems(event.inventory);
-        if (sharedItems.length > 0) {
-          overview += Stylist.bold("Shared Inventory: ") + Presenter.aggregateList(sharedItems.sort((a, b) => a.name.localeCompare(b.name)).map(i => i.name)) + "\n";
-        }
-        // if (event.itemQuantities && Object.keys(event.itemQuantities).length > 0) {
-        // overview += `Inventory:\n${Object.entries(event.itemQuantities).map(([itemName, qty]) => `- ${qty} x ${Words.humanize(itemName)}`).join("\n")
-        // }`
-        // }
-        return overview;
-      case "hirelingOffered":
+        message = await Presenter.characterRecord(event.pc, event.inventory);
+        break;
 
-        return `A hireling is available: ${await Presenter.characterRecord(event.hireling, [])} for ${event.cost} gold per month.`;
+      case "partyOverview":
+        message = await Events.presentOverview(event);
+        break;
+
+      case "hirelingOffered":
+        message = `A hireling is available: ${await Presenter.characterRecord(event.hireling, [])} for ${event.cost} gold per month.`;
+        break;
+
       case "hirelingHired":
-        return `${event.hireling.forename} has joined your party as a hireling for ${event.cost} gold per month.`;
+        message = `${event.hireling.forename} has joined your party as a hireling for ${event.cost} gold per month.`;
+        break;
+
       case "campaignStop":
-        return Stylist.bold(`Campaign ended: ${event.reason || `at ${event.at}`}`);
+        message = Stylist.bold(`Campaign ended: ${event.reason || `at ${event.at}`}`);
+        break;
 
       case "teleport":
-        return `${subjectName} is teleported to ${event.location}.`;
+        message = `${subjectName} is teleported to ${event.location}.`;
+        break;
 
       case "planeshift":
-        return `${subjectName} plane shifts to ${event.plane}.`;
+        message = `${subjectName} plane shifts to ${event.plane}.`;
+        break;
 
       default:
         return never(event);
     }
+
+    return message;
   }
 
   static async appendToLogfile(event: GameEvent) {
@@ -507,21 +631,12 @@ export default class Events {
     }
     let logMessage = await Events.present(event);
     // strip ANSI codes
-    logMessage = logMessage.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
+    logMessage = logMessage.replace(/[\\u001b\\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
     if (!logMessage || logMessage.trim() === '') {
       return;
     }
 
     await Files.append(logFilename, logMessage + '\n');
-  }
-
-  private static presentRound(event: RoundStartEvent): string {
-    return '';
-    // const roundLabel = ("Round " + event.turn.toString()).padEnd(20) + Stylist.colorize(event.environment?.padStart(60) || "Unknown Location", 'cyan');
-    // const parties = Presenter.parties(event.parties || []);
-    // const hr = "=".repeat(80);
-    // const auras = event.auras?.length > 0 ? "\n\nAuras:\n" + event.auras.map(aura => `- ${Stylist.colorize(aura.name, 'magenta')} (${Presenter.analyzeStatus(aura)})`).join("\n") : "";
-    // return `${hr}\n${roundLabel}\n${hr}\n${parties}${auras}`;
   }
 
   private static presentTurn(event: TurnStartEvent): string {
@@ -530,5 +645,18 @@ export default class Events {
     const hr = "=".repeat(80);
     const auras = event.auras?.length > 0 ? "\n\nAuras:\n" + event.auras.map(aura => `- ${Stylist.colorize(aura.name, 'magenta')} (${Presenter.analyzeStatus(aura)})`).join("\n") : "";
     return `${hr}\n${roundLabel}\n${hr}\n${parties}${auras}\n\n${Stylist.bold(`It's ${event.subject?.forename}'s turn!`)}`;
+  }
+
+  private static async presentOverview(event: PartyOverviewEvent): Promise<string> {
+    const records = [];
+    for (const pc of event.pcs) {
+      records.push(await Presenter.characterRecord(pc, Inventory.propertyOf(pc, event.inventory) || []));
+    }
+    let message = Stylist.bold(`Party Overview:\n${records.join("\n\n")}\n\n`);
+    const sharedItems = Inventory.sharedItems(event.inventory);
+    if (sharedItems.length > 0) {
+      message += Stylist.bold("Shared Inventory: ") + Presenter.aggregateList(sharedItems.sort((a, b) => a.name.localeCompare(b.name)).map(i => i.name)) + "\n";
+    }
+    return message;
   }
 }

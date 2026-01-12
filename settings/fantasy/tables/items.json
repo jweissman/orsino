@@ -1200,7 +1200,7 @@
         "kind": "potion",
         "rarity": "uncommon",
         "aspect": "healing",
-        "value": 80,
+        "value": 40,
         "target": [
           "self",
           "ally"
@@ -1219,7 +1219,7 @@
         "rarity": "uncommon",
         "kind": "potion",
         "aspect": "healing",
-        "value": 250,
+        "value": 120,
         "target": [
           "self",
           "ally"
@@ -1276,7 +1276,7 @@
         "kind": "flask",
         "aspect": "fire",
         "rarity": "common",
-        "value": 40,
+        "value": 18,
         "target": [
           "enemy"
         ],
@@ -1683,7 +1683,7 @@
         "type": "equipment",
         "kind": "amulet",
         "rarity": "uncommon",
-        "value": 200,
+        "value": 120,
         "effect": {
           "con": 2
         },
@@ -2288,230 +2288,81 @@
   "junk": {
     "discriminator": "kind",
     "groups": {
-      "wooden_bowl": {
-        "description": "A simple wooden bowl, chipped and worn from use.",
-        "type": "junk",
-        "value": 1
-      },
-      "cloth_pouch": {
-        "description": "A small cloth pouch, frayed at the edges.",
-        "type": "junk",
-        "value": 1
-      },
-      "broken_dagger": {
-        "description": "A broken dagger with a dull blade and a cracked handle.",
-        "type": "junk",
-        "value": 2
-      },
-      "tattered_map": {
-        "description": "A tattered map with faded markings and torn edges.",
-        "type": "junk",
-        "value": 3
-      },
-      "wooden_figurine": {
-        "description": "A small wooden figurine, roughly carved and unfinished.",
-        "type": "junk",
-        "value": 2
-      },
-      "simple_ring": {
-        "description": "A simple iron ring, slightly bent out of shape.",
-        "type": "junk",
-        "value": 5
-      },
-      "small_statue": {
-        "description": "A small statue made of bronze, depicting a forgotten deity.",
-        "type": "junk",
-        "value": 10
-      },
-      "bronze_bracelet": {
-        "description": "A bronze bracelet with intricate designs etched into its surface.",
-        "type": "junk",
-        "value": 8
-      },
-      "faded_painting": {
-        "description": "A faded painting on canvas, its colors dulled by time.",
-        "type": "junk",
-        "value": 12
-      },
-      "broken_crown": {
-        "description": "Missing several jewels and tarnished with age.",
-        "type": "junk",
-        "value": 25
-      },
-      "lensing_crystal": {
-        "description": "A cracked lens that once belonged to a powerful magnifying glass.",
-        "type": "junk",
-        "value": 18
-      },
-      "broken_scepter": {
-        "description": "A broken scepter, its head shattered and its shaft cracked.",
-        "type": "junk",
-        "value": 30
-      },
-      "faded_tome": {
-        "description": "A faded tome with yellowed pages and a cracked spine.",
-        "type": "junk",
-        "value": 20
-      },
-      "dowsing_rod": {
-        "description": "A simple dowsing rod made of wood, used for locating water or minerals.",
-        "type": "junk",
-        "value": 12
-      },
-      "crystal_orb": {
-        "description": "A small crystalline sphere that glimmers faintly in the light.",
-        "type": "junk",
-        "value": 15
-      },
-      "jeweled_crown": {
-        "description": "A small crown adorned with semi-precious stones.",
-        "type": "junk",
-        "value": 20
-      },
-      "ancient_tome": {
-        "description": "An ancient tome filled with cryptic writings and illustrations.",
-        "type": "junk",
-        "value": 40
-      },
-      "music_box": {
-        "description": "A beautifully crafted music box that plays a haunting melody.",
-        "type": "junk",
-        "value": 50
-      },
-      "unholy_symbol": {
-        "description": "A profane icon associated with forbidden rituals.",
-        "type": "junk",
-        "value": 75
-      },
-      "priceless_painting": {
-        "description": "A priceless painting by a renowned artist, its value immeasurable.",
-        "type": "junk",
-        "value": 1000
-      },
-      "royal_scepter": {
-        "description": "An ornate scepter once wielded by royalty, encrusted with jewels.",
-        "type": "junk",
-        "value": 1500
-      },
-      "dragons_egg": {
-        "description": "A rare and valuable dragon's egg, warm to the touch.",
-        "type": "junk",
-        "value": 2000
-      },
-      "ancient_crown": {
-        "description": "An ancient crown rumored to have belonged to a long-lost king.",
-        "type": "junk",
-        "value": 2500
-      },
-      "sacred_idol": {
-        "description": "A sacred idol revered by an ancient civilization.",
-        "type": "junk",
-        "value": 3000
-      },
-      "lost_tome": {
-        "description": "A lost tome containing forgotten knowledge and secrets.",
-        "type": "junk",
-        "value": 3500
-      },
-      "fallen_star": {
-        "description": "A fragment of a fallen star, radiating a faint magical aura.",
-        "type": "junk",
-        "value": 5000
-      },
-      "golden_idol": {
-        "description": "A small idol made of pure gold, intricately crafted.",
-        "type": "junk",
-        "value": 4000
-      },
-      "crystal_eye": {
-        "description": "A mystical crystal eye that seems to watch those who hold it.",
-        "type": "junk",
-        "value": 6000
-      },
-      "phoenix_feather": {
-        "description": "A rare feather from a phoenix, said to have healing properties.",
-        "type": "junk",
-        "value": 7000
-      },
-      "kraken_claw": {
-        "description": "A massive claw from a kraken, still dripping with seawater.",
-        "type": "junk",
-        "value": 8000
-      },
-      "diamond_necklace": {
-        "description": "A necklace adorned with a single, flawless diamond.",
-        "type": "junk",
-        "value": 10000
-      },
-      "divine_scepter": {
-        "description": "A scepter imbued with divine power, radiating holy energy.",
-        "type": "junk",
-        "value": 10000
-      },
-      "jeweled_statue": {
-        "description": "A statue encrusted with precious jewels, depicting a legendary figure.",
-        "type": "junk",
-        "value": 12000
-      },
-      "vial_of_phoenix_tears": {
-        "description": "A small vial containing the tears of a phoenix, known for their healing properties.",
-        "type": "junk",
-        "value": 15000
-      },
-      "ancient_orrery": {
-        "description": "A complex orrery that models the movements of celestial bodies.",
-        "type": "junk",
-        "value": 5000
-      },
-      "titan_statue": {
-        "description": "A massive statue carved from stone, depicting a titan of old.",
-        "type": "junk",
-        "value": 8000
-      },
-      "celestial_chart": {
-        "description": "An ancient chart mapping the stars and constellations.",
-        "type": "junk",
-        "value": 3000
-      },
-      "jeweled_zodiac": {
-        "description": "A decorative zodiac made of precious jewels.",
-        "type": "junk",
-        "value": 15000
-      },
-      "diamond_eye": {
-        "description": "A flawless diamond shaped like an eye, rumored to possess mystical properties.",
-        "type": "junk",
-        "value": 20000
-      },
-      "opalescent_skull": {
-        "description": "A skull made of opalescent material, shimmering with various colors.",
-        "type": "junk",
-        "value": 25000
-      },
-      "intelligent_book": {
-        "description": "A book that possesses its own consciousness and can communicate with its reader.",
-        "type": "junk",
-        "value": 30000
-      },
-      "soul_gem": {
-        "description": "A gem that contains a trapped soul, pulsating with dark energy.",
-        "type": "junk",
-        "value": 50000
-      }
+      "ancient_crown": { "description": "An ancient crown rumored to have belonged to a long-lost king.", "type": "junk", "value": 250 },
+      "ancient_map": { "description": "A weathered map showing forgotten lands and hidden treasures.", "type": "junk", "value": 75 },
+      "ancient_orrery": { "description": "A complex orrery that models the movements of celestial bodies.", "type": "junk", "value": 500 },
+      "ancient_tome": { "description": "An ancient tome filled with cryptic writings and illustrations.", "type": "junk", "value": 40 },
+      "antique_compass": { "description": "An antique compass that always points true north.", "type": "junk", "value": 60 },
+      "broken_crown": { "description": "Missing several jewels and tarnished with age.", "type": "junk", "value": 25 },
+      "broken_dagger": { "description": "A broken dagger with a dull blade and a cracked handle.", "type": "junk", "value": 2 },
+      "broken_flute": { "description": "A cracked wooden flute, hand-carved with delicate patterns.", "type": "junk", "value": 15 },
+      "broken_pipe": { "description": "A broken smoking pipe, missing its bowl.", "type": "junk", "value": 1 },
+      "broken_scepter": { "description": "A broken scepter, its head shattered and its shaft cracked.", "type": "junk", "value": 30 },
+      "bronze_bracelet": { "description": "A bronze bracelet with intricate designs etched into its surface.", "type": "junk", "value": 8 },
+      "celestial_chart": { "description": "An ancient chart mapping the stars and constellations.", "type": "junk", "value": 300 },
+      "cloth_pouch": { "description": "A small cloth pouch, frayed at the edges.", "type": "junk", "value": 1 },
+      "cloth_tunic": { "description": "A simple cloth tunic, worn and faded.", "type": "junk", "value": 3 },
+      "crystal_eye": { "description": "A mystical crystal eye that seems to watch those who hold it.", "type": "junk", "value": 600 },
+      "crystal_orb": { "description": "A small crystalline sphere that glimmers faintly in the light.", "type": "junk", "value": 100 },
+      "diamond_eye": { "description": "A flawless diamond shaped like an eye, rumored to possess mystical properties.", "type": "junk", "value": 20000 },
+      "diamond_necklace": { "description": "A necklace adorned with a single, flawless diamond.", "type": "junk", "value": 10000 },
+      "divine_scepter": { "description": "A scepter imbued with divine power, radiating holy energy.", "type": "junk", "value": 1000 },
+      "dowsing_rod": { "description": "A simple dowsing rod made of wood, used for locating water or minerals.", "type": "junk", "value": 12 },
+      "dragons_egg": { "description": "A rare and valuable dragon's egg, warm to the touch.", "type": "junk", "value": 2000 },
+      "dragons_tooth": { "description": "A large tooth from a dragon, sharp and slightly curved.", "type": "junk", "value": 150 },
+      "faded_map": { "description": "A faded map with barely visible markings and torn edges.", "type": "junk", "value": 10 },
+      "faded_painting": { "description": "A faded painting on canvas, its colors dulled by time.", "type": "junk", "value": 12 },
+      "faded_tome": { "description": "A faded tome with yellowed pages and a cracked spine.", "type": "junk", "value": 20 },
+      "fallen_star": { "description": "A fragment of a fallen star, radiating a faint magical aura.", "type": "junk", "value": 500 },
+      "golden_idol": { "description": "A small idol made of pure gold, intricately crafted.", "type": "junk", "value": 400 },
+      "hand_mirror": { "description": "A small hand mirror with a cracked glass surface.", "type": "junk", "value": 2 },
+      "intelligent_book": { "description": "A book that possesses its own consciousness and can communicate with its reader.", "type": "junk", "value": 3000 },
+      "intelligent_painting": { "description": "A painting that seems to change and shift when observed closely.", "type": "junk", "value": 2500 },
+      "iron_figurine": { "description": "A small iron figurine, rusted and pitted with age.", "type": "junk", "value": 4 },
+      "iron_idol": { "description": "A small idol carved from iron, depicting a warrior deity.", "type": "junk", "value": 20 },
+      "iron_torc": { "description": "A simple iron torc, slightly bent and rusted.", "type": "junk", "value": 4 },
+      "jeweled_box": { "description": "A small empty box encrusted with jewels, its lid slightly ajar.", "type": "junk", "value": 150 },
+      "jeweled_crown": { "description": "A small crown adorned with semi-precious stones.", "type": "junk", "value": 80 },
+      "jeweled_dagger": { "description": "A dagger with a hilt encrusted with precious gems.", "type": "junk", "value": 300 },
+      "jeweled_statue": { "description": "A statue encrusted with precious jewels, depicting a legendary figure.", "type": "junk", "value": 1200 },
+      "jeweled_torc": { "description": "A torc adorned with precious jewels as balustrades.", "type": "junk", "value": 500 },
+      "jeweled_zodiac": { "description": "A decorative zodiac made of precious jewels.", "type": "junk", "value": 1500 },
+      "kraken_claw": { "description": "A massive claw from a kraken, still dripping with seawater.", "type": "junk", "value": 800 },
+      "lensing_crystal": { "description": "A cracked lens that once belonged to a powerful magnifying glass.", "type": "junk", "value": 18 },
+      "lost_tome": { "description": "A lost tome containing forgotten knowledge and secrets.", "type": "junk", "value": 350 },
+      "music_box": { "description": "A beautifully crafted music box that plays a haunting melody.", "type": "junk", "value": 50 },
+      "opalescent_skull": { "description": "A skull made of opalescent material, shimmering with various colors.", "type": "junk", "value": 2500 },
+      "phoenix_feather": { "description": "A rare feather from a phoenix, said to have healing properties.", "type": "junk", "value": 700 },
+      "priceless_painting": { "description": "A priceless painting by a renowned artist, its value immeasurable.", "type": "junk", "value": 1000 },
+      "royal_crown": { "description": "An ornate crown once worn by royalty, studded with precious gems.", "type": "junk", "value": 500 },
+      "royal_scepter": { "description": "An ornate scepter once wielded by royalty, encrusted with jewels.", "type": "junk", "value": 150 },
+      "sacred_idol": { "description": "A sacred idol revered by an ancient civilization.", "type": "junk", "value": 3000 },
+      "simple_ring": { "description": "A simple iron ring, slightly bent out of shape.", "type": "junk", "value": 5 },
+      "bronze_statue": { "description": "A small statue made of bronze, depicting a forgotten deity.", "type": "junk", "value": 10 },
+      "smoking_pipe": { "description": "A well-used smoking pipe made of clay, with a few chips and cracks.", "type": "junk", "value": 7 },
+      "soul_gem": { "description": "A gem that contains a trapped soul, pulsating with dark energy.", "type": "junk", "value": 1000 },
+      "steel_coin": { "description": "A dull steel coin, worn smooth from years of handling.", "type": "junk", "value": 3 },
+      "steel_torc": { "description": "A simple steel torc, slightly bent and tarnished.", "type": "junk", "value": 7 },
+      "tattered_map": { "description": "A tattered map with faded markings and torn edges.", "type": "junk", "value": 3 },
+      "tattered_tome": { "description": "A tattered tome with frayed pages and a broken spine.", "type": "junk", "value": 15 },
+      "titan_statue": { "description": "A massive statue carved from stone, depicting a titan of old.", "type": "junk", "value": 800 },
+      "triskelion_amulet": { "description": "An amulet bearing a spiraling symbol with threefold symmetry, made of bronze.", "type": "junk", "value": 6 },
+      "unholy_symbol": { "description": "A profane icon associated with forbidden rituals.", "type": "junk", "value": 75 },
+      "unusual_seashell": { "description": "A large seashell with an unusual spiral pattern and iridescent sheen.", "type": "junk", "value": 25 },
+      "vial_of_phoenix_tears": { "description": "A small vial containing the tears of a phoenix, known for their healing properties.", "type": "junk", "value": 1500 },
+      "vial_of_unicorn_blood": { "description": "A small vial containing the blood of a unicorn, prized for its magical properties.", "type": "junk", "value": 1800 },
+      "wooden_bowl": { "description": "A simple wooden bowl, chipped and worn from use.", "type": "junk", "value": 1 },
+      "wooden_figurine": { "description": "A small wooden figurine, roughly carved and unfinished.", "type": "junk", "value": 2 },
+      "wooden_idol": { "description": "A small idol carved from wood, depicting a nature deity.", "type": "junk", "value": 15 },
+      "zoological_manual": { "description": "A detailed manual describing various fantastical creatures.", "type": "junk", "value": 40 },
+      "zodiac_medallion": { "description": "A medallion inscribed with zodiac symbols, made of silver.", "type": "junk", "value": 20 }
     }
   },
 
   "treasure": {
     "discriminator": "tier",
     "groups": {
-      "basic": [[ "dagger" ]],
-      "negligible": [[ "longsword" ]],
-      "minor": [[ "rapier" ]],
-      "major": [[ "bolt_blade" ]],
-      "grand": [[ "wakizashi" ]],
-      "legendary": [[ "katana" ]],
-
-      "_basic": [
+      "basic": [
         [
           "wooden_bowl", "cloth_pouch", "broken_dagger", "tattered_map", "wooden_figurine",
           "minor_healing_potion", "firewood", "shoes", "candle", "manacles",
@@ -2519,16 +2370,16 @@
           "soap", "fish_hook", "needle_and_thread", "skillet", "whetstone"
         ]
       ],
-      "_negligible": [
+      "negligible": [
         [
-          "simple_ring", "small_statue", "bronze_bracelet", "faded_painting", "faded_tome",
+          "simple_ring", "bronze_statue", "bronze_bracelet", "faded_painting", "faded_tome",
           "crowbar", "dice", "lantern", "oil_flask", "pouch",
           "quill", "shovel", "signal_whistle", "tent", "vinegar",
           "wind_chime", "alchemist_fire", "first_aid_kit", "holy_water", "cloak_pin",
           "healing_potion"
         ]
       ],
-      "_minor": [
+      "minor": [
         [
           "dagger", "longsword", "shortbow", "chainmail", 
           "major_healing_potion",
@@ -2536,20 +2387,20 @@
           "agate", "carnelian", "moonstone", "onyx", "quartz", 
           "broken_crown", "lensing_crystal", "music_box", "ancient_tome", "broken_scepter", "dowsing_rod", 
           "holy_symbol", "thieves_tools", "antidote", "ring_of_minor_protection", "elixir_of_strength",
-          "amulet_of_health", "ring_of_minor_strength", "mantle_of_charisma", "wand_of_cure_minor_wounds", "wand_of_paralyzing_touch",
+          "amulet_of_vitality", "amulet_of_health", "ring_of_minor_strength", "mantle_of_charisma", "wand_of_cure_minor_wounds", "wand_of_paralyzing_touch",
           "canvas", "lock", "hammer", "ladder", "musical_instrument", "rope"
         ]
       ],
-      "_major": [
+      "major": [
         [
           "amethyst", "tourmaline", "bolt_blade", "potion_of_barkskin", "scroll_of_domination",
           "ancient_orrery", "ancient_crown", "sacred_idol", "lost_tome",
           "ring_of_protection", "ring_of_thorns", "belt_of_giant_strength", "boots_of_swiftness", "crystal_orb",
           "nunchaku", "wardstone", "katana", "longbow", "galvorn_mail", 
-          "longsword_of_flames", "wardstone", "gloves_of_dexterity", "amulet_of_vitality", "helm_of_intellect", "mantle_of_charisma"
+          "longsword_of_flames", "wardstone", "gloves_of_dexterity", "helm_of_intellect", "mantle_of_charisma"
         ]
       ],
-      "_grand": [
+      "grand": [
         [
           "emerald", "sapphire",
           "crown_of_insight", "helm_of_the_stars", "ring_of_strength", "ring_of_major_protection", "amulet_of_focus",
@@ -2559,7 +2410,7 @@
           "sword_of_ages", "robe_of_elvenkind", "darkwood_staff", "angelmail", "dragonhelm"
         ]
       ],
-      "_legendary": [
+      "legendary": [
         [
           "black_diamond", "diamond", "black_opal", "fire_opal", "star_ruby",
           "scroll_of_apocalypse",

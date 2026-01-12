@@ -334,7 +334,7 @@ export default class AbilityHandler {
     // randomEnemies special-case
     if (ability.target[0] === "randomEnemies") {
       const living = Combat.living(enemies);
-      if (living.length === 0) throw new Error("No living enemies");
+      if (living.length === 0) {throw new Error("No living enemies");}
 
       const nRaw = ability.target[1];
       const n =
@@ -354,21 +354,21 @@ export default class AbilityHandler {
     }
 
     const options = AbilityHandler.validTargets(ability, user, allies, enemies);
-    if (options.length === 0) throw new Error(`No valid targets for ${ability.name}`);
-    if (options.length === 1) return options[0] as any;
+    if (options.length === 0) {throw new Error(`No valid targets for ${ability.name}`);}
+    if (options.length === 1) {return options[0] as any;}
 
     // interactive vs fallback
     if (context.driver) {
       return await context.driver.select("Which target?", options.map(t => ({
         name: Array.isArray(t) ? t.map(c => c.name).join(", ") : t.name,
         short: Array.isArray(t) ? t.map(c => c.forename).join(", ") : t.forename,
-        value: t as (Combatant | Combatant[]),
+        value: t,
         disabled: false
       })));
     }
 
     // non-interactive fallback
-    return options[0] as (Combatant | Combatant[]);
+    return options[0];
   }
 
   static rollAmount(name: string, amount: string, roll: Roll, user: Combatant): number {
@@ -516,7 +516,7 @@ export default class AbilityHandler {
       events.push({ type: "cast", subject: user, spellName: spell.name, source: effect.description } as Omit<CastEvent, "turn">);
       const spellTargetOrTargets = await AbilityHandler.resolveTargetOrTargets(spell, user, context);
 
-      let { success: spellSuccess, events: spellEvents } =
+      const { success: spellSuccess, events: spellEvents } =
         await AbilityHandler.perform(spell, user, spellTargetOrTargets, context, handlers);
 
       success = spellSuccess;
@@ -655,7 +655,7 @@ export default class AbilityHandler {
       events.push({ type: "xp", subject: user, amount } as ExperienceEvent);
       success = true;
     } else if (effect.type === "summon") {
-      let amount = Deem.evaluate(effect.amount || "1", { subject: user, ...user, description: name } as unknown as GeneratorOptions) as number;
+      const amount = Deem.evaluate(effect.amount || "1", { subject: user, ...user, description: name } as unknown as GeneratorOptions) as number;
       const summoned: Combatant[] = [];
       for (let i = 0; i < amount; i++) {
         const options: Record<string, any> = effect.options || {};
@@ -687,7 +687,7 @@ export default class AbilityHandler {
         // todo handle applied traits + reify (and maybe update type???)
         if (effect.applyTraits) {
           targetCombatant.traits = Array.from(new Set([...(targetCombatant.traits || []), ...effect.applyTraits]));
-          let isPlayerTeam = false;
+          const isPlayerTeam = false;
           // reify traits (we don't actually know if player team here, but safest to assume not -- note this only governs whether we give spells from spellbooks for caster traits which really shouldn't be too relevant here afaict?)
           await Combat.reifyTraits(targetCombatant, isPlayerTeam);
         }
@@ -781,7 +781,7 @@ export default class AbilityHandler {
       if (!effect.itemName) {
         throw new Error(`acquireItem effect must specify an itemName`);
       }
-      let it = Inventory.genLoot(effect.itemName);
+      const it = Inventory.genLoot(effect.itemName);
       context.inventory = context.inventory || [];
       it.ownerId = user.id;
       it.shared = it.itemClass === "consumable";

@@ -20,12 +20,12 @@ describe('Orsino', () => {
   Generator.setting = loadSetting('fantasy');
 
   it('generate male name', () => {
-    const response = Generator.gen("name", { group: 'male' });
+    const response = Generator.gen("maleName", { race: "human" });
     expect(response).toMatch(/[A-Z][a-z]+/);
   });
 
   it('generate female name', () => {
-    const response = Generator.gen("name", { gender: 'female' });
+    const response = Generator.gen("femaleName", { race: "human" });
     expect(response).toMatch(/[A-Z][a-z]+/);
   });
 
@@ -68,7 +68,7 @@ describe('Orsino', () => {
   });
 
   it('spellcaster gen', async () => {
-    let mage = Generator.gen("pc", { setting: 'fantasy', class: 'mage', }) as unknown as Combatant;
+    const mage = Generator.gen("pc", { setting: 'fantasy', class: 'mage', }) as unknown as Combatant;
     await CharacterRecord.chooseTraits(mage, Automatic.randomSelect.bind(Automatic));
     expect(mage.traits).toBeInstanceOf(Array);
     expect(mage.traits.length).toBeGreaterThan(0);
@@ -76,7 +76,7 @@ describe('Orsino', () => {
     expect(mage.abilities.length).toBeGreaterThan(2);
     // console.log(`Mage abilities: ${mage.abilities.join(", ")}`);
 
-    let cleric = Generator.gen("pc", { setting: 'fantasy', class: 'cleric', }) as unknown as Combatant;
+    const cleric = Generator.gen("pc", { setting: 'fantasy', class: 'cleric', }) as unknown as Combatant;
     await CharacterRecord.chooseTraits(cleric, Automatic.randomSelect.bind(Automatic));
     expect(cleric.traits).toBeInstanceOf(Array);
     expect(cleric.traits.length).toBeGreaterThan(0);
@@ -139,9 +139,9 @@ describe('Orsino', () => {
   });
 
   it('name presentation', async () => {
-    const pc      = Generator.gen("pc", { setting: "fantasy" }) as unknown as Combatant;
-    const npc     = Generator.gen("npc", { setting: "fantasy", targetCr: pc.level }) as unknown as Combatant;
-    const animal  = Generator.gen("animal", { setting: "fantasy" }) as unknown as Combatant;
+    const pc = Generator.gen("pc", { setting: "fantasy" }) as unknown as Combatant;
+    const npc = Generator.gen("npc", { setting: "fantasy", targetCr: pc.level }) as unknown as Combatant;
+    const animal = Generator.gen("animal", { setting: "fantasy" }) as unknown as Combatant;
     const monster = Generator.gen("monster", { setting: "fantasy" }) as unknown as Combatant;
 
     console.warn("\n--- Character Presentations (minimal) ---\n");

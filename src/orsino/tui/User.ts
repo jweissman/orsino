@@ -38,7 +38,7 @@ export default class User {
     const selection = await select({
       message,
       choices: choices as any
-    }) as string | Answers;
+    });
     return selection;
   }
 

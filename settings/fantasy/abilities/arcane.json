@@ -295,7 +295,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d6",
+        "amount": "=1d4",
         "kind": "cold"
       }
     ]
@@ -352,7 +352,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=2d6",
+        "amount": "=3d6",
         "kind": "acid",
         "saveForHalf": true
       }
@@ -1009,7 +1009,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d4",
+        "amount": "=2d6",
         "kind": "lightning",
         "saveForHalf": true
       }
@@ -1029,7 +1029,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d3 + floor(#level/3)",
+        "amount": "=1d4 + floor(#level/3)",
         "kind": "force"
       }
     ]
@@ -1047,7 +1047,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d6",
+        "amount": "=1d8",
         "kind": "fire",
         "saveForHalf": true
       }
@@ -1066,7 +1066,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d6",
+        "amount": "=2d6",
         "kind": "lightning"
       }
     ]
@@ -1192,14 +1192,14 @@
     "level": 2,
     "aspect": "arcane",
     "school": "evocation",
-    "description": "Fire a ray of frost, dealing 1d4 damage and reducing the target's speed by 10 feet for 3 rounds.",
+    "description": "Fire a dazzling blue ray of cold energy at a target.",
     "target": [
       "enemy"
     ],
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d4",
+        "amount": "=2d6",
         "kind": "cold"
       }
     ]
@@ -1217,7 +1217,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=2d6",
+        "amount": "=3d6",
         "kind": "bludgeoning"
       },
       {
@@ -1241,7 +1241,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d8",
+        "amount": "=2d8",
         "kind": "lightning",
         "saveForHalf": true,
         "cascade": {
@@ -1264,7 +1264,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d10",
+        "amount": "=2d10",
         "kind": "sonic",
         "saveForHalf": true
       }
@@ -1303,7 +1303,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=2d8",
+        "amount": "=3d8",
         "kind": "electric",
         "saveForHalf": true
       },
@@ -1345,7 +1345,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=2d6",
+        "amount": "=3d8",
         "kind": "bludgeoning",
         "saveNegates": true
       },
@@ -1485,7 +1485,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=5d6",
+        "amount": "=6d8",
         "kind": "cold",
         "saveForHalf": true
       }
@@ -1647,7 +1647,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=10d6",
+        "amount": "=10d8",
         "kind": "necrotic",
         "saveForHalf": true
       }
@@ -1943,7 +1943,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=3d3",
+        "amount": "=1d3+#level",
         "kind": "necrotic"
       },
       {
@@ -2027,7 +2027,7 @@
       },
       {
         "type": "damage",
-        "amount": "=1d2",
+        "amount": "=3d3+floor(#level/2)",
         "kind": "cold"
       }
     ]
@@ -2086,11 +2086,17 @@
         "type": "debuff",
         "status": "weakened",
         "saveKind": "fortitude",
+        "saveDC": 18
+      },
+      {
+        "type": "debuff",
+        "status": "despair",
+        "saveKind": "will",
         "saveDC": 15
       },
       {
         "type": "damage",
-        "amount": "=2d6",
+        "amount": "=3d6",
         "kind": "necrotic"
       }
     ]
@@ -2315,7 +2321,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=3d6 + #level",
+        "amount": "=6d8 + #level",
         "kind": "necrotic",
         "saveForHalf": true
       },
@@ -2764,7 +2770,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d6",
+        "amount": "=2d6",
         "kind": "psychic"
       },
       {

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from 'bun:test';
+import { describe, it, expect } from 'bun:test';
 import LanguageManager, { Concept } from '../../src/orsino/Language';
 import Deem from '../../src/deem';
 import { Template } from '../../src/orsino/Template';
@@ -6,7 +6,7 @@ import { Template } from '../../src/orsino/Template';
 describe('Language features', () => {
   const langManager = LanguageManager.instance;
 
-  it('should load languages correctly', async () => {
+  it('should load languages correctly', () => {
     const westron = langManager.getDictionary('westron');
     expect(westron).not.toBeNull();
     expect(westron.name).toBe('Westron');
@@ -26,9 +26,19 @@ describe('Language features', () => {
     expect(quenya.translate('firmament')).toBe('Menel');
     expect(quenya.translate('fire')).toBe('Nár');
     expect(quenya.translate('star')).toBe('Elen');
+
+    const khuzdul = langManager.getDictionary('khuzdul');
+    expect(khuzdul).not.toBeNull();
+    expect(khuzdul?.name).toBe('Khuzdul');
+    expect(khuzdul.missingConcepts()).toEqual([]);
+    expect(khuzdul.translate('earth')).toBe('Ardhan');
+    expect(khuzdul.translate('sky')).toBe('Rakiya');
+    expect(khuzdul.translate('firmament')).toBe('Zul');
+    expect(khuzdul.translate('fire')).toBe('Esh');
+    expect(khuzdul.translate('star')).toBe('Kochav');
   });
 
-  it('should translate westron words correctly', async () => {
+  it('should translate westron words correctly', () => {
     const westron = langManager.getDictionary('westron');
     expect(westron).not.toBeNull();
 
@@ -43,7 +53,7 @@ describe('Language features', () => {
     expect(westron.translate('spirit', 'fire')).toEqual('Arodnesfýr');
   });
 
-  it('should translate quenya words correctly', async () => {
+  it('should translate quenya words correctly', () => {
     const quenya = langManager.getDictionary('quenya');
     expect(quenya).not.toBeNull();
 
@@ -75,36 +85,54 @@ describe('Language features', () => {
     expect(quenya.translate("hill", "fate")).toEqual("Amon Amarth");
     expect(quenya.translate("rock", "song")).toEqual("Gondolindë");
     expect(quenya.translate("spray", "star")).toEqual("Vingelot");
+    expect(quenya.translate("silver", "foot")).toEqual("Celebrinda");
+  });
+
+  it('should translate khuzdul words correctly', () => {
+    const khuzdul = langManager.getDictionary('khuzdul');
+    expect(khuzdul).not.toBeNull();
+
+    expect(khuzdul.translate('stone')).toBe('Sela');
+    expect(khuzdul.translate('mountain')).toBe('Har');
+    expect(khuzdul.translate('great', 'fortress')).toBe('Gabilgathor');
   });
 
   it('should handle existing terrain features', () => {
-    let westron = langManager.getDictionary('westron');
-    let quenya = langManager.getDictionary('quenya');
+    const westron = langManager.getDictionary('westron');
+    const quenya = langManager.getDictionary('quenya');
+    const khuzdul = langManager.getDictionary('khuzdul');
     Template.bootstrapDeem();
-    debugger;
     const terrainKinds = Deem.evaluate("gather(terrainFeatures)", { setting: 'fantasy'})
-    for (let kind of terrainKinds as string[]) {
+    for (const kind of terrainKinds as string[]) {
       const commonTx = westron?.translate(kind as Concept);
       expect(commonTx).toBeDefined();
       const elvishTx = quenya?.translate(kind as Concept);
       expect(elvishTx).toBeDefined();
+      const dwarvishTx = khuzdul?.translate(kind as Concept);
+      expect(dwarvishTx).toBeDefined();
 
       const features = Deem.evaluate(`gatherEntries(terrainFeatures, ${JSON.stringify(kind)})`);
-      for (let feature of features as Concept[]) {
+      for (const feature of features as Concept[]) {
         const commonTranslation = westron?.translate(feature);
         expect(commonTranslation).toBeDefined();
 
         const elvishTranslation = quenya?.translate(feature);
         expect(elvishTranslation).toBeDefined();
+
+        const dwarvishTranslation = khuzdul?.translate(feature);
+        expect(dwarvishTranslation).toBeDefined();
       }
 
       const affixes = Deem.evaluate(`gatherEntries(townAffixes, ${JSON.stringify(kind)})`);
-      for (let affix of affixes as Concept[]) {
+      for (const affix of affixes as Concept[]) {
         const commonTranslation = westron?.translate(affix);
         expect(commonTranslation).toBeDefined();
 
         const elvishTranslation = quenya?.translate(affix);
         expect(elvishTranslation).toBeDefined();
+
+        const dwarvishTranslation = khuzdul?.translate(affix);
+        expect(dwarvishTranslation).toBeDefined();
       }
     }
   })

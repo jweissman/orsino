@@ -113,7 +113,7 @@ export class Inventory {
         throw new Error(`Could not find itemName ${itemKey} in masterWeapon table`);
       }
       // note: straight lookup from master will actually be missing a bunch of true ItemInstance fields like id etc
-      let weapon = {
+      const weapon = {
         id: this.genId('weapon'),
         ...masterWeapon,
         key: itemKey,
@@ -174,7 +174,7 @@ export class Inventory {
   static materialize = (itemKey: string, inventory: ItemInstance[]): ItemInstance => {
     const ref = itemKey;
     const byId = inventory.find(i => i.id === ref);
-    if (byId) return byId;
+    if (byId) {return byId;}
 
     // this can cause 'weapon sharing' bugs if two pcs have same weapon key (they will still need different ids so go ahead and spawn new instances)
     // const byKey = inventory.find(i => i.key === ref);
@@ -235,7 +235,7 @@ export class Inventory {
     return inventoryCounts;
   }
   static slotForItem(it: ItemInstance): EquipmentSlot {
-    if (it.itemClass === "weapon") return "weapon";
+    if (it.itemClass === "weapon") {return "weapon";}
     if (it.itemClass === "armor") {
       // if you’re using kind=body/helm/shield etc, map here
       return (it.kind as EquipmentSlot) || "body";
@@ -284,8 +284,8 @@ export class Inventory {
   static KEY_RE = /^[a-z0-9_]+$/;          // longsword, chain_mail
 
   static assertItemRef(ref: string, ctx: string) {
-    if (this.ID_RE.test(ref)) return;
-    if (this.KEY_RE.test(ref)) return;
+    if (this.ID_RE.test(ref)) {return;}
+    if (this.KEY_RE.test(ref)) {return;}
     throw new Error(`Invalid item ref "${ref}" in ${ctx}. Expected id (x:y) or key (snake_case).`);
   }
 }

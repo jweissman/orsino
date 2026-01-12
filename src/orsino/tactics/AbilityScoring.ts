@@ -167,13 +167,13 @@ export class AbilityScoring {
         }
       });
 
-      let debuffEffects = ability.effects.filter(e => e.type === "debuff");
-      for (let effect of debuffEffects) {
+      const debuffEffects = ability.effects.filter(e => e.type === "debuff");
+      for (const effect of debuffEffects) {
         if (effect?.status) {
-          let status = StatusHandler.instance.dereference(effect.status);
+          const status = StatusHandler.instance.dereference(effect.status);
           if (status && status.effect) {
             if (aoe) {
-              const allHaveAlready = Combat.living(enemies).every(e => e.activeEffects?.some(ae => ae.name === status!.name));
+              const allHaveAlready = Combat.living(enemies).every(e => e.activeEffects?.some(ae => ae.name === status.name));
               if (allHaveAlready) {
                 return impossible;
               }
@@ -183,7 +183,7 @@ export class AbilityScoring {
                 return impossible;
               }
               if (target) {
-                const hasDebuffAlready = target.activeEffects?.some(e => e.name === status!.name);
+                const hasDebuffAlready = target.activeEffects?.some(e => e.name === status.name);
                 if (hasDebuffAlready) {
                   return impossible;
                 }
@@ -213,12 +213,12 @@ export class AbilityScoring {
       // if we already _have_ this buff and it targets ["self"] -- don't use it
       if (ability.target.includes("self") && ability.target.length === 1) { //} &&
         // let buffEffect = ability.effects.find(e => e.type === "buff");
-        let buffEffects = ability.effects.filter(e => e.type === "buff");
-        for (let buffEffect of buffEffects) {
+        const buffEffects = ability.effects.filter(e => e.type === "buff");
+        for (const buffEffect of buffEffects) {
           if (buffEffect?.status) {
-            let status = StatusHandler.instance.dereference(buffEffect.status);
+            const status = StatusHandler.instance.dereference(buffEffect.status);
             if (status && status.effect) {
-              const hasBuffAlready = user.activeEffects?.some(e => e.name === status!.name);
+              const hasBuffAlready = user.activeEffects?.some(e => e.name === status.name);
               if (hasBuffAlready) {
                 return impossible;
               }
@@ -246,8 +246,8 @@ export class AbilityScoring {
       });
     }
     if (summon) {
-      let maxSummons = Combat.maxSummoningsForCombatant(user);
-      let currentSummons = user.activeSummonings ? Combat.living(user.activeSummonings).length : 0;
+      const maxSummons = Combat.maxSummoningsForCombatant(user);
+      const currentSummons = user.activeSummonings ? Combat.living(user.activeSummonings).length : 0;
       if (currentSummons >= maxSummons) {
         return impossible;
       }
@@ -276,21 +276,6 @@ export class AbilityScoring {
       });
     }
 
-    // note: ideally these shouldn't be valid actions in the first place!!
-    // they really should be disabled at other layers if not usable
-    // if a skill and already used, give -10 penalty
-    // if (ability.type === "skill" && user.abilitiesUsed?.includes(ability.name)) {
-    //   score = impossible;
-    // }
-
-    // // if a spell and no spell slots remaining, give -10 penalty
-    // if (ability.type === "spell") {
-    //   const spellSlotsRemaining = (Combat.maxSpellSlotsForCombatant(user) || 0) - (user.spellSlotsUsed || 0);
-    //   if (spellSlotsRemaining <= 0) {
-    //     score = impossible;
-    //   }
-    // }
-
     return Math.round(score);
   }
 
@@ -312,21 +297,21 @@ export class AbilityScoring {
   }
 
   private static abilityBoostsAC(effect: any): boolean {
-    if (effect.type !== "buff") return false;
-    let status = StatusHandler.instance.dereference(effect.status);
+    if (effect.type !== "buff") {return false;}
+    const status = StatusHandler.instance.dereference(effect.status);
     if (status && status.effect && status.effect.ac && status.effect.ac < 0) {
       return true;
     }
     return false;
   }
 
-  private static expectedDamage(ability: Ability, user: Combatant, context: CombatContext): number {
+  static expectedDamage(ability: Ability, user?: Combatant, context?: CombatContext): number {
     let totalDamage = 0;
     ability.effects.forEach(effect => {
       let effectDamage = 0;
-      if (effect.type === "attack") {
+      if (effect.type === "attack" && user && context) {
         let expectedDamage = 1;
-        let attackDie = Fighting.effectiveAttackDie(user, context);
+        const attackDie = Fighting.effectiveAttackDie(user, context);
 
         // check for simple XdY+Z or XdY-Z
         const attackDieSolvable = attackDie.match(/^(\d+)d(\d+)([+-]\d+)?$/);
@@ -372,12 +357,14 @@ export class AbilityScoring {
         }
       }
 
-      const livingEnemies = Combat.living(context.enemies).length;
-      if (ability.target.includes("enemies")) {
-        effectDamage *= livingEnemies;
-      } else if (ability.target[0] === "randomEnemies" && ability.target.length === 2) {
-        const count = ability.target[1] as any as number;
-        effectDamage *= Math.min(count, livingEnemies);
+      if (context) {
+        const livingEnemies = Combat.living(context.enemies).length;
+        if (ability.target.includes("enemies")) {
+          effectDamage *= livingEnemies;
+        } else if (ability.target[0] === "randomEnemies" && ability.target.length === 2) {
+          const count = ability.target[1] as any as number;
+          effectDamage *= Math.min(count, livingEnemies);
+        }
       }
 
       totalDamage += effectDamage;

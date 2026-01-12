@@ -17,7 +17,7 @@ import Automatic from "../tui/Automatic";
 import { Select } from "../types/Select";
 import { Answers } from "inquirer";
 import Deem from "../../deem";
-import Generator from "../Generator";
+import Generator, { GeneratorOptions } from "../Generator";
 
 type PlayerCharacterRace = string; // "human" | "elf" | "dwarf" | "halfling" | "orc" | "fae" | "gnome";
 
@@ -42,7 +42,7 @@ export default class CharacterRecord {
   }
 
   static validClassesForRace(race: PlayerCharacterRace): string[] {
-    let options = Deem.evaluate("dig(lookup(racialModifier, '" + race + "'), occupationOptions)") as string[];
+    const options = Deem.evaluate("dig(lookup(racialModifier, '" + race + "'), occupationOptions)") as string[];
     if (options.includes("all")) {
       return Deem.evaluate("gather(classModifier)") as string[];
     }
@@ -56,17 +56,13 @@ export default class CharacterRecord {
     selectionMethod: Select<Answers> = User.selection.bind(User),
     schoolOrDomainRestriction: string = 'all'
   ): Promise<string | boolean> {
-    // console.log(`Picking level ${spellLevel} ${aspect} spell for restriction: ${schoolOrDomainRestriction} (already known: ${alreadyKnown.join(", ")})`);
-
     const abilityHandler = AbilityHandler.instance;
     await abilityHandler.loadAbilities();
     let spellChoices = abilityHandler.spellKeysByLevel(aspect, spellLevel, false);
     spellChoices = spellChoices.filter(spell => alreadyKnown.indexOf(spell) === -1);
-    // console.log(`Found ${spellChoices.length} level ${spellLevel} ${aspect} spells before filtering: ${spellChoices.join(", ")}`);
     const spellChoicesDetailed = spellChoices.map(spellName => {
       const spell = abilityHandler.getAbility(spellName);
       const matchesRestriction = (spell.school === schoolOrDomainRestriction || spell.domain === schoolOrDomainRestriction || schoolOrDomainRestriction === 'all');
-      // console.log(`Considering spell ${spell.name} (school: ${spell.school}, domain: ${spell.domain}) -- matches restriction (${schoolOrDomainRestriction}): ${matchesRestriction}`);
       return {
         name: Words.capitalize(spell.name.padEnd(20)) + ' | ' +
           Stylist.colorize(spell.description, 'brightBlack'),
@@ -77,7 +73,6 @@ export default class CharacterRecord {
 
     });
     const available = spellChoicesDetailed.filter(s => !s.disabled);
-    // console.warn(`Picking level ${spellLevel} ${aspect} spell (already known: ${alreadyKnown.join(", ")}) with restriction: ${schoolOrDomainRestriction} -- available: ${available.map(s => s.value).join(", ")}`);
     if (available.length === 0) {
       console.warn(`No available level ${spellLevel} ${aspect} spells to choose from for restriction: ${schoolOrDomainRestriction}`);
       return false;
@@ -91,53 +86,31 @@ export default class CharacterRecord {
 
   static async chargen(
     prompt: string,
-    pcGenerator: (options?: any) => Combatant = (options) => Generator.gen("pc", options) as unknown as Combatant,
+    pcGenerator: (options?: GeneratorOptions) => Combatant = (options) => Generator.gen("pc", options) as unknown as Combatant,
     selectionMethod: Select<Answers> = User.selection.bind(User),
     confirmMethod: (message: string) => Promise<boolean> = User.confirmation.bind(User)
   ): Promise<Combatant> {
-
     let pc: Combatant = pcGenerator({ setting: 'fantasy' });
     let accepted = false;
     while (!accepted) {
-      // const shouldWizard = await selectionMethod(
-      //   'Would you like to customize this PC? ' + prompt,
-      //   ['Yes', 'No']
-      // );
-      // if (shouldWizard === 'Yes') {
       const doWizard = await confirmMethod(`Customize PC ${prompt}?`);
-      // console.warn(`Character creation wizard: ${doWizard}`);
       if (doWizard) {
         const raceSelect = await selectionMethod(
           'Select a race for this PC: ' + prompt,
           this.pcRaces
         ) as PlayerCharacterRace;
-
-        const occupationSelect = await selectionMethod(
+        const occupationSelect: string = await selectionMethod(
           'Select an occupation for this PC: ' + prompt,
           this.validClassesForRace(raceSelect)
-        );
-
+        ) as string;
         pc = pcGenerator({ setting: 'fantasy', race: raceSelect, class: occupationSelect });
         await this.chooseTraits(pc, selectionMethod);
-        // await this.pickInitialSpells(pc, selectionMethod);
-
         await Presenter.printCharacterRecord(pc, []);
-        const confirm = await confirmMethod(
-          'Use this PC? ' + prompt,
-          // ['Yes', 'No']
-        );
-        accepted = confirm; // === 'Yes';
+        accepted = await confirmMethod('Use this PC? ' + prompt);
       } else {
-
         pc = await this.autogen(this.pcRaces, pcGenerator);
-        // await this.pickInitialSpells(pc, Automatic.randomSelect.bind(Automatic));
-
         await Presenter.printCharacterRecord(pc, []);
-        accepted = await confirmMethod(
-          'Use this PC? ' + prompt
-          // ['Yes', 'No']
-        ); // === 'Yes';
-
+        accepted = await confirmMethod('Use this PC? ' + prompt);
       }
     }
     return pc;
@@ -147,8 +120,7 @@ export default class CharacterRecord {
     racePool: PlayerCharacterRace[] = this.pcRaces,
     pcGenerator: (options?: any) => Combatant = (options) => Generator.gen("pc", options) as unknown as Combatant,
   ) {
-    // const race = this.pcRaces[Math.floor(Math.random() * this.pcRaces.length)];
-    const race = racePool![Math.floor(Math.random() * racePool!.length)];
+    const race = racePool[Math.floor(Math.random() * racePool.length)];
     const validClasses = this.validClassesForRace(race);
     const occupation = validClasses[Math.floor(Math.random() * validClasses.length)];
     const pc = pcGenerator({
@@ -201,8 +173,6 @@ export default class CharacterRecord {
       if (trait.domain) {
         pc.domain = trait.domain;
       }
-      // console.log(`${Presenter.minimalCombatant(pc)} gained the trait: ${Words.capitalize((selectedTrait as Trait).name)}.`);
-
       delete pc.traitChoices;
     }
   }
@@ -268,25 +238,15 @@ export default class CharacterRecord {
       );
     }
 
-    // const doChoose = await selectionMethod(
-    //   `Would you like to customize PCs using the wizard?`,
-    //   ['Yes', 'No']
-    // );
-    // if (doChoose === 'No') {
-    //   return this.chooseParty(pcGenerator, partySize, Automatic.randomSelect.bind(Automatic));
-    // }
-
     const party: Combatant[] = [];
 
     let pc: Combatant | null = null;
     while (party.length < partySize) {
       const whichPc = '(' + (party.length + 1) + '/' + partySize + ')';
       pc = await this.chargen(whichPc, pcGenerator, select, confirm);
-      // }
 
       if (pc) {
         if (party.some(p => p.name === pc?.name)) {
-          // console.warn(Stylist.bold(`A PC named ${(pc.name)} is already in the party. Please choose a different name.`));
           continue;
         }
         await Presenter.printCharacterRecord(pc, []);
@@ -360,7 +320,7 @@ export default class CharacterRecord {
         { disabled: false, name: `Max HP (${pc.maximumHitPoints})`, value: 'maximumHitPoints', short: 'HP' },
       ]) as keyof Combatant;
 
-      const statistic = stat as keyof Combatant;
+      const statistic = stat;
       // @ts-expect-error -- TS doesn't like dynamic access here (can't work out what type pc[statistic] is)
       // maybe better to have a 'stats' model that's only numbers?
       pc[statistic] = (pc[statistic] as number || 0) + 1;

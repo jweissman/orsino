@@ -4,6 +4,7 @@ import AbilityHandler, { Ability, AbilityEffect } from "./Ability";
 import Generator from "./Generator";
 import { Armor, Inventory, Weapon } from "./Inventory";
 import StatusHandler, { StatusEffect, StatusModifications } from "./Status";
+import { AbilityScoring } from "./tactics/AbilityScoring";
 import { Template } from "./Template";
 import TraitHandler from "./Trait";
 import Presenter from "./tui/Presenter";
@@ -155,7 +156,7 @@ export default class Books {
     traits.sort((a, b) => a.localeCompare(b));
 
     this.write(`## Traits\n`);
-    let traitGroups: { [key: string]: string[] } = {};
+    const traitGroups: { [key: string]: string[] } = {};
     traits.forEach(traitName => {
       const trait = TraitHandler.instance.getTrait(traitName);
       if (trait) {
@@ -272,6 +273,7 @@ export default class Books {
       for (let i = 0; i < maxSpellsPerLevel; i++) {
         let row = "| ";
         for (let level = 0; level <= 9; level++) {
+          const pseudocombatant = { level, wis: 10 } as unknown as Combatant;
           if (spellLevels[level] && spellLevels[level][i]) {
             const ability = AbilityHandler.instance.getAbility(spellLevels[level][i]);
             const category = ability?.school || ability?.domain || "";
@@ -279,7 +281,8 @@ export default class Books {
             if (!categoryIcons[category]) {
               throw new Error(`No icon found for spell category '${category}' (spell: '${ability?.name}')`);
             }
-            row += `[<small>${icon} ${Words.capitalize(spellLevels[level][i])}</small>](#${spellLevels[level][i]}) | `;
+            const averageDamage = AbilityScoring.expectedDamage(ability, pseudocombatant).toFixed(1);
+            row += `[<small>${icon} ${Words.capitalize(spellLevels[level][i])}</small>](#${spellLevels[level][i]}) [${averageDamage}] | `;
           } else {
             row += " | ";
           }
@@ -289,13 +292,12 @@ export default class Books {
 
 
 
-      this.write("\n| Name | Level | School/Domain | Description | Details |");
-      this.write("|---|---|---|---|-----|");
+      this.write("\n| Name | School/Domain (Level) | Description | Details |");
+      this.write("|---|---|---|-----|");
       spells.forEach(spellName => {
         const ability = AbilityHandler.instance.getAbility(spellName);
         if (ability && ability.type === "spell") {
-          let row = `| <p id="${ability.name}">${Words.capitalize(ability.name)}</p> | `;
-          row += `${ability.level || "Cantrip"} `;
+          let row = `| <p id="${ability.name}">${Words.capitalize(ability.name)}</p> `;
           if (ability.school) {
             row += `| School of ${Words.capitalize(ability.school)}`;
           } else if (ability.domain) {
@@ -303,8 +305,9 @@ export default class Books {
           } else {
             row += "| -- ";
           }
-          row += `| _${ability.description}_ | `;
-          row += `${Presenter.describeAbility(ability).replace(/\n/g, " ")} |`;
+          row += `${ability.level || "Cantrip"} `;
+          row += `| _${ability.description}_ `;
+          row += `| ${Presenter.describeAbility(ability).replace(/\n/g, " ")} |`;
           this.write(row);
           // this.write(`\n#### ${ability.name}`); // (${ability.domain || ability.school}/${ability.level})`);
           // this.write(`Level: ${ability.level || 1} ${ability.school ? `| School: ${ability.school}` : ''}${ability.domain ? `| Domain: ${ability.domain}` : ''}`);
@@ -539,6 +542,8 @@ export default class Books {
 
     const treasureTypes = Deem.evaluate("gather(treasure)") as string[];
     for (const treasureType of treasureTypes) {
+      let totalValue = 0;
+
       this.write(`\n### ${Words.capitalize(treasureType)} Treasure\n`);
       this.write("| Treasure | Description | Value | Kind |");
       this.write("|----------|-------------|-------|------|");
@@ -547,6 +552,11 @@ export default class Books {
         const treasureEntry = Words.humanize(treasureEntries[i]);
         const item = Inventory.genLoot(treasureEntries[i]);
         this.write(`| ${treasureEntry} | ${item.description || 'A mysterious item'} | ${item.value || 'varies'} gp | ${item.itemClass || '--'} |`);
+        totalValue += item.value || 0;
+      }
+      if (totalValue > 0) {
+        this.write(`\n**Total Estimated Value:** ${totalValue} gp\n`);
+        this.write(`**Average Value per Item:** ${(totalValue / treasureEntries.length).toFixed(2)} gp\n`);
       }
     }
   }

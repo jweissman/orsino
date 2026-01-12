@@ -1,5 +1,9 @@
 
-export type GenerationTemplateType = 'name'
+export type GenerationTemplateType
+  = // 'name'
+  | 'maleName'
+  | 'femaleName'
+  | 'androgynousName'
   | 'surname'
   | 'loot'
   | 'pc'

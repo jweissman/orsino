@@ -1,6 +1,5 @@
-import Deem from "../../deem";
 import { AbilityEffect } from "../Ability";
-import { Armor, Equipment, Inventory, Weapon } from "../Inventory";
+import { Inventory } from "../Inventory";
 import { StatusModifications } from "../Status";
 
 export interface ItemInstance {
@@ -28,6 +27,5 @@ export interface ItemInstance {
 
 
 export const materializeItem = (itemKey: string, inventory: ItemInstance[]): ItemInstance => {
-  // console.log(`Materializing item ${itemKey} from inventory of ${inventory.length} items`);
   return Inventory.materialize(itemKey, inventory);
 }

@@ -80,7 +80,7 @@ export class Template {
       return Generator.genList(type, {}, count);
     }) as DeemFunc;
 
-    Deem.stdlib.mapGenList = ((type: GenerationTemplateType, items: any[], property: string) => {
+    Deem.stdlib.mapGenList = ((type: GenerationTemplateType, items: DeemValue[], property: string) => {
       // console.log(`mapGenList for type '${type}' over items:`, items);
       const results = [];
       // for (let item of items) {

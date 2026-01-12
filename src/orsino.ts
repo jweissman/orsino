@@ -131,6 +131,9 @@ export default class Orsino {
 
       // show pc records
       for (const pc of pcs) {
+        pc.hp = pc.maximumHitPoints;
+        pc.dead = false;
+
         outputSink(await Presenter.characterRecord(pc, inventory));
       }
 

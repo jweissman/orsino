@@ -169,7 +169,7 @@ export default class Dungeoneer {
   ) {
     this.dry = options.dry || Orsino.environment === 'test';
     this.roller = options.roller || Commands.roll.bind(Commands);
-    this.dungeonGen = options.dungeonGen || Dungeoneer.defaultGen;
+    this.dungeonGen = options.dungeonGen || Dungeoneer.defaultGen.bind(this);
     this.playerTeam = options.playerTeam || Dungeoneer.defaultTeam();
     this.driver = options.driver || new NullDriver();
 
@@ -410,7 +410,7 @@ export default class Dungeoneer {
     while (!combat.isOver()) {
       const result = await combat.round(
         // flee callback
-        async (combatant: Combatant) => {
+        (combatant: Combatant) => {
           // find another room for them
           const newRoom = this.nextRoom;
           if (newRoom) {
@@ -530,9 +530,11 @@ export default class Dungeoneer {
     while (
       !done && Combat.living(this.playerTeam.combatants).length > 0
     ) {
+      const fullHealth = this.playerTeam.combatants.every(c => c.hp === c.maximumHitPoints);
+      const noActiveEffects = this.playerTeam.combatants.every(c => (c.activeEffects || []).length === 0);
       const options = [
         { name: "Move to next room", value: "move", short: 'Continue', disabled: false }, //room === this.dungeon!.bossRoom },
-        { name: "Rest (stabilize unconscious party members, chance to use healing items, 30% encounter)", value: "rest", short: 'Rest', disabled: false },
+        { name: "Rest (stabilize unconscious party members, chance to use healing items, 30% encounter)", value: "rest", short: 'Rest', disabled: fullHealth && noActiveEffects },
         { name: "Search the room", value: "search", short: 'Search', disabled: this.featureDone(room, 'search') },
         { name: "Review party status", value: "status", short: 'Status', disabled: false },
       ];
@@ -578,7 +580,7 @@ export default class Dungeoneer {
       const choice = await this.select("What would you like to do?", options) as string;
       if (choice === "status") {
         for (const c of this.playerTeam.combatants) {
-          let playerGear = Inventory.propertyOf(c, this.playerTeam.inventory);
+          const playerGear = Inventory.propertyOf(c, this.playerTeam.inventory);
           await Presenter.printCharacterRecord(c, playerGear, this.outputSink);
         }
         if (Object.keys(Inventory.quantities(this.playerTeam.inventory.filter(ii => ii.shared))).length > 0) {
@@ -677,7 +679,7 @@ export default class Dungeoneer {
           room.completedFeatures = room.completedFeatures || [];
           room.completedFeatures.push('trap');
 
-          let result = await this.handleTrap(trap);
+          const result = await this.handleTrap(trap);
           if (!result.survived) {
             // console.warn("The party was defeated by the trap...");
             return { leaving: true };
@@ -764,7 +766,7 @@ export default class Dungeoneer {
         for (const effect of fx) {
           const { events } = await AbilityHandler.handleEffect(source, effect, trapPseudocombatant, pc, context, Commands.handlers(this.roller));
           for (const event of events) {
-            await this.emit({ ...event, source: trap.name } as DungeonEvent);
+            await this.emit({ ...event, source: trap.name } as unknown as DungeonEvent);
             if (event.type === "teleport") {
               return { interactorId: alertCheck.actor.id, leaving: false, newLocation: (event as TeleportEvent).location, survived: true };
             } else if (event.type === "planeshift") {
@@ -954,7 +956,7 @@ export default class Dungeoneer {
       for (const c of this.playerTeam.combatants) {
         if (c.hp <= 0 && c.dead !== true) {
           let systemShockDc = 10;
-          const conMod = Fighting.statMod(c.con as number);
+          const conMod = Fighting.statMod(c.con);
           systemShockDc += conMod;
           const systemShockRoll = this.roller(c, `System Shock Save (DC ${systemShockDc})`, 20);
           const total = systemShockRoll.amount;
@@ -1012,7 +1014,7 @@ export default class Dungeoneer {
                     const { events } = await AbilityHandler.handleEffect(it.name, effect, c, c, nullCombatContext, Commands.handlers(this.roller));
                     // events.forEach(e => this.emit({ ...e, turn: -1 } as DungeonEvent));
                     for (const event of events) {
-                      await this.emit({ ...event, turn: -1 } as DungeonEvent);
+                      await this.emit({ ...event, turn: -1 } as unknown as DungeonEvent);
                     }
                   }
                   // consume one

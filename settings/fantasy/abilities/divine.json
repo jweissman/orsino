@@ -276,12 +276,12 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=1d4",
+        "amount": "=1d2",
         "kind": "necrotic"
       },
       {
         "type": "damage",
-        "amount": "=1d3",
+        "amount": "=1d2",
         "kind": "psychic"
       },
       {
@@ -767,7 +767,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=3d6",
+        "amount": "=4d6+#level",
         "kind": "bludgeoning",
         "saveForHalf": true
       },
@@ -1287,8 +1287,8 @@
       }
     ]
   },
-  "deathbolt": {
-    "name": "Deathbolt",
+  "darkbolt": {
+    "name": "Dark Bolt",
     "type": "spell",
     "level": 1,
     "aspect": "divine",
@@ -1952,7 +1952,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=2d6",
+        "amount": "=3d6",
         "kind": "radiant",
         "saveForHalf": true
       },
@@ -2614,7 +2614,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=2d10",
+        "amount": "=3d10",
         "kind": "cold",
         "saveForHalf": true
       },
@@ -2985,7 +2985,7 @@
     "effects": [
       {
         "type": "damage",
-        "amount": "=5d6",
+        "amount": "=6d12",
         "kind": "psychic",
         "saveForHalf": true
       },
@@ -3051,7 +3051,7 @@
       },
       {
         "type": "damage",
-        "amount": "=1d2+#level",
+        "amount": "=1+#level",
         "kind": "bludgeoning",
         "saveForHalf": true
       },

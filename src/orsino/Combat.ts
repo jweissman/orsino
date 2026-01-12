@@ -22,6 +22,8 @@ import Words from "./tui/Words";
 import { CombatContext, pseudocontextFor } from "./types/CombatContext";
 import Sample from "./util/Sample";
 import { Driver, NullDriver } from "./Driver";
+import { GeneratorOptions } from "./Generator";
+import { never } from "./util/never";
 
 export type ChoiceSelector<T extends Answers> = (description: string, options: Choice<T>[], combatant?: Combatant) => Promise<T>;
 
@@ -203,7 +205,7 @@ export default class Combat {
   ): void {
     const equipmentList: StatusEffect[] = [];
     for (const [slot, equipmentKey] of Object.entries(combatant.equipment || {})) {
-      const item = materializeItem(equipmentKey, inventory) as ItemInstance;
+      const item = materializeItem(equipmentKey, inventory);
       if (item.effect) {
         // console.log(`Applying equipment effect from ${item.name} to ${combatant.name}`);
         equipmentList.push({ ...item, sourceKey: slot } as unknown as StatusEffect);
@@ -260,11 +262,11 @@ export default class Combat {
             const newSpellKeys = allSpellKeys.filter(spellKey => {
               const spell = abilityHandler.getAbility(spellKey);
               if (spellbook === 'arcane') {
-                if (!trait.school || trait.school === "all") return true;
+                if (!trait.school || trait.school === "all") {return true;}
                 return spell.school === trait.school;
               }
               if (spellbook === 'divine') {
-                if (!trait.domain || trait.domain === "all") return true;
+                if (!trait.domain || trait.domain === "all") {return true;}
                 return spell.domain === trait.domain;
               }
               return true;
@@ -272,7 +274,7 @@ export default class Combat {
 
             const preparedN = Math.min(6, 2 + Math.ceil((combatant.level || 1) / 2));
 
-            let spellSelection = Sample.count(preparedN, ...newSpellKeys.filter(
+            const spellSelection = Sample.count(preparedN, ...newSpellKeys.filter(
               spellKey => !combatant.abilities.includes(spellKey)
             ));
             combatant.abilities.push(...spellSelection);
@@ -337,7 +339,7 @@ export default class Combat {
       c.traits = c.traits || [];
 
 
-      let team = this.teamFor(c);
+      const team = this.teamFor(c);
       await Combat.reifyTraits(c, team !== this.enemyTeam);
       Combat.applyEquipmentEffects(c, team?.inventory || []);
 
@@ -685,7 +687,7 @@ export default class Combat {
       const randomChoice = enabledChoices[Math.floor(Math.random() * enabledChoices.length)];
       action = randomChoice.value as Ability;
     } else {
-      action = await this.select(`Your turn, ${Presenter.minimalCombatant(combatant)} - what do you do?`, choices, combatant) as Ability;
+      action = await this.select(`Your turn, ${Presenter.minimalCombatant(combatant)} - what do you do?`, choices, combatant);
     }
 
     if (action.name === "Flee") {
@@ -711,7 +713,7 @@ export default class Combat {
         value: t,
         short: Array.isArray(t) ? t.map(c => c.forename).join(", ") : Presenter.minimalCombatant(t),
         disabled: false
-      })), combatant) as Combatant | Combatant[];
+      })), combatant);
     } else if (action.target.includes("randomEnemies") && action.target.length === 2) {
       // pick random enemies
       // if (action.target[1] is a number use that)
@@ -719,9 +721,10 @@ export default class Combat {
       if (typeof action.target[1] === "number") {
         count = action.target[1];
       } else if (typeof action.target[1] === "string") {
-        count = Deem.evaluate(action.target[1], { ...combatant } as any) as number; // as any as number;
+        count = Deem.evaluate(action.target[1], { ...combatant } as unknown as GeneratorOptions) as number;
       } else {
-        throw new Error(`Invalid target count specification for randomEnemies: ${action.target[1]}`);
+        // throw new Error(`Invalid target count specification for randomEnemies: ${action.target[1]}`);
+        never(action.target[1]);
       }
       const possibleTargets = Combat.living(enemies);
       targetOrTargets = [];
@@ -806,7 +809,9 @@ export default class Combat {
     scoredAbilities = scoredAbilities.filter(sa => sa.score > 0);
 
     scoredAbilities.sort((a, b) => b.score - a.score);
-    this.outputSink(`NPC ${Presenter.minimalCombatant(combatant)} scored abilities:` + scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`));
+    this.outputSink(
+      `NPC ${Presenter.minimalCombatant(combatant)} scored abilities:` + scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`).join(", ")
+    );
     let action = scoredAbilities[
       // Math.floor(Math.random() * Math.min(2, scoredAbilities.length))
       0
@@ -822,13 +827,13 @@ export default class Combat {
 
     if (!action) {
       // this.note(`${Presenter.minimalCombatant(combatant)} has no valid actions and skips their turn.`);
-      this.emit({ type: "wait", subject: combatant } as Omit<WaitEvent, "turn">);
+      await this.emit({ type: "wait", subject: combatant } as Omit<WaitEvent, "turn">);
       return { haltRound: false };
     }
     const targetOrTargets: Combatant | Combatant[] | null = AbilityScoring.bestAbilityTarget(action, combatant, allies, enemies);
 
     if (targetOrTargets === null || targetOrTargets === undefined) {
-      this.emit({ type: "wait", subject: combatant } as Omit<WaitEvent, "turn">);
+      await this.emit({ type: "wait", subject: combatant } as Omit<WaitEvent, "turn">);
       return { haltRound: false };
     }
 
@@ -897,15 +902,18 @@ export default class Combat {
     // Tick down cooldowns
     if (combatant.abilityCooldowns) {
       Object.keys(combatant.abilityCooldowns).forEach(name => {
-        combatant.abilityCooldowns![name] = Math.max(0, combatant.abilityCooldowns![name] - 1);
+        const cooldowns = combatant.abilityCooldowns || {};
+        cooldowns[name] = Math.max(0, cooldowns[name] - 1);
       });
     }
 
     if (combatant.activeEffects?.some(e => e.effect.noActions)) {
-      const status = combatant.activeEffects.find(e => e.effect.noActions)!;
-      this.emit({ type: "inactive", subject: combatant, statusName: status.name, duration: status.duration } as Omit<NoActionsForCombatant, "turn">);
+      const status = combatant.activeEffects.find(e => e.effect.noActions);
+      if (status) {
+        await this.emit({ type: "inactive", subject: combatant, statusName: status.name, duration: status.duration } as Omit<NoActionsForCombatant, "turn">);
 
-      return { haltRound: false };
+        return { haltRound: false };
+      }
     }
 
 
@@ -935,7 +943,7 @@ export default class Combat {
         const allegianceEffect = combatant.activeEffects?.find(e => e.effect.changeAllegiance);
         const playerControlled = Fighting.effectivelyPlayerControlled(combatant);
         if (allegianceEffect) {
-          this.emit({ type: "allegianceChange", subject: combatant, statusName: allegianceEffect.name } as Omit<AllegianceChangeEvent, "turn">);
+          await this.emit({ type: "allegianceChange", subject: combatant, statusName: allegianceEffect.name } as Omit<AllegianceChangeEvent, "turn">);
 
           [allies, livingEnemies] = [enemies, livingAllies];
         }
@@ -964,7 +972,7 @@ export default class Combat {
   private roundsWithoutNetHpChange: number = 0;
 
   async round(
-    creatureFlees: (combatant: Combatant) => Promise<void> = async (_c: Combatant) => { }
+    creatureFlees: (combatant: Combatant) => void = (_c: Combatant) => { }
   ): Promise<{
     haltCombat?: boolean
     newPlane?: string
@@ -990,13 +998,18 @@ export default class Combat {
         this.combatantsByInitiative = this.combatantsByInitiative.filter(c => c.combatantId !== combatant.id);
         await this.emit({ type: "flee", subject: combatant } as Omit<FleeEvent, "turn">);
 
-        await creatureFlees(combatant);
+        creatureFlees(combatant);
       }
     }
 
+    const combatants = Combat.living(
+      this.combatantsByInitiative.map(c => ({
+        ...this.allCombatants.find(ac => ac.id === c.combatantId)
+      }))
+    );
     await this.emit({
       type: "roundStart",
-      combatants: Combat.living(this.combatantsByInitiative.map(c => ({ ...this.allCombatants.find(ac => ac.id === c.combatantId)! }))),
+      combatants, 
       parties: [
         { name: "Player", combatants: (this.playerCombatants) },
         { name: this.enemyTeam.name, combatants: (this.enemyCombatants) }
@@ -1034,7 +1047,7 @@ export default class Combat {
         // combatant.activeEffects.forEach((it: StatusEffect) => {
         for (const it of combatant.activeEffects) {
           if (it.duration !== undefined && it.duration !== Infinity) {
-            let newDuration = Math.max(0, it.duration - 1);
+            const newDuration = Math.max(0, it.duration - 1);
             // console.log(`Status effect ${it.name} on ${combatant.forename} ticks down from ${it.duration} to ${newDuration}`);
             it.duration = newDuration;
           }

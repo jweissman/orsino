@@ -1,18 +1,19 @@
 # Notes from Playtesting
 
 ## Bugs
+- [ ] Make sure the actual effective AC is displayed on character record! (We will need to reify equipment fx)
 - [ ] Weird interaction with absorption (temp Hp) and trap descriptions [it was saying the _trap_ absorbed damage?]
 - [ ] Sometimes dragons don't have valid abilities? (no melee attack?) [maybe fixed with targeting improvements...?? couldn't repro anymore anyway]
 - [ ] Planeshift ability is basically a soft-lock for autoplay (since constantly restarting/regenerating modules when cast, which is seemingly a lot at high levels...)
 
+
 ## Features
 - [ ] Make effective weapon/armor/size work for shapechange
-- [ ] Make read thoughts telegraph next moves (we may have to _obscure_ compelled moves like charge first?)
+- [ ] Make read thoughts telegraph next moves; we may have to _obscure_ compelled moves like charge first? (for now maybe just display what their _next best_ move is by score?)
 - [ ] Flight should make you actually _untargetable_ by melee
 - [ ] Remind players to rest if they're not at full health going into boss battle
 - [ ] Unify search/examine (should both have chance to find potions/loot and both grant XP on success)
-- [ ] All mage schools should have enough low-level spells to pick from
-- [ ] Traps should remember if they've been triggered (ie if you return to the dungeon again)
+- [ ] Dual wielding?
 
 ## Ideas
 - [ ] Rest could reset status effects? (would be nice to do this _before_ persisting PCs?) [could _only_ reset negative effects too?]
@@ -184,6 +185,10 @@
 - [ ] Make planeshift traps _very_ rare (similar for wonders that grant planeshift -- or travel you involuntarily -- but that should be the case already?)
 ---
 - [ ] Armor upgrades?
+---
+- [ ] Push forward gameState refactor (everything in mod runner goes through reducer/event processing to update gameState)
+---
+- [ ] Display wand/item charges in mirror gear
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing
@@ -346,6 +351,9 @@
 - [x] Bombs should not be heal-able (maybe there is some 'repair/mending' skill for inanimate objects though)
 - [x] Would be nice to let _all_ PCs attempt to interact/examine/search (as opposed to one and done for the action)
 - [x] Dirty trick should not give a save vs magic? (maybe vs will or even specifically vs blinding?) [reflex now]
+- [x] Traps should remember if they've been triggered (ie if you return to the dungeon again) [should be the case]
+- [x] Rings bought in town seem to break the ring1/ring2 flow? [maybe repaired now?]
+- [x] All mage schools should have enough low-level spells to pick from (should be okay now)
 
 ## Not really issues atm
 - Load all PCs on party select so we can show their race/class (no longer even letting you load PCs from file but we're still persisting them every room...) (we do persist PC records and could bring this back?)

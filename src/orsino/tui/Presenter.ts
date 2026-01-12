@@ -56,7 +56,7 @@ export default class Presenter {
       record += (`**${Words.capitalize(key)}:** ${Words.humanize(value.toString())}<br/>\n`);
     }
 
-    let pseudocontext: CombatContext = pseudocontextFor(combatant, []);
+    const pseudocontext: CombatContext = pseudocontextFor(combatant, []);
     const effectiveWeapon = Fighting.effectiveWeapon(combatant, pseudocontext);
     const effectiveArmorClass = Fighting.effectiveArmorClass(combatant, pseudocontext);
 
@@ -164,8 +164,8 @@ export default class Presenter {
       return this.padLiteralEnd(`${Stylist.bold(Words.capitalize(key))} ${value.toString()}`, 25);
     }).join('   ')) + "\n";
 
-    let pseudocontext: CombatContext = pseudocontextFor(combatant, inventory);
-      //{ subject: combatant, inventory: inventory, allies: [combatant], enemies: [], enemyInventory: [], allyIds: new Set([combatant.id]), enemyIds: new Set() };
+    const pseudocontext: CombatContext = pseudocontextFor(combatant, inventory);
+    //{ subject: combatant, inventory: inventory, allies: [combatant], enemies: [], enemyInventory: [], allyIds: new Set([combatant.id]), enemyIds: new Set() };
     const effectiveWeapon = Fighting.effectiveWeapon(combatant, pseudocontext);
     const effectiveArmorClass = Fighting.effectiveArmorClass(combatant, pseudocontext);
     const bolt = Stylist.colorize('⚡', 'yellow');
@@ -234,13 +234,18 @@ export default class Presenter {
       for (const slot of Object.keys(combatant.equipment)) {
         const equipmentSlot: EquipmentSlot = slot as EquipmentSlot;
         const itemName = (combatant.equipment as Record<EquipmentSlot, string>)[equipmentSlot];
-          const item = materializeItem(itemName, inventory) as ItemInstance;
-          record += `  ${Stylist.colorize(Words.capitalize(equipmentSlot), 'yellow')}: ${Words.humanize(item.name)} (${this.describeModifications(item.effect || {}, item.name)})\n`;
+        const item = materializeItem(itemName, inventory);
+        record += `  ${Stylist.colorize(Words.capitalize(equipmentSlot), 'yellow')}: ${Words.humanize(item.name)} (${this.describeModifications(item.effect || {}, item.name)})\n`;
       }
     }
 
     if (inventory && inventory.length > 0) {
-      record += Stylist.bold("\nGear: ") + this.aggregateList(inventory.sort((a, b) => a.name.localeCompare(b.name)).map(i => i.name)) + "\n";
+      const presentItem = (it: ItemInstance) => {
+        return `${it.name}${it.charges !== undefined ? ` (${it.charges}/${it.maxCharges} charges)` : ''}`;
+      }
+      record += Stylist.bold("\nGear: ") +
+        this.aggregateList(inventory.sort((a, b) => a.name.localeCompare(b.name))
+          .map(presentItem)) + "\n";
     }
 
 
@@ -272,7 +277,7 @@ export default class Presenter {
     }
 
     const combatKind = (combatant as unknown as { kind?: string }).kind || Words.humanize(combatant.race || '');
-    let combatantType = combatClass ? `${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '';
+    const combatantType = combatClass ? `${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '';
 
     let tempHp = 0;
     for (const poolAmount of Object.values(combatant.tempHpPools || {})) {
@@ -883,19 +888,19 @@ export default class Presenter {
             }
           }
           break;
-        
+
         case "effectiveWeapon":
           if (value) {
             parts.push(`Weapon set to ${value}`);
           }
           break;
-        
+
         case "effectiveArmor":
           if (value) {
             parts.push(`Armor set to ${value}`);
           }
           break;
-        
+
         case "effectiveSize":
           if (value) {
             parts.push(`Size set to ${Words.humanize(value as string)}`);
@@ -939,7 +944,7 @@ export default class Presenter {
             parts.push(`May not be healed`);
           }
           break;
-        
+
         case "hasPrimaryAttack":
           if (value) {
             parts.push(`Has primary attack`);
