@@ -15,7 +15,8 @@
         "description": "Gain +5 to investigation skill checks.",
         "effect": {
           "examineBonus": 5,
-          "searchBonus": 5
+          "searchBonus": 5,
+          "gatherInformationBonus": 5
         }
       }
     ]
@@ -36,7 +37,9 @@
         "description": "You are adept at navigating the city.",
         "whileEnvironment": "urban",
         "effect": {
-          "searchBonus": 10
+          "searchBonus": 2,
+          "gatherInformationBonus": 3,
+          "examineBonus": 4
         }
       }
     ]
@@ -55,7 +58,8 @@
           "searchBonus": 1,
           "examineBonus": 1,
           "pickLockBonus": 1,
-          "disarmTrapBonus": 1
+          "disarmTrapBonus": 1,
+          "gatherInformationBonus": 1
         }
       }
     ]

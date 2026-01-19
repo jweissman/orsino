@@ -286,13 +286,7 @@
           "effect": {
             "toHit": 2,
             "bonusDamage": 2,
-            "compelNextMove": "charge",
-            "onAttack": [
-              {
-                "type": "removeStatus",
-                "statusName": "Preparing to Charge"
-              }
-            ]
+            "compelNextMove": "charge"
           }
         },
         "duration": 2
@@ -311,6 +305,11 @@
       "status": "Preparing to Charge"
     },
     "effects": [
+      {
+        "type": "removeStatus",
+        "target": "self",
+        "statusName": "Preparing to Charge"
+      },
       {
         "type": "damage",
         "amount": "=3d8+1+#level",

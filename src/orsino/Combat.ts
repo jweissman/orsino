@@ -2,7 +2,7 @@ import { Answers } from "inquirer";
 import Choice from "inquirer/lib/objects/choice";
 
 import { AbilityScoring } from "./tactics/AbilityScoring";
-import { Combatant } from "./types/Combatant";
+import { Combatant, CombatantID } from "./types/Combatant";
 import { Commands } from "./rules/Commands";
 import { Fighting } from "./rules/Fighting";
 import { Inventory } from "./Inventory";
@@ -15,7 +15,6 @@ import Bark from "./Bark";
 import Deem from "../deem";
 import Events, { CombatEvent, RoundStartEvent, CombatEndEvent, FleeEvent, GameEvent, CombatantEngagedEvent, WaitEvent, NoActionsForCombatant, AllegianceChangeEvent, ItemUsedEvent, ActionEvent, ActedRandomly, StatusExpiryPreventedEvent, HealEvent, HitEvent, UnsummonEvent, PlaneshiftEvent } from "./Events";
 import Orsino from "../orsino";
-import Presenter from "./tui/Presenter";
 import Stylist from "./tui/Style";
 import TraitHandler from "./Trait";
 import Words from "./tui/Words";
@@ -24,6 +23,7 @@ import Sample from "./util/Sample";
 import { Driver, NullDriver } from "./Driver";
 import { GeneratorOptions } from "./Generator";
 import { never } from "./util/never";
+import CombatantPresenter from "./presenter/CombatantPresenter";
 
 export type ChoiceSelector<T extends Answers> = (description: string, options: Choice<T>[], combatant?: Combatant) => Promise<T>;
 
@@ -687,7 +687,7 @@ export default class Combat {
       const randomChoice = enabledChoices[Math.floor(Math.random() * enabledChoices.length)];
       action = randomChoice.value as Ability;
     } else {
-      action = await this.select(`Your turn, ${Presenter.minimalCombatant(combatant)} - what do you do?`, choices, combatant);
+      action = await this.select(`Your turn, ${CombatantPresenter.minimalCombatant(combatant)} - what do you do?`, choices, combatant);
     }
 
     if (action.name === "Flee") {
@@ -709,9 +709,9 @@ export default class Combat {
     let targetOrTargets = validTargets[0];
     if (validTargets.length > 1) {
       targetOrTargets = await this.select(`Select target(s) for ${action.name}:`, validTargets.map(t => ({
-        name: Array.isArray(t) ? t.map(c => c.forename).join("; ") : Presenter.combatant(t),
+        name: Array.isArray(t) ? t.map(c => c.forename).join("; ") : CombatantPresenter.combatant(t),
         value: t,
-        short: Array.isArray(t) ? t.map(c => c.forename).join(", ") : Presenter.minimalCombatant(t),
+        short: Array.isArray(t) ? t.map(c => c.forename).join(", ") : CombatantPresenter.minimalCombatant(t),
         disabled: false
       })), combatant);
     } else if (action.target.includes("randomEnemies") && action.target.length === 2) {
@@ -734,7 +734,7 @@ export default class Combat {
     }
 
     if (!targetOrTargets) {
-      throw new Error(`No valid targets found for ability ${action.name} used by ${Presenter.minimalCombatant(combatant)}.`);
+      throw new Error(`No valid targets found for ability ${action.name} used by ${CombatantPresenter.minimalCombatant(combatant)}.`);
     }
 
     if (action.type === "skill" && !action.name.match(/melee|ranged|wait/i)) {
@@ -810,7 +810,7 @@ export default class Combat {
 
     scoredAbilities.sort((a, b) => b.score - a.score);
     this.outputSink(
-      `NPC ${Presenter.minimalCombatant(combatant)} scored abilities:` + scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`).join(", ")
+      `NPC ${CombatantPresenter.minimalCombatant(combatant)} scored abilities:` + scoredAbilities.map(sa => `${sa.ability.name} (${sa.score})`).join(", ")
     );
     let action = scoredAbilities[
       // Math.floor(Math.random() * Math.min(2, scoredAbilities.length))
@@ -826,7 +826,6 @@ export default class Combat {
     }
 
     if (!action) {
-      // this.note(`${Presenter.minimalCombatant(combatant)} has no valid actions and skips their turn.`);
       await this.emit({ type: "wait", subject: combatant } as Omit<WaitEvent, "turn">);
       return { haltRound: false };
     }
@@ -1002,10 +1001,17 @@ export default class Combat {
       }
     }
 
+    const lookup = (id: CombatantID) => {
+      const found = this.allCombatants.find(c => c.id === id);
+      if (!found) {
+        throw new Error(`Could not find combatant with ID ${id} during round start processing.`);
+      }
+      return found;
+    }
     const combatants = Combat.living(
       this.combatantsByInitiative.map(c => ({
-        ...this.allCombatants.find(ac => ac.id === c.combatantId)
-      }))
+        ...lookup(c.combatantId)
+      })) //.flat()
     );
     await this.emit({
       type: "roundStart",
@@ -1034,8 +1040,6 @@ export default class Combat {
       }
       if (combatant.hp <= 0) { continue; } // Skip defeated combatants
       if ((combatant.activeEffects || []).some((e: StatusEffect) => e.effect?.flee)) { continue; } // Skip fleeing combatants
-
-      // console.log(`\n-- Round ${this.turnNumber}, ${Presenter.minimalCombatant(combatant)}'s turn --`);
 
       // tick down status
       const expiryEvents: Omit<GameEvent, "turn">[] = [];

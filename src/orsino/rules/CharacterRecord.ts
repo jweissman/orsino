@@ -18,6 +18,9 @@ import { Select } from "../types/Select";
 import { Answers } from "inquirer";
 import Deem from "../../deem";
 import Generator, { GeneratorOptions } from "../Generator";
+import { Driver, NullDriver } from "../Driver";
+import CombatantPresenter from "../presenter/CombatantPresenter";
+import CharacterPresenter from "../presenter/CharacterPresenter";
 
 type PlayerCharacterRace = string; // "human" | "elf" | "dwarf" | "halfling" | "orc" | "fae" | "gnome";
 
@@ -53,7 +56,8 @@ export default class CharacterRecord {
     spellLevel: number,
     aspect: 'arcane' | 'divine',
     alreadyKnown: string[] = [],
-    selectionMethod: Select<Answers> = User.selection.bind(User),
+    // selectionMethod: Select<Answers>, // = User.selection.bind(User),
+    driver: Driver = new NullDriver(),
     schoolOrDomainRestriction: string = 'all'
   ): Promise<string | boolean> {
     const abilityHandler = AbilityHandler.instance;
@@ -70,47 +74,47 @@ export default class CharacterRecord {
         short: spell.name,
         disabled: !matchesRestriction
       };
-
     });
     const available = spellChoicesDetailed.filter(s => !s.disabled);
     if (available.length === 0) {
       console.warn(`No available level ${spellLevel} ${aspect} spells to choose from for restriction: ${schoolOrDomainRestriction}`);
       return false;
     }
-    const chosenSpell: Choice<Answers> = await selectionMethod(
+    const chosenSpell = await driver.select(
       `Select a level ${spellLevel} ${aspect} spell:`,
       spellChoicesDetailed
-    ) as Choice<Answers>;
-    return chosenSpell as any as string;
+    );
+    return chosenSpell;
   }
 
   static async chargen(
     prompt: string,
     pcGenerator: (options?: GeneratorOptions) => Combatant = (options) => Generator.gen("pc", options) as unknown as Combatant,
-    selectionMethod: Select<Answers> = User.selection.bind(User),
-    confirmMethod: (message: string) => Promise<boolean> = User.confirmation.bind(User)
+    driver: Driver,
+    // selectionMethod: Select<Answers> = User.selection.bind(User),
+    // confirmMethod: (message: string) => Promise<boolean> = User.confirmation.bind(User)
   ): Promise<Combatant> {
     let pc: Combatant = pcGenerator({ setting: 'fantasy' });
     let accepted = false;
     while (!accepted) {
-      const doWizard = await confirmMethod(`Customize PC ${prompt}?`);
+      const doWizard = await driver.confirm(`Customize PC ${prompt}?`);
       if (doWizard) {
-        const raceSelect = await selectionMethod(
+        const raceSelect: PlayerCharacterRace = await driver.select(
           'Select a race for this PC: ' + prompt,
           this.pcRaces
-        ) as PlayerCharacterRace;
-        const occupationSelect: string = await selectionMethod(
+        );
+        const occupationSelect: string = await driver.select(
           'Select an occupation for this PC: ' + prompt,
           this.validClassesForRace(raceSelect)
-        ) as string;
+        );
         pc = pcGenerator({ setting: 'fantasy', race: raceSelect, class: occupationSelect });
-        await this.chooseTraits(pc, selectionMethod);
-        await Presenter.printCharacterRecord(pc, []);
-        accepted = await confirmMethod('Use this PC? ' + prompt);
+        await this.chooseTraits(pc, driver); // selectionMethod);
+        await CharacterPresenter.printCharacterRecord(pc, []);
+        accepted = await driver.confirm('Use this PC? ' + prompt);
       } else {
         pc = await this.autogen(this.pcRaces, pcGenerator);
-        await Presenter.printCharacterRecord(pc, []);
-        accepted = await confirmMethod('Use this PC? ' + prompt);
+        await CharacterPresenter.printCharacterRecord(pc, []);
+        accepted = await driver.confirm('Use this PC? ' + prompt);
       }
     }
     return pc;
@@ -118,7 +122,7 @@ export default class CharacterRecord {
 
   static async autogen(
     racePool: PlayerCharacterRace[] = this.pcRaces,
-    pcGenerator: (options?: any) => Combatant = (options) => Generator.gen("pc", options) as unknown as Combatant,
+    pcGenerator: (options?: GeneratorOptions) => Combatant = (options) => Generator.gen("pc", options) as unknown as Combatant,
   ) {
     const race = racePool[Math.floor(Math.random() * racePool.length)];
     const validClasses = this.validClassesForRace(race);
@@ -128,13 +132,15 @@ export default class CharacterRecord {
       race,
       class: occupation
     });
-    await this.chooseTraits(pc, Automatic.randomSelect.bind(Automatic));
+    await this.chooseTraits(pc, new NullDriver());
+      //Automatic.randomSelect.bind(Automatic));
     return pc;
   }
 
   static async chooseTraits(
     pc: Combatant,
-    selectionMethod: Select<Answers> = User.selection.bind(User)
+    // selectionMethod: Select<Answers> = User.selection.bind(User)
+    driver: Driver = new NullDriver()
   ) {
     if (pc.traitChoices && pc.traitChoices.length > 0) {
       const traitHandler = TraitHandler.instance;
@@ -142,7 +148,7 @@ export default class CharacterRecord {
 
       const choices = pc.traitChoices.filter(traitName => !pc.forbiddenTraits?.includes(traitName))
 
-      const selectedTrait = await selectionMethod("Select a trait for " + pc.name + ":",
+      const selectedTrait = await driver.select("Select a trait for " + pc.name + ":",
         choices.map(traitName => {
           const trait = traitHandler.getTrait(traitName);
           return {
@@ -153,10 +159,10 @@ export default class CharacterRecord {
           };
         }
         ));
-      console.log(`${pc.forename} chose the trait: ${(selectedTrait as Trait).name}.`);
-      pc.traits.push((selectedTrait as Trait).name);
+      console.warn(`${pc.forename} chose the trait: ${(selectedTrait).name}.`);
+      pc.traits.push((selectedTrait).name);
       pc.passiveEffects ||= [];
-      const trait = traitHandler.getTrait((selectedTrait as Trait).name);
+      const trait = traitHandler.getTrait((selectedTrait).name);
       if (trait.statuses) {
         pc.passiveEffects.push(...trait.statuses);
       }
@@ -164,8 +170,7 @@ export default class CharacterRecord {
         pc.abilities.push(...trait.abilities);
       }
       if (trait.spellbooks) {
-        await this.pickInitialSpells(pc, trait.spellbooks, trait.school || trait.domain || 'all',
-          selectionMethod);
+        await this.pickInitialSpells(pc, trait.spellbooks, trait.school || trait.domain || 'all', driver);
       }
       if (trait.school) {
         pc.school = trait.school;
@@ -181,7 +186,8 @@ export default class CharacterRecord {
     pc: Combatant,
     spellbooks: string[],
     schoolOrDomain: string = 'all',
-    selectionMethod: Select<Answers> = User.selection.bind(User)
+    // selectionMethod: Select<Answers> = User.selection.bind(User)
+    driver: Driver = new NullDriver()
   ) {
     const pcSpells: string[] = [];
 
@@ -198,7 +204,7 @@ export default class CharacterRecord {
         // console.warn(`Picking ${spellLevelsToPick[level]} level ${level} spells for ${pc.name} from ${spellbook} with restriction: ${schoolOrDomain}`);
 
         // first spell must match restriction
-        const firstSpell = await this.pickSpell(level, spellbook as 'arcane' | 'divine', pcSpells, selectionMethod, schoolOrDomain);
+        const firstSpell = await this.pickSpell(level, spellbook as 'arcane' | 'divine', pcSpells, driver, schoolOrDomain);
         if (typeof firstSpell === 'string') {
           pcSpells.push(firstSpell);
         } else {
@@ -206,7 +212,7 @@ export default class CharacterRecord {
         }
 
         for (let i = 1; i < spellLevelsToPick[level]; i++) {
-          const spell = await this.pickSpell(level, spellbook as 'arcane' | 'divine', pcSpells, selectionMethod);
+          const spell = await this.pickSpell(level, spellbook as 'arcane' | 'divine', pcSpells, driver);
           if (typeof spell === 'string') {
             pcSpells.push(spell);
           } else {
@@ -221,20 +227,24 @@ export default class CharacterRecord {
   }
 
   static async chooseParty(
-    pcGenerator: (options?: any) => Combatant,
+    pcGenerator: (options?: GeneratorOptions) => Combatant,
     partySize: number,
-    select: Select<Answers> = User.selection.bind(User),
-    confirm: (message: string) => Promise<boolean> = User.confirmation.bind(User)
+    driver: Driver = new NullDriver(),
+    // select: Select<Answers> = User.selection.bind(User),
+    // confirm: (message: string) => Promise<boolean> = User.confirmation.bind(User)
   ): Promise<Combatant[]> {
     const abilityHandler = AbilityHandler.instance;
     await abilityHandler.loadAbilities();
     await TraitHandler.instance.loadTraits();
 
-    const doChoose = await confirm("Customize PCs using the wizard?");
+    const doChoose = await driver.confirm("Customize PCs using the wizard?");
     console.warn(`Party creation wizard: ${doChoose}`);
     if (!doChoose) {
       return this.chooseParty(
-        pcGenerator, partySize, Automatic.randomSelect.bind(Automatic), () => Promise.resolve(true)
+        pcGenerator, partySize,
+        new NullDriver()
+        // Automatic.randomSelect.bind(Automatic),
+        // () => Promise.resolve(true)
       );
     }
 
@@ -243,13 +253,13 @@ export default class CharacterRecord {
     let pc: Combatant | null = null;
     while (party.length < partySize) {
       const whichPc = '(' + (party.length + 1) + '/' + partySize + ')';
-      pc = await this.chargen(whichPc, pcGenerator, select, confirm);
+      pc = await this.chargen(whichPc, pcGenerator, driver);  //select, confirm);
 
       if (pc) {
         if (party.some(p => p.name === pc?.name)) {
           continue;
         }
-        await Presenter.printCharacterRecord(pc, []);
+        await CharacterPresenter.printCharacterRecord(pc, []);
         party.push(pc);
       }
     };
@@ -294,9 +304,6 @@ export default class CharacterRecord {
     const events: DungeonEvent[] = [];
     let nextLevelXp = CharacterRecord.xpForLevel(pc.level + 1);
 
-    // if (pc.xp < nextLevelXp) {
-    //   console.warn(`${pc.name} needs to gain ${nextLevelXp - pc.xp} more experience for level ${pc.level + 1} (currently at ${pc.xp}/${nextLevelXp}).`);
-    // }
     while (pc.xp >= nextLevelXp) {
       pc.level++;
       nextLevelXp = CharacterRecord.xpForLevel(pc.level + 1);
@@ -305,9 +312,7 @@ export default class CharacterRecord {
       hitPointIncrease = Math.max(1, hitPointIncrease);
       pc.maximumHitPoints += hitPointIncrease;
       pc.hp = pc.maximumHitPoints;
-      // console.log(`${Presenter.minimalCombatant(pc)} leveled up to level ${pc.level}!`);
       events.push({ type: "upgrade", stat: "level", subject: pc, amount: 1, newValue: pc.level });
-      // console.log(`Hit points increased by ${hitPointIncrease} to ${pc.maxHp}.`);
       events.push({ type: "upgrade", stat: "maximumHitPoints", subject: pc, amount: hitPointIncrease, newValue: pc.maximumHitPoints });
       const stat = await select(`Choose a stat to increase:`, [
         { disabled: pc.level <= 20 && pc.str >= 18, name: `Strength (${pc.str})`, value: 'str', short: 'Strength' },
@@ -322,8 +327,8 @@ export default class CharacterRecord {
 
       const statistic = stat;
       // @ts-expect-error -- TS doesn't like dynamic access here (can't work out what type pc[statistic] is)
-      // maybe better to have a 'stats' model that's only numbers?
-      pc[statistic] = (pc[statistic] as number || 0) + 1;
+
+      pc[statistic] = ((pc[statistic] as number || 0) + 1);
       // this.note(`${c.name}'s ${stat.toUpperCase()} increased to ${c[stat as keyof Combatant]}!`);
 
       // let fx = await Fighting.gatherEffects(pc);
@@ -373,12 +378,12 @@ export default class CharacterRecord {
               disabled: false
             };
           });
-          const chosenSpellKey = await select(`Select a new spell for ${pc.name}:`, spellChoices);
+          const chosenSpellKey: string = await select(`Select a new spell for ${pc.name}:`, spellChoices) as string;
           const chosenSpell = abilityHandler.getAbility(chosenSpellKey);
-          console.log(`${(pc.forename)} learned the spell: ${chosenSpell.name}`);
+          console.warn(`${(pc.forename)} learned the spell: ${chosenSpell.name}`);
           pc.abilities.push(chosenSpellKey);
         } else {
-          console.log(`${(pc.forename)} has learned all available spells for their level.`);
+          console.warn(`${(pc.forename)} has learned all available spells for their level.`);
         }
       }
       // if (pc.class === "cleric") {
@@ -403,9 +408,9 @@ export default class CharacterRecord {
             };
           });
           if (spellChoices.every(choice => choice.disabled)) {
-            console.log(`${pc.name} has learned all available spells for their domain (${pc.domain}) at this time (level ${pc.level}).`);
+            console.warn(`${pc.name} has learned all available spells for their domain (${pc.domain}) at this time (level ${pc.level}).`);
           } else {
-            const chosenSpellKey = await select(`Select a new spell for ${pc.name}:`, spellChoices);
+            const chosenSpellKey: string = await select(`Select a new spell for ${pc.name}:`, spellChoices) as string;
             // console.log(chosenSpellKey);
             // const chosenSpell = abilityHandler.getAbility(chosenSpellKey);
             // console.log(`${(pc.forename)} learned the spell: ${chosenSpell.name}`);
@@ -418,29 +423,27 @@ export default class CharacterRecord {
         // epic feats...?
       } else if (pc.level % 5 === 0) {
         // feat selection
-        // console.log(`${Presenter.minimalCombatant(pc)} can select a new feat!`);
         const traitHandler = TraitHandler.instance;
         await traitHandler.loadTraits();
         const availableFeats = traitHandler.featsForCombatant(pc);
         if (availableFeats.length === 0) {
-          console.log(`There are no available feats for ${Presenter.minimalCombatant(pc)} at this time.`);
+          console.warn(`There are no available feats for ${CombatantPresenter.minimalCombatant(pc)} at this time.`);
           continue;
         }
 
-        const chosenFeat = await select(`Select a feat for ${pc.name}:`, availableFeats.map(trait => ({
+        const chosenFeat: Trait = await select(`Select a feat for ${pc.name}:`, availableFeats.map(trait => ({
           name: Words.capitalize(trait.name) + ': ' + trait.description,
           value: trait,
           short: trait.name,
           disabled: false
-        })));
-        console.log(`${Presenter.minimalCombatant(pc)} selected the feat: ${JSON.stringify(chosenFeat)}`);
+        }))) as Trait;
         pc.traits.push(chosenFeat.name);
         // apply any passive effects from the feat
         pc.passiveEffects ||= [];
         if (chosenFeat.statuses) {
           pc.passiveEffects.push(...chosenFeat.statuses);
         }
-        console.log(`${Presenter.minimalCombatant(pc)} gained the feat: ${Words.capitalize(chosenFeat.name)}.`);
+        console.warn(`${CombatantPresenter.minimalCombatant(pc)} gained the feat: ${Words.capitalize(chosenFeat.name)}.`);
       }
     }
 
@@ -448,13 +451,16 @@ export default class CharacterRecord {
   }
 
   static introduce(pc: Combatant) {
-    let introduction = `I am ${pc.name}, called the ${pc.personalNameMeaning}.`;
-    if (pc.class) {
-      introduction += ` I trained as a ${Words.humanize(pc.class)}.`;
+    const greetings = ["Hello", "Greetings", "Salutations", "Well met", "Good day", "Hi there", "How do you do"];
+    const greeting = greetings[Math.floor(Math.random() * greetings.length)];
+    let introduction = `${greeting}, I am ${pc.name}, called the ${pc.personalNameMeaning}.`;
+    if (pc.translatedHometownName && pc.class) {
+      introduction += ` I hail from ${pc.translatedHometownName}`;
+    // }
+    // if (pc.class) {
+      introduction += ` and trained as a ${Words.humanize(pc.class)}`;
     }
-    if (pc.translatedHometownName) {
-      introduction += ` I hail from ${pc.translatedHometownName}.`;
-    }
+    introduction += `.`;
     return introduction;
   }
 

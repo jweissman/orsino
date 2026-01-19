@@ -2,7 +2,6 @@ import { loadSetting } from "./orsino/loader";
 import { Combatant } from "./orsino/types/Combatant";
 import Dungeoneer, { Dungeon } from "./orsino/Dungeoneer";
 import { CampaignModule, ModuleRunner } from "./orsino/ModuleRunner";
-import Interactive from "./orsino/tui/User";
 import CharacterRecord from "./orsino/rules/CharacterRecord";
 import Generator, { GeneratorOptions } from "./orsino/Generator";
 import AbilityHandler from "./orsino/Ability";
@@ -15,7 +14,8 @@ import { never } from "./orsino/util/never";
 import { ItemInstance } from "./orsino/types/ItemInstance";
 import StatusHandler from "./orsino/Status";
 import { Template } from "./orsino/Template";
-import { AutomaticPlayDriver, ConsoleDriver, InquirerDriver, NullDriver } from "./orsino/Driver";
+import { AutomaticPlayDriver, ConsoleDriver, InquirerDriver } from "./orsino/Driver";
+import CharacterPresenter from "./orsino/presenter/CharacterPresenter";
 
 type PlaygroundType = "dungeon" | "module";  // TODO "world";
 
@@ -45,17 +45,18 @@ export default class Orsino {
 
     const partySize = options.partySize || 1;
     const pcs = await CharacterRecord.chooseParty(
-      (opts: GeneratorOptions) => Generator.gen("pc", { setting: 'fantasy', ...opts }) as unknown as Combatant,
+      (opts?: GeneratorOptions) => Generator.gen("pc", { setting: 'fantasy', ...opts }) as unknown as Combatant,
       partySize,
-      driver.select.bind(driver),
-      driver.confirm.bind(driver)
+      driver
+      // driver.select.bind(driver),
+      // driver.confirm.bind(driver)
     );
     
     if (type === "dungeon") {
       const averageLevel = Math.round(pcs.reduce((sum, pc) => sum + pc.level, 0) / pcs.length);
       const targetCr = Math.round(averageLevel * 0.75);
       const dungeoneer = new Dungeoneer({
-        roller: Interactive.roll.bind(Interactive),
+        // roller: Interactive.roll.bind(Interactive),
         driver,
         // pause: driver.pause.bind(driver),
         // select: driver.select.bind(driver),
@@ -71,12 +72,7 @@ export default class Orsino {
       await dungeoneer.run();
     } else if (type === "module") {
       const moduleRunner = new ModuleRunner({
-        roller: Interactive.roll.bind(Interactive),
         driver,
-        // select: driver.select.bind(driver),
-        // pause: driver.pause.bind(driver),
-        // clear: driver.clear.bind(driver),
-        // outputSink: Orsino.outputSink,
         moduleGen: (opts?: GeneratorOptions) => Generator.gen("module", { setting: 'fantasy', ...options, ...opts }) as unknown as CampaignModule,
         gen: Generator.gen.bind(Generator), //.bind(this),
         pcs: pcs.map(pc => ({ ...pc, playerControlled: true })),
@@ -88,13 +84,13 @@ export default class Orsino {
     }
   }
 
-  async autoplay(options: Record<string, any> = {}) {
+  async autoplay(options: GeneratorOptions = {}) {
     await AbilityHandler.instance.loadAbilities();
     await TraitHandler.instance.loadTraits();
     await StatusHandler.instance.loadStatuses();
     Template.bootstrapDeem({ setting: 'fantasy' });
 
-    const pcGen = (pcClass: string) => (options: GeneratorOptions) => Generator.gen("pc", { ...options, setting: 'fantasy', class: pcClass }) as unknown as Combatant
+    const pcGen = (pcClass: string) => (options?: GeneratorOptions) => Generator.gen("pc", { ...options, setting: 'fantasy', class: pcClass }) as unknown as Combatant
     const pcs: Combatant[] = [
       await CharacterRecord.autogen(CharacterRecord.pcRaces, pcGen("warrior")),
       await CharacterRecord.autogen(CharacterRecord.pcRaces, pcGen("thief")),
@@ -102,9 +98,10 @@ export default class Orsino {
       await CharacterRecord.autogen(CharacterRecord.pcRaces, pcGen("cleric")),
       await CharacterRecord.autogen(CharacterRecord.pcRaces, pcGen("ranger")),
       await CharacterRecord.autogen(CharacterRecord.pcRaces, pcGen("bard")),
+      await CharacterRecord.autogen(CharacterRecord.pcRaces, pcGen("monk")),
     ].map(pc => ({ ...pc, playerControlled: true }))
     for (const pc of pcs) {
-      await CharacterRecord.chooseTraits(pc, Automatic.randomSelect.bind(Automatic));
+      await CharacterRecord.chooseTraits(pc); //, Automatic.randomSelect.bind(Automatic));
     }
     await CharacterRecord.assignPartyPassives(pcs);
 
@@ -134,7 +131,7 @@ export default class Orsino {
         pc.hp = pc.maximumHitPoints;
         pc.dead = false;
 
-        outputSink(await Presenter.characterRecord(pc, inventory));
+        outputSink(await CharacterPresenter.characterRecord(pc, inventory));
       }
 
       outputSink("\n----\nCombat statistics: " + JSON.stringify(Combat.statistics));

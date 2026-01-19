@@ -179,7 +179,7 @@ export default class AbilityHandler {
 
   async validateAbilities() {
     // check that referenced abilities in templates exist
-    const tables = await Files.readJSON<{ [key: string]: any }>("./settings/fantasy/tables.json");
+    const tables = await Files.readJSON("./settings/fantasy/tables.json");
 
     const coreLists = [
       ...Object.values(tables['abilities']['groups']),
@@ -521,32 +521,6 @@ export default class AbilityHandler {
 
       success = spellSuccess;
       events.push(...spellEvents);
-      // return { success, events };
-      // success = success;
-
-      // need to adjust targets based on spell targetting?
-      // let needsNewTarget = effect.target && JSON.stringify(effect.target) !== JSON.stringify(spell.target);
-      // if (needsNewTarget) {
-      //   // recalc target based on spell target
-      //   targetCombatant = await this.resolveAbilityTarget(spell, user, context) as Combatant;
-      // }
-      // let newTarget = await this.resolveAbilityTarget(spell, user, context);
-      // let spellTargets: (Combatant | Combatant[])[] = AbilityHandler.validTargets(spell, user, context.allies || [], context.enemies || []);
-      // if (spellTargets.length === 0) {
-      //   console.warn(`No valid targets for spell ${spell.name} used by ${user.forename} (targets: ${spell.target.join(", ")})`);
-      //   return { success: false, events };
-      // } else if (spellTargets.length > 1) {
-      //   // if multiple target groups, we need to prompt the caster to select one...?
-      // }
-
-      // for (const spellEffect of spell.effects) {
-      //   const result = await this.handleEffect(effect.description || spellName, spellEffect, user, targetCombatant, context, handlers);
-      //   success ||= result.success;
-      //   events.push(...result.events);
-      //   if (!success) {
-      //     return { success: false, events };
-      //   }
-      // }
     } else if (effect.type === "heal") {
       const amount = AbilityHandler.rollAmount(name, effect.amount || "1", roll, user);
       const healEvents = await heal(user, targetCombatant, amount, context);
@@ -766,11 +740,11 @@ export default class AbilityHandler {
       }
       success = true;
     } else if (effect.type === "planeshift") {
-      const location = Deem.evaluate(effect.location || 'Arcadia', { subject: user, ...user, description: name } as any);
+      const location = Deem.evaluate(effect.location || 'Arcadia', { subject: user, ...user, description: name } as unknown as GeneratorOptions);
       events.push({ type: "planeshift", subject: user, plane: location } as Omit<GameEvent, "turn">);
       success = true;
     } else if (effect.type === "teleport") {
-      const location = Deem.evaluate(effect.location || 'firstRoom', { subject: user, ...user, description: name } as any);
+      const location = Deem.evaluate(effect.location || 'firstRoom', { subject: user, ...user, description: name } as unknown as GeneratorOptions);
       events.push({ type: "teleport", subject: user, location } as Omit<GameEvent, "turn">);
       success = true;
     } else if (effect.type === "recalculateHp") {

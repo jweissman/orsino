@@ -1,3 +1,4 @@
+import { select } from "@inquirer/prompts";
 import User from "./tui/User";
 
 type Choice<T> = {
@@ -131,11 +132,27 @@ export class ConsoleDriver implements Driver {
 export class InquirerDriver extends ConsoleDriver implements Driver {
   get description(): string { return "InquirerDriver using inquirer for prompts"; }
   async select<T>(message: string, choices: (readonly string[] | readonly Choice<T>[])): Promise<T> {
-    return User.selection(message, choices as unknown as readonly string[]) as Promise<T>;
+    // return User.selection(message, choices as unknown as readonly string[]) as Promise<T>;
+     if (choices.length === 0) {
+       throw new Error("No choices provided for selection");
+     }
+
+    //  const effectivelyPlayerControlled = subject ? Fighting.effectivelyPlayerControlled(subject) : true;
+    //  if (subject && !effectivelyPlayerControlled) {
+    //    return Automatic.randomSelect(message, choices);
+    //  }
+
+     // console.log(`Selecting for ${subject?.name}: ${message}`);
+     // const options = choices as readonly (Separator | Choice<Answers>)[];
+     return await select({ message, choices });
+    //  return selection;
+//   }
+
   }
 
   async confirm(message: string): Promise<boolean> {
-    const input = await User.selection(message + " (y/n):", ["yes", "no"]);
+    // const input = await User.selection(message + " (y/n):", ["yes", "no"]);
+    const input = await select({ message, choices: ["yes", "no"] });
     return String(input as string).toLowerCase().startsWith("y");
   }
 }

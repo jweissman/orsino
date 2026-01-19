@@ -221,9 +221,8 @@ export default class StandardLibrary {
       if (typeof separator !== 'string') {
         throw new Error(`join() expects separator to be a string, got: ${typeof separator}`);
       }
-      return arr
-        .map(item => typeof item === "string" ? Words.humanize(item) : item)
-          .join(separator);
+      const items = arr.map(item => typeof item === "string" ? Words.humanize(item) : item)
+      return (items as string[]).join(separator);
     }
 
   };

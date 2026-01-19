@@ -3,6 +3,9 @@ import Orsino from "../orsino";
 import AbilityHandler, { Ability, AbilityEffect } from "./Ability";
 import Generator from "./Generator";
 import { Armor, Inventory, Weapon } from "./Inventory";
+import AbilityPresenter from "./presenter/AbilityPresenter";
+import CharacterPresenter from "./presenter/CharacterPresenter";
+import StatusPresenter from "./presenter/StatusPresenter";
 import StatusHandler, { StatusEffect, StatusModifications } from "./Status";
 import { AbilityScoring } from "./tactics/AbilityScoring";
 import { Template } from "./Template";
@@ -42,7 +45,7 @@ export default class Books {
         ...options
       }) as unknown as Combatant;
       this.write(
-        Presenter.markdownCharacterRecord(animal)
+        CharacterPresenter.markdownCharacterRecord(animal)
       )
     }
 
@@ -116,7 +119,7 @@ export default class Books {
     monsterList.sort((a, b) => a.forename.localeCompare(b.forename));
     for (const monster of monsterList) {
       this.write(
-        Presenter.markdownCharacterRecord(monster)
+        CharacterPresenter.markdownCharacterRecord(monster)
       )
     }
 
@@ -142,7 +145,7 @@ export default class Books {
         //   Presenter.describeAbility(ability)
         // )
         let row = `| ${Words.capitalize(ability.name)} | _${ability.description}_ | `;
-        row += Presenter.describeAbility(ability).replace(/\n/g, " ") + " |";
+        row += AbilityPresenter.describeAbility(ability).replace(/\n/g, " ") + " |";
         this.write(row);
       }
     })
@@ -186,7 +189,7 @@ export default class Books {
         // this.write(trait.description);
         let line = `| ${Words.humanize(trait.name)} | _${trait.description}_ | `;
         trait.statuses?.forEach(status => {
-          line += `**${Words.humanize(status.name)}** - ${Presenter.describeStatus(status).replace(/\n/g, " ")}<br/>`;
+          line += `**${Words.humanize(status.name)}** - ${StatusPresenter.describeStatus(status).replace(/\n/g, " ")}<br/>`;
         });
         if (trait.abilities?.length || 0 > 0) {
           line += "*You gain the following abilities:*<br/>";
@@ -194,7 +197,7 @@ export default class Books {
         trait.abilities?.forEach(abilityName => {
           const ability = AbilityHandler.instance.getAbility(abilityName);
           if (ability) {
-            line += `**${Words.capitalize(ability.name)}** - ${Presenter.describeAbility(ability).replace(/\n/g, " ")}<br/>`;
+            line += `**${Words.capitalize(ability.name)}** - ${AbilityPresenter.describeAbility(ability).replace(/\n/g, " ")}<br/>`;
           }
         });
 
@@ -321,7 +324,7 @@ export default class Books {
           }
           row += `${ability.level || "Cantrip"} `;
           row += `| _${ability.description}_ `;
-          row += `| ${Presenter.describeAbility(ability).replace(/\n/g, " ")} |`;
+          row += `| ${AbilityPresenter.describeAbility(ability).replace(/\n/g, " ")} |`;
           this.write(row);
           // this.write(`\n#### ${ability.name}`); // (${ability.domain || ability.school}/${ability.level})`);
           // this.write(`Level: ${ability.level || 1} ${ability.school ? `| School: ${ability.school}` : ''}${ability.domain ? `| Domain: ${ability.domain}` : ''}`);
@@ -363,7 +366,7 @@ export default class Books {
       //   Presenter.describeModifications(magicItem.effect)
       // )
       let row = `| ${Words.capitalize(magicItem.name)} | _${magicItem.description}_ | `;
-      row += Presenter.describeModifications(magicItem.effect, magicItem.name).replace(/\n/g, " ") + " |";
+      row += StatusPresenter.describeModifications(magicItem.effect, magicItem.name).replace(/\n/g, " ") + " |";
       this.write(row);
     }
 
@@ -381,7 +384,7 @@ export default class Books {
       //   Presenter.describeAbility(consumable)
       // )
       let row = `| ${Words.capitalize(consumable.name)} | _${consumable.description}_ | `;
-      row += Presenter.describeAbility(consumable).replace(/\n/g, " ") + " |";
+      row += AbilityPresenter.describeAbility(consumable).replace(/\n/g, " ") + " |";
       this.write(row);
     }
   }
@@ -417,12 +420,12 @@ export default class Books {
     statuses.forEach(status => {
       let row = `| ${status.name} | `;
       row += status.description ? `_${status.description}_ | ` : " | ";
-      row += Presenter.describeStatus(status).replace(/\n/g, " ") + " |";
+      row += StatusPresenter.describeStatus(status).replace(/\n/g, " ") + " |";
       this.write(row);
     });
   }
 
-  static async wonderbook(_options: Record<string, any> = {}) {
+  static async wonderbook(_options = {}) {
     await Books.bootstrap();
 
     this.write(`## Wonders\n`);
@@ -442,12 +445,12 @@ export default class Books {
       const description = Deem.evaluate('lookup(wonderDescriptions, "' + wonderName + '")') as string;
       const effects = Deem.evaluate('lookup(wonderEffects, "' + wonderName + '")') as unknown as AbilityEffect[];
       let row = `| ${Words.humanize(wonderName)} | _${Words.capitalize(description)}_ | `;
-      row += Presenter.describeEffects(effects, 'user').replace(/\n/g, " ") + " |";
+      row += AbilityPresenter.describeEffects(effects, 'user').replace(/\n/g, " ") + " |";
       this.write(row);
     }
   }
 
-  static async planebook(_options: Record<string, any> = {}) {
+  static async planebook(_options = {}) {
     await this.bootstrap();
 
     this.write(`## Planes\n`);
@@ -471,11 +474,11 @@ export default class Books {
       this.write("|-----------|---------|--------|---------|------------------|");
       this.write(`| ${Words.capitalize(plane.order || "--")} ${Words.capitalize(plane.alignment || "--")} | ${Words.capitalize(plane.terrain || "Varied")} | ${Words.capitalize(plane.domain || "None")} | ${Words.capitalize(plane.weather || "Varied")} | ${Words.capitalize(plane.race || "--")} |\n`);
 
-      this.write("**Global Effects:** " + Presenter.describeModifications(plane.globalEffects) + "\n");
+      this.write("**Global Effects:** " + StatusPresenter.describeModifications(plane.globalEffects) + "\n");
     }
   }
 
-  static async trapbook(_options: Record<string, any> = {}) {
+  static async trapbook(_options = {}) {
     await this.bootstrap();
 
     this.write(`## Traps\n`);
@@ -487,13 +490,13 @@ export default class Books {
     for (const trapName of trapNames) {
       const trapDescription = Deem.evaluate('lookup(trapPunishmentDescriptions, "' + trapName + '")');
       const trapEffects = Deem.evaluate('lookup(trapEffects, "' + trapName + '")') as unknown as AbilityEffect[];
-      let row = `| ${Words.humanize(trapName)} | _${trapDescription}_ | `;
-      row += Presenter.describeEffects(trapEffects, 'target').replace(/\n/g, " ") + " |";
+      let row = `| ${Words.humanize(trapName)} | _${trapDescription as string}_ | `;
+      row += AbilityPresenter.describeEffects(trapEffects, 'target').replace(/\n/g, " ") + " |";
       this.write(row);
     }
   }
 
-  static async weaponbook(_options: Record<string, any> = {}) {
+  static async weaponbook(_options = {}) {
     await this.bootstrap();
 
     this.write(`## Weapons\n`);
@@ -594,14 +597,14 @@ export default class Books {
         cha?: number;
         occupationOptions?: string[];
         forbiddenTraits?: string[];
-      };
+      } 
       const description = Deem.evaluate('lookup(raceDescriptions, "' + raceName + '")') as string;
       this.write("_" + description + "_\n");
       this.write("| Attribute | Modifier |");
       this.write("|-----------|----------|");
       let modTotal = 0;
-      ['str', 'dex', 'con', 'int', 'wis', 'cha'].forEach(attr => {
-        const modifier = (race as any)[attr];
+      ['str', 'dex', 'con', 'int', 'wis', 'cha'].forEach((attr) => {
+        const modifier: number = (race)[attr as keyof typeof race] as number;
         if (modifier) {
           this.write(`| ${Words.capitalize(attr)} | ${modifier >= 0 ? "+" : ""}${modifier} |`);
         }
@@ -617,7 +620,7 @@ export default class Books {
     }
   }
 
-  static async classbook(_options: Record<string, any> = {}) {
+  static async classbook(_options = {}) {
     await this.bootstrap();
 
     this.write(`## Classes\n`);
@@ -647,7 +650,7 @@ export default class Books {
       this.write("|-----------|----------|");
       let modTotal = 0;
       ['str', 'dex', 'con', 'int', 'wis', 'cha'].forEach(attr => {
-        const modifier = (classMod as any)[attr];
+        const modifier = (classMod)[attr as keyof typeof classMod] as number;
         if (modifier) {
           this.write(`| ${Words.capitalize(attr)} | ${modifier >= 0 ? "+" : ""}${modifier} |`);
         }

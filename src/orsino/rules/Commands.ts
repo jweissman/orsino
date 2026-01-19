@@ -13,6 +13,9 @@ import Presenter from "../tui/Presenter";
 import Deem from "../../deem";
 import StatusHandler, { StatusModifications } from "../Status";
 import { SAVE_KINDS, SaveKind } from "../types/SaveKind";
+import { DeemValue } from "../../deem/stdlib";
+import CombatantPresenter from "../presenter/CombatantPresenter";
+import { GeneratorOptions } from "../Generator";
 
 type TimelessEvent = Omit<GameEvent, "turn">;
 
@@ -246,7 +249,6 @@ export class Commands {
       const reflectPercent = defenderEffects.reflectDamagePercent || 0;
       const reflectedDamage = Math.floor(damage * reflectPercent);
       if (reflectedDamage > 0) {
-        // console.log(`${Presenter.minimalCombatant(defender)} reflects ${reflectedDamage} ${damageKind} damage back to ${Presenter.minimalCombatant(attacker)}!`);
         const reflectEvents = await Commands.handleHit(
           defender, attacker, reflectedDamage, false, `reflect from ${defender.forename}`, true, damageKind,
           null, combatContext, roll
@@ -260,14 +262,14 @@ export class Commands {
     if (damage < 0) { damage = 0; }
     // if damage is NaN throw error
     if (isNaN(damage)) {
-      throw new Error(`Damage calculated as NaN for ${Presenter.minimalCombatant(attacker)} attacking ${Presenter.minimalCombatant(defender)}.`);
+      throw new Error(`Damage calculated as NaN for ${CombatantPresenter.minimalCombatant(attacker)} attacking ${CombatantPresenter.minimalCombatant(defender)}.`);
     }
 
     const originalHp = defender.hp;
     for (let [source, pool] of Object.entries(defender.tempHpPools || {})) {
       const originalTempHp = pool;
       if (isNaN(originalTempHp)) {
-        throw new Error(`Temporary HP pool '${source}' is NaN for ${Presenter.minimalCombatant(defender)}.`);
+        throw new Error(`Temporary HP pool '${source}' is NaN for ${CombatantPresenter.minimalCombatant(defender)}.`);
       }
       // let originalTempHp = defender.tempHp || 0;
       if (originalTempHp > 0) {
@@ -296,7 +298,6 @@ export class Commands {
       if (saved) {
         defender.hp = 1;
         // this.note(`${Presenter.combatant(defender)} drops to 1 HP instead of 0!`);
-        // console.warn(`${Presenter.minimalCombatant(defender)} drops to 1 HP instead of 0!`);
       }
     } //else
 
@@ -320,15 +321,13 @@ export class Commands {
     if (cascade) {
       let count = cascade.count;
       if (typeof count === "string") {
-        count = Deem.evaluate(count, { ...attacker } as any) as number;
+        count = Deem.evaluate(count, { ...attacker } as unknown as Record<string, DeemValue>) as number;
       }
       if (count > 0 && damage > 0) {
         const otherTargets = combatContext.enemies.filter(c => c !== defender && c.hp > 0);
         if (otherTargets.length > 0) {
-          // console.log(`Cascade damage of ${damage} triggered from ${Presenter.minimalCombatant(defender)} (${count} jumps remaining).`);
           const newTarget = otherTargets[Math.floor(Math.random() * otherTargets.length)];
           const cascadeDamage = Math.max(1, Math.floor(damage * cascade.damageRatio));
-          // console.log(`${Presenter.minimalCombatant(defender)} cascades ${cascadeDamage} ${damageKind} damage to ${Presenter.minimalCombatant(newTarget)}!`);
           const cascadeEvents = await Commands.handleHit(
             attacker, newTarget, cascadeDamage, false, `cascade via ${defender.forename}`, true, damageKind,
             { count: count - 1, damageRatio: cascade.damageRatio }, combatContext, roll
@@ -466,13 +465,13 @@ export class Commands {
     target.activeEffects = target.activeEffects || [];
     target.activeEffects.push({ name, type: type || 'condition', effect, duration, by: user });
     if (effect.tempHp) {
-      const pool = Deem.evaluate(effect.tempHp.toString(), { ...user } as any) as number || 0;
+      const pool = Deem.evaluate(effect.tempHp.toString(), { ...user } as unknown as GeneratorOptions) as number || 0;
       target.tempHpPools = target.tempHpPools || {};
 
       target.tempHpPools[name] = pool;
     }
 
-    return [
+    return Promise.resolve([
       {
         type: "statusEffect",
         subject: target,
@@ -482,7 +481,7 @@ export class Commands {
         duration,
         source: source || user.forename
       } as Omit<StatusEffectEvent, "turn">
-    ];
+    ]);
   }
 
   static async handleRemoveStatusEffect(target: Combatant, name: string): Promise<TimelessEvent[]> {
@@ -505,7 +504,7 @@ export class Commands {
         target.activeEffects.splice(existingEffectIndex, 1);
         // this.emit({
         let effectName = name;
-        if (effectName == '.*') {
+        if (effectName === '.*') {
           effectName = 'any active status effect';
         }
         events.push({ type: "statusExpire", subject: target, effectName, } as Omit<StatusExpireEvent, "turn">);

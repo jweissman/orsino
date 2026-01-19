@@ -95,7 +95,8 @@
       "thief": "Thieves are stealthy and cunning, adept at sneaking, lockpicking, and dealing precise strikes.",
       "cleric": "Clerics are divine spellcasters who draw power from their faith to heal allies and smite foes.",
       "bard": "Bards are charismatic performers who inspire allies and confound enemies through music and magic.",
-      "ranger": "Rangers are skilled hunters and trackers, proficient with bows and survival in the wilderness."
+      "ranger": "Rangers are skilled hunters and trackers, proficient with bows and survival in the wilderness.",
+      "monk": "Monks are disciplined martial artists who harness their inner energy to perform extraordinary feats."
     }
   },
 
@@ -1442,10 +1443,10 @@
       "radiant_surge": [[{ "type": "damage", "kind": "radiant", "amount": "=8d6" }]],
       "force_blast": [[{ "type": "damage", "kind": "force", "amount": "=8d6" }]],
       "poison_mist": [[{ "type": "damage", "kind": "poison", "amount": "=7d6" }]],
-      "planar_rift": [[{ "type": "planeshift", "location": "=oneOf(Limbo, Pandemonium, Mechanus)" }]],
       "silence_rune": [[{ "type": "debuff", "status": "silence" }]],
       "energy_burst": [[{ "type": "damage", "kind": "force", "amount": "=10d6" }]],
       "apocalypse": [[{ "type": "damage", "kind": "true", "amount": "=20d6" }]],
+      "planar_rift": [[{ "type": "planeshift", "location": "=oneOf(Limbo, Pandemonium, Mechanus)" }]],
       "gate_of_shadows": [[{ "type": "planeshift", "location": "Cthelll" }]]
     }
   },

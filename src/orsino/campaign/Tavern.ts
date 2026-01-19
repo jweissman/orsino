@@ -1,9 +1,11 @@
 import { Dungeon } from "../Dungeoneer";
 import { AllRumorsHeardEvent, DonationEvent, ModuleEvent, PurchaseEvent, RumorHeardEvent } from "../Events";
 import CharacterRecord from "../rules/CharacterRecord";
-import SkillCheck from "../SkillCheck";
+import SkillCheck from "../rules/SkillCheck";
+import SystemShock from "../rules/SystemShock";
 import Automatic from "../tui/Automatic";
 import Words from "../tui/Words";
+import { CombatantID } from "../types/Combatant";
 import { never } from "../util/never";
 import TownFeature from "./TownFeature";
 
@@ -12,11 +14,13 @@ type TavernService
   // | 'gamble'
   | 'hire'
   | 'converse'
+  | 'rooms'
 
 export default class Tavern extends TownFeature<TavernService> {
   get services(): Record<TavernService, () => Promise<ModuleEvent[]>> {
     return {
       drink: this.barkeep.bind(this),
+      rooms: this.hostel.bind(this),
       // gamble: this.cardsTable.bind(this),
       hire: this.hirelingBoard.bind(this),
       converse: this.commonRoom.bind(this),
@@ -29,7 +33,25 @@ export default class Tavern extends TownFeature<TavernService> {
       // case 'gamble': return "Cards Table";
       case 'hire': return "Hireling Board";
       case 'converse': return "Common Room";
+      case 'rooms': return "Hostel";
       default: return never(type);
+    }
+  }
+
+  serviceApplicable(serviceType: TavernService): boolean {
+    switch (serviceType) {
+      case 'drink':
+        return this.gold >= 2;
+      // case 'gamble':
+      //   return true;
+      case 'hire':
+        return this.campaignModule?.town.tavern?.hirelings.length ? true : false;
+      case 'converse':
+        return this.availableDungeons.length > 0;
+      case 'rooms':
+        return this.gold >= 5;
+      default:
+        return never(serviceType);
     }
   }
 
@@ -59,11 +81,11 @@ export default class Tavern extends TownFeature<TavernService> {
 
   get availableDungeons(): Dungeon[] {
     if (!this.campaignModule) { return []; }
-    return this.campaignModule.dungeons.filter(d => d.dungeonIndex && !this.gameState.completedDungeons.includes(d.dungeonIndex));
+    return this.campaignModule.dungeons.filter(d => d.dungeonIndex && !this.campaignModule.completedDungeons.includes(d.dungeonIndex));
   }
 
   private async commonRoom(): Promise<ModuleEvent[]> {
-    const available = this.availableDungeons.filter(d => d.dungeonIndex && !this.gameState.discoveredDungeons.includes(d.dungeonIndex));
+    const available = this.availableDungeons.filter(d => d.dungeonIndex && !this.campaignModule.discoveredDungeons.includes(d.dungeonIndex));
     if (available.length === 0) {
       return Promise.resolve([
         { type: "allRumorsHeard", subject: this.party[0], day: this.day } as AllRumorsHeardEvent
@@ -88,7 +110,7 @@ export default class Tavern extends TownFeature<TavernService> {
     // if (howMuchToSpend >= 50) { dc = 5; }
     // if (howMuchToSpend >= 100) { dc = 2; }
     const skillCheck = new SkillCheck(this.gameState, this.driver);
-    const { actor: gatherInformationActor, success } = await skillCheck.skillCheck(
+    const { actor: gatherInformationActor, success } = await skillCheck.perform(
       "gatherInformation",
       "gathering information in the tavern",
       "wis",
@@ -142,7 +164,7 @@ export default class Tavern extends TownFeature<TavernService> {
     const hireling = hirelings[Math.floor(Math.random() * hirelings.length)];
     hireling.level = 1;
     hireling.gp = 0;
-    await CharacterRecord.chooseTraits(hireling, Automatic.randomSelect.bind(Automatic));
+    await CharacterRecord.chooseTraits(hireling); //, Automatic.randomSelect.bind(Automatic));
     const race = hireling.race;
     const charClass = hireling.class;
     if (!race || !charClass) {
@@ -159,8 +181,7 @@ export default class Tavern extends TownFeature<TavernService> {
     const hirelingDescription = CharacterRecord.describe(hireling);
     const hirelingIntro = CharacterRecord.introduce(hireling);
 
-    this.driver.writeLn(`${hirelingDescription} ${hireling.forename} says: "${hirelingIntro} I would be honored to join your party for a fee of ${cost} gold."`);
-    this.driver.writeLn("");
+    this.driver.writeLn(`${hirelingDescription}\n\n${hireling.forename} says: "${hirelingIntro} I would be honored to join your party for a fee of ${cost} gold."`);
 
     const events: ModuleEvent[] = [({
       type: "hirelingOffered",
@@ -179,6 +200,50 @@ export default class Tavern extends TownFeature<TavernService> {
         day: this.day,
       });
     }
+
+    return events;
+  }
+
+  private async hostel(): Promise<ModuleEvent[]> {
+    const events: ModuleEvent[] = [];
+    const roomCost = 5;
+    if (this.gold < roomCost) {
+      console.warn("Not enough gold to rent a room.");
+      return Promise.resolve(events);
+    }
+    const renterId = await this.pickPartyMember("Who is renting a room?");
+    if (renterId === null) {
+      return Promise.resolve(events);
+    }
+    const renter = this.findPartyMember(renterId);
+    events.push({ type: "purchase", itemName: "room rental", cost: roomCost, subject: renter, day: this.day });
+
+    const healedCombatantIds: CombatantID[] = [];
+    const stabilizedCombatantIds: CombatantID[] = [];
+    const diedCombatantIds: CombatantID[] = [];
+    for (const pc of this.party) {
+      if (pc.hp <= 0) {
+        const stabilization = new SystemShock(this.gameState, this.driver);
+        const { died } = await stabilization.perform(pc.id);
+        if (!died) {
+          stabilizedCombatantIds.push(pc.id);
+        } else {
+          diedCombatantIds.push(pc.id);
+        }
+      } else if (!pc.dead) {
+        healedCombatantIds.push(pc.id);
+      }
+    }
+
+    events.push({
+      type: "rest",
+      subject: renter,
+      cost: 8,
+      restType: "long",
+      stabilizedCombatantIds,
+      healedCombatantIds,
+      diedCombatantIds
+    });
 
     return events;
   }

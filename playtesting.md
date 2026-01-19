@@ -6,7 +6,6 @@
 - [ ] Sometimes dragons don't have valid abilities? (no melee attack?) [maybe fixed with targeting improvements...?? couldn't repro anymore anyway]
 - [ ] Planeshift ability is basically a soft-lock for autoplay (since constantly restarting/regenerating modules when cast, which is seemingly a lot at high levels...)
 
-
 ## Features
 - [ ] Make effective weapon/armor/size work for shapechange
 - [ ] Make read thoughts telegraph next moves; we may have to _obscure_ compelled moves like charge first? (for now maybe just display what their _next best_ move is by score?)
@@ -193,6 +192,9 @@
 - [ ] Illusory trait for phantasmal summons
 - [ ] Skill check for gather info in taverns
 - [ ] Taverns only show _new_ rumors (ie for dungeons you haven't heard of yet...) or present 'nothing new' kind of message
+---
+- [~] Don't offer to equip weapons/items/armor the user wouldn't be proficient in [need to verify this!]
+- [ ] Palace where you can get a quest from a king (maybe also a bounty board in the tavern for rare creatures? --maybe depends on wilderness exploration)
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing

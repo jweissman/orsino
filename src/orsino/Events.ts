@@ -2,7 +2,7 @@ import { DamageKind } from "./types/DamageKind";
 import { never } from "./util/never";
 import Presenter from "./tui/Presenter";
 import Stylist from "./tui/Style";
-import { Combatant, EquipmentSlot } from "./types/Combatant";
+import { Combatant, CombatantID, EquipmentSlot } from "./types/Combatant";
 import { Team } from "./types/Team";
 import Orsino from "../orsino";
 import Files from "./util/Files";
@@ -13,6 +13,10 @@ import { StatusEffect, StatusModifications } from "./Status";
 import { ItemInstance } from "./types/ItemInstance";
 import { Inventory } from "./Inventory";
 import { Fighting } from "./rules/Fighting";
+import { GameState } from "./types/GameState";
+import CombatantPresenter from "./presenter/CombatantPresenter";
+import CharacterPresenter from "./presenter/CharacterPresenter";
+import StatusPresenter from "./presenter/StatusPresenter";
 
 type BaseEvent = {
   turn: number;
@@ -112,7 +116,16 @@ export type DungeonCleared = BaseDungeonEvent & { type: "dungeonCleared"; macguf
 export type DungeonFailed = BaseDungeonEvent & { type: "dungeonFailed"; dungeonName: string; reason: string; };
 export type ItemFoundEvent = BaseDungeonEvent & { type: "itemFound"; itemName: string; itemDescription: string; quantity: number; where: string; };
 export type EquipmentWornEvent = BaseDungeonEvent & { type: "equipmentWorn"; itemName: string; slot: EquipmentSlot; };
-export type RestEvent = BaseDungeonEvent & { type: "rest"; stabilizedCombatants: string[]; };
+export type RestEvent = BaseDungeonEvent & {
+  type: "rest";
+  // stabilizedCombatants: string[];
+  stabilizedCombatantIds: CombatantID[];
+  diedCombatantIds?: CombatantID[];
+  healedCombatantIds?: CombatantID[];
+
+  cost?: number;
+  restType: "short" | "long";
+};
 export type GoldEvent = BaseDungeonEvent & { type: "gold"; amount: number };
 export type ExperienceEvent = BaseDungeonEvent & { type: "xp"; amount: number };
 export type InvestigateEvent = BaseDungeonEvent & { type: "investigate"; clue: string; discovery: string; };
@@ -161,6 +174,7 @@ type BaseModuleEvent = Omit<BaseEvent, "turn"> & { day: number; };
 
 export type CampaignStartEvent = BaseModuleEvent & { type: "campaignStart"; pcs: Combatant[]; at: Timestamp };
 export type ModuleStartEvent = BaseModuleEvent & { type: "moduleStart"; moduleName: string; pcs: Combatant[]; at: Timestamp };
+export type NewDayEvent = BaseModuleEvent & { type: "newDay"; day: number; weather: string; season: "spring" | "summer" | "autumn" | "winter"; };
 export type TownVisitedEvent = BaseModuleEvent & {
   type: "townVisited";
   plane: string;
@@ -190,18 +204,22 @@ export type EnhanceWeaponEvent = BaseModuleEvent & { type: "enhanceWeapon"; weap
 
 // export type TempleVisitedEvent = BaseModuleEvent & { type: "templeVisited"; templeName: string; };
 export type CampaignStopEvent = BaseModuleEvent & { type: "campaignStop"; reason: string; at: Timestamp; };
-export type PartyOverviewEvent = BaseModuleEvent & { type: "partyOverview"; pcs: Combatant[]; inventory: ItemInstance[] } //itemQuantities: { [itemName: string]: number }; };
-export type CharacterOverviewEvent = BaseModuleEvent & { type: "characterOverview"; pc: Combatant; inventory: ItemInstance[] } //itemQuantities: { [itemName: string]: number }; };
+export type PartyOverviewEvent = BaseModuleEvent & { type: "partyOverview"; pcs: Combatant[]; inventory: ItemInstance[] }
+export type CharacterOverviewEvent = BaseModuleEvent & { type: "characterOverview"; pc: Combatant; inventory: ItemInstance[] }
 
 export type DrinkEvent = BaseModuleEvent & { type: "drink"; amount: number; beverage?: string; };
 export type AllRumorsHeardEvent = BaseModuleEvent & { type: "allRumorsHeard"; };
 export type RumorHeardEvent = BaseModuleEvent & { type: "rumorHeard"; rumor: string; dungeonIndex: number };
 export type HirelingOfferedEvent = BaseModuleEvent & { type: "hirelingOffered"; hireling: Combatant; cost: number; };
 export type HirelingHiredEvent = BaseModuleEvent & { type: "hirelingHired"; hireling: Combatant; cost: number; };
+// export type RoomRentedEvent = BaseModuleEvent & { type: "roomRented"; renter: Combatant; cost: number; };
+
+export type DungeonCompleted = BaseModuleEvent & { type: "dungeonCompleted"; dungeonIndex: number; };
 
 export type ModuleEvent =
   | ModuleStartEvent
   | CampaignStartEvent
+  | NewDayEvent
   | TownVisitedEvent
   | ShopEnteredEvent
   | TempleEnteredEvent
@@ -223,15 +241,21 @@ export type ModuleEvent =
   | AllRumorsHeardEvent
   | HirelingOfferedEvent
   | HirelingHiredEvent
+  | RestEvent
 
   | PartyOverviewEvent
   | CharacterOverviewEvent
+
+  | DungeonCompleted
   | CampaignStopEvent
 
 export type GameEvent = CombatEvent | DungeonEvent | ModuleEvent
 
 export default class Events {
-  static async present(event: GameEvent): Promise<string> {
+  static async present(
+    event: GameEvent,
+    state?: GameState
+  ): Promise<string> {
     let subjectName = event.subject ? event.subject.forename : null;
     if (event.subject) {
       const subjectEffects = Fighting.gatherEffects(event.subject);
@@ -306,10 +330,27 @@ export default class Events {
         break;
 
       case "rest":
-        if (event.stabilizedCombatants.length > 0) {
-          message = `Your party rests (${Words.humanizeList(event.stabilizedCombatants)} stabilized).`;
-        } else {
-          message = `Your party rests.`;
+        message = 'Your party rests.';
+        if (event.stabilizedCombatantIds.length) {
+          const stabilizedNames = event.stabilizedCombatantIds.map(id => {
+            const pc = state?.party.find(p => p.id === id);
+            return pc ? pc.forename : "a party member";
+          });
+          message = `${Words.humanizeList(stabilizedNames)} stabilized.`;
+        }
+        if (event.healedCombatantIds && event.healedCombatantIds.length) {
+          const healedNames = event.healedCombatantIds.map(id => {
+            const pc = state?.party.find(p => p.id === id);
+            return pc ? pc.forename : "a party member";
+          });
+          message += ` ${Words.humanizeList(healedNames)} healed to full health.`;
+        }
+        if (event.diedCombatantIds && event.diedCombatantIds.length) {
+          const diedNames = event.diedCombatantIds.map(id => {
+            const pc = state?.party.find(p => p.id === id);
+            return pc ? pc.forename : "a party member";
+          });
+          message += ` ${Words.humanizeList(diedNames)} have died.`;
         }
         break;
 
@@ -339,7 +380,7 @@ export default class Events {
       case "flee": message = `${subjectName} flees from combat.`; break;
 
       case "statusEffect":
-        message = `${subjectName} is ${event.effectName} (${Presenter.describeModifications(event.effect)}) by ${event.source}.`
+        message = `${subjectName} is ${event.effectName} (${StatusPresenter.describeModifications(event.effect)}) by ${event.source}.`
         break;
 
       case "statusExpire":
@@ -530,7 +571,7 @@ export default class Events {
         break;
 
       case "campaignStart":
-        message = Stylist.bold(`You embark on a new campaign!\nParty Members: ${event.pcs.map(pc => Presenter.combatant(pc)).join("\n")
+        message = Stylist.bold(`You embark on a new campaign!\nParty Members: ${event.pcs.map(pc => CombatantPresenter.combatant(pc)).join("\n")
           }`);
         break;
 
@@ -538,6 +579,26 @@ export default class Events {
         message = Stylist.bold(`You embark on the module '${event.moduleName}' with ${Words.humanizeList(event.pcs.map(pc => pc.forename))
           }`);
         break;
+
+      case "newDay":
+        // message = Stylist.bold(`Day ${event.day} begins. The weather is currently ${event.weather}.`);
+        message = (
+          `It is the ${Words.ordinal(1 + (event.day % 90))} day of ${event.season}. The weather is currently ${event.weather}.`);
+        break;
+
+      case "townVisited":
+        message = (
+          // `It is the ${Words.ordinal(1 + (event.day % 90))} day of ${event.season}.`
+          `You are in the ${event.adjective} ${Words.capitalize(event.race)} ${event.size} of ${Stylist.bold(event.townName)}, which is ${event.translatedTownName}`
+        );
+        if (event.plane !== "Prime Material") {
+          message += Stylist.italic(` on the plane of ${Words.capitalize(event.plane)}`);
+        }
+        message += `.`;
+
+        break;
+
+
       case "shopEntered":
         message = Stylist.bold(`Entered ${event.shopName}'s shop.`);
         break;
@@ -564,10 +625,6 @@ export default class Events {
 
       case "goldStatus":
         message = `Current gold: ${Words.humanizeNumber(event.amount)} gp.`;
-        break;
-
-      case "townVisited":
-        message = (`It is the ${Words.ordinal(1 + (event.day % 90))} day of ${event.season} in the ${event.adjective} ${Words.capitalize(event.race)} ${event.size} of ${Stylist.bold(event.townName)}, which is ${event.translatedTownName}, on the plane of ${Words.capitalize(event.plane)} (Population: ${Words.humanizeNumber(event.population)}). The weather is currently ${event.weather}.`);
         break;
 
       case "purchase":
@@ -608,11 +665,15 @@ export default class Events {
         break;
       
       case "characterOverview":
-        message = await Presenter.characterRecord(event.pc, event.inventory);
+        message = await CharacterPresenter.characterRecord(event.pc, event.inventory);
         break;
 
       case "partyOverview":
         message = await Events.presentOverview(event);
+        break;
+
+      case "dungeonCompleted":
+        message = `${subjectName} has completed dungeon #${event.dungeonIndex + 1}!`;
         break;
 
       case "hirelingOffered":
@@ -621,7 +682,7 @@ export default class Events {
 
       case "hirelingHired":
         message = `${event.hireling.forename} has joined your party as a hireling for ${event.cost} gold per month.`;
-        message += await Presenter.characterRecord(event.hireling, []);
+        message += await CharacterPresenter.characterRecord(event.hireling, []);
         break;
 
       case "campaignStop":
@@ -660,16 +721,16 @@ export default class Events {
 
   private static presentTurn(event: TurnStartEvent): string {
     const roundLabel = ("Round " + event.turn.toString()).padEnd(20) + Stylist.colorize(event.environment?.padStart(60) || "Unknown Location", 'cyan');
-    const parties = Presenter.parties(event.parties || []);
+    const parties = CombatantPresenter.parties(event.parties || []);
     const hr = "=".repeat(80);
-    const auras = event.auras?.length > 0 ? "\n\nAuras:\n" + event.auras.map(aura => `- ${Stylist.colorize(aura.name, 'magenta')} (${Presenter.analyzeStatus(aura)})`).join("\n") : "";
+    const auras = event.auras?.length > 0 ? "\n\nAuras:\n" + event.auras.map(aura => `- ${Stylist.colorize(aura.name, 'magenta')} (${StatusPresenter.analyzeStatus(aura)})`).join("\n") : "";
     return `${hr}\n${roundLabel}\n${hr}\n${parties}${auras}\n\n${Stylist.bold(`It's ${event.subject?.forename}'s turn!`)}`;
   }
 
   private static async presentOverview(event: PartyOverviewEvent): Promise<string> {
     const records = [];
     for (const pc of event.pcs) {
-      records.push(await Presenter.characterRecord(pc, Inventory.propertyOf(pc, event.inventory) || []));
+      records.push(await CharacterPresenter.characterRecord(pc, Inventory.propertyOf(pc, event.inventory) || []));
     }
     let message = Stylist.bold(`Party Overview:\n${records.join("\n\n")}\n\n`);
     const sharedItems = Inventory.sharedItems(event.inventory);

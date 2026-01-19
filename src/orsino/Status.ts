@@ -193,6 +193,7 @@ export interface StatusModifications {
   searchBonus?: number;
   pickLockBonus?: number;
   disarmTrapBonus?: number;
+  gatherInformationBonus?: number;
   lootBonus?: number;
 
   xpMultiplier?: number;

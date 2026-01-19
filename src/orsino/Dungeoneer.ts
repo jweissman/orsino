@@ -3,7 +3,6 @@ import { CombatContext, pseudocontextFor } from "./types/CombatContext";
 import { Team } from "./types/Team";
 import Presenter from "./tui/Presenter";
 import { Combatant, CombatantID } from "./types/Combatant";
-import { Select } from "./types/Select";
 import Words from "./tui/Words";
 import Deem from "../deem";
 import Files from "./util/Files";
@@ -17,12 +16,12 @@ import { Inventory } from "./Inventory";
 import Orsino from "../orsino";
 import { StatusEffect, StatusModifications } from "./Status";
 import Sample from "./util/Sample";
-import Automatic from "./tui/Automatic";
 import { ItemInstance } from "./types/ItemInstance";
 import { GenerationTemplateType } from "./types/GenerationTemplateType";
 import { GeneratedValue } from "./Generator";
 import { Driver, NullDriver } from "./Driver";
-
+import { SkillType } from "./rules/SkillCheck";
+import CharacterPresenter from "./presenter/CharacterPresenter";
 
 interface Encounter {
   creatures: Combatant[];
@@ -346,7 +345,7 @@ export default class Dungeoneer {
 
   async presentCharacterRecords(): Promise<void> {
     for (const c of this.playerTeam.combatants) {
-      await Presenter.printCharacterRecord(c, this.playerTeam.inventory, this.outputSink);
+      await CharacterPresenter.printCharacterRecord(c, this.playerTeam.inventory, this.outputSink);
     }
   }
 
@@ -579,7 +578,7 @@ export default class Dungeoneer {
       if (choice === "status") {
         for (const c of this.playerTeam.combatants) {
           const playerGear = Inventory.propertyOf(c, this.playerTeam.inventory);
-          await Presenter.printCharacterRecord(c, playerGear, this.outputSink);
+          await CharacterPresenter.printCharacterRecord(c, playerGear, this.outputSink);
         }
         if (Object.keys(Inventory.quantities(this.playerTeam.inventory.filter(ii => ii.shared))).length > 0) {
           this.outputSink(`Inventory:`);
@@ -971,7 +970,11 @@ export default class Dungeoneer {
           this.note(`Stabilized ${c.name} at 1 HP.`);
         } // Stabilize unconscious characters
       }
-      await this.emit({ type: "rest", stabilizedCombatants: stabilizedCombatants.map(c => c.name) });
+      await this.emit({
+        type: "rest",
+        restType: "short",
+        stabilizedCombatantIds: stabilizedCombatants.map(c => c.id)
+      });
 
       // ask if they want to use consumables/healing spells?
       const someoneWounded = this.playerTeam.combatants.some(c => {
@@ -1065,7 +1068,9 @@ export default class Dungeoneer {
     }
     await this.emit({ type: "itemFound", subject: actor, itemName: Words.humanize(it.name), itemDescription: description, quantity: 1, where });
 
-    if (isEquipment || isWeapon || isArmor) {
+    const isEquippable = isEquipment || isWeapon || isArmor;
+    const canEquip = isEquippable && Inventory.isProficient(it, actor);
+    if (canEquip) {
       const choice = await this.select(`Equip ${Words.humanize(it.name)} now?`, [
         { name: "Yes", value: "yes", short: 'Y', disabled: false },
         { name: "No", value: "no", short: 'N', disabled: false }

@@ -55,6 +55,35 @@
 
       "urban": { "dex": 1, "cha": 2 }
     }
+  },
+  "terrainClimates": {
+    "discriminator": "terrain",
+    "groups": {
+      "forest": [ "temperate", "temperate", "temperate", "tropical" ],
+      "cave": [ "temperate", "temperate", "cold" ],
+      "swamp": [ "temperate", "tropical", "tropical", "humid" ],
+      "mountain": [ "cold", "temperate", "temperate", "arid" ],
+      "snow": [ "cold", "cold", "temperate" ],
+      "desert": [ "arid", "arid", "temperate" ],
+      "island": [ "tropical", "temperate", "humid", "volcanic", "coastal" ],
+      "jungle": [ "tropical", "tropical", "humid" ],
+      "plains": [ "temperate", "temperate", "arid" ],
+      "volcano": [ "arid", "temperate", "cold" ]
+    }
+  },
+  "climateWeather": {
+    "discriminator": "climate",
+    "groups": {
+      "arid": [ "sunny", "sunny", "windy", "dusty", "hot" ],
+      "coastal": [ "windy", "foggy", "sunny", "rainy", "cloudy", "fair" ],
+      "cold": [ "snowy", "cloudy", "windy", "cold", "foggy", "sunny" ],
+      "humid": [ "rainy", "cloudy", "foggy", "sunny", "stormy" ],
+      "polar": [ "snowy", "windy", "foggy", "cloudy", "cold", "freezing" ],
+      "temperate": [ "sunny", "fair", "cloudy", "rainy", "windy", "foggy" ],
+      "tropical": [ "sunny", "sunny", "fair", "rainy", "humid", "stormy" ],
+      "unpredictable": [ "stormy", "windy", "rainy", "foggy", "cloudy" ],
+      "volcanic": [ "ashfall", "smoky", "hot", "cloudy", "windy" ]
+    }
   }
 
 }

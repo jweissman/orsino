@@ -10,14 +10,16 @@ import Words from "./tui/Words";
 import { Combatant } from "./types/Combatant";
 import { Commands } from "./rules/Commands";
 import { Driver, NullDriver } from "./Driver";
-import { Fighting } from "./rules/Fighting";
-import { GameState, GameStateReducer, newGameState } from "./types/GameState";
+import { GameState, newGameState } from "./types/GameState";
+import { GameStateReducer } from "./rules/GameStateReducer";
 import { GeneratedValue, GeneratorOptions } from "./Generator";
 import { GenerationTemplateType } from "./types/GenerationTemplateType";
 import { Inventory } from "./Inventory";
 import { ItemInstance } from "./types/ItemInstance";
 import { Roll } from "./types/Roll";
 import { StatusModifications } from "./Status";
+import Deem from "../deem";
+import CombatantPresenter from "./presenter/CombatantPresenter";
 
 type TownSize = 'hamlet' | 'village' | 'town' | 'city' | 'metropolis' | 'capital';
 type Race = 'human' | 'elf' | 'dwarf' | 'halfling' | 'gnome' | 'orc' | 'fae';
@@ -31,7 +33,19 @@ export interface Deity {
   title: string;
 }
 
+type Climate
+  = 'arid'
+  | 'coastal'
+  | 'cold'
+  | 'humid'
+  | 'polar'
+  | 'temperate'
+  | 'tropical'
+  | 'unpredicatable'
+  | 'volcanic';
+
 export interface Town {
+  climate: Climate;
   tavern: { hirelings: Combatant[] };
   townName: string;
   translatedName: string;
@@ -46,10 +60,14 @@ export interface CampaignModule {
   name: string;
   plane: string;
   terrain: string;
+  // climate: Climate;     
   weather: string;
   town: Town;
   dungeons: Dungeon[];
   globalEffects?: StatusModifications;
+
+  completedDungeons: number[];
+  discoveredDungeons: number[];
 }
 
 
@@ -70,15 +88,17 @@ export class ModuleRunner {
   private roller: Roll;
   private driver: Driver;
   private moduleGen: (options?: GeneratorOptions) => CampaignModule;
-  private readonly gameState: GameState;
+  private readonly state: GameState;
 
   private gen: (type: GenerationTemplateType, options?: GeneratorOptions) => GeneratedValue | GeneratedValue[];
 
-  journal: ModuleEvent[] = [];
-
-  get activeModule(): CampaignModule {
-    return this.gameState.campaignModule;
+  private get season(): "spring" | "summer" | "autumn" | "winter" {
+    const seasons = ["spring", "summer", "autumn", "winter"];
+    return seasons[Math.floor((this.days % 360) / 90)] as "spring" | "summer" | "autumn" | "winter";
   }
+  private journal: ModuleEvent[] = [];
+
+  private get campaignModule(): CampaignModule { return this.state.campaignModule; }
 
   constructor(options: RunnerOptions = {}) {
     this.roller = options.roller || Commands.roll.bind(Commands);
@@ -89,7 +109,7 @@ export class ModuleRunner {
     const initialModule = this.moduleGen();
     console.warn(`Initial module "${initialModule.name}" generated.`);
 
-    this.gameState = newGameState({
+    this.state = newGameState({
       ...ModuleRunner.configuration,
       party: options.pcs || [],
       inventory: options.inventory || [],
@@ -104,17 +124,9 @@ export class ModuleRunner {
     return this.driver.select(message, choices);
   }
 
-  get pcs() { return this.gameState.party; }
-  get sharedGold() { return this.gameState.sharedGold; }
-  get mod(): CampaignModule {
-    if (!this.activeModule) {
-      throw new Error("No active module!");
-    }
-    return this.activeModule;
-  }
-
-  get inventory() { return this.gameState.inventory; }
-  get state() { return this.gameState; }
+  get pcs() { return this.state.party; }
+  get sharedGold() { return this.state.sharedGold; }
+  get inventory() { return this.state.inventory; }
 
   private note(message: string): void {
     this._outputSink(message);
@@ -122,22 +134,32 @@ export class ModuleRunner {
 
   protected async emit(event: ModuleEvent) {
     this.journal.push(event);
-    this.note(await Events.present(event));
+    this.note(await Events.present(event, this.state));
     // @ts-expect-error -- dynamic update of game state based on event type
-    this.gameState = GameStateReducer.processEvent(this.state, event);
+    this.state = GameStateReducer.processEvent(this.state, event);
 
     await Events.appendToLogfile(event);
   }
 
-  markDungeonCompleted(dungeonIndex: number) {
-    if (!this.state.completedDungeons.includes(dungeonIndex)) {
-      this.state.completedDungeons.push(dungeonIndex);
-    }
+  get discoveredDungeons(): number[] {
+    return this.state.campaignModule.discoveredDungeons;
   }
 
+  get completedDungeons(): number[] {
+    return this.state.campaignModule.completedDungeons;
+  }
+
+  get days() { return this.state.day; }
+
+  // markDungeonCompleted(dungeonIndex: number) {
+  //   if (!this.completedDungeons.includes(dungeonIndex)) {
+  //     this.completedDungeons.push(dungeonIndex);
+  //   }
+  // }
+
   get availableDungeons(): Dungeon[] {
-    if (!this.activeModule) { return []; }
-    return this.activeModule.dungeons.filter(d => d.dungeonIndex && !this.state.completedDungeons.includes(d.dungeonIndex));
+    if (!this.campaignModule) { return []; }
+    return this.campaignModule.dungeons.filter(d => d.dungeonIndex && !this.completedDungeons.includes(d.dungeonIndex));
   }
 
   gatherStartingGear(pc: Combatant): ItemInstance[] {
@@ -180,7 +202,14 @@ export class ModuleRunner {
       const { newModuleOptions } = await this.runModule(dry);
       if (newModuleOptions !== null) {
         moduleOptions = newModuleOptions;
-        this.gameState.campaignModule = this.moduleGen(moduleOptions);
+        const campaignModule = this.moduleGen(moduleOptions);
+        // @ts-expect-error -- updating state with new module
+        this.state = newGameState({
+          party: this.pcs,
+          sharedGold: this.state.sharedGold,
+          inventory: this.state.inventory,
+          mod: { ...campaignModule, completedDungeons: [], discoveredDungeons: [] }
+        });
       } else {
         playing = false;
       }
@@ -188,7 +217,7 @@ export class ModuleRunner {
   }
 
   private async runModule(dry = false): Promise<{ newModuleOptions: GeneratorOptions | null }> {
-    if (!this.activeModule) {
+    if (!this.campaignModule) {
       throw new Error("No active module at runModule time!");
     }
 
@@ -196,12 +225,12 @@ export class ModuleRunner {
     this.pcs.forEach(pc => {
       pc.passiveEffects = pc.passiveEffects || [];
       pc.passiveEffects = pc.passiveEffects?.filter(e => !e.planar);
-      if (this.activeModule.globalEffects) {
+      if (this.campaignModule.globalEffects) {
         pc.passiveEffects.push({
           type: "condition",
-          name: this.activeModule.plane + " Residency",
-          description: `Effects granted by residing on the plane of ${this.activeModule.plane}`,
-          effect: this.activeModule.globalEffects || {},
+          name: this.campaignModule.plane + " Residency",
+          description: `Effects granted by residing on the plane of ${this.campaignModule.plane}`,
+          effect: this.campaignModule.globalEffects || {},
           planar: true
         });
       }
@@ -209,7 +238,7 @@ export class ModuleRunner {
 
     await this.emit({
       type: "moduleStart",
-      moduleName: this.mod.name,
+      moduleName: this.campaignModule.name,
       pcs: this.pcs,
       at: new Date().toISOString(),
       day: 0
@@ -218,31 +247,32 @@ export class ModuleRunner {
     return await this.enter(dry);
   }
 
-
-  days = 0;
-  async enter(dry = false, mod: CampaignModule = this.mod): Promise<{
+  // days = 0;
+  async enter(dry = false, mod: CampaignModule = this.campaignModule): Promise<{
     newModuleOptions: GeneratorOptions | null
   }> {
-    await this.emit({
-      type: "townVisited",
-      townName: mod.town.townName, day: 0,
-      translatedTownName: mod.town.translatedName,
-      plane: mod.plane,
-      weather: mod.weather,
-      race: mod.town.race, size: mod.town.size,
-      population: mod.town.population,
-      adjective: mod.town.adjective,
-      season: this.season,
-    });
+    // await this.emit({
+    //   type: "townVisited",
+    //   townName: mod.town.townName, day: 0,
+    //   translatedTownName: mod.town.translatedName,
+    //   plane: mod.plane,
+    //   weather: mod.weather,
+    //   race: mod.town.race, size: mod.town.size,
+    //   population: mod.town.population,
+    //   adjective: mod.town.adjective,
+    //   season: this.season,
+    // });
+    // await this.status();
     const maxDays = 360;
-    while (this.days++ < maxDays && this.pcs.some(pc => pc.hp > 0)) {
-      await this.status(mod);
+    while (this.days < maxDays && this.pcs.some(pc => pc.hp > 0)) {
+      const weather = Deem.evaluate(`lookup(climateWeather, ${mod.town.climate})`) as string;
+      await this.emit({ type: "newDay", day: this.days + 1, season: this.season, weather })
+      await this.status();
       const action = await this.menu(dry);
 
       if (action === "embark") {
         const dungeon = await this.selectDungeon();
         if (dungeon) {
-
           const share = Math.floor(this.state.sharedGold / this.pcs.length);
           this.pcs.forEach(pc => pc.gp = (pc.gp || 0) + share);
           this.state.sharedGold -= share * this.pcs.length;
@@ -260,18 +290,29 @@ export class ModuleRunner {
             },
           });
           const { newPlane } = await dungeoneer.run();
+
+          this.state.sharedGold += dungeoneer.playerTeam.combatants
+            .reduce((sum, pc) => sum + (pc.gp || 0), 0);
+          this.pcs.forEach(pc => pc.gp = 0);
+
           if (newPlane !== null && newPlane !== undefined && newPlane !== mod.plane) {
             console.warn(`~~~ The party has shifted to the plane of ${newPlane} ~~~`);
             return { newModuleOptions: { _plane_name: newPlane } };
           }
 
           if (dungeoneer.winner === "Player") {
-            this.markDungeonCompleted(dungeon.dungeonIndex || 0);
+            // this.markDungeonCompleted(dungeon.dungeonIndex || 0);
+            const dungeonIndex = dungeon.dungeonIndex;
+            if (dungeonIndex === undefined) {
+              throw new Error("Dungeon index undefined on completed dungeon!");
+            }
+            await this.emit({
+              type: "dungeonCompleted",
+              dungeonIndex,
+              day: this.days,
+            });
           }
 
-          this.state.sharedGold += dungeoneer.playerTeam.combatants
-            .reduce((sum, pc) => sum + (pc.gp || 0), 0);
-          this.pcs.forEach(pc => pc.gp = 0);
 
           // do NOT stabilize unconscious PC to 1 HP here - leave that to the inn or temple
           // this.pcs.forEach(pc => {
@@ -286,8 +327,8 @@ export class ModuleRunner {
             pc.activeEffects = [];
           };
         }
-      } else if (action === "inn") {
-        await this.rest(this.pcs);
+      // } else if (action === "inn") {
+      //   await this.rest(this.pcs);
       } else if (action === "itemShop") {
         await this.handleTownFeature('market', 'consumables');
       } else if (action === "magicShop") {
@@ -309,7 +350,7 @@ export class ModuleRunner {
         await this.handleTownFeature('temple');
       } else if (action === "mirror") {
         const pc = await this.select("Whose character record would you like to view?", this.pcs.map(pc => ({
-          short: pc.name, value: pc, name: Presenter.combatant(pc), disabled: !!pc.dead
+          short: pc.name, value: pc, name: CombatantPresenter.combatant(pc), disabled: !!pc.dead
         })));
         await this.emit({
           type: "characterOverview",
@@ -333,21 +374,11 @@ export class ModuleRunner {
     return { newModuleOptions: null };
   }
 
-  static townIcons = {
-    hamlet: "🏡",
-    village: "🏘️",
-    town: "🏰",
-    city: "🏙️",
-    metropolis: "🌆",
-    capital: "🏛️",
-  }
 
-  get season(): "spring" | "summer" | "autumn" | "winter" {
-    const seasons = ["spring", "summer", "autumn", "winter"];
-    return seasons[Math.floor((this.days % 360) / 90)] as "spring" | "summer" | "autumn" | "winter";
-  }
 
-  async status(mod: CampaignModule = this.mod) {
+  async status() { //}mod: CampaignModule = this.campaignModule) {
+    const mod = this.campaignModule;
+
     await this.emit({
       type: "townVisited",
       plane: mod.plane,
@@ -368,10 +399,10 @@ export class ModuleRunner {
   private async menu(dry = false): Promise<string> {
     const basicShops = {
       tavern: "Gather hirelings, hear rumors about the region",
-      inn: "Restore HP/slots",
-      temple: `Pray to ${Words.capitalize(this.mod.town.deity.name)}`,
+      temple: `Pray to ${Words.capitalize(this.campaignModule.town.deity.name)}`,
     }
     const advancedShops = {
+      // inn: "Restore HP/slots",
       general: "Buy gear and sell loot",
       armory: "Buy weapons and armor",
       blacksmith: "Improve weapons",
@@ -396,48 +427,50 @@ export class ModuleRunner {
 
     const available = this.availableDungeons;
     if (available.length > 0) {
-      options.push({ short: "Seek", value: "embark", name: "⚔️ Embark on a Quest", disabled: this.state.discoveredDungeons.length === 0 || this.availableDungeons.length === 0 });
+      options.push({ short: "Seek", value: "embark", name: "⚔️ Embark on a Quest", disabled: this.discoveredDungeons.length === 0 || this.availableDungeons.length === 0 });
     }
 
     this.note("You have " + Stylist.bold(this.sharedGold + "g") + " available.");
-    return await this.select("What would you like to do?", options);
+    const choice = await this.select("What would you like to do?", options);
+    console.warn(`You selected: ${Words.capitalize(choice)}`);
+    return choice;
   }
 
-  private async rest(party: Combatant[]) {
-    const cost = 10;
-    if (this.sharedGold < cost) {
-      console.warn(`You need at least ${cost}g to rest at the inn.`);
-      return;
-    }
-    this.state.sharedGold -= cost;
-    // party.forEach(pc => {
-    for (const pc of party) {
-      pc.spellSlotsUsed = 0;
-      pc.activeEffects = []; // Clear status effects!
-      if (pc.hp <= 0) {
-        const tryStabilize = await this.driver.confirm(`Would you like to attempt to stabilize ${pc.name}?`);
-        if (tryStabilize) {
-          let systemShockDc = 10;
-          const conMod = Fighting.statMod(pc.con);
-          systemShockDc += conMod;
-          const systemShockRoll = this.roller(pc, `System Shock Save (DC ${systemShockDc})`, 20);
-          if (systemShockRoll.amount >= systemShockDc) {
-            pc.hp = 1;
-            console.warn(`${pc.name} has been stabilized and regains consciousness with 1 HP.`);
-          } else {
-            console.warn(`${pc.name} failed to stabilize and has died!`);
-            pc.dead = true;
-          }
-        // } else {
-        //   console.warn(`${pc.name} remains alive but still unconscious...`);
-        }
-      } else if (!pc.dead) {
-        // console.warn(`${pc.name} rests and recovers to full health.`);
-        const effective = Fighting.effectiveStats(pc);
-        pc.hp = effective.maxHp;
-      }
-    }
-  }
+  // private async rest(party: Combatant[]) {
+  //   const cost = 10;
+  //   if (this.sharedGold < cost) {
+  //     console.warn(`You need at least ${cost}g to rest at the inn. (You have ${this.sharedGold}g)`);
+  //     return;
+  //   }
+  //   this.state.sharedGold -= cost;
+  //   // party.forEach(pc => {
+  //   for (const pc of party) {
+  //     pc.spellSlotsUsed = 0;
+  //     pc.activeEffects = []; // Clear status effects!
+  //     if (pc.hp <= 0) {
+  //       const tryStabilize = await this.driver.confirm(`Would you like to attempt to stabilize ${pc.name}?`);
+  //       if (tryStabilize) {
+  //         let systemShockDc = 10;
+  //         const conMod = Fighting.statMod(pc.con);
+  //         systemShockDc += conMod;
+  //         const systemShockRoll = this.roller(pc, `System Shock Save (DC ${systemShockDc})`, 20);
+  //         if (systemShockRoll.amount >= systemShockDc) {
+  //           pc.hp = 1;
+  //           console.warn(`${pc.name} has been stabilized and regains consciousness with 1 HP.`);
+  //         } else {
+  //           console.warn(`${pc.name} failed to stabilize and has died!`);
+  //           pc.dead = true;
+  //         }
+  //       // } else {
+  //       //   console.warn(`${pc.name} remains alive but still unconscious...`);
+  //       }
+  //     } else if (!pc.dead) {
+  //       // console.warn(`${pc.name} rests and recovers to full health.`);
+  //       const effective = Fighting.effectiveStats(pc);
+  //       pc.hp = effective.maxHp;
+  //     }
+  //   }
+  // }
 
   townFeatures: { [key: string]: () => TownFeature<string> } = {
     temple: () => new Temple(this.driver, this.state),
@@ -465,7 +498,7 @@ export class ModuleRunner {
   }
 
   private async selectDungeon(): Promise<Dungeon | null> {
-    const dungeonChoices = this.availableDungeons.filter(d => this.state.discoveredDungeons.includes(d.dungeonIndex!));
+    const dungeonChoices = this.availableDungeons.filter(d => d.dungeonIndex && this.discoveredDungeons.includes(d.dungeonIndex));
     if (dungeonChoices.length === 0) { return null; }
 
     const reasonableCr = Math.round(1.5 * this.pcs.map(pc => pc.level).reduce((a, b) => a + b, 0) / this.pcs.length) + 2;
@@ -498,6 +531,7 @@ export class ModuleRunner {
         townName: "Port Vesper",
         translatedName: "Safe Harbor",
         adjective: "bustling",
+        climate: "coastal",
         size: "city",
         race: "human",
         population: 5000,
@@ -507,6 +541,8 @@ export class ModuleRunner {
       dungeons: [Dungeoneer.defaultGen()],
       plane: "Prime Material",
       weather: "Tropical",
+      completedDungeons: [],
+      discoveredDungeons: [],
     }
     // return module;
   }

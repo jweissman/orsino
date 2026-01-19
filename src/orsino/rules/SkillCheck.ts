@@ -1,12 +1,12 @@
-import { Driver } from "./Driver";
-import { Commands } from "./rules/Commands";
-import { Fighting } from "./rules/Fighting";
-import { StatusModifications } from "./Status";
-import Presenter from "./tui/Presenter";
-import { Combatant } from "./types/Combatant";
-import { GameState } from "./types/GameState";
+import { Driver } from "../Driver";
+import { Commands } from "./Commands";
+import { Fighting } from "./Fighting";
+import { StatusModifications } from "../Status";
+import Presenter from "../tui/Presenter";
+import { Combatant } from "../types/Combatant";
+import { GameState } from "../types/GameState";
 
-type SkillType = "search" | "examine" | "disarm" | "gatherInformation"; // | "pickLock" | "climb" | "swim" | "jump" | "listen" | "spot";
+export type SkillType = "search" | "examine" | "disarm" | "gatherInformation"; // | "pickLock" | "climb" | "swim" | "jump" | "listen" | "spot";
 
 export default class SkillCheck {
   constructor(
@@ -14,7 +14,7 @@ export default class SkillCheck {
     private readonly driver: Driver,
   ) {}
 
-  async skillCheck(type: SkillType, action: string, stat: keyof Combatant, dc: number, valid: (c: Combatant) => boolean = (): boolean => true): Promise<{
+  async perform(type: SkillType, action: string, stat: keyof Combatant, dc: number, valid: (c: Combatant) => boolean = (): boolean => true): Promise<{
     actor: Combatant;
     success: boolean;
   }> {
