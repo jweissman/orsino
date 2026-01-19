@@ -446,4 +446,31 @@ export default class CharacterRecord {
 
     return events;
   }
+
+  static introduce(pc: Combatant) {
+    let introduction = `I am ${pc.name}, called the ${pc.personalNameMeaning}.`;
+    if (pc.class) {
+      introduction += ` I trained as a ${Words.humanize(pc.class)}.`;
+    }
+    if (pc.translatedHometownName) {
+      introduction += ` I hail from ${pc.translatedHometownName}.`;
+    }
+    return introduction;
+  }
+
+  static describe(combatant: Combatant): string {
+    const descriptor = {
+      male: "He is", female: "She is", androgynous: "They are"
+    }[(combatant.gender || 'androgynous').toLowerCase()] || "They are";
+
+    const what = `${Words.humanize(combatant.archetype || 'neutral')} ${(Words.humanize(combatant.background || 'adventurer'))}`;
+
+    return `${Words.capitalize(combatant.referenceName || combatant.forename)} is ${Words.a_an(what)} from the ${combatant.hometown || 'unknown'}. ${descriptor} ${this.approximateAge(combatant) || 'unknown'} years old with ${Words.a_an(combatant.body_type || 'average')} build, ${combatant.hair || 'unknown color'} hair, ${combatant.eye_color || 'dark'} eyes and ${Words.a_an(combatant.personality || 'unreadable')} disposition.`
+  }
+
+  // round to nearest 5
+  static approximateAge(combatant: Combatant): number {
+    return Math.round((combatant.age || 0) / 5) * 5;
+  }
+
 }

@@ -1,4 +1,3 @@
-import { DamageKind } from "./DamageKind";
 import { StatusEffect } from "../Status";
 import { SaveKind } from "./SaveKind";
 
@@ -42,6 +41,8 @@ export type CombatantID = string;
 export interface Combatant {
   id: CombatantID;
   description?: string;
+  personalName?: string;
+  personalNameMeaning?: string;
   kind?: string;
   armorProficiencies?: {
     all?: boolean;
@@ -136,4 +137,5 @@ export interface Combatant {
   forbiddenTraits?: string[];
   dead?: boolean;
 
+  translatedHometownName?: string;
 }

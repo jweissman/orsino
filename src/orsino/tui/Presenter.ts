@@ -1,7 +1,7 @@
 import Stylist from "./Style";
 import { Combatant, EquipmentSlot } from "../types/Combatant";
 import Words from "./Words";
-import { Fighting } from "../rules/Fighting";
+import { Fighting, StatLine } from "../rules/Fighting";
 import AbilityHandler, { Ability, AbilityEffect, TargetKind } from "../Ability";
 import TraitHandler from "../Trait";
 import Combat from "../Combat";
@@ -9,6 +9,7 @@ import { CombatContext, pseudocontextFor } from "../types/CombatContext";
 import StatusHandler, { StatusEffect, StatusModifications } from "../Status";
 import { never } from "../util/never";
 import { ItemInstance, materializeItem } from "../types/ItemInstance";
+import CharacterRecord from "../rules/CharacterRecord";
 
 export default class Presenter {
   static colors = ['magenta', 'red', 'yellow', 'yellow', 'yellow', 'green', 'green', 'green', 'green'];
@@ -26,7 +27,7 @@ export default class Presenter {
   static markdownCharacterRecord(combatant: Combatant): string {
     let record = "";
     record += (`### ${combatant.name}\n`);
-    record += `_${combatant.description || this.describeCharacter(combatant)}_\n`;
+    record += `_${combatant.description || CharacterRecord.describe(combatant)}_\n`;
 
     const statNames = ['str', 'dex', 'int', 'wis', 'cha', 'con'];
     const effective = Fighting.effectiveStats(combatant);
@@ -38,7 +39,7 @@ export default class Presenter {
     });
     record += "|\n";
     statNames.forEach(stat => {
-      const value = (effective as any)[stat];
+      const value = (effective)[stat as keyof StatLine];
       // const mod = Fighting.statMod(value);
       // const sign = mod >= 0 ? '+' : '';
       record += (`| ${value}`); // (${sign}${mod}) `);
@@ -113,15 +114,15 @@ export default class Presenter {
     sink("\n" + "=".repeat(40) + "\n");
   }
 
-  static describeCharacter(combatant: Combatant) {
-    const descriptor = {
-      male: "He is", female: "She is", androgynous: "They are"
-    }[(combatant.gender || 'androgynous').toLowerCase()] || "They are";
+  // static describeCharacter(combatant: Combatant) {
+  //   const descriptor = {
+  //     male: "He is", female: "She is", androgynous: "They are"
+  //   }[(combatant.gender || 'androgynous').toLowerCase()] || "They are";
 
-    const what = `${Words.humanize(combatant.archetype || 'neutral')} ${(Words.humanize(combatant.background || 'adventurer'))}`;
+  //   const what = `${Words.humanize(combatant.archetype || 'neutral')} ${(Words.humanize(combatant.background || 'adventurer'))}`;
 
-    return `${Words.capitalize(combatant.referenceName || combatant.forename)} is ${Words.a_an(what)} from the ${combatant.hometown || 'unknown'}, ${combatant.age || 'unknown'} years old. ${descriptor} of ${combatant.body_type || 'average'} build with ${combatant.hair || 'unknown color'} hair, ${combatant.eye_color || 'dark'} eyes and ${Words.a_an(combatant.personality || 'unreadable')} disposition.`
-  }
+  //   return `${Words.capitalize(combatant.referenceName || combatant.forename)} is ${Words.a_an(what)} from the ${combatant.hometown || 'unknown'}, ${combatant.age || 'unknown'} years old. ${descriptor} of ${combatant.body_type || 'average'} build with ${combatant.hair || 'unknown color'} hair, ${combatant.eye_color || 'dark'} eyes and ${Words.a_an(combatant.personality || 'unreadable')} disposition.`
+  // }
 
   static async characterRecord(combatant: Combatant, inventory: ItemInstance[]): Promise<string> {
     await AbilityHandler.instance.loadAbilities();
@@ -136,13 +137,13 @@ export default class Presenter {
 
     record += (
       Stylist.italic(
-        this.describeCharacter(combatant)
+        CharacterRecord.describe(combatant)
       ) + "\n\n"
     )
     const statNames = ['str', 'dex', 'int', 'wis', 'cha', 'con'];
     const effective = Fighting.effectiveStats(combatant);
     const statLine = statNames.map(stat => {
-      const value = (effective as any)[stat];
+      const value = (effective)[stat as keyof StatLine];
       const mod = Fighting.statMod(value);
       const color = mod > 0 ? 'green' : (mod < 0 ? 'red' : 'white');
       const sign = mod >= 0 ? '+' : '';

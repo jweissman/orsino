@@ -180,7 +180,7 @@ export type BlessServiceEvent = BaseModuleEvent & { type: "blessingGranted"; ble
 export type ItemRechargedEvent = BaseModuleEvent & { type: "itemRecharged"; itemName: string; itemId: string; chargesBefore: number; chargesAfter: number };
 
 export type ShopEnteredEvent = BaseModuleEvent & { type: "shopEntered"; shopName: string; };
-export type PurchaseEvent = BaseModuleEvent & { type: "purchase"; itemName: string; cost: number; buyer: Combatant; };
+export type PurchaseEvent = BaseModuleEvent & { type: "purchase"; itemName: string; cost: number; }; // buyer: Combatant; };
 export type SaleEvent = BaseModuleEvent & { type: "sale"; itemName: string; revenue: number; seller: Combatant; };
 export type EquipmentEvent = BaseModuleEvent & { type: "equip"; itemName: string; itemKey: string; slot: EquipmentSlot; wearerId: string; wearerName: string };
 export type AcquireItemEvent = BaseModuleEvent & { type: "acquire"; itemName: string; itemKey: string; quantity: number }; //; acquirer: Combatant; };
@@ -188,11 +188,14 @@ export type WieldEvent = BaseModuleEvent & { type: "wield"; weaponName: string; 
 
 export type EnhanceWeaponEvent = BaseModuleEvent & { type: "enhanceWeapon"; weaponName: string; weaponKey: string;  weaponId?: string; wielderId: string; wielderName: string; enhancement: string; cost: number; oldDamage: string; newDamage: string; };
 
-export type RumorHeardEvent = BaseModuleEvent & { type: "rumorHeard"; rumor: string; };
 // export type TempleVisitedEvent = BaseModuleEvent & { type: "templeVisited"; templeName: string; };
 export type CampaignStopEvent = BaseModuleEvent & { type: "campaignStop"; reason: string; at: Timestamp; };
 export type PartyOverviewEvent = BaseModuleEvent & { type: "partyOverview"; pcs: Combatant[]; inventory: ItemInstance[] } //itemQuantities: { [itemName: string]: number }; };
 export type CharacterOverviewEvent = BaseModuleEvent & { type: "characterOverview"; pc: Combatant; inventory: ItemInstance[] } //itemQuantities: { [itemName: string]: number }; };
+
+export type DrinkEvent = BaseModuleEvent & { type: "drink"; amount: number; beverage?: string; };
+export type AllRumorsHeardEvent = BaseModuleEvent & { type: "allRumorsHeard"; };
+export type RumorHeardEvent = BaseModuleEvent & { type: "rumorHeard"; rumor: string; dungeonIndex: number };
 export type HirelingOfferedEvent = BaseModuleEvent & { type: "hirelingOffered"; hireling: Combatant; cost: number; };
 export type HirelingHiredEvent = BaseModuleEvent & { type: "hirelingHired"; hireling: Combatant; cost: number; };
 
@@ -215,12 +218,14 @@ export type ModuleEvent =
 
   | EnhanceWeaponEvent
   | AcquireItemEvent
+  | DrinkEvent
   | RumorHeardEvent
-  // | TempleVisitedEvent
-  | PartyOverviewEvent
-  | CharacterOverviewEvent
+  | AllRumorsHeardEvent
   | HirelingOfferedEvent
   | HirelingHiredEvent
+
+  | PartyOverviewEvent
+  | CharacterOverviewEvent
   | CampaignStopEvent
 
 export type GameEvent = CombatEvent | DungeonEvent | ModuleEvent
@@ -566,7 +571,8 @@ export default class Events {
         break;
 
       case "purchase":
-        message = `${event.buyer.forename} purchased ${Words.a_an(event.itemName)} for ${event.cost} gold.`;
+        // message = `${subjectName} purchased ${Words.a_an(event.itemName)} for ${event.cost} gold.`;
+        message = `${subjectName} spent ${event.cost} gold on ${Words.a_an(event.itemName)}.`;
         break;
 
       case "sale":
@@ -588,6 +594,18 @@ export default class Events {
       case "rumorHeard":
         message = `The tavern buzzes with news: "${event.rumor}"`;
         break;
+
+      case "allRumorsHeard":
+        message = `${subjectName} has heard all the rumors available in this town.`;
+        break;
+
+      case "drink":
+        if (event.beverage) {
+          message = `${subjectName} drinks ${event.amount} ${event.beverage}.`;
+        } else {
+          message = `${subjectName} drinks.`;
+        }
+        break;
       
       case "characterOverview":
         message = await Presenter.characterRecord(event.pc, event.inventory);
@@ -598,11 +616,12 @@ export default class Events {
         break;
 
       case "hirelingOffered":
-        message = `A hireling is available: ${await Presenter.characterRecord(event.hireling, [])} for ${event.cost} gold per month.`;
+        message = '';
         break;
 
       case "hirelingHired":
         message = `${event.hireling.forename} has joined your party as a hireling for ${event.cost} gold per month.`;
+        message += await Presenter.characterRecord(event.hireling, []);
         break;
 
       case "campaignStop":
@@ -621,7 +640,7 @@ export default class Events {
         return never(event);
     }
 
-    return message;
+    return message || '';
   }
 
   static async appendToLogfile(event: GameEvent) {

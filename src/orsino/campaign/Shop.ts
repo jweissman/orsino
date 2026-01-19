@@ -1,14 +1,13 @@
 import Choice from "inquirer/lib/objects/choice";
 
 import Deem from "../../deem";
-import { ModuleEvent } from "../Events";
-import { Armor, Equipment, Inventory, Weapon } from "../Inventory";
 import Words from "../tui/Words";
+import { Armor, Equipment, Inventory, Weapon } from "../Inventory";
 import { Combatant } from "../types/Combatant";
-import { GameState } from "../types/GameState";
-import Automatic from "../tui/Automatic";
-import { never } from "../util/never";
 import { ItemInstance, materializeItem } from "../types/ItemInstance";
+import { ModuleEvent, WieldEvent } from "../Events";
+import { never } from "../util/never";
+import TownFeature from "./TownFeature";
 
 export type ShopType
   = 'loot'
@@ -17,13 +16,7 @@ export type ShopType
   | 'equipment'
   | 'armor'
   | 'enhancements'
-  // | 'gems'
-
-type ShopStepResult =
-  | { done: true; events: ModuleEvent[] }
-  | { done: false; events: ModuleEvent[] }
-
-export default class Shop {
+export default class Shop extends TownFeature<ShopType> {
   static name(type: ShopType): string {
     switch (type) {
       case 'consumables':
@@ -37,43 +30,28 @@ export default class Shop {
         return "Magician";
       case 'loot':
         return "Provisioner";
-      // case 'gems':
-        // return "Jeweler";
       default:
         return never(type);
     }
   }
 
-  constructor(private select = Automatic.randomSelect.bind(Automatic)) { }
-
-  gameState!: GameState;
-  leaving = false;
-  currentGold: number = 0;
-
-  get gold() { return this.currentGold }
-  get day() { return this.gameState.day }
-  get party() { return this.gameState.party }
-
-  async interact(shopType: ShopType, gameState: GameState): Promise<ShopStepResult> {
-    this.gameState = gameState;
-    this.currentGold = this.gameState.sharedGold;
-    this.leaving = false;
-    const stores: Record<ShopType, () => Promise<ModuleEvent[]>> = {
-      equipment: this.equipmentShop.bind(this),
-      consumables: this.consumablesShop.bind(this),
-      weapons: this.weaponsShop.bind(this),
-      armor: this.armorShop.bind(this),
-      loot: this.lootShop.bind(this),
-      enhancements: this.blacksmithShop.bind(this),
-    };
-    const events: ModuleEvent[] = await stores[shopType].bind(this)();
-    return { done: this.leaving, events };
+  serviceName(type: ShopType): string {
+    return Shop.name(type) + "'s Shop";
   }
+
+  services: Record<ShopType, () => Promise<ModuleEvent[]>> = {
+    equipment: this.equipmentShop.bind(this),
+    consumables: this.consumablesShop.bind(this),
+    weapons: this.weaponsShop.bind(this),
+    armor: this.armorShop.bind(this),
+    loot: this.lootShop.bind(this),
+    enhancements: this.blacksmithShop.bind(this),
+  };
+
 
   private async armorShop(): Promise<ModuleEvent[]> {
     const events: ModuleEvent[] = [];
     const armorItemNames = Deem.evaluate(`gather(masterArmor, -1, '!dig(#__it, "natural")')`) as string[];
-    // const weaponItemNames = Deem.evaluate(`gather(masterWeapon, -1, '!dig(#__it, "natural")')`) as string[];
     const pcEquipment = (combatant: Combatant) => {
       const equipmentWithoutWeapon = { ...combatant.equipment };
       delete equipmentWithoutWeapon.weapon;
@@ -88,36 +66,33 @@ export default class Shop {
       name: `${pc.name} (${pcEquipment(pc)})`,
       disabled: false,
     }));
-    const wearer = await this.select(`Who needs new armor?`, pcOptions) as Combatant;
+    const wearer = await this.driver.select(`Who needs new armor?`, pcOptions);
 
     const options = [];
     for (let index = 0; index < armorItemNames.length; index++) {
       const itemKey = armorItemNames[index];
-      // const item = Deem.evaluate(`lookup(masterArmor, "${itemName}")`) as unknown as Equipment;
       const item = materializeItem(itemKey, []) as Armor & ItemInstance;
       item.key = itemKey;
       options.push({
         short: Words.humanize(itemKey) + ` (${item.value}g)`,
         value: item,
         name: `${Words.humanize(itemKey)} - ${item.description} (${item.value}g)`,
-        disabled: this.currentGold < item.value || (wearer.armorProficiencies ? !Inventory.isArmorProficient(item, wearer.armorProficiencies) : true),
-        // disabled: this.currentGold < item.value || (wielder.weaponProficiencies ? !Inventory.isWeaponProficient(item, wielder.weaponProficiencies) : true),
+        disabled: this.gold < item.value || (wearer.armorProficiencies ? !Inventory.isArmorProficient(item, wearer.armorProficiencies) : true),
       })
     }
-    options.push({ disabled: false, short: "Done", value: "done", name: "Finish shopping" });
+    options.push({ disabled: false, short: "Done", value: null, name: "Finish shopping" });
 
-    const choice = await this.select("Available armor to purchase:", options);
-    if (choice === "done") {
+    const choice = await this.driver.select("Available armor to purchase:", options);
+    if (choice === null) {
       this.leaving = true;
       return events;
     }
-    const item = choice as Equipment & ItemInstance;
+    const item = choice;
 
-    if (this.currentGold >= item.value) {
+    if (this.gold >= item.value) {
       const inventory = this.gameState.inventory;
       const { oldItemRef: maybeOldItem } = Inventory.equipmentSlotAndExistingItem(item, wearer, inventory);
       if (maybeOldItem) {
-        // const oldItem = materializeItem(maybeOldItem, this.gameState.inventory);
         const oldItem = Inventory.materializeRef(maybeOldItem, this.gameState.inventory);
         events.push({
           type: "sale",
@@ -132,10 +107,9 @@ export default class Shop {
         type: "purchase",
         itemName: item.key,
         cost: item.value,
-        buyer: wearer,
+        subject: wearer,
         day: this.day,
       });
-      this.currentGold -= item.value;
       const equipment = Deem.evaluate(`lookup(masterArmor, "${item.key}")`) as unknown as Equipment;
       const slot = equipment.kind;
       events.push({
@@ -154,7 +128,7 @@ export default class Shop {
   private async lootShop(): Promise<ModuleEvent[]> {
     const events: ModuleEvent[] = [];
 
-    const buyingSelling = await this.select("Would you like to buy or sell?", [
+    const buyingSelling = await this.driver.select("Would you like to buy or sell?", [
       {
         short: "Buy Gear",
         value: "buy",
@@ -179,7 +153,7 @@ export default class Shop {
         name: "Finish shopping",
         disabled: false,
       },
-    ]) as string;
+    ]);
 
     if (buyingSelling === "buy") {
       events.push(...await this.buyGear())
@@ -204,40 +178,38 @@ export default class Shop {
       item.key = itemName;
       options.push({
         short: Words.humanize(itemName) + ` (${item.value}g)`,
-        value: item,
+        value: item as Equipment & ItemInstance,
         name: `${Words.humanize(itemName)} - ${item.description || 'no description'} (${item.value}g)`,
-        disabled: this.currentGold < item.value,
+        disabled: this.gold < item.value,
       })
     }
 
-    options.push({ disabled: false, short: "Done", value: "done", name: "Finish shopping" });
+    options.push({ disabled: false, short: "Done", value: null, name: "Finish shopping" });
 
-    const choice = await this.select("Available gear to purchase:", options);
-    if (choice === "done") {
+    const choice = await this.driver.select("Available gear to purchase:", options) as Equipment & ItemInstance | null;
+    if (choice === null) {
       this.leaving = true;
       return events;
     }
 
-    const item = choice as Equipment & ItemInstance;
+    const item = choice;
 
-    if (this.currentGold >= item.value) {
+    if (this.gold >= item.value) {
       const firstPc = this.party[0];
       events.push({
         type: "purchase",
-        itemName: item.key,
+        itemName: item.name || item.key,
         cost: item.value,
-        buyer: firstPc,
+        subject: firstPc,
         day: this.day,
       });
-      this.currentGold -= item.value;
       
       events.push({
         type: "acquire",
         subject: firstPc,
-        itemName: item.name,
+        itemName: item.name || item.key,
         itemKey: item.key,
         quantity: 1,
-        // acquirer: firstPc,
         day: this.day,
       });
     }
@@ -257,19 +229,19 @@ export default class Shop {
       }
       lootOptions.push({
         short: `${Words.humanize(itemKey)} x${qty} (${item.value}g each)`,
-        value: item,
+        value: item as Equipment,
         name: `${Words.humanize(itemKey)} - ${item.description || 'no description'} x${qty} (${item.value}g each)`,
         disabled: false,
       });
     }
-    lootOptions.push({ disabled: false, short: "Done", value: "done", name: "Finish selling" });
+    lootOptions.push({ disabled: false, short: "Done", value: null, name: "Finish selling" });
 
-    const choice = await this.select("Available items to sell:", lootOptions);
-    if (choice === "done") {
+    const choice = await this.driver.select("Available items to sell:", lootOptions) as Equipment | null;
+    if (choice === null) {
       this.leaving = true;
       return events;
     }
-    const item = choice as Equipment;
+    const item = choice; // as Equipment;
 
     // sell one unit of the item
     const itemIndex = this.gameState.inventory.findIndex(ii => ii.key === item.key);
@@ -282,7 +254,6 @@ export default class Shop {
         seller: this.party[0],
         day: this.day,
       });
-      this.currentGold += item.value;
     }
     return events;
   }
@@ -301,7 +272,6 @@ export default class Shop {
           seller: this.party[0],
           day: this.day,
         });
-        this.currentGold += item.value;
       }
     }
     return events;
@@ -316,39 +286,39 @@ export default class Shop {
         equipmentIds.map(eid => materializeItem(eid, this.gameState.inventory).name)
       );
     } 
-    // const pcOptions = this.party.map(pc => ({
-    //   short: pc.name,
-    //   value: pc,
-    //   name: `${pc.name} (${pcEquipment(pc) || 'no equipment'})`,
-    //   disabled: false,
-    // }));
-    // const wearer = await this.select(`Who needs new equipment?`, pcOptions) as Combatant;
-    const wearer = await this.pickPartyMember(`Who needs new equipment?`, (combatant) => {
+
+    const wearerId = await this.pickPartyMember(`Who needs new equipment?`, (combatant) => {
       return `${combatant.name} (${pcEquipment(combatant) || 'no equipment'})`;
     });
+    if (wearerId === null) {
+      this.leaving = true;
+      return events;
+    }
+
+    const wearer = this.findPartyMember(wearerId);
 
     const options = [];
     for (let index = 0; index < magicItemNames.length; index++) {
       const itemName = magicItemNames[index];
-      const item = Deem.evaluate(`lookup(masterEquipment, "${itemName}")`) as unknown as Equipment;
+      const item = Inventory.reifyFromKey(itemName) as Equipment & ItemInstance;
       item.key = itemName;
       options.push({
         short: Words.humanize(itemName) + ` (${item.value}g)`,
         value: item,
         name: `${Words.humanize(itemName)} - ${item.description} (${item.value}g)`,
-        disabled: this.currentGold < item.value,
+        disabled: this.gold < item.value || (!Inventory.isProficient(item as ItemInstance, wearer))
       })
     }
-    options.push({ disabled: false, short: "Done", value: "done", name: "Finish shopping" });
+    options.push({ disabled: false, short: "Done", value: null, name: "Finish shopping" });
 
-    const choice = await this.select("Available equipment to purchase:", options);
-    if (choice === "done") {
+    const choice = await this.driver.select("Available equipment to purchase:", options);
+    if (choice === null) {
       this.leaving = true;
       return events;
     }
-    const item = choice as Equipment & ItemInstance;
+    const item = choice; // as Equipment & ItemInstance;
 
-    if (this.currentGold >= item.value) {
+    if (this.gold >= item.value) {
       const inventory = this.gameState.inventory;
       const { oldItemRef: maybeOldItem, slot: newSlot } = Inventory.equipmentSlotAndExistingItem(item, wearer, inventory);
 
@@ -368,10 +338,10 @@ export default class Shop {
         type: "purchase",
         itemName: item.key,
         cost: item.value,
-        buyer: wearer,
+        subject: wearer,
         day: this.day,
       });
-      this.currentGold -= item.value;
+      // this.currentGold -= item.value;
       const equipment = Deem.evaluate(`lookup(masterEquipment, "${item.key}")`) as unknown as Equipment;
       const slot = newSlot || equipment.kind;
       events.push({
@@ -401,13 +371,13 @@ export default class Shop {
         short: item.name + ` (${item.value}g)`,
         value: item,
         name: `${item.name} - ${item.description} (${item.value}g)`,
-        disabled: this.currentGold < item.value || (!anyoneProficient),
+        disabled: this.gold < item.value || (!anyoneProficient),
       })
     }
-    options.push({ disabled: false, short: "Done", value: "done", name: "Finish shopping" });
+    options.push({ disabled: false, short: "Done", value: null, name: "Finish shopping" });
 
-    const choice = await this.select("Available items to purchase:", options);
-    if (choice === "done") {
+    const choice = await this.driver.select("Available items to purchase:", options) as ItemInstance | null;
+    if (choice === null) {
       this.leaving = true;
       return events;
     }
@@ -418,16 +388,15 @@ export default class Shop {
       value: number;
     };
 
-    if (this.currentGold >= item.value) {
+    if (this.gold >= item.value) {
       const firstPc = this.party[0];
       events.push({
         type: "purchase",
         itemName: item.key,
         cost: item.value,
-        buyer: firstPc,
+        subject: firstPc,
         day: this.day,
       });
-      this.currentGold -= item.value;
 
       events.push({
         type: "acquire",
@@ -446,11 +415,18 @@ export default class Shop {
     const weaponItemKeys = Deem.evaluate(`gather(masterWeapon, -1, '!dig(#__it, "natural")')`) as string[];
     weaponItemKeys.sort();
     const pcWeapon = (combatant: Combatant) => {
-      return combatant.equipment && combatant.equipment.weapon ? materializeItem(combatant.equipment.weapon, this.gameState.inventory).name : 'unarmed';
+      return combatant.equipment && combatant.equipment.weapon
+        ? materializeItem(combatant.equipment.weapon, this.gameState.inventory).name
+        : 'unarmed';
     } 
-    const wielder = await this.pickPartyMember(`Who needs a new weapon?`, (combatant) => {
+    const wielderId = await this.pickPartyMember(`Who needs a new weapon?`, (combatant) => {
       return `${combatant.name} (${pcWeapon(combatant)})`;
     });
+    if (wielderId === null) {
+      this.leaving = true;
+      return events;
+    }
+    const wielder = this.findPartyMember(wielderId);
 
     const options: Choice<Weapon & ItemInstance>[] = [];
     for (let index = 0; index < weaponItemKeys.length; index++) {
@@ -461,26 +437,25 @@ export default class Shop {
         short: Words.humanize(itemKey) + ` (${item.value}g)`,
         value: item,
         name: `${Words.humanize(itemKey)} - ${item.damage} ${item.weight} ${item.kind} (${item.value}g)`,
-        disabled: this.currentGold < item.value || (wielder.weaponProficiencies ? !Inventory.isWeaponProficient(item, wielder.weaponProficiencies) : true),
+        disabled: this.gold < item.value || (wielder.weaponProficiencies ? !Inventory.isWeaponProficient(item, wielder.weaponProficiencies) : true),
       })
     }
-    options.push({ disabled: false, short: "Done", value: "done", name: "Finish shopping" });
+    options.push({ disabled: false, short: "Done", value: null, name: "Finish shopping" });
 
-    const choice = await this.select("Available weapons to purchase:", options);
-    if (choice === "done") {
+    const choice = await this.driver.select("Available weapons to purchase:", options) as Weapon & ItemInstance | null;
+    if (choice === null) {
       this.leaving = true;
       return events;
     }
-    const item = choice as Weapon & ItemInstance;
-    if (this.currentGold >= item.value) {
+    const item = choice;
+    if (this.gold >= item.value) {
       events.push({
         type: "purchase",
         itemName: item.key,
         cost: item.value,
-        buyer: wielder,
+        subject: wielder,
         day: this.day,
       });
-      this.currentGold -= item.value;
       events.push({
         type: "wield",
         weaponKey: item.key,
@@ -488,7 +463,7 @@ export default class Shop {
         wielderId: wielder.id,
         wielderName: wielder.forename,
         day: this.day,
-      });
+      } as WieldEvent);
     }
     return events;
   }
@@ -505,9 +480,14 @@ export default class Shop {
       }
     }
 
-    const improver = await this.pickPartyMember(`Who needs an enhancement?`, (combatant) => {
+    const improverId = await this.pickPartyMember(`Who needs an enhancement?`, (combatant) => {
       return `${combatant.name} (${weaponDetails(combatant)})`;
     });
+    if (improverId === null) {
+      this.leaving = true;
+      return events;
+    }
+    const improver = this.findPartyMember(improverId);
 
     const currentWeaponInstance = improver.equipment && improver.equipment.weapon
       ? materializeItem(improver.equipment.weapon, this.gameState.inventory) as Weapon & ItemInstance
@@ -515,6 +495,11 @@ export default class Shop {
 
     if (!currentWeaponInstance) {
       console.warn(`${improver.name} is unarmed and cannot have their weapon enhanced.`);
+      return events;
+    }
+
+    if (currentWeaponInstance.natural) {
+      console.warn(`${improver.name} is wielding a natural weapon (${currentWeaponInstance.name}) and cannot have it enhanced.`);
       return events;
     }
 
@@ -527,7 +512,7 @@ export default class Shop {
     const dieClasses = [2, 3, 4, 6, 8, 10, 12, 20, 30, 60, 100];
     const baseDieIndex = dieClasses.indexOf(dieSides);
     if (baseDieIndex < 0) {
-      console.log(`Cannot enhance weapon with unknown damage die ${originalAttackDie}.`);
+      console.warn(`Cannot enhance weapon with unknown damage die ${originalAttackDie}.`);
       return events;
     }
 
@@ -539,24 +524,24 @@ export default class Shop {
       imbue:     1000 + (dieNumber * 500),
     }
 
-    const improvementRequested = await this.select("What type of enhancement would you like?", [
+    const improvementRequested = await this.driver.select("What type of enhancement would you like?", [
       {
         short: "Sharpen Weapon",
         value: "sharpen",
         name: `${'Sharpen'.padEnd(12)} | Improve your weapon's minimum damage (from ${originalAttackDie} to ${baseDie}+${modifierNumber + 1}) (Cost: ${costs.sharpen} gp)`,
-        disabled: modifierNumber >= 5 || costs.sharpen > this.currentGold,
+        disabled: modifierNumber >= 5 || costs.sharpen > this.gold,
       },
       {
         short: "Reinforce Weapon",
         value: "reinforce",
         name: `${'Reinforce'.padEnd(12)} | Improve your weapon's base damage die (from ${originalAttackDie} to ${dieNumber}d${upgradedAttackDie}${modifier ? ` + ${modifierNumber}` : ''}) (Cost: ${costs.reinforce} gp)`,
-        disabled: baseDieIndex >= dieClasses.length - 1 || costs.reinforce > this.currentGold,
+        disabled: baseDieIndex >= dieClasses.length - 1 || costs.reinforce > this.gold,
       },
       {
         short: "Imbue Weapon",
         value: "imbue",
         name: `${'Imbue'.padEnd(12)} | Improve your weapon's die number (from ${originalAttackDie} to ${dieNumber + 1}d${dieSides}${modifier ? ` + ${modifierNumber}` : ''}) (Cost: ${costs.imbue} gp)`,
-        disabled: dieNumber >= 5 || costs.imbue > this.currentGold,
+        disabled: dieNumber >= 5 || costs.imbue > this.gold,
       },
       {
         short: "Done",
@@ -564,7 +549,7 @@ export default class Shop {
         name: "Finish shopping",
         disabled: false,
       },
-    ]) as string;
+    ]);
 
     if (improvementRequested === "done") {
       this.leaving = true;
@@ -572,21 +557,12 @@ export default class Shop {
     }
 
     // modify weapon
-    console.log(`Enhancing ${improver.name}'s ${currentWeaponInstance.name}... (${improvementRequested})`);
-    // const weaponQualities = {
-    //   1: "sharpened",
-    //   2: "fine",
-    //   3: "excellent",
-    //   4: "superior",
-    //   5: "masterwork",
-    // }
-
     const cost = costs[improvementRequested as keyof typeof costs];
     events.push({
       type: "purchase",
       itemName: `${improvementRequested} enhancement`,
       cost,
-      buyer: improver,
+      subject: improver,
       day: this.day,
     })
     switch (improvementRequested) {
@@ -597,7 +573,7 @@ export default class Shop {
           type: "enhanceWeapon",
           weaponKey: currentWeaponInstance.key,
           weaponName: currentWeaponInstance.name,
-          weaponId: currentWeaponInstance.id!,
+          weaponId: currentWeaponInstance.id,
           wielderId: improver.id,
           wielderName: improver.forename,
           enhancement: "sharpen",
@@ -614,7 +590,7 @@ export default class Shop {
           type: "enhanceWeapon",
           weaponKey: currentWeaponInstance.key,
           weaponName: currentWeaponInstance.name,
-          weaponId: currentWeaponInstance.id!,
+          weaponId: currentWeaponInstance.id,
           wielderId: improver.id,
           wielderName: improver.forename,
           enhancement: "reinforce",
@@ -632,7 +608,7 @@ export default class Shop {
           type: "enhanceWeapon",
           weaponKey: currentWeaponInstance.key,
           weaponName: currentWeaponInstance.name,
-          weaponId: currentWeaponInstance.id!,
+          weaponId: currentWeaponInstance.id,
           wielderId: improver.id,
           wielderName: improver.forename,
           enhancement: "imbue",
@@ -646,18 +622,5 @@ export default class Shop {
     }
 
     return events;
-  }
-
-  private async pickPartyMember(
-    prompt: string, presenter: (combatant: Combatant) => string = (combatant) => combatant.name
-  ): Promise<Combatant> {
-    const pcOptions: Choice<Combatant>[] = this.party.map(pc => ({
-      short: pc.name,
-      value: pc,
-      name: presenter(pc),
-      disabled: false,
-    }));
-    const pc = await this.select(prompt, pcOptions) as Combatant;
-    return pc;
   }
 }

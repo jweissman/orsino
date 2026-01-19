@@ -23,7 +23,6 @@ import { GenerationTemplateType } from "./types/GenerationTemplateType";
 import { GeneratedValue } from "./Generator";
 import { Driver, NullDriver } from "./Driver";
 
-type SkillType = "search" | "examine" | "disarm"; // | "pickLock" | "climb" | "swim" | "jump" | "listen" | "spot";
 
 interface Encounter {
   creatures: Combatant[];
@@ -311,7 +310,6 @@ export default class Dungeoneer {
 
     return {}
   }
-
 
   async skillCheck(type: SkillType, action: string, stat: keyof Combatant, dc: number, valid: (c: Combatant) => boolean = (): boolean => true): Promise<{
     actor: Combatant;
@@ -901,7 +899,7 @@ export default class Dungeoneer {
     if (success) {
       if (room.gear) {
         for (const item of room.gear) {
-          const it = Inventory.genLoot(item);
+          const it = Inventory.genLoot(item, 'minor');
           this.playerTeam.inventory.push(it);
           let description = it.description || Words.a_an(Words.humanize(item));
           if (description.endsWith('.')) {

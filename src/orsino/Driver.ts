@@ -18,10 +18,17 @@ export interface Driver {
   input(message: string): Promise<string>;
   pause(message: string): Promise<void>;
   readKey(): Promise<string>;
+
+  // roll(actor: Combatant, description: string, sides: number): RollResult;
 }
 
 export class ConsoleDriver implements Driver {
   get description(): string { return "ConsoleDriver with stdin/stdout"; }
+
+  // roll(_actor: unknown, _description: string, sides: number) {
+  //   // return { amount: Math.floor(Math.random() * sides) + 1, description: `Rolled a d${sides}` };
+  //   return Commands.roll(_actor as Combatant, _description, sides);
+  // }
 
   write(text: string): void { process.stdout.write(text); }
   writeLn(text: string): void { process.stdout.write(text + "\n"); }
@@ -99,14 +106,18 @@ export class ConsoleDriver implements Driver {
     this.write("Press any key to continue...");
     return new Promise((resolve) => {
       const stdin = process.stdin;
-      const wasRaw = (stdin as any).isRaw;
+      const wasRaw = (stdin).isRaw;
 
       const cleanup = () => {
-        try { if (stdin.isTTY) {stdin.setRawMode(!!wasRaw);} } catch { }
+        try { if (stdin.isTTY) { stdin.setRawMode(!!wasRaw); } } catch {
+          // ignore
+        }
         stdin.pause();
       };
 
-      try { if (stdin.isTTY) {stdin.setRawMode(true);} } catch { }
+      try { if (stdin.isTTY) { stdin.setRawMode(true); } } catch {
+        // ignore
+      }
       stdin.resume();
 
       stdin.once("data", (data: Buffer) => {
@@ -120,12 +131,12 @@ export class ConsoleDriver implements Driver {
 export class InquirerDriver extends ConsoleDriver implements Driver {
   get description(): string { return "InquirerDriver using inquirer for prompts"; }
   async select<T>(message: string, choices: (readonly string[] | readonly Choice<T>[])): Promise<T> {
-    return User.selection(message, choices as any) as Promise<T>;
+    return User.selection(message, choices as unknown as readonly string[]) as Promise<T>;
   }
 
   async confirm(message: string): Promise<boolean> {
     const input = await User.selection(message + " (y/n):", ["yes", "no"]);
-    return String(input).toLowerCase().startsWith("y");
+    return String(input as string).toLowerCase().startsWith("y");
   }
 }
 
@@ -134,18 +145,21 @@ export class NullDriver implements Driver {
   write(_text: string): void { }
   writeLn(_text: string): void { }
   clear(): void { }
+  // roll(_actor: unknown, _description: string, sides: number) {
+  //   return { amount: Math.floor(Math.random() * sides) + 1, description: `Rolled a d${sides}` };
+  // }
 
   async select<T>(_message: string, choices: (readonly string[] | readonly Choice<T>[])): Promise<T> {
     if (choices.length === 0) {
       throw new Error("No choices provided to NullDriver.select");
     }
     const enabled = choices.filter(c => typeof c === "string" || !c.disabled);
-    if (!enabled) {
+    if (enabled.length === 0) {
       throw new Error("No enabled choices provided to NullDriver.select");
     }
     // return (typeof enabled === "string" ? enabled : enabled.value) as T;
     const chosen = enabled[Math.floor(Math.random() * enabled.length)];
-    return (typeof chosen === "string" ? chosen : chosen.value) as T;
+    return Promise.resolve((typeof chosen === "string" ? chosen : chosen.value) as T);
   }
 
   confirm(_message: string): Promise<boolean> { return Promise.resolve(true); }

@@ -2,14 +2,13 @@ import Deem from "../../deem";
 import { CombatContext } from "../types/CombatContext";
 import { Armor, Weapon } from "../Inventory";
 import { StatusEffect, StatusModifications } from "../Status";
-import Presenter from "../tui/Presenter";
 import Words from "../tui/Words";
 import { AttackResult } from "../types/AttackResult";
 import { Combatant } from "../types/Combatant";
 import { ItemInstance, materializeItem } from "../types/ItemInstance";
 import { Roll } from "../types/Roll";
 
-type StatLine = {
+export type StatLine = {
   str: number;
   dex: number;
   int: number;

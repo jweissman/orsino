@@ -1486,6 +1486,55 @@
       }
     ]
   },
+  "wise": {
+    "name": "Wise",
+    "type": "character",
+    "description": "Wisdom of the Ages",
+    "statuses": [
+      {
+        "name": "Wisdom",
+        "description": "This creature possesses great wisdom, granting it enhanced perception and insight.",
+        "effect": {
+          "wis": 2,
+          "searchBonus": 3,
+          "examineBonus": 3,
+          "saveVersusInsanity": 2
+        }
+      }
+    ]
+  },
+  "discipline": {
+    "name": "Disciplined Mind",
+    "type": "character",
+    "description": "Mind Seal",
+    "statuses": [
+      {
+        "name": "Disciplined Mind",
+        "description": "This creature has a focused and disciplined mind, granting it increased concentration and resistance to distractions.",
+        "effect": {
+          "saveVersusMagic": 2,
+          "saveVersusInsanity": 2,
+          "allRolls": 1
+        }
+      }
+    ]
+  },
+  "compassion": {
+    "name": "Compassionate Heart",
+    "type": "character",
+    "description": "Heart of Forgiveness",
+    "statuses": [
+      {
+        "name": "Compassionate Heart",
+        "description": "This creature possesses a compassionate heart, granting it enhanced healing abilities and empathy towards others.",
+        "effect": {
+          "bonusHealing": "=1d4",
+          "cha": 2,
+          "saveVersusFear": 2
+        }
+      }
+    ]
+  },
 
   "abjurer": {
     "type": "school",

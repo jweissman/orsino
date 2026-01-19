@@ -212,10 +212,10 @@ describe('Orsino', () => {
     await explorer.run(true);
 
     expect(explorer.activeModule).toBeDefined();
-    expect(explorer.activeModule!.name).toBe(mod.name);
-    expect(explorer.activeModule!.terrain).toBe(mod.terrain);
-    expect(explorer.activeModule!.town).toEqual(mod.town);
-    expect(explorer.activeModule!.dungeons).toEqual(mod.dungeons);
+    expect(explorer.activeModule.name).toBe(mod.name);
+    expect(explorer.activeModule.terrain).toBe(mod.terrain);
+    expect(explorer.activeModule.town).toEqual(mod.town);
+    expect(explorer.activeModule.dungeons).toEqual(mod.dungeons);
 
     // for (const pc in explorer.pcs) {
     for (let pc = 0; pc < explorer.pcs.length; pc++) {
@@ -256,7 +256,7 @@ describe('Orsino', () => {
 
     await explorer.run(true);
 
-    const module: CampaignModule = explorer.activeModule!;
+    const module: CampaignModule = explorer.activeModule;
     expect(module).toBeDefined();
     expect(module.name).toBe(mod.name);
     expect(module.terrain).toBe(mod.terrain);

@@ -43,6 +43,9 @@ export type GeneratorOptions = {
   color?: string;
   element?: string;
   rank?: string;
+
+  _loot_rank?: string;
+  _plane_name?: string;
 }
 export type GeneratedValue = Record<string, DeemValue>;
 

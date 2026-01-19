@@ -1,3 +1,5 @@
+import { never } from "../util/never";
+
 export default class Words {
   static statName(stat: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha' | 'maxHp'): string {
     switch (stat) {
@@ -9,7 +11,9 @@ export default class Words {
       case 'cha': return 'Charisma';
       case 'maxHp': return 'Max HP';
       default: 
-        throw new Error(`Unknown stat: ${stat}`);
+        // throw new Error(`Unknown stat: ${stat}`);
+        return never(stat);
+        // return ''; // unreachable
     }
   }
 

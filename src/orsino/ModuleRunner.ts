@@ -1,23 +1,23 @@
 import Dungeoneer, { Dungeon } from "./Dungeoneer";
-import { Combatant } from "./types/Combatant";
-import { Roll } from "./types/Roll";
-import { GenerationTemplateType } from "./types/GenerationTemplateType";
-import Stylist from "./tui/Style";
-import Words from "./tui/Words";
-import { Commands } from "./rules/Commands";
-import { Inventory } from "./Inventory";
 import Events, { ModuleEvent } from "./Events";
-import { StatusModifications } from "./Status";
 import Presenter from "./tui/Presenter";
-import CharacterRecord from "./rules/CharacterRecord";
-import Automatic from "./tui/Automatic";
-import { Fighting } from "./rules/Fighting";
-import { GeneratedValue, GeneratorOptions } from "./Generator";
-import { GameState, GameStateReducer, newGameState } from "./types/GameState";
-import Shop, { ShopType } from "./campaign/Shop";
-import { ItemInstance } from "./types/ItemInstance";
-import { Driver, NullDriver } from "./Driver";
+import Shop from "./campaign/Shop";
+import Stylist from "./tui/Style";
+import Tavern from "./campaign/Tavern";
 import Temple from "./campaign/Temple";
+import TownFeature from "./campaign/TownFeature";
+import Words from "./tui/Words";
+import { Combatant } from "./types/Combatant";
+import { Commands } from "./rules/Commands";
+import { Driver, NullDriver } from "./Driver";
+import { Fighting } from "./rules/Fighting";
+import { GameState, GameStateReducer, newGameState } from "./types/GameState";
+import { GeneratedValue, GeneratorOptions } from "./Generator";
+import { GenerationTemplateType } from "./types/GenerationTemplateType";
+import { Inventory } from "./Inventory";
+import { ItemInstance } from "./types/ItemInstance";
+import { Roll } from "./types/Roll";
+import { StatusModifications } from "./Status";
 
 type TownSize = 'hamlet' | 'village' | 'town' | 'city' | 'metropolis' | 'capital';
 type Race = 'human' | 'elf' | 'dwarf' | 'halfling' | 'gnome' | 'orc' | 'fae';
@@ -69,22 +69,32 @@ export class ModuleRunner {
 
   private roller: Roll;
   private driver: Driver;
-  private moduleGen: (
-    options?: GeneratorOptions
-  ) => CampaignModule;
-  private gameState: GameState;
+  private moduleGen: (options?: GeneratorOptions) => CampaignModule;
+  private readonly gameState: GameState;
 
   private gen: (type: GenerationTemplateType, options?: GeneratorOptions) => GeneratedValue | GeneratedValue[];
 
-  activeModule: CampaignModule | null = null;
   journal: ModuleEvent[] = [];
+
+  get activeModule(): CampaignModule {
+    return this.gameState.campaignModule;
+  }
 
   constructor(options: RunnerOptions = {}) {
     this.roller = options.roller || Commands.roll.bind(Commands);
     this.driver = options.driver || new NullDriver();
     this.moduleGen = options.moduleGen || this.defaultModuleGen.bind(this);
     this.gen = options.gen || (() => { throw new Error("No gen function provided") });
-    this.gameState = newGameState({ ...ModuleRunner.configuration, party: options.pcs || [], inventory: options.inventory || [] });
+
+    const initialModule = this.moduleGen();
+    console.warn(`Initial module "${initialModule.name}" generated.`);
+
+    this.gameState = newGameState({
+      ...ModuleRunner.configuration,
+      party: options.pcs || [],
+      inventory: options.inventory || [],
+      mod: initialModule
+    });
   }
 
   protected clear(): void { this.driver.clear(); }
@@ -113,6 +123,7 @@ export class ModuleRunner {
   protected async emit(event: ModuleEvent) {
     this.journal.push(event);
     this.note(await Events.present(event));
+    // @ts-expect-error -- dynamic update of game state based on event type
     this.gameState = GameStateReducer.processEvent(this.state, event);
 
     await Events.appendToLogfile(event);
@@ -126,18 +137,18 @@ export class ModuleRunner {
 
   get availableDungeons(): Dungeon[] {
     if (!this.activeModule) { return []; }
-    return this.activeModule.dungeons.filter(d => !this.state.completedDungeons.includes(d.dungeonIndex!));
+    return this.activeModule.dungeons.filter(d => d.dungeonIndex && !this.state.completedDungeons.includes(d.dungeonIndex));
   }
 
   gatherStartingGear(pc: Combatant): ItemInstance[] {
-      const itemNames: string[] = pc.startingGear || [];
-      const items: ItemInstance[] = [];
-      for (const itemName of itemNames) {
-        const item = { ...Inventory.genLoot(itemName), ownerId: pc.id, ownerSlot: 'backpack' };
-        item.shared = item.itemClass === 'consumable';
-        items.push(item);
-      }
-      return items;
+    const itemNames: string[] = pc.startingGear || [];
+    const items: ItemInstance[] = [];
+    for (const itemName of itemNames) {
+      const item = { ...Inventory.genLoot(itemName), ownerId: pc.id, ownerSlot: 'backpack' };
+      item.shared = item.itemClass === 'consumable';
+      items.push(item);
+    }
+    return items;
   }
 
   async run(dry = false) {
@@ -166,31 +177,31 @@ export class ModuleRunner {
     let playing = true;
     let moduleOptions = {};
     while (playing) {
-      const { newModuleOptions } = await this.runModule(dry, moduleOptions);
+      const { newModuleOptions } = await this.runModule(dry);
       if (newModuleOptions !== null) {
         moduleOptions = newModuleOptions;
+        this.gameState.campaignModule = this.moduleGen(moduleOptions);
       } else {
         playing = false;
       }
     }
   }
 
-  private async runModule(dry = false, moduleOptions: Record<string, any> = {}): Promise<{ newModuleOptions: Record<string, any> | null }> {
-    // this.outputSink("Generating module, please wait...");
-    this.activeModule = this.moduleGen(
-      moduleOptions
-    );
+  private async runModule(dry = false): Promise<{ newModuleOptions: GeneratorOptions | null }> {
+    if (!this.activeModule) {
+      throw new Error("No active module at runModule time!");
+    }
 
     // clear out any existing globals
     this.pcs.forEach(pc => {
       pc.passiveEffects = pc.passiveEffects || [];
       pc.passiveEffects = pc.passiveEffects?.filter(e => !e.planar);
-      if (this.activeModule!.globalEffects) {
+      if (this.activeModule.globalEffects) {
         pc.passiveEffects.push({
           type: "condition",
-          name: this.activeModule!.plane + " Residency",
-          description: `Effects granted by residing on the plane of ${this.activeModule!.plane}`,
-          effect: this.activeModule!.globalEffects || {},
+          name: this.activeModule.plane + " Residency",
+          description: `Effects granted by residing on the plane of ${this.activeModule.plane}`,
+          effect: this.activeModule.globalEffects || {},
           planar: true
         });
       }
@@ -204,22 +215,14 @@ export class ModuleRunner {
       day: 0
     });
 
-    // this.outputSink(`Module "${this.activeModule.name}" generated: ${this.activeModule.terrain} terrain, ${this.activeModule.town.name} town, ${this.activeModule.dungeons.length} dungeons
-    // }`);
-    // clear screen
-    // this.outputSink("\x1Bc");
-    // this.outputSink(`Welcome to ${Stylist.bold(this.mod.name)}!`);
     return await this.enter(dry);
-
-    // this.outputSink("\nThank you for playing!");
   }
 
 
   days = 0;
   async enter(dry = false, mod: CampaignModule = this.mod): Promise<{
-    newModuleOptions: Record<string, any> | null
+    newModuleOptions: GeneratorOptions | null
   }> {
-    // this.outputSink(`You arrive at the ${mod.town.adjective} ${Words.capitalize(mod.town.race)} ${mod.town.size} of ${Stylist.bold(mod.town.name)}.`);
     await this.emit({
       type: "townVisited",
       townName: mod.town.townName, day: 0,
@@ -234,12 +237,9 @@ export class ModuleRunner {
     const maxDays = 360;
     while (this.days++ < maxDays && this.pcs.some(pc => pc.hp > 0)) {
       await this.status(mod);
-      // this.outputSink(`\n--- Day ${days}/${maxDays} ---`);
       const action = await this.menu(dry);
-      // this.outputSink(`You chose to ${action}.`);
 
       if (action === "embark") {
-        // don't we need to distribute gold to PCs? is this already done somehow
         const dungeon = await this.selectDungeon();
         if (dungeon) {
 
@@ -247,25 +247,19 @@ export class ModuleRunner {
           this.pcs.forEach(pc => pc.gp = (pc.gp || 0) + share);
           this.state.sharedGold -= share * this.pcs.length;
 
-          // this.logGold("before dungeoneer");
-          // this.outputSink(`You embark on a Quest to the ${Stylist.bold(dungeon.dungeon_name)}...`);
           const dungeoneer = new Dungeoneer({
             dry,
             roller: this.roller,
-            // select: this.select,
-            // pause: this.pause,
-            // clear: this.clear,
-            // outputSink: this._outputSink,
             driver: this.driver,
             dungeonGen: () => dungeon,
-            gen: this.gen, //.bind(this),
+            gen: this.gen,
             playerTeam: {
               name: "Player",
               combatants: this.pcs,
               inventory: this.state.inventory,
             },
           });
-          const { newPlane } = await dungeoneer.run();  //dungeon, this.pcs);
+          const { newPlane } = await dungeoneer.run();
           if (newPlane !== null && newPlane !== undefined && newPlane !== mod.plane) {
             console.warn(`~~~ The party has shifted to the plane of ${newPlane} ~~~`);
             return { newModuleOptions: { _plane_name: newPlane } };
@@ -278,7 +272,6 @@ export class ModuleRunner {
           this.state.sharedGold += dungeoneer.playerTeam.combatants
             .reduce((sum, pc) => sum + (pc.gp || 0), 0);
           this.pcs.forEach(pc => pc.gp = 0);
-          // this.logGold("after dungeoneer");
 
           // do NOT stabilize unconscious PC to 1 HP here - leave that to the inn or temple
           // this.pcs.forEach(pc => {
@@ -292,31 +285,28 @@ export class ModuleRunner {
             pc.spellSlotsUsed = 0;
             pc.activeEffects = [];
           };
-        // } else {
-        //   console.warn("No available dungeons!");
         }
       } else if (action === "inn") {
         await this.rest(this.pcs);
       } else if (action === "itemShop") {
-        await this.shop('consumables');
+        await this.handleTownFeature('market', 'consumables');
       } else if (action === "magicShop") {
-        await this.shop('equipment');
+        await this.handleTownFeature('market', 'equipment');
       } else if (action === "armory") {
         const weaponsOrArmor: string = await this.select("What would you like to buy?", ['Weapons', 'Armor']);
         if (weaponsOrArmor.toLowerCase() === 'weapons') {
-          await this.shop('weapons');
+          await this.handleTownFeature('market', 'weapons');
         } else {
-          await this.shop('armor');
+          await this.handleTownFeature('market', 'armor');
         }
       } else if (action === "general") {
-        await this.shop('loot');
+        await this.handleTownFeature('market', 'loot');
       } else if (action === "blacksmith") {
-        await this.shop('enhancements');
+        await this.handleTownFeature('market', 'enhancements');
       } else if (action === "tavern") {
-        await this.showRumors();
-        await this.presentHireling();
+        await this.handleTownFeature('tavern');
       } else if (action === "temple") {
-        await this.temple();
+        await this.handleTownFeature('temple');
       } else if (action === "mirror") {
         const pc = await this.select("Whose character record would you like to view?", this.pcs.map(pc => ({
           short: pc.name, value: pc, name: Presenter.combatant(pc), disabled: !!pc.dead
@@ -438,125 +428,39 @@ export class ModuleRunner {
             console.warn(`${pc.name} failed to stabilize and has died!`);
             pc.dead = true;
           }
-        } else {
-          console.warn(`${pc.name} remains alive but still unconscious...`);
+        // } else {
+        //   console.warn(`${pc.name} remains alive but still unconscious...`);
         }
       } else if (!pc.dead) {
-        console.warn(`${pc.name} rests and recovers to full health.`);
+        // console.warn(`${pc.name} rests and recovers to full health.`);
         const effective = Fighting.effectiveStats(pc);
         pc.hp = effective.maxHp;
-      // } else {
-      //   console.warn(`${pc.name} is dead and must seek resurrection.`);
       }
     }
-    // this.outputSink("💤 Your party rests and recovers fully.");
   }
 
-  private async temple() {
-    const templeName = `${this.mod.town.townName} Temple of ${Words.capitalize(this.mod.town.deity.name)}`;
-    await this.emit({ type: "templeEntered", templeName, day: this.days });
-    const temple = new Temple(this.mod.town.deity, this.driver);
+  townFeatures: { [key: string]: () => TownFeature<string> } = {
+    temple: () => new Temple(this.driver, this.state),
+    tavern: () => new Tavern(this.driver, this.state),
+    market: () => new Shop(this.driver, this.state),
+  }
+
+  private async handleTownFeature(
+    featureType: 'tavern' | 'temple' | 'market',
+    serviceName?: string
+  ) {
+    const featureEntryEvents = this.townFeatures[featureType]().enter();
+    for (const event of await featureEntryEvents) {
+      await this.emit(event);
+    }
+
     let done = false;
     while (!done) {
+      const feature = this.townFeatures[featureType]();
       await this.emit({ type: "goldStatus", amount: this.sharedGold, day: this.days });
-      const { events, done: newDone } = await temple.interact(this.state);
+      const { events, done: newDone } = await feature.interact(serviceName);
       for (const event of events) { await this.emit(event); }
       done = newDone;
-    }
-  }
-
-  private async shop(category: ShopType) {
-    await this.emit({ type: "shopEntered", shopName: Shop.name(category), day: this.days });
-    const shop = new Shop(this.select.bind(this));
-    let done = false;
-    while (!done) {
-      await this.emit({ type: "goldStatus", amount: this.sharedGold, day: this.days });
-      const { events, done: newDone } = await shop.interact(category, this.state);
-      for (const event of events) { await this.emit(event); }
-      // this.gameState = processEvents(this.state, events);
-      done = newDone;
-    }
-  }
-
-  private async showRumors() {
-    const available = this.availableDungeons;
-    if (available.length === 0) {
-      // this.outputSink("You've cleared all known threats in the region!");
-      return;
-    }
-
-    const index = Math.floor(Math.random() * available.length);
-    const rumor = available[index].rumor;
-    await this.emit({
-      type: "rumorHeard",
-      rumor,
-      day: this.days,
-    });
-
-    this.state.discoveredDungeons = this.state.discoveredDungeons.concat(
-      available.filter(d => d.dungeonIndex === available[index].dungeonIndex).map(d => d.dungeonIndex!)
-    );
-  }
-
-  private async presentHireling() {
-    const cost = 100;
-    const partySize = this.pcs.length;
-    if (partySize >= 6 || this.sharedGold < cost) {
-      return;
-    }
-    const hirelings = this.mod.town.tavern?.hirelings || [];
-    if (hirelings.length === 0) {
-      return;
-    }
-    // gen a level 1 PC as hireling
-    // const hireling = this.gen("pc", { background: "hireling", setting: "fantasy" }) as unknown as Combatant;
-    const hireling = hirelings[Math.floor(Math.random() * hirelings.length)];
-    hireling.level = 1;
-    hireling.gp = 0;
-      //await CharacterRecord.autogen(CharacterRecord.goodRaces, (options) => this.gen("pc", { ...options, background: "hireling" }) as unknown as Combatant) as Combatant;
-    // await CharacterRecord.pickInitialSpells(hireling, Automatic.randomSelect);
-    await CharacterRecord.chooseTraits(hireling, Automatic.randomSelect.bind(Automatic));
-    const race = hireling.race;
-    const charClass = hireling.class;
-    if (!race || !charClass) {
-      throw new Error("Hireling generation failed!");
-    }
-    const wouldLikeHireling = await this.driver.confirm(
-      // "A hireling is available to join your party. Would you like to consider their merits?",
-      `A ${Words.humanize(race)} ${Words.humanize(charClass)} named ${hireling.name} is looking for work. Would you like to interview them?`,
-    );
-      // [
-      //   { short: "Yes", value: true, name: `Interview ${hireling.forename}`, disabled: false },
-      //   { short: "No", value: false, name: "Decline", disabled: false },
-      // ]);
-
-    if (!wouldLikeHireling) {
-      return;
-    }
-
-    await this.emit({
-      type: "hirelingOffered",
-      hireling,
-      cost,
-      day: this.days,
-    });
-
-    const choice: boolean = await this.driver.confirm(`Would you like to hire ${hireling.name} for ${cost}?`);
-
-    if (choice) {
-      this.mod.town.tavern.hirelings = this.mod.town.tavern.hirelings.filter(h => h.id !== hireling.id);
-      this.state.sharedGold -= cost;
-      this.state.party.push(hireling);
-      this.state.inventory.push(...this.gatherStartingGear(hireling));
-      // this.outputSink(`✅ You have hired ${hireling.name} into your party!`);
-      await this.emit({
-        type: "hirelingHired",
-        hireling,
-        cost,
-        day: this.days,
-      });
-    } else {
-      this._outputSink(`You declined to hire ${hireling.name}.`);
     }
   }
 
@@ -586,25 +490,24 @@ export class ModuleRunner {
     return choice !== -1 ? dungeonChoices[choice] : null;
   }
 
-  // private logGold(tag: string) {
-  //   const pcGold = this.pcs.map(p => `${p.forename}:${p.gp||0}`).join(", ");
-  //   console.log(`🪙 [gold] ${tag} shared=${this.state.sharedGold} pcs=[${pcGold}]`);
-  // }
-
-
   private defaultModuleGen(): CampaignModule {
-    const module = {
+    return {
       name: "The Lost City of Eldoria",
       terrain: "Jungle",
       town: {
         townName: "Port Vesper",
+        translatedName: "Safe Harbor",
+        adjective: "bustling",
+        size: "city",
+        race: "human",
         population: 5000,
-        deity: { name: "The Serpent Queen" }
+        deity: { name: "The Serpent Queen", domain: "Trickery", blessing: {}, forename: "Zyra", gender: "female", title: "Goddess of Deception" },
+        tavern: { hirelings: [] },
       },
       dungeons: [Dungeoneer.defaultGen()],
       plane: "Prime Material",
       weather: "Tropical",
     }
-    return module as CampaignModule;
+    // return module;
   }
 }

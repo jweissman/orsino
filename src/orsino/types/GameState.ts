@@ -1,7 +1,8 @@
 import { AcquireItemEvent, BlessServiceEvent, EnhanceWeaponEvent, EquipmentEvent, GameEvent, ItemRechargedEvent, WieldEvent } from "../Events";
 import { Inventory } from "../Inventory";
+import { CampaignModule } from "../ModuleRunner";
 import { Combatant } from "./Combatant";
-import { ItemInstance, materializeItem } from "./ItemInstance";
+import { ItemInstance } from "./ItemInstance";
 
 export interface GameState {
   day: number;
@@ -10,12 +11,14 @@ export interface GameState {
   inventory: Array<ItemInstance>;
   completedDungeons: number[];
   discoveredDungeons: number[];
+  campaignModule: CampaignModule;
 }
 
-const newGameState = ({ party, sharedGold, inventory }: {
+const newGameState = ({ party, sharedGold, inventory, mod }: {
   party: Combatant[];
   sharedGold: number;
   inventory: ItemInstance[];
+  mod: CampaignModule;
 }): GameState => ({
   day: 1,
   party,
@@ -23,6 +26,7 @@ const newGameState = ({ party, sharedGold, inventory }: {
   inventory,
   completedDungeons: [],
   discoveredDungeons: [],
+  campaignModule: mod
 });
 
 class GameStateReducer {
@@ -32,6 +36,20 @@ class GameStateReducer {
       case "shopEntered":
       case "templeEntered":
         // no state change
+        break;
+      case "rumorHeard":
+        if (!newState.discoveredDungeons.includes(event.dungeonIndex)) {
+          newState.discoveredDungeons = newState.discoveredDungeons.concat([event.dungeonIndex]);
+        }
+        break;
+      case "hirelingHired":
+        newState.party = newState.party.concat([event.hireling]);
+        newState.sharedGold = newState.sharedGold - event.cost;
+        newState.inventory = newState.inventory.concat(
+          ...this.gatherStartingGear(event.hireling)
+        );
+        newState.campaignModule.town.tavern.hirelings =
+          newState.campaignModule.town.tavern.hirelings.filter(h => h.id !== event.hireling.id);
         break;
       case "purchase":
         newState.sharedGold = newState.sharedGold - event.cost;
@@ -57,7 +75,7 @@ class GameStateReducer {
       case "resurrectionService":
         newState.party = newState.party.map(pc => {
           if (pc.id === event.subject?.id) {
-            console.warn(`Resurrecting ${pc.name} on day ${event.day}`);
+            // console.warn(`Resurrecting ${pc.name} on day ${event.day}`);
             return {
               ...pc,
               dead: false,
@@ -83,7 +101,7 @@ class GameStateReducer {
       ownerSlot: 'backpack',
     };
     it.shared = it.itemClass === 'consumable';
-    console.warn(`Acquired ${event.quantity} x ${it.name} for ${event.subject?.name} (shared: ${it.shared})`);
+    // console.warn(`Acquired ${event.quantity} x ${it.name} for ${event.subject?.name} (shared: ${it.shared})`);
     const items = Array.from({ length: event.quantity }, () => ({
       ...it,
       id: Inventory.genId(it.itemClass ?? "item"),
@@ -99,7 +117,7 @@ class GameStateReducer {
     Inventory.assertItemRef(event.itemKey, `processEvent equip for ${event.wearerId} on day ${event.day}`);
     state.party = (state.party ?? []).map((pc: Combatant) => {
       if (pc.id === event.wearerId) {
-        console.warn(`!!! Equipping ${event.itemKey} to ${pc.name} in slot ${event.slot} on day ${event.day} [pcId=${pc.id}, wearerId=${event.wearerId}]`);
+        // console.warn(`!!! Equipping ${event.itemKey} to ${pc.name} in slot ${event.slot} on day ${event.day} [pcId=${pc.id}, wearerId=${event.wearerId}]`);
         return {
           ...pc,
           equipment: {
@@ -117,9 +135,10 @@ class GameStateReducer {
   private static handleWield = (state: GameState, event: WieldEvent): GameState => {
     Inventory.assertItemRef(event.weaponKey, `processWieldEvent for ${event.wielderId} on day ${event.day}`);
     const weapon = Inventory.reifyFromKey(event.weaponKey);
+    const weaponId = weapon.id || Inventory.genId(weapon.itemClass ?? "weapon");
     state.inventory = [
       ...state.inventory,
-      { ...weapon, id: Inventory.genId(weapon.itemClass ?? "weapon"), ownerId: event.wielderId, ownerSlot: 'weapon' }
+      { ...weapon, id: weaponId, ownerId: event.wielderId, ownerSlot: 'weapon' }
     ]
     state.party = state.party.map((pc: Combatant) => {
       if (pc.id === event.wielderId) {
@@ -127,7 +146,7 @@ class GameStateReducer {
           ...pc,
           equipment: {
             ...(pc.equipment || {}),
-            weapon: weapon.id || weapon.key || event.weaponName,
+            weapon: weaponId,
           }
         };
       } else {
@@ -141,7 +160,7 @@ class GameStateReducer {
     let weaponId = event.weaponId;
     const wielder = newState.party.find(pc => pc.id === event.wielderId);
     if (!wielder?.equipment?.weapon?.includes(":")) {
-      console.warn(`!!! Reifying weapon ${event.weaponName} for wielderId ${event.wielderId} on day ${event.day} -- currently uninstantiated weapon key ${wielder?.equipment?.weapon}`);
+      // console.warn(`!!! Reifying weapon ${event.weaponName} for wielderId ${event.wielderId} on day ${event.day} -- currently uninstantiated weapon key ${wielder?.equipment?.weapon}`);
       const weaponInstance = Inventory.reifyFromKey(event.weaponKey);
       if (!weaponInstance.id) {
         throw new Error(`Could not reify weapon ${event.weaponName} for wielderId ${event.wielderId} on day ${event.day} -- no id`);
@@ -150,7 +169,7 @@ class GameStateReducer {
       Inventory.assertItemRef(weaponId, `processEvent enhanceWeapon for ${event.wielderId} on day ${event.day}`);
       newState.inventory = [
         ...newState.inventory,
-        { ...weaponInstance, id: Inventory.genId(weaponInstance.itemClass ?? "weapon"), ownerId: event.wielderId, ownerSlot: 'weapon' }
+        { ...weaponInstance, id: weaponId, ownerId: event.wielderId, ownerSlot: 'weapon' }
       ];
       newState.party = newState.party.map((pc: Combatant) => {
         if (pc.id === event.wielderId) {
@@ -169,7 +188,7 @@ class GameStateReducer {
     // alter weapon in inventory
     newState.inventory = newState.inventory.map((it) => {
       if (it.ownerId === event.wielderId && it.id === weaponId) {
-        console.warn(`!!! Enhancing weapon ${it.name} for ${it.ownerId} with ${event.enhancement} on day ${event.day}`);
+        // console.warn(`!!! Enhancing weapon ${it.name} for ${it.ownerId} with ${event.enhancement} on day ${event.day}`);
         return {
           ...it,
           damage: event.newDamage,
@@ -189,7 +208,7 @@ class GameStateReducer {
     }
     state.party = state.party.map(pc => {
       if (pc.id === subject.id) {
-        console.warn(`Applying blessing ${event.blessing.name} to ${pc.name} on day ${event.day}`);
+        // console.warn(`Applying blessing ${event.blessing.name} to ${pc.name} on day ${event.day}`);
         return {
           ...pc,
           activeEffects: [
@@ -206,7 +225,7 @@ class GameStateReducer {
   private static handleRecharge = (state: GameState, event: ItemRechargedEvent): GameState => {
     state.inventory = state.inventory.map((it) => {
       if (it.id === event.itemId) {
-        console.warn(`Updating charges for item ${it.name} from ${event.chargesBefore} to ${event.chargesAfter} on day ${event.day}`);
+        // console.warn(`Updating charges for item ${it.name} from ${event.chargesBefore} to ${event.chargesAfter} on day ${event.day}`);
         return {
           ...it,
           charges: event.chargesAfter,
@@ -216,6 +235,17 @@ class GameStateReducer {
       }
     });
     return state;
+  }
+
+  private static gatherStartingGear(pc: Combatant): ItemInstance[] {
+    const itemNames: string[] = pc.startingGear || [];
+    const items: ItemInstance[] = [];
+    for (const itemName of itemNames) {
+      const item = { ...Inventory.genLoot(itemName), ownerId: pc.id, ownerSlot: 'backpack' };
+      item.shared = item.itemClass === 'consumable';
+      items.push(item);
+    }
+    return items;
   }
 }
 

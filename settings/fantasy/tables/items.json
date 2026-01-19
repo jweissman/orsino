@@ -153,12 +153,14 @@
         "natural": true,
         "damage": "1d2",
         "type": "bludgeoning",
-        "description": "A basic unarmed strike using the fists."
+        "description": "A basic unarmed strike using the fists.",
+        "weight": "light"
       },
       "kick": {
         "natural": true,
         "damage": "1d2",
-        "type": "bludgeoning"
+        "type": "bludgeoning",
+        "weight": "light"
       },
       "battleaxe": {
         "damage": "1d8",
@@ -2036,6 +2038,7 @@
         "name": "Angelmail",
         "description": "A radiant suit of armor that provides divine protection to the wearer.",
         "type": "equipment",
+        "itemClass": "armor",
         "kind": "body",
         "rarity": "legendary",
         "value": 4500,

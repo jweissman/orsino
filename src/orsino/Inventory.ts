@@ -5,6 +5,12 @@ import { Combatant, EquipmentSlot } from "./types/Combatant";
 import { DamageKind } from "./types/DamageKind";
 import { ItemInstance } from "./types/ItemInstance";
 
+export type LootRank = 'basic'
+  | 'negligible'
+  | 'minor'
+  | 'major'
+  | 'grand'
+  | 'legendary';
 export interface Weapon {
   key?: string;
   description: string;
@@ -12,6 +18,7 @@ export interface Weapon {
   type: DamageKind;
   intercept?: boolean;
   missile?: boolean;
+  natural?: boolean;
   value: number;
   kind: string;
   weight: string;
@@ -41,6 +48,22 @@ export interface Equipment {
 type ItemRef = { key: string; kind: "key" } | { id: string; kind: "id" } | null
 
 export class Inventory {
+  static isProficient(item: ItemInstance, combatant: Combatant): boolean {
+    let proficient = true;
+    if (item.itemClass === 'weapon' && combatant.weaponProficiencies) {
+      proficient = Inventory.isWeaponProficient(item as unknown as Weapon, combatant.weaponProficiencies);
+    }
+    if (item.itemClass === 'armor' && combatant.armorProficiencies) {
+      proficient = Inventory.isArmorProficient(item as unknown as Armor, combatant.armorProficiencies);
+    }
+    if (item.itemClass === 'consumable' && combatant.itemProficiencies) {
+      proficient = Inventory.isItemProficient(item, combatant.itemProficiencies);
+    }
+    // other item classes (general equipment) are always 'proficient'
+    // console.warn(`Checking proficiency for item ${item.name} (${item.itemClass}) on combatant ${combatant.name} => ${proficient}`);
+    return proficient;
+  }
+
   static isArmorProficient(item: Armor, armorProficiencies: {
     weight?: string[]; all?: boolean; kind?: string[];
   }) {
@@ -130,12 +153,16 @@ export class Inventory {
         throw new Error(`Could not find equipment ${itemKey} in masterEquipment table`);
       }
 
-      return {
+      const it: Equipment & ItemInstance = {
         id: this.genId('equipment'),
+        // itemClass: 'equipment',
         ...masterEquipment,
         key: itemKey,
-        itemClass: 'equipment',
       };
+      if (!it.itemClass) {
+        it.itemClass = 'equipment';
+      }
+      return it;
     }
 
     const hasMasterArmorEntry = Deem.evaluate(`hasEntry(masterArmor, "${itemKey}")`) as boolean;
@@ -183,7 +210,7 @@ export class Inventory {
     // If it looks like an id, don't try to treat it like a key
     if (ref.includes(":")) {
       if (inventory.length === 0) {
-        console.trace(`materialize called with id=${ref} but empty inventory; caller is wrong`);
+        console.warn(`materialize called with id=${ref} but empty inventory; caller is wrong`);
       }
       throw new Error(
         `Missing item instance ${ref} in provided inventory (len=${inventory.length}). ` +
@@ -217,9 +244,9 @@ export class Inventory {
     }
   }
 
-  static genLoot(key: string): ItemInstance {
+  static genLoot(key: string, rank: LootRank = 'basic'): ItemInstance {
     this.assertItemRef(key, `genLoot for key=${key}`);
-    const it = Generator.gen("loot", { _key: key }) as unknown as ItemInstance;
+    const it = Generator.gen("loot", { _key: key, _loot_rank: rank }) as unknown as ItemInstance;
     if (it.charges) {
       // console.warn(`Setting maxCharges for item ${it.name} to ${it.charges}.`);
       it.maxCharges = Math.max(1, it.charges);

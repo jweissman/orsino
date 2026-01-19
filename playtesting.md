@@ -189,6 +189,10 @@
 - [ ] Push forward gameState refactor (everything in mod runner goes through reducer/event processing to update gameState)
 ---
 - [ ] Display wand/item charges in mirror gear
+---
+- [ ] Illusory trait for phantasmal summons
+- [ ] Skill check for gather info in taverns
+- [ ] Taverns only show _new_ rumors (ie for dungeons you haven't heard of yet...) or present 'nothing new' kind of message
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing

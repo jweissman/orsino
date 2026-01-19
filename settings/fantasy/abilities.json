@@ -1006,5 +1006,18 @@
         "saveDC": 18
       }
     ]
+  },
+  "flurry_of_blows": {
+    "name": "Flurry of Blows",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Deliver a rapid series of powerful strikes to an enemy.",
+    "target": [ "enemy" ],
+    "effects": [
+      { "type": "attack" },
+      { "type": "attack" },
+      { "type": "attack" },
+      { "type": "attack" }
+    ]
   }
 }

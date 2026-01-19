@@ -270,6 +270,7 @@ export default class Books {
         }
       });
       const maxSpellsPerLevel = Math.max(...Object.values(spellLevels).map(arr => arr.length));
+      const averageDamagePerLevel: Record<number, number[]> = {};
       for (let i = 0; i < maxSpellsPerLevel; i++) {
         let row = "| ";
         for (let level = 0; level <= 9; level++) {
@@ -281,14 +282,27 @@ export default class Books {
             if (!categoryIcons[category]) {
               throw new Error(`No icon found for spell category '${category}' (spell: '${ability?.name}')`);
             }
-            const averageDamage = AbilityScoring.expectedDamage(ability, pseudocombatant).toFixed(1);
-            row += `[<small>${icon} ${Words.capitalize(spellLevels[level][i])}</small>](#${spellLevels[level][i]}) [${averageDamage}] | `;
+            const averageDamage = AbilityScoring.expectedDamage(ability, pseudocombatant);
+            row += `[<small>${icon} ${Words.capitalize(spellLevels[level][i])}</small>](#${spellLevels[level][i]}) ${averageDamage ? averageDamage.toFixed(1) : ""} | `;
+            if (!averageDamagePerLevel[level]) {
+              averageDamagePerLevel[level] = [];
+            }
+            if (averageDamage > 0) {
+              averageDamagePerLevel[level].push(averageDamage);
+            }
           } else {
             row += " | ";
           }
         }
         this.write(row);
       }
+      // this.write("\n**Average Damage per Spell Level:**\n");
+      let damageRow = "| ";
+      for (let level = 0; level <= 9; level++) {
+        const avgDamage = averageDamagePerLevel[level] ? (averageDamagePerLevel[level].reduce((a, b) => a + b, 0) / averageDamagePerLevel[level].length) : 0;
+        damageRow += ` ${avgDamage.toFixed(1)} | `;
+      }
+      this.write(damageRow);
 
 
 
@@ -301,7 +315,7 @@ export default class Books {
           if (ability.school) {
             row += `| School of ${Words.capitalize(ability.school)}`;
           } else if (ability.domain) {
-            row += `| ${ability.domain} domain `;
+            row += `| ${ability.domain} `;
           } else {
             row += "| -- ";
           }
