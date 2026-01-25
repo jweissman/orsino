@@ -9,49 +9,100 @@ import { ModuleEvent, WieldEvent } from "../Events";
 import { never } from "../util/never";
 import TownFeature from "./TownFeature";
 
-export type ShopType
-  = 'loot'
-  | 'consumables'
-  | 'weapons'
-  | 'equipment'
-  | 'armor'
-  | 'enhancements'
-export default class Shop extends TownFeature<ShopType> {
-  static name(type: ShopType): string {
+type ItemRestrictions = {
+  kind?: string[];
+  rarity?: string[];
+  aspect?: string[];
+  type?: string[];
+};
+
+export const SHOP_KINDS = [
+  'consumable',
+  'armor',
+  'equipment',
+  'gear',
+  'weapon',
+  'loot',
+
+  // specialty
+  'blacksmith',
+] as const;
+
+export type ShopKind = typeof SHOP_KINDS[number];
+
+class Catalog {
+  static gatherWithRestrictions(type: string, r: ItemRestrictions = {}): string[] {
+    const allItemKeys: string[] = Deem.evaluate(`gather(${type})`) as string[];
+    return allItemKeys.filter(itemKey => {
+      const item = Inventory.reifyFromKey(itemKey);
+      return this.passesRestrictions(item, r);
+    });
+  }
+
+  private static passesRestrictions(item: ItemInstance, r: ItemRestrictions): boolean {
+    if (item?.natural) { return false; }
+
+    if (r.kind && !r.kind.includes(item?.kind || "")) {
+      return false;
+    }
+    if (item.rarity && r.rarity && !r.rarity.includes(item?.rarity || "")) {
+      return false;
+    }
+    if (r.aspect && !r.aspect.includes(item?.aspect || "")) {
+      return false;
+    }
+    if (r.type && !r.type.includes(item?.type || "")) {
+      return false;
+    }
+
+    return true;
+  }
+}
+
+export default class Shop extends TownFeature<ShopKind> {
+  static name(type: ShopKind): string {
     switch (type) {
-      case 'consumables':
+      case 'consumable':
         return "Alchemist";
-      case 'weapons':
-      case 'armor':
-        return "Armorer";
-      case 'enhancements':
+      case 'blacksmith':
         return "Blacksmith";
       case 'equipment':
         return "Magician";
       case 'loot':
+        return "Merchant";
+      case 'armor':
+        return "Armorer";
+      case 'weapon':
+        return "Weaponsmith";
+      case 'gear':
         return "Provisioner";
       default:
         return never(type);
     }
   }
 
-  serviceName(type: ShopType): string {
+  serviceName(type: ShopKind): string {
     return Shop.name(type) + "'s Shop";
   }
 
-  services: Record<ShopType, () => Promise<ModuleEvent[]>> = {
-    equipment: this.equipmentShop.bind(this),
-    consumables: this.consumablesShop.bind(this),
-    weapons: this.weaponsShop.bind(this),
+  services: Record<ShopKind, () => Promise<ModuleEvent[]>> = {
+    consumable: this.consumablesShop.bind(this),
     armor: this.armorShop.bind(this),
+    equipment: this.equipmentShop.bind(this),
+    weapon: this.weaponsShop.bind(this),
+
+    // split gear into its own shop?
+    gear: this.lootShop.bind(this),
     loot: this.lootShop.bind(this),
-    enhancements: this.blacksmithShop.bind(this),
+
+    blacksmith: this.blacksmithShop.bind(this),
   };
 
 
-  private async armorShop(): Promise<ModuleEvent[]> {
+  private async armorShop(itemRestrictions: ItemRestrictions = {}): Promise<ModuleEvent[]> {
     const events: ModuleEvent[] = [];
-    const armorItemNames = Deem.evaluate(`gather(masterArmor, -1, '!dig(#__it, "natural")')`) as string[];
+    // const armorItemNames = Deem.evaluate(`gather(masterArmor, -1, '!dig(#__it, "natural")')`) as string[];
+    const armorItemNames = Catalog.gatherWithRestrictions('masterArmor', itemRestrictions);
     const pcEquipment = (combatant: Combatant) => {
       const equipmentWithoutWeapon = { ...combatant.equipment };
       delete equipmentWithoutWeapon.weapon;
@@ -125,7 +176,9 @@ export default class Shop extends TownFeature<ShopType> {
     return events;
   }
 
-  private async lootShop(): Promise<ModuleEvent[]> {
+  private async lootShop(
+    itemRestrictions: ItemRestrictions = {}
+  ): Promise<ModuleEvent[]> {
     const events: ModuleEvent[] = [];
 
     const buyingSelling = await this.driver.select("Would you like to buy or sell?", [
@@ -156,7 +209,7 @@ export default class Shop extends TownFeature<ShopType> {
     ]);
 
     if (buyingSelling === "buy") {
-      events.push(...await this.buyGear())
+      events.push(...await this.buyGear(itemRestrictions))
     } else if (buyingSelling === "sell") {
       events.push(...await this.sellItems());
     } else if (buyingSelling === "sell_junk") {
@@ -168,9 +221,10 @@ export default class Shop extends TownFeature<ShopType> {
     return events;
   }
 
-  private async buyGear(): Promise<ModuleEvent[]> {
+  private async buyGear(itemRestrictions: ItemRestrictions = {}): Promise<ModuleEvent[]> {
     const events: ModuleEvent[] = [];
-    const gearItemNames = Deem.evaluate(`gather(masterGear)`) as string[];
+    // const gearItemNames = Deem.evaluate(`gather(masterGear)`) as string[];
+    const gearItemNames = Catalog.gatherWithRestrictions('masterGear', itemRestrictions);
     const options: Choice[] = [];
     for (let index = 0; index < gearItemNames.length; index++) {
       const itemName = gearItemNames[index];
@@ -203,7 +257,7 @@ export default class Shop extends TownFeature<ShopType> {
         subject: firstPc,
         day: this.day,
       });
-      
+
       events.push({
         type: "acquire",
         subject: firstPc,
@@ -277,15 +331,18 @@ export default class Shop extends TownFeature<ShopType> {
     return events;
   }
 
-  private async equipmentShop(): Promise<ModuleEvent[]> {
+  private async equipmentShop(
+    itemRestrictions: { kind?: string[]; rarity?: string[] } = {}
+  ): Promise<ModuleEvent[]> {
+    // console.warn(`Entering equipment shop with restrictions: ${JSON.stringify(itemRestrictions)}`);
     const events: ModuleEvent[] = [];
-    const magicItemNames = Deem.evaluate(`gather(masterEquipment)`) as string[];
+    const magicItemNames: string[] = Catalog.gatherWithRestrictions('masterEquipment', itemRestrictions);
     const pcEquipment = (combatant: Combatant) => {
       const equipmentIds = Object.values(combatant.equipment || {});
       return Words.humanizeList(
         equipmentIds.map(eid => materializeItem(eid, this.gameState.inventory).name)
       );
-    } 
+    }
 
     const wearerId = await this.pickPartyMember(`Who needs new equipment?`, (combatant) => {
       return `${combatant.name} (${pcEquipment(combatant) || 'no equipment'})`;
@@ -357,9 +414,12 @@ export default class Shop extends TownFeature<ShopType> {
     return events;
   }
 
-  private async consumablesShop(): Promise<ModuleEvent[]> {
+  private async consumablesShop(
+    itemRestrictions: ItemRestrictions = {}
+  ): Promise<ModuleEvent[]> {
     const events: ModuleEvent[] = [];
-    const consumableItemNames = Deem.evaluate(`gather(consumables)`) as string[];
+    // const consumableItemNames = Deem.evaluate(`gather(consumables)`) as string[];
+    const consumableItemNames = Catalog.gatherWithRestrictions('consumables', itemRestrictions);
     const options: Choice[] = [];
     for (let index = 0; index < consumableItemNames.length; index++) {
       const itemName = consumableItemNames[index];
@@ -410,15 +470,18 @@ export default class Shop extends TownFeature<ShopType> {
     return events;
   }
 
-  private async weaponsShop(): Promise<ModuleEvent[]> {
+  private async weaponsShop(
+    itemRestrictions: ItemRestrictions = {}
+  ): Promise<ModuleEvent[]> {
     const events: ModuleEvent[] = [];
-    const weaponItemKeys = Deem.evaluate(`gather(masterWeapon, -1, '!dig(#__it, "natural")')`) as string[];
+    // const weaponItemKeys = Deem.evaluate(`gather(masterWeapon, -1, '!dig(#__it, "natural")')`) as string[];
+    const weaponItemKeys = Catalog.gatherWithRestrictions('masterWeapon', itemRestrictions);
     weaponItemKeys.sort();
     const pcWeapon = (combatant: Combatant) => {
       return combatant.equipment && combatant.equipment.weapon
         ? materializeItem(combatant.equipment.weapon, this.gameState.inventory).name
         : 'unarmed';
-    } 
+    }
     const wielderId = await this.pickPartyMember(`Who needs a new weapon?`, (combatant) => {
       return `${combatant.name} (${pcWeapon(combatant)})`;
     });
@@ -519,9 +582,9 @@ export default class Shop extends TownFeature<ShopType> {
     const upgradedAttackDie = dieClasses[Math.min(baseDieIndex + 1, dieClasses.length - 1)];
 
     const costs = {
-      sharpen:   500  + (modifierNumber * 200),
-      reinforce: 750  + (baseDieIndex * 300),
-      imbue:     1000 + (dieNumber * 500),
+      sharpen: 500 + (modifierNumber * 200),
+      reinforce: 750 + (baseDieIndex * 300),
+      imbue: 1000 + (dieNumber * 500),
     }
 
     const improvementRequested = await this.driver.select("What type of enhancement would you like?", [

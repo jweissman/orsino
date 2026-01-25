@@ -140,6 +140,13 @@ export default class StatusPresenter extends Presenter {
         case "bonusPoisonDamage":
           parts.push(this.increaseDecrease('bonus poison damage', value as number));
           break;
+        // case "bonusPsychicDamage":
+        //   parts.push(this.increaseDecrease('bonus psychic damage', value as number));
+        //   break;
+        case "bonusSpellDamage":
+          parts.push(this.increaseDecrease('bonus spell damage', value as number));
+          break;
+
         case "criticalRangeIncrease":
           parts.push(this.increaseDecrease('critical range', value as number));
           break;
@@ -503,6 +510,12 @@ export default class StatusPresenter extends Presenter {
         case "readThoughts":
           if (value) {
             parts.push(`Can read surface thoughts of others`);
+          }
+          break;
+
+        case "revealLocation":
+          if (value) {
+            parts.push(`Permit travel to ${value} from world map`);
           }
           break;
 

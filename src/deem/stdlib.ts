@@ -223,6 +223,24 @@ export default class StandardLibrary {
       }
       const items = arr.map(item => typeof item === "string" ? Words.humanize(item) : item)
       return (items as string[]).join(separator);
+    },
+
+    alliterate: (options: DeemValue[], key: DeemValue) => {
+      if (typeof key !== 'string') {
+        console.warn(`alliterate() received non-string key: ${JSON.stringify(key)}`);
+        throw new Error(`alliterate() expects key to be a string, got: ${typeof key}`);
+      }
+      if (!options.every(opt => typeof opt === 'string')) {
+        throw new Error(`alliterate() expects all options to be strings, got: [${options.map(i => typeof i).join(', ')}]`);
+      }
+      const firstChar = key.charAt(0).toLowerCase();
+      const filtered = options.filter(opt => (opt).charAt(0).toLowerCase() === firstChar);
+      if (filtered.length > 0) {
+        return filtered[Math.floor(Math.random() * filtered.length)];
+      } else {
+        // no matching alliteration, pick any
+        return options[Math.floor(Math.random() * options.length)];
+      }
     }
 
   };

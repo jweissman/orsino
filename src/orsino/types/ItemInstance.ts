@@ -23,6 +23,11 @@ export interface ItemInstance {
   ownerId?: string;
   ownerSlot?: string; // optional semantic hint about where item is stored (e.g. "left hand", "backpack", etc)
   shared?: boolean; // indicates if item is shared among team members
+
+
+  rarity?: string;
+  natural?: boolean;
+  type?: string;
 }
 
 

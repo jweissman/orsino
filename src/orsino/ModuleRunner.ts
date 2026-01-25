@@ -1,7 +1,6 @@
 import Dungeoneer, { Dungeon } from "./Dungeoneer";
 import Events, { ModuleEvent } from "./Events";
-import Presenter from "./tui/Presenter";
-import Shop from "./campaign/Shop";
+import Shop, { SHOP_KINDS, ShopDefinition, ShopKind } from "./campaign/Shop";
 import Stylist from "./tui/Style";
 import Tavern from "./campaign/Tavern";
 import Temple from "./campaign/Temple";
@@ -44,9 +43,18 @@ type Climate
   | 'unpredicatable'
   | 'volcanic';
 
+interface ShopDefinition {
+  type: string;
+  name: string;
+  // owner: Combatant;
+  kind: ShopKind;
+  itemTypes?: ('consumable' | 'weapon' | 'armor' | 'equipment' | 'gear')[];
+  itemRestrictions?: { kind?: string[]; rarity?: string[] };
+}
 export interface Town {
+shops: ShopDefinition[];
   climate: Climate;
-  tavern: { hirelings: Combatant[] };
+  tavern: { name: string; hirelings: Combatant[] };
   townName: string;
   translatedName: string;
   adjective: string;
@@ -251,18 +259,6 @@ export class ModuleRunner {
   async enter(dry = false, mod: CampaignModule = this.campaignModule): Promise<{
     newModuleOptions: GeneratorOptions | null
   }> {
-    // await this.emit({
-    //   type: "townVisited",
-    //   townName: mod.town.townName, day: 0,
-    //   translatedTownName: mod.town.translatedName,
-    //   plane: mod.plane,
-    //   weather: mod.weather,
-    //   race: mod.town.race, size: mod.town.size,
-    //   population: mod.town.population,
-    //   adjective: mod.town.adjective,
-    //   season: this.season,
-    // });
-    // await this.status();
     const maxDays = 360;
     while (this.days < maxDays && this.pcs.some(pc => pc.hp > 0)) {
       const weather = Deem.evaluate(`lookup(climateWeather, ${mod.town.climate})`) as string;
@@ -327,27 +323,55 @@ export class ModuleRunner {
             pc.activeEffects = [];
           };
         }
-      // } else if (action === "inn") {
-      //   await this.rest(this.pcs);
-      } else if (action === "itemShop") {
-        await this.handleTownFeature('market', 'consumables');
-      } else if (action === "magicShop") {
-        await this.handleTownFeature('market', 'equipment');
-      } else if (action === "armory") {
-        const weaponsOrArmor: string = await this.select("What would you like to buy?", ['Weapons', 'Armor']);
-        if (weaponsOrArmor.toLowerCase() === 'weapons') {
-          await this.handleTownFeature('market', 'weapons');
-        } else {
-          await this.handleTownFeature('market', 'armor');
-        }
-      } else if (action === "general") {
-        await this.handleTownFeature('market', 'loot');
-      } else if (action === "blacksmith") {
-        await this.handleTownFeature('market', 'enhancements');
+        // } else if (action === "inn") {
+        //   await this.rest(this.pcs);
+        // } else if (action === "itemShop") {
+        //   await this.handleTownFeature('market', 'consumables');
+        // } else if (action === "magicShop") {
+        //   await this.handleTownFeature('market', 'equipment');
+        // } else if (action === "armory") {
+        //   const weaponsOrArmor: string = await this.select("What would you like to buy?", ['Weapons', 'Armor']);
+        //   if (weaponsOrArmor.toLowerCase() === 'weapons') {
+        //     await this.handleTownFeature('market', 'weapons');
+        //   } else {
+        //     await this.handleTownFeature('market', 'armor');
+        //   }
+        // } else if (action === "general") {
+        //   await this.handleTownFeature('market', 'loot');
+        // } else if (action === "blacksmith") {
+        //   await this.handleTownFeature('market', 'enhancements');
       } else if (action === "tavern") {
         await this.handleTownFeature('tavern');
       } else if (action === "temple") {
         await this.handleTownFeature('temple');
+        // } else if (SHOP_KINDS.includes(action as ShopKind)) {
+      } else if (action.match(/shop:/)) {
+        const [, shopKind] = action.split(":");
+        // pick item type to browse
+        const shopDef: ShopDefinition = Deem.evaluate(`lookup(shopTypes, '${shopKind}')`) as unknown as ShopDefinition;
+        if (!shopDef) {
+          throw new Error(`No shop definition found for kind: ${shopKind}`);
+        }
+        const itemTypes = shopDef.itemTypes || [];
+        if (itemTypes.length === 0) {
+          // throw new Error(`Shop of kind ${shopKind} has no item types defined.`);
+          await this.handleTownFeature('market', shopKind);
+        } else {
+          let serviceName: string | undefined = undefined;
+          if (itemTypes.length === 1) {
+            serviceName = itemTypes[0];
+          } else {
+            serviceName = await this.select(`What would you like to browse at the ${shopDef.type}?`, itemTypes.map(it => ({
+              name: Words.capitalize(it),
+              value: it,
+              short: it
+            })));
+          }
+          // await this.handleTownFeature('market', shopKind);
+          console.warn(`Visiting shop of kind ${shopKind} to browse ${serviceName} (restrictions: ${JSON.stringify(shopDef.itemRestrictions)})`);
+
+          await this.handleTownFeature('market', serviceName as ShopKind, shopDef.itemRestrictions);
+        }
       } else if (action === "mirror") {
         const pc = await this.select("Whose character record would you like to view?", this.pcs.map(pc => ({
           short: pc.name, value: pc, name: CombatantPresenter.combatant(pc), disabled: !!pc.dead
@@ -398,18 +422,25 @@ export class ModuleRunner {
 
   private async menu(dry = false): Promise<string> {
     const basicShops = {
-      tavern: "Gather hirelings, hear rumors about the region",
+      tavern: `Relax at ${this.campaignModule.town.tavern.name}`,
       temple: `Pray to ${Words.capitalize(this.campaignModule.town.deity.name)}`,
-    }
-    const advancedShops = {
-      // inn: "Restore HP/slots",
-      general: "Buy gear and sell loot",
-      armory: "Buy weapons and armor",
-      blacksmith: "Improve weapons",
-      magicShop: "Buy equipment",
-      itemShop: "Buy consumables",
-      // jeweler: "Improve gems and jewelry",
       mirror: "Show Party Inventory/Character Records",
+    }
+
+    const advancedShops: {
+      [key: string]: string
+    } = {
+      // inn: "Restore HP/slots",
+      // general: "Buy gear and sell loot",
+      // armory: "Buy weapons and armor",
+      // blacksmith: "Improve weapons",
+      // magicShop: "Buy equipment",
+      // itemShop: "Buy consumables",
+      // jeweler: "Improve gems and jewelry",
+    }
+
+    for (const shop of this.campaignModule.town.shops || []) {
+      advancedShops['shop:' + shop.kind] = `Visit ${shop.name}`;
     }
 
     let shops = { ...basicShops };
@@ -417,13 +448,12 @@ export class ModuleRunner {
       shops = { ...basicShops, ...advancedShops };
     }
 
-    const options = //: Choice<Answers>[] =
-      Object.entries(shops).map(([value, desc]) => ({
-        short: Words.capitalize(value),
-        value,
-        name: `Visit the ${Words.humanize(value).padEnd(15)} ${Stylist.colorize(desc, 'blue')}`,
-        disabled: (value === "temple" && this.sharedGold < 10),
-      }));
+    const options = Object.entries(shops).map(([value, desc]) => ({
+      short: Words.capitalize(value),
+      value,
+      name: `${desc.padEnd(36)} ${Stylist.colorize(`Visit the ${Words.humanize(value)}`, 'blue')}`,
+      disabled: false // (value === "temple" && this.sharedGold < 10),
+    })).sort((a, b) => a.name.localeCompare(b.name));
 
     const available = this.availableDungeons;
     if (available.length > 0) {
@@ -432,45 +462,8 @@ export class ModuleRunner {
 
     this.note("You have " + Stylist.bold(this.sharedGold + "g") + " available.");
     const choice = await this.select("What would you like to do?", options);
-    console.warn(`You selected: ${Words.capitalize(choice)}`);
     return choice;
   }
-
-  // private async rest(party: Combatant[]) {
-  //   const cost = 10;
-  //   if (this.sharedGold < cost) {
-  //     console.warn(`You need at least ${cost}g to rest at the inn. (You have ${this.sharedGold}g)`);
-  //     return;
-  //   }
-  //   this.state.sharedGold -= cost;
-  //   // party.forEach(pc => {
-  //   for (const pc of party) {
-  //     pc.spellSlotsUsed = 0;
-  //     pc.activeEffects = []; // Clear status effects!
-  //     if (pc.hp <= 0) {
-  //       const tryStabilize = await this.driver.confirm(`Would you like to attempt to stabilize ${pc.name}?`);
-  //       if (tryStabilize) {
-  //         let systemShockDc = 10;
-  //         const conMod = Fighting.statMod(pc.con);
-  //         systemShockDc += conMod;
-  //         const systemShockRoll = this.roller(pc, `System Shock Save (DC ${systemShockDc})`, 20);
-  //         if (systemShockRoll.amount >= systemShockDc) {
-  //           pc.hp = 1;
-  //           console.warn(`${pc.name} has been stabilized and regains consciousness with 1 HP.`);
-  //         } else {
-  //           console.warn(`${pc.name} failed to stabilize and has died!`);
-  //           pc.dead = true;
-  //         }
-  //       // } else {
-  //       //   console.warn(`${pc.name} remains alive but still unconscious...`);
-  //       }
-  //     } else if (!pc.dead) {
-  //       // console.warn(`${pc.name} rests and recovers to full health.`);
-  //       const effective = Fighting.effectiveStats(pc);
-  //       pc.hp = effective.maxHp;
-  //     }
-  //   }
-  // }
 
   townFeatures: { [key: string]: () => TownFeature<string> } = {
     temple: () => new Temple(this.driver, this.state),
@@ -480,7 +473,8 @@ export class ModuleRunner {
 
   private async handleTownFeature(
     featureType: 'tavern' | 'temple' | 'market',
-    serviceName?: string
+    serviceName?: string,
+    itemRestrictions?: { kind?: string[]; rarity?: string[] }
   ) {
     const featureEntryEvents = this.townFeatures[featureType]().enter();
     for (const event of await featureEntryEvents) {
@@ -491,7 +485,7 @@ export class ModuleRunner {
     while (!done) {
       const feature = this.townFeatures[featureType]();
       await this.emit({ type: "goldStatus", amount: this.sharedGold, day: this.days });
-      const { events, done: newDone } = await feature.interact(serviceName);
+      const { events, done: newDone } = await feature.interact(serviceName, itemRestrictions);
       for (const event of events) { await this.emit(event); }
       done = newDone;
     }
@@ -536,7 +530,8 @@ export class ModuleRunner {
         race: "human",
         population: 5000,
         deity: { name: "The Serpent Queen", domain: "Trickery", blessing: {}, forename: "Zyra", gender: "female", title: "Goddess of Deception" },
-        tavern: { hirelings: [] },
+        tavern: { hirelings: [], name: "The Salty Mermaid"},
+        shops: [],
       },
       dungeons: [Dungeoneer.defaultGen()],
       plane: "Prime Material",

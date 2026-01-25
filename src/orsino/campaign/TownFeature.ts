@@ -5,6 +5,7 @@ import { Combatant, CombatantID } from "../types/Combatant";
 import { GameState } from "../types/GameState";
 
 type StepResult = { done: boolean; events: ModuleEvent[] };
+type ServiceOptions = { [key: string]: string[] };
 
 export default abstract class TownFeature<ServiceType extends string> {
   constructor(protected driver: Driver, protected readonly gameState: GameState) {
@@ -14,7 +15,7 @@ export default abstract class TownFeature<ServiceType extends string> {
   get day() { return this.gameState.day }
   get party() { return this.gameState.party }
 
-  abstract get services(): Record<ServiceType, () => Promise<ModuleEvent[]>>;
+  abstract get services(): Record<ServiceType, (options?: ServiceOptions) => Promise<ModuleEvent[]>>;
   abstract serviceName(type: ServiceType): string;
 
   serviceApplicable(_serviceType: ServiceType): boolean {
@@ -27,11 +28,15 @@ export default abstract class TownFeature<ServiceType extends string> {
     return Promise.resolve([]);
   }
 
-  async interact(serviceName?: ServiceType): Promise<StepResult> {
+  async interact(
+    serviceName?: ServiceType,
+    serviceOptions?: ServiceOptions
+  ): Promise<StepResult> {
     this.leaving = false;
     if (serviceName) {
+      // console.warn(`TownFeature.interact(): serviceName=${serviceName}`);
       const serviceAction = this.services[serviceName].bind(this);
-      const events: ModuleEvent[] = await serviceAction();
+      const events: ModuleEvent[] = await serviceAction(serviceOptions);
       return { done: this.leaving, events };
     }
     const serviceChoices = Object.keys(this.services).map(s => ({
@@ -47,7 +52,9 @@ export default abstract class TownFeature<ServiceType extends string> {
       return { done: true, events: [] };
     }
     const serviceAction = this.services[serviceType as ServiceType].bind(this);
-    const events: ModuleEvent[] = await serviceAction();
+    const events: ModuleEvent[] = await serviceAction(
+      serviceOptions
+    );
     return { done: this.leaving, events };
   }
 

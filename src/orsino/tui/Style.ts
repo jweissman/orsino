@@ -1,3 +1,4 @@
+type Color = 'black' | 'red' | 'green' | 'yellow' | 'blue' | 'magenta' | 'cyan' | 'white';
 export default class Stylist {
   static cleanLength(text: string) {
     // removes ANSI codes and returns the length of the clean string
@@ -18,8 +19,8 @@ export default class Stylist {
   static italic = (text: string) => Stylist.format(text, 'italic');
   static underline = (text: string) => Stylist.format(text, 'underline');
 
-  static colorize = (text: string, color: string) => {
-    const colors: Record<string, string> = {
+  static colorize = (text: string, color: Color) => {
+    const colors: Record<Color, string> = {
       black: '30',
       red: '31',
       green: '32',

@@ -1100,7 +1100,7 @@
         "name": "Goodberry",
         "description": "A small, red berry that provides nourishment and minor healing when consumed.",
         "type": "consumable",
-        "kind": "potion",
+        "kind": "food",
         "rarity": "common",
         "aspect": "healing",
         "value": 10,
@@ -1115,6 +1115,30 @@
           }
         ]
       },
+      "kingsfoil": {
+        "name": "Kingsfoil",
+        "description": "A three-leaf herb known also as Aelvenroot, prized for its potent healing properties when brewed into a tea or poultice.",
+        "type": "consumable",
+        "kind": "herb",
+        "rarity": "rare",
+        "aspect": "healing",
+        "value": 75,
+        "target": [
+          "self",
+          "ally"
+        ],
+        "effects": [
+          {
+            "type": "heal",
+            "amount": "2d4+2"
+          },
+          {
+            "type": "removeStatus",
+            "statusName": "Poison"
+          }
+        ]
+      },
+
       "first_aid_kit": {
         "name": "First Aid Kit",
         "description": "A small kit containing bandages and salves for treating minor wounds.",
@@ -1588,6 +1612,74 @@
   "masterEquipment": {
     "discriminator": "kind",
     "groups": {
+      "ironglass_dagger": {
+        "name": "Ironglass Dagger",
+        "description": "A dagger forged from rare ironglass, known for its sharpness and durability.",
+        "type": "equipment",
+        "kind": "dagger",
+        "rarity": "common",
+        "value": 150,
+        "damage": "1d4",
+        "effect": {
+          "bonusDamage": "1d2"
+        },
+        "itemClass": "equipment"
+      },
+      "silvered_bracers": {
+        "name": "Silvered Bracers",
+        "description": "A pair of bracers made of silver, offering minor protection against attacks.",
+        "type": "equipment",
+        "kind": "bracers",
+        "rarity": "common",
+        "value": 80,
+        "effect": {
+          "ac": -1
+        },
+        "itemClass": "equipment"
+      },
+      "cloak_of_protection": {
+        "name": "Cloak of Protection",
+        "description": "A magical cloak that provides a small boost to the wearer's defenses.",
+        "type": "equipment",
+        "kind": "cloak",
+        "rarity": "common",
+        "value": 100,
+        "effect": {
+          "ac": -1,
+          "saveVersusAll": 1
+        },
+        "itemClass": "equipment"
+      },
+
+      "singing_stone": {
+        "name": "Singing Stone",
+        "description": "A mystical stone that emits a soothing melody when held.",
+        "type": "equipment",
+        "kind": "amulet",
+        "rarity": "uncommon",
+        "value": 200,
+        "effect": {
+          "bonusSpellDC": 1,
+          "bonusSpellDamage": 1
+        },
+        "itemClass": "equipment"
+      },
+
+      "dun_rierdan_waystone": {
+        "name": "Dun Rìerdan Waystone",
+        "description": "An ancient waystone that enhances the traveler's endurance and resilience. When in proximity it may point the way to Dun Rì, the city of seven towers.",
+        "type": "equipment",
+        "kind": "amulet",
+        "rarity": "rare",
+        "value": 500,
+        "effect": {
+          "con": 2,
+          "resistAll": 0.05,
+          "revealLocation": "dun_ri"
+        },
+        "itemClass": "equipment"
+      },
+
       "ring_of_minor_protection": {
         "name": "Ring of Minor Protection",
         "kind": "ring",
@@ -1596,7 +1688,8 @@
         },
         "value": 50,
         "description": "A simple enchanted ring providing slight protection",
-        "itemClass": "equipment"
+        "itemClass": "equipment",
+        "rarity": "uncommon"
       },
       "ring_of_protection": {
         "name": "Ring of Protection",
@@ -2285,6 +2378,32 @@
             }
           ]
         }
+      },
+      "phoenix_talon": {
+        "name": "Phoenix Talon",
+        "description": "A rare and powerful talon from a phoenix, imbued with fiery magic.",
+        "type": "equipment",
+        "kind": "weapon",
+        "rarity": "legendary",
+        "itemClass": "weapon",
+        "value": 15000,
+        "damage": "2d8",
+        "aspect": "animal",
+        "effect": {
+          "onAttackHit": [
+            {
+              "type": "damage",
+              "amount": "=3d6",
+              "kind": "fire",
+              "target": "target"
+            },
+            {
+              "type": "heal",
+              "amount": "=1d8",
+              "target": "self"
+            }
+          ]
+        }
       }
     }
   },
@@ -2358,7 +2477,12 @@
       "wooden_figurine": { "description": "A small wooden figurine, roughly carved and unfinished.", "type": "junk", "value": 2 },
       "wooden_idol": { "description": "A small idol carved from wood, depicting a nature deity.", "type": "junk", "value": 15 },
       "zoological_manual": { "description": "A detailed manual describing various fantastical creatures.", "type": "junk", "value": 40 },
-      "zodiac_medallion": { "description": "A medallion inscribed with zodiac symbols, made of silver.", "type": "junk", "value": 20 }
+      "zodiac_medallion": { "description": "A medallion inscribed with zodiac symbols, made of silver.", "type": "junk", "value": 20 },
+
+      "diviners_eye": { "description": "A mystical eye that grants visions of distant places and hidden truths.", "type": "junk", "value": 5000 },
+      "eternal_flame": { "description": "A small, ever-burning flame contained within a glass orb.", "type": "junk", "value": 4000 },
+      "philosophers_stone": { "description": "A legendary stone said to have the power to transmute base metals into gold.", "type": "junk", "value": 10000 }
+
     }
   },
 
@@ -2425,6 +2549,7 @@
       ]
     }
   },
+
   "treasureValue": {
     "discriminator": "tier",
     "groups": {
@@ -2457,6 +2582,35 @@
       "legendary": [
         "diamond", "black_opal", "star_ruby", "blue_diamond", "fire_opal"
       ]
+    }
+  },
+
+  "shopTypes": {
+    "discriminator": "kind",
+    "groups": {
+      "alchemy": { "type": "Alchemy Shop", "description": "A shop that specializes in potions, elixirs, and alchemical ingredients.", "itemTypes": ["consumable"], "itemRestrictions": { "kind": ["potion", "elixir", "ingredient"] } },
+      "apothecary": { "type": "Apothecary", "description": "A shop that sells medicinal herbs, remedies, and healing supplies.", "itemTypes": ["consumable"], "itemRestrictions": { "kind": ["herb", "elixir"] } },
+      "armory": { "type": "Armor Shop", "description": "A shop that offers a variety of armor and protective gear.", "itemTypes": ["armor"] },
+      "blacksmith": { "type": "Blacksmith", "description": "A shop that forges and enhances weapons and armor.", "itemTypes": [] },
+      "curiosities": { "type": "Curiosity Shop", "description": "A shop that sells rare and unusual items, including artifacts and oddities.", "itemTypes": ["equipment"], "itemRestrictions": { "rarity": ["rare", "very_rare", "legendary"] } },
+      "dispensary": { "type": "Dispensary", "description": "A shop that provides various consumables, including potions and scrolls.", "itemTypes": ["consumable"], "itemRestrictions": { "kind": ["potion", "scroll"] } },
+      "emporium": { "type": "General Emporium", "description": "A large store that offers a wide range of items.", "itemTypes": ["consumable", "gear"], "itemRestrictions": { "rarity": ["common", "uncommon"] } },
+      "fabrics": { "type": "Fabric Shop", "description": "A shop that sells various fabrics, clothing, and tailoring supplies.", "itemTypes": ["armor"], "itemRestrictions": { "type": ["cloth", "hide", "leather"] } },
+      "general": { "type": "General Store", "description": "A shop that sells a variety of everyday items and basic adventuring gear.", "itemTypes": ["gear"] },
+      "herbs": { "type": "Herbalist", "description": "A shop that specializes in herbs, plants, and natural remedies.", "itemTypes": ["consumable"], "itemRestrictions": { "kind": ["herb"] } },
+      "jewelry": { "type": "Jewelry Shop", "description": "A shop that offers a variety of rings, amulets, and other jewelry items.", "itemTypes": ["equipment"], "itemRestrictions": { "kind": ["ring", "amulet", "necklace", "bracelet"] } },
+      "kitchen": { "type": "Foodstuffs", "description": "A shop that sells cooking utensils, food supplies, and kitchenware.", "itemTypes": ["consumable", "gear"], "itemRestrictions": { "kind": ["food", "utensil"], "type": ["consumable"] } },
+      "magic_items": { "type": "Magic Shop", "description": "A shop that deals in magical items, potions, and scrolls.", "itemTypes": ["equipment", "consumable"], "itemRestrictions": { "rarity": ["common", "uncommon"] } },
+      "potions": { "type": "Potion Shop", "description": "A shop that specializes in potions and elixirs for various effects.", "itemTypes": ["consumable"], "itemRestrictions": { "kind": ["potion", "elixir"] } },
+      "provisions": { "type": "Provisioner", "description": "A shop that supplies food, water, and other essential provisions for adventurers.", "itemTypes": ["consumable"], "itemRestrictions": { "kind": ["food", "water", "light"] } },
+      "rarities": { "type": "Rarity Shop", "description": "A shop that sells rare and exotic items, including unique treasures and artifacts.", "itemTypes": ["equipment"], "itemRestrictions": { "rarity": ["rare", "legendary"] } },
+      "scrolls": { "type": "Scroll Shop", "description": "A shop that specializes in magical scrolls for spellcasters.", "itemTypes": ["consumable"], "itemRestrictions": { "kind": ["scroll"] } },
+      "tailor": { "type": "Tailor Shop", "description": "A shop that creates and sells custom clothing and armor.", "itemTypes": ["armor"], "itemRestrictions": { "kind": ["cloth", "leather", "hide"] } },
+      "tools": { "type": "Tool Shop", "description": "A shop that provides various tools and equipment for adventurers and craftsmen.", "itemTypes": ["gear"], "itemRestrictions": { "type": ["tool"] } },
+      "variety": { "type": "Variety Store", "description": "A shop that offers a diverse selection of items across multiple categories.", "itemTypes": ["consumable", "gear", "equipment", "armor", "weapon"], "itemRestrictions": { "rarity": ["common"]} },
+      "weapons": { "type": "Weapon Shop", "description": "A shop specializing in weapons for adventurers and warriors.", "itemTypes": ["weapon"] },
+      "wonders": { "type": "Wonder Shop", "description": "A shop that sells wondrous items and magical curiosities.", "itemTypes": ["equipment"], "itemRestrictions": { "rarity": ["legendary"] } },
+      "zoology": { "type": "Zoology Shop", "description": "A shop that sells items related to animals and magical creatures.", "itemTypes": ["consumable", "equipment", "gear"], "itemRestrictions": { "aspect": ["animal"] }}
     }
   }
 }

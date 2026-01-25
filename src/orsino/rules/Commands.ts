@@ -1,5 +1,5 @@
 import AbilityHandler, { AbilityEffect } from "../Ability";
-import { DamageKind } from "../types/DamageKind";
+import { DAMAGE_KINDS, DamageKind, isMagicDamageKind } from "../types/DamageKind";
 import { RollResult } from "../types/RollResult";
 import { GameEvent, FallenEvent, HealEvent, HitEvent, MissEvent, StatusEffectEvent, StatusExpireEvent, SummonEvent, SaveEvent, DamageBonus, DamageReduction, DamageAbsorb, UnsummonEvent } from "../Events";
 import Stylist from "../tui/Style";
@@ -9,7 +9,6 @@ import { Roll } from "../types/Roll";
 import { Fighting } from "./Fighting";
 import Combat from "../Combat";
 import { CombatContext } from "../types/CombatContext";
-import Presenter from "../tui/Presenter";
 import Deem from "../../deem";
 import StatusHandler, { StatusModifications } from "../Status";
 import { SAVE_KINDS, SaveKind } from "../types/SaveKind";
@@ -191,13 +190,35 @@ export class Commands {
       return [];
     }
 
-    if (attackerEffects.bonusDamage && attacker !== defender) {
-      const sources = attackerFxWithNames.bonusDamage?.sources || [];
-      const bonusDamage = Deem.evaluate(attackerEffects.bonusDamage.toString()) as number || 0;
-      damage = Math.max(0, damage + bonusDamage);
-      if (bonusDamage !== 0) {
-        events.push({ type: "damageBonus", subject: attacker, target: defender, amount: bonusDamage, damageKind, reason: Words.humanizeList(sources) } as Omit<DamageBonus, "turn">);
+    if (attacker !== defender) {
+      if (attackerEffects.bonusDamage) {
+        const sources = attackerFxWithNames.bonusDamage?.sources || [];
+        const bonusDamage = Deem.evaluate(attackerEffects.bonusDamage.toString()) as number || 0;
+        damage = Math.max(0, damage + bonusDamage);
+        if (bonusDamage !== 0) {
+          events.push({ type: "damageBonus", subject: attacker, target: defender, amount: bonusDamage, damageKind, reason: Words.humanizeList(sources) } as Omit<DamageBonus, "turn">);
+        }
       }
+      if (isMagicDamageKind(damageKind) && attackerEffects.bonusSpellDamage) {
+        const sources = attackerFxWithNames.bonusSpellDamage?.sources || [];
+        const bonusDamage = Deem.evaluate(attackerEffects.bonusSpellDamage.toString()) as number || 0;
+        damage = Math.max(0, damage + bonusDamage);
+        if (bonusDamage !== 0) {
+          events.push({ type: "damageBonus", subject: attacker, target: defender, amount: bonusDamage, damageKind, reason: Words.humanizeList(sources) } as Omit<DamageBonus, "turn">);
+        }
+      }
+      for (const kind of DAMAGE_KINDS) {
+        const bonusKindDamageKey = `bonus${kind.charAt(0).toUpperCase() + kind.slice(1)}Damage` as keyof StatusModifications;
+        if (damageKind === kind && attackerEffects[bonusKindDamageKey]) {
+          const sources = attackerFxWithNames[bonusKindDamageKey]?.sources || [];
+          const bonusDamage = Deem.evaluate((attackerEffects[bonusKindDamageKey] as string|number).toString()) as number || 0;
+          damage = Math.max(0, damage + bonusDamage);
+          if (bonusDamage !== 0) {
+            events.push({ type: "damageBonus", subject: attacker, target: defender, amount: bonusDamage, damageKind, reason: Words.humanizeList(sources) } as Omit<DamageBonus, "turn">);
+          }
+        }
+      }
+      
     }
 
     const multiplierKey = `${by}Multiplier` as keyof StatusModifications;

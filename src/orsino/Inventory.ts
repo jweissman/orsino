@@ -195,6 +195,21 @@ export class Inventory {
       };
     }
 
+    const hasGearEntry = Deem.evaluate(`hasEntry(masterGear, "${itemKey}")`) as boolean;
+    if (hasGearEntry) {
+      const gear = Deem.evaluate(`lookup(masterGear, "${itemKey}")`) as unknown as ItemInstance;
+      if (!gear) {
+        throw new Error(`Could not find gear ${itemKey} in masterGear table`);
+      }
+      
+      return {
+        id: this.genId('gear'),
+        ...gear,
+        key: itemKey,
+        itemClass: 'gear'
+      };
+    }
+
     throw new Error(`Could not materialize item ${itemKey}`);
   }
 

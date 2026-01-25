@@ -78,10 +78,22 @@
     "name": "=humanize(#_name)",
     "description": "=\"The #_about tavern of #name\""
   },
+  "shop": {
+    "kind": "=pick(gather(shopTypes))",
+    "race": "=pick(gather(racialModifier, -1, '!dig(#__it, evil)'))",
+    "ownerForename": "=alliterate(gatherEntries(npcName, #race), #kind)",
+    "^typeOverlay": "=lookup(shopTypes, #kind)",
+    "name": "=#ownerForename + \"'s \" + humanize(#kind)"
+  },
   "town": {
     "^hamlet": "=gen(hamlet)",
     "deity": "=gen(deity)",
     "tavern": "=gen(tavern)",
+    "_coreShopTypes": [ "general", "blacksmith", "potions", "magic_items" ],
+    "_extraShopCount": "=1d3+1",
+    "_extraShopTypes": "=gather(shopTypes, #_extraShopCount)",
+    "_shopTypes": "=uniq(concat(#_coreShopTypes, #_extraShopTypes))",
+    "shops": "=mapGenList(shop, #_shopTypes, 'kind')",
     "capital": "=#size == 'capital'"
   },
   "equipment": {

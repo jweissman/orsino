@@ -27,6 +27,7 @@ export interface StatusModifications {
   bonusMeleeDamage?: number;
   bonusPoisonDamage?: number;
   // bonusPsychicDamage?: number;
+  bonusSpellDamage?: number;
 
   bonusHealing?: number;
 
@@ -212,6 +213,9 @@ export interface StatusModifications {
 
   // show next move plan (should be obscured first)
   readThoughts?: boolean;
+
+  // allow travel to a location from the world map
+  revealLocation?: string;
 }
 
 export interface StatusEffect {

@@ -1007,7 +1007,7 @@
     ]
   },
   "death_ward": {
-    "name": "Deathward",
+    "name": "Death Ward",
     "type": "spell",
     "level": 2,
     "aspect": "divine",
