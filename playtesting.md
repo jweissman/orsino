@@ -195,6 +195,13 @@
 ---
 - [~] Don't offer to equip weapons/items/armor the user wouldn't be proficient in [need to verify this!]
 - [ ] Palace where you can get a quest from a king (maybe also a bounty board in the tavern for rare creatures? --maybe depends on wilderness exploration)
+---
+- [ ] More herbal remedies/find plants in dungeon (e.g. mortuary garden)
+- [~] Noble houses/lines
+- [ ] NPC quests from shopkeepers
+---
+- [ ] Searching without examining objects first should have a chance to trigger traps??
+- [ ] Simple remember/getOrCreate helpers in stdlib?
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing

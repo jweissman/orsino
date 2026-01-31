@@ -1,6 +1,6 @@
 import Dungeoneer, { Dungeon } from "./Dungeoneer";
 import Events, { ModuleEvent } from "./Events";
-import Shop, { SHOP_KINDS, ShopDefinition, ShopKind } from "./campaign/Shop";
+import Shop, { ShopKind } from "./campaign/Shop";
 import Stylist from "./tui/Style";
 import Tavern from "./campaign/Tavern";
 import Temple from "./campaign/Temple";
@@ -21,7 +21,7 @@ import Deem from "../deem";
 import CombatantPresenter from "./presenter/CombatantPresenter";
 
 type TownSize = 'hamlet' | 'village' | 'town' | 'city' | 'metropolis' | 'capital';
-type Race = 'human' | 'elf' | 'dwarf' | 'halfling' | 'gnome' | 'orc' | 'fae';
+type Race = string; // 'human' | 'elf' | 'dwarf' | 'halfling' | 'gnome' | 'orc' | 'fae';
 
 export interface Deity {
   name: string;
@@ -90,7 +90,7 @@ type RunnerOptions = {
 
 export class ModuleRunner {
   static configuration = {
-    sharedGold: 10000
+    sharedGold: 100
   }
 
   private roller: Roll;
@@ -373,15 +373,19 @@ export class ModuleRunner {
           await this.handleTownFeature('market', serviceName as ShopKind, shopDef.itemRestrictions);
         }
       } else if (action === "mirror") {
-        const pc = await this.select("Whose character record would you like to view?", this.pcs.map(pc => ({
-          short: pc.name, value: pc, name: CombatantPresenter.combatant(pc), disabled: !!pc.dead
-        })));
-        await this.emit({
-          type: "characterOverview",
-          pc,
-          day: this.days,
-          inventory: this.state.inventory.filter(item => item.ownerId === pc.id),
-        });
+        if (!this.pcs.every(pc => pc.dead)) {
+          const pc = await this.select("Whose character record would you like to view?", this.pcs.map(pc => ({
+            short: pc.name, value: pc, name: CombatantPresenter.combatant(pc), disabled: !!pc.dead
+          })));
+          await this.emit({
+            type: "characterOverview",
+            pc,
+            day: this.days,
+            inventory: this.state.inventory.filter(item => item.ownerId === pc.id),
+          });
+        } else {
+          this.note("All party members are dead. Cannot view character records.");
+        }
       } else {
         throw new Error(`Unknown action selected: ${action}`);
       }

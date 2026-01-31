@@ -145,6 +145,7 @@ const concepts = [
 
   // created things...
   'jewel', 'ship', 'needle', 'bell', 'candle',
+  'fountain',
 
   // clothes
   'mantle', 'veil', // 'garment'
@@ -182,24 +183,28 @@ const concepts = [
 
 ] as const;
 
-type ConceptKind = "color" | "animal" | "element" | "nature" | "place" | "object" | "abstract" | "modifier" | "adjective" | "timeOfDay" | "bodyPart" | "animalPart";
+type ConceptKind = "color" | "animal" | "element" | "nature" | "place" | "object" | "abstract" | "modifier" | "adjective" | "timeOfDay" | "bodyPart" | "animalPart" | "tree";
 
-export type ConceptTemplate = 'personalName';
+export type ConceptTemplate = 'personalName' | 'nobleHouse';
 
 export class Conceptory {
   static conceptKinds: { [key in ConceptKind]: Concept[] } = {
-    color: ['white', 'black', 'gray', 'red', 'blue', 'green', 'orange'],
+    color: [
+      'white', 'black', 'gray', 'red', 'blue', 'green', 'orange',
+      // "_color": "=oneOf(crimson, sable, golden, argent, azure, emerald, violet, ivory, onyx, amber, cerulean)",
+    ],
     animal: ['dragons', 'elephants', 'bears', 'birds', 'horses', 'snakes', 'wolves', 'hounds', 'swans', 'eagles', 'nightingales'],
     element: ['ice', 'fire', 'earth', 'water', 'embers', 'steam', 'magma', 'radiance', 'soot', 'ash', 'salt', 'void', 'smoke'],
     nature: ['forest', 'grove', 'glade', 'cave', 'marsh', 'swamp', 'fen', 'gyre', 'desert', 'river', 'glen', 'stream', 'mere', 'mountain', 'hill', 'valley', 'peak', 'mound', 'point', 'mountain-chain', 'crest', 'fall', 'ridge', 'pass', 'island', 'isle', 'sea', 'lake', 'bay', 'pool', 'harbor', 'shore', 'port', 'beach', 'wave', 'tree', 'bark', 'leaf', 'root', 'bush', 'thorn', 'flower', 'moss', 'vine', 'grass'],
     place: ['town', 'borough', 'village', 'stead', 'hold', 'view', 'keep', 'watch', 'rest', 'run', 'land', 'place', 'realm', 'region', 'road', 'path', 'haven', 'fortress', 'prison', 'citadel', 'stronghold', 'tower', 'garden'],
-    object: ['jewel', 'ship', 'needle', 'bell', 'candle', 'mantle', 'veil'],
+    object: ['jewel', 'ship', 'needle', 'bell', 'candle', 'mantle', 'veil', 'fountain'],
     abstract: ['love', 'dream', 'song', 'music', 'silence', 'divine', 'fate', 'thought', 'speech', 'skill', 'tomorrow', 'spirit', 'tyranny', 'freedom', 'magic'],
     modifier: ['ever-', '-less', 'at-', '-person', '-man', '-son', '-woman', '-maid', '-daughter'],
     adjective: ['tall', 'deep', 'lofty', 'lonely', 'high', 'great', 'large', 'small', 'tiny', 'narrow', 'wide', 'sharp', 'giant', 'quick', 'pale', 'bitter', 'golden', 'holy', 'fortunate', 'dusty', 'beautiful', 'fell', 'cloudy', 'secret', 'sweet', 'bold', 'splendid', 'abundant', 'sparkling'],
     timeOfDay: ['morning', 'evening', 'dusk', 'noon', 'afternoon', 'midnight'],
     bodyPart: ['hand', 'foot', 'head', 'eye', 'ear', 'heart'],
     animalPart: ['horns', 'fangs', 'claws', 'wings'],
+    tree: ['willow', 'pine', 'cherry', 'oak', 'spruce', 'birch', 'elm', 'holly', 'fern', 'palm', 'acorn'],
   }
 
   static getConceptsByKind(kind: ConceptKind): Concept[] {
@@ -224,8 +229,16 @@ export class Conceptory {
     'adjectiveElement': ['adjective', 'element'],
   }
 
-  static generatePersonalName(templateKey: string): Concept[] {
-    const template = this.personalNameTemplates[templateKey];
+  static nobleHouseTemplates: { [key: string]: ConceptKind[] }= {
+    'simpleObject': ['color', 'object'],
+    // 'natural': ['color', 'nature'],
+    'animal': ['color', 'animal'],
+    'elemental': ['color', 'element'],
+    'tree': ['color', 'tree'],
+  }
+
+  static generateFromTemplate(templateKey: string, templateSet: { [key: string]: ConceptKind[] }): Concept[] {
+    const template = templateSet[templateKey];
     if (!template) {
       throw new Error(`Template "${templateKey}" not found.`);
     }
@@ -233,14 +246,22 @@ export class Conceptory {
   }
 
   static generate(conceptTemplate: ConceptTemplate): Concept[] {
+    let templateSet: { [key: string]: ConceptKind[] } = {};
     if (conceptTemplate === 'personalName') {
       // pick a random personal name template
-      const templateKeys = Object.keys(this.personalNameTemplates);
-      const randomKey = templateKeys[Math.floor(Math.random() * templateKeys.length)];
-      return this.generatePersonalName(randomKey);
+      // templateKeys = Object.keys(this.personalNameTemplates);
+      // return this.generatePersonalName(randomKey);
+      templateSet = this.personalNameTemplates;
+    } else if (conceptTemplate === 'nobleHouse') {
+      // templateKeys = Object.keys(this.nobleHouseTemplates);
+      templateSet = this.nobleHouseTemplates;
     } else {
       return never(conceptTemplate);
     }
+    const templateKeys = Object.keys(templateSet);
+    const randomKey = templateKeys[Math.floor(Math.random() * templateKeys.length)];
+    
+    return this.generateFromTemplate(randomKey, templateSet);
   }
 }
 

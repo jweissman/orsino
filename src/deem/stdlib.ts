@@ -241,7 +241,21 @@ export default class StandardLibrary {
         // no matching alliteration, pick any
         return options[Math.floor(Math.random() * options.length)];
       }
-    }
+    },
+
+    first: (arr: DeemValue[]) => {
+      if (!Array.isArray(arr)) {
+        throw new Error(`first() expects an array, got: ${typeof arr}`);
+      }
+      return arr.length > 0 ? arr[0] : null;
+    },
+
+    last: (arr: DeemValue[]) => {
+      if (!Array.isArray(arr)) {
+        throw new Error(`last() expects an array, got: ${typeof arr}`);
+      }
+      return arr.length > 0 ? arr[arr.length - 1] : null;
+    },
 
   };
 }

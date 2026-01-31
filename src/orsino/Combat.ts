@@ -262,11 +262,11 @@ export default class Combat {
             const newSpellKeys = allSpellKeys.filter(spellKey => {
               const spell = abilityHandler.getAbility(spellKey);
               if (spellbook === 'arcane') {
-                if (!trait.school || trait.school === "all") {return true;}
+                if (!trait.school || trait.school === "all") { return true; }
                 return spell.school === trait.school;
               }
               if (spellbook === 'divine') {
-                if (!trait.domain || trait.domain === "all") {return true;}
+                if (!trait.domain || trait.domain === "all") { return true; }
                 return spell.domain === trait.domain;
               }
               return true;
@@ -984,22 +984,29 @@ export default class Combat {
     this.combatantsByInitiative = this.determineInitiative();
     this.turnNumber++;
     // check for escape conditions (if 'flee' status is active, remove the combatant from combat)
-    for (const combatant of this.enemyCombatants) {
+    // for (const combatant of this.enemyCombatants) {
+    for (const combatant of [...this.enemyCombatants]) {
       if (combatant.activeEffects?.some(e => e.effect?.flee)) {
+        const summonedIds = (combatant.activeSummonings ?? []).map(s => s.id);
+
         // remove from combatants / teams
         this.enemyTeam.combatants = this.enemyTeam.combatants.filter(c => c.id !== combatant.id);
+
         for (const c of this.enemyTeam.combatants) {
           if (c.activeSummonings?.some(s => s.id === combatant.id)) {
             c.activeSummonings = c.activeSummonings.filter(s => s.id !== combatant.id);
           }
         }
 
-        this.combatantsByInitiative = this.combatantsByInitiative.filter(c => c.combatantId !== combatant.id);
+        this.combatantsByInitiative = this.combatantsByInitiative.filter(c => c.combatantId !== combatant.id && !summonedIds.includes(c.combatantId));
         await this.emit({ type: "flee", subject: combatant } as Omit<FleeEvent, "turn">);
 
         creatureFlees(combatant);
       }
     }
+
+    const allIds = new Set(this.allCombatants.map(c => c.id));
+    this.combatantsByInitiative = this.combatantsByInitiative.filter(c => allIds.has(c.combatantId));
 
     const lookup = (id: CombatantID) => {
       const found = this.allCombatants.find(c => c.id === id);
@@ -1015,7 +1022,7 @@ export default class Combat {
     );
     await this.emit({
       type: "roundStart",
-      combatants, 
+      combatants,
       parties: [
         { name: "Player", combatants: (this.playerCombatants) },
         { name: this.enemyTeam.name, combatants: (this.enemyCombatants) }

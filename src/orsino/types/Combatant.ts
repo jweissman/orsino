@@ -40,6 +40,8 @@ export type CombatantID = string;
 
 export interface Combatant {
   id: CombatantID;
+  // summonerId?: CombatantID;
+
   description?: string;
   personalName?: string;
   personalNameMeaning?: string;

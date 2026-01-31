@@ -111,9 +111,10 @@ export class Template {
     // Object.entries(this.props).forEach(([key, value]) => {
     for (const [key, value] of Object.entries(this.props)) {
       // console.log(`Assembling property: ${key} with value:`, value);
-      const context: Record<string, any> = {
+      const context: Record<string, DeemValue> = {
         ...localContext,
-        ...assembled
+        ...assembled,
+        '_self': assembled,
       };
       Template.bootstrapDeem(context);
       const resolved: DeemValue = localContext[key] !== undefined ? localContext[key] :
