@@ -16,6 +16,7 @@
       "afternoon": "ofernón",
       "any": "ǽneg",
       "apple": "æppel",
+      "arch": "earc",
       "ash": "asce",
       "at-": "æt-",
       "autumn": "hærfest",
@@ -286,7 +287,16 @@
       "wings": "feþer",
       "winter": "yver",
       "wolves": "wulf",
-      "wood": "wudu"
+      "wood": "wudu",
+
+      "spire": "brord",
+      "gate": "gæt",
+      "pillar": "sweor",
+
+      "harp": "earpa",
+
+      "moles": "wande",
+      "swallows": "swealwe"
     },
     "replacements": {
       "ǣ": "ae",
@@ -585,7 +595,16 @@
       "wings": "ráma",
       "winter": "rhîw",
       "wolves": "draug",
-      "wood": "taure"
+      "wood": "taure",
+
+      "arch": "cú",
+      "spire": "tirin",
+      "gate": "ando",
+      "pillar": "tarma",
+
+      "harp": "nandë",
+      "moles": "noldarë",
+      "swallows": "tuilindo"
     },
     "replacements": {
       "dc": "g",
@@ -896,7 +915,16 @@
       "wings": "knafi-yim",
       "winter": "choref-",
       "wolves": "zavim",
-      "wood": "etz"
+      "wood": "etz",
+
+      "arch": "kashuet",
+      "spire": "mivneh",
+      "gate": "sha-ar",
+      "pillar": "imud",
+
+      "harp": "nevel",
+      "moles": "choled",
+      "swallows": "snunit"
     },
     "replacements": {
     }

@@ -8,8 +8,6 @@ import AbilityHandler from "./orsino/Ability";
 import TraitHandler from "./orsino/Trait";
 import Combat from "./orsino/Combat";
 import { Team } from "./orsino/types/Team";
-import Presenter from "./orsino/tui/Presenter";
-import Automatic from "./orsino/tui/Automatic";
 import { never } from "./orsino/util/never";
 import { ItemInstance } from "./orsino/types/ItemInstance";
 import StatusHandler from "./orsino/Status";

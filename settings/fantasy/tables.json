@@ -169,6 +169,8 @@
       "cutpurse": { "dex": 5, "cha": 2, "gp": 30, "requiredClass": "thief" },
       "pickpocket": { "dex": 4, "cha": 2, "gp": 25, "requiredClass": "thief" },
 
+      "archon": { "int": 3, "wis": 3, "cha": 2, "gp": 100 },
+      "abbot": { "wis": 4, "cha": 3, "gp": 80 },
       "acolyte": { "wis": 2, "int": 1, "gp": 5 },
       "advisor": { "int": 3, "wis": 3, "cha": 2, "gp": 100 },
       "alchemist": { "int": 2, "dex": 1, "gp": 30 },
@@ -179,7 +181,6 @@
       "archaeologist": { "int": 3, "wis": 2, "gp": 30 },
       "architect": { "int": 4, "wis": 3, "gp": 60  },
       "archivist": { "int": 4, "wis": 5, "gp": 30 },
-      "aristocrat": { "cha": 2, "int": 1, "str": -1, "gp": 400 },
       "artificer": { "int": 4, "dex": 3, "wis": 2, "gp": 60 },
       "artisan": { "int": 1, "wis": 1, "cha": 1, "gp": 20 },
       "artist": { "cha": 3, "int": 2, "gp": 40  },
@@ -257,7 +258,6 @@
       "miner": { "con": 2, "str": 1, "gp": 15 },
       "mutant": { "str": 2, "con": 2, "gp": 0 },
       "navigator": { "int": 2, "wis": 1, "gp": 20 },
-      "noble": { "str": 1, "int": 1, "cha": 2, "con": -1, "gp": 50 },
       "nomad": { "dex": 2, "wis": 1, "gp": 10 },
       "nurse": { "wis": 3, "cha": 1, "gp": 15 },
       "orchardist": { "wis": 2, "con": 1, "gp": 15 },
@@ -322,9 +322,14 @@
       "woodworker": { "dex": 3, "int": 1, "gp": 25  },
       "wretch": { "con": 2, "wis": 1, "gp": 0 },
       "yeoman": { "wis": 2, "dex": 1, "gp": 20 },
-      "zoologist": { "int": 3, "wis": 2, "gp": 20 }
+      "zoologist": { "int": 3, "wis": 2, "gp": 20 },
+
+      "noble": { "str": 1, "int": 1, "cha": 2, "con": -1, "gp": 50 },
+      "aristocrat": { "cha": 2, "int": 1, "str": -1, "gp": 400 },
+      "royalty": { "cha": 3, "int": 2, "wis": 1, "str": -2, "gp": 1000  }
     }
   },
+
   "racialModifier": {
     "discriminator": "race",
     "groups": {
@@ -415,7 +420,21 @@
       "birdfolk": [[ "agile", "curious" ]]
     }
   },
-  
+
+  "nobilityOverlay": {
+    "discriminator": "type",
+    "groups": {
+      "noble": {
+        "_title": "=#houseHead ? (#gender == 'male' ? oneOf(duke, marquis, earl, viscount, baron) : oneOf(duchess, marchioness, countess, viscountess, baroness)) : (#gender == 'male' ? oneOf(knight, lord, sir) : oneOf(lady, dame))"
+      },
+      "aristocrat": {
+        "_title": "=#houseHead ? (#gender == 'male' ? lord : lady) : (#gender == 'male' ? oneOf(esquire, gentleman, knight, sir) : oneOf(mistress, gentlewoman, dame))"
+      },
+      "royalty": {
+        "_title": "=#houseHead ? (#gender == male ? king : queen) : (#gender == male ? oneOf(prince, duke) : oneOf(princess, duchess))"
+      }
+    }
+  },
   
   "weapon": {
     "discriminator": "class",
@@ -1295,6 +1314,7 @@
       ]
     }
   },
+
   "dungeonOverlay": {
     "discriminator": "building_type",
     "groups": {
@@ -1303,7 +1323,10 @@
         "deity_name": "=dig(#patron_deity, forename)"
       },
       "tomb": {
-        "_npc_template_type_expr": "(#npc_type != Necromancer && 1d10 < 8) ? undead : nihil"
+        "_npc_template_type_expr": "(#npc_type != Necromancer && 1d10 < 8) ? undead : nihil",
+        "buried_figure": "=genIsolated(pc)",
+        "figure_name": "=dig(#buried_figure, name)",
+        "dungeon_name": "=\"#{capitalize(#dungeon_type)} of #figure_name\""
       },
       "fortress": {},
       "library": {},

@@ -257,6 +257,39 @@ export default class StandardLibrary {
       return arr.length > 0 ? arr[arr.length - 1] : null;
     },
 
+    roman: (num: DeemValue) => {
+      if (typeof num !== 'number') {
+        throw new Error(`roman() expects a number, got: ${typeof num}`);
+      }
+      if (num <= 0 || num >= 4000) {
+        throw new Error(`roman() expects a number between 1 and 3999, got: ${num}`);
+      }
+      const romanNumerals: { [key: number]: string } = {
+        1000: 'M',
+        900: 'CM',
+        500: 'D',
+        400: 'CD',
+        100: 'C',
+        90: 'XC',
+        50: 'L',
+        40: 'XL',
+        10: 'X',
+        9: 'IX',
+        5: 'V',
+        4: 'IV',
+        1: 'I'
+      };
+      let result = '';
+      let remaining = num;
+      for (const value of Object.keys(romanNumerals).map(k => parseInt(k)).sort((a, b) => b - a)) {
+        while (remaining >= value) {
+          result += romanNumerals[value];
+          remaining -= value;
+        }
+      }
+      return result;
+    }
+
     // find: (arr: DeemValue[], prop: DeemValue, value: DeemValue) => {
     //   if (!Array.isArray(arr)) {
     //     throw new Error(`find() expects an array, got: ${typeof arr}`);

@@ -17,9 +17,10 @@ const concepts = [
   'cave',
   'marsh', 'swamp', 'fen', 'gyre',
   'desert',
+  'jungle', 'volcano', 'plains',
   
   'edge',
-
+  'vale', 'field', 'mead',
   'river', 'glen', 'stream', 'mere', 'mouth', 'cross', 'bridge', 'dale', 'ford', 'brook',
   // barrow, downs, gulch ...
 
@@ -60,6 +61,7 @@ const concepts = [
   // ...animals,
   'dragons', 'elephants',
   'bears', 'birds', 'horses', 'snakes', 'wolves',
+  'moles',
   // mole...
 
   // tame animals..
@@ -67,7 +69,7 @@ const concepts = [
   'hounds',
 
   // birds in particular...
-  'swans', 'eagles', 'nightingales',
+  'swans', 'eagles', 'nightingales', 'swallows',
   // swallow
 
   // ...elements,
@@ -100,9 +102,11 @@ const concepts = [
 
   // natural substances..
   'wax',
+
   // 'nut',
 
   // instruments..?
+  'harp',
   // lute, harp, viol ...
 
   // adjectives...
@@ -145,10 +149,12 @@ const concepts = [
 
   // created things...
   'jewel', 'ship', 'needle', 'bell', 'candle',
-  'fountain',
 
   // clothes
   'mantle', 'veil', // 'garment'
+
+  // architectural features
+  'arch', 'spire', 'gate', 'pillar', 'fountain',
 
 
   // questing...
@@ -175,15 +181,12 @@ const concepts = [
 
   'any',
 
-  'jungle', 'volcano', 'plains',
-  'vale', 'field', 'mead',
-
   'spray',
 
 
 ] as const;
 
-type ConceptKind = "color" | "animal" | "element" | "nature" | "place" | "object" | "abstract" | "modifier" | "adjective" | "timeOfDay" | "bodyPart" | "animalPart" | "tree";
+type ConceptKind = "color" | "animal" | "element" | "nature" | "place" | "object" | "abstract" | "modifier" | "adjective" | "timeOfDay" | "bodyPart" | "animalPart" | "tree" | "season" | "mood" | "food" | "architecture" | "instrument";
 
 export type ConceptTemplate = 'personalName' | 'nobleHouse';
 
@@ -193,10 +196,10 @@ export class Conceptory {
       'white', 'black', 'gray', 'red', 'blue', 'green', 'orange',
       // "_color": "=oneOf(crimson, sable, golden, argent, azure, emerald, violet, ivory, onyx, amber, cerulean)",
     ],
-    animal: ['dragons', 'elephants', 'bears', 'birds', 'horses', 'snakes', 'wolves', 'hounds', 'swans', 'eagles', 'nightingales'],
+    animal: ['dragons', 'elephants', 'bears', 'birds', 'horses', 'snakes', 'wolves', 'hounds', 'swans', 'eagles', 'nightingales', 'swallows', 'moles'],
     element: ['ice', 'fire', 'earth', 'water', 'embers', 'steam', 'magma', 'radiance', 'soot', 'ash', 'salt', 'void', 'smoke'],
     nature: ['forest', 'grove', 'glade', 'cave', 'marsh', 'swamp', 'fen', 'gyre', 'desert', 'river', 'glen', 'stream', 'mere', 'mountain', 'hill', 'valley', 'peak', 'mound', 'point', 'mountain-chain', 'crest', 'fall', 'ridge', 'pass', 'island', 'isle', 'sea', 'lake', 'bay', 'pool', 'harbor', 'shore', 'port', 'beach', 'wave', 'tree', 'bark', 'leaf', 'root', 'bush', 'thorn', 'flower', 'moss', 'vine', 'grass'],
-    place: ['town', 'borough', 'village', 'stead', 'hold', 'view', 'keep', 'watch', 'rest', 'run', 'land', 'place', 'realm', 'region', 'road', 'path', 'haven', 'fortress', 'prison', 'citadel', 'stronghold', 'tower', 'garden'],
+    place: ['town', 'borough', 'village', 'stead', 'hold', 'view', 'keep', 'watch', 'rest', 'run', 'land', 'place', 'realm', 'region', 'road', 'path', 'haven', 'fortress', 'prison', 'citadel', 'stronghold', 'garden'],
     object: ['jewel', 'ship', 'needle', 'bell', 'candle', 'mantle', 'veil', 'fountain'],
     abstract: ['love', 'dream', 'song', 'music', 'silence', 'divine', 'fate', 'thought', 'speech', 'skill', 'tomorrow', 'spirit', 'tyranny', 'freedom', 'magic'],
     modifier: ['ever-', '-less', 'at-', '-person', '-man', '-son', '-woman', '-maid', '-daughter'],
@@ -205,6 +208,11 @@ export class Conceptory {
     bodyPart: ['hand', 'foot', 'head', 'eye', 'ear', 'heart'],
     animalPart: ['horns', 'fangs', 'claws', 'wings'],
     tree: ['willow', 'pine', 'cherry', 'oak', 'spruce', 'birch', 'elm', 'holly', 'fern', 'palm', 'acorn'],
+    season: ['autumn', 'winter', 'spring', 'summer'],
+    mood: ['dread', 'horror', 'awe', 'joy', 'sorrow', 'gloom'],
+    food: ['apple', 'honey', 'bread', 'elderberry', 'wine', 'fish'],
+    architecture: ['arch', 'spire', 'gate', 'pillar', 'fountain', 'tower'],
+    instrument: ['harp'],
   }
 
   static getConceptsByKind(kind: ConceptKind): Concept[] {
@@ -235,6 +243,8 @@ export class Conceptory {
     'animal': ['color', 'animal'],
     'elemental': ['color', 'element'],
     'tree': ['color', 'tree'],
+    'architecture': ['color', 'architecture'],
+    'instrument': ['color', 'instrument'],
   }
 
   static generateFromTemplate(templateKey: string, templateSet: { [key: string]: ConceptKind[] }): Concept[] {

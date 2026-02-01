@@ -72,6 +72,7 @@ program
   .option('--name <name>', 'Specify the name to use')
   .option('--race <race>', 'Specify the racial group to use')
   .option('--class <class>', 'Specify the class to use')
+  .option('--background <background>', 'Specify the background to use')
   .option('--cr <cr>', 'Specify the challenge rating to target')
   .option('--tabular', 'Print output in tabular format where applicable')
   .action(async (type, options) => {
@@ -94,6 +95,9 @@ program
 
     if (options.key !== null) {
       options._key = options.key;
+    }
+    if (options.background !== null) {
+      options._background = options.background;
     }
     
     // let t0 = Date.now();

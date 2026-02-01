@@ -95,16 +95,17 @@ export default class Tavern extends TownFeature<TavernService> {
     const howMuchToSpend = await this.driver.select<number>(
       "How much gold are you spending to gather information?",
       [
+        { name: "2 gold", short: "2g", value: 2, disabled: this.gold < 2 },
         { name: "5 gold", short: "5g", value: 5, disabled: this.gold < 5 },
         { name: "10 gold", short: "10g", value: 10, disabled: this.gold < 10 },
         { name: "25 gold", short: "25g", value: 25, disabled: this.gold < 25 },
-        { name: "50 gold", short: "50g", value: 50, disabled: this.gold < 50 },
-        { name: "100 gold", short: "100g", value: 100, disabled: this.gold < 100 },
+        // { name: "50 gold", short: "50g", value: 50, disabled: this.gold < 50 },
+        // { name: "100 gold", short: "100g", value: 100, disabled: this.gold < 100 },
         { name: "Cancel", short: "Cancel", value: 0, disabled: false },
       ]
     );
 
-    const dc = 18 - Math.floor(howMuchToSpend / 10);
+    const dc = 15 - Math.floor(howMuchToSpend / 5);
     // if (howMuchToSpend >= 10) { dc = 15; }
     // if (howMuchToSpend >= 25) { dc = 10; }
     // if (howMuchToSpend >= 50) { dc = 5; }

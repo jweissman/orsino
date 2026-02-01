@@ -75,6 +75,9 @@ export class Template {
     Deem.stdlib.gen = ((type: GenerationTemplateType) => {
       return Generator.gen(type, { ...context })
     }) as DeemFunc;
+    Deem.stdlib.genIsolated = ((type: GenerationTemplateType) => {
+      return Generator.gen(type, {})
+    }) as DeemFunc;
     Deem.stdlib.genList = ((type: GenerationTemplateType, count: number = 1) => {
       return Generator.genList(type, { ...context }, count);
     }) as DeemFunc;
@@ -150,18 +153,27 @@ export class Template {
         '_self': assembled,
       };
       Template.bootstrapDeem(context);
-      const resolved: DeemValue = localContext[key] !== undefined ? localContext[key] :
-        (Template.evaluatePropertyExpression(value, context) as unknown as DeemValue);
+      let shouldResolve = localContext[key] === undefined;
+      let effectiveKey = key;
+      if (effectiveKey.startsWith(">")) {
+        effectiveKey = key.substring(1);
+        shouldResolve = true;
+      }
+      const resolved: DeemValue =
+        // localContext[effectiveKey] !== undefined
+        shouldResolve
+          ? (Template.evaluatePropertyExpression(value, context) as unknown as DeemValue)
+          : localContext[effectiveKey];
 
       // it felt like we needed deep copy here to prevent any mutations from affecting the original template
-      assembled[key] = deepCopy(resolved) as DeemValue;
+      assembled[effectiveKey] = deepCopy(resolved) as DeemValue;
 
-      localContext[key] = assembled[key];
+      localContext[effectiveKey] = assembled[effectiveKey];
 
-      if (key.startsWith("!")) {
+      if (effectiveKey.startsWith("!")) {
         // handle special commands (just !remove for now)
-        if (key === "!remove" && Array.isArray(assembled[key])) {
-          for (const propToRemove of assembled[key] as DeemValue[]) {
+        if (effectiveKey === "!remove" && Array.isArray(assembled[effectiveKey])) {
+          for (const propToRemove of assembled[effectiveKey] as DeemValue[]) {
             delete assembled[propToRemove as string];
             delete localContext[propToRemove as string];
           }
@@ -169,11 +181,11 @@ export class Template {
         continue;
       }
 
-      if (key.startsWith("*") || key.startsWith("^")) {
+      if (effectiveKey.startsWith("*") || effectiveKey.startsWith("^")) {
         // we have evaluated the value (confirm we have gotten an object) 
         // then 'overlay' (add) each property onto the context
         // Object.entries(assembled[key] || {}).forEach(([k, v]) => {
-        for (let [k, v] of Object.entries(assembled[key] || {})) {
+        for (let [k, v] of Object.entries(assembled[effectiveKey] || {})) {
 
           // if it's an array, we want to concatenate it
           if (Array.isArray(v)) {
@@ -194,7 +206,7 @@ export class Template {
           } else if (typeof v === 'number') {
             assembled[k] = (assembled[k] as number || 0) + v;
           } else if (typeof v === 'string') {
-            if (key.startsWith("^")) {
+            if (effectiveKey.startsWith("^")) {
               // console.log(`Evaluating overlaid property ${k} with expression: ${v}`);
               // deem evaluate the string before overlaying
               v = Template.evaluatePropertyExpression(v, { ...context, ...assembled });

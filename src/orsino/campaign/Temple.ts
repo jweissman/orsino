@@ -12,9 +12,9 @@ export default class Temple extends TownFeature<TempleServiceType> {
 
   get feeSchedule() {
     return {
-      blessing: 10,
-      recharge: 25,
-      resurrection: 100,
+      blessing: 1,
+      recharge: 10,
+      resurrection: 50
     }
   }
 

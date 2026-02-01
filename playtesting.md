@@ -1,7 +1,6 @@
 # Notes from Playtesting
 
 ## Bugs
-- [ ] Make sure the actual effective AC is displayed on character record! (We will need to reify equipment fx)
 - [ ] Weird interaction with absorption (temp Hp) and trap descriptions [it was saying the _trap_ absorbed damage?]
 - [ ] Sometimes dragons don't have valid abilities? (no melee attack?) [maybe fixed with targeting improvements...?? couldn't repro anymore anyway]
 - [ ] Planeshift ability is basically a soft-lock for autoplay (since constantly restarting/regenerating modules when cast, which is seemingly a lot at high levels...)
@@ -121,7 +120,6 @@
 - [ ] Should display _what_ healing items were used on rest
 - [ ] Divine blessings should be (specially-marked) passives? Maybe restrict to one at a time?
 - [ ] Staying at the inn should cost gold
-- [ ] Hearing a rumor should cost ~1-2 gp (to buy drinks?)
 - [ ] Maybe simple town quests to generate small gp amounts (go to this building, deliver this message, clear the basement of rats, find a patron at the bar etc?) 
 - [ ] Mages could pick a school?
 - [ ] Riddles should give actual loot/gear and let you equip them??
@@ -202,6 +200,13 @@
 ---
 - [ ] Searching without examining objects first should have a chance to trigger traps??
 - [ ] Simple remember/getOrCreate helpers in stdlib?
+---
+- [ ] Effects from interactions/room features should last longer than 3 rounds!
+- [ ] Could hint about the next room? (Especially if there's an encounter, you could hear movement/talking or smell roasting meat; could give opportunity to attempt to surprise, or charge in etc)
+- [ ] Some kind of hint about what enemies are planning to do next?
+---
+- [ ] Make it possible to see exotic races as hirelings in the tavern again??
+- [ ] Improve trait display/selection (sometimes it's just the name and then the name again without a clear description?)
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing
@@ -367,6 +372,8 @@
 - [x] Traps should remember if they've been triggered (ie if you return to the dungeon again) [should be the case]
 - [x] Rings bought in town seem to break the ring1/ring2 flow? [maybe repaired now?]
 - [x] All mage schools should have enough low-level spells to pick from (should be okay now)
+- [x] Hearing a rumor should cost ~1-2 gp (to buy drinks?)
+- [x] Make sure the actual effective AC is displayed on character record! (We will need to reify equipment fx) -- seems fixed?
 
 ## Not really issues atm
 - Load all PCs on party select so we can show their race/class (no longer even letting you load PCs from file but we're still persisting them every room...) (we do persist PC records and could bring this back?)
