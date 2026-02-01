@@ -257,5 +257,30 @@ export default class StandardLibrary {
       return arr.length > 0 ? arr[arr.length - 1] : null;
     },
 
+    // find: (arr: DeemValue[], prop: DeemValue, value: DeemValue) => {
+    //   if (!Array.isArray(arr)) {
+    //     throw new Error(`find() expects an array, got: ${typeof arr}`);
+    //   }
+    //   if (typeof prop !== 'string') {
+    //     throw new Error(`find() expects property name to be a string, got: ${typeof prop}`);
+    //   }
+    //   console.log(`find(): searching for items with ${prop} === ${JSON.stringify(value)} [list length: ${arr.length}]`);
+    //   const options = arr.filter(item => {
+    //     console.log(`find(): checking item: ${JSON.stringify(item)} (value of ${prop}: ${typeof item === 'object' && item !== null && prop in item ? JSON.stringify((item as { [key: string]: DeemValue })[prop]) : 'N/A'})`);
+    //     if (typeof item === 'object' && item !== null && prop in item) {
+    //       const it = item as { [key: string]: DeemValue };
+    //       return it[prop] === value;
+    //     }
+    //     return false;
+    //   }) || null;
+
+    //   console.log(`find(): found ${options.length} matching items.`);
+    //   if (options.length === 0) {
+    //     throw new Error(`find() could not find any items with ${prop} === ${JSON.stringify(value)}`);
+    //     return null;
+    //   }
+    //   return options[Math.floor(Math.random() * options.length)];
+    // }
+
   };
 }

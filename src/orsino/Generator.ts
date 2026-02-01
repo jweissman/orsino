@@ -101,13 +101,47 @@ export default class Generator {
     }
   }
 
-  public static lookupInTable(tableName: GenerationTemplateType, groupName: string, globallyUnique: boolean = false): DeemValue {
+  public static lookupInTable(tableName: GenerationTemplateType, groupName: string, globallyUnique: boolean = false, condition?: string, context: Record<string, DeemValue> = {}): DeemValue {
     const table = Generator.generationSource(tableName);
     if (!table || !(table instanceof Table)) {
       throw new Error(`Table not found: ${tableName}`);
     }
-    const ret = table.pick(groupName, globallyUnique);
-    return ret;
+    if (condition) {
+      const options = table.optionsForPick(groupName);
+      if (!options) {
+        throw new Error(`No options found for group ${groupName} in table ${tableName}`);
+      }
+      // console.log(`lookupInTable: table=${tableName}, group=${groupName}, options=${options.length}, condition=${condition}`);
+      const filteredOptions = options.filter(option => {
+        // console.log(` Evaluating condition for option=${JSON.stringify(option)}`);
+        const conditionResult = Deem.evaluate(condition, {
+          __it: option,
+          ...context
+        });
+        // console.log(`  option=${JSON.stringify(option)} => conditionResult=${!!conditionResult}`);
+        return conditionResult;
+      });
+      if (filteredOptions.length === 0) {
+        // throw new Error(`No options in group ${groupName} of table ${tableName} satisfy condition: ${condition}`);
+        console.warn(`No options in group ${groupName} of table ${tableName} satisfy condition: ${condition} -- returning first available option.`);
+        return options[0];
+      }
+      let choice: DeemValue;
+      if (globallyUnique) {
+        const uniqueOptions = filteredOptions.filter(option => !table.pickedOptions.has(option));
+        if (uniqueOptions.length === 0) {
+          throw new Error(`No globally unique options left in group ${groupName} of table ${tableName} satisfying condition: ${condition}`);
+        }
+        choice = uniqueOptions[Math.floor(Math.random() * uniqueOptions.length)];
+        table.pickedOptions.add(choice);
+      } else {
+        choice = filteredOptions[Math.floor(Math.random() * filteredOptions.length)];
+      }
+      return choice;
+    } else {
+      const ret = table.pick(groupName, globallyUnique);
+      return ret;
+    }
   }
 
   public static gatherKeysFromTable(tableName: GenerationTemplateType, count: number, condition?: string): DeemValue[] {

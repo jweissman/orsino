@@ -1,4 +1,4 @@
-type Color = 'black' | 'red' | 'green' | 'yellow' | 'blue' | 'magenta' | 'cyan' | 'white';
+type Color = 'black' | 'red' | 'green' | 'yellow' | 'blue' | 'magenta' | 'cyan' | 'white' | 'gray';
 export default class Stylist {
   static cleanLength(text: string) {
     // removes ANSI codes and returns the length of the clean string
@@ -29,6 +29,7 @@ export default class Stylist {
       magenta: '35',
       cyan: '36',
       white: '37',
+      gray: '90',
     };
     const colorCode = colors[color] || colors.white;
     return `\x1b[${colorCode}m${text}\x1b[0m`;

@@ -40,6 +40,10 @@ export default class Temple extends TownFeature<TempleServiceType> {
   }
 
   serviceApplicable(serviceType: TempleServiceType): boolean {
+    if (this.gold < (this.feeSchedule)[serviceType]) {
+      return false;
+    }
+
     switch (serviceType) {
       case 'resurrection':
         return this.party.some(pc => pc.dead);
@@ -89,6 +93,11 @@ export default class Temple extends TownFeature<TempleServiceType> {
     const events: ModuleEvent[] = [];
     const deityName = this.deity.name;
     const blessingsGranted: string[] = [];
+
+    // do we have enough gold?
+    if (this.gold < this.feeSchedule.blessing) {
+      return events;
+    }
 
     const offerDonation = await this.driver.confirm(
       `The Temple of ${deityName} offers blessings for ${this.feeSchedule.blessing}g. Would you like to make a donation?`

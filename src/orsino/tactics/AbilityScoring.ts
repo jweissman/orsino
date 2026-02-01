@@ -3,8 +3,7 @@ import AbilityHandler, { Ability, AbilityEffect } from "../Ability";
 import Combat from "../Combat";
 import { GeneratorOptions } from "../Generator";
 import { Fighting } from "../rules/Fighting";
-import StatusHandler from "../Status";
-import Presenter from "../tui/Presenter";
+import StatusHandler, { StatusEffect } from "../Status";
 import { Combatant } from "../types/Combatant";
 import { CombatContext } from "../types/CombatContext";
 
@@ -42,7 +41,7 @@ export class AbilityScoring {
 
     if (ability.target.includes("randomEnemies") && ability.target.length === 2) {
       // pick random enemies
-      const count = ability.target[1] as any as number;
+      const count = ability.target[1] as unknown as number;
       const possibleTargets = Combat.living(enemies);
       const targetOrTargets: Combatant[] = [];
       for (let i = 0; i < count; i++) {
@@ -65,7 +64,7 @@ export class AbilityScoring {
 
         return Combat.weakest(validTargets as Combatant[]);
       }
-      console.log("!!! Defaulting to first valid target in array of arrays:", validTargets);
+      // console.log("!!! Defaulting to first valid target in array of arrays:", validTargets);
       return validTargets[0];
     }
   }
@@ -82,7 +81,8 @@ export class AbilityScoring {
     perfect: 10,
   }
 
-  static HARD_CONTROL = new Set(["asleep", "paralyzed", "prone", "stun", "confused", "charmed", "dominated", "fear", "silence"]);
+  static HARD_CONTROL = new Set(["asleep", "paralyzed", "stun", "dominated"]);
+  static SOFT_CONTROL = new Set(["fear", "silence", "slow", "weakened", "confused", "charmed", "blinded", "deafened", "prone"]);
 
   static scoreAbility(ability: Ability, context: CombatContext, depth: number = 0): number {
     if (depth > 3) { // prevent infinite recursion
@@ -193,6 +193,10 @@ export class AbilityScoring {
             if (isHardControl) {
               score += outstanding;
             }
+            const isSoftControl = this.SOFT_CONTROL.has(status.name);
+            if (isSoftControl) {
+              score += good;
+            }
           }
         }
       }
@@ -296,8 +300,9 @@ export class AbilityScoring {
     return { attack, heal, damage, buff, debuff, defense, aoe, flee, summon, rez };
   }
 
-  private static abilityBoostsAC(effect: any): boolean {
+  private static abilityBoostsAC(effect: AbilityEffect): boolean {
     if (effect.type !== "buff") {return false;}
+    if (!effect.status) {return false;}
     const status = StatusHandler.instance.dereference(effect.status);
     if (status && status.effect && status.effect.ac && status.effect.ac < 0) {
       return true;
@@ -339,14 +344,15 @@ export class AbilityScoring {
 
         effectDamage += expectedDamage * hitChance;
       } else if (effect.type === "damage") {
-        if (typeof effect.amount === "number") {
-          effectDamage += effect.amount;
-        } else if (typeof effect.amount === "string" && effect.amount.startsWith("=")) {
+        const amount = effect.amount;  //Deem.evaluate(effect.amount) as number;
+        if (typeof amount === "number") {
+          effectDamage += amount as unknown as number;
+        } else if (amount === "string" && amount.startsWith("=")) {
           // deem eval 5x then average
           let sum = 0;
           const evalCount = 5;
           for (let i = 0; i < evalCount; i++) {
-            const rollResult = Deem.evaluate(effect.amount, { ...user } as GeneratorOptions) as number;
+            const rollResult = Deem.evaluate(amount, { ...user } as GeneratorOptions) as number;
             sum += rollResult;
           }
           effectDamage += sum / evalCount;

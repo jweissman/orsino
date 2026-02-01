@@ -45,7 +45,7 @@ export class Table {
   }
 
   pickedOptions: Set<DeemValue> = new Set();
-  pick(groupName: string, globallyUnique: boolean = false): DeemValue {
+  optionsForPick(groupName: string): DeemValue[] | null {
     let options = [];
     if (groupName === 'default') {
       const allItems = Object.values(this.groups).flat();
@@ -54,17 +54,46 @@ export class Table {
 
     if (groupName === null) {
       // console.warn(`No group name provided for table ${this.discriminator}`);
-      return {};
+      return []
     }
 
     const group = this.groups[groupName];
     if (group === undefined) {
       throw new Error(`Group not found in table ${this.name} (group: ${groupName})`);
       // console.warn(`Group '${groupName}' not found in table '${this.name}'`);
-      return {};
+      return [] 
     }
     // return group[Math.floor(Math.random() * group.length)];
     options = group;
+
+    // if not an array, return the single value
+    // if (!Array.isArray(options)) {
+    //   return options;
+    // }
+
+    return options;
+  }
+
+  pick(groupName: string, globallyUnique: boolean = false): DeemValue {
+    const options = this.optionsForPick(groupName);
+    // if (groupName === 'default') {
+    //   const allItems = Object.values(this.groups).flat();
+    //   options = allItems[Math.floor(Math.random() * allItems.length)] as DeemValue[];
+    // }
+
+    // if (groupName === null) {
+    //   // console.warn(`No group name provided for table ${this.discriminator}`);
+    //   return {};
+    // }
+
+    // const group = this.groups[groupName];
+    // if (group === undefined) {
+    //   throw new Error(`Group not found in table ${this.name} (group: ${groupName})`);
+    //   // console.warn(`Group '${groupName}' not found in table '${this.name}'`);
+    //   return {};
+    // }
+    // // return group[Math.floor(Math.random() * group.length)];
+    // options = group;
 
     // if not an array, return the single value
     if (!Array.isArray(options)) {

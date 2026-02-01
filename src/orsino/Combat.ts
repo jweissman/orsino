@@ -407,7 +407,7 @@ export default class Combat {
 
   validateAction(ability: Ability, combatant: Combatant, allies: Combatant[], enemies: Combatant[]): boolean {
     const activeFx = Fighting.gatherEffects(combatant);
-    const { valid, reason } = this._actionIsValid(ability, combatant, allies, enemies);
+    const { valid, reason } = this.actionIsValid(ability, combatant, allies, enemies);
     // console.log(`Action ${ability.name} for ${combatant.name} is ${valid ? "valid" : "not valid"} against ${enemies.length} opponents (${enemies.map(e => e.name).join(", ")})`);
     if (ability.name.match(/melee|ranged/i) && (!activeFx.compelNextMove)) {
       if (!valid && Combat.visible(enemies).length > 0) {
@@ -418,7 +418,7 @@ export default class Combat {
     return valid;
   }
 
-  _actionIsValid(ability: Ability, combatant: Combatant, allies: Combatant[], enemies: Combatant[]): {
+  actionIsValid(ability: Ability, combatant: Combatant, allies: Combatant[], enemies: Combatant[]): {
     valid: boolean;
     reason?: string;
   } {
@@ -806,7 +806,7 @@ export default class Combat {
       score: AbilityScoring.scoreAbility(ability, ctx)
     }));
 
-    scoredAbilities = scoredAbilities.filter(sa => sa.score > 0);
+    scoredAbilities = scoredAbilities.filter(sa => sa.score > -5); // filter out really bad options
 
     scoredAbilities.sort((a, b) => b.score - a.score);
     this.outputSink(

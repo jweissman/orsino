@@ -1,21 +1,15 @@
-import Choice from "inquirer/lib/objects/choice";
 import AbilityHandler from "../Ability";
 import { ChoiceSelector } from "../Combat";
 import { CombatContext, pseudocontextFor } from "../types/CombatContext";
 import { DungeonEvent } from "../Events";
 import TraitHandler, { Trait } from "../Trait";
-import Presenter from "../tui/Presenter";
 import Stylist from "../tui/Style";
-import User from "../tui/User";
 import Words from "../tui/Words";
 import { Combatant } from "../types/Combatant";
 import { Roll } from "../types/Roll";
 import { Team } from "../types/Team";
 import { Commands } from "./Commands";
 import { Fighting } from "./Fighting";
-import Automatic from "../tui/Automatic";
-import { Select } from "../types/Select";
-import { Answers } from "inquirer";
 import Deem from "../../deem";
 import Generator, { GeneratorOptions } from "../Generator";
 import { Driver, NullDriver } from "../Driver";
@@ -52,6 +46,13 @@ export default class CharacterRecord {
     return options;
   }
 
+  static validBackgroundsForClass(occupation: string): string[] {
+    const options = Deem.evaluate(`gather(backgroundModifier, -1, '(dig(#__it, requiredClass) == ${occupation})')`) as string[];
+      //"dig(lookup(classModifier, '" + occupation + "'), backgroundOptions)") as string[];
+
+    return options;
+  }
+
   static async pickSpell(
     spellLevel: number,
     aspect: 'arcane' | 'divine',
@@ -69,7 +70,7 @@ export default class CharacterRecord {
       const matchesRestriction = (spell.school === schoolOrDomainRestriction || spell.domain === schoolOrDomainRestriction || schoolOrDomainRestriction === 'all');
       return {
         name: Words.capitalize(spell.name.padEnd(20)) + ' | ' +
-          Stylist.colorize(spell.description, 'brightBlack'),
+          Stylist.colorize(spell.description, 'gray'),
         value: spellName,
         short: spell.name,
         disabled: !matchesRestriction
@@ -107,7 +108,11 @@ export default class CharacterRecord {
           'Select an occupation for this PC: ' + prompt,
           this.validClassesForRace(raceSelect)
         );
-        pc = pcGenerator({ setting: 'fantasy', race: raceSelect, class: occupationSelect });
+        const backgroundSelect: string = await driver.select(
+          'Select a background for this PC: ' + prompt,
+          this.validBackgroundsForClass(occupationSelect)
+        );
+        pc = pcGenerator({ setting: 'fantasy', race: raceSelect, class: occupationSelect, background: backgroundSelect });
         await this.chooseTraits(pc, driver); // selectionMethod);
         await CharacterPresenter.printCharacterRecord(pc, []);
         accepted = await driver.confirm('Use this PC? ' + prompt);
@@ -127,10 +132,13 @@ export default class CharacterRecord {
     const race = racePool[Math.floor(Math.random() * racePool.length)];
     const validClasses = this.validClassesForRace(race);
     const occupation = validClasses[Math.floor(Math.random() * validClasses.length)];
+    const validBackgrounds = this.validBackgroundsForClass(occupation);
+    const background = validBackgrounds[Math.floor(Math.random() * validBackgrounds.length)];
     const pc = pcGenerator({
       setting: 'fantasy',
       race,
-      class: occupation
+      class: occupation,
+      background
     });
     await this.chooseTraits(pc, new NullDriver());
       //Automatic.randomSelect.bind(Automatic));

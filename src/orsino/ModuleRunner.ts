@@ -434,13 +434,7 @@ export class ModuleRunner {
     const advancedShops: {
       [key: string]: string
     } = {
-      // inn: "Restore HP/slots",
-      // general: "Buy gear and sell loot",
-      // armory: "Buy weapons and armor",
-      // blacksmith: "Improve weapons",
-      // magicShop: "Buy equipment",
-      // itemShop: "Buy consumables",
-      // jeweler: "Improve gems and jewelry",
+      // town_hall: `Visit the Town Hall`,
     }
 
     for (const shop of this.campaignModule.town.shops || []) {

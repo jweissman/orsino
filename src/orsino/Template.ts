@@ -23,8 +23,10 @@ export class Template {
       }
       return context[varName] !== undefined;
     }
-    Deem.stdlib.lookup = ((tableName: GenerationTemplateType, groupName: string) => {
-      return Generator.lookupInTable(tableName, groupName);
+    Deem.stdlib.lookup = ((
+      tableName: GenerationTemplateType, groupName: string, condition?: string
+    ) => {
+      return Generator.lookupInTable(tableName, groupName, false, condition, context);
     }) as DeemFunc;
     Deem.stdlib.lookupUnique = ((tableName: GenerationTemplateType, groupName: string) => Generator.lookupInTable(tableName, groupName, true)) as DeemFunc;
 
@@ -80,19 +82,50 @@ export class Template {
       return Generator.genList(type, {}, count);
     }) as DeemFunc;
 
-    Deem.stdlib.mapGenList = ((type: GenerationTemplateType, items: DeemValue[], property: string) => {
-      // console.log(`mapGenList for type '${type}' over items:`, items);
+    Deem.stdlib.mapGenList = ((
+      type: GenerationTemplateType,
+      // items: DeemValue[], property: string
+      ...itemsAndProps: DeemValue[]
+    ) => {
       const results = [];
-      // for (let item of items) {
-      //   let index = items.indexOf(item);
-      for (let i = 0; i < items.length; i++) {
-        const item = items[i];
-        const index = i;
-        const genOptions: GeneratorOptions = { ...context, [property]: item, _index: index };
+
+      // for (let i = 0; i < items.length; i++) {
+      //   const item = items[i];
+      //   const index = i;
+      //   const genOptions: GeneratorOptions = { ...context, [property]: item, _index: index };
+      //   const genResult = Generator.gen(type, genOptions);
+      //   results.push(genResult);
+      // }
+
+      // need to take arbitrary list of items1, properties1, items2, properties2, ...
+      const pairCount = Math.floor(itemsAndProps.length / 2);
+      const propertiesList: Record<string, DeemValue>[] = [];
+
+      const minItems = Math.min(...Array.from({ length: pairCount }, (_, p) => {
+        const items: DeemValue[] = itemsAndProps[p * 2] as DeemValue[];
+        return items.length;
+      }));
+
+      for (let p = 0; p < pairCount; p++) {
+        const items: DeemValue[] = itemsAndProps[p * 2] as DeemValue[];
+        const property: string = itemsAndProps[p * 2 + 1] as string;
+
+        // ensure we have a properties object for each item
+        for (let i = 0; i < items.length; i++) {
+          if (!propertiesList[i]) {
+            propertiesList[i] = {};
+          }
+          propertiesList[i][property] = items[i];
+        }
+      }
+
+      // now generate with each properties object
+      for (let i = 0; i < minItems; i++) {
+        const genOptions: GeneratorOptions = { ...context, ...propertiesList[i], _index: i };
         const genResult = Generator.gen(type, genOptions);
         results.push(genResult);
       }
-      // process.stdout.write(`.`);
+
       return results;
     }) as DeemFunc;
 
