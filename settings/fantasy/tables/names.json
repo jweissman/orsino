@@ -240,8 +240,8 @@
         "Adrik", "Baern", "Barendd", "Brottor", "Dain", "Eberk", "Fargrim", "Gimgen", "Harbek", "Kildrak", "Morgran", "Orsik", "Rangrim", "Rurik", "Taklinn", "Thoradin", "Traubon", "Ulfgar", "Veit"
       ],
       "elf": [
-        "Aelar", "Earendel", "Erevan", "Faelar", "Galinn", "Immeral",
-        "Ing", "Legolas", "Theron", "Thranduil", "Vaelis", "Voronwe", "Zephyrion"
+        "Aelar", "Earendel", "Erevan", "Faelar", "Galinn", "Immeral", "Ing", "Theron", "Thranduil", "Vaelis", "Voronwe", "Zephyrion",
+        "Arandir", "Arannis", "Baeloth", "Caelynn", "Dayereth", "Erevan", "Felosial", "Galinndan", "Hadarai", "Immeral", "Jassin", "Keyleth", "Lia", "Myriil", "Naivara", "Orym", "Peren", "Quarion", "Rolen", "Soveliss", "Thamior", "Uriel", "Veyas", "Wyn"
       ],
       "gnome": [
         "Alston", "Eldon", "Fonkin", "Gimble", "Jebeddo",
@@ -291,22 +291,25 @@
         "Audhild", "Diesa", "Falkrunn", "Gerta", "Hjod", "Inga", "Jargana"
       ],
       "elf": [
-        "Aelene", "Althaea",
-        "Belanna",
-        "Caelynn",
-        "Dayereth",
-        "Eilis",
+        "Aelene", "Althaea", "Aurea", "Avalia",
+        "Belanna", "Briala",
+        "Caelynn", "Cuthana",
+        "Dayereth", "Delphina",
+        "Eilis", "Elaria", "Elora",
         "Estra",
-        "Felosial",
-        "Galadria", "Galinndan",
-        "Hadarai",
-        "Keyleth",
-        "Lia",
+        "Faelar", "Finduilas",
+        "Felosial", "Fara", "Furia",
+        "Galadria", "Galinndan", "Gelina", "Gwenneth",
+        "Hadarai", "Helena", "Hilia",
+        "Keyleth", "Kumari",
+        "Lia", "Lessandra",
         "Luthia",
+        "Mariel", "Mercuria",
         "Myriil",
-        "Naivara",
-        "Soveliss",
+        "Naivara", "Nolia",
+        "Soveliss", "Surtanna",
         "Thamior",
+        "Undira",
         "Veyas"
       ],
       "gnome": [

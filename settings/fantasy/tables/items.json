@@ -1115,6 +1115,26 @@
           }
         ]
       },
+      "rashers": {
+        "name": "Rashers of Bacon",
+        "description": "Cured strips of pork that can be cooked and eaten for sustenance.",
+        "type": "consumable",
+        "kind": "food",
+        "rarity": "common",
+        "aspect": "healing",
+        "value": 5,
+        "target": [
+          "self",
+          "ally"
+        ],
+        "effects": [
+          {
+            "type": "heal",
+            "amount": "1d3"
+          }
+        ]
+      },
+
       "kingsfoil": {
         "name": "Kingsfoil",
         "description": "A three-leaf herb known also as Aelvenroot, prized for its potent healing properties when brewed into a tea or poultice.",
@@ -1135,6 +1155,117 @@
           {
             "type": "removeStatus",
             "statusName": "Poison"
+          }
+        ]
+      },
+      "cloudberry": {
+        "name": "Cloudberry",
+        "description": "A rare berry that grows in cold, mountainous regions. It has a sweet and tangy flavor and is said to have mild healing properties.",
+        "type": "consumable",
+        "kind": "food",
+        "rarity": "uncommon",
+        "aspect": "healing",
+        "value": 20,
+        "target": [
+          "self",
+          "ally"
+        ],
+        "effects": [
+          {
+            "type": "heal",
+            "amount": "1d4+1"
+          }
+        ]
+      },
+      "foxglove": {
+        "name": "Foxglove",
+        "description": "A beautiful but poisonous flower. When prepared correctly, it can be used to create a potent healing salve.",
+        "type": "consumable",
+        "kind": "herb",
+        "rarity": "uncommon",
+        "aspect": "healing",
+        "value": 50,
+        "target": [
+          "self",
+          "ally"
+        ],
+        "effects": [
+          {
+            "type": "heal",
+            "amount": "1d4+2"
+          },
+          {
+            "type": "removeStatus",
+            "statusName": "Poison|Fatigue|Weakened"
+          }
+        ]
+      },
+      "heather": {
+        "name": "Heather",
+        "description": "A fragrant herb that can be brewed into a tea to soothe aches and pains.",
+        "type": "consumable",
+        "kind": "herb",
+        "rarity": "common",
+        "aspect": "healing",
+        "value": 15,
+        "target": [
+          "self",
+          "ally"
+        ],
+        "effects": [
+          {
+            "type": "heal",
+            "amount": "1d3+1"
+          },
+          {
+            "type": "removeStatus",
+            "statusName": "Fatigue"
+          }
+        ]
+      },
+      "dandelion": {
+        "name": "Dandelion",
+        "description": "A common herb known for its detoxifying properties. It can be used to create a tea that helps cleanse the body of toxins.",
+        "type": "consumable",
+        "kind": "herb",
+        "rarity": "common",
+        "aspect": "healing",
+        "value": 10,
+        "target": [
+          "self",
+          "ally"
+        ],
+        "effects": [
+          {
+            "type": "heal",
+            "amount": "1d3"
+          },
+          {
+            "type": "removeStatus",
+            "statusName": "Poison"
+          }
+        ]
+      },
+      "comfrey": {
+        "name": "Comfrey",
+        "description": "A leafy herb known for its ability to promote rapid healing of wounds and broken bones.",
+        "type": "consumable",
+        "kind": "herb",
+        "rarity": "uncommon",
+        "aspect": "healing",
+        "value": 40,
+        "target": [
+          "self",
+          "ally"
+        ],
+        "effects": [
+          {
+            "type": "heal",
+            "amount": "2d4"
+          },
+          {
+            "type": "removeStatus",
+            "statusName": "Bleeding"
           }
         ]
       },

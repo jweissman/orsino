@@ -1,4 +1,4 @@
-import LanguageManager, { Concept, Conceptory, ConceptTemplate } from '../orsino/Language';
+import LanguageManager, { Concept, ConceptKind, conceptKinds, Conceptory, ConceptTemplate } from '../orsino/Language';
 import { Fighting } from '../orsino/rules/Fighting';
 import Words from '../orsino/tui/Words';
 
@@ -207,7 +207,20 @@ export default class StandardLibrary {
       return lang.translate(...concepts as Concept[]);
     },
 
-    conceptory: (conceptTemplate: DeemValue) => {
+    concept: (conceptKind: DeemValue) => {
+      if (typeof conceptKind !== 'string') {
+        throw new Error(`concept() expects a string, got: ${typeof conceptKind}`);
+      }
+      const kind: ConceptKind = conceptKind as ConceptKind;
+      if (!conceptKinds.includes(kind)) {
+        throw new Error(`concept() received invalid concept kind: ${conceptKind}`);
+      }
+      const options = Conceptory.getConceptsByKind(kind);
+      const concept = options[Math.floor(Math.random() * options.length)];
+      return concept;
+    },
+
+    conceptTemplate: (conceptTemplate: DeemValue) => {
       if (typeof conceptTemplate !== 'string') {
         throw new Error(`conceptory() expects a string, got: ${typeof conceptTemplate}`);
       }

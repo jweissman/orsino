@@ -1000,6 +1000,7 @@
           "immunePoison": true,
           "immuneDisease": true,
           "immuneSleep": true,
+          "immuneBleed": true,
           "resistBludgeoning": 0.5,
           "resistPiercing": 0.5,
           "resistSlashing": 0.5

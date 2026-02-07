@@ -1,9 +1,11 @@
 # Notes from Playtesting
 
 ## Bugs
+- [ ] Creature with 20+ HP remaining seemed to die from a smite which only dealt 10 damage...?
 - [ ] Weird interaction with absorption (temp Hp) and trap descriptions [it was saying the _trap_ absorbed damage?]
 - [ ] Sometimes dragons don't have valid abilities? (no melee attack?) [maybe fixed with targeting improvements...?? couldn't repro anymore anyway]
 - [ ] Planeshift ability is basically a soft-lock for autoplay (since constantly restarting/regenerating modules when cast, which is seemingly a lot at high levels...)
+- [ ] Unsummon sometimes displays 'undefined'? (eg 'Galadria unsummons undefined.')
 
 ## Features
 - [ ] Make effective weapon/armor/size work for shapechange
@@ -374,6 +376,7 @@
 - [x] All mage schools should have enough low-level spells to pick from (should be okay now)
 - [x] Hearing a rumor should cost ~1-2 gp (to buy drinks?)
 - [x] Make sure the actual effective AC is displayed on character record! (We will need to reify equipment fx) -- seems fixed?
+- [x] Targets for cure minor wounds came "mixed" between individuals and a group (ie option 1: "Character A", option 2: "Character B; Character C"; all were wounded but it actually healed _both_ B + C when I selected the group; it should only target individuals?) -- maybe resolved?
 
 ## Not really issues atm
 - Load all PCs on party select so we can show their race/class (no longer even letting you load PCs from file but we're still persisting them every room...) (we do persist PC records and could bring this back?)

@@ -186,7 +186,13 @@ const concepts = [
 
 ] as const;
 
-type ConceptKind = "color" | "animal" | "element" | "nature" | "place" | "object" | "abstract" | "modifier" | "adjective" | "timeOfDay" | "bodyPart" | "animalPart" | "tree" | "season" | "mood" | "food" | "architecture" | "instrument";
+// type ConceptKind = "color" | "animal" | "element" | "nature" | "place" | "object" | "abstract" | "modifier" | "adjective" | "timeOfDay" | "bodyPart" | "animalPart" | "tree" | "season" | "mood" | "food" | "architecture" | "instrument";
+
+export const conceptKinds = [
+  "color", "animal", "element", "nature", "place", "object", "abstract", "modifier", "adjective", "timeOfDay", "bodyPart", "animalPart", "tree", "season", "mood", "food", "architecture", "instrument"
+] as const;
+
+export type ConceptKind = typeof conceptKinds[number];
 
 export type ConceptTemplate = 'personalName' | 'nobleHouse';
 
@@ -237,17 +243,17 @@ export class Conceptory {
     'adjectiveElement': ['adjective', 'element'],
   }
 
-  static nobleHouseTemplates: { [key: string]: ConceptKind[] }= {
-    'simpleObject': ['color', 'object'],
-    // 'natural': ['color', 'nature'],
-    'animal': ['color', 'animal'],
-    'elemental': ['color', 'element'],
-    'tree': ['color', 'tree'],
-    'architecture': ['color', 'architecture'],
-    'instrument': ['color', 'instrument'],
-  }
+  // static nobleHouseTemplates: { [key: string]: ConceptKind[] }= {
+  //   'simpleObject': ['color', 'object'],
+  //   // 'natural': ['color', 'nature'],
+  //   'animal': ['color', 'animal'],
+  //   'elemental': ['color', 'element'],
+  //   'tree': ['color', 'tree'],
+  //   'architecture': ['color', 'architecture'],
+  //   'instrument': ['color', 'instrument'],
+  // }
 
-  static generateFromTemplate(templateKey: string, templateSet: { [key: string]: ConceptKind[] }): Concept[] {
+  private static generateFromTemplate(templateKey: string, templateSet: { [key: string]: ConceptKind[] }): Concept[] {
     const template = templateSet[templateKey];
     if (!template) {
       throw new Error(`Template "${templateKey}" not found.`);

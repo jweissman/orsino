@@ -110,15 +110,13 @@
   "line": {
     "race": "=oneOf(human, elf, dwarf)",
     "_languageKey": "=(#race == 'elf') ? 'quenya' : (#race == 'dwarf' ? 'khuzdul' : 'westron')",
-    "_nameConcepts": "=conceptory(nobleHouse)",
-    "_colorConcept": "=first(#_nameConcepts)",
-    "_sigilConcept": "=last(#_nameConcepts)",
+    "_fgColor": "=oneOf(or, argent, gules, sable, azure, vert, sanguine)",
+    "_bgColor": "=oneOf(or, argent, gules, sable, azure, vert, sanguine)",
+    "_sigilConcept": "=concept(oneOf(object, element, tree, animal, architecture, instrument))",
     "sigil": "=translate(#_languageKey, #_sigilConcept)",
     "sigilMeaning": "=#_sigilConcept",
-    "color": "=translate(#_languageKey, #_colorConcept)",
-    "colorMeaning": "=#_colorConcept",
     "houseName": "=#sigil",
-    "houseSymbol": "=#colorMeaning + ' ' + #sigilMeaning + ' on a field of ' + oneOf(cerulean, crimson, purple, scarlet, argent, gules, sable, azure, vert, sanguine)",
+    "houseSymbol": "=#_fgColor + ' ' + #sigilMeaning + ' on a field of ' + #_bgColor",
     "standing": "=oneOf(minor, rising, fallen, great, infamous)",
     "publicReputation": "=if((#standing == 'great' || #standing == 'rising'), oneOf(beloved, respected, admired, honored), (if((#standing == 'infamous' || #standing == 'fallen'), oneOf(feared, mocked, notorious), oneOf(respected, admired, honored))))",
     "virtue": "=oneOf(duty,mercy,honor,learning,strength,piety,cunning,justice,wisdom,valor)",
@@ -135,7 +133,7 @@
     "formalName": "=\"#_formalNamePrefix #houseName\"",
     "shortName": "=#houseName",
     "epithet": "='House of the ' + capitalize(#sigilMeaning)",
-    "houseDescription": "=\"#formalName, the #epithet, #{a_an(#standing)} house #publicReputation throughout the land, led by #lord.\""
+    "houseDescription": "=\"#formalName, the #epithet, #{a_an(#standing)} house #publicReputation throughout the land\""
   },
   "pc": {
     "_zodiac_animal": "=oneOf(rat, ox, tiger, rabbit, dragon, snake, horse, goat, monkey, rooster, dog, pig)",
@@ -175,7 +173,7 @@
     "_surname": "=#_isNoble ? dig(#_house, houseName) : lookup(surname, #class)",
     "_nameSource": "=#gender == 'male' ? maleName : (#gender == 'female' ? femaleName : androgynousName)",
     "forename": "=oneOf(lookupUnique(#_nameSource, #race))",
-    "_personalNameElements": "=conceptory(personalName)",
+    "_personalNameElements": "=conceptTemplate(personalName)",
     "_languageKey": "=(#race == 'elf') ? 'quenya' : (#race == 'dwarf' ? 'khuzdul' : 'westron')",
     "personalName": "=translate(#_languageKey, #_personalNameElements)",
     "name": "=\"#forename #_surname\"",

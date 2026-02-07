@@ -71,7 +71,7 @@ export class Commands {
       result = Math.max(1, result);
       rollDescription += ` ${subject.name} adds ${effectStack.allRolls} to all rolls, so the total is now ${result}.`;
     }
-    // console.warn(rollDescription);
+    console.warn(rollDescription);
     return { amount: result, description: rollDescription };
   }
 
@@ -190,6 +190,8 @@ export class Commands {
       return [];
     }
 
+    // const originalHp = defender.hp;
+
     if (attacker !== defender) {
       if (attackerEffects.bonusDamage) {
         const sources = attackerFxWithNames.bonusDamage?.sources || [];
@@ -285,6 +287,7 @@ export class Commands {
     if (isNaN(damage)) {
       throw new Error(`Damage calculated as NaN for ${CombatantPresenter.minimalCombatant(attacker)} attacking ${CombatantPresenter.minimalCombatant(defender)}.`);
     }
+    const damageDealt = damage;
 
     const originalHp = defender.hp;
     for (let [source, pool] of Object.entries(defender.tempHpPools || {})) {
@@ -310,6 +313,7 @@ export class Commands {
         }
       }
     }
+
     defender.hp -= damage;
 
     if (defender.hp <= 0) {
@@ -322,16 +326,17 @@ export class Commands {
       }
     } //else
 
-    // let events: TimelessEvent[] = [{
     events.push({
       type: "hit",
       subject: attacker,
       target: defender,
-      damage: Math.min(damage, originalHp),
+      damage: damageDealt, //: Math.min(damage, originalHp),
       success: true,
       critical,
       by,
-      damageKind
+      damageKind,
+      originalHp,
+      newHp: defender.hp
     } as Omit<HitEvent, "turn">);
 
     if (critical) {

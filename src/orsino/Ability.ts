@@ -287,9 +287,9 @@ export default class AbilityHandler {
           break;
         case "ally":
           if (healing) {
-            targets.push(Combat.wounded(allies));
+            targets.push(...Combat.wounded(allies));
           } else {
-            targets.push(Combat.living(allies));
+            targets.push(...Combat.living(allies));
           }
           break;
         case "deadAlly": targets.push(...(allies.filter(a => a.hp <= 0))); break;

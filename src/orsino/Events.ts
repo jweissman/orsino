@@ -32,7 +32,10 @@ export type CombatEndEvent = BaseEvent & { type: "combatEnd"; winner: string };
 export type RoundStartEvent = BaseEvent & { type: "roundStart", combatants: Combatant[], parties: Team[]; environment?: string, auras: StatusEffect[] };
 export type TurnStartEvent = BaseEvent & { type: "turnStart", combatants: Combatant[], parties: Team[]; environment?: string, auras: StatusEffect[] };
 
-export type HitEvent = BaseEvent & { type: "hit"; damage: number; success: boolean; critical: boolean; by: string; damageKind: DamageKind };
+export type HitEvent = BaseEvent & {
+  type: "hit"; damage: number; success: boolean; critical: boolean; by: string; damageKind: DamageKind; newHp: number; originalHp: number;
+
+};
 export type DamageBonus = BaseEvent & { type: "damageBonus"; amount: number; damageKind: DamageKind; reason: string };
 export type DamageReduction = BaseEvent & { type: "damageReduction"; amount: number; damageKind: DamageKind; reason: string };
 export type DamageAbsorb = BaseEvent & { type: "tempHpAbsorb"; amount: number; source: string };
@@ -252,6 +255,10 @@ export type ModuleEvent =
 export type GameEvent = CombatEvent | DungeonEvent | ModuleEvent
 
 export default class Events {
+  private static dungeonName(name: string, icon?: string): string {
+    return Stylist.colorize(name.toUpperCase(), 'yellow') + (icon ? ` ${icon}` : '');
+  }
+
   static async present(
     event: GameEvent,
     state?: GameState
@@ -279,13 +286,7 @@ export default class Events {
         break;
 
       case "enterDungeon":
-        message = `
-        ${"=".repeat(80)}
-        ${event.dungeonIcon}  ${Stylist.colorize(event.dungeonName.toUpperCase(), 'yellow')} (${event.depth} rooms)
-
-          Your Goal: ${event.goal || "Unknown"}!
-        ${"=".repeat(80)}
-        `;
+        message = `Now entering ${Events.dungeonName(event.dungeonName, event.dungeonIcon)} (${event.depth} rooms)`;
         break;
 
       case "leaveDungeon":
@@ -363,7 +364,7 @@ export default class Events {
         break;
 
       case "dungeonFailed":
-        message = `You have failed to cleanse ${event.dungeonName} of evil. ${event.reason}`;
+        message = `You have failed to cleanse ${Events.dungeonName(event.dungeonName)} of evil. ${event.reason}`;
         break;
 
       case "heal":
@@ -418,7 +419,7 @@ export default class Events {
         break;
 
       case "hit":
-        message = `${targetName} takes ${event.damage.toString()} ${event.damageKind} damage from ${event.by}.`;
+        message = `${targetName} takes ${event.damage.toString()} ${event.damageKind} damage from ${event.by} (${event.newHp} HP remaining, originally ${event.originalHp}).`;
         if (event.critical) { message += " Critical hit!"; }
         if (event.target?.playerControlled) {
           message = Stylist.colorize(message, 'red');
@@ -709,9 +710,9 @@ export default class Events {
     if (Orsino.environment === 'test') {
       logFilename = `log/game-${new Date().toISOString().split('T')[0]}.test.txt`;
     }
-    let logMessage = await Events.present(event);
+    const logMessage = await Events.present(event);
     // strip ANSI codes
-    logMessage = logMessage.replace(/[\\u001b\\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
+    // logMessage = logMessage.replace(/[\\u001b\\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
     if (!logMessage || logMessage.trim() === '') {
       return;
     }

@@ -123,7 +123,18 @@ program
 
         town: response.town ? response.town.name : undefined,
         dungeons: response.dungeons ? response.dungeons.map((d) => `CR ${d.intendedCr}/${d.race}`).join("; ") : undefined,
+
+        equipment: response.equipment ? Object.entries(response.equipment).map(([slot, item]) => `${slot}: ${item}`).join("; ") : undefined,
+        startingGear: response.startingGear ? response.startingGear.join("; ") : undefined,
+
+        traitChoices: response.traitChoices ? response.traitChoices.join("; ") : undefined,
+        occupationOptions: response.occupationOptions ? response.occupationOptions.join("; ") : undefined,
+        forbiddenTraits: response.forbiddenTraits ? response.forbiddenTraits.join("; ") : undefined,
+        armorProficiencies: response.armorProficiencies ? Object.entries(response.armorProficiencies).map(([type, prof]) => `${type}: ${prof}`).join("; ") : undefined,
+        weaponProficiencies: response.weaponProficiencies ? Object.entries(response.weaponProficiencies).map(([type, prof]) => `${type}: ${prof}`).join("; ") : undefined,
+        itemProficiencies: response.itemProficiencies ? Object.entries(response.itemProficiencies).map(([type, prof]) => `${type}: ${prof}`).join("; ") : undefined,
       }
+
 
       // if any keys undefined, remove them
       Object.keys(cleanResponse).forEach(key => {

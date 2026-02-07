@@ -619,7 +619,7 @@ export default class Dungeoneer {
           gp = Deem.evaluate("1+1d20") as number;
           items = Deem.evaluate("sample(gather(consumables, -1, 'dig(#__it, rarity) == common'), 1d2)") as string[];
         }
-        await this.emit({ type: "investigate", subject: check.actor, clue: `the ${room.decor}`, discovery: check.success ? `${gp} gold coins hidden within` : `nothing of interest` });
+        await this.emit({ type: "investigate", subject: check.actor, clue: `the ${room.decor}`, discovery: check.success ? `${gp} gold coins` : `nothing of interest` });
         await this.reward(0, gp);
 
         for (const item of items) {
