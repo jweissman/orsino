@@ -1,6 +1,6 @@
 import { Fighting } from "../rules/Fighting";
 import Presenter from "../tui/Presenter";
-import Stylist from "../tui/Style";
+import Stylist, { Color } from "../tui/Style";
 import Words from "../tui/Words";
 import { Combatant } from "../types/Combatant";
 
@@ -9,17 +9,15 @@ export default class CombatantPresenter extends Presenter {
     const effective = Fighting.effectiveStats(combatant);
     const hpRatio = combatant.hp / effective.maxHp;
     const hpBar = Stylist.prettyValue(combatant.hp, effective.maxHp);
-    const color = this.colors[Math.floor(hpRatio * (this.colors.length - 1))] || this.colors[0];
-    let name = Stylist.format(combatant.forename, 'bold');
-
+    const color: Color = this.colors[Math.floor(hpRatio * (this.colors.length - 1))] || this.colors[0];
+    let name = (combatant.forename); //, 'bold');
     let combatClass = combatant.class;
-
 
     const fx = Fighting.effectList(combatant);
     if (fx.some(e => e.effect?.displayName)) {
       const firstNameOverride = fx.find(e => e.effect?.displayName)?.effect?.displayName;
       if (firstNameOverride) {
-        name = Stylist.format(firstNameOverride, 'bold');
+        name = (firstNameOverride); //, 'bold');
       }
     }
     if (fx.some(e => e.effect?.displayClass)) {
@@ -41,7 +39,8 @@ export default class CombatantPresenter extends Presenter {
       combatant.hp <= 0 ? Stylist.colorize('X', 'red') : Stylist.colorize(hpBar, color),
       tempHp > 0 ? Stylist.colorize(`(+${tempHp})`, 'blue') : '',
       combatant.hp > 0 ? `${combatant.hp}/${effective.maxHp}` : 'KO',
-      combatantType
+      combatantType,
+      combatant.level ? `Lvl. ${combatant.level}` : '',
       // combatClass ? `${Words.capitalize(combatKind ? (combatKind + ' ') : '')}${Words.capitalize(combatClass)}` : '',
     ].join(' ');
   }
@@ -61,7 +60,7 @@ export default class CombatantPresenter extends Presenter {
 
     const hpRatio = combatant.hp / effective.maxHp;
     const hpBar = Stylist.prettyValue(combatant.hp, effective.maxHp);
-    const color = this.colors[Math.floor(hpRatio * (this.colors.length - 1))] || this.colors[0];
+    const color: Color = this.colors[Math.floor(hpRatio * (this.colors.length - 1))] || this.colors[0];
 
     const combatClass = displayClass || combatant.class;
     const combatKind = (combatant).kind || Words.humanize(combatant.race || '');
@@ -78,7 +77,7 @@ export default class CombatantPresenter extends Presenter {
       }));
     }
 
-    const friendly = combatant.playerControlled;
+    // const friendly = combatant.playerControlled;
     let name = combatant.name;
     // const fx = Fighting.effectList(combatant);
     if (fx.some(e => e.effect?.displayName)) {
@@ -87,10 +86,8 @@ export default class CombatantPresenter extends Presenter {
         name = Stylist.format(firstNameOverride, 'bold');
       }
     }
-    const lhs = `${Stylist.colorize(hpBar, color)} ${Stylist.format(
-      Stylist.colorize(name, friendly ? 'cyan' : 'yellow'),
-      'bold'
-    ).padEnd(40)}${classInfo}`;
+    const stylizedName = name; // Stylist.format( Stylist.colorize(name, friendly ? 'cyan' : 'yellow'), 'bold')
+    const lhs = `${Stylist.colorize(hpBar, color)} ${stylizedName.padEnd(40)}${classInfo}`;
     // let rhs = `(${this.statLine(combatant)})`;
     // return `${lhs} ${rhs}`;
     return lhs;

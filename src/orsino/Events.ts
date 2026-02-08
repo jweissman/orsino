@@ -1,7 +1,7 @@
 import { DamageKind } from "./types/DamageKind";
 import { never } from "./util/never";
 import Presenter from "./tui/Presenter";
-import Stylist from "./tui/Style";
+// import Stylist from "./tui/Style";
 import { Combatant, CombatantID, EquipmentSlot } from "./types/Combatant";
 import { Team } from "./types/Team";
 import Orsino from "../orsino";
@@ -17,6 +17,7 @@ import { GameState } from "./types/GameState";
 import CombatantPresenter from "./presenter/CombatantPresenter";
 import CharacterPresenter from "./presenter/CharacterPresenter";
 import StatusPresenter from "./presenter/StatusPresenter";
+import Stylist from "./tui/Style";
 
 type BaseEvent = {
   turn: number;
@@ -219,6 +220,8 @@ export type HirelingHiredEvent = BaseModuleEvent & { type: "hirelingHired"; hire
 
 export type DungeonCompleted = BaseModuleEvent & { type: "dungeonCompleted"; dungeonIndex: number; };
 
+export type QuestAccepted = BaseModuleEvent & { type: "questAccepted"; quest: { name: string; description: string; difficulty: number; dungeonIndex: number; reward: { gold: number; items?: ItemInstance[] } } };
+
 export type ModuleEvent =
   | ModuleStartEvent
   | CampaignStartEvent
@@ -251,13 +254,13 @@ export type ModuleEvent =
 
   | DungeonCompleted
   | CampaignStopEvent
+  | QuestAccepted
 
 export type GameEvent = CombatEvent | DungeonEvent | ModuleEvent
 
 export default class Events {
-  private static dungeonName(name: string, icon?: string): string {
-    return Stylist.colorize(name.toUpperCase(), 'yellow') + (icon ? ` ${icon}` : '');
-  }
+  private static dungeonName(name: string, icon?: string): string { return name.toUpperCase() + (icon ? ` ${icon}` : ''); }
+  private static roomDescription(description: string): string { return description; }
 
   static async present(
     event: GameEvent,
@@ -286,7 +289,7 @@ export default class Events {
         break;
 
       case "enterDungeon":
-        message = `Now entering ${Events.dungeonName(event.dungeonName, event.dungeonIcon)} (${event.depth} rooms)`;
+        message = `Now entering ${this.dungeonName(event.dungeonName, event.dungeonIcon)} (${event.depth} rooms)`;
         break;
 
       case "leaveDungeon":
@@ -294,7 +297,7 @@ export default class Events {
         break;
 
       case "enterRoom":
-        message = Stylist.italic(event.roomDescription);
+        message = this.roomDescription(event.roomDescription);
         break;
 
       case "roomCleared":
@@ -357,7 +360,7 @@ export default class Events {
 
       case "dungeonCleared":
         if (event.macguffin) {
-          message = `🎉 Victory! You have cleared the dungeon and secured ${Stylist.bold(event.macguffin)}!`;
+          message = `🎉 Victory! You have cleared the dungeon and secured ${event.macguffin}!`;
         } else {
           message = `Victory! You have cleared the dungeon!`;
         }
@@ -540,7 +543,8 @@ export default class Events {
         break;
 
       case "action":
-        message = Stylist.bold(`\n${subjectName} ${event.actionName}.`);
+        message = `${subjectName} ${event.actionName}.`;
+          // Stylist.bold(`\n${subjectName} ${event.actionName}.`);
         break;
 
       case "actedRandomly":
@@ -572,17 +576,15 @@ export default class Events {
         break;
 
       case "campaignStart":
-        message = Stylist.bold(`You embark on a new campaign!\nParty Members: ${event.pcs.map(pc => CombatantPresenter.combatant(pc)).join("\n")
-          }`);
+        message = `You embark on a new campaign!\nParty Members:\n - ${event.pcs.map(pc => CombatantPresenter.combatant(pc)).join("\n - ")}`;
         break;
 
       case "moduleStart":
-        message = Stylist.bold(`You embark on the module '${event.moduleName}' with ${Words.humanizeList(event.pcs.map(pc => pc.forename))
+        message = (`You embark on the module '${event.moduleName}' with ${Words.humanizeList(event.pcs.map(pc => pc.forename))
           }`);
         break;
 
       case "newDay":
-        // message = Stylist.bold(`Day ${event.day} begins. The weather is currently ${event.weather}.`);
         message = (
           `It is the ${Words.ordinal(1 + (event.day % 90))} day of ${event.season}. The weather is currently ${event.weather}.`);
         break;
@@ -590,10 +592,10 @@ export default class Events {
       case "townVisited":
         message = (
           // `It is the ${Words.ordinal(1 + (event.day % 90))} day of ${event.season}.`
-          `You are in the ${event.adjective} ${Words.capitalize(event.race)} ${event.size} of ${Stylist.bold(event.townName)}, which is ${event.translatedTownName}`
+          `You are in the ${event.adjective} ${Words.capitalize(event.race)} ${event.size} of ${(event.townName)}, which is ${event.translatedTownName}`
         );
         if (event.plane !== "Prime Material") {
-          message += Stylist.italic(` on the plane of ${Words.capitalize(event.plane)}`);
+          message += ` on the plane of ${Words.capitalize(event.plane)}`;
         }
         message += `.`;
 
@@ -601,11 +603,11 @@ export default class Events {
 
 
       case "shopEntered":
-        message = Stylist.bold(`Entered ${event.shopName}'s shop.`);
+        message = (`Entered ${event.shopName}'s shop.`);
         break;
 
       case "templeEntered":
-        message = Stylist.bold(`Entered the temple of ${event.templeName}.`);
+        message = (`Entered the temple of ${event.templeName}.`);
         break;
 
       case "donation":
@@ -687,7 +689,7 @@ export default class Events {
         break;
 
       case "campaignStop":
-        message = Stylist.bold(`Campaign ended: ${event.reason || `at ${event.at}`}`);
+        message = (`Campaign ended: ${event.reason || `at ${event.at}`}`);
         break;
 
       case "teleport":
@@ -696,6 +698,10 @@ export default class Events {
 
       case "planeshift":
         message = `${subjectName} plane shifts to ${event.plane}.`;
+        break;
+      
+      case "questAccepted":
+        message = `${subjectName} has given the quest: ${event.quest.name} - ${event.quest.description} (Difficulty: ${event.quest.difficulty}, Reward: ${event.quest.reward.gold} gold${event.quest.reward.items ? ` and ${Words.humanizeList(event.quest.reward.items.map(i => Words.a_an(i.name)))}` : ""})`;
         break;
 
       default:
@@ -721,11 +727,11 @@ export default class Events {
   }
 
   private static presentTurn(event: TurnStartEvent): string {
-    const roundLabel = ("Round " + event.turn.toString()).padEnd(20) + Stylist.colorize(event.environment?.padStart(60) || "Unknown Location", 'cyan');
+    const roundLabel = ("Round " + event.turn.toString()).padEnd(20) + (event.environment?.padStart(60) || "Unknown Location"); //, 'cyan');
     const parties = CombatantPresenter.parties(event.parties || []);
     const hr = "=".repeat(80);
-    const auras = event.auras?.length > 0 ? "\n\nAuras:\n" + event.auras.map(aura => `- ${Stylist.colorize(aura.name, 'magenta')} (${StatusPresenter.analyzeStatus(aura)})`).join("\n") : "";
-    return `${hr}\n${roundLabel}\n${hr}\n${parties}${auras}\n\n${Stylist.bold(`It's ${event.subject?.forename}'s turn!`)}`;
+    const auras = event.auras?.length > 0 ? "\n\nAuras:\n" + event.auras.map(aura => `- ${(aura.name)} (${StatusPresenter.analyzeStatus(aura)})`).join("\n") : "";
+    return `${hr}\n${roundLabel}\n${hr}\n${parties}${auras}\n\n${(`It's ${event.subject?.forename}'s turn!`)}`;
   }
 
   private static async presentOverview(event: PartyOverviewEvent): Promise<string> {
@@ -733,10 +739,10 @@ export default class Events {
     for (const pc of event.pcs) {
       records.push(await CharacterPresenter.characterRecord(pc, Inventory.propertyOf(pc, event.inventory) || []));
     }
-    let message = Stylist.bold(`Party Overview:\n${records.join("\n\n")}\n\n`);
+    let message = (`Party Overview:\n${records.join("\n\n")}\n\n`);
     const sharedItems = Inventory.sharedItems(event.inventory);
     if (sharedItems.length > 0) {
-      message += Stylist.bold("Shared Inventory: ") + Presenter.aggregateList(sharedItems.sort((a, b) => a.name.localeCompare(b.name)).map(i => i.name)) + "\n";
+      message += ("Shared Inventory: ") + Presenter.aggregateList(sharedItems.sort((a, b) => a.name.localeCompare(b.name)).map(i => i.name)) + "\n";
     }
     return message;
   }

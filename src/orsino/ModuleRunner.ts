@@ -19,6 +19,7 @@ import { Roll } from "./types/Roll";
 import { StatusModifications } from "./Status";
 import Deem from "../deem";
 import CombatantPresenter from "./presenter/CombatantPresenter";
+import TownHall from "./campaign/TownHall";
 
 type TownSize = 'hamlet' | 'village' | 'town' | 'city' | 'metropolis' | 'capital';
 type Race = string; // 'human' | 'elf' | 'dwarf' | 'halfling' | 'gnome' | 'orc' | 'fae';
@@ -51,8 +52,13 @@ interface ShopDefinition {
   itemTypes?: ('consumable' | 'weapon' | 'armor' | 'equipment' | 'gear')[];
   itemRestrictions?: { kind?: string[]; rarity?: string[] };
 }
+
+interface TownHallDefinition {
+  magistrate: Combatant
+}
 export interface Town {
-shops: ShopDefinition[];
+  townHall: TownHallDefinition;
+  shops: ShopDefinition[];
   climate: Climate;
   tavern: { name: string; hirelings: Combatant[] };
   townName: string;
@@ -344,6 +350,8 @@ export class ModuleRunner {
         await this.handleTownFeature('tavern');
       } else if (action === "temple") {
         await this.handleTownFeature('temple');
+      } else if (action === "town_hall") {
+        await this.handleTownFeature('town_hall');
         // } else if (SHOP_KINDS.includes(action as ShopKind)) {
       } else if (action.match(/shop:/)) {
         const [, shopKind] = action.split(":");
@@ -434,7 +442,7 @@ export class ModuleRunner {
     const advancedShops: {
       [key: string]: string
     } = {
-      // town_hall: `Visit the Town Hall`,
+      town_hall: `Visit the Town Hall`,
     }
 
     for (const shop of this.campaignModule.town.shops || []) {
@@ -467,10 +475,11 @@ export class ModuleRunner {
     temple: () => new Temple(this.driver, this.state),
     tavern: () => new Tavern(this.driver, this.state),
     market: () => new Shop(this.driver, this.state),
+    town_hall: () => new TownHall(this.driver, this.state),
   }
 
   private async handleTownFeature(
-    featureType: 'tavern' | 'temple' | 'market',
+    featureType: 'tavern' | 'temple' | 'market' | 'town_hall',
     serviceName?: string,
     itemRestrictions?: { kind?: string[]; rarity?: string[] }
   ) {

@@ -123,7 +123,7 @@ export default class Generator {
       });
       if (filteredOptions.length === 0) {
         // throw new Error(`No options in group ${groupName} of table ${tableName} satisfy condition: ${condition}`);
-        console.warn(`No options in group ${groupName} of table ${tableName} satisfy condition: ${condition} -- returning first available option.`);
+        console.warn(`No options in group ${groupName} of table ${tableName} satisfy condition: ${condition} -- returning first available option.`, { npc_role: context.npc_role });
         return options[0];
       }
       let choice: DeemValue;

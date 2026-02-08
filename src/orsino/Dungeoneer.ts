@@ -107,6 +107,7 @@ export interface BossRoom extends RoomBase {
 }
 
 export interface Dungeon {
+  quest_name: string;
   macguffin?: string;
   terrain: "forest" | "cave" | "swamp" | "mountain" | "snow" | "desert";
   dungeon_type: string;
@@ -118,7 +119,7 @@ export interface Dungeon {
   rooms: Room[];
   bossRoom: BossRoom;
 
-  dungeonIndex?: number;
+  dungeonIndex: number;
   rumor: string;
   direction: "north" | "south" | "east" | "west";
   intendedCr: number;

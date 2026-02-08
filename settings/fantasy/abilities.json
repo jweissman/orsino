@@ -90,6 +90,35 @@
       }
     ]
   },
+  "rapid_fire": {
+    "name": "Rapid Fire",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Quickly fire your weapon multiple times in swift succession.",
+    "target": [
+      "enemy"
+    ],
+    "effects": [
+      { "type": "attack" },
+      { "type": "attack" },
+      { "type": "attack" },
+      { "type": "attack" },
+      { "type": "attack" }
+    ]
+  },
+  "snipe": {
+    "name": "Snipe",
+    "type": "skill",
+    "aspect": "physical",
+    "description": "Take careful aim to strike a vital spot.",
+    "target": [ "enemy" ],
+    "effects": [
+      {
+        "type": "attack",
+        "bonusDamage": "=1d10+#level"
+      }
+    ]
+  },
   "smash": {
     "name": "Smash",
     "type": "skill",

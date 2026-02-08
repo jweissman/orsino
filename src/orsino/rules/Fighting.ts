@@ -25,7 +25,7 @@ export class Fighting {
   }
 
   static statMod(stat: number): number {
-    return Math.round((stat - 10) / 3);
+    return Math.round((stat - 10) / 2);
   }
 
   static effectList(combatant: Combatant): StatusEffect[] {

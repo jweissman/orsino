@@ -71,7 +71,7 @@ export class Commands {
       result = Math.max(1, result);
       rollDescription += ` ${subject.name} adds ${effectStack.allRolls} to all rolls, so the total is now ${result}.`;
     }
-    console.warn(rollDescription);
+    // console.warn(rollDescription);
     return { amount: result, description: rollDescription };
   }
 

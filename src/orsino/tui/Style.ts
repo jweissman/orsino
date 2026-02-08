@@ -1,4 +1,4 @@
-type Color = 'black' | 'red' | 'green' | 'yellow' | 'blue' | 'magenta' | 'cyan' | 'white' | 'gray';
+export type Color = 'black' | 'red' | 'green' | 'yellow' | 'blue' | 'magenta' | 'cyan' | 'white' | 'gray';
 export default class Stylist {
   static cleanLength(text: string) {
     // removes ANSI codes and returns the length of the clean string

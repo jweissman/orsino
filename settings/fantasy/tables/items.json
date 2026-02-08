@@ -2741,7 +2741,12 @@
       "variety": { "type": "Variety Store", "description": "A shop that offers a diverse selection of items across multiple categories.", "itemTypes": ["consumable", "gear", "equipment", "armor", "weapon"], "itemRestrictions": { "rarity": ["common"]} },
       "weapons": { "type": "Weapon Shop", "description": "A shop specializing in weapons for adventurers and warriors.", "itemTypes": ["weapon"] },
       "wonders": { "type": "Wonder Shop", "description": "A shop that sells wondrous items and magical curiosities.", "itemTypes": ["equipment"], "itemRestrictions": { "rarity": ["legendary"] } },
-      "zoology": { "type": "Zoology Shop", "description": "A shop that sells items related to animals and magical creatures.", "itemTypes": ["consumable", "equipment", "gear"], "itemRestrictions": { "aspect": ["animal"] }}
+      "zoology": { "type": "Zoology Shop", "description": "A shop that sells items related to animals and magical creatures.", "itemTypes": ["consumable", "equipment", "gear"], "itemRestrictions": { "aspect": ["animal"] }},
+
+      "black_market": { "type": "Black Market", "description": "An illicit market where rare and forbidden items can be found, often at a high price.", "itemTypes": ["equipment", "consumable"], "itemRestrictions": { "rarity": ["very_rare", "legendary"] } },
+      "arcaneum": { "type": "Arcane Emporium", "description": "A shop that specializes in powerful magical items and artifacts.", "itemTypes": ["equipment"], "itemRestrictions": { "rarity": ["legendary"] } },
+      "antiquarian": { "type": "Antiquarian", "description": "A shop that deals in ancient and rare items, including relics and historical artifacts.", "itemTypes": ["equipment", "junk"], "itemRestrictions": { "rarity": ["rare", "legendary"] } },
+      "exotician": { "type": "Exotic Arts", "description": "A shop that offers unique and exotic items from distant lands and forgotten cultures.", "itemTypes": ["equipment", "consumable"], "itemRestrictions": { "rarity": ["rare", "legendary"] } }
     }
   }
 }

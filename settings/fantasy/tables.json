@@ -571,10 +571,15 @@
         "Factotum", "Amanuensis",
         "Priest", "Herald", "Devotee", "Mendicant", "Benefactor", "Preacher",
         "Acolyte", "Adept", "Cleric", "Cultist", "Sage", "Elder", "Guardian",
+        "Godsworn", "Prophet", "Templar",
         "High Priest", "Primate", "Death Priest", "Hierophant"
       ],
       "mine": [ "Miner", "Dweller", "Brute", "Thug", "Lurker" ],
-      "fortress": [ "Soldier", "Mercenary", "Warrior", "Chieftain" ],
+      "fortress": [
+        "Soldier", "Mercenary", "Warrior", "Chieftain", "Withersake",
+        "Medic", "Chirurgeon", "Blackguard", "Sharpshooter", "Warmage",
+        "Bandit", "Thug", "Assassin", "Brute", "Berserker", "Warlord", "General"
+      ],
       "tomb": [
         "Novice", "Acolyte", "Gravedigger", "Cultist", "Bandit", "Tombrobber", "Wizard",
         "Archaeologist", "Adventurer", "Blackguard", "Chirurgeon", "Doomsman",
@@ -620,77 +625,86 @@
 
       "Mendicant":    { "str": -2, "dex": -2, "con": -2, "int": 1, "wis": 2, "cha": 2, "abilities": [
         "cure_minor", "cure", "bless", "meditate", "chant"
-      ] },
-      "Factotum":    { "str": -1, "dex": -1, "int": 1, "wis": 1, "cha": 2, "abilities": ["cure_minor", "inspire"] },
-      "Amanuensis":  { "str": -1, "dex": -1, "int": 2, "wis": 1, "cha": 1, "abilities": ["cure_minor", "cure", "bless", "prayer"] },
-      "Herald":       { "str": -1, "dex": -1, "int": 1, "wis": -1, "cha": 2, "abilities": ["inspire"] },
-      "Benefactor":   { "str": -1, "dex": -1, "int": 2, "wis": -1, "cha": 2, "abilities": ["cure_minor", "cure"] },
-      "Devotee":      { "str": -1, "dex": -1, "int": 1, "wis": 2, "cha": 1, "abilities": ["cure_minor", "cure"] },
-      "Preacher":     { "str": -1, "dex": -1, "int": 2, "wis": 2, "cha": 2, "abilities": ["sunmark", "rally", "inspire", "bless", "remove_fear"] },
-      "Adept":       { "str": 1,  "con": 2, "wis": 3, "int": 2, "abilities": [ "dirty_trick", "cure_minor", "cure", "cure_moderate", "bless", "shocking_grasp", "paralyzing_touch", "raise_dead", "resist_fire" ], "traits": ["piety"] },
-      "Acolyte":      { "str": 0,  "con": 1, "wis": 2, "int": 1, "abilities": [ "heal", "bless", "paralyzing_touch" ], "traits": ["piety"] },
+      ], "traits": ["piety"], "role": "support" },
+      "Factotum":    { "str": -1, "dex": -1, "int": 1, "wis": 1, "cha": 2, "abilities": ["cure_minor", "inspire"], "role": "support" },
+      "Amanuensis":  { "str": -1, "dex": -1, "int": 2, "wis": 1, "cha": 1, "abilities": ["cure_minor", "cure", "bless", "prayer"], "role": "support" },
+      "Herald":       { "str": -1, "dex": -1, "int": 1, "wis": -1, "cha": 2, "abilities": ["inspire"], "role": "support" },
+      "Benefactor":   { "str": -1, "dex": -1, "int": 2, "wis": -1, "cha": 2, "abilities": ["cure_minor", "cure"], "role": "support" },
+      "Devotee":      { "str": -1, "dex": -1, "int": 1, "wis": 2, "cha": 1, "abilities": ["cure_minor", "cure"], "traits": ["piety"], "role": "support" },
+      "Preacher":     { "str": -1, "dex": -1, "int": 2, "wis": 2, "cha": 2, "abilities": ["sunmark", "rally", "inspire", "bless", "remove_fear"], "role": "controller" },
+      "Adept":       { "str": 1,  "con": 2, "wis": 3, "int": 2, "abilities": [ "dirty_trick", "cure_minor", "cure", "cure_moderate", "bless", "shocking_grasp", "paralyzing_touch", "raise_dead", "resist_fire" ], "traits": ["piety"], "role": "skirmisher" },
+      "Acolyte":      { "str": 0,  "con": 1, "wis": 2, "int": 1, "abilities": [ "heal", "bless", "paralyzing_touch" ], "traits": ["piety"], "role": "skirmisher" },
+      "Templar":      { "str": 2,  "con": 3, "int": 1, "wis": 4, "cha": 2, "abilities": [ "prepare_charge", "charge", "cure_minor", "cure", "bless", "resist_fire", "hold_person" ], "traits": ["piety"], "role": "tank" },
+      "Godsworn":     { "str": 2,  "con": 3, "dex": 2, "int": 1, "wis": 4, "cha": 2, "abilities": [ "prepare_charge", "charge", "hide", "backstab", "rapid_strike", "cure_minor", "cure", "bless", "resist_fire", "hold_person" ], "traits": ["piety"], "role": "assassin" },
+      "Prophet":      { "str": 1,  "con": 2, "int": 3, "wis": 4, "cha": 2, "abilities": [ "cure_minor", "cure", "bless", "meditate", "chant", "terror", "mass_curse" ], "traits": ["piety"], "role": "controller" },
       
-      "Cultist":      { "str": 1,  "con": 2, "int": 2, "abilities": [ "heal", "cure_minor", "ghost_touch", "curse", "terror", "paralyzing_touch", "silence", "animate_dead" ], "traits": ["piety", "radiant"] },
-      "Cleric":       { "wis": 3, "con": 2, "abilities": [ "cure_minor", "minor_ward", "smite", "cure", "bless", "resist_fire", "hold_person" ] },
-      "Sage":         { "int": 4, "abilities": [ "dancing_lights", "cure_minor", "cure", "curse", "terror", "blade_barrier", "command" ] },
-      "Guardian":     { "con": 4, "abilities": [ "second_wind", "taunt", "shield", "prepare_charge", "charge", "remove_fear", "cure_disease", "chant" ] },
-      "Elder":        { "int": 6, "con": 4, "abilities": [ "cure_minor", "cure", "curse", "terror", "life_drain", "silence", "judgment", "command", "blade_barrier" ] },
-      "Priest":        { "str": -1, "con": 1, "int": 2, "wis": 3, "cha": 2, "abilities": [ "cure_minor", "cure", "cure_moderate", "bless", "paralyzing_touch", "holy", "judgment", "curse", "chant", "prayer" ], "traits": ["piety"] },
-      "Death Priest": { "str": 3, "con": 4, "int": 4, "dex": 2, "wis": 6, "abilities": [ "cure_moderate", "curse", "terror", "life_drain",  "firebolt", "burning_hands", "chant" ], "traits": ["fiendish", "piety"] },
-      "High Priest":  { "str": -2, "con": 4, "int": 6, "dex": 2, "wis": 8, "cha": 8, "abilities": [ "smite", "bless", "curse", "inspire", "cure_serious", "holy", "prayer" ] },
-      "Primate":      { "str": 4, "con": 4, "int": 6, "dex": 2, "wis": 8, "cha": 6, "abilities": [ "cure_minor", "cure", "minor_ward", "smite", "bless", "curse", "inspire", "cure_serious", "judgment", "holy", "mass_curse", "prayer" ] },
-      "Hierophant":   { "str": 2, "con": 4, "int": 3, "dex": 2, "wis": 5, "cha": 5, "abilities": [ "prepare_charge", "charge", "minor_ward", "sleep", "curse", "fear", "life_drain", "poison_cloud", "resist_fire", "cure", "cure_serious", "blade_barrier" ] },
+      "Cultist":      { "str": 1,  "con": 2, "int": 2, "abilities": [ "heal", "cure_minor", "ghost_touch", "curse", "terror", "paralyzing_touch", "silence", "animate_dead" ], "traits": ["piety", "radiant"], "role": "controller" },
+      "Cleric":       { "wis": 3, "con": 2, "abilities": [ "cure_minor", "minor_ward", "smite", "cure", "bless", "resist_fire", "hold_person" ], "role": "controller" },
+      "Sage":         { "int": 4, "abilities": [ "dancing_lights", "cure_minor", "cure", "curse", "terror", "blade_barrier", "command" ], "role": "artillery" },
+      "Guardian":     { "con": 4, "abilities": [ "second_wind", "taunt", "shield", "prepare_charge", "charge", "remove_fear", "cure_disease", "chant" ], "role": "tank" },
+      "Elder":        { "int": 6, "con": 4, "abilities": [ "cure_minor", "cure", "curse", "terror", "life_drain", "silence", "judgment", "command", "blade_barrier" ], "role": "controller" },
+      "Priest":        { "str": -1, "con": 1, "int": 2, "wis": 3, "cha": 2, "abilities": [ "cure_minor", "cure", "cure_moderate", "bless", "paralyzing_touch", "holy", "judgment", "curse", "chant", "prayer" ], "traits": ["piety"], "role": "support" },
+      "Death Priest": { "str": 3, "con": 4, "int": 4, "dex": 2, "wis": 6, "abilities": [ "cure_moderate", "curse", "terror", "life_drain",  "firebolt", "burning_hands", "chant" ], "traits": ["fiendish", "piety"], "role": "artillery" },
+      "High Priest":  { "str": -2, "con": 4, "int": 6, "dex": 2, "wis": 8, "cha": 8, "abilities": [ "smite", "bless", "curse", "inspire", "cure_serious", "holy", "prayer" ], "role": "boss" },
+      "Primate":      { "str": 4, "con": 4, "int": 6, "dex": 2, "wis": 8, "cha": 6, "abilities": [ "cure_minor", "cure", "minor_ward", "smite", "bless", "curse", "inspire", "cure_serious", "judgment", "holy", "mass_curse", "prayer" ], "role": "boss" },
+      "Hierophant":   { "str": 2, "con": 4, "int": 3, "dex": 2, "wis": 5, "cha": 5, "abilities": [ "prepare_charge", "charge", "minor_ward", "sleep", "curse", "fear", "life_drain", "poison_cloud", "resist_fire", "cure", "cure_serious", "blade_barrier" ], "role": "tank" },
 
-      "Apprentice":   { "str": -1, "dex": -1, "int": 2, "wis": 1, "cha": -1, "abilities": [ "spark", "firebolt", "magic_missile" ] },
-      "Captain":    { "str": 3,  "con": 3, "dex": 2, "abilities": [ "prepare_charge", "charge", "second_wind", "taunt", "rally" ] },
-      "Whelp":        { "str": -1, "dex": -1, "abilities": [] },
-      "Runt":         { "str": -2, "abilities": ["hide"] },
-      "Creep":        { "str": -1, "dex": 1, "abilities": ["hide"] },
-      "Peasant":      { "str": 1, "dex": 1, "con": 1, "cha": -1, "abilities": [ "prepare_charge", "charge" ] },
-      "Loser":        { "str": -1, "dex": -1, "con": -1, "cha": 2, "abilities": [ "prepare_charge", "charge" ] },
-      "Magelet":      { "int": 2, "con": 1, "abilities": [ "magic_missile", "shocking_grasp" ] },
+      "Apprentice":   { "str": -1, "dex": -1, "int": 2, "wis": 1, "cha": -1, "abilities": [ "spark", "firebolt", "magic_missile" ], "role": "artillery" },
+      "Captain":    { "str": 3,  "con": 3, "dex": 2, "abilities": [ "prepare_charge", "charge", "second_wind", "taunt", "rally" ], "role": "skirmisher" },
+      "Whelp":        { "str": -1, "dex": -1, "abilities": ["hide"], "role": "skirmisher" },
+      "Runt":         { "str": -2, "abilities": ["hide"], "role": "skirmisher" },
+      "Creep":        { "str": -1, "dex": 1, "abilities": ["hide"], "role": "skirmisher" },
+      "Peasant":      { "str": 1, "dex": 1, "con": 1, "cha": -1, "abilities": [ "prepare_charge", "charge" ], "role": "skirmisher" },
+      "Loser":        { "str": -1, "dex": -1, "con": -1, "cha": 2, "abilities": [ "prepare_charge", "charge" ], "role": "skirmisher" },
+      "Magelet":      { "int": 2, "con": 1, "abilities": [ "magic_missile", "shocking_grasp" ], "role": "artillery" },
 
-      "Magician":     { "int": 3, "con": 2, "abilities": [ "magic_missile", "shocking_grasp", "sleep" ] },
-      "Criminal":     { "dex": 2, "cha": 1, "abilities": [ "hide" ] },
-      "Shaman":       { "int": 2, "wis": 1, "abilities": [ "heal" ] },
-      "Slinger":      { "dex": 3, "abilities": [] },
-      "Miner":        { "con": 2, "str": 1, "abilities": [ "prepare_charge", "charge" ] },
-      "Mercenary":    { "str": 2, "dex": 2, "abilities": [ "prepare_charge", "charge" ] },
-      "Hermit":       { "wis": 2, "con": 1, "abilities": [ "hide", "bless", "inspire" ] },
-      "Thug":         { "str": 2, "abilities": [ "taunt", "prepare_charge", "charge" ] },
-      "Cutthroat":    { "str": 2, "dex": 2, "abilities": [ "hide", "enrage", "prepare_charge", "charge" ] },
-      "Bridgeminder": { "str": 2, "abilities": [ "taunt", "prepare_charge", "charge" ] },
-      "Dweller":      { "str": 3, "dex": 2, "abilities": [ "hide", "prepare_charge", "charge" ] },
-      "Stalker":      { "str": 2, "dex": 4, "abilities": [ "hide", "backstab" ] },
-      "Lurker":       { "str": 4, "dex": 2, "abilities": [ "hide", "backstab", "prepare_charge", "charge" ] },
-      "Warden":       { "con": 2, "str": 1, "abilities": [ "second_wind", "taunt" ] },
+      "Magician":     { "int": 3, "con": 2, "abilities": [ "magic_missile", "shocking_grasp", "sleep" ], "role": "artillery" },
+      "Criminal":     { "dex": 2, "cha": 1, "abilities": [ "hide" ], "role": "skirmisher" },
+      "Shaman":       { "int": 2, "wis": 1, "abilities": [ "heal" ], "role": "support" },
+      "Slinger":      { "dex": 3, "abilities": ["rapid_fire"], "role": "skirmisher" },
+      "Miner":        { "con": 2, "str": 1, "abilities": [ "prepare_charge", "charge" ], "role": "skirmisher" },
+      "Mercenary":    { "str": 2, "dex": 2, "abilities": [ "prepare_charge", "charge" ], "role": "skirmisher" },
+      "Hermit":       { "wis": 2, "con": 1, "abilities": [ "hide", "bless", "inspire" ], "role": "support" },
+      "Thug":         { "str": 2, "abilities": [ "taunt", "prepare_charge", "charge" ], "role": "skirmisher" },
+      "Cutthroat":    { "str": 2, "dex": 2, "abilities": [ "hide", "enrage", "prepare_charge", "charge" ], "role": "skirmisher" },
+      "Bridgeminder": { "str": 2, "abilities": [ "taunt", "prepare_charge", "charge" ], "role": "skirmisher" },
+      "Dweller":      { "str": 3, "dex": 2, "abilities": [ "hide", "prepare_charge", "charge" ], "role": "skirmisher" },
+      "Stalker":      { "str": 2, "dex": 4, "abilities": [ "hide", "backstab" ], "role": "assassin" },
+      "Lurker":       { "str": 4, "dex": 2, "abilities": [ "hide", "backstab", "prepare_charge", "charge" ], "role": "assassin" },
+      "Warden":       { "con": 2, "str": 1, "abilities": [ "second_wind", "taunt" ], "role": "tank" },
 
-      "Warrior":      { "str": 3, "dex": 2, "con": 2, "abilities": [ "second_wind", "prepare_charge", "charge" ] },
-      "Thief":        { "dex": 2, "cha": 1, "abilities": [ "hide", "backstab" ] },
-      "Mage":         { "int": 6, "con": 4, "dex": 2, "str": 2, "abilities": [ "magic_missile", "shocking_grasp", "sleep" ] },
-      "Ranger":       { "str": 4, "dex": 4, "con": 2, "abilities": [ "heal", "set_spear", "prepare_charge", "charge" ] },
-      "Bard":         { "cha": 4, "dex": 2, "int": 2, "abilities": [ "cure", "inspire", "charm" ] },
+      "Warrior":      { "str": 3, "dex": 2, "con": 2, "abilities": [ "second_wind", "prepare_charge", "charge" ], "role": "skirmisher" },
+      "Thief":        { "dex": 2, "cha": 1, "abilities": [ "hide", "backstab" ], "role": "assassin" },
+      "Mage":         { "int": 6, "con": 4, "dex": 2, "str": 2, "abilities": [ "magic_missile", "shocking_grasp", "sleep" ], "role": "artillery" },
+      "Ranger":       { "str": 4, "dex": 4, "con": 2, "abilities": [ "heal", "set_spear", "prepare_charge", "charge" ], "role": "skirmisher" },
+      "Bard":         { "cha": 4, "dex": 2, "int": 2, "abilities": [ "cure", "inspire", "charm" ], "role": "support" },
 
-      "Miser":        { "con": 4, "str": 2, "abilities": [ "enrage", "prepare_charge", "charge" ] },
-      "Soldier":      { "str": 1, "con": 1, "abilities": [ "prepare_charge", "charge" ] },
-      "Brute":        { "str": 4, "abilities": [ "enrage", "prepare_charge", "charge" ] },
-      "Berserker":    { "str": 6, "abilities": [ "enrage", "prepare_charge", "charge" ] },
-      "Scholar":      { "int": 4, "abilities": [ "magic_missile", "sleep", "shocking_grasp" ] },
-      "Fury":         { "str": 8, "con": 6, "abilities": [ "enrage", "prepare_charge", "charge" ] },
-      "Princeling":   { "str": 6, "con": 4, "int": 4, "dex": 2, "abilities": [ "inspire", "terror", "prepare_charge", "charge" ] },
+      "Miser":        { "con": 4, "str": 2, "abilities": [ "enrage", "prepare_charge", "charge" ], "role": "skirmisher" },
+      "Soldier":      { "str": 1, "con": 1, "abilities": [ "prepare_charge", "charge" ], "role": "skirmisher" },
+      "Medic":        { "con": 4, "int": 2, "abilities": [ "heal", "cure_minor", "cure" ], "role": "support" },
+      "Sharpshooter": { "dex": 4, "int": 2, "abilities": [ "snipe", "rapid_fire" ], "role": "artillery" },
+      "Warmage":        { "str": 4, "con": 4, "int": 4, "dex": 2, "wis": 4, "cha": 4, "abilities": [ "enrage", "prepare_charge", "charge", "curse", "terror", "life_drain", "poison_cloud", "resist_fire" ], "traits": ["fiendish"], "role": "controller" },
+      "Withersake":       { "str": 4, "con": 2, "int": 2, "dex": 2, "wis": 2, "cha": 4, "abilities": [ "enrage", "prepare_charge", "charge", "heal", "cure_minor", "cure" ], "role": "skirmisher" },
 
-      "Chieftain":    { "str": 4, "con": 3, "abilities": [ "enrage", "prepare_charge", "charge" ] },
-      "Assassin":     { "dex": 4, "str": 2, "int": 1, "abilities": [ "hide", "backstab", "poison_weapon", "prepare_charge", "charge" ] },
-      "Shaman King":  { "str": 4, "con": 4, "int": 6, "dex": 2, "wis": 6, "abilities": [ "heal", "curse", "terror" ] },
-      "General":      { "str": 6, "con": 4, "int": 2, "dex": 2, "abilities": [ "enrage", "prepare_charge", "charge", "inspire", "second_wind" ] },
-      "Warlord":      { "str": 7, "con": 6, "int": 5, "wis": 4, "dex": 3, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ] },
+
+      "Brute":        { "str": 4, "abilities": [ "enrage", "prepare_charge", "charge" ], "role": "tank" },
+      "Berserker":    { "str": 6, "abilities": [ "enrage", "prepare_charge", "charge" ], "role": "tank" },
+      "Scholar":      { "int": 4, "abilities": [ "magic_missile", "sleep", "shocking_grasp" ], "role": "artillery" },
+      "Fury":         { "str": 8, "con": 6, "abilities": [ "enrage", "prepare_charge", "charge" ], "role": "tank" },
+      "Princeling":   { "str": 6, "con": 4, "int": 4, "dex": 2, "abilities": [ "inspire", "terror", "prepare_charge", "charge" ], "role": "skirmisher" },
+
+      "Chieftain":    { "str": 4, "con": 3, "abilities": [ "enrage", "prepare_charge", "charge" ], "role": "tank" },
+      "Assassin":     { "dex": 4, "str": 2, "int": 1, "abilities": [ "hide", "backstab", "poison_weapon", "prepare_charge", "charge" ], "role": "assassin" },
+      "Shaman King":  { "str": 4, "con": 4, "int": 6, "dex": 2, "wis": 6, "abilities": [ "heal", "curse", "terror" ], "role": "support" },
+      "General":      { "str": 6, "con": 4, "int": 2, "dex": 2, "abilities": [ "enrage", "prepare_charge", "charge", "inspire", "second_wind" ], "role": "boss" },
+      "Warlord":      { "str": 7, "con": 6, "int": 5, "wis": 4, "dex": 3, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ], "role": "boss" },
       "Chosen One":   { "str": 5, "con": 5, "int": 5, "dex": 5, "wis": 5, "abilities": [ "enrage", "heal", "inspire", "curse", "fear", "inspire", "charm", "prepare_charge", "charge" ] },
-      "Destroyer":    { "str": 8, "con": 6, "int": 2, "dex": 2, "abilities": [ "fear", "maul", "curse", "enrage", "prepare_charge", "charge" ] },
+      "Destroyer":    { "str": 8, "con": 6, "int": 2, "dex": 2, "abilities": [ "fear", "maul", "curse", "enrage", "prepare_charge", "charge" ], "role": "tank" },
 
-      "Archmage":     { "int": 8, "con": 4, "dex": 2, "str": -2, "abilities": [ "armor", "magic_missile", "life_drain", "shocking_grasp", "sleep" ] },
-      "King":         { "str": 6, "con": 6, "int": 4, "dex": 2, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ] },
-      "Lord":         { "str": 8, "con": 8, "int": 6, "wis": 6, "dex": 4, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ] },
-      "Monarch":      { "str": 10, "con": 10, "int": 6, "wis": 6, "dex": 4, "abilities": [ "inspire", "enrage", "prepare_charge", "charge", "heal" ] }
+      "Archmage":     { "int": 8, "con": 4, "dex": 2, "str": -2, "abilities": [ "armor", "magic_missile", "life_drain", "shocking_grasp", "sleep" ], "role": "artillery" },
+      "King":         { "str": 6, "con": 6, "int": 4, "dex": 2, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ], "role": "boss" },
+      "Lord":         { "str": 8, "con": 8, "int": 6, "wis": 6, "dex": 4, "abilities": [ "enrage", "prepare_charge", "charge", "heal" ], "role": "boss" },
+      "Monarch":      { "str": 10, "con": 10, "int": 6, "wis": 6, "dex": 4, "abilities": [ "inspire", "enrage", "prepare_charge", "charge", "heal" ], "role": "boss" }
     }
   },
   
@@ -833,7 +847,7 @@
     "discriminator": "building_type",
     "groups": {
       "temple": [ "fane", "shrine", "sanctum", "reliquary", "sanctuary", "monastery", "cathedral" ],
-      "fortress": [ "tower", "keep", "stronghold", "citadel", "bastion", "redoubt" ],
+      "fortress": [ "tower", "keep", "stronghold", "citadel", "bastion", "redoubt", "barbican", "martello", "outpost", "fastness" ],
       "library": [ "archive", "vault", "scriptorium", "repository", "bookhouse" ],
       "tomb": [ "ossuary", "cenotaph", "crypt", "catacomb", "mausoleum", "necropolis", "sepulcher", "charnel" ],
       "mine": [ "cave", "cavern", "lair", "delve", "tunnel", "hollow" ]
@@ -916,15 +930,16 @@
       ],
       "tomb": [[
         "crypt",
+        "crypt",
+        "crypt",
+        "ossuary",
         "ossuary",
         "catacombs",
-        "fane",
-        "alcove",
-        "reliquary",
+        "catacombs",
+        "mortuary_garden",
         "mortuary_garden",
         "phylactery",
-        "ritual_chamber",
-        "dark_altar"
+        "ancestral_shrine"
       ]],
       "mine": [
         [
@@ -982,11 +997,20 @@
         "monster_type": "Golem",
         "_monsterLevelDistribution": ["=#_targetCr"],
         "_npcCount": 1,
-        "_npc_types": ["Wizard", "Gravedigger"],
+        "_npc_types": ["Wizard", "Gravedigger", "Tombrobber"],
         "_companionCount": 0,
         "_treasureItems": ["shovel", "pick"],
         "bonusGold": "1d10"
       },
+      "ancestral_shrine": {
+        "_npcCount": 3,
+        "_npc_types": ["Tombrobber", "Tombrobber", "Tombrobber"],
+        "_companionCount": 0,
+        "_treasureItems": ["holy_symbol", "holy_water", "shovel", "pick"],
+        "bonusGold": "1d200",
+        "narrative": "=\"ancient ancestral shrine to #{dig(#buried_figure, referenceName)}. The air is thick with reverence and sorrow. The walls are adorned with faded murals depicting the lives and deeds of #figure_name, and a sense of solemnity permeates the space.\""
+      },
+
       "reliquary": {
         "_npcCount": 4,
         "_npc_types": ["Wizard", "Adept", "Adept", "Adept"],
@@ -1084,6 +1108,9 @@
   "roomNarrative": {
     "discriminator": "type",
     "groups": {
+      "ancestral_shrine": [
+        "ancient ancestral shrine. The air is thick with reverence and sorrow. The walls are adorned with faded murals depicting the lives and deeds of long-dead ancestors, and a sense of solemnity permeates the space."
+      ],
       "catacombs": [
         "dense catacombs, walls lined with ancient tombs and sarcophagi."
       ],
@@ -1190,9 +1217,50 @@
       ]
     }
   },
+  "dungeonRoomFeatures": {
+    "discriminator": "building_type",
+    "groups": {
+      "tomb": [["memorial_altar", "sealed_sarcophagus"]],
+      "temple": [["pure_fountain", "arcane_circle", "deepwood_table", "cold_iron_altar"]],
+      "fortress": [["armamentarium"]],
+      "library": [["arcane_circle", "enchanted_bookshelf"]],
+      "mine": [["deepwater_well", "gem_vein"]]
+    }
+  },
   "roomFeature": {
     "discriminator": "kind",
     "groups": {
+      "gem_vein": {
+        "name": "gem vein",
+        "description": "A vein of precious gems embedded in the rock. The air is thick with the scent of minerals and earth.",
+        "offer": 5,
+        "effects": [
+          { "type": "gold", "amount": "20+2d10" },
+          { "type": "acquireItem", "itemName": "ruby" },
+          { "type": "acquireItem", "itemName": "sapphire" },
+          { "type": "acquireItem", "itemName": "emerald" }
+        ]
+      },
+      "armamentarium": {
+        "name": "armamentarium",
+        "description": "A collection of ancient weapons and armor, some of them enchanted. The air is thick with the scent of oil and metal.",
+        "offer": 5,
+        "effects": [
+          { "type": "acquireItem", "itemName": "longsword" },
+          { "type": "acquireItem", "itemName": "shield" },
+          { "type": "buff", "status": "protected" }
+        ]
+      },
+      "enchanted_bookshelf": {
+        "name": "arcane knowledge",
+        "description": "A towering bookshelf filled with ancient tomes and scrolls. The air is thick with the scent of old paper and ink, and you can feel the latent magic in the air.",
+        "offer": 5,
+        "effects": [
+          { "type": "acquireItem", "itemName": "scroll_of_fireball" },
+          { "type": "acquireItem", "itemName": "wand_of_magic_missile" },
+          { "type": "buff", "status": "focus" }
+        ]
+      },
       "memorial_altar": {
         "name": "healing memory",
         "description": "A shrine to the honored dead. Fresh flowers somehow still bloom here. You feel a soothing warmth in the air.",
@@ -1248,6 +1316,7 @@
       }
     }
   },
+
   "roomDecoration": {
     "discriminator": "d100",
     "groups": {
@@ -1319,15 +1388,24 @@
     "groups": {
       "temple": {
         "patron_deity": "=gen(deity)",
-        "deity_name": "=dig(#patron_deity, forename)"
+        "deity_name": "=dig(#patron_deity, forename)",
+        "dungeon_name": "=\"#{capitalize(#dungeon_type)} of #deity_name\"",
+        "quest_name": "=oneOf(\"Purify the #dungeon_name\", \"Defeat the evil presence within the #dungeon_name\", \"Cleanse the polluted #dungeon_name\")"
       },
       "tomb": {
         "_npc_template_type_expr": "(#npc_type != Necromancer && 1d10 < 8) ? undead : nihil",
         "buried_figure": "=genIsolated(pc)",
         "figure_name": "=dig(#buried_figure, name)",
-        "dungeon_name": "=\"#{capitalize(#dungeon_type)} of #figure_name\""
+        "dungeon_name": "=\"#{capitalize(#dungeon_type)} of #figure_name\"",
+        "quest_name": "=\"Seal the #dungeon_name\""
       },
-      "fortress": {},
+      "fortress": {
+        "warlord": "=genIsolated(pc)",
+        "warlord_name": "=dig(#warlord, name)",
+        "dungeon_name": "=\"#{capitalize(#dungeon_type)} of #warlord_name\"",
+        "quest_name": "=oneOf(\"Defeat #warlord_name in the #{humanize(#dungeon_type)}\", \"Infiltrate the #{humanize(#dungeon_type)} and eliminate #warlord_name\", \"Retake the #{humanize(#dungeon_type)} from #warlord_name\")"
+
+      },
       "library": {},
       "mine": {}
     }

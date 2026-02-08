@@ -1,9 +1,9 @@
-import Stylist from "./Style";
+import Stylist, { Color } from "./Style";
 import { Combatant } from "../types/Combatant";
 import { Fighting } from "../rules/Fighting";
 
 export default class Presenter {
-  static colors = ['magenta', 'red', 'yellow', 'yellow', 'yellow', 'green', 'green', 'green', 'green'];
+  static colors: Color[] = ['magenta', 'red', 'yellow', 'yellow', 'yellow', 'green', 'green', 'green', 'green'];
 
   static aggregateList = (items: string[]) => {
     const counts: { [item: string]: number } = {};

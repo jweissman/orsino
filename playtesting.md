@@ -209,6 +209,8 @@
 ---
 - [ ] Make it possible to see exotic races as hirelings in the tavern again??
 - [ ] Improve trait display/selection (sometimes it's just the name and then the name again without a clear description?)
+---
+- [ ] Special room features (sacrophagi only in tomb / maybe in certain rooms...)
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing

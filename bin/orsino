@@ -74,6 +74,7 @@ program
   .option('--class <class>', 'Specify the class to use')
   .option('--background <background>', 'Specify the background to use')
   .option('--cr <cr>', 'Specify the challenge rating to target')
+  .option('--room_type <room_type>', 'Specify the room type to use')
   .option('--tabular', 'Print output in tabular format where applicable')
   .action(async (type, options) => {
     // const orsino = new Orsino(options.setting);

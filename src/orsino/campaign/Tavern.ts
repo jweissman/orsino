@@ -3,7 +3,6 @@ import { AllRumorsHeardEvent, DonationEvent, ModuleEvent, PurchaseEvent, RumorHe
 import CharacterRecord from "../rules/CharacterRecord";
 import SkillCheck from "../rules/SkillCheck";
 import SystemShock from "../rules/SystemShock";
-import Automatic from "../tui/Automatic";
 import Words from "../tui/Words";
 import { CombatantID } from "../types/Combatant";
 import { never } from "../util/never";

@@ -60,9 +60,14 @@ export class GameStateReducer {
           newState.campaignModule.completedDungeons = newState.campaignModule.completedDungeons.concat([event.dungeonIndex]);
         }
         break;
+      
+      case "questAccepted":
+        newState.activeQuest = event.quest;
+        newState.campaignModule.discoveredDungeons = newState.campaignModule.discoveredDungeons.concat([event.quest.dungeonIndex]);
+        break;
 
       default:
-      // console.warn(`Unhandled event type in processEvents: ${event.type}`);
+        // console.warn(`Unhandled event type in processEvents: ${event.type}`);
       // return never(event);
     }
 
