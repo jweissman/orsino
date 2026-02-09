@@ -12,7 +12,7 @@
     "discriminator": "terrain",
     "groups": {
       "any": [ "day", "morning", "autumn", "golden", "beautiful", "splendid", "love", "dream", "music" ],
-      "forest": [ "acorn", "bark", "bush", "fern", "flower", "green", "leaf", "tree", "wood", "thorn", "rose", "lily", "willow", "elm", "birds" ],
+      "forest": [ "acorn", "bark", "bush", "fern", "flower", "green", "leaf", "tree", "thorn", "rose", "lily", "willow", "elm", "birds" ],
       "cave": [ "deep", "hollow", "dark", "rock", "gloom", "damp", "dusty", "ash" ],
       "swamp": [ "marsh", "wet", "moss", "black", "gloom", "fen" ],
       "mountain": [ "hill", "mountain", "peak", "iron", "cold", "stone", "high", "red", "tall", "lofty", "lonely", "high", "tin", "iron", "silver", "gold" ],

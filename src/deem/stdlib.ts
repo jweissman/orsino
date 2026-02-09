@@ -1,4 +1,4 @@
-import LanguageManager, { Concept, ConceptKind, conceptKinds, Conceptory, ConceptTemplate } from '../orsino/Language';
+import LanguageManager, { Concept, ConceptKind, conceptKinds, Conceptory, ConceptTemplate, WordCorruptor } from '../orsino/Language';
 import { Fighting } from '../orsino/rules/Fighting';
 import Words from '../orsino/tui/Words';
 
@@ -205,6 +205,13 @@ export default class StandardLibrary {
         throw new Error(`translate() could not find default language 'westron'`);
       }
       return lang.translate(...concepts as Concept[]);
+    },
+
+    corrupt: (str: DeemValue, langKey: DeemValue) => {
+      if (typeof str !== 'string') {
+        throw new Error(`corrupt() expects a string, got: ${typeof str}`);
+      }
+      return WordCorruptor.mutate(str, langKey as 'westron' | 'khuzdul' | 'quenya') as DeemValue;
     },
 
     concept: (conceptKind: DeemValue) => {

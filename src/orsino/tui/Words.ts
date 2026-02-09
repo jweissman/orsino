@@ -47,7 +47,7 @@ export default class Words {
     const article = vowels.includes(firstLetter) ? 'an' : 'a';
     return `${article} ${phrase}`;
   }
-  static capitalize = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1);
+  static capitalize = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   static humanizeList = (arr: string[]): string => {
     if (arr.length === 0) {return '';}
     if (arr.length === 1) {return arr[0];}
