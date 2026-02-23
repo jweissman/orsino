@@ -74,7 +74,7 @@ export class Table {
     return options;
   }
 
-  pick(groupName: string, globallyUnique: boolean = false): DeemValue {
+  pick(groupName: string, globallyUnique: boolean = false, randomFunc: (maxValue: number) => number = (max) => Math.floor(Math.random() * max)): DeemValue {
     const options = this.optionsForPick(groupName);
     // if (groupName === 'default') {
     //   const allItems = Object.values(this.groups).flat();
@@ -107,14 +107,14 @@ export class Table {
         // could reset options for this group here instead but good to be able to throw just to see what's missing
         console.warn(`No more unique options available in table ${this.name} for group ${groupName}, resetting picked options.`);
         this.pickedOptions.clear();
-        return this.pick(groupName, globallyUnique);
+        return this.pick(groupName, globallyUnique, randomFunc);
       }
-      const choice = availableOptions[Math.floor(Math.random() * availableOptions.length)];
+      const choice = availableOptions[randomFunc(availableOptions.length)];
       this.pickedOptions.add(choice);
       return choice;
     }
 
-    return options[Math.floor(Math.random() * options.length)];
+    return options[randomFunc(options.length)];
   }
 
   hasGroup(groupName: string): boolean {

@@ -1,14 +1,90 @@
-import LanguageManager, { Concept, ConceptKind, conceptKinds, Conceptory, ConceptTemplate, WordCorruptor } from '../orsino/Language';
+import { WordCorruptor } from '../linguistics/Corruptor';
+import LanguageManager, { Concept, ConceptKind, conceptKinds, Conceptory, ConceptTemplate } from '../orsino/Language';
 import { Fighting } from '../orsino/rules/Fighting';
 import Words from '../orsino/tui/Words';
 
 export type DeemValue = string | number | boolean | null | DeemValue[] | { [key: string]: DeemValue };
 export type DeemFunc = ((...args: DeemValue[]) => DeemValue)
-              | ((arr: DeemValue[], ...args: DeemValue[]) => DeemValue)
-
+  | ((arr: DeemValue[], ...args: DeemValue[]) => DeemValue)
 
 export default class StandardLibrary {
-  static functions: Record<string, DeemFunc> = {
+  static rand = (seed: string | number) => {
+    // simple seeded random generator (mulberry32)
+    let s = typeof seed === 'number' ? seed : [...seed].reduce((a, b) => a + b.charCodeAt(0), 0);
+    // console.warn(`Creating seeded random function with seed: ${seed} (numeric value: ${s})`);
+    return function (max: number=-1) {
+      s += 0x6D2B79F5;
+      let t = Math.imul(s ^ s >>> 15, 1 | s);
+      t ^= t + Math.imul(t ^ t >>> 7, 61 | t);
+      let val = ((t ^ t >>> 14) >>> 0) / 4294967296;
+      if (max > 0) {
+        return Math.floor(val * max);
+      }
+      return val;
+      // return [0.5, 0.6, 0.7][s++ % 3] as number; // deterministic sequence for testing
+    }
+  }
+
+  static probability = (seed: string | number = 'default-seed'): Record<string, DeemFunc> => {
+    console.warn(`Creating probability functions with seed: ${seed}`);
+    const randFunc = StandardLibrary.rand(seed);
+    return {
+      rand: randFunc,
+      oneOf: (...args: DeemValue[]) => {
+        const picked = args[Math.floor(randFunc() * args.length)];
+        // console.warn("Deem StandardLibrary.probabilityFunctions.oneOf(): picked=", picked);
+        return picked;
+      },
+      pick: (arr: DeemValue[], index: DeemValue = -1) => {
+        if (!Array.isArray(arr)) {
+          throw new Error(`pick() expects an array, got: ${typeof arr}`);
+        }
+        if (index === -1) {
+          return arr[Math.floor(randFunc() * arr.length)]
+        } else {
+          if (typeof index === 'number') {
+            return arr[index % arr.length];
+          } else {
+            throw new Error(`pick() received invalid index: ${JSON.stringify(index)} (type: ${typeof index})`);
+          }
+        }
+      },
+      sample: (arr: DeemValue[], count: DeemValue) => {
+        if (typeof count !== 'number') {
+          throw new Error(`sample() expects count to be a number, got: ${typeof count}`);
+        }
+
+        const sampled: DeemValue[] = [];
+
+        const arrCopy = [...arr];
+        for (let i = 0; i < count && arrCopy.length > 0; i++) {
+          const index = Math.floor(randFunc() * arrCopy.length);
+          sampled.push(arrCopy.splice(index, 1)[0]);
+        }
+        return sampled;
+      },
+      roll: (count: DeemValue, sides: DeemValue) => {
+        if (typeof count !== 'number' || typeof sides !== 'number') {
+          throw new Error(`roll() expects count and sides to be numbers, got: ${typeof count} and ${typeof sides}`);
+        }
+        const rolls = Array.from({ length: count }, () => Math.floor(randFunc() * sides) + 1);
+        const sum = rolls.reduce((a, b) => a + b, 0);
+        // console.log(`roll(): rolled ${count}d${sides} => rolls: [${rolls.join(', ')}], sum: ${sum}`);
+        return sum;
+      },
+      rollWithDrop: (count: DeemValue, sides: DeemValue) => {
+        if (typeof count !== 'number' || typeof sides !== 'number') {
+          throw new Error(`rollWithDrop() expects count and sides to be numbers, got: ${typeof count} and ${typeof sides}`);
+        }
+        const rolls = Array.from({ length: count }, () => Math.floor(randFunc() * sides) + 1);
+        rolls.sort((a, b) => a - b);
+        rolls.shift(); // drop the lowest
+        return rolls.reduce((a, b) => a + b, 0);
+      },
+    }
+  }
+
+  static core: Record<string, DeemFunc> = {
     a_an: (word: DeemValue) => {
       if (typeof word !== 'string') {
         throw new Error(`a_an() expects a string, got: ${typeof word}`);
@@ -17,41 +93,41 @@ export default class StandardLibrary {
       return (vowels.includes(word.charAt(0).toLowerCase()) ? 'an' : 'a') + ' ' + word;
     },
     count: (arr: DeemValue[]) => { return arr.length },
-    rand: () => Math.random(),
+    // rand: () => Math.random(),
     if: (cond: DeemValue, trueVal: DeemValue, falseVal: DeemValue) => (cond ? trueVal : falseVal),
-    oneOf: (...args: DeemValue[]) => {
-      const picked = args[Math.floor(Math.random() * args.length)];
-      // console.warn("Deem StandardLibrary.oneOf(): picked=", picked);
-      return picked;
-    },
-    pick: (arr: DeemValue[], index: DeemValue = -1) => {
-      if (!Array.isArray(arr)) {
-        throw new Error(`pick() expects an array, got: ${typeof arr}`);
-      }
-      if (index === -1) {
-        return arr[Math.floor(Math.random() * arr.length)]
-      } else {
-        if (typeof index === 'number') {
-          return arr[index % arr.length];
-        } else {
-          throw new Error(`pick() received invalid index: ${JSON.stringify(index)} (type: ${typeof index})`);
-        }
-      }
-    },
-    sample: (arr: DeemValue[], count: DeemValue) => {
-      if (typeof count !== 'number') {
-        throw new Error(`sample() expects count to be a number, got: ${typeof count}`);
-      }
+    // oneOf: (...args: DeemValue[]) => {
+    //   const picked = args[Math.floor(Math.random() * args.length)];
+    //   // console.warn("Deem StandardLibrary.oneOf(): picked=", picked);
+    //   return picked;
+    // },
+    // pick: (arr: DeemValue[], index: DeemValue = -1) => {
+    //   if (!Array.isArray(arr)) {
+    //     throw new Error(`pick() expects an array, got: ${typeof arr}`);
+    //   }
+    //   if (index === -1) {
+    //     return arr[Math.floor(Math.random() * arr.length)]
+    //   } else {
+    //     if (typeof index === 'number') {
+    //       return arr[index % arr.length];
+    //     } else {
+    //       throw new Error(`pick() received invalid index: ${JSON.stringify(index)} (type: ${typeof index})`);
+    //     }
+    //   }
+    // },
+    // sample: (arr: DeemValue[], count: DeemValue) => {
+    //   if (typeof count !== 'number') {
+    //     throw new Error(`sample() expects count to be a number, got: ${typeof count}`);
+    //   }
 
-      const sampled: DeemValue[] = [];
+    //   const sampled: DeemValue[] = [];
 
-      const arrCopy = [...arr];
-      for (let i = 0; i < count && arrCopy.length > 0; i++) {
-        const index = Math.floor(Math.random() * arrCopy.length);
-        sampled.push(arrCopy.splice(index, 1)[0]);
-      }
-      return sampled;
-    },
+    //   const arrCopy = [...arr];
+    //   for (let i = 0; i < count && arrCopy.length > 0; i++) {
+    //     const index = Math.floor(Math.random() * arrCopy.length);
+    //     sampled.push(arrCopy.splice(index, 1)[0]);
+    //   }
+    //   return sampled;
+    // },
     round: (num: DeemValue) => {
       if (typeof num !== 'number') {
         throw new Error(`round() expects a number, got: ${typeof num}`);
@@ -140,23 +216,7 @@ export default class StandardLibrary {
       return Math.max(...args)
     },
     concat: (...args: DeemValue[]) => args.flat().filter((x) => x !== null && x !== undefined),
-    roll: (count: DeemValue, sides: DeemValue) => {
-      if (typeof count !== 'number' || typeof sides !== 'number') {
-        throw new Error(`roll() expects count and sides to be numbers, got: ${typeof count} and ${typeof sides}`);
-      }
-      const rolls = Array.from({ length: count }, () => Math.floor(Math.random() * sides) + 1);
-      const sum = rolls.reduce((a, b) => a + b, 0);
-      return sum;
-    },
-    rollWithDrop: (count: DeemValue, sides: DeemValue) => {
-      if (typeof count !== 'number' || typeof sides !== 'number') {
-        throw new Error(`rollWithDrop() expects count and sides to be numbers, got: ${typeof count} and ${typeof sides}`);
-      }
-      const rolls = Array.from({ length: count }, () => Math.floor(Math.random() * sides) + 1);
-      rolls.sort((a, b) => a - b);
-      rolls.shift(); // drop the lowest
-      return rolls.reduce((a, b) => a + b, 0);
-    },
+
     statMod: (stat: DeemValue) => {
       if (typeof stat !== 'number') {
         throw new Error(`statMod() expects a number, got: ${typeof stat}`);
@@ -214,7 +274,7 @@ export default class StandardLibrary {
       return WordCorruptor.mutate(str, langKey as 'westron' | 'khuzdul' | 'quenya') as DeemValue;
     },
 
-    concept: (conceptKind: DeemValue) => {
+    concepts: (conceptKind: DeemValue) => {
       if (typeof conceptKind !== 'string') {
         throw new Error(`concept() expects a string, got: ${typeof conceptKind}`);
       }
@@ -223,8 +283,9 @@ export default class StandardLibrary {
         throw new Error(`concept() received invalid concept kind: ${conceptKind}`);
       }
       const options = Conceptory.getConceptsByKind(kind);
-      const concept = options[Math.floor(Math.random() * options.length)];
-      return concept;
+      // const concept = options[Math.floor(Math.random() * options.length)];
+      // return concept;
+      return options;
     },
 
     conceptTemplate: (conceptTemplate: DeemValue) => {
@@ -334,6 +395,34 @@ export default class StandardLibrary {
     //   }
     //   return options[Math.floor(Math.random() * options.length)];
     // }
-
   };
+
+  // static meta: (context: Record<string, DeemValue>) => Record<string, DeemFunc> = (context) => {
+  //   // console.log(`StandardLibrary.meta() called with context: ${JSON.stringify(context)}`);
+  //   // const probability = StandardLibrary.probability(context.seed as string);
+
+  //   return {
+  //     // ...probability,
+  //     eval: (expr: DeemValue) => Deem.evaluate(expr as string, context),
+  //     defined: (varName: DeemValue) => {
+  //       if (typeof varName !== 'string') {
+  //         throw new Error(`defined() expects a string, got: ${typeof varName}`);
+  //       }
+  //       return context[varName] !== undefined;
+  //     },
+  //     lookup: ((
+  //       tableName: GenerationTemplateType, groupName: string, condition?: string
+  //     ) => {
+  //       // console.warn(`Deem StandardLibrary.meta.lookup() called with tableName='${tableName}', groupName='${groupName}', seed='${context.seed}'`);
+  //       return Generator.lookupInTable(
+  //         tableName, groupName, false, condition, context, (max: number) => {
+  //           // probability.rand()
+  //           let val = Math.floor(probability.rand() as number * max);
+  //           console.log(`Deem StandardLibrary.meta.lookup(): generated random value ${val} (max: ${max}) using seed '${context.seed}'`);
+  //           return val;
+  //         }
+  //       );
+  //     }) as DeemFunc
+  //   }
+  // }
 }

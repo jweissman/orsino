@@ -39,7 +39,7 @@ describe('Orsino', () => {
   });
 
   it("generate room", () => {
-    const room = Generator.gen("room", { setting: "fantasy", targetCr: 12 }) as unknown as Room;
+    const room = Generator.gen("room", { setting: "fantasy", targetCr: 12, room_type: "crypt" }) as unknown as Room;
     expect(room.narrative).toMatch(/[a-z\s]+/);
     expect(room.room_size).toMatch(/tiny|small|medium|large|enormous/);
   });

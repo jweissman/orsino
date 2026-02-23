@@ -46,6 +46,9 @@ export type GeneratorOptions = {
 
   _loot_rank?: string;
   _plane_name?: string;
+
+
+  seed?: string;
 }
 export type GeneratedValue = Record<string, DeemValue>;
 
@@ -63,7 +66,9 @@ export default class Generator {
     const items: GeneratedValue[] = [];
     while (items.length < count) {
       const i = items.length;
-      const item: GeneratedValue = this.gen(type, deepCopy({ ...options, _index: i }) as GeneratorOptions) as GeneratedValue;
+      const item: GeneratedValue = this.gen(
+        type, deepCopy({ ...options, _index: i }
+      ) as GeneratorOptions) as GeneratedValue;
       items.push(item);
     }
 
@@ -101,7 +106,10 @@ export default class Generator {
     }
   }
 
-  public static lookupInTable(tableName: GenerationTemplateType, groupName: string, globallyUnique: boolean = false, condition?: string, context: Record<string, DeemValue> = {}): DeemValue {
+  public static lookupInTable(
+    tableName: GenerationTemplateType, groupName: string, globallyUnique: boolean = false, condition?: string, context: Record<string, DeemValue> = {},
+    randomFunc: (maxValue: number) => number = (max) => Math.floor(Math.random() * max)
+  ): DeemValue {
     const table = Generator.generationSource(tableName);
     if (!table || !(table instanceof Table)) {
       throw new Error(`Table not found: ${tableName}`);
@@ -132,14 +140,15 @@ export default class Generator {
         if (uniqueOptions.length === 0) {
           throw new Error(`No globally unique options left in group ${groupName} of table ${tableName} satisfying condition: ${condition}`);
         }
-        choice = uniqueOptions[Math.floor(Math.random() * uniqueOptions.length)];
+        choice = uniqueOptions[randomFunc(uniqueOptions.length)];
         table.pickedOptions.add(choice);
       } else {
-        choice = filteredOptions[Math.floor(Math.random() * filteredOptions.length)];
+        choice = filteredOptions[randomFunc(filteredOptions.length)];
       }
       return choice;
     } else {
-      const ret = table.pick(groupName, globallyUnique);
+      const ret = table.pick(groupName, globallyUnique, randomFunc);
+      // console.log(`lookupInTable: table=${tableName}, group=${groupName}, globallyUnique=${globallyUnique} => ret=${JSON.stringify(ret)}`);
       return ret;
     }
   }

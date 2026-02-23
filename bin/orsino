@@ -76,6 +76,7 @@ program
   .option('--cr <cr>', 'Specify the challenge rating to target')
   .option('--room_type <room_type>', 'Specify the room type to use')
   .option('--tabular', 'Print output in tabular format where applicable')
+  .option('--seed <seed>', 'Specify the seed to use for generation')
   .action(async (type, options) => {
     // const orsino = new Orsino(options.setting);
     let tabular = options.tabular || false;

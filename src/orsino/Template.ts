@@ -26,7 +26,7 @@ export class Template {
     Deem.stdlib.lookup = ((
       tableName: GenerationTemplateType, groupName: string, condition?: string
     ) => {
-      return Generator.lookupInTable(tableName, groupName, false, condition, context);
+      return Generator.lookupInTable(tableName, groupName, false, condition, context, Deem.stdlib.rand as (dv: DeemValue) => number);
     }) as DeemFunc;
     Deem.stdlib.lookupUnique = ((tableName: GenerationTemplateType, groupName: string) => Generator.lookupInTable(tableName, groupName, true)) as DeemFunc;
 

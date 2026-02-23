@@ -211,6 +211,9 @@
 - [ ] Improve trait display/selection (sometimes it's just the name and then the name again without a clear description?)
 ---
 - [ ] Special room features (sacrophagi only in tomb / maybe in certain rooms...)
+---
+- [ ] Materials/substances for weapons/armor/items? (crystal sword, coldsteel katana?)
+- [ ] Latinate language for ancients (which we can corrupt according to specific language family profiles?)
 
 ## Fixed
 - [x] Temple/shrine to local deity to get a blessing

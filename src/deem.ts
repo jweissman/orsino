@@ -20,7 +20,10 @@ type EvalNode = ohm.Node & EvalSemantics;
 export default class Deem {
   static magicVars: Record<string, DeemValue> = {};
   static colorize = (str: string, color: string) => `\x1b[${color}m${str}\x1b[0m`;
-  static stdlib: { [key: string]: DeemFunc } = StandardLibrary.functions;
+  static stdlib: { [key: string]: DeemFunc } = {
+    ...StandardLibrary.core,
+    ...StandardLibrary.probability('default-seed'),
+  }
   static grammar = ohm.grammar(source);
 
   static semantics = Deem.grammar.createSemantics().addOperation<DeemValue>('eval(context)', {
@@ -135,21 +138,20 @@ export default class Deem {
         const argValue = (arg as EvalNode).eval(ctx);
         args.push(argValue);
       }
-      const func = Deem.stdlib[funcName];
+      const lib: { [key: string]: DeemFunc } = Deem.stdlib;
+      //   ...Deem.stdlib
+      //   // ...StandardLibrary.probability(ctx.seed as string)
+      //   // ...StandardLibrary.meta(ctx as Record<string, DeemValue>)
+      // }
+      // debugger;
+      const func = lib[funcName];
       if (!func) {
         throw new Error(`Unknown function: ${funcName}`);
       }
 
-      // const isFuncAsync = func.constructor.name === 'AsyncFunction';
       let ret = null;
-      // if (isFuncAsync) {
-      //   ret = await func(...args.flat());
-      // } else {
-      // const flatArgs = args.flat();
       // @ts-expect-error -- ignore due to dynamic function call and unpredictable tuple type --
       ret = func(...args.flat());
-      // console.warn(`Deem FunctionCall: func='${funcName}' with args=`, args, ` returned:`, ret);
-      // }
       return ret;
     },
     ArgList(first, _comma, rest) {
@@ -216,37 +218,41 @@ export default class Deem {
       return result;
     },
     dice_multi(count, _d, sides) {
-      const ctx = (this.args as EvalArgs).context || {};
-      const rollFunc = ctx.roll as unknown as Roll;
-      if (ctx.roll !== undefined && ctx.roll !== null && typeof ctx.roll === 'function') {
-        let sum = 0;
-        for (let i = 0; i < parseInt(count.sourceString); i++) {
-          const result = rollFunc(
-            ctx.subject as unknown as Combatant,
-            ctx.description as string,
-            parseInt(sides.sourceString)
-          );
-          sum += result.amount;
-        }
-        return sum;
-      }
+      // const ctx = (this.args as EvalArgs).context || {};
+      // const rollFunc = ctx.roll as unknown as Roll;
+      // if (ctx.roll !== undefined && ctx.roll !== null && typeof ctx.roll === 'function') {
+      //   let sum = 0;
+      //   for (let i = 0; i < parseInt(count.sourceString); i++) {
+      //     const result = rollFunc(
+      //       ctx.subject as unknown as Combatant,
+      //       ctx.description as string,
+      //       parseInt(sides.sourceString)
+      //     );
+      //     sum += result.amount;
+      //   }
+      //   return sum;
+      // }
 
-      const rolls = Array.from({ length: parseInt(count.sourceString) }, () => Math.floor(Math.random() * parseInt(sides.sourceString)) + 1);
-      const sum = rolls.reduce((a, b) => a + b, 0);
-      return sum;
+      // const rolls = Array.from({ length: parseInt(count.sourceString) }, () => Math.floor(Math.random() * parseInt(sides.sourceString)) + 1);
+      // const sum = rolls.reduce((a, b) => a + b, 0);
+      return Deem.stdlib.roll(parseInt(count.sourceString) as unknown as DeemValue, parseInt(sides.sourceString) as unknown as DeemValue) as DeemValue;
     },
     dice_single(_d, sides) {
-      const ctx = (this.args as EvalArgs).context || {};
-      if (ctx.roll) {
-        const rollFunc = ctx.roll as unknown as Roll;
-        const result = rollFunc(
-          ctx.subject as unknown as Combatant,
-          ctx.description as string,
-          parseInt(sides.sourceString)
-        );
-        return result.amount;
-      }
-      return Math.floor(Math.random() * parseInt(sides.sourceString)) + 1;
+      // const ctx = (this.args as EvalArgs).context || {};
+      // if (ctx.roll) {
+      //   const rollFunc = ctx.roll as unknown as Roll;
+      //   const result = rollFunc(
+      //     ctx.subject as unknown as Combatant,
+      //     ctx.description as string,
+      //     parseInt(sides.sourceString)
+      //   );
+      //   return result.amount;
+      // }
+      return Deem.stdlib.roll(1, parseInt(sides.sourceString) as unknown as DeemValue);
+      // return Math.floor(
+      //   // Math.random() * parseInt(sides.sourceString)
+      //   Deem.stdlib.rand(parseInt(sides.sourceString))
+      // ) + 1;
     }
   }).addAttribute<string>('pretty', {
     Exp(exp) { return exp.pretty as string; },
@@ -317,7 +323,7 @@ export default class Deem {
       try {
         ret = sem.eval(context);
       } catch (e) {
-        console.trace("Error evaluating expression:", expression);
+        console.warn("Error evaluating expression:", expression);
         throw new Error(`Error evaluating expression: ${expression}\n${(e as Error).message}`);
       }
       return ret;
